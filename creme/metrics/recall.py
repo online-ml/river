@@ -36,8 +36,8 @@ class Recall(base.BinaryMetric):
     """
 
     def get(self):
-        tp = self.cm.true_positives
-        fn = self.cm.false_negatives
+        tp = self.cm.true_positives(self.pos_val)
+        fn = self.cm.false_negatives(self.pos_val)
         try:
             return tp / (tp + fn)
         except ZeroDivisionError:

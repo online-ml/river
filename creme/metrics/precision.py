@@ -35,8 +35,8 @@ class Precision(base.BinaryMetric):
     """
 
     def get(self):
-        tp = self.cm.true_positives
-        fp = self.cm.false_positives
+        tp = self.cm.true_positives(self.pos_val)
+        fp = self.cm.false_positives(self.pos_val)
         try:
             return tp / (tp + fp)
         except ZeroDivisionError:

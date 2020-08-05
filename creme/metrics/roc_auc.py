@@ -70,10 +70,6 @@ class ROCAUC(base.BinaryMetric):
         return self
 
     @property
-    def bigger_is_better(self):
-        return True
-
-    @property
     def requires_labels(self):
         return False
 
@@ -89,10 +85,10 @@ class ROCAUC(base.BinaryMetric):
                 return 0.
 
         for i, cm in enumerate(self.cms):
-            tp = cm.true_positives
-            tn = cm.true_negatives
-            fp = cm.false_positives
-            fn = cm.false_negatives
+            tp = cm.true_positives(self.pos_val)
+            tn = cm.true_negatives(self.pos_val)
+            fp = cm.false_positives(self.pos_val)
+            fn = cm.false_negatives(self.pos_val)
 
             tprs[i] = safe_div(a=tp, b=tp + fn)
             fprs[i] = safe_div(a=fp, b=fp + tn)

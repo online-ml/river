@@ -38,9 +38,9 @@ class ClassificationReport(base.MultiClassMetric):
     >>> print(report)
                Precision   Recall   F1      Support
     <BLANKLINE>
-       apple       0.000    0.000   0.000       1.0
-      banana       0.000    0.000   0.000       3.0
-        pear       0.000    0.000   0.000       1.0
+       apple       0.000    0.000   0.000         1
+      banana       1.000    0.667   0.800         3
+        pear       0.000    0.000   0.000         1
     <BLANKLINE>
        Macro       0.333    0.222   0.267
        Micro       0.400    0.400   0.400
@@ -51,16 +51,16 @@ class ClassificationReport(base.MultiClassMetric):
     Notes
     -----
 
-    You can wrap a `creme.metrics.ClassificationReport` with `creme.metrics.Rolling` in order
-    to obtain a classification report over a window of observations. You can also wrap it with
-    `creme.metrics.TimeRolling` to obtain a report over a period of time.
+    You can wrap a `metrics.ClassificationReport` with `metrics.Rolling` in order to obtain a
+    classification report over a window of observations. You can also wrap it with
+    `metrics.TimeRolling` to obtain a report over a period of time.
 
     """
 
     def __init__(self, decimals=3, cm=None):
         super().__init__(cm)
         self.decimals = decimals
-        self._f1s = collections.defaultdict(functools.partial(fbeta.F1, self.cm))
+        self._f1s = {}
         self._macro_precision = precision.MacroPrecision(self.cm)
         self._macro_recall = recall.MacroRecall(self.cm)
         self._macro_f1 = fbeta.MacroF1(self.cm)
@@ -82,6 +82,11 @@ class ClassificationReport(base.MultiClassMetric):
 
         headers = ['', 'Precision', 'Recall', 'F1', 'Support']
         classes = sorted(self.cm.classes)
+
+        for c in classes:
+            if c not in self._f1s:
+                self._f1s[c] = fbeta.F1(cm=self.cm, pos_val=c)
+
         columns = [
             # Row names
             ['', *map(str, classes), '', 'Macro', 'Micro', 'Weighted'],
@@ -113,7 +118,7 @@ class ClassificationReport(base.MultiClassMetric):
                 ])
             ],
             # Support
-            ['', *[str(self.cm.sum_row[c]) for c in classes], *[''] * 4]
+            ['', *[str(self.cm.sum_row[c]).rstrip('.0') for c in classes], *[''] * 4]
         ]
 
         # Build the table
