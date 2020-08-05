@@ -98,16 +98,16 @@ class BinaryMetric(ClassificationMetric):
     """Mother class for all binary classification metrics."""
 
     def update(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-               sample_weight=1.) -> 'BinaryMetric':
+               sample_weight=1) -> 'BinaryMetric':
         if self.requires_labels:
             y_pred = bool(y_pred)
-        return super().update(bool(y_true), y_pred)
+        return super().update(bool(y_true), y_pred, sample_weight)
 
     def revert(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-               sample_weight=1.) -> 'BinaryMetric':
+               sample_weight=1) -> 'BinaryMetric':
         if self.requires_labels:
             y_pred = bool(y_pred)
-        return super().update(bool(y_true), y_pred)
+        return super().revert(bool(y_true), y_pred, sample_weight)
 
 
 class MultiClassMetric(ClassificationMetric):

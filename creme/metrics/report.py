@@ -19,7 +19,6 @@ class ClassificationReport(base.MultiClassMetric):
 
     Parameters
     ----------
-
     decimals
         The number of decimals to display in each cell.
 

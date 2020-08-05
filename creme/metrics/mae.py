@@ -7,24 +7,25 @@ __all__ = ['MAE']
 class MAE(base.MeanMetric, base.RegressionMetric):
     """Mean absolute error.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [3, -0.5, 2, 7]
-        >>> y_pred = [2.5, 0.0, 2, 8]
+    >>> y_true = [3, -0.5, 2, 7]
+    >>> y_pred = [2.5, 0.0, 2, 8]
 
-        >>> metric = metrics.MAE()
+    >>> metric = metrics.MAE()
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     print(metric.update(yt, yp).get())
-        0.5
-        0.5
-        0.333
-        0.5
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp).get())
+    0.5
+    0.5
+    0.333
+    0.5
 
-        >>> metric
-        MAE: 0.5
+    >>> metric
+    MAE: 0.5
 
     """
 

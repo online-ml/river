@@ -54,7 +54,6 @@ cdef class ConfusionMatrix:
 
     def __init__(self, classes=None):
         self._init_classes = set(classes) if classes is not None else set()
-        self.classes = self._init_classes
         self.sum_diag = 0.0
         self.sum_row = collections.defaultdict(float)
         self.sum_col = collections.defaultdict(float)
@@ -67,7 +66,6 @@ cdef class ConfusionMatrix:
 
     def update(self, y_true, y_pred, sample_weight=1.):
         self.n_samples += sample_weight
-        self.classes.update([y_true, y_pred])
         self.data[y_true][y_pred] += sample_weight
 
         if y_true == y_pred:
@@ -83,6 +81,13 @@ cdef class ConfusionMatrix:
         return self
 
     @property
+    def classes(self):
+        return (
+            set(c for c, n in self.sum_row.items() if n) |
+            set(c for c, n in self.sum_col.items() if n)
+        )
+
+    @property
     def n_classes(self):
         return len(self.classes)
 
@@ -94,6 +99,7 @@ cdef class ConfusionMatrix:
         self.__init__(classes=self._init_classes)
 
     def __repr__(self):
+
         # The classes are sorted alphabetically for reproducibility reasons
         classes = sorted(self.classes)
 
