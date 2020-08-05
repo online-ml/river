@@ -40,8 +40,8 @@ def numpy2dict(data):
     Returns
     -------
         dict
-            A dictionary where keys are integers :math: `k \in \{0, 1, ..., |\mathtt{data}| - 1\}`,
-            and the values are each one of the :math: `k` entries in `data`.
+            A dictionary where keys are integers $k \in \{0, 1, ..., |\text{data}| - 1\}$,
+            and the values are each one of the $k$ entries in `data`.
 
     Examples
     --------
