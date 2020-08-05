@@ -1,6 +1,5 @@
-import collections
+from collections import defaultdict, Counter
 import functools
-import warnings
 
 import numpy as np
 cimport numpy as np
@@ -55,10 +54,13 @@ cdef class ConfusionMatrix:
     def __init__(self, classes=None):
         self._init_classes = set(classes) if classes is not None else set()
         self.sum_diag = 0.0
-        self.sum_row = collections.defaultdict(float)
-        self.sum_col = collections.defaultdict(float)
-        self.data = collections.defaultdict(functools.partial(collections.defaultdict, float))
+        self.sum_row = defaultdict(float)
+        self.sum_col = defaultdict(float)
+        self.data = defaultdict(functools.partial(defaultdict, float))
         self.n_samples = 0
+        self._class_counter = Counter()
+        self.last_y_true = None
+        self.last_y_pred = None
 
     def __getitem__(self, key):
         """Syntactic sugar for accessing the counts directly."""
@@ -66,6 +68,15 @@ cdef class ConfusionMatrix:
 
     def update(self, y_true, y_pred, sample_weight=1.):
         self.n_samples += sample_weight
+
+        if sample_weight > 0:
+            self._class_counter.update([y_true])
+            # Keep track of last entry
+            self.last_y_true = y_true
+            self.last_y_pred = y_pred
+        else:
+            self._class_counter.subtract([y_true])
+
         self.data[y_true][y_pred] += sample_weight
 
         if y_true == y_pred:
@@ -128,6 +139,13 @@ cdef class ConfusionMatrix:
         ))
 
         return table
+
+    @property
+    def majority_class(self):
+        try:
+            return self._class_counter.most_common(1)[0][0]
+        except IndexError:
+            return False       # TODO confirm default value
 
     @property
     def true_positives(self):

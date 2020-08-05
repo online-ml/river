@@ -43,3 +43,126 @@ class CohenKappa(base.MultiClassMetric):
             return (p0 - pe) / (1 - pe)
         except ZeroDivisionError:
             return 0.
+
+
+class KappaM(base.MultiClassMetric):
+    """Kappa-M score.
+
+    The Kappa-M statistic [1]_ compares performance with the majority class classifier.
+    It is defined as
+
+    $$
+    \kappa_{m} = (p_o - p_e) / (1 - p_e)
+    $$
+
+    where `p_o` is the empirical probability of agreement on the label
+    assigned to any sample (prequential accuracy), and `p_e` is
+    the prequential accuracy of the `majority classifier`.
+
+    Examples
+    --------
+
+    >>> from creme import metrics
+
+    >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
+    >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
+
+    >>> metric = metrics.KappaM()
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
+
+    >>> metric
+    KappaM: 0.5
+
+    References:
+    1. A. Bifet et al. "Efficient online evaluation of big data stream classifiers."
+       In Proceedings of the 21th ACM SIGKDD international conference on knowledge discovery
+       and data mining, pp. 59-68. ACM, 2015.
+
+    """
+    _weight_majority_classifier = 0.
+
+    def update(self, y_true, y_pred, sample_weight=1):
+        if self.cm.majority_class == y_true:
+            self._weight_majority_classifier += sample_weight
+        super().update(y_true, y_pred, sample_weight)
+
+        return self
+
+    # TODO support rolling
+
+    def get(self):
+
+        try:
+            p0 = self.cm.sum_diag / self.cm.n_samples  # same as accuracy
+        except ZeroDivisionError:
+            p0 = 0
+
+        try:
+            pe = self._weight_majority_classifier / self.cm.n_samples
+            return (p0 - pe) / (1.0 - pe) if pe != 1.0 else 0.0
+        except ZeroDivisionError:
+            return 0.
+
+class KappaT(base.MultiClassMetric):
+    """Kappa-T score.
+
+    The Kappa-T [1]_ measures the temporal correlation between samples.
+    It is defined as
+
+    .$$
+    \kappa_{t} = (p_o - p_e) / (1 - p_e)
+    $$
+
+    where `p_o` is the empirical probability of agreement on the label
+    assigned to any sample (prequential accuracy), and `p_e` is
+    the prequential accuracy of the `no-change classifier` that predicts
+    only using the last class seen by the classifier.
+
+    Examples
+    --------
+
+    >>> from creme import metrics
+
+    >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
+    >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
+
+    >>> metric = metrics.KappaM()
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
+
+    >>> metric
+    KappaT: 0.6
+
+    References:
+    1. A. Bifet et al. (2013). "Pitfalls in benchmarking data stream classification
+       and how to avoid them." Proc. of the European Conference on Machine Learning
+       and Principles and Practice of Knowledge Discovery in Databases (ECMLPKDD'13),
+       Springer LNAI 8188, p. 465-479.
+
+    """
+    _weight_correct_no_change_classifier = 0.
+
+    def update(self, y_true, y_pred, sample_weight=1):
+        if self.cm.last_y_true == y_true:
+            self._weight_correct_no_change_classifier += sample_weight
+        super().update(y_true, y_pred, sample_weight)
+
+        return self
+
+    # TODO support rolling
+
+    def get(self):
+
+        try:
+            p0 = self.cm.sum_diag / self.cm.n_samples  # same as accuracy
+        except ZeroDivisionError:
+            p0 = 0
+
+        try:
+            pe = self._weight_correct_no_change_classifier / self.cm.n_samples
+            return (p0 - pe) / (1.0 - pe) if pe != 1.0 else 0.0
+        except ZeroDivisionError:
+            p0 = 0
