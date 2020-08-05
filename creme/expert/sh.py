@@ -1,5 +1,4 @@
 import copy
-import functools
 import math
 import operator
 import typing
@@ -20,7 +19,7 @@ class SuccessiveHalving:
         for model in models:
             if not metric.works_with(model):
                 raise ValueError(f"{metric.__class__.__name__} metric can't be used to evaluate a " +
-                                f'{model.__class__.__name__}')
+                                 f'{model.__class__.__name__}')
 
         self.models = models
         self.metric = metric

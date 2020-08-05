@@ -1,7 +1,3 @@
-import collections
-import copy
-import functools
-import numbers
 import typing
 
 from creme import base

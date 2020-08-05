@@ -82,7 +82,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
 
     @classmethod
     def _default_params(cls):
-        return {'model':linear_model.LogisticRegression()}
+        return {'model': linear_model.LogisticRegression()}
 
     def fit_one(self, x, y):
         lambda_poisson = 1

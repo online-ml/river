@@ -1,5 +1,4 @@
-import collections
-import math
+import contextlib
 import numbers
 import typing
 
@@ -36,17 +35,31 @@ class GLM:
             intercept_lr
         )
         self.clip_gradient = clip_gradient
-        self.weights = collections.defaultdict(initializer)
         self.initializer = initializer
+        self._weights = utils.VectorDict(None)
 
         # The predict_many functions are going to return pandas.Series. We can name the series with
         # the name given to the y series seen during the last fit_many call.
         self._y_name = None
 
+    @property
+    def weights(self):
+        return self._weights.to_dict()
+
+    @contextlib.contextmanager
+    def _fit_mode(self, mask=None):
+        weights = self._weights
+        try:
+            # enable the initializer and set a mask
+            self._weights = utils.VectorDict(weights, self.initializer, mask)
+            yield
+        finally:
+            self._weights = weights
+
     def _fit(self, x, y, w, get_grad):
 
         # Some optimizers need to do something before a prediction is made
-        self.weights = self.optimizer.update_before_pred(w=self.weights)
+        self.optimizer.update_before_pred(w=self._weights)
 
         # Calculate the gradient
         gradient, loss_gradient = get_grad(x, y, w)
@@ -55,37 +68,31 @@ class GLM:
         self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
 
         # Update the weights
-        self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient)
+        self.optimizer.update_after_pred(w=self._weights, g=gradient)
 
         return self
 
     # Single instance methods
 
     def _raw_dot_one(self, x: dict) -> float:
-        return utils.math.dot(self.weights, x) + self.intercept
+        return self._weights @ utils.VectorDict(x) + self.intercept
 
     def _eval_gradient_one(self, x: dict, y: float, w: float) -> (dict, float):
 
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
-        loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
+        loss_gradient = float(utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient))
 
-        return (
-            {
-                i: xi * loss_gradient + 2. * self.l2 * self.weights.get(i, 0)
-                for i, xi in x.items()
-            },
-            loss_gradient
-        )
+        return loss_gradient * utils.VectorDict(x) + 2. * self.l2 * self._weights, loss_gradient
 
     def fit_one(self, x, y, w=1.):
-        return self._fit(x, y, w, get_grad=self._eval_gradient_one)
+        with self._fit_mode(x):
+            return self._fit(x, y, w, get_grad=self._eval_gradient_one)
 
     # Mini-batch methods
 
     def _raw_dot_many(self, X: pd.DataFrame) -> np.ndarray:
-        weights = np.array([self.weights[c] for c in X.columns])
-        return X.values @ weights + self.intercept
+        return X.values @ self._weights.to_numpy(X.columns) + self.intercept
 
     def _eval_gradient_many(self,
                             X: pd.DataFrame,
@@ -107,7 +114,8 @@ class GLM:
 
     def fit_many(self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1):
         self._y_name = y.name
-        return self._fit(X, y, w, get_grad=self._eval_gradient_many)
+        with self._fit_mode(set(X)):
+            return self._fit(X, y, w, get_grad=self._eval_gradient_many)
 
 
 class LinearRegression(GLM, base.Regressor):
@@ -132,7 +140,7 @@ class LinearRegression(GLM, base.Regressor):
         initializer: Weights initialization scheme.
 
     Attributes:
-        weights (collections.defaultdict): The current weights.
+        weights (dict): The current weights.
 
     Example:
 
@@ -241,8 +249,8 @@ class LinearRegression(GLM, base.Regressor):
 
         names = list(map(str, x.keys())) + ['Intercept']
         values = list(map(fmt_float, list(x.values()) + [1]))
-        weights = list(map(fmt_float, [self.weights.get(i, 0) for i in x] + [self.intercept]))
-        contributions = [xi * self.weights.get(i, 0) for i, xi in x.items()] + [self.intercept]
+        weights = list(map(fmt_float, [self._weights.get(i, 0) for i in x] + [self.intercept]))
+        contributions = [xi * self._weights.get(i, 0) for i, xi in x.items()] + [self.intercept]
         order = reversed(np.argsort(contributions))
         contributions = list(map(fmt_float, contributions))
 
@@ -276,7 +284,7 @@ class LogisticRegression(GLM, base.Classifier, base.MiniBatchClassifier):
         initializer: Weights initialization scheme.
 
     Attributes:
-        weights (collections.defaultdict): The current weights.
+        weights (dict): The current weights.
 
     Example:
 
