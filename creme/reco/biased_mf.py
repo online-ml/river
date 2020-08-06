@@ -22,8 +22,8 @@ class BiasedMF(base.Recommender):
 
     $$\\hat{y}(x) = \\bar{y} + bu_{u} + bi_{i} + \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle$$
 
-    Where :math:`bu_{u}` and :math:`bi_{i}` are respectively the user and item biases. The last term
-    being simply the dot product between the latent vectors of the given user-item pair:
+    Where $bu_{u}$ and $bi_{i}$ are respectively the user and item biases. The last term being
+    simply the dot product between the latent vectors of the given user-item pair:
 
     $$\\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}$$
 
