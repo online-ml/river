@@ -99,7 +99,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         self.classes.add(y)
         x_arr = dict2numpy(x)
 
-        self.data_window.add_sample(x_arr, y)
+        self.data_window.add_one(x_arr, y)
 
         return self
 

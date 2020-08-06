@@ -7,7 +7,7 @@ from sklearn.neighbors import KDTree
 from creme.utils.skmultiflow_utils import get_dimensions
 
 
-class SlidingWindow:
+class KNeighborsBuffer:
     """Keep a fixed-size sliding window of the most recent data samples.
 
     Parameters
@@ -37,19 +37,38 @@ class SlidingWindow:
         self.window_size = window_size
         self._n_features = -1
         self._n_targets = -1
-        self._X_queue = None
-        self._y_queue = None
+        self._size = 0
+        self._next_insert = 0
+        self._imask = None
+        self._X = None
+        self._y = None
         self._is_initialized = False
 
     def _configure(self):
-        self._X_queue = np.zeros((0, self._n_features))
-        self._y_queue = deque()
+        # Binary instance mask to filter data in the buffer
+        self._imask = np.zeros(self.window_size, dtype=bool)
+        self._X = np.zeros((self.window_size, self._n_features))
+        self._y = deque()
         self._is_initialized = True
 
-    def add_sample(self, X, y):
+    def reset(self):
+        """Reset the sliding window. """
+        self._n_features = -1
+        self._n_targets = -1
+        self._size = 0
+        self._next_insert = 0
+        self._imask = None
+
+        self._X = None
+        self._y = None
+        self._is_initialized = False
+
+        return self
+
+    def add_one(self, x, y):
         """Add a (single) sample to the sample window.
 
-        X : numpy.ndarray of shape (1, n_features)
+        x : numpy.ndarray of shape (1, n_features)
             1D-array of feature for a single sample.
 
         y : numpy.ndarray of shape (1, n_targets)
@@ -66,35 +85,44 @@ class SlidingWindow:
 
         """
         if not self._is_initialized:
-            self._n_features = get_dimensions(X)[1]
+            self._n_features = get_dimensions(x)[1]
             self._n_targets = get_dimensions(y)[1]
             self._configure()
 
-        if self._n_features != get_dimensions(X)[1]:
+        if self._n_features != get_dimensions(x)[1]:
             raise ValueError("Inconsistent number of features in X: {}, previously observed {}.".
-                             format(get_dimensions(X)[1], self._n_features))
+                             format(get_dimensions(x)[1], self._n_features))
 
         if self.size == self.window_size:
-            # Delete oldest sample
-            self._X_queue = np.delete(self._X_queue, 0, axis=0)
-            self._y_queue.popleft()
+            self.remove_one()
 
-        self._X_queue = np.vstack((self._X_queue, X))
-        self._y_queue = self._y_queue.append(y)
+        self._X[self._next_insert, :] = x
+        self._y = self._y.append(y)
 
-    def delete_oldest_sample(self):
+        # Update the instance storing logic
+        self._imask[self._next_insert] = True  # Mark slot as filled
+        self._next_insert = self._next_insert + 1 if self._next_insert < self.window_size - 1 \
+            else 0
+        self._size += 1
+
+    def remove_one(self):
         """Delete the oldest sample in the window. """
         if self.size > 0:
-            self._X_queue = self._X_queue[1:, :]
-            self._y_queue.popleft()
+            self._next_insert = self._next_insert - 1 if self._next_insert > 0 else \
+                self.window_size - 1
+            self._imask[self._next_insert] = False  # Mark slot as free
+            self._size -= 1
 
-    def reset(self):
-        """Reset the sliding window. """
-        self._n_features = -1
-        self._n_targets = -1
-        self._X_queue = None
-        self._y_queue = None
-        self._is_initialized = False
+            # Update the y buffer
+            self._y.popleft()
+
+    def remove_all(self):
+        """"""
+        self._next_insert = 0
+        self._size = 0
+        # Just reset the instance filtering mask, not the X buffer
+        self._imask = np.zeros(self.window_size, dtype=bool)
+        self._y = deque()
 
     @property
     def features_buffer(self):
@@ -102,7 +130,7 @@ class SlidingWindow:
 
         The shape of the buffer is (window_size, n_features).
         """
-        return self._X_queue
+        return self._X[self._imask, :]  # Only return the actually filled instances
 
     @property
     def targets_buffer(self):
@@ -110,7 +138,7 @@ class SlidingWindow:
 
         The shape of the buffer is (window_size, n_targets).
         """
-        return self._y_queue
+        return self._y
 
     @property
     def n_targets(self):
@@ -125,7 +153,7 @@ class SlidingWindow:
     @property
     def size(self):
         """Get the window size. """
-        return 0 if self._X_queue is None else self._X_queue.shape[0]
+        return self._size
 
 
 class BaseNeighbors:
@@ -138,7 +166,7 @@ class BaseNeighbors:
             raise ValueError('Invalid metric: {}.\n'
                              'Valid options are: {}'.format(metric, self.valid_metrics()))
         self.metric = metric
-        self.data_window = SlidingWindow(window_size=max_window_size)
+        self.data_window = KNeighborsBuffer(window_size=max_window_size)
 
     def _get_neighbors(self, X):
         tree = KDTree(self.data_window.features_buffer, self.leaf_size, metric=self.metric)

@@ -117,7 +117,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         """
 
         x_arr = dict2numpy(x)
-        self.data_window.add_sample(X=x_arr, y=y)
+        self.data_window.add_one(X=x_arr, y=y)
 
         return self
 
