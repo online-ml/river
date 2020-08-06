@@ -28,7 +28,7 @@ cdef class MultiLabelConfusionMatrix:
     cdef readonly data                          # The actual data (3D np.ndarray)
     cdef readonly dict _label_dict              # Dictionary to map labels and their label-index
     cdef readonly int _label_idx_cnt            # Internal label-index counter
-    cdef readonly n_samples                     # Number of samples seen
+    cdef readonly int n_samples                 # Number of samples seen
 
     # Methods
     cdef int _map_label(self, label, bint add_label)
