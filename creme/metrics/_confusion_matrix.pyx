@@ -1,8 +1,10 @@
-from collections import defaultdict, Counter
+from collections import defaultdict
 import functools
 
 import numpy as np
 cimport numpy as np
+
+cimport cython
 
 
 cdef class ConfusionMatrix:
@@ -58,9 +60,8 @@ cdef class ConfusionMatrix:
         self.sum_col = defaultdict(float)
         self.data = defaultdict(functools.partial(defaultdict, float))
         self.n_samples = 0
-        self._class_counter = Counter()
-        self.last_y_true = None
-        self.last_y_pred = None
+        self.last_y_true = 0
+        self.last_y_pred = 0
 
     def __getitem__(self, key):
         """Syntactic sugar for accessing the counts directly."""
@@ -70,12 +71,9 @@ cdef class ConfusionMatrix:
         self.n_samples += sample_weight
 
         if sample_weight > 0:
-            self._class_counter.update([y_true])
             # Keep track of last entry
             self.last_y_true = y_true
             self.last_y_pred = y_pred
-        else:
-            self._class_counter.subtract([y_true])
 
         self.data[y_true][y_pred] += sample_weight
 
@@ -140,12 +138,20 @@ cdef class ConfusionMatrix:
 
         return table
 
+    @cython.boundscheck(False)  # Deactivate bounds checking
+    @cython.wraparound(False)   # Deactivate negative indexing.
+    cdef _majority_class(self):
+        majority_class = False    # TODO confirm default value
+        cdef double max_value = 0.0
+        for class_label in self.classes:
+            if self.sum_row[class_label] > max_value:
+                max_value = self.sum_row[class_label]
+                majority_class = class_label
+        return majority_class
+
     @property
     def majority_class(self):
-        try:
-            return self._class_counter.most_common(1)[0][0]
-        except IndexError:
-            return False       # TODO confirm default value
+        return self._majority_class()
 
     def true_positives(self, label):
         return self.data[label][label]
