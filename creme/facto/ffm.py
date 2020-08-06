@@ -107,8 +107,13 @@ class FFM(BaseFM):
 class FFMRegressor(FFM, base.Regressor):
     """Field-aware Factorization Machine for regression.
 
-    Field names are inferred from feature names by taking everything before the first underscore:
-    `feature_name.split('_')[0]`.
+    The model equation is defined by:
+
+    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} \\langle \\mathbf{v}_{j, f_{j'}}, \\mathbf{v}_{j', f_j} \\rangle x_{j} x_{j'}$$
+
+    Where \\mathbf{v}_{j, f_{j'}} is the latent vector corresponding to $j$ feature for $f_{j'}$
+    field, and \\mathbf{v}_{j', f_j} is the latent vector corresponding to $j'$ feature for $f_j$
+    field.
 
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
@@ -163,6 +168,10 @@ class FFMRegressor(FFM, base.Regressor):
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
         5.319945
 
+    .. note::
+        - For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.
+        - Field names are inferred from feature names by taking everything before the first underscore: `feature_name.split('_')[0]`.
+
     References:
         1. [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
 
@@ -203,8 +212,13 @@ class FFMRegressor(FFM, base.Regressor):
 class FFMClassifier(FFM, base.Classifier):
     """Field-aware Factorization Machine for binary classification.
 
-    Field names are inferred from feature names by taking everything before the first underscore:
-    `feature_name.split('_')[0]`.
+    The model equation is defined by:
+
+    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} \\langle \\mathbf{v}_{j, f_{j'}}, \\mathbf{v}_{j', f_j} \\rangle x_{j} x_{j'}$$
+
+    Where \\mathbf{v}_{j, f_{j'}} is the latent vector corresponding to $j$ feature for $f_{j'}$
+    field, and \\mathbf{v}_{j', f_j} is the latent vector corresponding to $j'$ feature for $f_j$
+    field.
 
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
@@ -258,6 +272,10 @@ class FFMClassifier(FFM, base.Classifier):
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
         True
+
+    .. note::
+        - For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.
+        - Field names are inferred from feature names by taking everything before the first underscore: `feature_name.split('_')[0]`.
 
     References:
         1. [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)

@@ -117,6 +117,13 @@ class FwFM(BaseFM):
 class FwFMRegressor(FwFM, base.Regressor):
     """Field-weighted Factorization Machine for regression.
 
+    The model equation is defined as:
+
+    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} r_{f_j, f_{j'}} \\langle \\mathbf{v}_j, \\mathbf{v}_{j'} \\rangle x_{j} x_{j'}$$
+
+    Where $f_j$ and $f_{j'}$ are $j$ and $j'$ fields, respectively, and $\\mathbf{v}_j$ and
+    $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
+
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
         weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
@@ -174,6 +181,10 @@ class FwFMRegressor(FwFM, base.Regressor):
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
         5.236501
 
+    .. note::
+        - For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.
+        - Field names are inferred from feature names by taking everything before the first underscore: `feature_name.split('_')[0]`.
+
     References:
         1. [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://arxiv.org/abs/1806.03514)
 
@@ -216,6 +227,13 @@ class FwFMRegressor(FwFM, base.Regressor):
 
 class FwFMClassifier(FwFM, base.Classifier):
     """Field-weighted Factorization Machine for binary classification.
+
+    The model equation is defined as:
+
+    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} r_{f_j, f_{j'}} \\langle \\mathbf{v}_j, \\mathbf{v}_{j'} \\rangle x_{j} x_{j'}$$
+
+    Where $f_j$ and $f_{j'}$ are $j$ and $j'$ fields, respectively, and $\\mathbf{v}_j$ and
+    $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
 
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
@@ -272,6 +290,10 @@ class FwFMClassifier(FwFM, base.Classifier):
 
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
         True
+
+    .. note::
+        - For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.
+        - Field names are inferred from feature names by taking everything before the first underscore: `feature_name.split('_')[0]`.
 
     References:
         1. [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://arxiv.org/abs/1806.03514)

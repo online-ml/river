@@ -94,6 +94,12 @@ class FM(BaseFM):
 class FMRegressor(FM, base.Regressor):
     """Factorization Machine for regression.
 
+    The model equation is defined as:
+
+    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} \\langle \\mathbf{v}_j, \\mathbf{v}_{j'} \\rangle x_{j} x_{j'}$$
+
+    Where $\\mathbf{v}_j$ and $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
+
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
         weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
@@ -147,6 +153,10 @@ class FMRegressor(FM, base.Regressor):
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
         5.236504
 
+    .. note::
+        For more efficiency, this model automatically one-hot encodes strings features considering
+        them as categorical variables.
+
     References:
         1. [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
         2. [Rendle, S., 2012, May. Factorization Machines with libFM. In ACM Transactions on Intelligent Systems and Technology 3, 3, Article 57, 22 pages.](https://analyticsconsultores.com.mx/wp-content/uploads/2019/03/Factorization-Machines-with-libFM-Steffen-Rendle-University-of-Konstanz2012-.pdf)
@@ -187,6 +197,12 @@ class FMRegressor(FM, base.Regressor):
 
 class FMClassifier(FM, base.Classifier):
     """Factorization Machine for binary classification.
+
+    The model equation is defined as:
+
+    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} \\langle \\mathbf{v}_j, \\mathbf{v}_{j'} \\rangle x_{j} x_{j'}$$
+
+    Where $\\mathbf{v}_j$ and $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
 
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
@@ -239,6 +255,10 @@ class FMClassifier(FM, base.Classifier):
 
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
         True
+
+    .. note::
+        For more efficiency, this model automatically one-hot encodes strings features considering
+        them as categorical variables.
 
     References:
         1. [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
