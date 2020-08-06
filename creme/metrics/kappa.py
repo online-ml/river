@@ -103,10 +103,9 @@ class KappaM(base.MultiClassMetric):
     _weight_majority_classifier = 0.
 
     def update(self, y_true, y_pred, sample_weight=1):
+        super().update(y_true, y_pred, sample_weight)
         if self.cm.majority_class == y_true:
             self._weight_majority_classifier += sample_weight
-        super().update(y_true, y_pred, sample_weight)
-
         return self
 
     # TODO support rolling
@@ -169,7 +168,6 @@ class KappaT(base.MultiClassMetric):
         if self.cm.last_y_true == y_true:
             self._weight_correct_no_change_classifier += sample_weight
         super().update(y_true, y_pred, sample_weight)
-
         return self
 
     # TODO support rolling
