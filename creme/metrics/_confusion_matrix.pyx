@@ -68,12 +68,14 @@ cdef class ConfusionMatrix:
         return self.data[key]
 
     def update(self, y_true, y_pred, sample_weight=1.):
-        self.n_samples += sample_weight
 
         if sample_weight > 0:
+            self.n_samples += 1
             # Keep track of last entry
             self.last_y_true = y_true
             self.last_y_pred = y_pred
+        else:
+            self.n_samples -= 1
 
         self.data[y_true][y_pred] += sample_weight
 
