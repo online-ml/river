@@ -115,6 +115,10 @@ class HOFM(BaseFM):
 class HOFMRegressor(HOFM, base.Regressor):
     """Higher-Order Factorization Machine for regression.
 
+    The model equation is defined as:
+
+    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{l=2}^{d} \\sum_{j_1=1}^{p} \\cdots \\sum_{j_l=j_{l-1}+1}^{p} \\left(\\prod_{j'=1}^{l} x_{j_{j'}} \\right) \\left(\\sum_{f=1}^{k_l} \\prod_{j'=1}^{l} v_{j_{j'}, f}^{(l)} \\right)$$
+
     Parameters:
         degree: Polynomial degree or model order.
         n_factors: Dimensionality of the factorization or number of latent factors.
@@ -172,6 +176,10 @@ class HOFMRegressor(HOFM, base.Regressor):
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
         5.311745
 
+    .. note::
+        For more efficiency, this model automatically one-hot encodes strings features considering
+        them as categorical variables.
+
     References:
         1. [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
 
@@ -212,6 +220,10 @@ class HOFMRegressor(HOFM, base.Regressor):
 
 class HOFMClassifier(HOFM, base.Classifier):
     """Higher-Order Factorization Machine for binary classification.
+
+    The model equation is defined as:
+
+    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{l=2}^{d} \\sum_{j_1=1}^{p} \\cdots \\sum_{j_l=j_{l-1}+1}^{p} \\left(\\prod_{j'=1}^{l} x_{j_{j'}} \\right) \\left(\\sum_{f=1}^{k_l} \\prod_{j'=1}^{l} v_{j_{j'}, f}^{(l)} \\right)$$
 
     Parameters:
         degree: Polynomial degree or model order.
@@ -269,6 +281,10 @@ class HOFMClassifier(HOFM, base.Classifier):
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
         True
+
+    .. note::
+        For more efficiency, this model automatically one-hot encodes strings features considering
+        them as categorical variables.
 
     References:
         1. [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
