@@ -1,9 +1,8 @@
-from collections import deque
-
 import numpy as np
 from sklearn.neighbors import KDTree
 
 
+from creme.utils import Window
 from creme.utils.skmultiflow_utils import get_dimensions
 
 
@@ -48,7 +47,7 @@ class KNeighborsBuffer:
         # Binary instance mask to filter data in the buffer
         self._imask = np.zeros(self.window_size, dtype=bool)
         self._X = np.zeros((self.window_size, self._n_features))
-        self._y = deque()
+        self._y = Window(size=self.window_size)
         self._is_initialized = True
 
     def reset(self):
@@ -58,7 +57,6 @@ class KNeighborsBuffer:
         self._size = 0
         self._next_insert = 0
         self._imask = None
-
         self._X = None
         self._y = None
         self._is_initialized = False
@@ -116,13 +114,13 @@ class KNeighborsBuffer:
             # Update the y buffer
             self._y.popleft()
 
-    def remove_all(self):
-        """"""
+    def clear(self):
+        """Clear all stored elements."""
         self._next_insert = 0
         self._size = 0
         # Just reset the instance filtering mask, not the X buffer
         self._imask = np.zeros(self.window_size, dtype=bool)
-        self._y = deque()
+        self._y.clear()
 
     @property
     def features_buffer(self):
