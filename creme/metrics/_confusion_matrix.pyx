@@ -62,21 +62,33 @@ cdef class ConfusionMatrix:
         self.n_samples = 0
         self.last_y_true = 0
         self.last_y_pred = 0
+        self.sample_correction = defaultdict(int)    # Used to apply corrections during revert
+        self.weight_majority_classifier = 0.         # Correctly classified: majority class
+        self.weight_no_change_classifier = 0.        # Correctly classified: no-change
 
     def __getitem__(self, key):
         """Syntactic sugar for accessing the counts directly."""
         return self.data[key]
 
     def update(self, y_true, y_pred, sample_weight=1.):
+        self.n_samples += 1
+        self._update_matrix(y_true, y_pred, sample_weight)
 
-        if sample_weight > 0:
-            self.n_samples += 1
-            # Keep track of last entry
-            self.last_y_true = y_true
-            self.last_y_pred = y_pred
-        else:
-            self.n_samples -= 1
+        self.sample_correction['MCC'] = 0    # MCC: majority-class classifier correction
+        if self.majority_class == y_true:
+            self.weight_majority_classifier += sample_weight
+            self.sample_correction['MCC'] = 1
 
+        self.sample_correction['NCC'] = 0    # NCC: no-change classifier correction
+        if self.last_y_true == y_true:
+            self.weight_no_change_classifier += sample_weight
+            self.sample_correction['NCC'] = 1
+
+        # Keep track of last entry
+        self.last_y_true = y_true
+        self.last_y_pred = y_pred
+
+    def _update_matrix(self, y_true, y_pred, sample_weight=1.):
         self.data[y_true][y_pred] += sample_weight
 
         if y_true == y_pred:
@@ -86,9 +98,17 @@ cdef class ConfusionMatrix:
 
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.):
+    def revert(self, y_true, y_pred, sample_weight=1., correction=None):
+        self.n_samples -= 1
         # Revert is equal to subtracting so we pass the negative sample_weight
-        self.update(y_true, y_pred, -sample_weight)
+        self._update_matrix(y_true, y_pred, -sample_weight)
+
+        if correction['MCC'] == 1:
+            self.weight_majority_classifier -= sample_weight
+
+        if correction['NCC'] == 1:
+            self.weight_no_change_classifier -= sample_weight
+
         return self
 
     @property

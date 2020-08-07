@@ -65,8 +65,8 @@ class ClassificationMetric(Metric):
         self.cm.update(y_true, y_pred, sample_weight)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1):
-        self.cm.revert(y_true, y_pred, sample_weight)
+    def revert(self, y_true, y_pred, sample_weight=1, correction=None):
+        self.cm.revert(y_true, y_pred, sample_weight, correction)
         return self
 
     @property
@@ -92,6 +92,10 @@ class ClassificationMetric(Metric):
                              'are not compatible')
         return Metrics([self, other])
 
+    @property
+    def sample_correction(self):
+        return self.cm.sample_correction
+
 
 class BinaryMetric(ClassificationMetric):
     """Mother class for all binary classification metrics.
@@ -109,10 +113,10 @@ class BinaryMetric(ClassificationMetric):
         return super().update(y_true == self.pos_val, y_pred, sample_weight)
 
     def revert(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-               sample_weight=1) -> 'BinaryMetric':
+               sample_weight=1, correction=None) -> 'BinaryMetric':
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
-        return super().revert(y_true == self.pos_val, y_pred, sample_weight)
+        return super().revert(y_true == self.pos_val, y_pred, sample_weight, correction)
 
 
 class MultiClassMetric(ClassificationMetric):
