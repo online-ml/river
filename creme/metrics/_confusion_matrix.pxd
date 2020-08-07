@@ -13,6 +13,9 @@ cdef class ConfusionMatrix:
     cdef readonly int n_samples                 # Number of samples seen
     cdef readonly last_y_true                   # Last y_true value seen
     cdef readonly last_y_pred                   # Last y_pred value seen
+    cdef readonly sample_correction             # Used to apply corrections during revert
+    cdef readonly float weight_majority_classifier      # Correctly classified: majority class
+    cdef readonly float weight_no_change_classifier     # Correctly classified: no-change
 
     # Methods
     cdef _majority_class(self)

@@ -100,15 +100,6 @@ class KappaM(base.MultiClassMetric):
            and data mining, pp. 59-68. ACM, 2015.
 
     """
-    _weight_majority_classifier = 0.
-
-    def update(self, y_true, y_pred, sample_weight=1):
-        super().update(y_true, y_pred, sample_weight)
-        if self.cm.majority_class == y_true:
-            self._weight_majority_classifier += sample_weight
-        return self
-
-    # TODO support rolling
 
     def get(self):
 
@@ -118,7 +109,7 @@ class KappaM(base.MultiClassMetric):
             p0 = 0
 
         try:
-            pe = self._weight_majority_classifier / self.cm.n_samples
+            pe = self.cm.weight_majority_classifier / self.cm.n_samples
             return (p0 - pe) / (1.0 - pe) if pe != 1.0 else 0.0
         except ZeroDivisionError:
             return 0.
@@ -162,15 +153,6 @@ class KappaT(base.MultiClassMetric):
            Springer LNAI 8188, p. 465-479.
 
     """
-    _weight_correct_no_change_classifier = 0.
-
-    def update(self, y_true, y_pred, sample_weight=1):
-        if self.cm.last_y_true == y_true:
-            self._weight_correct_no_change_classifier += sample_weight
-        super().update(y_true, y_pred, sample_weight)
-        return self
-
-    # TODO support rolling
 
     def get(self):
 
@@ -180,7 +162,7 @@ class KappaT(base.MultiClassMetric):
             p0 = 0
 
         try:
-            pe = self._weight_correct_no_change_classifier / self.cm.n_samples
+            pe = self.cm.weight_no_change_classifier / self.cm.n_samples
             return (p0 - pe) / (1.0 - pe) if pe != 1.0 else 0.0
         except ZeroDivisionError:
             p0 = 0
