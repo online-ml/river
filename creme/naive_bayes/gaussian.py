@@ -30,7 +30,7 @@ class GaussianNB(base.BaseNB):
         >>> model = naive_bayes.GaussianNB()
 
         >>> for x, y in stream.iter_array(X, Y):
-        ...     _ = model.fit_one(x, y)
+        ...     _ = model.learn_one(x, y)
 
         >>> model.predict_one({0: -0.8, 1: -1})
         1
@@ -42,7 +42,7 @@ class GaussianNB(base.BaseNB):
         defaultdict = collections.defaultdict
         self.gaussians = defaultdict(functools.partial(defaultdict, proba.Gaussian))
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         self.class_counts.update((y,))
 

@@ -83,7 +83,7 @@ class BiasedMF(base.Recommender):
         ... )
 
         >>> for x, y in dataset:
-        ...     _ = model.fit_one(x, y)
+        ...     _ = model.learn_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
         6.489025
@@ -152,7 +152,7 @@ class BiasedMF(base.Recommender):
 
         return y_pred
 
-    def _fit_one(self, user, item, y):
+    def _learn_one(self, user, item, y):
 
         # Update the global mean
         self.global_mean.update(y)

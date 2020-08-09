@@ -163,7 +163,7 @@ class FFMRegressor(FFM, base.Regressor):
         ... )
 
         >>> for x, y in dataset:
-        ...     model = model.fit_one(x, y)
+        ...     model = model.learn_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
         5.319945
@@ -268,7 +268,7 @@ class FFMClassifier(FFM, base.Classifier):
         ... )
 
         >>> for x, y in dataset:
-        ...     model = model.fit_one(x, y)
+        ...     model = model.learn_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
         True

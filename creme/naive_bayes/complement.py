@@ -34,7 +34,7 @@ class ComplementNB(base.BaseNB):
         >>> model = feature_extraction.BagOfWords() | ('nb', naive_bayes.ComplementNB)
 
         >>> for sentence, label in sentences:
-        ...     model = model.fit_one(sentence, label)
+        ...     model = model.learn_one(sentence, label)
 
         >>> model['nb'].p_class('health') == 2 / 3
         True
@@ -57,7 +57,7 @@ class ComplementNB(base.BaseNB):
         self.feature_totals = collections.Counter()
         self.class_totals = collections.Counter()
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         self.class_counts.update((y,))
 
         for f, frequency in x.items():

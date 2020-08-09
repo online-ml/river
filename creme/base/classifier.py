@@ -12,7 +12,7 @@ class Classifier(Predictor):
     """A classifier."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters:
