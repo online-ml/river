@@ -51,8 +51,8 @@ class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
     def _wrapped_model(self):
         return self.regressor
 
-    def fit_one(self, x, y):
-        self.regressor.fit_one(x, self.func(y))
+    def learn_one(self, x, y):
+        self.regressor.learn_one(x, self.func(y))
         return self
 
     def predict_one(self, x):

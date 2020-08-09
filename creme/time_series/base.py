@@ -9,7 +9,7 @@ class Forecaster(base.Estimator):
     def _supervised(self):
         return True
 
-    def fit_one(self, y, x=None) -> 'Forecaster':
+    def learn_one(self, y, x=None) -> 'Forecaster':
         """Updates the model.
 
         Parameters:

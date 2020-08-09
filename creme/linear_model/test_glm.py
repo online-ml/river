@@ -80,7 +80,7 @@ def test_finite_differences(lm, dataset):
 
     for x, y in dataset:
 
-        x = scaler.fit_one(x).transform_one(x)
+        x = scaler.learn_one(x).transform_one(x)
 
         # Store the current gradient and weights
         gradient, _ = lm._eval_gradient_one(x, y, 1)
@@ -110,18 +110,18 @@ def test_finite_differences(lm, dataset):
         # Reset the weights to their original values in order not to influence
         # the training loop, even though it doesn't really matter.
         lm.weights = weights
-        lm.fit_one(x, y)
+        lm.learn_one(x, y)
 
 
 def test_one_many_consistent():
-    """Checks that using fit_one or fit_many produces the same result."""
+    """Checks that using learn_one or fit_many produces the same result."""
 
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
     one = lm.LinearRegression()
     for x, y in stream.iter_pandas(X, Y):
-        one.fit_one(x, y)
+        one.learn_one(x, y)
 
     many = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, len(X)), np.array_split(Y, len(Y))):
@@ -177,8 +177,8 @@ def test_lin_reg_sklearn_coherence():
     sk = sklm.SGDRegressor(learning_rate='constant', eta0=.01, alpha=.0)
 
     for x, y in datasets.TrumpApproval():
-        x = ss.fit_one(x).transform_one(x)
-        cr.fit_one(x, y)
+        x = ss.learn_one(x).transform_one(x)
+        cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y])
 
     for i, w in enumerate(cr.weights.values()):
@@ -195,8 +195,8 @@ def test_log_reg_sklearn_coherence():
     sk = sklm.SGDClassifier(learning_rate='constant', eta0=.01, alpha=.0, loss='log')
 
     for x, y in datasets.Bananas():
-        x = ss.fit_one(x).transform_one(x)
-        cr.fit_one(x, y)
+        x = ss.learn_one(x).transform_one(x)
+        cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
     for i, w in enumerate(cr.weights.values()):
@@ -213,8 +213,8 @@ def test_perceptron_sklearn_coherence():
     sk = sklm.Perceptron()
 
     for x, y in datasets.Bananas():
-        x = ss.fit_one(x).transform_one(x)
-        cr.fit_one(x, y)
+        x = ss.learn_one(x).transform_one(x)
+        cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
     for i, w in enumerate(cr.weights.values()):
