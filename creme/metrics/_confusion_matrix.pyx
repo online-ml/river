@@ -222,23 +222,62 @@ cdef class MultiLabelConfusionMatrix:
         self._label_idx_cnt = 0
         for label in self.labels:
             self._add_label(label)
+        self.last_y_true = 0
+        self.last_y_pred = 0
+        self.n_samples = 0
+        self.sample_correction = defaultdict(float)  # Used to apply corrections during revert
+        self.exact_match_cnt = 0.                    # Exact match count
+        self.jaccard_sum = 0.0                       # Jaccard-index sum
 
-    def update(self, label, int y_true, int y_pred, double sample_weight=1.0):
-        if not (0 <= y_true < 2) or not (0 <= y_pred < 2):
-            raise ValueError("Valid values are 0 or 1, passed ({}, {})".format(y_true, y_pred))
+    def update(self, y_true, y_pred, sample_weight=1.0):
+
+        cdef double is_equal = 1.
+        cdef double inter_val = 0.0
+        cdef double union_val = 0.0
 
         # Increase sample count, negative sample_weight indicates that we are removing samples
-        self.n_samples += 1 if sample_weight > 0. else -1
+        self.n_samples += 1
 
-        label_idx = self._map_label(label, add_label=True)
-        if label_idx > self.data.shape[0]:
-            self._reshape()
-        self.data[label_idx, y_true, y_pred] += sample_weight
-        return self
+        for label in y_true.keys():
+            label_idx = self._map_label(label, add_label=True)
+            if label_idx > self.data.shape[0]:
+                self._reshape()
+            self.data[label_idx, y_true[label], y_pred[label]] += sample_weight
+            if y_true[label] != y_pred[label]:
+                is_equal = 0        # Not equal
+            inter_val += 1.0 if y_true[label] and y_pred[label] else 0.0
+            union_val += 1.0 if y_true[label] or y_pred[label] else 0.0
 
-    def revert(self, label, int y_true, int y_pred, sample_weight=1.):
+        # Update exact match
+
+        self.exact_match_cnt += is_equal
+        self.sample_correction['IS_EQUAL'] = is_equal    # IS_EQUAL: exact match correction
+
+        # Update jaccard index sum
+        self.sample_correction['J_SUM'] = 0.0            # J_SUM: jaccard sum correction
+        if union_val > 0.:                               # skip if ill-defined
+            self.jaccard_sum += inter_val / union_val
+            self.sample_correction['J_SUM'] = inter_val / union_val
+
+        # Keep track of last entry
+        self.last_y_true = y_true
+        self.last_y_pred = y_pred
+
+
+    def revert(self, label, y_true, y_pred, sample_weight=1., correction=None):
+        self.n_samples -= 1
         # Revert is equal to subtracting so we pass the negative sample_weight
-        self.update(label, y_true, y_pred, -sample_weight)
+        for label in y_true.keys():
+            label_idx = self._map_label(label, add_label=True)
+            if label_idx > self.data.shape[0]:
+                self._reshape()
+            self.data[label_idx, y_true[label], y_pred[label]] += -sample_weight
+
+        # Update the exact_no_match count
+        self.exact_match_cnt -= correction['IS_EQUAL']
+        # Update the jaccard sum
+        self.jaccard_sum -= correction['J_SUM']
+
         return self
 
     def __getitem__(self, label):
