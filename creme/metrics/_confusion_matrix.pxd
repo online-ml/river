@@ -31,7 +31,12 @@ cdef class MultiLabelConfusionMatrix:
     cdef readonly data                          # The actual data (3D np.ndarray)
     cdef readonly dict _label_dict              # Dictionary to map labels and their label-index
     cdef readonly int _label_idx_cnt            # Internal label-index counter
+    cdef readonly last_y_true                   # Last y_true value seen
+    cdef readonly last_y_pred                   # Last y_pred value seen
     cdef readonly int n_samples                 # Number of samples seen
+    cdef readonly sample_correction             # Used to apply corrections during revert
+    cdef readonly double exact_match_cnt           # Exact match count
+    cdef readonly double jaccard_sum            # Jaccard-index sum
 
     # Methods
     cdef int _map_label(self, label, bint add_label)

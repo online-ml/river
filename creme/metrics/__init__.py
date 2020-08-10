@@ -11,6 +11,7 @@ from .accuracy import Accuracy
 from .base import Metric
 from ._confusion_matrix import ConfusionMatrix
 from .cross_entropy import CrossEntropy
+from .exact_match import ExactMatch
 from .fbeta import F1
 from .fbeta import FBeta
 from .fbeta import MacroF1
@@ -21,6 +22,8 @@ from .fbeta import MultiFBeta
 from .fbeta import WeightedF1
 from .fbeta import WeightedFBeta
 from .geometric_mean import GeometricMean
+from .hamming import Hamming
+from .hamming import HammingLoss
 from .jaccard import Jaccard
 from .kappa import CohenKappa
 from .kappa import KappaM
@@ -53,9 +56,12 @@ __all__ = [
     'CohenKappa',
     'ConfusionMatrix',
     'CrossEntropy',
+    'ExactMatch',
     'F1',
     'FBeta',
     'GeometricMean',
+    'Hamming',
+    'HammingLoss',
     'Jaccard',
     'KappaM',
     'KappaT',

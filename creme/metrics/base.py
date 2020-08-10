@@ -153,6 +153,11 @@ class RegressionMetric(Metric):
 class MultiOutputClassificationMetric(Metric):
     """Mother class for all multi-output classification metrics."""
 
+    def __init__(self, cm=None):
+        if cm is None:
+            cm = _confusion_matrix.MultiLabelConfusionMatrix()
+        self.cm = cm
+
     def update(
         self,
         y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
@@ -160,9 +165,11 @@ class MultiOutputClassificationMetric(Metric):
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
             typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]]
         ],
-        sample_weight: numbers.Number
+        sample_weight: numbers.Number = 1.0,
     ) -> 'MultiOutputClassificationMetric':
         """Update the metric."""
+        self.cm.update(y_true, y_pred, sample_weight)
+        return self
 
     def revert(
         self,
@@ -171,9 +178,12 @@ class MultiOutputClassificationMetric(Metric):
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
             typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]]
         ],
-        sample_weight: numbers.Number
+        sample_weight: numbers.Number = 1.0,
+        correction=None,
     ) -> 'MultiOutputClassificationMetric':
         """Revert the metric."""
+        self.cm.revert(y_true, y_pred, sample_weight, correction)
+        return self
 
     def works_with(self, model) -> bool:
         return utils.inspect.ismoclassifier(model)

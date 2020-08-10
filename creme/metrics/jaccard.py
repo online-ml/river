@@ -4,8 +4,13 @@ from . import base
 __all__ = ['Jaccard']
 
 
-class Jaccard(base.MeanMetric, base.MultiOutputClassificationMetric):
+class Jaccard(base.MultiOutputClassificationMetric):
     """Jaccard index for binary multi-outputs.
+
+    The Jaccard index, or Jaccard similarity coefficient, defined as
+    the size of the intersection divided by the size of the union of two label
+    sets, is used to compare the set of predicted labels for a sample with the
+    corresponding set of labels in `y_true`.
 
     Example:
 
@@ -28,6 +33,12 @@ class Jaccard(base.MeanMetric, base.MultiOutputClassificationMetric):
         >>> jac
         Jaccard: 0.583333
 
+    Notes
+    -----
+    The Jaccard index may be a poor metric if there are no positives for some samples or labels.
+    The Jaccard index is undefined if there are no true or predicted labels, this implementation
+    will return a score of 0.0 if this is the case.
+
     References:
         1. [Wikipedia section on similarity of asymmetric binary attributes](https://www.wikiwand.com/en/Jaccard_index#/Similarity_of_asymmetric_binary_attributes)
 
@@ -39,17 +50,11 @@ class Jaccard(base.MeanMetric, base.MultiOutputClassificationMetric):
 
     @property
     def requires_labels(self):
-        return True
+        return True                  # TODO confirm usage and enforce if required
 
-    def _eval(self, y_true, y_pred):
+    def get(self):
 
-        one_and_ones = 0
-        zero_or_ones = 0
-
-        for i in y_true:
-            if y_true[i] and y_pred[i]:
-                one_and_ones += 1
-            elif y_true[i] or y_pred[i]:
-                zero_or_ones += 1
-
-        return one_and_ones / (zero_or_ones + one_and_ones)
+        try:
+            return self.cm.jaccard_sum / self.cm.n_samples
+        except ZeroDivisionError:
+            return 0.
