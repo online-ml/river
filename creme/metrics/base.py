@@ -188,6 +188,10 @@ class MultiOutputClassificationMetric(Metric):
     def works_with(self, model) -> bool:
         return utils.inspect.ismoclassifier(model)
 
+    @property
+    def sample_correction(self):
+        return self.cm.sample_correction
+
 
 class MultiOutputRegressionMetric(Metric):
     """Mother class for all multi-output regression metrics."""
