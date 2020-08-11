@@ -62,7 +62,7 @@ cdef class ConfusionMatrix:
         self.n_samples = 0
         self.last_y_true = 0
         self.last_y_pred = 0
-        self.sample_correction = defaultdict(int)    # Used to apply corrections during revert
+        self.sample_correction = dict()              # Used to apply corrections during revert
         self.weight_majority_classifier = 0.         # Correctly classified: majority class
         self.weight_no_change_classifier = 0.        # Correctly classified: no-change
 
@@ -73,6 +73,7 @@ cdef class ConfusionMatrix:
     def update(self, y_true, y_pred, sample_weight=1.):
         self.n_samples += 1
         self._update_matrix(y_true, y_pred, sample_weight)
+        self.sample_correction = dict()
 
         self.sample_correction['MCC'] = 0    # MCC: majority-class classifier correction
         if self.majority_class == y_true:
@@ -163,11 +164,13 @@ cdef class ConfusionMatrix:
     @cython.boundscheck(False)  # Deactivate bounds checking
     @cython.wraparound(False)   # Deactivate negative indexing.
     cdef _majority_class(self):
-        majority_class = False    # TODO confirm default value
+        majority_class = 0    # TODO confirm default value
         cdef double max_value = 0.0
-        for class_label in self.classes:
-            if self.sum_row[class_label] > max_value:
-                max_value = self.sum_row[class_label]
+        cdef double max_proba_class = 0.0
+        for class_label in sorted(self.classes):
+            max_proba_class = self.sum_row[class_label] / self.n_samples
+            if max_proba_class > max_value:
+                max_value = max_proba_class
                 majority_class = class_label
         return majority_class
 
@@ -225,7 +228,7 @@ cdef class MultiLabelConfusionMatrix:
         self.last_y_true = 0
         self.last_y_pred = 0
         self.n_samples = 0
-        self.sample_correction = defaultdict(float)  # Used to apply corrections during revert
+        self.sample_correction = dict()              # Used to apply corrections during revert
         self.exact_match_cnt = 0.                    # Exact match count
         self.jaccard_sum = 0.0                       # Jaccard-index sum
 
@@ -234,14 +237,13 @@ cdef class MultiLabelConfusionMatrix:
         cdef double is_equal = 1.
         cdef double inter_val = 0.0
         cdef double union_val = 0.0
+        self.sample_correction = dict()
 
         # Increase sample count, negative sample_weight indicates that we are removing samples
         self.n_samples += 1
 
         for label in y_true.keys():
             label_idx = self._map_label(label, add_label=True)
-            if label_idx > self.data.shape[0]:
-                self._reshape()
             self.data[label_idx, y_true[label], y_pred[label]] += sample_weight
             if y_true[label] != y_pred[label]:
                 is_equal = 0        # Not equal
@@ -264,13 +266,11 @@ cdef class MultiLabelConfusionMatrix:
         self.last_y_pred = y_pred
 
 
-    def revert(self, label, y_true, y_pred, sample_weight=1., correction=None):
+    def revert(self, y_true, y_pred, sample_weight=1., correction=None):
         self.n_samples -= 1
         # Revert is equal to subtracting so we pass the negative sample_weight
         for label in y_true.keys():
             label_idx = self._map_label(label, add_label=True)
-            if label_idx > self.data.shape[0]:
-                self._reshape()
             self.data[label_idx, y_true[label], y_pred[label]] += -sample_weight
 
         # Update the exact_no_match count

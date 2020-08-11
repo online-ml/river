@@ -110,7 +110,7 @@ class KappaM(base.MultiClassMetric):
 
         try:
             pe = self.cm.weight_majority_classifier / self.cm.n_samples
-            return (p0 - pe) / (1.0 - pe) if pe != 1.0 else 0.0
+            return (p0 - pe) / (1.0 - pe)
         except ZeroDivisionError:
             return 0.
 
@@ -163,6 +163,6 @@ class KappaT(base.MultiClassMetric):
 
         try:
             pe = self.cm.weight_no_change_classifier / self.cm.n_samples
-            return (p0 - pe) / (1.0 - pe) if pe != 1.0 else 0.0
+            return (p0 - pe) / (1.0 - pe)
         except ZeroDivisionError:
-            p0 = 0
+            return 0.
