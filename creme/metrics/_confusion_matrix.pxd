@@ -35,7 +35,9 @@ cdef class MultiLabelConfusionMatrix:
     cdef readonly last_y_pred                   # Last y_pred value seen
     cdef readonly int n_samples                 # Number of samples seen
     cdef readonly sample_correction             # Used to apply corrections during revert
-    cdef readonly double exact_match_cnt           # Exact match count
+    cdef readonly int exact_match_cnt           # Exact match count
+    cdef readonly double precision_sum          # Precision sum
+    cdef readonly double recall_sum             # Recall sum
     cdef readonly double jaccard_sum            # Jaccard-index sum
 
     # Methods

@@ -60,11 +60,12 @@ cdef class ConfusionMatrix:
         self.sum_col = defaultdict(float)
         self.data = defaultdict(functools.partial(defaultdict, float))
         self.n_samples = 0
+        # Auxiliary variables
         self.last_y_true = 0
         self.last_y_pred = 0
-        self.sample_correction = dict()              # Used to apply corrections during revert
-        self.weight_majority_classifier = 0.         # Correctly classified: majority class
-        self.weight_no_change_classifier = 0.        # Correctly classified: no-change
+        self.sample_correction = dict()             # Used to apply corrections during revert
+        self.weight_majority_classifier = 0.        # Correctly classified: majority class
+        self.weight_no_change_classifier = 0.       # Correctly classified: no-change
 
     def __getitem__(self, key):
         """Syntactic sugar for accessing the counts directly."""
@@ -75,12 +76,12 @@ cdef class ConfusionMatrix:
         self._update_matrix(y_true, y_pred, sample_weight)
         self.sample_correction = dict()
 
-        self.sample_correction['MCC'] = 0    # MCC: majority-class classifier correction
+        self.sample_correction['MCC'] = 0           # MCC: majority-class classifier correction
         if self.majority_class == y_true:
             self.weight_majority_classifier += sample_weight
             self.sample_correction['MCC'] = 1
 
-        self.sample_correction['NCC'] = 0    # NCC: no-change classifier correction
+        self.sample_correction['NCC'] = 0           # NCC: no-change classifier correction
         if self.last_y_true == y_true:
             self.weight_no_change_classifier += sample_weight
             self.sample_correction['NCC'] = 1
@@ -164,7 +165,7 @@ cdef class ConfusionMatrix:
     @cython.boundscheck(False)  # Deactivate bounds checking
     @cython.wraparound(False)   # Deactivate negative indexing.
     cdef _majority_class(self):
-        majority_class = 0    # TODO confirm default value
+        majority_class = 0
         cdef double max_value = 0.0
         cdef double max_proba_class = 0.0
         for class_label in sorted(self.classes):
@@ -225,18 +226,24 @@ cdef class MultiLabelConfusionMatrix:
         self._label_idx_cnt = 0
         for label in self.labels:
             self._add_label(label)
+        self.n_samples = 0
+        # Auxiliary variables
         self.last_y_true = 0
         self.last_y_pred = 0
-        self.n_samples = 0
-        self.sample_correction = dict()              # Used to apply corrections during revert
-        self.exact_match_cnt = 0.                    # Exact match count
-        self.jaccard_sum = 0.0                       # Jaccard-index sum
+        self.sample_correction = dict()             # Used to apply corrections during revert
+        self.exact_match_cnt = 0                    # Exact match count
+        self.jaccard_sum = 0.                       # Jaccard-index sum
+        self.precision_sum = 0.                     # Precision sum
+        self.recall_sum = 0.                        # Recall sum
 
     def update(self, y_true, y_pred, sample_weight=1.0):
 
-        cdef double is_equal = 1.
-        cdef double inter_val = 0.0
-        cdef double union_val = 0.0
+        cdef int is_equal = 1
+        cdef double inter_cnt = 0.
+        cdef double union_cnt = 0.
+        cdef double ones_true_cnt = 0.
+        cdef double ones_pred_cnt = 0.
+        cdef double val = 0.
         self.sample_correction = dict()
 
         # Increase sample count, negative sample_weight indicates that we are removing samples
@@ -247,19 +254,30 @@ cdef class MultiLabelConfusionMatrix:
             self.data[label_idx, y_true[label], y_pred[label]] += sample_weight
             if y_true[label] != y_pred[label]:
                 is_equal = 0        # Not equal
-            inter_val += 1.0 if y_true[label] and y_pred[label] else 0.0
-            union_val += 1.0 if y_true[label] or y_pred[label] else 0.0
+            inter_cnt += float(y_true[label] and y_pred[label])
+            union_cnt += float(y_true[label] or y_pred[label])
+            if y_true[label] == 1:
+                ones_true_cnt += 1.
+            if y_pred[label] == 1:
+                ones_pred_cnt += 1.
 
-        # Update exact match
 
+        # Update auxiliary variables
+        # Exact match
+        self.sample_correction['IS_EQUAL'] = is_equal   # IS_EQUAL: exact match correction
         self.exact_match_cnt += is_equal
-        self.sample_correction['IS_EQUAL'] = is_equal    # IS_EQUAL: exact match correction
-
-        # Update jaccard index sum
-        self.sample_correction['J_SUM'] = 0.0            # J_SUM: jaccard sum correction
-        if union_val > 0.:                               # skip if ill-defined
-            self.jaccard_sum += inter_val / union_val
-            self.sample_correction['J_SUM'] = inter_val / union_val
+        # Example-based precision
+        val = (inter_cnt / ones_pred_cnt) if ones_pred_cnt > 0. else 0.
+        self.precision_sum += val
+        self.sample_correction['P_SUM'] = val           # P_SUM: precision sum correction
+        # Example-based recall
+        val = (inter_cnt / ones_true_cnt) if ones_true_cnt > 0. else 0.
+        self.recall_sum += val
+        self.sample_correction['R_SUM'] = val           # R_SUM: recall sum correction
+        # Jaccard-index
+        val = (inter_cnt / union_cnt) if union_cnt > 0. else 0.
+        self.jaccard_sum += val
+        self.sample_correction['J_SUM'] = val           # J_SUM: jaccard sum correction
 
         # Keep track of last entry
         self.last_y_true = y_true
@@ -273,9 +291,10 @@ cdef class MultiLabelConfusionMatrix:
             label_idx = self._map_label(label, add_label=True)
             self.data[label_idx, y_true[label], y_pred[label]] += -sample_weight
 
-        # Update the exact_no_match count
+        # Update auxiliary variables
         self.exact_match_cnt -= correction['IS_EQUAL']
-        # Update the jaccard sum
+        self.precision_sum -= correction['P_SUM']
+        self.recall_sum -= correction['R_SUM']
         self.jaccard_sum -= correction['J_SUM']
 
         return self

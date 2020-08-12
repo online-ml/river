@@ -8,7 +8,8 @@ __all__ = [
     'MacroRecall',
     'MicroRecall',
     'Recall',
-    'WeightedRecall'
+    'WeightedRecall',
+    'ExampleRecall'
 ]
 
 
@@ -146,5 +147,50 @@ class WeightedRecall(base.MultiClassMetric):
                 continue
         try:
             return total / self.cm.n_samples
+        except ZeroDivisionError:
+            return 0.
+
+
+class ExampleRecall(base.MultiOutputClassificationMetric):
+    """Example-based recall score for multilabel classification.
+
+        Examples
+        --------
+
+        >>> from creme import metrics
+
+        >>> y_true = [
+        ...     {0: False, 1: True, 2: True},
+        ...     {0: True, 1: True, 2: False},
+        ...     {0: True, 1: True, 2: False},
+        ... ]
+
+        >>> y_pred = [
+        ...     {0: True, 1: True, 2: True},
+        ...     {0: True, 1: False, 2: False},
+        ...     {0: True, 1: True, 2: False},
+        ... ]
+
+        >>> metric = metrics.ExampleRecall()
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
+
+        >>> metric
+        ExampleRecall: 0.833333
+
+        """
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    @property
+    def requires_labels(self):
+        return True
+
+    def get(self):
+
+        try:
+            return self.cm.recall_sum / self.cm.n_samples
         except ZeroDivisionError:
             return 0.
