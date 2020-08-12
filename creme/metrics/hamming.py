@@ -41,7 +41,7 @@ class Hamming(base.MultiOutputClassificationMetric):
 
     @property
     def requires_labels(self):
-        return True                  # TODO confirm usage and enforce if required
+        return True
 
     def get(self):
 
@@ -87,7 +87,7 @@ class HammingLoss(base.MultiOutputClassificationMetric):
 
     @property
     def requires_labels(self):
-        return True                  # TODO confirm usage and enforce if required
+        return True
 
     def get(self):
 
