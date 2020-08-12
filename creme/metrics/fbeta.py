@@ -15,7 +15,10 @@ __all__ = [
     'MicroFBeta',
     'MultiFBeta',
     'WeightedF1',
-    'WeightedFBeta'
+    'WeightedFBeta',
+    'ExampleF1',
+    'ExampleFBeta'
+
 ]
 
 
@@ -314,6 +317,69 @@ class MultiFBeta(base.MultiClassMetric):
             return 0.
 
 
+class ExampleFBeta(base.MultiOutputClassificationMetric):
+    """Example-based F-Beta score.
+
+    Parameters
+    ----------
+    beta
+        Weight of precision in the harmonic mean.
+
+    Attributes
+    ----------
+    precision : metrics.ExamplePrecision
+    recall : metrics.ExampleRecall
+
+    Examples
+    --------
+
+    >>> from creme import metrics
+
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
+
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
+
+    >>> metric = metrics.ExampleFBeta(beta=2)
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
+
+    >>> metric
+    ExampleFBeta: 0.843882
+
+    """
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    @property
+    def requires_labels(self):
+        return True
+
+    def __init__(self, beta: float, cm=None):
+        super().__init__(cm)
+        self.beta = beta
+        self.precision = precision.ExamplePrecision(self.cm)
+        self.recall = recall.ExampleRecall(self.cm)
+
+    def get(self):
+        p = self.precision.get()
+        r = self.recall.get()
+        b2 = self.beta * self.beta
+        try:
+            return (1 + b2) * p * r / (b2 * p + r)
+        except ZeroDivisionError:
+            return 0.
+
+
 class F1(FBeta):
     """Binary F1 score.
 
@@ -426,4 +492,37 @@ class WeightedF1(WeightedFBeta):
     """
 
     def __init__(self, cm=None):
+        super().__init__(beta=1., cm=cm)
+
+
+class ExampleF1(ExampleFBeta):
+    """Example-based F1 score for multilabel classification.
+
+        Examples
+        --------
+
+        >>> from creme import metrics
+
+        >>> y_true = [
+        ...     {0: False, 1: True, 2: True},
+        ...     {0: True, 1: True, 2: False},
+        ...     {0: True, 1: True, 2: False},
+        ... ]
+
+        >>> y_pred = [
+        ...     {0: True, 1: True, 2: True},
+        ...     {0: True, 1: False, 2: False},
+        ...     {0: True, 1: True, 2: False},
+        ... ]
+
+        >>> metric = metrics.ExampleF1()
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
+
+        >>> metric
+        ExampleF1: 0.860215
+
+        """
+
+    def __init__(self, cm=None, pos_val=True):
         super().__init__(beta=1., cm=cm)

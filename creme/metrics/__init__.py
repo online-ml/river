@@ -21,6 +21,8 @@ from .fbeta import MicroFBeta
 from .fbeta import MultiFBeta
 from .fbeta import WeightedF1
 from .fbeta import WeightedFBeta
+from .fbeta import ExampleF1
+from .fbeta import ExampleFBeta
 from .geometric_mean import GeometricMean
 from .hamming import Hamming
 from .hamming import HammingLoss
@@ -39,10 +41,12 @@ from .precision import MacroPrecision
 from .precision import MicroPrecision
 from .precision import Precision
 from .precision import WeightedPrecision
+from .precision import ExamplePrecision
 from .recall import MacroRecall
 from .recall import MicroRecall
 from .recall import Recall
 from .recall import WeightedRecall
+from .recall import ExampleRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
 from .rolling import Rolling
@@ -57,6 +61,10 @@ __all__ = [
     'ConfusionMatrix',
     'CrossEntropy',
     'ExactMatch',
+    'ExamplePrecision',
+    'ExampleRecall',
+    'ExampleF1',
+    'ExampleFBeta',
     'F1',
     'FBeta',
     'GeometricMean',

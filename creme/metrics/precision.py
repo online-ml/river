@@ -7,7 +7,8 @@ __all__ = [
     'MacroPrecision',
     'MicroPrecision',
     'Precision',
-    'WeightedPrecision'
+    'WeightedPrecision',
+    'ExamplePrecision'
 ]
 
 
@@ -156,5 +157,50 @@ class WeightedPrecision(base.MultiClassMetric):
                 continue
         try:
             return total / self.cm.n_samples
+        except ZeroDivisionError:
+            return 0.
+
+
+class ExamplePrecision(base.MultiOutputClassificationMetric):
+    """Example-based precision score for multilabel classification.
+
+        Examples
+        --------
+
+        >>> from creme import metrics
+
+        >>> y_true = [
+        ...     {0: False, 1: True, 2: True},
+        ...     {0: True, 1: True, 2: False},
+        ...     {0: True, 1: True, 2: False},
+        ... ]
+
+        >>> y_pred = [
+        ...     {0: True, 1: True, 2: True},
+        ...     {0: True, 1: False, 2: False},
+        ...     {0: True, 1: True, 2: False},
+        ... ]
+
+        >>> metric = metrics.ExamplePrecision()
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
+
+        >>> metric
+        ExamplePrecision: 0.888889
+
+        """
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    @property
+    def requires_labels(self):
+        return True
+
+    def get(self):
+
+        try:
+            return self.cm.precision_sum / self.cm.n_samples
         except ZeroDivisionError:
             return 0.
