@@ -104,12 +104,12 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
     def _default_params(cls):
         return {'classifier': linear_model.LogisticRegression(), 'code_size': 6}
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         code = self.code_book[y]
 
         for i, c in enumerate(code):
-            self.classifiers[i].fit_one(x, c)
+            self.classifiers[i].learn_one(x, c)
 
         return self
 

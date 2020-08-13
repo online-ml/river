@@ -12,7 +12,7 @@ class Classifier(Predictor):
     """A classifier."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters:
@@ -70,7 +70,7 @@ class MiniBatchClassifier:
     """
 
     @abc.abstractmethod
-    def fit_many(self, X: pd.DataFrame, y: pd.Series) -> 'MiniBatchClassifier':
+    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> 'MiniBatchClassifier':
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters:

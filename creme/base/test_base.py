@@ -5,7 +5,7 @@ from creme import preprocessing
 def test_set_params():
 
     obj = linear_model.LinearRegression(l2=42)
-    obj.fit_one({'x': 3}, 6)
+    obj.learn_one({'x': 3}, 6)
 
     new = obj._set_params({'l2': 21})
     assert new.l2 == 21
@@ -17,7 +17,7 @@ def test_set_params():
 def test_set_params_pipeline():
 
     obj = preprocessing.StandardScaler() | linear_model.LinearRegression(l2=42)
-    obj.fit_one({'x': 3}, 6)
+    obj.learn_one({'x': 3}, 6)
 
     params = {'LinearRegression': {'l2': 21}}
     new = obj._set_params(params)

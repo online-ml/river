@@ -25,7 +25,7 @@ def test_online_batch_consistent():
     for i, x in enumerate(pd.read_csv(dataset.path, chunksize=1)):
         y = x.pop('category')
         y_pred = batch.predict_many(x)
-        batch.fit_many(x, y)
+        batch.learn_many(x, y)
 
         for yt, yp in zip(y, y_pred):
             if yp is not None:
@@ -50,7 +50,7 @@ def test_online_batch_consistent():
 
     for i, (x, y) in enumerate(stream.iter_pandas(X, Y)):
         y_pred = online.predict_one(x)
-        online.fit_one(x, y)
+        online.learn_one(x, y)
 
         if y_pred is not None:
             online_metric.update(y, y_pred)

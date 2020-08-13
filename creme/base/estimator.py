@@ -13,7 +13,7 @@ class Estimator(abc.ABC):
         """Indicates whether or not the estimator is supervised or not.
 
         This is useful internally for determining if an estimator expects to be provided with a `y`
-        value in it's `fit_one` method. For instance we use this in a pipeline to know whether or
+        value in it's `learn_one` method. For instance we use this in a pipeline to know whether or
         not we should pass `y` to an estimator or not.
 
         """

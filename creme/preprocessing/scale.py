@@ -47,7 +47,7 @@ class Binarizer(base.Transformer):
 
         >>> binarizer = creme.preprocessing.Binarizer()
         >>> for x in X:
-        ...     print(binarizer.fit_one(x).transform_one(x))
+        ...     print(binarizer.learn_one(x).transform_one(x))
         {'x1': False, 'x2': False}
         {'x1': True, 'x2': True}
         {'x1': True, 'x2': True}
@@ -82,7 +82,7 @@ class StandardScaler(base.Transformer):
     This transformer supports mini-batches as well as single instances. In the mini-batch case, the
     number of columns and the ordering of the columns are allowed to change between subsequent
     calls. In other words, this transformer will keep working even if you add and/or remove
-    features every time you call `fit_many` and `transform_many`.
+    features every time you call `learn_many` and `transform_many`.
 
     Example:
 
@@ -103,7 +103,7 @@ class StandardScaler(base.Transformer):
         >>> scaler = preprocessing.StandardScaler()
 
         >>> for x in X:
-        ...     print(scaler.fit_one(x).transform_one(x))
+        ...     print(scaler.learn_one(x).transform_one(x))
         {'x': 0.0, 'y': 0.0}
         {'x': -0.999, 'y': 0.999}
         {'x': 0.937, 'y': 1.350}
@@ -111,15 +111,15 @@ class StandardScaler(base.Transformer):
         {'x': -0.776, 'y': -0.729}
         {'x': -1.274, 'y': 0.992}
 
-        This transformer also supports mini-batch updates. You can call `fit_many` and provide a
+        This transformer also supports mini-batch updates. You can call `learn_many` and provide a
         `pandas.DataFrame`:
 
         >>> import pandas as pd
         >>> X = pd.DataFrame.from_dict(X)
 
         >>> scaler = preprocessing.StandardScaler()
-        >>> scaler = scaler.fit_many(X[:3])
-        >>> scaler = scaler.fit_many(X[3:])
+        >>> scaler = scaler.learn_many(X[:3])
+        >>> scaler = scaler.learn_many(X[3:])
 
         You can then call `transform_many` to scale a mini-batch of features:
 
@@ -143,7 +143,7 @@ class StandardScaler(base.Transformer):
         self.means = collections.defaultdict(float)
         self.vars = collections.defaultdict(float)
 
-    def fit_one(self, x):
+    def learn_one(self, x):
 
         for i, xi in x.items():
             self.counts[i] += 1
@@ -159,7 +159,7 @@ class StandardScaler(base.Transformer):
             for i, xi in x.items()
         }
 
-    def fit_many(self, X: pd.DataFrame):
+    def learn_many(self, X: pd.DataFrame):
         """Update with a mini-batch of features.
 
         Note that the update formulas for mean and variance are slightly different than in the
@@ -207,7 +207,7 @@ class StandardScaler(base.Transformer):
 
         Parameters:
             X: A dataframe where each column is a feature. An exception will be raised if any of
-                the features has not been seen during a previous call to `fit_many`.
+                the features has not been seen during a previous call to `learn_many`.
 
         """
 
@@ -247,7 +247,7 @@ class MinMaxScaler(base.Transformer):
         >>> scaler = preprocessing.MinMaxScaler()
 
         >>> for x in X:
-        ...     print(scaler.fit_one(x).transform_one(x))
+        ...     print(scaler.learn_one(x).transform_one(x))
         {'x': 0.0}
         {'x': 0.0}
         {'x': 0.406920}
@@ -260,7 +260,7 @@ class MinMaxScaler(base.Transformer):
         self.min = collections.defaultdict(stats.Min)
         self.max = collections.defaultdict(stats.Max)
 
-    def fit_one(self, x):
+    def learn_one(self, x):
 
         for i, xi in x.items():
             self.min[i].update(xi)
@@ -303,7 +303,7 @@ class MaxAbsScaler(base.Transformer):
         >>> scaler = preprocessing.MaxAbsScaler()
 
         >>> for x in X:
-        ...     print(scaler.fit_one(x).transform_one(x))
+        ...     print(scaler.learn_one(x).transform_one(x))
         {'x': 1.0}
         {'x': 0.767216}
         {'x': 0.861940}
@@ -315,7 +315,7 @@ class MaxAbsScaler(base.Transformer):
     def __init__(self):
         self.abs_max = collections.defaultdict(stats.AbsMax)
 
-    def fit_one(self, x):
+    def learn_one(self, x):
 
         for i, xi in x.items():
             self.abs_max[i].update(xi)
@@ -363,7 +363,7 @@ class RobustScaler(base.Transformer):
         >>> scaler = preprocessing.RobustScaler()
 
         >>> for x in X:
-        ...     print(scaler.fit_one(x).transform_one(x))
+        ...     print(scaler.learn_one(x).transform_one(x))
         {'x': 0.0}
         {'x': -1.0}
         {'x': 0.0}
@@ -380,7 +380,7 @@ class RobustScaler(base.Transformer):
         self.median = collections.defaultdict(functools.partial(stats.Quantile, .5))
         self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
 
-    def fit_one(self, x):
+    def learn_one(self, x):
 
         for i, xi in x.items():
             if self.with_centering:

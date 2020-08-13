@@ -237,7 +237,7 @@ class SNARIMAX(base.Forecaster):
 
         >>> for x, y in datasets.AirlinePassengers():
         ...     y_pred = model.forecast(horizon=1, xs=[x])
-        ...     model = model.fit_one(x, y)
+        ...     model = model.learn_one(x, y)
         ...     metric = metric.update(y, y_pred[0])
 
         >>> metric
@@ -329,7 +329,7 @@ class SNARIMAX(base.Forecaster):
 
         return x
 
-    def _fit_predict_one(self, y: float, x: dict = None):
+    def _learn_predict_one(self, y: float, x: dict = None):
         """Updates the model and returns the prediction for the next time step.
 
         Parameters:
@@ -343,15 +343,15 @@ class SNARIMAX(base.Forecaster):
         y = self.differencer.diff(y=y, y_previous=self.y_trues)
         x = self._add_lag_features(x=x, y_trues=self.y_trues, errors=self.errors)
         y_pred = self.regressor.predict_one(x)
-        self.regressor.fit_one(x, y)
+        self.regressor.learn_one(x, y)
 
         self.y_trues.appendleft(y)
         self.errors.appendleft(y - y_pred)
 
         return y_pred
 
-    def fit_one(self, y, x=None):
-        self._fit_predict_one(y=y, x=x)
+    def learn_one(self, y, x=None):
+        self._learn_predict_one(y=y, x=x)
         return self
 
     def forecast(self, horizon, xs=None):

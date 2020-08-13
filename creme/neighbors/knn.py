@@ -73,7 +73,7 @@ class KNeighborsRegressor(base.Regressor):
         self.p = p
         self._nn = NearestNeighbours(window_size=window_size, p=p)
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         self._nn.update(x, y)
         return self
 
@@ -148,7 +148,7 @@ class KNeighborsClassifier(base.Classifier):
     def _multiclass(self):
         return True
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         self.classes.add(y)
         self._nn.update(x, y)
         return self
