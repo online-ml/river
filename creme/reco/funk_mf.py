@@ -21,8 +21,7 @@ class FunkMF(base.Recommender):
 
     $$\\hat{y}(x) = \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}$$
 
-    Where :math:`k` is the number of latent factors. The model expect dict inputs containing both a
-    `user` and an `item` entries.
+    Where $k$ is the number of latent factors.
 
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
