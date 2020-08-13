@@ -201,6 +201,6 @@ class ExamplePrecision(base.MultiOutputClassificationMetric):
     def get(self):
 
         try:
-            return self.cm.precision_sum / self.cm.total_weight
+            return self.cm.precision_sum / self.cm.n_samples
         except ZeroDivisionError:
             return 0.

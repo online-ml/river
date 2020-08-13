@@ -92,6 +92,8 @@ cdef class ConfusionMatrix:
         self.last_y_true = y_true
         self.last_y_pred = y_pred
 
+        return self
+
     def _update_matrix(self, y_true, y_pred, sample_weight=1.):
         self.data[y_true][y_pred] += sample_weight
 
