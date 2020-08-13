@@ -50,7 +50,7 @@ def yield_datasets(model):
         yield datasets.Music()
 
 
-def check_learn_one(model, dataset):
+def check_fit_one(model, dataset):
 
     klass = model.__class__
 
@@ -58,12 +58,12 @@ def check_learn_one(model, dataset):
 
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
-        model = model.learn_one(x, y)
+        model = model.fit_one(x, y)
 
         # Check the model returns itself
         assert isinstance(model, klass)
 
-        # Check learn_one is pure (i.e. x and y haven't changed)
+        # Check fit_one is pure (i.e. x and y haven't changed)
         assert x == xx
         assert y == yy
 
@@ -74,7 +74,7 @@ def check_predict_proba_one(classifier, dataset):
 
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
-        classifier = classifier.learn_one(x, y)
+        classifier = classifier.fit_one(x, y)
         y_pred = classifier.predict_proba_one(x)
 
         # Check the probabilities are coherent
@@ -92,7 +92,7 @@ def check_predict_proba_one_binary(classifier, dataset):
 
     for x, y in dataset:
         y_pred = classifier.predict_proba_one(x)
-        classifier = classifier.learn_one(x, y)
+        classifier = classifier.fit_one(x, y)
         assert set(y_pred.keys()) == {False, True}
 
 
@@ -133,14 +133,14 @@ def check_shuffling_no_impact(model, dataset):
         else:
             assert y_pred == y_pred_shuffled
 
-        model.learn_one(x, y)
-        shuffled.learn_one(x_shuffled, y)
+        model.fit_one(x, y)
+        shuffled.fit_one(x_shuffled, y)
 
 
 def check_debug_one(model, dataset):
     for x, y in dataset:
         model.debug_one(x)
-        model.learn_one(x, y)
+        model.fit_one(x, y)
         model.debug_one(x)
         break
 
@@ -149,7 +149,7 @@ def check_pickling(model, dataset):
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
     for x, y in dataset:
         model.predict_one(x)
-        model.learn_one(x, y)
+        model.fit_one(x, y)
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
 
 
@@ -229,7 +229,7 @@ def yield_checks(model):
     # Checks that make use of datasets
     for dataset in yield_datasets(model):
 
-        yield wrapped_partial(check_learn_one, dataset=dataset)
+        yield wrapped_partial(check_fit_one, dataset=dataset)
         yield wrapped_partial(check_pickling, dataset=dataset)
         if hasattr(model, 'debug_one'):
             yield wrapped_partial(check_debug_one, dataset=dataset)

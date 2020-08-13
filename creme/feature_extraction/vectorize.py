@@ -83,7 +83,7 @@ class VectorizerMixin:
 
     Parameters:
         on: The name of the feature that contains the text to vectorize. If `None`, then each
-            `learn_one` and `transform_one` should treat `x` as a `str` and not as a `dict`.
+            `fit_one` and `transform_one` should treat `x` as a `str` and not as a `dict`.
         strip_accents: Whether or not to strip accent characters.
         lowercase: Whether or not to convert all characters to lowercase.
         preprocessor: Override the preprocessing step while preserving the tokenizing
@@ -158,7 +158,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
     Parameters:
         on: The name of the feature that contains the text to vectorize. If `None`, then each
-            `learn_one` and `transform_one` will assume that each `x` that is provided is a `str`,
+            `fit_one` and `transform_one` will assume that each `x` that is provided is a `str`,
             andnot a `dict`.
         strip_accents: Whether or not to strip accent characters.
         lowercase: Whether or not to convert all characters to lowercase.
@@ -195,7 +195,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
         Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
 
-        Note that `learn_one` does not have to be called because `BagOfWords` is stateless. You can
+        Note that `fit_one` does not have to be called because `BagOfWords` is stateless. You can
         call it but it won't do anything.
 
         In the above example, a string is passed to `transform_one`. You can also indicate which
@@ -282,7 +282,7 @@ class TFIDF(BagOfWords):
         ... ]
 
         >>> for sentence in corpus:
-        ...     tfidf = tfidf.learn_one(sentence)
+        ...     tfidf = tfidf.fit_one(sentence)
         ...     print(tfidf.transform_one(sentence))
         {'this': 0.447, 'is': 0.447, 'the': 0.447, 'first': 0.447, 'document': 0.447}
         {'this': 0.333, 'document': 0.667, 'is': 0.333, 'the': 0.333, 'second': 0.469}
@@ -296,7 +296,7 @@ class TFIDF(BagOfWords):
 
         >>> for sentence in corpus:
         ...     x = {'sentence': sentence}
-        ...     tfidf = tfidf.learn_one(x)
+        ...     tfidf = tfidf.fit_one(x)
         ...     print(tfidf.transform_one(x))
         {'this': 0.447, 'is': 0.447, 'the': 0.447, 'first': 0.447, 'document': 0.447}
         {'this': 0.333, 'document': 0.667, 'is': 0.333, 'the': 0.333, 'second': 0.469}
@@ -320,7 +320,7 @@ class TFIDF(BagOfWords):
         self.dfs = collections.Counter()
         self.n = 0
 
-    def learn_one(self, x):
+    def fit_one(self, x):
 
         # Update the document counts
         terms = self.process_text(x)

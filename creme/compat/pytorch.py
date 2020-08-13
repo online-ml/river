@@ -21,7 +21,7 @@ class PyTorch2CremeBase:
         self._y_batch = [None] * batch_size
         self._batch_i = 0
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         self._x_batch[self._batch_i] = list(x.values())
         self._y_batch[self._batch_i] = [y]

@@ -14,7 +14,7 @@ class MultiOutputClassifier(MultiOutputEstimator):
     """A multi-output classifier."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: typing.Dict[typing.Union[str, int], base.typing.ClfTarget]) -> 'MultiOutputClassifier':
+    def fit_one(self, x: dict, y: typing.Dict[typing.Union[str, int], base.typing.ClfTarget]) -> 'MultiOutputClassifier':
         """Fits to a set of features `x` and a set of labels `y`.
 
         Parameters:
@@ -59,7 +59,7 @@ class MultiOutputRegressor(MultiOutputEstimator):
     """A multi-output regressor."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: typing.Dict[typing.Union[str, int], base.typing.RegTarget]) -> 'MultiOutputRegressor':
+    def fit_one(self, x: dict, y: typing.Dict[typing.Union[str, int], base.typing.RegTarget]) -> 'MultiOutputRegressor':
         """Fits to a set of features `x` and a set of outputs `y`.
 
         Parameters:

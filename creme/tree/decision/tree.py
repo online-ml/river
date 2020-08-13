@@ -53,7 +53,7 @@ class BaseDecisionTree(abc.ABC):
         self.criterion_func = CRITERIA_CLF[criterion]
         self.root = leaf.Leaf(depth=0, tree=self, target_dist=proba.Multinomial())
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
         self.root = self.root.update(x, y)
         return self
 
@@ -87,7 +87,7 @@ class BaseDecisionTree(abc.ABC):
             ... )
 
             >>> for x, y in datasets.Phishing():
-            ...    model = model.learn_one(x, y)
+            ...    model = model.fit_one(x, y)
 
             >>> dot = model.draw()
 

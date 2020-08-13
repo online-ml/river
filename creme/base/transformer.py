@@ -10,12 +10,12 @@ class Transformer(base.Estimator):
     def _supervised(self):
         return False
 
-    def learn_one(self, x: dict) -> 'Transformer':
+    def fit_one(self, x: dict) -> 'Transformer':
         """Update with a set of features `x`.
 
-        A lot of transformers don't actually have to do anything during the `learn_one` step
+        A lot of transformers don't actually have to do anything during the `fit_one` step
         because they are stateless. For this reason the default behavior of this function is to do
-        nothing. Transformers that however do something during the `learn_one` can override this
+        nothing. Transformers that however do something during the `fit_one` can override this
         method.
 
         Parameters:
@@ -70,7 +70,7 @@ class SupervisedTransformer(Transformer):
     def _supervised(self):
         return True
 
-    def learn_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':
+    def fit_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':
         """Update with a set of features `x` and a target `y`.
 
         Parameters:

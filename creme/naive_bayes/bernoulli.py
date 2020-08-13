@@ -36,7 +36,7 @@ class BernoulliNB(base.BaseNB):
         ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
         ... )
         >>> for sentence, label in docs:
-        ...     model = model.learn_one(sentence, label)
+        ...     model = model.fit_one(sentence, label)
 
         >>> model['nb'].p_class('yes')
         0.75
@@ -96,7 +96,7 @@ class BernoulliNB(base.BaseNB):
         self.class_counts = collections.Counter()
         self.feature_counts = collections.defaultdict(collections.Counter)
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
         self.class_counts.update((y,))
 
         for i, xi in x.items():

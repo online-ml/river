@@ -40,7 +40,7 @@ class MultinomialNB(base.BaseNB):
         ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
         ... )
         >>> for sentence, label in docs:
-        ...     model = model.learn_one(sentence, label)
+        ...     model = model.fit_one(sentence, label)
 
         >>> model['nb'].p_class('yes')
         0.75
@@ -108,7 +108,7 @@ class MultinomialNB(base.BaseNB):
     def _more_tags(self):
         return {tags.POSITIVE_INPUT}
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
         self.class_counts.update((y,))
 
         for f, frequency in x.items():
