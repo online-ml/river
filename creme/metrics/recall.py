@@ -191,6 +191,6 @@ class ExampleRecall(base.MultiOutputClassificationMetric):
     def get(self):
 
         try:
-            return self.cm.recall_sum / self.cm.n_samples
+            return self.cm.recall_sum / self.cm.total_weight
         except ZeroDivisionError:
             return 0.
