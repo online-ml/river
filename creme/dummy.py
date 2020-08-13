@@ -39,7 +39,7 @@ class NoChangeClassifier(base.Classifier):
         >>> model = dummy.NoChangeClassifier()
 
         >>> for sentence, label in sentences:
-        ...     model = model.learn_one(sentence, label)
+        ...     model = model.fit_one(sentence, label)
 
         >>> new_sentence = 'glad sad miserable pleasant glad'
         >>> model.predict_one(new_sentence)
@@ -58,7 +58,7 @@ class NoChangeClassifier(base.Classifier):
     def _multiclass(self):
         return True
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
         self.last_class = y
         self.classes.add(y)
         return self
@@ -98,7 +98,7 @@ class PriorClassifier(base.Classifier):
         >>> model = dummy.PriorClassifier()
 
         >>> for sentence, label in sentences:
-        ...     model = model.learn_one(sentence, label)
+        ...     model = model.fit_one(sentence, label)
 
         >>> new_sentence = 'glad sad miserable pleasant glad'
         >>> model.predict_one(new_sentence)
@@ -116,7 +116,7 @@ class PriorClassifier(base.Classifier):
     def _multiclass(self):
         return True
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
         self.counts.update([y])
         self.n += 1
         return self
@@ -147,7 +147,7 @@ class StatisticRegressor(base.Regressor):
         >>> model = dummy.StatisticRegressor(stats.Mean())
 
         >>> for sentence, score in sentences:
-        ...     model = model.learn_one(sentence, score)
+        ...     model = model.fit_one(sentence, score)
 
         >>> new_sentence = 'glad sad miserable pleasant glad'
         >>> model.predict_one(new_sentence)
@@ -162,7 +162,7 @@ class StatisticRegressor(base.Regressor):
     def _default_params(cls):
         return {'statistic': stats.Mean()}
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
         self.statistic.update(y)
         return self
 

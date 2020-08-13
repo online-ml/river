@@ -13,7 +13,7 @@ class PreviousImputer(base.Transformer):
 
         >>> imputer = impute.PreviousImputer()
 
-        >>> imputer = imputer.learn_one({'x': 1, 'y': 2})
+        >>> imputer = imputer.fit_one({'x': 1, 'y': 2})
         >>> imputer.transform_one({'y': None})
         {'y': 2}
 
@@ -25,7 +25,7 @@ class PreviousImputer(base.Transformer):
     def __init__(self):
         self._latest = {}
 
-    def learn_one(self, x):
+    def fit_one(self, x):
 
         for i, v in x.items():
             if v is not None:

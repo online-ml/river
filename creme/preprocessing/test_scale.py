@@ -9,13 +9,13 @@ import pandas as pd
 
 
 def test_standard_scaler_one_many_consistent():
-    """Checks that using learn_one or fit_many produces the same result."""
+    """Checks that using fit_one or fit_many produces the same result."""
 
     X = pd.read_csv(datasets.TrumpApproval().path)
 
     one = preprocessing.StandardScaler()
     for x, _ in stream.iter_pandas(X):
-        one.learn_one(x)
+        one.fit_one(x)
 
     many = preprocessing.StandardScaler()
     for xb in np.array_split(X, 10):

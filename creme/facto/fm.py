@@ -94,12 +94,6 @@ class FM(BaseFM):
 class FMRegressor(FM, base.Regressor):
     """Factorization Machine for regression.
 
-    The model equation is defined as:
-
-    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} \\langle \\mathbf{v}_j, \\mathbf{v}_{j'} \\rangle x_{j} x_{j'}$$
-
-    Where $\\mathbf{v}_j$ and $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
-
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
         weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
@@ -122,8 +116,8 @@ class FMRegressor(FM, base.Regressor):
         seed: Randomization seed used for reproducibility.
 
     Attributes:
-        weights: The current weights assigned to the features.
-        latents: The current latent weights assigned to the features.
+        weights (collections.defaultdict): The current weights assigned to the features.
+        latents (collections.defaultdict): The current latent weights assigned to the features.
 
     Example:
 
@@ -148,14 +142,10 @@ class FMRegressor(FM, base.Regressor):
         ... )
 
         >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+        ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
         5.236504
-
-    .. note::
-        For more efficiency, this model automatically one-hot encodes strings features considering
-        them as categorical variables.
 
     References:
         1. [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
@@ -198,12 +188,6 @@ class FMRegressor(FM, base.Regressor):
 class FMClassifier(FM, base.Classifier):
     """Factorization Machine for binary classification.
 
-    The model equation is defined as:
-
-    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} \\langle \\mathbf{v}_j, \\mathbf{v}_{j'} \\rangle x_{j} x_{j'}$$
-
-    Where $\\mathbf{v}_j$ and $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
-
     Parameters:
         n_factors: Dimensionality of the factorization or number of latent factors.
         weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
@@ -222,12 +206,12 @@ class FMClassifier(FM, base.Classifier):
         weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
         latent_initializer: Latent factors initialization scheme. Defaults to
             `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
-        clip_gradient: Clips the absolute value of each gradient value.
+        clip_gradient (float): Clips the absolute value of each gradient value.
         seed: Randomization seed used for reproducibility.
 
     Attributes:
-        weights: The current weights assigned to the features.
-        latents: The current latent weights assigned to the features.
+        weights (collections.defaultdict): The current weights assigned to the features.
+        latents (collections.defaultdict): The current latent weights assigned to the features.
 
     Example:
 
@@ -251,14 +235,10 @@ class FMClassifier(FM, base.Classifier):
         ... )
 
         >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+        ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
         True
-
-    .. note::
-        For more efficiency, this model automatically one-hot encodes strings features considering
-        them as categorical variables.
 
     References:
         1. [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)

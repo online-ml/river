@@ -31,7 +31,7 @@ class PredClipper(base.Regressor, base.WrapperMixin):
         ... )
 
         >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+        ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'a': -100, 'b': -200})
         0
@@ -54,8 +54,8 @@ class PredClipper(base.Regressor, base.WrapperMixin):
     def _labelloc(self):
         return 'b'  # for bottom
 
-    def learn_one(self, x, y):
-        self.regressor.learn_one(x, y)
+    def fit_one(self, x, y):
+        self.regressor.fit_one(x, y)
         return self
 
     def predict_one(self, x):

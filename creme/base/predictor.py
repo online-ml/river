@@ -7,7 +7,7 @@ class Predictor(estimator.Estimator):
     """A predictor.
 
     A predictor is an estimator that has `predict_one` method. Indeed, not all estimators make
-    predictions, although each and every one has a `learn_one` method. This is essentially useful
+    predictions, although each and every one has a `fit_one` method. This is essentially useful
     for housekeeping.
 
     """

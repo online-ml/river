@@ -28,7 +28,7 @@ class VarianceThreshold(base.Transformer):
         >>> selector = feature_selection.VarianceThreshold()
 
         >>> for x, _ in stream.iter_array(X):
-        ...     print(selector.learn_one(x).transform_one(x))
+        ...     print(selector.fit_one(x).transform_one(x))
         {0: 0, 1: 2, 2: 0, 3: 3}
         {1: 1, 2: 4}
         {1: 1, 2: 1}
@@ -40,7 +40,7 @@ class VarianceThreshold(base.Transformer):
         self.min_samples = min_samples
         self.variances = collections.defaultdict(stats.Var)
 
-    def learn_one(self, x):
+    def fit_one(self, x):
 
         for i, xi in x.items():
             self.variances[i].update(xi)

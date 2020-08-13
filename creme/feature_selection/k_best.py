@@ -38,7 +38,7 @@ class SelectKBest(base.SupervisedTransformer):
         ... )
 
         >>> for xi, yi, in stream.iter_array(X, y):
-        ...     selector = selector.learn_one(xi, yi)
+        ...     selector = selector.fit_one(xi, yi)
 
         >>> pprint(selector.leaderboard)
         Counter({9: 0.7898,
@@ -67,7 +67,7 @@ class SelectKBest(base.SupervisedTransformer):
     def _default_params(cls):
         return {'similarity': stats.PearsonCorr()}
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         for i, xi in x.items():
             self.leaderboard[i] = self.similarities[i].update(xi, y).get()

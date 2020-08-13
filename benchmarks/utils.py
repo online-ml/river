@@ -48,7 +48,7 @@ def benchmark(get_X_y, n, get_pp, models, get_metric):
 
         for x, y in tqdm.tqdm_notebook(get_X_y(), total=n):
 
-            x = pp.learn_one(x, y).transform_one(x)
+            x = pp.fit_one(x, y).transform_one(x)
 
             # Predict
             tic = time.perf_counter_ns()
@@ -60,7 +60,7 @@ def benchmark(get_X_y, n, get_pp, models, get_metric):
 
             # Fit
             tic = time.perf_counter_ns()
-            model.learn_one(x, y)
+            model.fit_one(x, y)
             fit_time += time.perf_counter_ns() - tic
 
         results.append(Result(lib, name, metric.get(), fit_time, pred_time))

@@ -16,7 +16,7 @@ class BaseChain(base.WrapperMixin, collections.UserDict):
         self.order = order
 
         # If the order is specified, then we can instantiate a model for each label, if not we'll
-        # do it in the first call to learn_one
+        # do it in the first call to fit_one
         if order is not None:
             self._init_models()
 
@@ -72,7 +72,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
         ...     y = {i: yi == 'TRUE' for i, yi in y.items()}
         ...     y_pred = model.predict_one(x)
         ...     metric = metric.update(y, y_pred)
-        ...     model = model.learn_one(x, y)
+        ...     model = model.fit_one(x, y)
 
         >>> metric
         Jaccard: 0.451524
@@ -92,7 +92,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
     def _multiclass(self):
         return self.model._multiclass
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         if self.order is None:
             self.order = list(y.keys())
@@ -106,7 +106,7 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
             # Make predictions before the model is updated to avoid leakage
             y_pred = clf.predict_proba_one(x)
 
-            clf.learn_one(x, y[o])
+            clf.fit_one(x, y[o])
 
             # The predictions are stored as features for the next label
             if clf._multiclass:
@@ -191,7 +191,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
     def _default_params(cls):
         return {'model': linear_model.LinearRegression()}
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         if self.order is None:
             self.order = list(y.keys())
@@ -205,7 +205,7 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
             # Make predictions before the model is updated to avoid leakage
             y_pred = reg.predict_one(x)
 
-            reg.learn_one(x, y[o])
+            reg.fit_one(x, y[o])
 
             # The predictions are stored as features for the next label
             x[o] = y_pred

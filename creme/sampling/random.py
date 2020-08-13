@@ -50,7 +50,7 @@ class RandomUnderSampler(ClassificationSampler):
         self._actual_dist = collections.Counter()
         self._pivot = None
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         self._actual_dist[y] += 1
         f = self.desired_dist
@@ -60,7 +60,7 @@ class RandomUnderSampler(ClassificationSampler):
         if y != self._pivot:
             self._pivot = max(g.keys(), key=lambda y: f[y] / g[y])
         else:
-            self.classifier.learn_one(x, y)
+            self.classifier.fit_one(x, y)
             return self
 
         # Determine the sampling ratio if the class is not the pivot
@@ -68,7 +68,7 @@ class RandomUnderSampler(ClassificationSampler):
         ratio = f[y] / (M * g[y])
 
         if ratio < 1 and self._rng.random() < ratio:
-            self.classifier.learn_one(x, y)
+            self.classifier.fit_one(x, y)
 
         return self
 
@@ -97,7 +97,7 @@ class RandomOverSampler(ClassificationSampler):
         self._actual_dist = collections.Counter()
         self._pivot = None
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         self._actual_dist[y] += 1
         f = self.desired_dist
@@ -107,14 +107,14 @@ class RandomOverSampler(ClassificationSampler):
         if y != self._pivot:
             self._pivot = max(g.keys(), key=lambda y: g[y] / f[y])
         else:
-            self.classifier.learn_one(x, y)
+            self.classifier.fit_one(x, y)
             return self
 
         M = g[self._pivot] / f[self._pivot]
         rate = M * f[y] / g[y]
 
         for _ in range(self._rng.poisson(rate)):
-            self.classifier.learn_one(x, y)
+            self.classifier.fit_one(x, y)
 
         return self
 
@@ -148,7 +148,7 @@ class RandomSampler(ClassificationSampler):
         self.desired_dist = desired_dist
         self._n = 0
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         self._actual_dist[y] += 1
         self._n += 1
@@ -158,6 +158,6 @@ class RandomSampler(ClassificationSampler):
         rate = self.sampling_rate * f[y] / (g[y] / self._n)
 
         for _ in range(self._rng.poisson(rate)):
-            self.classifier.learn_one(x, y)
+            self.classifier.fit_one(x, y)
 
         return self
