@@ -39,7 +39,7 @@ class HardSampling(base.WrapperMixin):
     def predict_one(self, x):
         return self.model.predict_one(x)
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         loss = self.loss(y_true=y, y_pred=self.pred_func(x))
 
@@ -57,7 +57,7 @@ class HardSampling(base.WrapperMixin):
 
             triplet = self.buffer.pop(i)
 
-            self.model.fit_one(triplet.x, triplet.y)
+            self.model.learn_one(triplet.x, triplet.y)
 
             loss = self.loss(y_true=triplet.y, y_pred=self.pred_func(triplet.x))
 
@@ -65,7 +65,7 @@ class HardSampling(base.WrapperMixin):
 
         # Probability (1 - p)
         else:
-            self.model.fit_one(x, y)
+            self.model.learn_one(x, y)
 
         return self
 

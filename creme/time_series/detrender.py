@@ -9,7 +9,7 @@ from creme import stats
 class Detrender(base.Regressor, base.WrapperMixin):
     """A linear detrender which centers the target in zero.
 
-    At each `fit_one` step, the current mean of `y` is substracted from `y` before being fed
+    At each `learn_one` step, the current mean of `y` is substracted from `y` before being fed
     to the provided regression model. During the `predict_one` step, the current mean is added
     to the prediction of the regression model.
 
@@ -28,8 +28,8 @@ class Detrender(base.Regressor, base.WrapperMixin):
     def _wrapped_model(self):
         return self.regressor
 
-    def fit_one(self, x, y):
-        self.regressor.fit_one(x, y - self.mean.get())
+    def learn_one(self, x, y):
+        self.regressor.learn_one(x, y - self.mean.get())
         self.mean.update(y)
         return self
 
@@ -60,9 +60,9 @@ class GroupDetrender(base.Regressor, base.WrapperMixin):
     def _wrapped_model(self):
         return self.regressor
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         key = x[self.by]
-        self.regressor.fit_one(x, y - self.means[key].get())
+        self.regressor.learn_one(x, y - self.means[key].get())
         self.means[key].update(y)
         return self
 

@@ -17,7 +17,7 @@ class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
     classifiers are instantiated on the fly.
 
     The number of classifiers is `k * (k - 1) / 2`, where `k` is the number of classes. However,
-    each call to `fit_one` only requires training `k - 1` models. Indeed, only the models that
+    each call to `learn_one` only requires training `k - 1` models. Indeed, only the models that
     pertain to the given label have to be trained. Meanwhile, making a prediction requires going
     through each and every model.
 
@@ -68,13 +68,13 @@ class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
     def _default_params(cls):
         return {'classifier': linear_model.LogisticRegression()}
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         self.classes.add(y)
 
         for c in self.classes - {y}:
             pair = (c, y) if c < y else (y, c)
-            self.classifiers[pair].fit_one(x, y=c < y)
+            self.classifiers[pair].learn_one(x, y=c < y)
 
         return self
 

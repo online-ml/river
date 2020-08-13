@@ -57,10 +57,10 @@ class Shift(stats.Univariate):
         ...     {'shop': 'Ikea', 'sales': 20}
         ... ])
 
-        Now let's call the `fit_one` method to update our feature extractor.
+        Now let's call the `learn_one` method to update our feature extractor.
 
         >>> x = next(X)
-        >>> agg = agg.fit_one(x)
+        >>> agg = agg.learn_one(x)
 
         At this point, the average defaults to the initial value of `stats.Mean`, which is 0.
 
@@ -69,11 +69,11 @@ class Shift(stats.Univariate):
 
         We can now update our feature extractor with the next data point and check the output.
 
-        >>> agg = agg.fit_one(next(X))
+        >>> agg = agg.learn_one(next(X))
         >>> agg.transform_one(x)
         {'sales_mean_of_shift_1_by_shop': 10.0}
 
-        >>> agg = agg.fit_one(next(X))
+        >>> agg = agg.learn_one(next(X))
         >>> agg.transform_one(x)
         {'sales_mean_of_shift_1_by_shop': 12.5}
 

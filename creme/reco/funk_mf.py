@@ -65,7 +65,7 @@ class FunkMF(base.Recommender):
         ... )
 
         >>> for x, y in dataset:
-        ...     _ = model.fit_one(x, y)
+        ...     _ = model.learn_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
         1.866272
@@ -108,7 +108,7 @@ class FunkMF(base.Recommender):
     def _predict_one(self, user, item):
         return np.dot(self.u_latents[user], self.i_latents[item])
 
-    def _fit_one(self, user, item, y):
+    def _learn_one(self, user, item, y):
 
         # Calculate the gradient of the loss with respect to the prediction
         g_loss = self.loss.gradient(y, self._predict_one(user, item))

@@ -105,7 +105,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
             loss = self.loss(y_true=y, y_pred=y_pred)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
             total += self.weights[i]
-            regressor.fit_one(x, y)
+            regressor.learn_one(x, y)
 
         # Normalize the weights so that they sum up to 1
         if total:
@@ -114,7 +114,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
 
         return y_pred_mean
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         self.fit_predict_one(x, y)
         return self
 
