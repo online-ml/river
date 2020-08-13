@@ -17,7 +17,7 @@ def test_predict_class_given_unseen_features():
     ]
 
     for sentence, label in docs:
-        model = model.fit_one(sentence, label)
+        model = model.learn_one(sentence, label)
 
     # Assert model parameters needed to calculate the likelihoods
     assert model['nb'].n_terms == 4

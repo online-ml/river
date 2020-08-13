@@ -31,7 +31,7 @@ class RBFSampler(base.Transformer):
         >>> model = lm.LogisticRegression(optimizer=optim.SGD(.1))
 
         >>> for x, y in stream.iter_array(X, Y):
-        ...     model = model.fit_one(x, y)
+        ...     model = model.learn_one(x, y)
         ...     y_pred = model.predict_one(x)
         ...     print(y, int(y_pred))
         0 0
@@ -45,7 +45,7 @@ class RBFSampler(base.Transformer):
         ... )
 
         >>> for x, y in stream.iter_array(X, Y):
-        ...     model = model.fit_one(x, y)
+        ...     model = model.learn_one(x, y)
         ...     y_pred = model.predict_one(x)
         ...     print(y, int(y_pred))
         0 0
