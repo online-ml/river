@@ -59,21 +59,21 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
     def _multiclass(self):
         return self.meta_classifier._multiclass
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         # Ask each model to make a prediction and then update it
         oof = {}
         for i, clf in enumerate(self):
             for k, p in clf.predict_proba_one(x).items():
                 oof[f'oof_{i}_{k}'] = p
-            clf.fit_one(x, y)
+            clf.learn_one(x, y)
 
         # Optionally, add the base features
         if self.include_features:
             oof.update(x)
 
         # Update the meta-classifier using the predictions from the base classifiers
-        self.meta_classifier.fit_one(oof, y)
+        self.meta_classifier.learn_one(oof, y)
 
         return self
 

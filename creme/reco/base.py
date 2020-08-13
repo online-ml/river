@@ -7,14 +7,14 @@ from creme import base
 class Recommender(base.Regressor):
     """A recommender."""
 
-    def fit_one(self, x, y):
-        return self._fit_one(x['user'], x['item'], y)
+    def learn_one(self, x, y):
+        return self._learn_one(x['user'], x['item'], y)
 
     def predict_one(self, x):
         return self._predict_one(x['user'], x['item'])
 
     @abc.abstractmethod
-    def _fit_one(self, user: typing.Union[str, int], item: typing.Union[str, int],
+    def _learn_one(self, user: typing.Union[str, int], item: typing.Union[str, int],
                  y: float) -> 'Recommender':
         """Fits a `user`-`item` pair and a real-valued target `y`.
 

@@ -48,14 +48,14 @@ class SuccessiveHalving:
         """The current best model."""
         return self.models[self._best_model_idx]
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         for i in self._rankings[:self._s]:
             model = self.models[i]
             metric = self._metrics[i]
             y_pred = self._pred_func(model)(x)
             metric.update(y_true=y, y_pred=y_pred)
-            model.fit_one(x, y)
+            model.learn_one(x, y)
 
             # Check for a new best model
             if i != self._best_model_idx:
@@ -184,7 +184,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         ...     verbose=True
         ... )
 
-        A `SuccessiveHalvingRegressor` is also a regressor with a `fit_one` and a `predict_one`
+        A `SuccessiveHalvingRegressor` is also a regressor with a `learn_one` and a `predict_one`
         method. We can therefore evaluate it like any other classifier with
         `evaluate.progressive_val_score`.
 
@@ -322,7 +322,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         ...     verbose=True
         ... )
 
-        A `SuccessiveHalvingClassifier` is also a classifier with a `fit_one` and a
+        A `SuccessiveHalvingClassifier` is also a classifier with a `learn_one` and a
         `predict_proba_one` method. We can therefore evaluate it like any other classifier with
         `evaluate.progressive_val_score`.
 

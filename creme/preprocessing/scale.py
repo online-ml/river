@@ -47,7 +47,7 @@ class Binarizer(base.Transformer):
 
         >>> binarizer = creme.preprocessing.Binarizer()
         >>> for x in X:
-        ...     print(binarizer.fit_one(x).transform_one(x))
+        ...     print(binarizer.learn_one(x).transform_one(x))
         {'x1': False, 'x2': False}
         {'x1': True, 'x2': True}
         {'x1': True, 'x2': True}
@@ -103,7 +103,7 @@ class StandardScaler(base.Transformer):
         >>> scaler = preprocessing.StandardScaler()
 
         >>> for x in X:
-        ...     print(scaler.fit_one(x).transform_one(x))
+        ...     print(scaler.learn_one(x).transform_one(x))
         {'x': 0.0, 'y': 0.0}
         {'x': -0.999, 'y': 0.999}
         {'x': 0.937, 'y': 1.350}
@@ -143,7 +143,7 @@ class StandardScaler(base.Transformer):
         self.means = collections.defaultdict(float)
         self.vars = collections.defaultdict(float)
 
-    def fit_one(self, x):
+    def learn_one(self, x):
 
         for i, xi in x.items():
             self.counts[i] += 1
@@ -247,7 +247,7 @@ class MinMaxScaler(base.Transformer):
         >>> scaler = preprocessing.MinMaxScaler()
 
         >>> for x in X:
-        ...     print(scaler.fit_one(x).transform_one(x))
+        ...     print(scaler.learn_one(x).transform_one(x))
         {'x': 0.0}
         {'x': 0.0}
         {'x': 0.406920}
@@ -260,7 +260,7 @@ class MinMaxScaler(base.Transformer):
         self.min = collections.defaultdict(stats.Min)
         self.max = collections.defaultdict(stats.Max)
 
-    def fit_one(self, x):
+    def learn_one(self, x):
 
         for i, xi in x.items():
             self.min[i].update(xi)
@@ -303,7 +303,7 @@ class MaxAbsScaler(base.Transformer):
         >>> scaler = preprocessing.MaxAbsScaler()
 
         >>> for x in X:
-        ...     print(scaler.fit_one(x).transform_one(x))
+        ...     print(scaler.learn_one(x).transform_one(x))
         {'x': 1.0}
         {'x': 0.767216}
         {'x': 0.861940}
@@ -315,7 +315,7 @@ class MaxAbsScaler(base.Transformer):
     def __init__(self):
         self.abs_max = collections.defaultdict(stats.AbsMax)
 
-    def fit_one(self, x):
+    def learn_one(self, x):
 
         for i, xi in x.items():
             self.abs_max[i].update(xi)
@@ -363,7 +363,7 @@ class RobustScaler(base.Transformer):
         >>> scaler = preprocessing.RobustScaler()
 
         >>> for x in X:
-        ...     print(scaler.fit_one(x).transform_one(x))
+        ...     print(scaler.learn_one(x).transform_one(x))
         {'x': 0.0}
         {'x': -1.0}
         {'x': 0.0}
@@ -380,7 +380,7 @@ class RobustScaler(base.Transformer):
         self.median = collections.defaultdict(functools.partial(stats.Quantile, .5))
         self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
 
-    def fit_one(self, x):
+    def learn_one(self, x):
 
         for i, xi in x.items():
             if self.with_centering:

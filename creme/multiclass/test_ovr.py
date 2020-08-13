@@ -50,7 +50,7 @@ def test_online_batch_consistent():
 
     for i, (x, y) in enumerate(stream.iter_pandas(X, Y)):
         y_pred = online.predict_one(x)
-        online.fit_one(x, y)
+        online.learn_one(x, y)
 
         if y_pred is not None:
             online_metric.update(y, y_pred)

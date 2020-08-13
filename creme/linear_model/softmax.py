@@ -65,7 +65,7 @@ class SoftmaxRegression(base.Classifier):
     def _multiclass(self):
         return True
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         # Some optimizers need to do something before a prediction is made
         for label, weights in self.weights.items():

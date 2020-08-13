@@ -75,7 +75,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
     def _default_params(cls):
         return {'classifier': linear_model.LogisticRegression()}
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         # Instantiate a new binary classifier if the class is new
         if y not in self.classifiers:
@@ -83,7 +83,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
 
         # Train each label's associated classifier
         for label, model in self.classifiers.items():
-            model.fit_one(x, y == label)
+            model.learn_one(x, y == label)
 
         return self
 
