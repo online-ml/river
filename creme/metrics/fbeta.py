@@ -524,5 +524,5 @@ class ExampleF1(ExampleFBeta):
 
         """
 
-    def __init__(self, cm=None, pos_val=True):
+    def __init__(self, cm=None):
         super().__init__(beta=1., cm=cm)
