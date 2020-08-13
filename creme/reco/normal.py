@@ -12,8 +12,7 @@ class RandomNormal(base.Recommender):
     """Predicts random values sampled from a normal distribution.
 
     The parameters of the normal distribution are fitted with running statistics. This is
-    equivalent to using `surprise.prediction_algorithms.random_pred.NormalPredictor`. The model
-    expect dict inputs containing both a `user` and an `item` entries.
+    equivalent to using `surprise.prediction_algorithms.random_pred.NormalPredictor`.
 
     Parameters:
         seed: Randomization seed used for reproducibility.
