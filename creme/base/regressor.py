@@ -9,7 +9,7 @@ class Regressor(Predictor):
     """A regressor."""
 
     @abc.abstractmethod
-    def fit_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
+    def learn_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
         """Fits to a set of features ``x`` and a real-valued target ``y``.
 
         Parameters:

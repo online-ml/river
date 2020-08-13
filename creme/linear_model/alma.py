@@ -61,7 +61,7 @@ class ALMAClassifier(base.Classifier):
         yp = utils.math.sigmoid(self._raw_dot(x))
         return {False: 1 - yp, True: yp}
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         # Convert 0 to -1
         y = int(y or -1)

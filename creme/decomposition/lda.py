@@ -74,7 +74,7 @@ class LDA(base.Transformer):
         ... )
 
         >>> for x in X:
-        ...     lda = lda.fit_one(x)
+        ...     lda = lda.learn_one(x)
         ...     topics = lda.transform_one(x)
         ...     print(topics)
         {0: 2.5, 1: 0.5}
@@ -122,8 +122,8 @@ class LDA(base.Transformer):
             self.nu_1[topic] = np.ones(1)
             self.nu_2[topic] = np.array([self.alpha_beta])
 
-    def fit_transform_one(self, x: dict) -> dict:
-        """Equivalent to `lda.fit_one(x).transform_one(x)`s, but faster.
+    def learn_transform_one(self, x: dict) -> dict:
+        """Equivalent to `lda.learn_one(x).transform_one(x)`s, but faster.
 
         Parameters:
             x: A document.
@@ -158,8 +158,8 @@ class LDA(base.Transformer):
 
         return dict(enumerate(batch_document_topic_distribution))
 
-    def fit_one(self, x):
-        self.fit_transform_one(x)
+    def learn_one(self, x):
+        self.learn_transform_one(x)
         return self
 
     def transform_one(self, x):

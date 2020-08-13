@@ -58,7 +58,7 @@ class Baseline(base.Recommender):
         >>> model = reco.Baseline(optimizer=optim.SGD(0.005))
 
         >>> for x, y in dataset:
-        ...     _ = model.fit_one(x, y)
+        ...     _ = model.learn_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
         6.538120
@@ -92,7 +92,7 @@ class Baseline(base.Recommender):
     def _predict_one(self, user, item):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]
 
-    def _fit_one(self, user, item, y):
+    def _learn_one(self, user, item, y):
 
         # Update the global mean
         self.global_mean.update(y)

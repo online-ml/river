@@ -54,7 +54,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
         >>> for X in pd.read_csv(dataset.path, chunksize=64):
         ...     y = X.pop('category')
         ...     y_pred = model.predict_many(X)
-        ...     model = model.fit_many(X, y)
+        ...     model = model.learn_many(X, y)
 
     """
 
@@ -75,7 +75,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
     def _default_params(cls):
         return {'classifier': linear_model.LogisticRegression()}
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         # Instantiate a new binary classifier if the class is new
         if y not in self.classifiers:
@@ -83,7 +83,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
 
         # Train each label's associated classifier
         for label, model in self.classifiers.items():
-            model.fit_one(x, y == label)
+            model.learn_one(x, y == label)
 
         return self
 
@@ -103,7 +103,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
 
         return y_pred
 
-    def fit_many(self, X, y, **params):
+    def learn_many(self, X, y, **params):
 
         self._y_name = y.name
 
@@ -114,7 +114,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
 
         # Train each label's associated classifier
         for label, model in self.classifiers.items():
-            model.fit_many(X, y == label, **params)
+            model.learn_many(X, y == label, **params)
 
         return self
 

@@ -34,9 +34,9 @@ class Grouper(base.Transformer):
     def _get_key(self, x):
         return '_'.join(str(x[k]) for k in self.by)
 
-    def fit_one(self, x):
+    def learn_one(self, x):
         key = self._get_key(x)
-        self.transformers[key].fit_one(x)
+        self.transformers[key].learn_one(x)
         return self
 
     def transform_one(self, x):

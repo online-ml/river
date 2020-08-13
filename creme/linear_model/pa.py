@@ -12,11 +12,11 @@ __all__ = ['PAClassifier', 'PARegressor']
 
 class BasePA:
 
-    def __init__(self, C, mode, fit_intercept):
+    def __init__(self, C, mode, learn_intercept):
         self.C = C
         self.mode = mode
         self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[mode]
-        self.fit_intercept = fit_intercept
+        self.learn_intercept = learn_intercept
         self.weights = collections.defaultdict(float)
         self.intercept = 0.
 
@@ -44,7 +44,7 @@ class PARegressor(BasePA, base.Regressor):
         C
         mode
         eps
-        fit_intercept
+        learn_intercept
 
     Example:
 
@@ -63,13 +63,13 @@ class PARegressor(BasePA, base.Regressor):
         ...     C=0.01,
         ...     mode=2,
         ...     eps=0.1,
-        ...     fit_intercept=False
+        ...     learn_intercept=False
         ... )
         >>> metric = metrics.MAE() + metrics.MSE()
 
         >>> for xi, yi in stream.iter_array(X, y):
         ...     y_pred = model.predict_one(xi)
-        ...     model = model.fit_one(xi, yi)
+        ...     model = model.learn_one(xi, yi)
         ...     metric = metric.update(yi, y_pred)
 
         >>> print(metric)
@@ -80,12 +80,12 @@ class PARegressor(BasePA, base.Regressor):
 
     """
 
-    def __init__(self, C=1.0, mode=1, eps=0.1, fit_intercept=True):
-        super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
+    def __init__(self, C=1.0, mode=1, eps=0.1, learn_intercept=True):
+        super().__init__(C=C, mode=mode, learn_intercept=learn_intercept)
         self.eps = eps
         self.loss = optim.losses.EpsilonInsensitiveHinge(eps=eps)
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         y_pred = self.predict_one(x)
         tau = self.calc_tau(x, self.loss(y, y_pred))
@@ -93,7 +93,7 @@ class PARegressor(BasePA, base.Regressor):
 
         for i, xi in x.items():
             self.weights[i] += step * xi
-        if self.fit_intercept:
+        if self.learn_intercept:
             self.intercept += step
 
         return self
@@ -109,7 +109,7 @@ class PAClassifier(BasePA, base.Classifier):
         C
         mode
         eps
-        fit_intercept
+        learn_intercept
 
     Example:
 
@@ -146,7 +146,7 @@ class PAClassifier(BasePA, base.Classifier):
         ... )
 
         >>> for xi, yi in stream.iter_array(X_train, y_train):
-        ...     y_pred = model.fit_one(xi, yi)
+        ...     y_pred = model.learn_one(xi, yi)
 
         >>> metric = metrics.Accuracy() + metrics.LogLoss()
 
@@ -161,11 +161,11 @@ class PAClassifier(BasePA, base.Classifier):
 
     """
 
-    def __init__(self, C=1., mode=1, fit_intercept=True):
-        super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
+    def __init__(self, C=1., mode=1, learn_intercept=True):
+        super().__init__(C=C, mode=mode, learn_intercept=learn_intercept)
         self.loss = optim.losses.Hinge()
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         y_pred = utils.math.dot(x, self.weights) + self.intercept
         tau = self.calc_tau(x, self.loss(y, y_pred))
@@ -173,7 +173,7 @@ class PAClassifier(BasePA, base.Classifier):
 
         for i, xi in x.items():
             self.weights[i] += step * xi
-        if self.fit_intercept:
+        if self.learn_intercept:
             self.intercept += step
 
         return self
