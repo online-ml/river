@@ -99,7 +99,7 @@ REFERENCE_COMPONENTS_WITH_PRUNNING = [
     np.array([2.5, 1.5]),
 ]
 
-REFERENCE_FIT_ONE_PREDICT_ONE = [
+REFERENCE_LEARN_ONE_PREDICT_ONE = [
     np.array([2.5, 0.5]),
     np.array([2.5, 1.5]),
     np.array([1.5, 2.5]),
@@ -237,7 +237,7 @@ def test_five_components():
 
     for document in DOC_SET:
         tokens = {token: 1 for token in document.split(' ')}
-        components_list.append(lda.fit_transform_one(tokens))
+        components_list.append(lda.learn_transform_one(tokens))
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
@@ -265,7 +265,7 @@ def test_prunning_vocabulary():
 
     for document in DOC_SET:
         tokens = {token: 1 for token in document.split(' ')}
-        components_list.append(lda.fit_transform_one(tokens))
+        components_list.append(lda.learn_transform_one(tokens))
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
@@ -274,9 +274,9 @@ def test_prunning_vocabulary():
         )
 
 
-def test_fit_transform():
+def test_learn_transform():
     """
-    Assert that fit_one and transform_one methods returns waited ouput.
+    Assert that learn_one and transform_one methods returns waited ouput.
     """
 
     lda = LDA(
@@ -290,12 +290,12 @@ def test_fit_transform():
 
     for document in DOC_SET:
         tokens = {token: 1 for token in document.split(' ')}
-        lda = lda.fit_one(x=tokens)
+        lda = lda.learn_one(x=tokens)
 
         components_list.append(lda.transform_one(x=tokens))
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
             a1=list(component.values()),
-            a2=REFERENCE_FIT_ONE_PREDICT_ONE[index]
+            a2=REFERENCE_LEARN_ONE_PREDICT_ONE[index]
         )

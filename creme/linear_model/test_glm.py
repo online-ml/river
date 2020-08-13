@@ -80,7 +80,7 @@ def test_finite_differences(lm, dataset):
 
     for x, y in dataset:
 
-        x = scaler.fit_one(x).transform_one(x)
+        x = scaler.learn_one(x).transform_one(x)
 
         # Store the current gradient and weights
         gradient, _ = lm._eval_gradient_one(x, y, 1)
@@ -110,41 +110,41 @@ def test_finite_differences(lm, dataset):
         # Reset the weights to their original values in order not to influence
         # the training loop, even though it doesn't really matter.
         lm.weights = weights
-        lm.fit_one(x, y)
+        lm.learn_one(x, y)
 
 
 def test_one_many_consistent():
-    """Checks that using fit_one or fit_many produces the same result."""
+    """Checks that using learn_one or learn_many produces the same result."""
 
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
     one = lm.LinearRegression()
     for x, y in stream.iter_pandas(X, Y):
-        one.fit_one(x, y)
+        one.learn_one(x, y)
 
     many = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, len(X)), np.array_split(Y, len(Y))):
-        many.fit_many(xb, yb)
+        many.learn_many(xb, yb)
 
     for i in X:
         assert math.isclose(one.weights[i], many.weights[i])
 
 
 def test_shuffle_columns():
-    """Checks that fit_many works identically whether columns are shuffled or not."""
+    """Checks that learn_many works identically whether columns are shuffled or not."""
 
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
     normal = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
-        normal.fit_many(xb, yb)
+        normal.learn_many(xb, yb)
 
     shuffled = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
         cols = np.random.permutation(X.columns)
-        shuffled.fit_many(xb[cols], yb)
+        shuffled.learn_many(xb[cols], yb)
 
     for i in X:
         assert math.isclose(normal.weights[i], shuffled.weights[i])
@@ -160,7 +160,7 @@ def test_add_remove_columns():
     for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
         # Pick half of the columns at random
         cols = np.random.choice(X.columns, len(X.columns) // 2, replace=False)
-        lin_reg.fit_many(xb[cols], yb)
+        lin_reg.learn_many(xb[cols], yb)
 
 
 def test_lin_reg_sklearn_coherence():
@@ -177,8 +177,8 @@ def test_lin_reg_sklearn_coherence():
     sk = sklm.SGDRegressor(learning_rate='constant', eta0=.01, alpha=.0)
 
     for x, y in datasets.TrumpApproval():
-        x = ss.fit_one(x).transform_one(x)
-        cr.fit_one(x, y)
+        x = ss.learn_one(x).transform_one(x)
+        cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y])
 
     for i, w in enumerate(cr.weights.values()):
@@ -195,8 +195,8 @@ def test_log_reg_sklearn_coherence():
     sk = sklm.SGDClassifier(learning_rate='constant', eta0=.01, alpha=.0, loss='log')
 
     for x, y in datasets.Bananas():
-        x = ss.fit_one(x).transform_one(x)
-        cr.fit_one(x, y)
+        x = ss.learn_one(x).transform_one(x)
+        cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
     for i, w in enumerate(cr.weights.values()):
@@ -213,8 +213,8 @@ def test_perceptron_sklearn_coherence():
     sk = sklm.Perceptron()
 
     for x, y in datasets.Bananas():
-        x = ss.fit_one(x).transform_one(x)
-        cr.fit_one(x, y)
+        x = ss.learn_one(x).transform_one(x)
+        cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
     for i, w in enumerate(cr.weights.values()):
