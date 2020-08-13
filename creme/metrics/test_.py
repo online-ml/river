@@ -125,6 +125,7 @@ def test_metric(metric, sk_metric):
     str(metric)
 
     for y_true, y_pred, sample_weights in generate_test_cases(metric=metric, n=30):
+
         m = copy.deepcopy(metric)
         for i, (yt, yp, w) in enumerate(zip(y_true, y_pred, sample_weights)):
 
@@ -141,7 +142,7 @@ def test_metric(metric, sk_metric):
                         y_pred=y_pred[:i + 1],
                         sample_weight=sample_weights[:i + 1]
                     )
-                ) < 1e-10
+                ) < 1e-6
 
 
 @pytest.mark.parametrize('metric, sk_metric', [

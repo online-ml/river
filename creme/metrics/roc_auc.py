@@ -50,8 +50,9 @@ class ROCAUC(base.BinaryMetric):
 
     """
 
-    def __init__(self, n_thresholds=10):
+    def __init__(self, n_thresholds=10, pos_val=True):
         self.n_thresholds = n_thresholds
+        self.pos_val = pos_val
         self.thresholds = [i / (n_thresholds - 1) for i in range(n_thresholds)]
         self.thresholds[0] -= 1e-7
         self.thresholds[-1] += 1e-7
@@ -60,13 +61,13 @@ class ROCAUC(base.BinaryMetric):
     def update(self, y_true, y_pred, sample_weight=1.):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
-            cm.update(y_true=bool(y_true), y_pred=p_true > t, sample_weight=sample_weight)
+            cm.update(y_true == self.pos_val, p_true > t, sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
-            cm.revert(y_true=bool(y_true), y_pred=p_true > t, sample_weight=sample_weight)
+            cm.revert(y_true == self.pos_val, p_true > t, sample_weight)
         return self
 
     @property

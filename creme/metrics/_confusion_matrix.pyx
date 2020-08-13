@@ -60,6 +60,7 @@ cdef class ConfusionMatrix:
         self.sum_col = defaultdict(float)
         self.data = defaultdict(functools.partial(defaultdict, float))
         self.n_samples = 0
+        self.total_weight = 0
         # Auxiliary variables
         self.last_y_true = 0
         self.last_y_pred = 0
@@ -73,6 +74,7 @@ cdef class ConfusionMatrix:
 
     def update(self, y_true, y_pred, sample_weight=1.):
         self.n_samples += 1
+        self.total_weight += sample_weight
         self._update_matrix(y_true, y_pred, sample_weight)
         self.sample_correction = dict()
 
@@ -102,6 +104,7 @@ cdef class ConfusionMatrix:
 
     def revert(self, y_true, y_pred, sample_weight=1., correction=None):
         self.n_samples -= 1
+        self.total_weight -= sample_weight
         # Revert is equal to subtracting so we pass the negative sample_weight
         self._update_matrix(y_true, y_pred, -sample_weight)
 

@@ -239,7 +239,7 @@ class WeightedFBeta(base.MultiClassMetric):
                 continue
 
         try:
-            return total / self.cm.n_samples
+            return total / self.cm.total_weight
         except ZeroDivisionError:
             return 0.
 
