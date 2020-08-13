@@ -33,7 +33,7 @@ class Pipeline(base.Estimator):
     parts of the pipeline are updated when `predict_one` and `predict_proba_one` are called.
     Usually the unsupervised parts of the pipeline are all the steps that precede the final step,
     which is a supervised model. However, some transformers are supervised and are therefore
-    obtained during calls to `learn_one`.
+    obtained during calls to `fit_one`.
 
     Parameters:
         steps: Ideally, a list of (name, estimator) tuples. A name is automatically inferred
@@ -141,7 +141,7 @@ class Pipeline(base.Estimator):
         >>> model = (tfidf + counts) | mnb
 
         >>> for x, y in dataset:
-        ...     model = model.learn_one(x, y)
+        ...     model = model.fit_one(x, y)
 
         >>> x = dataset[0][0]
         >>> report = model.debug_one(dataset[0][0])
@@ -282,7 +282,7 @@ class Pipeline(base.Estimator):
 
     # Single instance methods
 
-    def learn_one(self, x: dict, y=None, **params):
+    def fit_one(self, x: dict, y=None, **params):
         """Fit to a single instance.
 
         Parameters:
@@ -303,18 +303,18 @@ class Pipeline(base.Estimator):
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
-                        sub_t.learn_one(x=x_pre, y=y)
+                        sub_t.fit_one(x=x_pre, y=y)
 
             elif t._supervised:
-                t.learn_one(x=x_pre, y=y)
+                t.fit_one(x=x_pre, y=y)
 
         # At this point steps contains a single step, which is therefore the final step of the
         # pipeline
         final = next(steps)
         if final._supervised:
-            final.learn_one(x=x, y=y, **params)
+            final.fit_one(x=x, y=y, **params)
         else:
-            final.learn_one(x=x, **params)
+            final.fit_one(x=x, **params)
 
         return self
 
@@ -330,16 +330,16 @@ class Pipeline(base.Estimator):
         for t in itertools.islice(steps, len(self.steps) - 1):
 
             # The unsupervised transformers are updated during transform. We do this because
-            # typically transform_one is called before learn_one, and therefore we might as well use
+            # typically transform_one is called before fit_one, and therefore we might as well use
             # the available information as soon as possible. Note that way of proceeding is very
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
                     if not sub_t._supervised:
-                        sub_t.learn_one(x=x)
+                        sub_t.fit_one(x=x)
 
             elif not t._supervised:
-                t.learn_one(x=x)
+                t.fit_one(x=x)
 
             x = t.transform_one(x=x)
 
@@ -516,7 +516,7 @@ class Pipeline(base.Estimator):
         for t in itertools.islice(steps, len(self.steps) - 1):
 
             # The unsupervised transformers are updated during transform. We do this because
-            # typically transform_one is called before learn_one, and therefore we might as well use
+            # typically transform_one is called before fit_one, and therefore we might as well use
             # the available information as soon as possible. Note that way of proceeding is very
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):

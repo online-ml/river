@@ -46,7 +46,7 @@ model = linear_model.LinearRegression()
 1. Pick a base class from the `base` module.
 2. Check if any of the mixin classes from the `base` module apply to your implementation.
 3. Make you've implemented the required methods, with the following exceptions:
-   1. Stateless transformers do not require a `learn_one` method.
+   1. Stateless transformers do not require a `fit_one` method.
    2. In case of a classifier, the `predict_one` is implemented by default, but can be overriden.
 4. Add type hints to the parameters of the `__init__` method.
 5. If possible provide a default value for each parameter. If, for whatever reason, no good default exists, then implement the `_default_params` method. This is a private method that is meant to be used for testing.

@@ -6,7 +6,7 @@ from . import estimator
 class AnomalyDetector(estimator.Estimator):
 
     @abc.abstractmethod
-    def learn_one(self, x: dict) -> 'AnomalyDetector':
+    def fit_one(self, x: dict) -> 'AnomalyDetector':
         """Update the model.
 
         Parameters:

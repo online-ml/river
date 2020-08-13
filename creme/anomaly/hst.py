@@ -57,9 +57,9 @@ class HalfSpaceTrees(base.AnomalyDetector):
     `limits` argument. If you do not know the limits in advance, then you can use a
     `preprocessing.MinMaxScaler` as an initial preprocessing step.
 
-    The current implementation builds the trees the first time the `learn_one` method is called.
-    Therefore, the first `learn_one` call might be slow, whereas subsequent calls will be very fast
-    in comparison. In general, the computation time of both `learn_one` and `score_one` scales
+    The current implementation builds the trees the first time the `fit_one` method is called.
+    Therefore, the first `fit_one` call might be slow, whereas subsequent calls will be very fast
+    in comparison. In general, the computation time of both `fit_one` and `score_one` scales
     linearly with the number of trees, and exponentially with the height of each tree.
 
     Note that high scores indicate anomalies, whereas low scores indicate normal observations.
@@ -87,11 +87,11 @@ class HalfSpaceTrees(base.AnomalyDetector):
         ... )
 
         >>> for x in X[:3]:
-        ...     hst = hst.learn_one({'x': x})  # Warming up
+        ...     hst = hst.fit_one({'x': x})  # Warming up
 
         >>> for x in X:
         ...     features = {'x': x}
-        ...     hst = hst.learn_one(features)
+        ...     hst = hst.fit_one(features)
         ...     print(f'Anomaly score for x={x:.3f}: {hst.score_one(features):.3f}')
         Anomaly score for x=0.500: 0.107
         Anomaly score for x=0.450: 0.071
@@ -119,7 +119,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
         >>> for x, y in datasets.CreditCard().take(8000):
         ...     score = model.score_one(x)
-        ...     model = model.learn_one(x, y)
+        ...     model = model.fit_one(x, y)
         ...     auc = auc.update(y, score)
 
         >>> auc
@@ -161,7 +161,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
         """The largest potential anomaly score."""
         return self.n_trees * self.window_size * (2 ** (self.height + 1) - 1)
 
-    def learn_one(self, x):
+    def fit_one(self, x):
 
         # The trees are built when the first observation comes in
         if not self.trees:

@@ -17,7 +17,7 @@ class Agg(base.Transformer):
     from `pandas`, but on a streaming dataset. This makes use of the streaming statistics from the
     `stats` module.
 
-    When `learn_one` is called, the running statistic `how` of group `by` is updated with the value
+    When `fit_one` is called, the running statistic `how` of group `by` is updated with the value
     of `on`. Meanwhile, the output of `transform_one` is a single-element dictionary, where the key
     is the name of the aggregate and the value is the current value of the statistic for the
     relevant group. The key is automatically inferred from the parameters.
@@ -61,7 +61,7 @@ class Agg(base.Transformer):
         ... )
 
         >>> for x in X:
-        ...     agg = agg.learn_one(x)
+        ...     agg = agg.fit_one(x)
         ...     print(agg.transform_one(x))
         {'revenue_mean_by_place': 42.0}
         {'revenue_mean_by_place': 16.0}
@@ -83,7 +83,7 @@ class Agg(base.Transformer):
         ... )
 
         >>> for x in X:
-        ...     agg = agg.learn_one(x)
+        ...     agg = agg.fit_one(x)
         ...     print(agg.transform_one(x))
         {'revenue_max_by_place_and_country': 42}
         {'revenue_max_by_place_and_country': 16}
@@ -104,7 +104,7 @@ class Agg(base.Transformer):
 
         >>> import pprint
         >>> for x in X:
-        ...     agg = agg.learn_one(x)
+        ...     agg = agg.fit_one(x)
         ...     pprint.pprint(agg.transform_one(x))
         {'revenue_max_by_place_and_country': 42, 'revenue_mean_by_place': 42.0}
         {'revenue_max_by_place_and_country': 16, 'revenue_mean_by_place': 16.0}
@@ -130,7 +130,7 @@ class Agg(base.Transformer):
     def _get_key(self, x):
         return '_'.join(str(x[k]) for k in self.by)
 
-    def learn_one(self, x):
+    def fit_one(self, x):
         self.groups[self._get_key(x)].update(x[self.on])
         return self
 
@@ -191,7 +191,7 @@ class TargetAgg(base.SupervisedTransformer):
 
         >>> for x, y in dataset:
         ...     print(agg.transform_one(x))
-        ...     agg = agg.learn_one(x, y)
+        ...     agg = agg.fit_one(x, y)
         {'target_bayes_mean_by_place': 3.0}
         {'target_bayes_mean_by_place': 3.0}
         {'target_bayes_mean_by_place': 9.5}
@@ -214,7 +214,7 @@ class TargetAgg(base.SupervisedTransformer):
 
         >>> for x, y in dataset:
         ...     print(agg.transform_one(x))
-        ...     agg = agg.learn_one(x, y)
+        ...     agg = agg.fit_one(x, y)
         {'target_bayes_mean_by_place_and_country': 3.0}
         {'target_bayes_mean_by_place_and_country': 3.0}
         {'target_bayes_mean_by_place_and_country': 3.0}
@@ -240,7 +240,7 @@ class TargetAgg(base.SupervisedTransformer):
     def _get_key(self, x):
         return '_'.join(str(x[k]) for k in self.by)
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
         self.groups[self._get_key(x)].update(y)
         return self
 

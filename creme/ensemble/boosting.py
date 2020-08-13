@@ -14,7 +14,7 @@ __all__ = ['AdaBoostClassifier']
 class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     """Boosting for classification
 
-    For each incoming observation, each model's `learn_one` method is called `k` times where
+    For each incoming observation, each model's `fit_one` method is called `k` times where
     `k` is sampled from a Poisson distribution of parameter lambda. The lambda parameter is
     updated when the weaks learners fit successively the same observation.
 
@@ -84,12 +84,12 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     def _default_params(cls):
         return {'model': linear_model.LogisticRegression()}
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
         lambda_poisson = 1
 
         for i, model in enumerate(self):
             for _ in range(self._rng.poisson(lambda_poisson)):
-                model.learn_one(x, y)
+                model.fit_one(x, y)
 
             if model.predict_one(x) == y:
                 self.correct_weight[i] += lambda_poisson
