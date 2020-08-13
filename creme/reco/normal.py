@@ -41,7 +41,7 @@ class RandomNormal(base.Recommender):
         >>> model = reco.RandomNormal(seed=42)
 
         >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+        ...     _ = model.fit_one(x, y)
 
         >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
         6.883895
@@ -59,7 +59,7 @@ class RandomNormal(base.Recommender):
         self.seed = seed
         self._rng = random.Random(seed)
 
-    def _learn_one(self, user, item, y):
+    def _fit_one(self, user, item, y):
         y_pred = self._predict_one(user, item)
         self.mean.update(y)
         self.variance.update(y)

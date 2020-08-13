@@ -45,7 +45,7 @@ class OneHotEncoder(base.Transformer):
 
         >>> oh = creme.preprocessing.OneHotEncoder(sparse=True)
         >>> for x in X:
-        ...     oh = oh.learn_one(x)
+        ...     oh = oh.fit_one(x)
         ...     pprint(oh.transform_one(x))
         {'c1_u': 1, 'c2_d': 1}
         {'c1_a': 1, 'c2_x': 1}
@@ -57,7 +57,7 @@ class OneHotEncoder(base.Transformer):
 
         >>> oh = creme.preprocessing.OneHotEncoder(sparse=False)
         >>> for x in X[:2]:
-        ...     oh = oh.learn_one(x)
+        ...     oh = oh.fit_one(x)
         ...     pprint(oh.transform_one(x))
         {'c1_u': 1, 'c2_d': 1}
         {'c1_a': 1, 'c1_u': 0, 'c2_d': 0, 'c2_x': 1}
@@ -69,7 +69,7 @@ class OneHotEncoder(base.Transformer):
         >>> pp = compose.Select('c1') | creme.preprocessing.OneHotEncoder()
 
         >>> for x in X:
-        ...     pp = pp.learn_one(x)
+        ...     pp = pp.fit_one(x)
         ...     pprint(pp.transform_one(x))
         {'c1_u': 1}
         {'c1_a': 1, 'c1_u': 0}
@@ -82,7 +82,7 @@ class OneHotEncoder(base.Transformer):
         >>> pp += compose.Select('c2')
 
         >>> for x in X:
-        ...     pp = pp.learn_one(x)
+        ...     pp = pp.fit_one(x)
         ...     pprint(pp.transform_one(x))
         {'c1_u': 1, 'c2': 'd'}
         {'c1_a': 1, 'c1_u': 0, 'c2': 'x'}
@@ -95,7 +95,7 @@ class OneHotEncoder(base.Transformer):
         self.sparse = sparse
         self.values = collections.defaultdict(set)
 
-    def learn_one(self, x):
+    def fit_one(self, x):
         for i, xi in x.items():
             self.values[i].add(xi)
         return self

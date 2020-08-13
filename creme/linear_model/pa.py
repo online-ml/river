@@ -69,7 +69,7 @@ class PARegressor(BasePA, base.Regressor):
 
         >>> for xi, yi in stream.iter_array(X, y):
         ...     y_pred = model.predict_one(xi)
-        ...     model = model.learn_one(xi, yi)
+        ...     model = model.fit_one(xi, yi)
         ...     metric = metric.update(yi, y_pred)
 
         >>> print(metric)
@@ -85,7 +85,7 @@ class PARegressor(BasePA, base.Regressor):
         self.eps = eps
         self.loss = optim.losses.EpsilonInsensitiveHinge(eps=eps)
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         y_pred = self.predict_one(x)
         tau = self.calc_tau(x, self.loss(y, y_pred))
@@ -146,7 +146,7 @@ class PAClassifier(BasePA, base.Classifier):
         ... )
 
         >>> for xi, yi in stream.iter_array(X_train, y_train):
-        ...     y_pred = model.learn_one(xi, yi)
+        ...     y_pred = model.fit_one(xi, yi)
 
         >>> metric = metrics.Accuracy() + metrics.LogLoss()
 
@@ -165,7 +165,7 @@ class PAClassifier(BasePA, base.Classifier):
         super().__init__(C=C, mode=mode, fit_intercept=fit_intercept)
         self.loss = optim.losses.Hinge()
 
-    def learn_one(self, x, y):
+    def fit_one(self, x, y):
 
         y_pred = utils.math.dot(x, self.weights) + self.intercept
         tau = self.calc_tau(x, self.loss(y, y_pred))

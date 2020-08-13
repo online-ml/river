@@ -56,7 +56,7 @@ class KMeans(base.Clusterer):
         >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
 
         >>> for i, (x, _) in enumerate(stream.iter_array(X)):
-        ...     k_means = k_means.learn_one(x)
+        ...     k_means = k_means.fit_one(x)
         ...     print(f'{X[i]} is assigned to cluster {k_means.predict_one(x)}')
         [1, 2] is assigned to cluster 1
         [1, 4] is assigned to cluster 1
@@ -89,7 +89,7 @@ class KMeans(base.Clusterer):
         self.centers = {i: collections.defaultdict(rand_gauss) for i in range(n_clusters)}  # type: ignore
 
     def fit_predict_one(self, x):
-        """Equivalent to `k_means.learn_one(x).predict_one(x)`, but faster."""
+        """Equivalent to `k_means.fit_one(x).predict_one(x)`, but faster."""
 
         # Find the cluster with the closest center
         closest = self.predict_one(x)
@@ -100,7 +100,7 @@ class KMeans(base.Clusterer):
 
         return closest
 
-    def learn_one(self, x):
+    def fit_one(self, x):
         self.fit_predict_one(x)
         return self
 

@@ -124,9 +124,9 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
         if not hasattr(self, 'instance_'):
             self.instance_ = copy.deepcopy(self.estimator)
 
-        # Call learn_one for each observation
+        # Call fit_one for each observation
         for x, yi in STREAM_METHODS[type(X)](X, y):
-            self.instance_.learn_one(x, yi)
+            self.instance_.fit_one(x, yi)
 
         return self
 
@@ -249,9 +249,9 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
                 self.label_encoder_ = preprocessing.LabelEncoder().fit(self.classes_)
             y = self.label_encoder_.transform(y)
 
-        # Call learn_one for each observation
+        # Call fit_one for each observation
         for x, yi in STREAM_METHODS[type(X)](X, y):
-            self.instance_.learn_one(x, yi)
+            self.instance_.fit_one(x, yi)
 
         return self
 
@@ -393,13 +393,13 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         if not hasattr(self, 'instance_'):
             self.instance_ = copy.deepcopy(self.estimator)
 
-        # Call learn_one for each observation
+        # Call fit_one for each observation
         if isinstance(self.instance_, base.SupervisedTransformer):
             for x, yi in STREAM_METHODS[type(X)](X, y):
-                self.instance_.learn_one(x, yi)
+                self.instance_.fit_one(x, yi)
         else:
             for x, _ in STREAM_METHODS[type(X)](X):
-                self.instance_.learn_one(x)
+                self.instance_.fit_one(x)
 
         return self
 
@@ -496,10 +496,10 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
         if not hasattr(self, 'instance_'):
             self.instance_ = copy.deepcopy(self.estimator)
 
-        # Call learn_one for each observation
+        # Call fit_one for each observation
         self.labels_ = np.empty(len(X), dtype=np.int32)
         for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
-            label = self.instance_.learn_one(x).predict_one(x)
+            label = self.instance_.fit_one(x).predict_one(x)
             self.labels_[i] = label
 
         return self

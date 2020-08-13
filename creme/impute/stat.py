@@ -11,7 +11,7 @@ class StatImputer(base.Transformer):
     """Replaces missing values with a statistic.
 
     This transformer allows you to replace missing values with the value of a running statistic.
-    During a call to `learn_one`, for each feature, a statistic is updated whenever a numeric feature
+    During a call to `fit_one`, for each feature, a statistic is updated whenever a numeric feature
     is observed. When `transform_one` is called, each feature with a `None` value is replaced with
     the current value of the corresponding statistic.
 
@@ -40,7 +40,7 @@ class StatImputer(base.Transformer):
         >>> imp = impute.StatImputer(('temperature', stats.Mean()))
 
         >>> for x in X:
-        ...     imp = imp.learn_one(x)
+        ...     imp = imp.fit_one(x)
         ...     print(imp.transform_one(x))
         {'temperature': 1}
         {'temperature': 8}
@@ -64,7 +64,7 @@ class StatImputer(base.Transformer):
         >>> imp = impute.StatImputer(('weather', stats.Mode()))
 
         >>> for x in X:
-        ...     imp = imp.learn_one(x)
+        ...     imp = imp.fit_one(x)
         ...     print(imp.transform_one(x))
         {'weather': 'sunny'}
         {'weather': 'rainy'}
@@ -79,7 +79,7 @@ class StatImputer(base.Transformer):
         >>> imp = impute.StatImputer(('weather', 'missing'))
 
         >>> for x in X:
-        ...     imp = imp.learn_one(x)
+        ...     imp = imp.fit_one(x)
         ...     print(imp.transform_one(x))
         {'weather': 'sunny'}
         {'weather': 'rainy'}
@@ -109,7 +109,7 @@ class StatImputer(base.Transformer):
         ... )
 
         >>> for x in X:
-        ...     imp = imp.learn_one(x)
+        ...     imp = imp.fit_one(x)
         ...     print(imp.transform_one(x))
         {'weather': 'sunny', 'temperature': 8}
         {'weather': 'rainy', 'temperature': 3}
@@ -147,7 +147,7 @@ class StatImputer(base.Transformer):
         ... )
 
         >>> for x in X:
-        ...     imp = imp.learn_one(x)
+        ...     imp = imp.fit_one(x)
         ...     print(imp.transform_one(x))
         {'weather': 'sunny', 'temperature': 8}
         {'weather': 'rainy', 'temperature': 3}
@@ -170,7 +170,7 @@ class StatImputer(base.Transformer):
             for feature, stat in imputers
         }
 
-    def learn_one(self, x):
+    def fit_one(self, x):
 
         for i in self.stats:
             if x[i] is not None:

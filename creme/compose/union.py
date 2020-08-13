@@ -66,7 +66,7 @@ class TransformerUnion(base.Transformer):
 
         >>> from pprint import pprint
         >>> for x in X:
-        ...     agg = agg.learn_one(x)
+        ...     agg = agg.fit_one(x)
         ...     pprint(agg.transform_one(x))
         {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
         {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
@@ -202,7 +202,7 @@ class TransformerUnion(base.Transformer):
     def __add__(self, other):
         return self._add_step(other)
 
-    def learn_one(self, x, y=None):
+    def fit_one(self, x, y=None):
         """Update each transformer.
 
         Parameters:
@@ -213,9 +213,9 @@ class TransformerUnion(base.Transformer):
         """
         for t in self.transformers.values():
             if isinstance(t, base.SupervisedTransformer):
-                t.learn_one(x, y)
+                t.fit_one(x, y)
             else:
-                t.learn_one(x)
+                t.fit_one(x)
         return self
 
     def transform_one(self, x):
