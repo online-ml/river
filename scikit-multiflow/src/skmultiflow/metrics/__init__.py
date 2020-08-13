@@ -2,10 +2,6 @@
 The :mod:`skmultiflow.metrics` module includes performance metrics.
 """
 
-from ._classification_performance_evaluator import ClassificationPerformanceEvaluator
-from ._classification_performance_evaluator import WindowClassificationPerformanceEvaluator
-from ._classification_performance_evaluator import MultiLabelClassificationPerformanceEvaluator
-from ._classification_performance_evaluator import WindowMultiLabelClassificationPerformanceEvaluator
 from .measure_collection import RegressionMeasurements
 from .measure_collection import MultiTargetRegressionMeasurements
 from .measure_collection import WindowRegressionMeasurements

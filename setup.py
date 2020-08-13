@@ -1,8 +1,17 @@
 import io
 import platform
 import os
-import setuptools
 import sys
+
+import setuptools
+
+try:
+    from numpy import get_include
+except ImportError:
+    print('To proceed first install numpy.\n' +
+          'For example, using pip:\n' +
+          '$ pip install -U numpy')
+    sys.exit(1)
 
 try:
     from Cython.Build import cythonize
@@ -81,7 +90,7 @@ setuptools.setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=setuptools.find_packages(exclude=('tests',)),
+    packages=setuptools.find_packages(exclude=('tests', 'scikit-multiflow')),
     install_requires=base_packages,
     extras_require={
         'dev': dev_packages,
@@ -107,6 +116,7 @@ setuptools.setup(
             setuptools.Extension(
                 '*',
                 sources=['**/*.pyx'],
+                include_dirs=[get_include()],
                 libraries=[] if platform.system() == 'Windows' else ['m']
             )
         ],
