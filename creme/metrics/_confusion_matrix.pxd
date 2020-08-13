@@ -11,6 +11,7 @@ cdef class ConfusionMatrix:
     cdef readonly sum_col                       # Sum per column
     cdef readonly data                          # The actual data (dictionary)
     cdef readonly int n_samples                 # Number of samples seen
+    cdef readonly float total_weight            # Sum of sample_weights seen
     cdef readonly last_y_true                   # Last y_true value seen
     cdef readonly last_y_pred                   # Last y_pred value seen
     cdef readonly sample_correction             # Used to apply corrections during revert

@@ -146,7 +146,7 @@ class WeightedRecall(base.MultiClassMetric):
             except ZeroDivisionError:
                 continue
         try:
-            return total / self.cm.n_samples
+            return total / self.cm.total_weight
         except ZeroDivisionError:
             return 0.
 
