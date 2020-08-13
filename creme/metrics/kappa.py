@@ -83,8 +83,8 @@ class KappaM(base.MultiClassMetric):
 
     >>> from creme import metrics
 
-    >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
-    >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
+    >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird', 'cat', 'ant', 'cat', 'cat', 'ant']
+    >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat', 'ant', 'ant', 'cat', 'cat', 'ant']
 
     >>> metric = metrics.KappaM()
 
@@ -92,7 +92,7 @@ class KappaM(base.MultiClassMetric):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    KappaM: 0.5
+    KappaM: 0.25
 
     References:
         1. A. Bifet et al. "Efficient online evaluation of big data stream classifiers."
@@ -138,7 +138,7 @@ class KappaT(base.MultiClassMetric):
     >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']
     >>> y_pred = ['ant', 'ant', 'cat', 'cat', 'ant', 'cat']
 
-    >>> metric = metrics.KappaM()
+    >>> metric = metrics.KappaT()
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     metric = metric.update(yt, yp)
