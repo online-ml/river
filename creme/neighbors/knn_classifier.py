@@ -2,6 +2,7 @@ import typing
 
 from creme import base
 from creme.utils import dict2numpy
+from creme.utils.math import softmax
 
 from .base_neighbors import BaseNeighbors
 
@@ -26,16 +27,20 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         The maximum size of the window storing the last observed samples.
 
     leaf_size : int (default=30)
-        sklearn.KDTree parameter. The maximum number of samples that can
+        scipy.cKDTree parameter. The maximum number of samples that can
         be stored in one leaf node, which determines from which point the
         algorithm will switch for a brute-force approach. The bigger this
         number the faster the tree construction time, but the slower the
         query time will be.
 
-    metric : string or sklearn.DistanceMetric object
-        sklearn.KDTree parameter. The distance metric to use for the KDTree.
-        Default=’euclidean’. KNNClassifier.valid_metrics() gives a list of
-        the metrics which are valid for KDTree.
+    p : float (default=2)
+        p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
+        Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid values are
+        in the interval $[1, +\infty)$
+
+    weighted : bool (default=True)
+        Whether to weight the contribution of each neighbor by it's inverse
+        distance or not.
 
     Notes
     -----
@@ -45,37 +50,33 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
     Examples
     --------
-    >>> # Imports
-    >>> from skmultiflow.lazy import KNNClassifier
-    >>> from skmultiflow.data import SEAGenerator
-    >>> # Setting up the stream
-    >>> stream = SEAGenerator(random_state=1, noise_percentage=.1)
-    >>> knn = KNNClassifier(n_neighbors=8, max_window_size=2000, leaf_size=40)
-    >>> # Keep track of sample count and correct prediction count
-    >>> n_samples = 0
-    >>> corrects = 0
-    >>> while n_samples < 5000:
-    ...     X, y = stream.next_sample()
-    ...     my_pred = knn.predict(X)
-    ...     if y[0] == my_pred[0]:
-    ...         corrects += 1
-    ...     knn = knn.partial_fit(X, y)
-    ...     n_samples += 1
-    >>>
-    >>> # Displaying results
-    >>> print('KNNClassifier usage example')
-    >>> print('{} samples analyzed.'.format(n_samples))
-    5000 samples analyzed.
-    >>> print("KNNClassifier's performance: {}".format(corrects/n_samples))
-    KNN's performance: 0.8776
+        >>> from creme import datasets
+        >>> from creme import evaluate
+        >>> from creme import metrics
+        >>> from creme import neighbors
+        >>> from creme import preprocessing
+
+        >>> dataset = datasets.Phishing()
+
+        >>> model = (
+        ...    preprocessing.StandardScaler() |
+        ...    neighbors.KNNClassifier()
+        ... )
+
+        >>> metric = metrics.Accuracy()
+
+        >>> evaluate.progressive_val_score(dataset, model, metric)
+        Accuracy: 88.11%
 
     """
 
-    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, metric='euclidean'):
+    def __init__(self, n_neighbors: int = 5, max_window_size: int = 1000, leaf_size: int = 30,
+                 p: float = 2, weighted: bool = True):
         super().__init__(n_neighbors=n_neighbors,
                          max_window_size=max_window_size,
                          leaf_size=leaf_size,
-                         metric=metric)
+                         p=p)
+        self.weighted = weighted
         self.classes = set()
 
     def learn_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
@@ -122,11 +123,18 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         proba = {class_idx: 0.0 for class_idx in self.classes}
         x_arr = dict2numpy(x)
 
-        _, neighbor_idx = self._get_neighbors(x_arr)
-        for index in neighbor_idx:
-            proba[self.data_window.targets_buffer[index]] += 1. / len(neighbor_idx)
+        dists, neighbor_idx = self._get_neighbors(x_arr)
 
-        return proba
+        target_buffer = self.data_window.targets_buffer
+
+        if not self.weighted:  # Uniform weights
+            for index in neighbor_idx[0]:
+                proba[target_buffer[index]] += 1.
+        else:  # Use the inverse of the distance to weight the votes
+            for d, index in zip(dists[0], neighbor_idx[0]):
+                proba[target_buffer[index]] += 1. / d
+
+        return softmax(proba)
 
     @property
     def _multiclass(self):
