@@ -11,16 +11,16 @@ def configuration(parent_package="", top_path=None):
     if os.name == 'posix':
         libraries.append('m')
 
-    config.add_extension("_confusion_matrix",
-                         sources=["_confusion_matrix.pyx"],
-                         include_dirs=[numpy.get_include()],
-                         libraries=libraries,
-                         extra_compile_args=["-O3"])
-    config.add_extension("_classification_performance_evaluator",
-                         sources=["_classification_performance_evaluator.pyx"],
-                         include_dirs=[numpy.get_include()],
-                         libraries=libraries,
-                         extra_compile_args=["-O3"])
+    # config.add_extension("_confusion_matrix",
+    #                      sources=["_confusion_matrix.pyx"],
+    #                      include_dirs=[numpy.get_include()],
+    #                      libraries=libraries,
+    #                      extra_compile_args=["-O3"])
+    # config.add_extension("_classification_performance_evaluator",
+    #                      sources=["_classification_performance_evaluator.pyx"],
+    #                      include_dirs=[numpy.get_include()],
+    #                      libraries=libraries,
+    #                      extra_compile_args=["-O3"])
 
     return config
 

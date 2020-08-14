@@ -1,7 +1,7 @@
 from scipy import integrate
 
 from . import base
-from . import confusion
+from . import _confusion_matrix
 
 
 __all__ = ['ROCAUC']
@@ -15,60 +15,60 @@ class ROCAUC(base.BinaryMetric):
     error is not significant as long as the predicted probabilities are well calibrated. In any
     case, this metric can still be used to reliably compare models between each other.
 
-    Parameters:
-        n_thresholds: The number of thresholds used for discretizing the ROC curve. A higher value
-            will lead to more accurate results, but will also cost more time and memory.
+    Parameters
+    ----------
+    n_thresholds
+        The number of thresholds used for discretizing the ROC curve. A higher value will lead to
+        more accurate results, but will also cost more time and memory.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [ 0,  0,   1,  1]
-        >>> y_pred = [.1, .4, .35, .8]
+    >>> y_true = [ 0,  0,   1,  1]
+    >>> y_pred = [.1, .4, .35, .8]
 
-        >>> metric = metrics.ROCAUC()
+    >>> metric = metrics.ROCAUC()
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        >>> metric
-        ROCAUC: 0.875
+    >>> metric
+    ROCAUC: 0.875
 
-        The true ROC AUC is in fact 0.75. We can improve the accuracy by increasing the amount
-        of thresholds. This comes at the cost more computation time and more memory usage.
+    The true ROC AUC is in fact 0.75. We can improve the accuracy by increasing the amount
+    of thresholds. This comes at the cost more computation time and more memory usage.
 
-        >>> metric = metrics.ROCAUC(n_thresholds=20)
+    >>> metric = metrics.ROCAUC(n_thresholds=20)
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        >>> metric
-        ROCAUC: 0.75
+    >>> metric
+    ROCAUC: 0.75
 
     """
 
-    def __init__(self, n_thresholds=10):
+    def __init__(self, n_thresholds=10, pos_val=True):
         self.n_thresholds = n_thresholds
+        self.pos_val = pos_val
         self.thresholds = [i / (n_thresholds - 1) for i in range(n_thresholds)]
         self.thresholds[0] -= 1e-7
         self.thresholds[-1] += 1e-7
-        self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
+        self.cms = [_confusion_matrix.ConfusionMatrix() for _ in range(n_thresholds)]
 
     def update(self, y_true, y_pred, sample_weight=1.):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
-            cm.update(y_true=bool(y_true), y_pred=p_true > t, sample_weight=sample_weight)
+            cm.update(y_true == self.pos_val, p_true > t, sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
-            cm.revert(y_true=bool(y_true), y_pred=p_true > t, sample_weight=sample_weight)
+            cm.revert(y_true == self.pos_val, p_true > t, sample_weight)
         return self
-
-    @property
-    def bigger_is_better(self):
-        return True
 
     @property
     def requires_labels(self):
@@ -86,10 +86,10 @@ class ROCAUC(base.BinaryMetric):
                 return 0.
 
         for i, cm in enumerate(self.cms):
-            tp = cm.counts.get(True, {}).get(True, 0)
-            tn = cm.counts.get(False, {}).get(False, 0)
-            fp = cm.counts.get(False, {}).get(True, 0)
-            fn = cm.counts.get(True, {}).get(False, 0)
+            tp = cm.true_positives(self.pos_val)
+            tn = cm.true_negatives(self.pos_val)
+            fp = cm.false_positives(self.pos_val)
+            fn = cm.false_negatives(self.pos_val)
 
             tprs[i] = safe_div(a=tp, b=tp + fn)
             fprs[i] = safe_div(a=fp, b=fp + tn)

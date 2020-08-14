@@ -112,7 +112,7 @@ class SKL2CremeRegressor(SKL2CremeBase, base.Regressor):
             x_dtype=np.float
         )
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         if self._x_batch is None:
             n_features = len(x)
@@ -193,7 +193,7 @@ class SKL2CremeClassifier(SKL2CremeBase, base.Classifier):
     def _multiclass(self):
         return True
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         if self._x_batch is None:
             n_features = len(x)

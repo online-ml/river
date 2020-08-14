@@ -103,7 +103,7 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor, me
         >>> for x, y in datasets.Phishing():
         ...     y_pred = model.predict_proba_one(x)
         ...     metric = metric.update(y, y_pred)
-        ...     model = model.fit_one(x, y)
+        ...     model = model.learn_one(x, y)
 
         >>> metric
         ROCAUC: 0.950363
@@ -170,7 +170,7 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor, me
         y_pred = preds.pop(i)
         if y_pred != {} and y_pred is not None:
             metric.update(y_true=y, y_pred=y_pred)
-        model.fit_one(x=x, y=y)
+        model.learn_one(x=x, y=y)
 
         # Update the answer counter
         n_total_answers += 1

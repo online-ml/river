@@ -53,11 +53,11 @@ def test_pickling(metric):
 
 
 def generate_test_cases(metric, n):
-    """Yields (y_true, y_pred) pairs of size n for a given metric."""
+    """Yields n (y_true, y_pred, sample_weight) triplets for a given metric."""
 
     sample_weights = [random.random() for _ in range(n)]
 
-    if isinstance(metric, base.BinaryMetric):
+    if isinstance(metric, base.ClassificationMetric):
         y_true = [random.choice([False, True]) for _ in range(n)]
         if metric.requires_labels:
             y_pred = [random.choice([False, True]) for _ in range(n)]
@@ -125,6 +125,7 @@ def test_metric(metric, sk_metric):
     str(metric)
 
     for y_true, y_pred, sample_weights in generate_test_cases(metric=metric, n=30):
+
         m = copy.deepcopy(metric)
         for i, (yt, yp, w) in enumerate(zip(y_true, y_pred, sample_weights)):
 
@@ -141,7 +142,7 @@ def test_metric(metric, sk_metric):
                         y_pred=y_pred[:i + 1],
                         sample_weight=sample_weights[:i + 1]
                     )
-                ) < 1e-10
+                ) < 1e-6
 
 
 @pytest.mark.parametrize('metric, sk_metric', [
@@ -251,7 +252,7 @@ def test_multi_fbeta():
 
 
 @pytest.mark.filterwarnings('ignore::sklearn.metrics.classification.UndefinedMetricWarning')
-def test_rolling_multi_f1():
+def test_rolling_multi_fbeta():
 
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
@@ -288,7 +289,6 @@ def test_compose():
 
     metrics.MAE() + metrics.MSE()
     metrics.Accuracy() + metrics.LogLoss()
-    metrics.Accuracy() + metrics.ConfusionMatrix()
 
     with pytest.raises(ValueError):
         _ = metrics.MSE() + metrics.LogLoss()
