@@ -39,7 +39,7 @@ class GLM:
         self._weights = utils.VectorDict(None)
 
         # The predict_many functions are going to return pandas.Series. We can name the series with
-        # the name given to the y series seen during the last fit_many call.
+        # the name given to the y series seen during the last learn_many call.
         self._y_name = None
 
     @property
@@ -47,7 +47,7 @@ class GLM:
         return self._weights.to_dict()
 
     @contextlib.contextmanager
-    def _fit_mode(self, mask=None):
+    def _learn_mode(self, mask=None):
         weights = self._weights
         try:
             # enable the initializer and set a mask
@@ -85,8 +85,8 @@ class GLM:
 
         return loss_gradient * utils.VectorDict(x) + 2. * self.l2 * self._weights, loss_gradient
 
-    def fit_one(self, x, y, w=1.):
-        with self._fit_mode(x):
+    def learn_one(self, x, y, w=1.):
+        with self._learn_mode(x):
             return self._fit(x, y, w, get_grad=self._eval_gradient_one)
 
     # Mini-batch methods
@@ -112,9 +112,9 @@ class GLM:
 
         return dict(zip(X.columns, gradient)), loss_gradient.mean()
 
-    def fit_many(self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1):
         self._y_name = y.name
-        with self._fit_mode(set(X)):
+        with self._learn_mode(set(X)):
             return self._fit(X, y, w, get_grad=self._eval_gradient_many)
 
 
@@ -122,7 +122,7 @@ class LinearRegression(GLM, base.Regressor):
     """Linear regression.
 
     This estimator supports learning with mini-batches. On top of the single instance methods, it
-    provides the following methods: `fit_many`, `predict_many`, `predict_proba_many`. Each method
+    provides the following methods: `learn_many`, `predict_many`, `predict_proba_many`. Each method
     takes as input a `pandas.DataFrame` where each column represents a feature.
 
     Parameters:
@@ -267,7 +267,7 @@ class LogisticRegression(GLM, base.Classifier, base.MiniBatchClassifier):
     """Logistic regression.
 
     This estimator supports learning with mini-batches. On top of the single instance methods, it
-    provides the following methods: `fit_many`, `predict_many`, `predict_proba_many`. Each method
+    provides the following methods: `learn_many`, `predict_many`, `predict_proba_many`. Each method
     takes as input a `pandas.DataFrame` where each column represents a feature.
 
     Parameters:

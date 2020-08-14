@@ -10,8 +10,10 @@ class RegressionMultiOutput(base.MultiOutputRegressionMetric, base.WrapperMetric
     This wraps a regression metric to make it compatible with multi-output regression tasks. The
     value of each output will be fed sequentially to the `get` method of the provided metric.
 
-    Parameters:
-        metric: The regression metric to evaluate with each output.
+    Parameters
+    ----------
+    metric
+        The regression metric to evaluate with each output.
 
     """
 

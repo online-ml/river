@@ -15,30 +15,34 @@ class Rolling(base.WrapperMetric, utils.Window):
     buffer is full, the oldest pair is removed and the `revert` method of the metric is called with
     said pair.
 
-    Parameters:
-        metric: A metric.
-        window_size: The number of most recent `(y_true, y_pred)` pairs on which to evaluate the
-            metric.
+    Parameters
+    ----------
+    metric
+        A metric.
+    window_size
+        The number of most recent `(y_true, y_pred)` pairs on which to evaluate the metric.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [3, -0.5, 2, 7]
-        >>> y_pred = [2.5, 0.0, 2, 8]
+    >>> y_true = [3, -0.5, 2, 7]
+    >>> y_pred = [2.5, 0.0, 2, 8]
 
-        >>> metric = metrics.Rolling(metrics.MSE(), window_size=2)
+    >>> metric = metrics.Rolling(metrics.MSE(), window_size=2)
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     print(metric.update(yt, yp))
-        Rolling of size 2 MSE: 0.25
-        Rolling of size 2 MSE: 0.25
-        Rolling of size 2 MSE: 0.125
-        Rolling of size 2 MSE: 0.5
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    Rolling of size 2 MSE: 0.25
+    Rolling of size 2 MSE: 0.25
+    Rolling of size 2 MSE: 0.125
+    Rolling of size 2 MSE: 0.5
 
-    .. tip::
-        You should use `Rolling` to evaluate a metric over a window of fixed sized. You can use
-        `creme.metrics.TimeRolling` to instead evaluate a metric over a period of time.
+    Notes
+    -----
+    You should use `metrics.Rolling` to evaluate a metric over a window of fixed sized. You can use
+    `metrics.TimeRolling` to instead evaluate a metric over a period of time.
 
     """
 
@@ -52,10 +56,15 @@ class Rolling(base.WrapperMetric, utils.Window):
         return self._metric
 
     def update(self, y_true, y_pred, sample_weight=1.):
-        self.metric.update(y_true, y_pred, sample_weight)
         if len(self) == self.window_size:
             self.metric.revert(*self[0])
-        self.append((y_true, y_pred, sample_weight))
+        self.metric.update(y_true, y_pred, sample_weight)
+        try:
+            # For classification metrics that require additional information
+            self.append((y_true, y_pred, sample_weight, self.metric.sample_correction))
+        except AttributeError:
+            # Default case
+            self.append((y_true, y_pred, sample_weight))
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.):

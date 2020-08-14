@@ -1,7 +1,6 @@
 import math
 
 from . import base
-from . import confusion
 
 
 __all__ = ['MCC']
@@ -10,7 +9,8 @@ __all__ = ['MCC']
 class MCC(base.BinaryMetric):
     """Matthews correlation coefficient.
 
-    Example:
+    Examples
+    --------
 
         >>> from creme import metrics
 
@@ -25,35 +25,17 @@ class MCC(base.BinaryMetric):
         >>> mcc
         MCC: -0.333333
 
-    References:
-        1. [Wikipedia article](https://www.wikiwand.com/en/Matthews_correlation_coefficient)
+    References
+    ----------
+    1. [Wikipedia article](https://www.wikiwand.com/en/Matthews_correlation_coefficient)
 
     """
 
-    def __init__(self):
-        self.cm = confusion.ConfusionMatrix()
-
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
-    def update(self, y_true, y_pred, sample_weight=1.):
-        self.cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
-        return self
-
-    def revert(self, y_true, y_pred, sample_weight=1.):
-        self.cm.revert(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
-        return self
-
     def get(self):
-        tp = self.cm.counts.get(True, {}).get(True, 0)
-        tn = self.cm.counts.get(False, {}).get(False, 0)
-        fp = self.cm.counts.get(False, {}).get(True, 0)
-        fn = self.cm.counts.get(True, {}).get(False, 0)
+        tp = self.cm.true_positives(self.pos_val)
+        tn = self.cm.true_negatives(self.pos_val)
+        fp = self.cm.false_positives(self.pos_val)
+        fn = self.cm.false_negatives(self.pos_val)
 
         n = (tp + tn + fp + fn) or 1
         s = (tp + fn) / n

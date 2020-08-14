@@ -48,14 +48,14 @@ class SuccessiveHalving:
         """The current best model."""
         return self.models[self._best_model_idx]
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
 
         for i in self._rankings[:self._s]:
             model = self.models[i]
             metric = self._metrics[i]
             y_pred = self._pred_func(model)(x)
             metric.update(y_true=y, y_pred=y_pred)
-            model.fit_one(x, y)
+            model.learn_one(x, y)
 
             # Check for a new best model
             if i != self._best_model_idx:
@@ -184,7 +184,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         ...     verbose=True
         ... )
 
-        A `SuccessiveHalvingRegressor` is also a regressor with a `fit_one` and a `predict_one`
+        A `SuccessiveHalvingRegressor` is also a regressor with a `learn_one` and a `predict_one`
         method. We can therefore evaluate it like any other classifier with
         `evaluate.progressive_val_score`.
 
@@ -322,7 +322,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         ...     verbose=True
         ... )
 
-        A `SuccessiveHalvingClassifier` is also a classifier with a `fit_one` and a
+        A `SuccessiveHalvingClassifier` is also a classifier with a `learn_one` and a
         `predict_proba_one` method. We can therefore evaluate it like any other classifier with
         `evaluate.progressive_val_score`.
 
@@ -335,11 +335,11 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
         ...     model=sh,
         ...     metric=metrics.ROCAUC()
         ... )
-        [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best Accuracy: 80.00%
-        [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best Accuracy: 84.00%
-        [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best Accuracy: 86.14%
-        [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	best Accuracy: 84.80%
-        ROCAUC: 0.953198
+        [1] 5 removed       5 left  50 iterations   budget used: 500        budget left: 1500       best Accuracy: 80.00%
+        [2] 2 removed       3 left  100 iterations  budget used: 1000       budget left: 1000       best Accuracy: 84.00%
+        [3] 1 removed       2 left  166 iterations  budget used: 1498       budget left: 502        best Accuracy: 86.14%
+        [4] 1 removed       1 left  250 iterations  budget used: 1998       budget left: 2  best Accuracy: 84.80%
+        ROCAUC: 0.952889
 
         We can now view the best model.
 
@@ -360,7 +360,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
               weight_neg=1.
             )
             l2=0.
-            intercept=-0.399002
+            intercept=-0.397923
             intercept_lr=Constant (
               learning_rate=0.01
             )

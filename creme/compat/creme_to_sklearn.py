@@ -124,9 +124,9 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
         if not hasattr(self, 'instance_'):
             self.instance_ = copy.deepcopy(self.estimator)
 
-        # Call fit_one for each observation
+        # Call learn_one for each observation
         for x, yi in STREAM_METHODS[type(X)](X, y):
-            self.instance_.fit_one(x, yi)
+            self.instance_.learn_one(x, yi)
 
         return self
 
@@ -214,7 +214,7 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
     def _partial_fit(self, X, y, classes):
 
         # If first _partial_fit call, set the classes, else check consistency
-        utils.multiclass._check_partial_fit_first_call(self, classes)
+        utils.multiclass._check_partial_learn_first_call(self, classes)
 
         # Check the inputs
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
@@ -249,9 +249,9 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
                 self.label_encoder_ = preprocessing.LabelEncoder().fit(self.classes_)
             y = self.label_encoder_.transform(y)
 
-        # Call fit_one for each observation
+        # Call learn_one for each observation
         for x, yi in STREAM_METHODS[type(X)](X, y):
-            self.instance_.fit_one(x, yi)
+            self.instance_.learn_one(x, yi)
 
         return self
 
@@ -393,13 +393,13 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
         if not hasattr(self, 'instance_'):
             self.instance_ = copy.deepcopy(self.estimator)
 
-        # Call fit_one for each observation
+        # Call learn_one for each observation
         if isinstance(self.instance_, base.SupervisedTransformer):
             for x, yi in STREAM_METHODS[type(X)](X, y):
-                self.instance_.fit_one(x, yi)
+                self.instance_.learn_one(x, yi)
         else:
             for x, _ in STREAM_METHODS[type(X)](X):
-                self.instance_.fit_one(x)
+                self.instance_.learn_one(x)
 
         return self
 
@@ -496,10 +496,10 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
         if not hasattr(self, 'instance_'):
             self.instance_ = copy.deepcopy(self.estimator)
 
-        # Call fit_one for each observation
+        # Call learn_one for each observation
         self.labels_ = np.empty(len(X), dtype=np.int32)
         for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
-            label = self.instance_.fit_one(x).predict_one(x)
+            label = self.instance_.learn_one(x).predict_one(x)
             self.labels_[i] = label
 
         return self
