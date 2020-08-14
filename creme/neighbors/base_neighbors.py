@@ -1,8 +1,8 @@
+import itertools
+
 import numpy as np
-from sklearn.neighbors import KDTree
+from scipy.spatial import cKDTree
 
-
-from creme.utils import Window
 from creme.utils.skmultiflow_utils import get_dimensions
 
 
@@ -47,7 +47,7 @@ class KNeighborsBuffer:
         # Binary instance mask to filter data in the buffer
         self._imask = np.zeros(self.window_size, dtype=bool)
         self._X = np.zeros((self.window_size, self._n_features))
-        self._y = Window(size=self.window_size)
+        self._y = [None for _ in range(self.window_size)]
         self._is_initialized = True
 
     def reset(self):
@@ -91,11 +91,11 @@ class KNeighborsBuffer:
             raise ValueError("Inconsistent number of features in X: {}, previously observed {}.".
                              format(get_dimensions(x)[1], self._n_features))
 
-        if self.size == self.window_size:
-            self.remove_one()
+        # if self.size == self.window_size:
+        #     self.remove_one()
 
         self._X[self._next_insert, :] = x
-        self._y = self._y.append(y)
+        self._y[self._next_insert] = y
 
         # Update the instance storing logic
         self._imask[self._next_insert] = True  # Mark slot as filled
@@ -111,16 +111,12 @@ class KNeighborsBuffer:
             self._imask[self._next_insert] = False  # Mark slot as free
             self._size -= 1
 
-            # Update the y buffer
-            self._y.popleft()
-
     def clear(self):
         """Clear all stored elements."""
         self._next_insert = 0
         self._size = 0
         # Just reset the instance filtering mask, not the X buffer
         self._imask = np.zeros(self.window_size, dtype=bool)
-        self._y.clear()
 
     @property
     def features_buffer(self):
@@ -136,7 +132,7 @@ class KNeighborsBuffer:
 
         The shape of the buffer is (window_size, n_targets).
         """
-        return self._y
+        return list(itertools.compress(self._y, self._imask))
 
     @property
     def n_targets(self):
@@ -156,27 +152,22 @@ class KNeighborsBuffer:
 
 class BaseNeighbors:
     """Base class for neighbors-based estimators. """
-    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, metric='euclidean'):
+    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, p=2):
         self.n_neighbors = n_neighbors
         self.max_window_size = max_window_size
         self.leaf_size = leaf_size
-        if metric not in self.valid_metrics():
-            raise ValueError('Invalid metric: {}.\n'
-                             'Valid options are: {}'.format(metric, self.valid_metrics()))
-        self.metric = metric
+        if p < 1:
+            raise ValueError('Invalid Minkowski p-norm value: {}.\n'
+                             'Values must be greater than or equal to 1'.format(p))
+        self.p = p
         self.data_window = KNeighborsBuffer(window_size=max_window_size)
 
     def _get_neighbors(self, X):
-        tree = KDTree(self.data_window.features_buffer, self.leaf_size, metric=self.metric)
-        dist, idx = tree.query(X=X, k=self.n_neighbors)
+        tree = cKDTree(self.data_window.features_buffer, leafsize=self.leaf_size)
+        dist, idx = tree.query(X.reshape(1, -1), k=self.n_neighbors, p=self.p)
         return dist, idx
 
     def reset(self):
         """Reset estimator. """
         self.data_window.reset()
         return self
-
-    @staticmethod
-    def valid_metrics():
-        """Get valid distance metrics for the KDTree. """
-        return KDTree.valid_metrics
