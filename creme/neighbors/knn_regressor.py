@@ -96,7 +96,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
                                                             {self._MEAN, self._MEDIAN}))
         self.aggregation_method = aggregation_method
 
-    def fit_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
+    def learn_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
         """Fits to a set of features ``x`` and a real-valued target ``y``.
 
         Parameters

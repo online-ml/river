@@ -1,3 +1,5 @@
+import typing
+
 from creme import base
 from creme.utils import dict2numpy
 
@@ -76,7 +78,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
                          metric=metric)
         self.classes = set()
 
-    def fit_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters
@@ -103,7 +105,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         return self
 
-    def predict_proba_one(self, x: dict) -> base.typing.Dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
         """Predict the probability of each label for a dictionary of features `x`.
 
         Parameters:
