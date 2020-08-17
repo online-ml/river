@@ -117,15 +117,19 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         """
 
-        if self.data_window is None or self.data_window.size < self.n_neighbors:
+        if self.data_window.size < self.n_neighbors:
             # The model is empty, default to None
             return None
         proba = {class_idx: 0.0 for class_idx in self.classes}
         x_arr = dict2numpy(x)
 
         dists, neighbor_idx = self._get_neighbors(x_arr)
-
         target_buffer = self.data_window.targets_buffer
+
+        # If the closest neighbor has a distance of 0, then return it's output
+        if dists[0][0] == 0:
+            proba[target_buffer[neighbor_idx[0][0]]] = 1.
+            return proba
 
         if not self.weighted:  # Uniform weights
             for index in neighbor_idx[0]:

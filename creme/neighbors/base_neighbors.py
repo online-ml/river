@@ -38,6 +38,7 @@ class KNeighborsBuffer:
         self._n_targets = -1
         self._size = 0
         self._next_insert = 0
+        self._oldest = 0
         self._imask = None
         self._X = None
         self._y = None
@@ -56,6 +57,7 @@ class KNeighborsBuffer:
         self._n_targets = -1
         self._size = 0
         self._next_insert = 0
+        self._oldest = 0
         self._imask = None
         self._X = None
         self._y = None
@@ -91,31 +93,42 @@ class KNeighborsBuffer:
             raise ValueError("Inconsistent number of features in X: {}, previously observed {}.".
                              format(get_dimensions(x)[1], self._n_features))
 
-        # if self.size == self.window_size:
-        #     self.remove_one()
-
         self._X[self._next_insert, :] = x
         self._y[self._next_insert] = y
+
+        slot_replaced = self._imask[self._next_insert]
 
         # Update the instance storing logic
         self._imask[self._next_insert] = True  # Mark slot as filled
         self._next_insert = self._next_insert + 1 if self._next_insert < self.window_size - 1 \
             else 0
-        self._size += 1
 
-    def remove_one(self):
+        if slot_replaced:  # The oldest sample was replaced (complete cycle in the buffer)
+            self._oldest = self._next_insert
+        else:  # Actual buffer increased
+            self._size += 1
+
+    def remove_one(self, rem_oldest=True):
         """Delete the oldest sample in the window. """
         if self.size > 0:
-            self._next_insert = self._next_insert - 1 if self._next_insert > 0 else \
-                self.window_size - 1
-            self._imask[self._next_insert] = False  # Mark slot as free
+            if rem_oldest:
+                self._imask[self._oldest] = False  # Mark slot as free
+                self._oldest = self._oldest + 1 if self._oldest < self.window_size - 1 else 0
+                if self._oldest == self._next_insert:
+                    # Shifts circular buffer and make its starting point be the index 0
+                    self._oldest = self._next_insert = 0
+            else:  # Remove the most recent element
+                self._next_insert = self._next_insert - 1 if self._next_insert > 0 else \
+                    self.window_size - 1
+                self._imask[self._next_insert] = False  # Mark slot as free
             self._size -= 1
 
     def clear(self):
         """Clear all stored elements."""
         self._next_insert = 0
+        self._oldest = 0
         self._size = 0
-        # Just reset the instance filtering mask, not the X buffer
+        # Just reset the instance filtering mask, not the buffers
         self._imask = np.zeros(self.window_size, dtype=bool)
 
     @property
