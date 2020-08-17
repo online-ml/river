@@ -126,14 +126,18 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
         """
 
-        if self.data_window is None or self.data_window.size < self.n_neighbors:
+        if self.data_window.size < self.n_neighbors:
             # Not enough information available, return default prediction
-            return None
+            return 0.
 
         x_arr = dict2numpy(x)
 
         dists, neighbor_idx = self._get_neighbors(x_arr)
         target_buffer = self.data_window.targets_buffer
+
+        # If the closest neighbor has a distance of 0, then return it's output
+        if dists[0][0] == 0:
+            return target_buffer[neighbor_idx[0][0]]
 
         neighbor_vals = []
 
@@ -141,15 +145,11 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
             neighbor_vals.append(target_buffer[index])
 
         if self.aggregation_method == self._MEAN:
-            y_pred = np.mean(neighbor_vals)
+            return np.mean(neighbor_vals)
         elif self.aggregation_method == self._MEDIAN:
-            y_pred = np.median(neighbor_vals)
+            return np.median(neighbor_vals)
         else:  # weighted mean
-            sum_dist = dists.sum()
-            weights = np.array([1. - dist / sum_dist for dist in dists[0]])
-            # Weights are proportional to the inverse of the distance
-            weights /= weights.sum()
-
-            y_pred = np.average(neighbor_vals, weights=weights)
-
-        return y_pred
+            return (
+                sum(y / d for y, d in zip(neighbor_vals, dists[0])) /
+                sum(1 / d for d in dists[0])
+            )
