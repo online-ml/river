@@ -64,7 +64,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    # MAE: 0.399144
+    # MAE: 0.441308
 
     """
 
@@ -126,7 +126,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
         """
 
-        if self.data_window.size < self.n_neighbors:
+        if self.data_window.size == 0:
             # Not enough information available, return default prediction
             return 0.
 
@@ -139,10 +139,13 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         if dists[0][0] == 0:
             return target_buffer[neighbor_idx[0][0]]
 
-        neighbor_vals = []
-
-        for index in neighbor_idx[0]:
-            neighbor_vals.append(target_buffer[index])
+        if self.data_window.size < self.n_neighbors:  # Select only the valid neighbors
+            neighbor_vals = [target_buffer[index] for cnt, index in enumerate(neighbor_idx[0])
+                             if cnt < self.data_window.size]
+            dists = [dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size]
+        else:
+            neighbor_vals = [target_buffer[index] for index in neighbor_idx[0]]
+            dists = dists[0]
 
         if self.aggregation_method == self._MEAN:
             return np.mean(neighbor_vals)
@@ -150,6 +153,6 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
             return np.median(neighbor_vals)
         else:  # weighted mean
             return (
-                sum(y / d for y, d in zip(neighbor_vals, dists[0])) /
-                sum(1 / d for d in dists[0])
+                sum(y / d for y, d in zip(neighbor_vals, dists)) /
+                sum(1 / d for d in dists)
             )
