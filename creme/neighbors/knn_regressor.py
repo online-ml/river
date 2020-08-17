@@ -23,21 +23,22 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         The maximum size of the window storing the last observed samples.
 
     leaf_size : int (default=30)
-        sklearn.KDTree parameter. The maximum number of samples that can
-        be stored in one leaf node, which determines from which point the
-        algorithm will switch for a brute-force approach. The bigger this
-        number the faster the tree construction time, but the slower the
-        query time will be.
+        scipy.spatial.cKDTree parameter. The maximum number of samples that
+        can be stored in one leaf node, which determines from which point
+        the algorithm will switch for a brute-force approach. The bigger
+        this number the faster the tree construction time, but the slower
+        the query time will be.
 
-    metric : string or sklearn.DistanceMetric object
-        sklearn.KDTree parameter. The distance metric to use for the KDTree.
-        Default=’euclidean’. KNNRegressor.valid_metrics() gives a list of
-        the metrics which are valid for KDTree.
+    p : float (default=2)
+        p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
+        Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid
+        values are in the interval $[1, +\infty)$
 
     aggregation_method : str (default='mean')
             | The method to aggregate the target values of neighbors.
             | 'mean'
             | 'median'
+            | 'weighted_mean'
 
     Notes
     -----
@@ -47,53 +48,42 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
     Examples
     --------
-    >>> # Imports
-    >>> from skmultiflow.data import RegressionGenerator
-    >>> from skmultiflow.lazy import KNNRegressor
-    >>> import numpy as np
-    >>>
-    >>> # Setup the data stream
-    >>> stream = RegressionGenerator(random_state=1)
-    >>> # Setup the estimator
-    >>> knn = KNNRegressor()
-    >>>
-    >>> # Auxiliary variables to control loop and track performance
-    >>> n_samples = 0
-    >>> correct_cnt = 0
-    >>> max_samples = 2000
-    >>> y_pred = np.zeros(max_samples)
-    >>> y_true = np.zeros(max_samples)
-    >>>
-    >>> # Run test-then-train loop for max_samples or while there is data in the stream
-    >>> while n_samples < max_samples and stream.has_more_samples():
-    ...     X, y = stream.next_sample()
-    ...     y_true[n_samples] = y[0]
-    ...     y_pred[n_samples] = knn.predict(X)[0]
-    ...     knn.partial_fit(X, y)
-    ...     n_samples += 1
-    >>>
-    >>> # Display results
-    >>> print('{} samples analyzed.'.format(n_samples))
-    2000 samples analyzed
-    >>> print('KNN regressor mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
-    KNN regressor mean absolute error: 144.5672450178514
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import metrics
+    >>> from creme import neighbors
+    >>> from creme import preprocessing
+
+    >>> dataset = datasets.TrumpApproval()
+
+    >>> model = (
+    ...  preprocessing.StandardScaler() |
+    ...  neighbors.KNNRegressor(max_window_size=50)
+    ... )
+
+    >>> metric = metrics.MAE()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    # MAE: 0.399144
 
     """
 
     _MEAN = 'mean'
     _MEDIAN = 'median'
+    _WEIGHTED_MEAN = 'weighted_mean'
 
-    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, metric='euclidean',
-                 aggregation_method='mean'):
+    def __init__(self, n_neighbors: int = 5, max_window_size: int = 1000, leaf_size: int = 30,
+                 p: float = 2, aggregation_method: str = 'mean'):
 
         super().__init__(n_neighbors=n_neighbors,
                          max_window_size=max_window_size,
                          leaf_size=leaf_size,
-                         metric=metric)
-        if aggregation_method not in {self._MEAN, self._MEDIAN}:
+                         p=p)
+        if aggregation_method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
             raise ValueError('Invalid aggregation_method: {}.\n'
                              'Valid options are: {}'.format(aggregation_method,
-                                                            {self._MEAN, self._MEDIAN}))
+                                                            {self._MEAN, self._MEDIAN,
+                                                             self.f_WEIGHTED_MEAN}))
         self.aggregation_method = aggregation_method
 
     def learn_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
@@ -117,7 +107,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         """
 
         x_arr = dict2numpy(x)
-        self.data_window.add_one(X=x_arr, y=y)
+        self.data_window.add_one(x_arr, y)
 
         return self
 
@@ -141,12 +131,25 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
             return None
 
         x_arr = dict2numpy(x)
-        _, neighbors_idx = self._get_neighbors(x_arr)
-        neighbors_val = [self.data_window.targets_buffer[idx] for idx in neighbors_idx]
+
+        dists, neighbor_idx = self._get_neighbors(x_arr)
+        target_buffer = self.data_window.targets_buffer
+
+        neighbor_vals = []
+
+        for index in neighbor_idx[0]:
+            neighbor_vals.append(target_buffer[index])
 
         if self.aggregation_method == self._MEAN:
-            y_pred = np.mean(neighbors_val)
-        else:   # self.aggregation_method == self._MEDIAN
-            y_pred = np.median(neighbors_val)
+            y_pred = np.mean(neighbor_vals)
+        elif self.aggregation_method == self._MEDIAN:
+            y_pred = np.median(neighbor_vals)
+        else:  # weighted mean
+            sum_dist = dists.sum()
+            weights = np.array([1. - dist / sum_dist for dist in dists[0]])
+            # Weights are proportional to the inverse of the distance
+            weights /= weights.sum()
+
+            y_pred = np.average(neighbor_vals, weights=weights)
 
         return y_pred

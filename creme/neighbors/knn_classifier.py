@@ -27,16 +27,16 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         The maximum size of the window storing the last observed samples.
 
     leaf_size : int (default=30)
-        scipy.cKDTree parameter. The maximum number of samples that can
-        be stored in one leaf node, which determines from which point the
-        algorithm will switch for a brute-force approach. The bigger this
-        number the faster the tree construction time, but the slower the
-        query time will be.
+        scipy.spatial.cKDTree parameter. The maximum number of samples that
+        can be stored in one leaf node, which determines from which point
+        the algorithm will switch for a brute-force approach. The bigger
+        this number the faster the tree construction time, but the slower
+        the query time will be.
 
     p : float (default=2)
         p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
-        Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid values are
-        in the interval $[1, +\infty)$
+        Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid
+        values are in the interval $[1, +\infty)$
 
     weighted : bool (default=True)
         Whether to weight the contribution of each neighbor by it's inverse
