@@ -66,7 +66,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         >>> metric = metrics.Accuracy()
 
         >>> evaluate.progressive_val_score(dataset, model, metric)
-        Accuracy: 88.11%
+        Accuracy: 88.07%
 
     """
 
@@ -117,10 +117,11 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         """
 
-        if self.data_window.size < self.n_neighbors:
+        proba = {class_idx: 0. for class_idx in self.classes}
+        if self.data_window.size == 0:
             # The model is empty, default to None
-            return None
-        proba = {class_idx: 0.0 for class_idx in self.classes}
+            return proba
+
         x_arr = dict2numpy(x)
 
         dists, neighbor_idx = self._get_neighbors(x_arr)
@@ -131,11 +132,19 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
             proba[target_buffer[neighbor_idx[0][0]]] = 1.
             return proba
 
+        if self.data_window.size < self.n_neighbors:  # Select only the valid neighbors
+            neighbor_idx = [index for cnt, index in enumerate(neighbor_idx[0])
+                            if cnt < self.data_window.size]
+            dists = [dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size]
+        else:
+            neighbor_idx = neighbor_idx[0]
+            dists = dists[0]
+
         if not self.weighted:  # Uniform weights
-            for index in neighbor_idx[0]:
+            for index in neighbor_idx:
                 proba[target_buffer[index]] += 1.
         else:  # Use the inverse of the distance to weight the votes
-            for d, index in zip(dists[0], neighbor_idx[0]):
+            for d, index in zip(dists, neighbor_idx):
                 proba[target_buffer[index]] += 1. / d
 
         return softmax(proba)

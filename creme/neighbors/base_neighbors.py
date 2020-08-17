@@ -137,7 +137,7 @@ class KNeighborsBuffer:
 
         The shape of the buffer is (window_size, n_features).
         """
-        return self._X[self._imask, :]  # Only return the actually filled instances
+        return self._X[self._imask]  # Only return the actually filled instances
 
     @property
     def targets_buffer(self):
@@ -175,9 +175,10 @@ class BaseNeighbors:
         self.p = p
         self.data_window = KNeighborsBuffer(window_size=max_window_size)
 
-    def _get_neighbors(self, X):
-        tree = cKDTree(self.data_window.features_buffer, leafsize=self.leaf_size)
-        dist, idx = tree.query(X.reshape(1, -1), k=self.n_neighbors, p=self.p)
+    def _get_neighbors(self, x):
+        X = self.data_window.features_buffer
+        tree = cKDTree(X, leafsize=self.leaf_size)
+        dist, idx = tree.query(x.reshape(1, -1), k=self.n_neighbors, p=self.p)
         return dist, idx
 
     def reset(self):
