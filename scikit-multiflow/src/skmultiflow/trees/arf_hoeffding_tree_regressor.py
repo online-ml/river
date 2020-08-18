@@ -1,9 +1,10 @@
 from skmultiflow.trees import HoeffdingTreeRegressor
-from skmultiflow.trees.nodes import RandomLearningNodeForRegression
-from skmultiflow.trees.nodes import InactiveLearningNodeForRegression
-from skmultiflow.trees.nodes import RandomLearningNodePerceptron
-from skmultiflow.trees.nodes import InactiveLearningNodePerceptron
 from skmultiflow.utils import check_random_state
+
+from ._nodes import RandomActiveLearningNodeMean
+from ._nodes import InactiveLearningNodeMean
+from ._nodes import RandomActiveLearningNodePerceptron
+from ._nodes import InactiveLearningNodePerceptron
 
 
 class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
@@ -86,38 +87,34 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
                          nominal_attributes=nominal_attributes,
                          learning_ratio_perceptron=learning_ratio_perceptron,
                          learning_ratio_decay=learning_ratio_decay,
-                         learning_ratio_const=learning_ratio_const,
-                         )
+                         learning_ratio_const=learning_ratio_const)
 
         self.max_features = max_features
         self.random_state = random_state
         self._random_state = check_random_state(self.random_state)
 
-    def _new_learning_node(self, initial_class_observations=None, parent_node=None,
-                           is_active_node=True):
+    def _new_learning_node(self, initial_stats=None, parent_node=None,
+                           is_active=True):
         """Create a new learning node. The type of learning node depends on the tree
         configuration."""
-        if initial_class_observations is None:
-            initial_class_observations = {}
+        if initial_stats is None:
+            initial_stats = {}
 
         # Generate a random seed for the new learning node
         random_state = self._random_state.randint(0, 4294967295, dtype='u8')
-        if is_active_node:
+        if is_active:
             if self.leaf_prediction == self._TARGET_MEAN:
-                return RandomLearningNodeForRegression(
-                    initial_class_observations, max_features=self.max_features,
-                    random_state=random_state
-                )
+                return RandomActiveLearningNodeMean(
+                    initial_stats, max_features=self.max_features, random_state=random_state)
             elif self.leaf_prediction == self._PERCEPTRON:
-                return RandomLearningNodePerceptron(
-                    initial_class_observations, max_features=self.max_features,
-                    parent_node=parent_node, random_state=random_state
-                )
+                return RandomActiveLearningNodePerceptron(
+                    initial_stats, max_features=self.max_features, parent_node=parent_node,
+                    random_state=random_state)
         else:
             if self.leaf_prediction == self._TARGET_MEAN:
-                return InactiveLearningNodeForRegression(initial_class_observations)
+                return InactiveLearningNodeMean(initial_stats)
             elif self.leaf_prediction == self._PERCEPTRON:
-                return InactiveLearningNodePerceptron(initial_class_observations, parent_node,
+                return InactiveLearningNodePerceptron(initial_stats, parent_node,
                                                       random_state=random_state)
 
     def reset(self):
@@ -140,5 +137,4 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
                                          learning_ratio_decay=self.learning_ratio_decay,
                                          learning_ratio_const=self.learning_ratio_const,
                                          max_features=self.max_features,
-                                         random_state=self.random_state
-                                         )
+                                         random_state=self.random_state)

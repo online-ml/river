@@ -116,9 +116,9 @@ def test_adaptive_random_forest_regressor_perceptron():
     error2 = mean_absolute_error(y_true, y_pred2)
     error3 = mean_absolute_error(y_true, y_pred3)
 
-    expected_error1 = 118.69
-    expected_error2 = 121.56
-    expected_error3 = 117.96
+    expected_error1 = 126.01
+    expected_error2 = 126.32
+    expected_error3 = 124.79
 
     assert np.isclose(round(error1, 2), expected_error1)
     assert np.isclose(round(error2, 2), expected_error2)
@@ -194,8 +194,8 @@ def test_adaptive_random_forest_regressor_drift_detection_coverage():
 
         cnt += 1
 
-    expected_error1 = 11.04
-    expected_error2 = 11.49
+    expected_error1 = 10.94
+    expected_error2 = 12.08
 
     error1 = mean_absolute_error(y_true, y_pred1)
     error2 = mean_absolute_error(y_true, y_pred2)

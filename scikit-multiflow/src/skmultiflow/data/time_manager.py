@@ -88,7 +88,7 @@ class TimeManager(object):
         y_true = np.array(samples["y_true"].values.tolist())
         y_pred = np.array(samples["y_pred"].values.tolist())
         # return X, y_true and y_pred for the dequeued samples
-        return X, y_true,  y_pred
+        return X, y_true, y_pred
 
     def update_queue(self, X, y_true, y_pred, sample_weight, arrival_time, available_time):
         # check if weight is None to create a list

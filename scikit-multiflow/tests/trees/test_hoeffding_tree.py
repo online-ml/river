@@ -92,7 +92,7 @@ def test_hoeffding_tree_nba(test_path):
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
 
-    expected_model_1 = 'Leaf = Class 1.0 | {0.0: 1423.0, 1.0: 1745.0, 2.0: 978.0, 3.0: 854.0}\n'
+    expected_model_1 = 'Leaf = Class 1 | {0: 1423.0, 1: 1745.0, 2: 978.0, 3: 854.0}\n'
 
     assert (learner.get_model_description() == expected_model_1)
     assert type(learner.predict(X)) == np.ndarray
@@ -160,7 +160,7 @@ def test_hoeffding_tree_model_information():
         'Byte size estimate overhead': 1.0
     }
 
-    observed_info = learner.get_model_measurements
+    observed_info = learner.model_measurements
     for k in expected_info:
         assert k in observed_info
         assert expected_info[k] == observed_info[k]
@@ -199,6 +199,6 @@ def test_hoeffding_tree_categorical_features(test_path):
                            "if Attribute 0 = 3.0:\n" \
                            "  Leaf = Class 1 | {0: 168.0, 1: 459.0}\n" \
                            "if Attribute 0 = -30.0:\n" \
-                           "  Leaf = Class 3.0 | {3.0: 46.0, 4.0: 42.0}\n"
+                           "  Leaf = Class 3 | {3: 46.0, 4: 42.0}\n"
 
     assert learner.get_model_description() == expected_description
