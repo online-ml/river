@@ -4,7 +4,7 @@ from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.lazy import KNNADWINClassifier
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 
 import warnings
 

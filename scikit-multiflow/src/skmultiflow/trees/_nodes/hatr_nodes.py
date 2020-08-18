@@ -1,6 +1,6 @@
 import math
 
-from skmultiflow.drift_detection.adwin import ADWIN
+from creme.drift.adwin import ADWIN
 from .base import FoundNode
 from .base import ActiveLeaf
 from .base import InactiveLeaf

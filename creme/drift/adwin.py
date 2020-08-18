@@ -1,9 +1,9 @@
 import numpy as np
 
-from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
+from creme.drift.base import DriftDetector
 
 
-class ADWIN(BaseDriftDetector):
+class ADWIN(DriftDetector):
     """ Adaptive Windowing method for concept drift detection.
 
     Parameters
@@ -38,7 +38,7 @@ class ADWIN(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.drift_detection.adwin import ADWIN
+    >>> from creme.drift import ADWIN
     >>> adwin = ADWIN()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -199,6 +199,8 @@ class ADWIN(BaseDriftDetector):
         self._variance += incremental_variance
         self._total += value
         self.__compress_buckets()
+
+        return self.detected_change()
 
     def __insert_element_bucket(self, variance, value, node):
         node.insert_bucket(value, variance)

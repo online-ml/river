@@ -1,9 +1,9 @@
 import numpy as np
 
-from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
+from creme.drift.base import DriftDetector
 
 
-class EDDM(BaseDriftDetector):
+class EDDM(DriftDetector):
     """ Early Drift Detection Method.
 
     Notes
@@ -43,7 +43,7 @@ class EDDM(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.drift_detection.eddm import EDDM
+    >>> from creme.drift.eddm import EDDM
     >>> eddm = EDDM()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -76,6 +76,8 @@ class EDDM(BaseDriftDetector):
         self.m_std_temp = None
         self.m_m2s_max = None
         self.m_last_level = None
+        self.estimation = None
+        self.delay = None
         self.reset()
 
     def reset(self):
@@ -117,15 +119,15 @@ class EDDM(BaseDriftDetector):
 
         """
 
-        if self.in_concept_change:
+        if self._in_concept_change:
             self.reset()
 
-        self.in_concept_change = False
+        self._in_concept_change = False
 
         self.m_n += 1
 
         if prediction == 1.0:
-            self.in_warning_zone = False
+            self._in_warning_zone = False
             self.delay = 0
             self.m_num_errors += 1
             self.m_lastd = self.m_d
@@ -146,10 +148,12 @@ class EDDM(BaseDriftDetector):
             else:
                 p = m2s / self.m_m2s_max
                 if (self.m_num_errors > self.m_min_num_errors) and (p < self.FDDM_OUTCONTROL):
-                    self.in_concept_change = True
+                    self._in_concept_change = True
 
                 elif (self.m_num_errors > self.m_min_num_errors) and (p < self.FDDM_WARNING):
-                    self.in_warning_zone = True
+                    self._in_warning_zone = True
 
                 else:
-                    self.in_warning_zone = False
+                    self._in_warning_zone = False
+
+        return self._in_concept_change

@@ -1,9 +1,10 @@
 import numpy as np
 from scipy import stats
-from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
+
+from creme.drift.base import DriftDetector
 
 
-class KSWIN(BaseDriftDetector):
+class KSWIN(DriftDetector):
     r""" Kolmogorov-Smirnov Windowing method for concept drift detection.
 
     Parameters
@@ -54,8 +55,7 @@ class KSWIN(BaseDriftDetector):
     >>> # Imports
     >>> import numpy as np
     >>> from skmultiflow.data.sea_generator import SEAGenerator
-    >>> from skmultiflow.drift_detection import KSWIN
-    >>> import numpy as np
+    >>> from creme.drift import KSWIN
     >>> # Initialize KSWIN and a data stream
     >>> kswin = KSWIN(alpha=0.01)
     >>> stream = SEAGenerator(classification_function = 2,
@@ -79,7 +79,6 @@ class KSWIN(BaseDriftDetector):
         self.window_size = window_size
         self.stat_size = stat_size
         self.alpha = alpha
-        self.change_detected = False
         self.p_value = 0
         self.n = 0
         if self.alpha < 0 or self.alpha > 1:
@@ -118,14 +117,16 @@ class KSWIN(BaseDriftDetector):
                                                 self.window[-self.stat_size:], mode="exact")
 
             if self.p_value <= self.alpha and st > 0.1:
-                self.change_detected = True
+                self._in_concept_change = True
                 self.window = self.window[-self.stat_size:]
             else:
-                self.change_detected = False
+                self._in_concept_change = False
         else:  # Not enough samples in sliding window for a valid test
-            self.change_detected = False
+            self._in_concept_change = False
 
         self.window = np.concatenate([self.window, [input_value]])
+
+        return self._in_concept_change
 
     def detected_change(self):
         """ Get detected change
@@ -136,7 +137,7 @@ class KSWIN(BaseDriftDetector):
             Whether or not a drift occurred
 
         """
-        return self.change_detected
+        return self._in_concept_change
 
     def reset(self):
         """ reset
@@ -145,4 +146,4 @@ class KSWIN(BaseDriftDetector):
         """
         self.p_value = 0
         self.window = np.array([])
-        self.change_detected = False
+        self._in_concept_change = False

@@ -2,7 +2,7 @@ import copy as cp
 
 from skmultiflow.meta import OzaBaggingClassifier
 from skmultiflow.lazy import KNNADWINClassifier
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 from skmultiflow.utils.utils import *
 
 import warnings

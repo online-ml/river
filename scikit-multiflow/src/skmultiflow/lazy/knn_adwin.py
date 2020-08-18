@@ -1,5 +1,5 @@
 from skmultiflow.lazy import KNNClassifier
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 from skmultiflow.utils.utils import get_dimensions
 
 import numpy as np
@@ -25,7 +25,7 @@ class KNNADWINClassifier(KNNClassifier):
     and by doing so it regulates the sample window size.
      
     To know more about the ADWIN change detector, please see
-    :class:`skmultiflow.drift_detection.ADWIN`
+    :class:`skmultiflow.drift.ADWIN`
 
     It uses the regular KNNClassifier as a base class, with the
     major difference that this class keeps a variable size window, 

@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 import math
 
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 from skmultiflow.bayes import do_naive_bayes_prediction
 from skmultiflow.utils import check_random_state, get_max_value_key, normalize_values_in_dict
 
