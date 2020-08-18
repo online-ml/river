@@ -2,31 +2,32 @@ import numpy as np
 from operator import attrgetter
 
 from skmultiflow.core import RegressorMixin
-from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
+from skmultiflow.trees import HoeffdingTreeClassifier
 from skmultiflow.utils import get_dimensions
-from skmultiflow.trees.split_criterion import VarianceReductionSplitCriterion
 
-from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
-from skmultiflow.trees.nodes import SplitNode
-from skmultiflow.trees.nodes import LearningNode
-from skmultiflow.trees.nodes import ActiveLearningNode, InactiveLearningNode
-from skmultiflow.trees.nodes import ActiveLearningNodeForRegression
-from skmultiflow.trees.nodes import InactiveLearningNodeForRegression
-from skmultiflow.trees.nodes import ActiveLearningNodePerceptron
-from skmultiflow.trees.nodes import InactiveLearningNodePerceptron
-from skmultiflow.trees.nodes.active_learning_node_perceptron import compute_sd
+from ._split_criterion import VarianceReductionSplitCriterion
+from ._attribute_test import NominalAttributeMultiwayTest
+from ._nodes import SplitNode
+from ._nodes import LearningNode
+from ._nodes import ActiveLeaf, InactiveLeaf
+from ._nodes import ActiveLearningNodeMean
+from ._nodes import InactiveLearningNodeMean
+from ._nodes import ActiveLearningNodePerceptron
+from ._nodes import InactiveLearningNodePerceptron
+from ._nodes.htr_nodes import compute_sd
 
 import warnings
 
 
-def RegressionHoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
-                            split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
-                            stop_mem_management=False, remove_poor_atts=False, leaf_prediction="perceptron",
-                            no_preprune=False, nb_threshold=0, nominal_attributes=None, learning_ratio_perceptron=0.02,
+def RegressionHoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000,
+                            grace_period=200, split_confidence=0.0000001, tie_threshold=0.05,
+                            binary_split=False, stop_mem_management=False, remove_poor_atts=False,
+                            leaf_prediction="perceptron", no_preprune=False, nb_threshold=0,
+                            nominal_attributes=None, learning_ratio_perceptron=0.02,
                             learning_ratio_decay=0.001, learning_ratio_const=True,
                             random_state=None):     # pragma: no cover
-    warnings.warn("'.RegressionHoeffdingTree' has been renamed to 'HoeffdingTreeRegressor' in v0.5.0.\n"
-                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    warnings.warn("'.RegressionHoeffdingTree' has been renamed to 'HoeffdingTreeRegressor' in "
+                  "v0.5.0.\nThe old name will be removed in v0.7.0", category=FutureWarning)
     return HoeffdingTreeRegressor(max_byte_size=max_byte_size,
                                   memory_estimate_period=memory_estimate_period,
                                   grace_period=grace_period,
@@ -230,8 +231,8 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
         """
         normalized_sample = []
         for i in range(len(X)):
-            if (self._nominal_attributes is None or (self._nominal_attributes is not None and
-                                                     i not in self._nominal_attributes)) and \
+            if (self.nominal_attributes is None or (self.nominal_attributes is not None and
+                                                    i not in self.nominal_attributes)) and \
                     self.samples_seen > 1:
                 mean = self.sum_of_attribute_values[i] / self.samples_seen
                 sd = compute_sd(self.sum_of_attribute_squares[i], self.sum_of_attribute_values[i],
@@ -240,7 +241,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                     normalized_sample.append(float(X[i] - mean) / (3 * sd))
                 else:
                     normalized_sample.append(0.0)
-            elif self._nominal_attributes is not None and i in self._nominal_attributes:
+            elif self.nominal_attributes is not None and i in self.nominal_attributes:
                 normalized_sample.append(X[i])  # keep nominal inputs unaltered
             else:
                 normalized_sample.append(0.0)
@@ -271,53 +272,27 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                 return float(y - mean) / (3 * sd)
         return 0.0
 
-    def _new_learning_node(self, initial_class_observations=None, parent_node=None,
-                           is_active_node=True):
+    def _new_learning_node(self, initial_stats=None, parent_node=None, is_active=True):
         """Create a new learning node. The type of learning node depends on the tree
         configuration."""
-        if initial_class_observations is None:
-            initial_class_observations = {}
+        if initial_stats is None:
+            initial_stats = {}
 
-        if is_active_node:
+        if is_active:
             if self.leaf_prediction == self._TARGET_MEAN:
-                return ActiveLearningNodeForRegression(initial_class_observations)
+                return ActiveLearningNodeMean(initial_stats)
             elif self.leaf_prediction == self._PERCEPTRON:
-                return ActiveLearningNodePerceptron(initial_class_observations, parent_node,
+                return ActiveLearningNodePerceptron(initial_stats, parent_node,
                                                     random_state=self.random_state)
         else:
             if self.leaf_prediction == self._TARGET_MEAN:
-                return InactiveLearningNodeForRegression(initial_class_observations)
+                return InactiveLearningNodeMean(initial_stats)
             elif self.leaf_prediction == self._PERCEPTRON:
-                return InactiveLearningNodePerceptron(initial_class_observations, parent_node,
+                return InactiveLearningNodePerceptron(initial_stats, parent_node,
                                                       random_state=self.random_state)
 
-    def get_weights_for_instance(self, X):
-        """ Get the perceptron weights for a single instance.
-
-        Parameters
-        ----------
-        X: numpy.ndarray of length equal to the number of features.
-            Instance attributes.
-
-        Returns
-        -------
-        np.array(n_features)
-            Array with the perceptron weights for a specific instance
-        """
-        if self._tree_root is not None:
-            found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
-            leaf_node = found_node.node
-            if leaf_node is None:
-                leaf_node = found_node.parent
-            if isinstance(leaf_node, LearningNode):
-                return leaf_node.perceptron_weight
-            else:
-                return None
-        else:
-            return None
-
     def partial_fit(self, X, y, sample_weight=None):
-        """Incrementally trains the model.
+        """ Incrementally trains the model.
 
         Train samples (instances) are composed of X attributes and their corresponding targets y.
 
@@ -396,30 +371,29 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
 
         if isinstance(leaf_node, LearningNode):
             learning_node = leaf_node
-            learning_node.learn_from_instance(X, y, sample_weight, self)
-            if self._growth_allowed and isinstance(learning_node, ActiveLearningNode):
+            learning_node.learn_one(X, y, weight=sample_weight, tree=self)
+            if self._growth_allowed and isinstance(learning_node, ActiveLeaf):
                 active_learning_node = learning_node
-                weight_seen = active_learning_node.get_weight_seen()
-                weight_diff = weight_seen - active_learning_node.\
-                    get_weight_seen_at_last_split_evaluation()
+                weight_seen = active_learning_node.total_weight
+                weight_diff = weight_seen - active_learning_node.last_split_attempt_at
                 if weight_diff >= self.grace_period:
                     self._attempt_to_split(active_learning_node, found_node.parent,
                                            found_node.parent_branch)
-                    active_learning_node.set_weight_seen_at_last_split_evaluation(weight_seen)
+                    active_learning_node.last_split_attempt_at = weight_seen
         # Split node encountered a previously unseen categorical value
-        # (in a multiway test)
+        # (in a multi-way test)
         elif isinstance(leaf_node, SplitNode) and \
-                isinstance(leaf_node.get_split_test(), NominalAttributeMultiwayTest):
+                isinstance(leaf_node.split_test, NominalAttributeMultiwayTest):
             current = found_node.node
             leaf_node = self._new_learning_node()
-            branch_id = current.get_split_test().add_new_branch(
-                X[current.get_split_test().get_atts_test_depends_on()[0]]
+            branch_id = current.split_test.add_new_branch(
+                X[current.split_test.get_atts_test_depends_on()[0]]
             )
             current.set_child(branch_id, leaf_node)
             self._active_leaf_node_cnt += 1
-            leaf_node.learn_from_instance(X, y, sample_weight, self)
+            leaf_node.learn_one(X, y, weight=sample_weight, tree=self)
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
-            self.estimate_model_byte_size()
+            self._estimate_model_byte_size()
 
     def predict(self, X):
         """Predicts the target value using mean class or the perceptron.
@@ -436,32 +410,16 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
 
         """
         predictions = []
-        if self.samples_seen > 0:
+        if self.samples_seen > 0 and self._tree_root is not None:
             r, _ = get_dimensions(X)
             for i in range(r):
-                if self.leaf_prediction == self._TARGET_MEAN:
-                    votes = self.get_votes_for_instance(X[i])   # Gets observed data statistics
-                    if votes == {}:
-                        # Tree is empty, all target_values equal, default to zero
-                        predictions.append(0)
-                    else:
-                        number_of_samples_seen = votes[0]
-                        sum_of_values = votes[1]
-                        predictions.append(sum_of_values / number_of_samples_seen)
-                elif self.leaf_prediction == self._PERCEPTRON:
-                    if self.samples_seen > 1:
-                        perceptron_weights = self.get_weights_for_instance(X[i])
-                        if perceptron_weights is None:
-                            predictions.append(0.0)
-                            continue
-                        normalized_sample = self.normalize_sample(X[i])
-                        normalized_prediction = perceptron_weights.dot(normalized_sample)
-                        # De-normalize prediction
-                        mean = self.sum_of_values / self.samples_seen
-                        sd = compute_sd(self.sum_of_squares, self.sum_of_values, self.samples_seen)
-                        predictions.append(normalized_prediction * sd * 3 + mean)
-                    else:
-                        predictions.append(0.0)
+                node = self._tree_root.filter_instance_to_leaf(X[i], None, -1).node
+                if node.is_leaf():
+                    predictions.append(node.predict_one(X[i], tree=self))
+                else:
+                    # The instance sorting ended up in a Split Node, since no branch was found
+                    # for some of the instance's features. Use the mean prediction in this case
+                    predictions.append(node.stats[1] / node.stats[0])
         else:
             # Model is empty
             predictions.append(0.0)
@@ -488,7 +446,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
 
         Parameters
         ----------
-        node: ActiveLearningNode
+        node:
             The node to evaluate.
         parent: SplitNode
             The node's parent.
@@ -503,36 +461,28 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
         if len(best_split_suggestions) < 2:
             should_split = len(best_split_suggestions) > 0
         else:
-            hoeffding_bound = self.compute_hoeffding_bound(
-                split_criterion.get_range_of_merit(node.get_observed_class_distribution()),
-                                                   self.split_confidence, node.get_weight_seen()
-            )
+            hoeffding_bound = self._hoeffding_bound(
+                split_criterion.get_range_of_merit(node.stats), self.split_confidence,
+                node.total_weight)
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
             if best_suggestion.merit > 0.0 and \
                     (second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
                         or hoeffding_bound < self.tie_threshold):
                 should_split = True
-            if self.remove_poor_atts is not None and self.remove_poor_atts:
+            if self.remove_poor_atts:
                 poor_atts = set()
-                # Scan 1 - add any poor attribute to set
+                best_ratio = second_best_suggestion.merit / best_suggestion.merit
+
+                # Add any poor attribute to set
                 for i in range(len(best_split_suggestions)):
-                    if best_split_suggestions[i] is not None:
+                    if best_split_suggestions[i].split_test is not None:
                         split_atts = best_split_suggestions[i].split_test.\
                             get_atts_test_depends_on()
                         if len(split_atts) == 1:
-                            if best_suggestion.merit - best_split_suggestions[i].merit > \
-                                    hoeffding_bound:
+                            if (best_split_suggestions[i].merit / best_suggestion.merit
+                                    < best_ratio - 2 * hoeffding_bound):
                                 poor_atts.add(int(split_atts[0]))
-                # Scan 2 - remove good attributes from set
-                for i in range(len(best_split_suggestions)):
-                    if best_split_suggestions[i] is not None:
-                        split_atts = best_split_suggestions[i].\
-                            split_test.get_atts_test_depends_on()
-                        if len(split_atts) == 1:
-                            if best_suggestion.merit - best_split_suggestions[i].merit < \
-                                    hoeffding_bound:
-                                poor_atts.remove(int(split_atts[0]))
                 for poor_att in poor_atts:
                     node.disable_attribute(poor_att)
         if should_split:
@@ -541,12 +491,10 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                 # Preprune - null wins
                 self._deactivate_learning_node(node, parent, parent_idx)
             else:
-                new_split = self.new_split_node(split_decision.split_test,
-                                                node.get_observed_class_distribution())
+                new_split = self._new_split_node(split_decision.split_test, node.stats)
                 for i in range(split_decision.num_splits()):
                     new_child = self._new_learning_node(
-                        split_decision.resulting_class_distribution_from_split(i), node
-                    )
+                        split_decision.resulting_stats_from_split(i), node)
                     new_split.set_child(i, new_child)
                 self._active_leaf_node_cnt -= 1
                 self._decision_node_cnt += 1
@@ -556,7 +504,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                 else:
                     parent.set_child(parent_idx, new_split)
             # Manage memory
-            self.enforce_tracker_limit()
+            self._enforce_tracker_limit()
         elif len(best_split_suggestions) >= 2 and best_split_suggestions[-1].merit > 0 and \
                 best_split_suggestions[-2].merit > 0:
             last_check_ratio = best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
@@ -569,13 +517,13 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
         learning_nodes.sort(key=lambda n: n.depth, reverse=True)
         return learning_nodes
 
-    def _activate_learning_node(self, to_activate: InactiveLearningNode, parent: SplitNode,
+    def _activate_learning_node(self, to_activate: InactiveLeaf, parent: SplitNode,
                                 parent_branch: int):
         """ Activate a learning node.
 
         Parameters
         ----------
-        to_activate: InactiveLearningNode
+        to_activate: InactiveLeaf
             The node to activate.
         parent: SplitNode
             The node's parent.
@@ -584,7 +532,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
 
         """
         new_leaf = self._new_learning_node(
-            to_activate.get_observed_class_distribution(), to_activate
+            to_activate.stats, to_activate
         )
         if parent is None:
             self._tree_root = new_leaf
@@ -593,13 +541,13 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
         self._active_leaf_node_cnt += 1
         self._inactive_leaf_node_cnt -= 1
 
-    def _deactivate_learning_node(self, to_deactivate: ActiveLearningNode,
+    def _deactivate_learning_node(self, to_deactivate: ActiveLeaf,
                                   parent: SplitNode, parent_branch: int):
         """Deactivate a learning node.
 
         Parameters
         ----------
-        to_deactivate: ActiveLearningNode
+        to_deactivate: ActiveLeaf
             The node to deactivate.
         parent: SplitNode
             The node's parent.
@@ -607,9 +555,9 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
             Parent node's branch index.
 
         """
-        new_leaf = self._new_learning_node(
-            to_deactivate.get_observed_class_distribution(), to_deactivate, is_active_node=False
-        )
+        new_leaf = self._new_learning_node(to_deactivate.stats,
+                                           to_deactivate,
+                                           is_active=False)
 
         if parent is None:
             self._tree_root = new_leaf

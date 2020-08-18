@@ -4,13 +4,13 @@ from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
 
 class DDM(BaseDriftDetector):
-    """ Drift Detection Method.
-    
+    r""" Drift Detection Method.
+
     Parameters
     ----------
     min_num_instances: int (default=30)
-        The minimum required number of analyzed samples so change can be 
-        detected. This is used to avoid false detections during the early 
+        The minimum required number of analyzed samples so change can be
+        detected. This is used to avoid false detections during the early
         moments of the detector, when the weight of one sample is important.
 
     warning_level: float (default=2.0)
@@ -61,7 +61,7 @@ class DDM(BaseDriftDetector):
     >>> ddm = DDM()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Changing the data concept from index 999 to 1500, simulating an 
+    >>> # Changing the data concept from index 999 to 1500, simulating an
     >>> # increase in error rate
     >>> for i in range(999, 1500):
     ...     data_stream[i] = 0
@@ -69,9 +69,11 @@ class DDM(BaseDriftDetector):
     >>> for i in range(2000):
     ...     ddm.add_element(data_stream[i])
     ...     if ddm.detected_warning_zone():
-    ...         print('Warning zone has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    ...         print("Warning zone has been detected in data: {} "
+    ...               "- of index: {}".format(data_stream[i],i))
     ...     if ddm.detected_change():
-    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    ...         print("Change has been detected in data: {} "
+    ...               "- of index: {}".format(data_stream[i],i))
 
     """
 
@@ -104,20 +106,20 @@ class DDM(BaseDriftDetector):
 
     def add_element(self, prediction):
         """ Add a new element to the statistics
-        
+
         Parameters
         ----------
         prediction: int (either 0 or 1)
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
-        
+
         Notes
         -----
-        After calling this method, to verify if change was detected or if  
-        the learner is in the warning zone, one should call the super method 
+        After calling this method, to verify if change was detected or if
+        the learner is in the warning zone, one should call the super method
         detected_change, which returns True if concept drift was detected and
         False otherwise.
-        
+
         """
         if self.in_concept_change:
             self.reset()
@@ -139,10 +141,12 @@ class DDM(BaseDriftDetector):
             self.miss_sd_min = self.miss_std
             self.miss_prob_sd_min = self.miss_prob + self.miss_std
 
-        if self.miss_prob + self.miss_std > self.miss_prob_min + self.out_control_level * self.miss_sd_min:
+        if self.miss_prob + self.miss_std > self.miss_prob_min + self.out_control_level \
+                * self.miss_sd_min:
             self.in_concept_change = True
 
-        elif self.miss_prob + self.miss_std > self.miss_prob_min + self.warning_level * self.miss_sd_min:
+        elif self.miss_prob + self.miss_std > self.miss_prob_min + self.warning_level \
+                * self.miss_sd_min:
             self.in_warning_zone = True
 
         else:

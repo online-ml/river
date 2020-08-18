@@ -1,6 +1,6 @@
 import numpy as np
 
-from skmultiflow.trees.split_criterion import SplitCriterion
+from skmultiflow.trees._split_criterion import SplitCriterion
 
 
 class InfoGainExpandCriterion(SplitCriterion):

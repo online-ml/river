@@ -10,10 +10,10 @@ from skmultiflow.rules.hellinger_distance_criterion import HellingerDistanceCrit
 from skmultiflow.rules.info_gain_rule_criterion import InfoGainExpandCriterion
 from skmultiflow.rules.nominal_attribute_class_observer import NominalAttributeClassObserver
 from skmultiflow.rules.numeric_attribute_class_observer import GaussianNumericAttributeClassObserver
-from skmultiflow.trees.attribute_observer import AttributeClassObserverNull
 from skmultiflow.bayes import do_naive_bayes_prediction
 from skmultiflow.utils import get_dimensions, normalize_values_in_dict, \
     calculate_object_size
+from skmultiflow.trees._attribute_observer import AttributeObserverNull
 
 
 _FIRSTHIT = 'first_hit'
@@ -228,7 +228,7 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
                     else:
                         obs = GaussianNumericAttributeClassObserver()
                     self._attribute_observers[i] = obs
-                obs.observe_attribute_class(X[i], int(y), weight)
+                obs.update(X[i], int(y), weight)
 
         def get_weight_seen(self):
             """Calculate the total weight seen by the node.
@@ -298,7 +298,7 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
 
             """
             if att_idx in self._attribute_observers:
-                self._attribute_observers[att_idx] = AttributeClassObserverNull()
+                self._attribute_observers[att_idx] = AttributeObserverNull()
 
         def restart(self):
             """ Restarts the rule with initial values"""
@@ -575,14 +575,14 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
                     self.default_rule.restart()
                     if new_pred.operator in ["=", "<="]:
                         self.rule_set[-1].observed_class_distribution = best_suggestion. \
-                            resulting_class_distribution_from_split(0).copy()
+                            resulting_stats_from_split(0).copy()
                         self.default_rule.observed_class_distribution = best_suggestion. \
-                            resulting_class_distribution_from_split(1).copy()
+                            resulting_stats_from_split(1).copy()
                     else:
                         self.rule_set[-1].observed_class_distribution = best_suggestion. \
-                            resulting_class_distribution_from_split(1).copy()
+                            resulting_stats_from_split(1).copy()
                         self.default_rule.observed_class_distribution = best_suggestion. \
-                            resulting_class_distribution_from_split(0).copy()
+                            resulting_stats_from_split(0).copy()
                 else:
                     self.default_rule.weight_seen_at_last_expand = self.default_rule.get_weight_seen()
             elif self.expand_criterion == _FOILGAIN:
@@ -609,10 +609,10 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
                         self.rule_set[-1].predicate_set.append(new_pred)
                         if new_pred.operator in ["=", "<="]:
                             self.rule_set[-1].observed_class_distribution = best_suggestion. \
-                                resulting_class_distribution_from_split(0).copy()
+                                resulting_stats_from_split(0).copy()
                         else:
                             self.rule_set[-1].observed_class_distribution = best_suggestion. \
-                                resulting_class_distribution_from_split(1).copy()
+                                resulting_stats_from_split(1).copy()
                 if should_expand:
                     self.default_rule.restart()
                 else:
@@ -683,11 +683,11 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
                         if pred.operator == "<=":
                             pred.value = min(pred.value, new_pred.value)
                             rule.observed_class_distribution = best_suggestion. \
-                                resulting_class_distribution_from_split(0).copy()
+                                resulting_stats_from_split(0).copy()
                         elif pred.operator == ">":
                             pred.value = max(pred.value, new_pred.value)
                             rule.observed_class_distribution = best_suggestion. \
-                                resulting_class_distribution_from_split(1).copy()
+                                resulting_stats_from_split(1).copy()
                         rule._attribute_observers = {}
                         add_pred = False
                         break
@@ -698,10 +698,10 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
                     rule.observed_class_distribution = {}
                     if new_pred.operator in ["=", "<="]:
                         rule.observed_class_distribution = best_suggestion. \
-                            resulting_class_distribution_from_split(0).copy()
+                            resulting_stats_from_split(0).copy()
                     else:
                         rule.observed_class_distribution = best_suggestion. \
-                            resulting_class_distribution_from_split(1).copy()
+                            resulting_stats_from_split(1).copy()
 
                     if self.expand_criterion == _FOILGAIN:
                         if not self.ordered_rules:
@@ -761,11 +761,11 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
                                                 if pred.operator == "<=":
                                                     pred.value = min(pred.value, new_pred.value)
                                                     new_rule.observed_class_distribution = best_suggestion. \
-                                                        resulting_class_distribution_from_split(0).copy()
+                                                        resulting_stats_from_split(0).copy()
                                                 elif pred.operator == ">":
                                                     pred.value = max(pred.value, new_pred.value)
                                                     new_rule.observed_class_distribution = best_suggestion. \
-                                                        resulting_class_distribution_from_split(1).copy()
+                                                        resulting_stats_from_split(1).copy()
                                                 new_rule._attribute_observers = {}
                                                 add_pred = False
                                                 break
@@ -775,10 +775,10 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
                                             new_rule.observed_class_distribution = {}
                                             if new_pred.operator in ["=", "<="]:
                                                 new_rule.observed_class_distribution = best_suggestion. \
-                                                    resulting_class_distribution_from_split(0).copy()
+                                                    resulting_stats_from_split(0).copy()
                                             else:
                                                 new_rule.observed_class_distribution = best_suggestion. \
-                                                    resulting_class_distribution_from_split(1).copy()
+                                                    resulting_stats_from_split(1).copy()
                                         self.rule_set.append(copy.deepcopy(new_rule))
 
     def predict(self, X):
