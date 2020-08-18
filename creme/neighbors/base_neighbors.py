@@ -1,9 +1,11 @@
 import itertools
+import typing
 
 import numpy as np
 from scipy.spatial import cKDTree
 
 from creme.utils.skmultiflow_utils import get_dimensions
+from creme import base
 
 
 class KNeighborsBuffer:
@@ -65,14 +67,14 @@ class KNeighborsBuffer:
 
         return self
 
-    def add_one(self, x, y):
+    def append(self, x, y):
         """Add a (single) sample to the sample window.
 
-        x : numpy.ndarray of shape (1, n_features)
+        x : numpy.ndarray of shape (, n_features)
             1D-array of feature for a single sample.
 
-        y : numpy.ndarray of shape (1, n_targets)
-            1D-array of targets for a single sample.
+        y : creme.base.typing.Target
+            The target data for a single sample.
 
         Raises
         ------
@@ -108,20 +110,35 @@ class KNeighborsBuffer:
         else:  # Actual buffer increased
             self._size += 1
 
-    def remove_one(self, rem_oldest=True):
-        """Delete the oldest sample in the window. """
+        return self
+
+    def pop(self) -> typing.Tuple[np.ndarray, base.typing.Target]:
+        """Remove and return the most recent element added to the buffer. """
         if self.size > 0:
-            if rem_oldest:
-                self._imask[self._oldest] = False  # Mark slot as free
-                self._oldest = self._oldest + 1 if self._oldest < self.window_size - 1 else 0
-                if self._oldest == self._next_insert:
-                    # Shifts circular buffer and make its starting point be the index 0
-                    self._oldest = self._next_insert = 0
-            else:  # Remove the most recent element
-                self._next_insert = self._next_insert - 1 if self._next_insert > 0 else \
-                    self.window_size - 1
-                self._imask[self._next_insert] = False  # Mark slot as free
+            self._next_insert = self._next_insert - 1 if self._next_insert > 0 else \
+                self.window_size - 1
+            x, y = self._X[self._next_insert], self._y[self._next_insert]
+            self._imask[self._next_insert] = False  # Mark slot as free
             self._size -= 1
+
+            return x, y
+        else:
+            return None
+
+    def popleft(self) -> typing.Tuple[np.ndarray, base.typing.Target]:
+        """ Remove and return the oldest element in the buffer. """
+        if self.size > 0:
+            x, y = self._X[self._oldest], self._y[self._oldest]
+            self._imask[self._oldest] = False  # Mark slot as free
+            self._oldest = self._oldest + 1 if self._oldest < self.window_size - 1 else 0
+            if self._oldest == self._next_insert:
+                # Shift circular buffer and make its starting point be the index 0
+                self._oldest = self._next_insert = 0
+            self._size -= 1
+
+            return x, y
+        else:
+            return None
 
     def clear(self):
         """Clear all stored elements."""
@@ -165,15 +182,15 @@ class KNeighborsBuffer:
 
 class BaseNeighbors:
     """Base class for neighbors-based estimators. """
-    def __init__(self, n_neighbors=5, max_window_size=1000, leaf_size=30, p=2):
+    def __init__(self, n_neighbors=5, window_size=1000, leaf_size=30, p=2):
         self.n_neighbors = n_neighbors
-        self.max_window_size = max_window_size
+        self.window_size = window_size
         self.leaf_size = leaf_size
         if p < 1:
             raise ValueError('Invalid Minkowski p-norm value: {}.\n'
                              'Values must be greater than or equal to 1'.format(p))
         self.p = p
-        self.data_window = KNeighborsBuffer(window_size=max_window_size)
+        self.data_window = KNeighborsBuffer(window_size=window_size)
 
     def _get_neighbors(self, x):
         X = self.data_window.features_buffer

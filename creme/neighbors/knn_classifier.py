@@ -11,7 +11,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     """ k-Nearest Neighbors classifier.
 
     This non-parametric classification method keeps track of the last
-    `max_window_size` training samples. The predicted class-label for a
+    `window_size` training samples. The predicted class-label for a
     given query sample is obtained in two steps:
 
     1. Find the closest `n_neighbors` to the query sample in the data window.
@@ -23,7 +23,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     n_neighbors : int (default=5)
         The number of nearest neighbors to search for.
 
-    max_window_size : int (default=1000)
+    window_size : int (default=1000)
         The maximum size of the window storing the last observed samples.
 
     leaf_size : int (default=30)
@@ -36,7 +36,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     p : float (default=2)
         p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
         Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid
-        values are in the interval $[1, +\infty)$
+        values are in the interval $[1, +\\infty)$
 
     weighted : bool (default=True)
         Whether to weight the contribution of each neighbor by it's inverse
@@ -70,14 +70,14 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
     """
 
-    def __init__(self, n_neighbors: int = 5, max_window_size: int = 1000, leaf_size: int = 30,
+    def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
                  p: float = 2, weighted: bool = True):
         super().__init__(n_neighbors=n_neighbors,
-                         max_window_size=max_window_size,
+                         window_size=window_size,
                          leaf_size=leaf_size,
                          p=p)
         self.weighted = weighted
-        self.classes = set()
+        self.classes_ = set()
 
     def learn_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
         """Update the model with a set of features `x` and a label `y`.
@@ -99,10 +99,10 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         """
 
-        self.classes.add(y)
+        self.classes_.add(y)
         x_arr = dict2numpy(x)
 
-        self.data_window.add_one(x_arr, y)
+        self.data_window.append(x_arr, y)
 
         return self
 
@@ -117,7 +117,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         """
 
-        proba = {class_idx: 0. for class_idx in self.classes}
+        proba = {class_idx: 0. for class_idx in self.classes_}
         if self.data_window.size == 0:
             # The model is empty, default to None
             return proba
