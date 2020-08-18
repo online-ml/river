@@ -64,7 +64,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    # MAE: 0.441308
+    MAE: 0.441308
 
     """
 
