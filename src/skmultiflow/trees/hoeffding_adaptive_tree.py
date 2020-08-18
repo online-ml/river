@@ -1,18 +1,21 @@
+import numpy as np
+
 from skmultiflow.trees import HoeffdingTreeClassifier
-from skmultiflow.trees.nodes import InactiveLearningNode
-from skmultiflow.trees.nodes import AdaLearningNode
-from skmultiflow.trees.nodes import AdaSplitNode
 from skmultiflow.utils import add_dict_values
 
-import numpy as np
+from ._nodes import InactiveLeaf
+from ._nodes import InactiveLearningNodeMC
+from ._nodes import AdaLearningNode
+from ._nodes import AdaSplitNode
 
 import warnings
 
 
-def HAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, split_criterion='info_gain',
-        split_confidence=0.0000001, tie_threshold=0.05, binary_split=False, stop_mem_management=False,
-        remove_poor_atts=False, no_preprune=False, leaf_prediction='nba', nb_threshold=0, nominal_attributes=None,
-        bootstrap_sampling=True, random_state=None):     # pragma: no cover
+def HAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
+        split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05,
+        binary_split=False, stop_mem_management=False, remove_poor_atts=False, no_preprune=False,
+        leaf_prediction='nba', nb_threshold=0, nominal_attributes=None, bootstrap_sampling=True,
+        random_state=None):     # pragma: no cover
     warnings.warn("'HAT' has been renamed to 'HoeffdingAdaptiveTreeClassifier' in v0.5.0.\n"
                   "The old name will be removed in v0.7.0", category=FutureWarning)
     return HoeffdingAdaptiveTreeClassifier(max_byte_size=max_byte_size,
@@ -94,19 +97,21 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     Notes
     -----
-    The Hoeffding Adaptive Tree [1]_ uses ADWIN [2]_ to monitor performance of branches on the tree and to replace them
-    with new branches when their accuracy decreases if the new branches are more accurate.
+    The Hoeffding Adaptive Tree [1]_ uses ADWIN [2]_ to monitor performance of branches on the tree
+    and to replace them with new branches when their accuracy decreases if the new branches are
+    more accurate.
 
-    The bootstrap sampling strategy is an improvement over the original Hoeffding Adaptive Tree algorithm.
-    It is enabled by default since, in general, it results in better performance.
+    The bootstrap sampling strategy is an improvement over the original Hoeffding Adaptive Tree
+    algorithm. It is enabled by default since, in general, it results in better performance.
 
     References
     ----------
-    .. [1] Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."\
-       In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin, Heidelberg, 2009.
-    .. [2] Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive windowing."\
-       In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial\
-       and Applied Mathematics, 2007.
+    .. [1] Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
+       In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
+       Heidelberg, 2009.
+    .. [2] Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
+       windowing." In Proceedings of the 2007 SIAM international conference on data mining,
+       pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     Examples
     --------
@@ -146,19 +151,19 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                  bootstrap_sampling=True,
                  random_state=None):
 
-        super(HoeffdingAdaptiveTreeClassifier, self).__init__(max_byte_size=max_byte_size,
-                                                              memory_estimate_period=memory_estimate_period,
-                                                              grace_period=grace_period,
-                                                              split_criterion=split_criterion,
-                                                              split_confidence=split_confidence,
-                                                              tie_threshold=tie_threshold,
-                                                              binary_split=binary_split,
-                                                              stop_mem_management=stop_mem_management,
-                                                              remove_poor_atts=remove_poor_atts,
-                                                              no_preprune=no_preprune,
-                                                              leaf_prediction=leaf_prediction,
-                                                              nb_threshold=nb_threshold,
-                                                              nominal_attributes=nominal_attributes)
+        super().__init__(max_byte_size=max_byte_size,
+                         memory_estimate_period=memory_estimate_period,
+                         grace_period=grace_period,
+                         split_criterion=split_criterion,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         binary_split=binary_split,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_atts=remove_poor_atts,
+                         no_preprune=no_preprune,
+                         leaf_prediction=leaf_prediction,
+                         nb_threshold=nb_threshold,
+                         nominal_attributes=nominal_attributes)
         self.alternate_trees_cnt = 0
         self.pruned_alternate_trees_cnt = 0
         self.switch_alternate_trees_cnt = 0
@@ -177,22 +182,23 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._active_leaf_node_cnt = 1
-        if isinstance(self._tree_root, InactiveLearningNode):
-            self._tree_root.learn_from_instance(X, y, sample_weight, self)
+        if isinstance(self._tree_root, InactiveLeaf):
+            self._tree_root.learn_one(X, y, weight=sample_weight, tree=self)
         else:
-            self._tree_root.learn_from_instance(X, y, sample_weight, self, None, -1)
+            self._tree_root.learn_one(X, y, sample_weight, self, None, -1)
 
-    def filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch, update_splitter_counts):
+    def filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch,
+                                  update_splitter_counts):
         nodes = []
         self._tree_root.filter_instance_to_leaves(X, y, weight, split_parent, parent_branch,
                                                   update_splitter_counts, nodes)
         return nodes
 
     # Override HoeffdingTreeClassifier
-    def get_votes_for_instance(self, X):
+    def _get_votes_for_instance(self, X):
         result = {}
         if self._tree_root is not None:
-            if isinstance(self._tree_root, InactiveLearningNode):
+            if isinstance(self._tree_root, InactiveLeaf):
                 found_node = [self._tree_root.filter_instance_to_leaf(X, None, -1)]
             else:
                 found_node = self.filter_instance_to_leaves(X, -np.inf, -np.inf, None, -1, False)
@@ -201,15 +207,18 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                     leaf_node = fn.node
                     if leaf_node is None:
                         leaf_node = fn.parent
-                    dist = leaf_node.get_class_votes(X, self)
+                    dist = leaf_node.predict_one(X, tree=self)
                     # add elements to dictionary
                     result = add_dict_values(result, dist, inplace=True)
         return result
 
     # Override HoeffdingTreeClassifier
-    def _new_learning_node(self, initial_class_observations=None):
-        return AdaLearningNode(initial_class_observations, self.random_state)
+    def _new_learning_node(self, initial_class_observations=None, is_active=True):
+        if is_active:
+            return AdaLearningNode(initial_class_observations, self.random_state)
+        else:
+            return InactiveLearningNodeMC(initial_class_observations)
 
     # Override HoeffdingTreeClassifier
-    def new_split_node(self, split_test, class_observations):
+    def _new_split_node(self, split_test, class_observations):
         return AdaSplitNode(split_test, class_observations, self.random_state)

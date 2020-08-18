@@ -2,6 +2,7 @@ import numpy as np
 from scipy import stats
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
+
 class KSWIN(BaseDriftDetector):
     r""" Kolmogorov-Smirnov Windowing method for concept drift detection.
 
@@ -72,6 +73,7 @@ class KSWIN(BaseDriftDetector):
     >>>             detections.append(i)
     >>> print("Number of detections: "+str(len(detections)))
     """
+
     def __init__(self, alpha=0.005, window_size=100, stat_size=30, data=None):
         super().__init__()
         self.window_size = window_size
@@ -89,7 +91,7 @@ class KSWIN(BaseDriftDetector):
         if self.window_size < self.stat_size:
             raise ValueError("stat_size must be smaller than window_size")
 
-        if type(data) != np.ndarray or type(data) is None:
+        if not isinstance(data, np.ndarray) or data is None:
             self.window = np.array([])
         else:
             self.window = data
@@ -109,20 +111,21 @@ class KSWIN(BaseDriftDetector):
         self.n += 1
         currentLength = self.window.shape[0]
         if currentLength >= self.window_size:
-            self.window = np.delete(self.window,0)
+            self.window = np.delete(self.window, 0)
             rnd_window = np.random.choice(self.window[:-self.stat_size], self.stat_size)
 
-            (st, self.p_value) = stats.ks_2samp(rnd_window, self.window[-self.stat_size:],mode="exact")
+            (st, self.p_value) = stats.ks_2samp(rnd_window,
+                                                self.window[-self.stat_size:], mode="exact")
 
             if self.p_value <= self.alpha and st > 0.1:
                 self.change_detected = True
                 self.window = self.window[-self.stat_size:]
             else:
                 self.change_detected = False
-        else: # Not enough samples in sliding window for a valid test
+        else:  # Not enough samples in sliding window for a valid test
             self.change_detected = False
 
-        self.window = np.concatenate([self.window,[input_value]])
+        self.window = np.concatenate([self.window, [input_value]])
 
     def detected_change(self):
         """ Get detected change

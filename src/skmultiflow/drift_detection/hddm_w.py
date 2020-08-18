@@ -1,4 +1,4 @@
-from math import *
+from math import sqrt, log
 
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
@@ -19,7 +19,8 @@ class HDDM_W(BaseDriftDetector):
         The weight given to recent data. Smaller values mean less weight given to recent data.
 
     two_side_option : bool (default=True)
-        Option to monitor error increments and decrements (two-sided) or only increments (one-sided)
+        Option to monitor error increments and decrements (two-sided) or only increments
+        (one-sided)
 
     Notes
     -----
@@ -54,10 +55,11 @@ class HDDM_W(BaseDriftDetector):
     >>> for i in range(2000):
     ...     hddm_w.add_element(data_stream[i])
     ...     if hddm_w.detected_warning_zone():
-    ...         print('Warning zone has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    ...         print("Warning zone has been detected in data: {} - of index: {}"
+    ...             .format(data_stream[i], i))
     ...     if hddm_w.detected_change():
-    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
-
+    ...         print("Change has been detected in data: {} - of index: {}"
+    ...                 .format(data_stream[i], i))
     """
 
     class SampleInfo:
@@ -65,7 +67,12 @@ class HDDM_W(BaseDriftDetector):
             self.EWMA_estimator = -1.0
             self.independent_bounded_condition_sum = None
 
-    def __init__(self, drift_confidence=0.001, warning_confidence=0.005, lambda_option=0.050, two_side_option=True):
+    def __init__(
+            self,
+            drift_confidence=0.001,
+            warning_confidence=0.005,
+            lambda_option=0.050,
+            two_side_option=True):
         super().__init__()
         super().reset()
         self.total = self.SampleInfo()
@@ -105,7 +112,8 @@ class HDDM_W(BaseDriftDetector):
             self.total.EWMA_estimator = prediction
             self.total.independent_bounded_condition_sum = 1
         else:
-            self.total.EWMA_estimator = self.lambda_option * prediction + aux_decay_rate * self.total.EWMA_estimator
+            self.total.EWMA_estimator = self.lambda_option * \
+                                        prediction + aux_decay_rate * self.total.EWMA_estimator
             self.total.independent_bounded_condition_sum = \
                 self.lambda_option * self.lambda_option \
                 + aux_decay_rate * aux_decay_rate * self.total.independent_bounded_condition_sum
@@ -131,16 +139,22 @@ class HDDM_W(BaseDriftDetector):
     def _detect_mean_increment(self, sample1, sample2, confidence):
         if sample1.EWMA_estimator < 0 or sample2.EWMA_estimator < 0:
             return False
-
-        bound = sqrt((sample1.independent_bounded_condition_sum
-                      + sample2.independent_bounded_condition_sum) * log(1 / confidence) / 2)
+        ibc_sum = sample1.independent_bounded_condition_sum \
+            + sample2.independent_bounded_condition_sum
+        bound = sqrt(ibc_sum * log(1 / confidence) / 2)
         return sample2.EWMA_estimator - sample1.EWMA_estimator > bound
 
     def _monitor_mean_incr(self, confidence):
-        return self._detect_mean_increment(self.sample1_incr_monitor, self.sample2_incr_monitor, confidence)
+        return self._detect_mean_increment(
+            self.sample1_incr_monitor,
+            self.sample2_incr_monitor,
+            confidence)
 
     def _monitor_mean_decr(self, confidence):
-        return self._detect_mean_increment(self.sample2_decr_monitor, self.sample1_decr_monitor, confidence)
+        return self._detect_mean_increment(
+            self.sample2_decr_monitor,
+            self.sample1_decr_monitor,
+            confidence)
 
     def _update_incr_statistics(self, value, confidence):
         aux_decay = 1.0 - self.lambda_option
@@ -149,7 +163,8 @@ class HDDM_W(BaseDriftDetector):
         if self.total.EWMA_estimator + bound < self.incr_cutpoint:
             self.incr_cutpoint = self.total.EWMA_estimator + bound
             self.sample1_incr_monitor.EWMA_estimator = self.total.EWMA_estimator
-            self.sample1_incr_monitor.independent_bounded_condition_sum = self.total.independent_bounded_condition_sum
+            self.sample1_incr_monitor.independent_bounded_condition_sum = \
+                self.total.independent_bounded_condition_sum
             self.sample2_incr_monitor = self.SampleInfo()
             self.delay = 0
         else:
@@ -158,11 +173,13 @@ class HDDM_W(BaseDriftDetector):
                 self.sample2_incr_monitor.EWMA_estimator = value
                 self.sample2_incr_monitor.independent_bounded_condition_sum = 1
             else:
-                self.sample2_incr_monitor.EWMA_estimator = \
-                    self.lambda_option * value + aux_decay * self.sample2_incr_monitor.EWMA_estimator
+                self.sample2_incr_monitor.EWMA_estimator = self.lambda_option * \
+                                                           value + aux_decay * \
+                                                           self.sample2_incr_monitor.EWMA_estimator
                 self.sample2_incr_monitor.independent_bounded_condition_sum = \
                     self.lambda_option * self.lambda_option + \
-                    aux_decay * aux_decay * self.sample2_incr_monitor.independent_bounded_condition_sum
+                    aux_decay * aux_decay * \
+                    self.sample2_incr_monitor.independent_bounded_condition_sum
 
     def _update_decr_statistics(self, value, confidence):
         aux_decay = 1.0 - self.lambda_option
@@ -171,7 +188,8 @@ class HDDM_W(BaseDriftDetector):
         if self.total.EWMA_estimator - epsilon > self.decr_cutpoint:
             self.decr_cutpoint = self.total.EWMA_estimator - epsilon
             self.sample1_decr_monitor.EWMA_estimator = self.total.EWMA_estimator
-            self.sample1_decr_monitor.independent_bounded_condition_sum = self.total.independent_bounded_condition_sum
+            self.sample1_decr_monitor.independent_bounded_condition_sum = \
+                self.total.independent_bounded_condition_sum
             self.sample2_decr_monitor = self.SampleInfo()
         else:
             if self.sample2_decr_monitor.EWMA_estimator < 0:
@@ -179,10 +197,12 @@ class HDDM_W(BaseDriftDetector):
                 self.sample2_decr_monitor.independent_bounded_condition_sum = 1
             else:
                 self.sample2_decr_monitor.EWMA_estimator = \
-                    self.lambda_option * value + aux_decay * self.sample2_decr_monitor.EWMA_estimator
+                    self.lambda_option * value + aux_decay * \
+                    self.sample2_decr_monitor.EWMA_estimator
                 self.sample2_decr_monitor.independent_bounded_condition_sum = \
                     self.lambda_option * self.lambda_option \
-                    + aux_decay * aux_decay * self.sample2_decr_monitor.independent_bounded_condition_sum
+                    + aux_decay * aux_decay \
+                    * self.sample2_decr_monitor.independent_bounded_condition_sum
 
     def reset(self):
         """ reset
@@ -200,4 +220,3 @@ class HDDM_W(BaseDriftDetector):
         self.decr_cutpoint = float("inf")
         self.width = 0
         self.delay = 0
-

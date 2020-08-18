@@ -6,18 +6,18 @@ class PageHinkley(BaseDriftDetector):
 
     Notes
     -----
-    This change detection method works by computing the observed 
+    This change detection method works by computing the observed
     values and their mean up to the current moment. Page-Hinkley
-    won't output warning zone warnings, only change detections. 
+    won't output warning zone warnings, only change detections.
     The method works by means of the Page-Hinkley test [1]_. In general
-    lines it will detect a concept drift if the observed mean at 
+    lines it will detect a concept drift if the observed mean at
     some instant is greater then a threshold value lambda.
 
     References
     ----------
     .. [1] E. S. Page. 1954. Continuous Inspection Schemes.
        Biometrika 41, 1/2 (1954), 100–115.
-    
+
     Parameters
     ----------
     min_instances: int (default=30)
@@ -27,9 +27,9 @@ class PageHinkley(BaseDriftDetector):
     threshold: int (default=50)
         The change detection threshold (lambda).
     alpha: float (default=1 - 0.0001)
-        The forgetting factor, used to weight the observed value 
+        The forgetting factor, used to weight the observed value
         and the mean.
-    
+
     Examples
     --------
     >>> # Imports
@@ -45,9 +45,11 @@ class PageHinkley(BaseDriftDetector):
     >>> for i in range(2000):
     ...     ph.add_element(data_stream[i])
     ...     if ph.detected_change():
-    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
-    
+    ...         print("Change has been detected in data: {} - of index: {}"
+    ...                 .format(data_stream[i],i))
+
     """
+
     def __init__(self, min_instances=30, delta=0.005, threshold=50, alpha=1 - 0.0001):
         super().__init__()
         self.min_instances = min_instances
@@ -72,19 +74,19 @@ class PageHinkley(BaseDriftDetector):
 
     def add_element(self, x):
         """ Add a new element to the statistics
-        
+
         Parameters
         ----------
         x: numeric value
             The observed value, from which we want to detect the
             concept change.
-        
+
         Notes
         -----
-        After calling this method, to verify if change was detected, one 
-        should call the super method detected_change, which returns True 
+        After calling this method, to verify if change was detected, one
+        should call the super method detected_change, which returns True
         if concept drift was detected and False otherwise.
-        
+
         """
         if self.in_concept_change:
             self.reset()

@@ -5,10 +5,10 @@ def configuration(parent_package="", top_path=None):
     config = Configuration('trees', parent_package, top_path)
 
     # submodules which do not have their own setup.py
-    config.add_subpackage('attribute_observer')
-    config.add_subpackage('attribute_test')
-    config.add_subpackage('nodes')
-    config.add_subpackage('split_criterion')
+    config.add_subpackage('_attribute_observer')
+    config.add_subpackage('_attribute_test')
+    config.add_subpackage('_nodes')
+    config.add_subpackage('_split_criterion')
 
     return config
 

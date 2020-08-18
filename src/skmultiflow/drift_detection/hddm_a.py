@@ -1,4 +1,4 @@
-from math import *
+from math import log, sqrt
 
 from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
 
@@ -16,7 +16,8 @@ class HDDM_A(BaseDriftDetector):
         Confidence to the warning
 
     two_side_option : bool (default=True)
-        Option to monitor error increments and decrements (two-sided) or only increments (one-sided)
+        Option to monitor error increments and decrements (two-sided) or only increments
+        (one-sided)
 
     Notes
     -----
@@ -51,9 +52,11 @@ class HDDM_A(BaseDriftDetector):
     >>> for i in range(2000):
     ...     hddm_a.add_element(data_stream[i])
     ...     if hddm_a.detected_warning_zone():
-    ...         print('Warning zone has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    ...         print("Warning zone has been detected in data: {} - of index: {}"
+    ...                .format(data_stream[i], i))
     ...     if hddm_a.detected_change():
-    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    ...         print("Change has been detected in data: {} - of index: {}"
+    ...                .format(data_stream[i], i))
 
     """
 
@@ -102,7 +105,7 @@ class HDDM_A(BaseDriftDetector):
         cota = sqrt(1.0 / (2 * self.n_min) * log(1.0 / self.drift_confidence))
         cota1 = sqrt(1.0 / (2 * self.total_n) * log(1.0 / self.drift_confidence))
 
-        if self.c_min / self.n_min + cota >= self.total_c / self.total_n + cota1 :
+        if self.c_min / self.n_min + cota >= self.total_c / self.total_n + cota1:
             self.c_min = self.total_c
             self.n_min = self.total_n
 
@@ -111,21 +114,28 @@ class HDDM_A(BaseDriftDetector):
             self.c_max = self.total_c
             self.n_max = self.total_n
 
-        if self._mean_incr(self.c_min, self.n_min, self.total_c, self.total_n, self.drift_confidence):
+        if self._mean_incr(
+                self.c_min,
+                self.n_min,
+                self.total_c,
+                self.total_n,
+                self.drift_confidence):
             self.n_estimation = self.total_n - self.n_min
             self.c_estimation = self.total_c - self.c_min
             self.n_min = self.n_max = self.total_n = 0
             self.c_min = self.c_max = self.total_c = 0
             self.in_concept_change = True
             self.in_warning_zone = False
-        elif self._mean_incr(self.c_min, self.n_min, self.total_c, self.total_n, self.warning_confidence):
+        elif self._mean_incr(self.c_min, self.n_min, self.total_c, self.total_n,
+                             self.warning_confidence):
             self.in_concept_change = False
             self.in_warning_zone = True
         else:
             self.in_concept_change = False
             self.in_warning_zone = False
 
-        if self.two_side_option and self._mean_decr(self.c_max, self.n_max, self.total_c, self.total_n) :
+        if self.two_side_option and self._mean_decr(
+                self.c_max, self.n_max, self.total_c, self.total_n):
             self.n_estimation = self.total_n - self.n_max
             self.c_estimation = self.total_c - self.c_max
             self.n_min = self.n_max = self.total_n = 0
