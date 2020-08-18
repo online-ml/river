@@ -1,9 +1,9 @@
 import numpy as np
 
-from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
+from creme.drift.base import DriftDetector
 
 
-class DDM(BaseDriftDetector):
+class DDM(DriftDetector):
     r""" Drift Detection Method.
 
     Parameters
@@ -57,7 +57,7 @@ class DDM(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.drift_detection import DDM
+    >>> from creme.drift import DDM
     >>> ddm = DDM()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -88,6 +88,8 @@ class DDM(BaseDriftDetector):
         self.min_instances = min_num_instances
         self.warning_level = warning_level
         self.out_control_level = out_control_level
+        self.estimation = None
+        self.delay = None
         self.reset()
 
     def reset(self):
@@ -121,7 +123,7 @@ class DDM(BaseDriftDetector):
         False otherwise.
 
         """
-        if self.in_concept_change:
+        if self._in_concept_change:
             self.reset()
 
         self.miss_prob = self.miss_prob + (prediction - self.miss_prob) / float(self.sample_count)
@@ -129,8 +131,8 @@ class DDM(BaseDriftDetector):
         self.sample_count += 1
 
         self.estimation = self.miss_prob
-        self.in_concept_change = False
-        self.in_warning_zone = False
+        self._in_concept_change = False
+        self._in_warning_zone = False
         self.delay = 0
 
         if self.sample_count < self.min_instances:
@@ -143,11 +145,13 @@ class DDM(BaseDriftDetector):
 
         if self.miss_prob + self.miss_std > self.miss_prob_min + self.out_control_level \
                 * self.miss_sd_min:
-            self.in_concept_change = True
+            self._in_concept_change = True
 
         elif self.miss_prob + self.miss_std > self.miss_prob_min + self.warning_level \
                 * self.miss_sd_min:
-            self.in_warning_zone = True
+            self._in_warning_zone = True
 
         else:
-            self.in_warning_zone = False
+            self._in_warning_zone = False
+
+        return self._in_concept_change

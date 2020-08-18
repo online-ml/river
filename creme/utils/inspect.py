@@ -7,6 +7,7 @@ thus provides utilities for determining an arbitrary model's type.
 
 """
 from creme import base
+from creme.drift.base import DriftDetector
 from creme import compose
 
 
@@ -18,7 +19,8 @@ __all__ = [
     'isclassifier',
     'isregressor',
     'ismoclassifier',
-    'ismoregressor'
+    'ismoregressor',
+    'isdriftdetector'
 ]
 
 
@@ -53,3 +55,7 @@ def istransformer(model):
 
 def ismoregressor(model):
     return isinstance(extract_relevant(model), base.MultiOutputRegressor)
+
+
+def isdriftdetector(model):
+    return isinstance(extract_relevant(model), DriftDetector)

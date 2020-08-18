@@ -1,5 +1,5 @@
 import numpy as np
-from skmultiflow.drift_detection.hddm_w import HDDM_W
+from creme.drift.hddm_w import HDDM_W
 
 
 def test_hddm_w():

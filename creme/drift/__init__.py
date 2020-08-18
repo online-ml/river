@@ -1,5 +1,5 @@
 """
-The :mod:`skmultiflow.drift_detection` module includes methods for Concept Drift Detection.
+Concept Drift Detection.
 """
 
 from .adwin import ADWIN

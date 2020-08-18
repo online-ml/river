@@ -1,9 +1,9 @@
 from math import log, sqrt
 
-from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
+from creme.drift.base import DriftDetector
 
 
-class HDDM_A(BaseDriftDetector):
+class HDDM_A(DriftDetector):
     """
     Drift Detection Method based on Hoeffding’s bounds with moving average-test.
 
@@ -40,7 +40,7 @@ class HDDM_A(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.drift_detection.hddm_a import HDDM_A
+    >>> from creme.drift import HDDM_A
     >>> hddm_a = HDDM_A()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -71,6 +71,8 @@ class HDDM_A(BaseDriftDetector):
         self.c_max = 0
         self.n_estimation = 0
         self.c_estimation = 0
+        self.estimation = None
+        self.delay = None
 
         self.drift_confidence = drift_confidence
         self.warning_confidence = warning_confidence
@@ -124,15 +126,15 @@ class HDDM_A(BaseDriftDetector):
             self.c_estimation = self.total_c - self.c_min
             self.n_min = self.n_max = self.total_n = 0
             self.c_min = self.c_max = self.total_c = 0
-            self.in_concept_change = True
-            self.in_warning_zone = False
+            self._in_concept_change = True
+            self._in_warning_zone = False
         elif self._mean_incr(self.c_min, self.n_min, self.total_c, self.total_n,
                              self.warning_confidence):
-            self.in_concept_change = False
-            self.in_warning_zone = True
+            self._in_concept_change = False
+            self._in_warning_zone = True
         else:
-            self.in_concept_change = False
-            self.in_warning_zone = False
+            self._in_concept_change = False
+            self._in_warning_zone = False
 
         if self.two_side_option and self._mean_decr(
                 self.c_max, self.n_max, self.total_c, self.total_n):
@@ -143,7 +145,10 @@ class HDDM_A(BaseDriftDetector):
 
         self._update_estimations()
 
-    def _mean_incr(self, c_min, n_min, total_c, total_n, confidence):
+        return self._in_concept_change
+
+    @staticmethod
+    def _mean_incr(c_min, n_min, total_c, total_n, confidence):
         if n_min == total_n:
             return False
 

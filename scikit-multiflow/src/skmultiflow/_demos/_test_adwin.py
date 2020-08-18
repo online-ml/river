@@ -1,5 +1,5 @@
 import numpy as np
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 
 
 def demo():

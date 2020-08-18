@@ -1,6 +1,6 @@
 import numpy as np
 
-from skmultiflow.drift_detection.eddm import EDDM
+from creme.drift.eddm import EDDM
 
 
 def test_eddm():

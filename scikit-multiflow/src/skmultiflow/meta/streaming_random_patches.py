@@ -7,9 +7,9 @@ import numpy as np
 from sklearn.preprocessing import normalize
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, clone
-from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
+from creme.drift.base import DriftDetector
 from skmultiflow.trees import HoeffdingTreeClassifier
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 from skmultiflow.utils import check_random_state, get_dimensions
 from skmultiflow.metrics import ClassificationPerformanceEvaluator
 

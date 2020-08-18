@@ -1,9 +1,9 @@
 from math import sqrt, log
 
-from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
+from creme.drift.base import DriftDetector
 
 
-class HDDM_W(BaseDriftDetector):
+class HDDM_W(DriftDetector):
     """
     Drift Detection Method based on Hoeffding’s bounds with moving weighted average-test.
 
@@ -43,7 +43,7 @@ class HDDM_W(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.drift_detection.hddm_w import HDDM_W
+    >>> from creme.drift import HDDM_W
     >>> hddm_w = HDDM_W()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -88,6 +88,7 @@ class HDDM_W(BaseDriftDetector):
         self.warning_confidence = warning_confidence
         self.lambda_option = lambda_option
         self.two_side_option = two_side_option
+        self.estimation = None
 
     def add_element(self, prediction):
         """ Add a new element to the statistics
@@ -121,22 +122,25 @@ class HDDM_W(BaseDriftDetector):
         self._update_incr_statistics(prediction, self.drift_confidence)
         if self._monitor_mean_incr(self.drift_confidence):
             self.reset()
-            self.in_concept_change = True
-            self.in_warning_zone = False
+            self._in_concept_change = True
+            self._in_warning_zone = False
             return
         elif self._monitor_mean_incr(self.warning_confidence):
-            self.in_concept_change = False
-            self.in_warning_zone = True
+            self._in_concept_change = False
+            self._in_warning_zone = True
         else:
-            self.in_concept_change = False
-            self.in_warning_zone = False
+            self._in_concept_change = False
+            self._in_warning_zone = False
 
         self._update_decr_statistics(prediction, self.drift_confidence)
         if self.two_side_option and self._monitor_mean_decr(self.drift_confidence):
             self.reset()
         self.estimation = self.total.EWMA_estimator
 
-    def _detect_mean_increment(self, sample1, sample2, confidence):
+        return self._in_concept_change
+
+    @staticmethod
+    def _detect_mean_increment(sample1, sample2, confidence):
         if sample1.EWMA_estimator < 0 or sample2.EWMA_estimator < 0:
             return False
         ibc_sum = sample1.independent_bounded_condition_sum \

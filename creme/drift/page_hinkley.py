@@ -1,7 +1,7 @@
-from skmultiflow.drift_detection.base_drift_detector import BaseDriftDetector
+from creme.drift.base import DriftDetector
 
 
-class PageHinkley(BaseDriftDetector):
+class PageHinkley(DriftDetector):
     """ Page-Hinkley method for concept drift detection.
 
     Notes
@@ -34,7 +34,7 @@ class PageHinkley(BaseDriftDetector):
     --------
     >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.drift_detection import PageHinkley
+    >>> from creme.drift import PageHinkley
     >>> ph = PageHinkley()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
@@ -88,7 +88,7 @@ class PageHinkley(BaseDriftDetector):
         if concept drift was detected and False otherwise.
 
         """
-        if self.in_concept_change:
+        if self._in_concept_change:
             self.reset()
 
         self.x_mean = self.x_mean + (x - self.x_mean) / float(self.sample_count)
@@ -96,14 +96,12 @@ class PageHinkley(BaseDriftDetector):
 
         self.sample_count += 1
 
-        self.estimation = self.x_mean
-        self.in_concept_change = False
-        self.in_warning_zone = False
-
-        self.delay = 0
+        self._in_concept_change = False
 
         if self.sample_count < self.min_instances:
             return None
 
         if self.sum > self.threshold:
-            self.in_concept_change = True
+            self._in_concept_change = True
+
+        return self._in_concept_change
