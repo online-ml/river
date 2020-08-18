@@ -21,8 +21,8 @@ class EDDM(BaseDriftDetector):
     The algorithm works similarly to the DDM algorithm, by keeping
     track of statistics only. It works with the running average
     distance (:math:`p_i^'`) and the running standard deviation (:math:`s_i^'`), as
-    well as :math:`p^'_{max}` and :math:`s^'_{max}`, which are the values of :math:`p_i^'` and :math:`s_i^'`
-    when :math:`(p_i^' + 2 * s_i^')` reaches its maximum.
+    well as :math:`p^'_{max}` and :math:`s^'_{max}`, which are the values of :math:`p_i^'`
+    and :math:`s_i^'` when :math:`(p_i^' + 2 * s_i^')` reaches its maximum.
 
     Like DDM, there are two threshold values that define the
     borderline between no change, warning zone, and drift detected.
@@ -47,7 +47,7 @@ class EDDM(BaseDriftDetector):
     >>> eddm = EDDM()
     >>> # Simulating a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Changing the data concept from index 999 to 1500, simulating an 
+    >>> # Changing the data concept from index 999 to 1500, simulating an
     >>> # increase in error rate
     >>> for i in range(999, 1500):
     ...     data_stream[i] = 0
@@ -55,10 +55,11 @@ class EDDM(BaseDriftDetector):
     >>> for i in range(2000):
     ...     eddm.add_element(data_stream[i])
     ...     if eddm.detected_warning_zone():
-    ...         print('Warning zone has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
+    ...         print("Warning zone has been detected in data: {}"
+    ...               " - of index: {}".format(data_stream[i], i))
     ...     if eddm.detected_change():
-    ...         print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
-
+    ...         print("Change has been detected in data: {}"
+    ...               " - of index: {}".format(data_stream[i], i))
     """
     FDDM_OUTCONTROL = 0.9
     FDDM_WARNING = 0.95
@@ -95,25 +96,25 @@ class EDDM(BaseDriftDetector):
 
     def add_element(self, prediction):
         """ Add a new element to the statistics
-        
+
         Parameters
         ----------
         prediction: int (either 0 or 1)
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
-        
+
         Returns
         -------
         EDDM
             self
-        
+
         Notes
         -----
-        After calling this method, to verify if change was detected or if  
-        the learner is in the warning zone, one should call the super method 
+        After calling this method, to verify if change was detected or if
+        the learner is in the warning zone, one should call the super method
         detected_change, which returns True if concept drift was detected and
         False otherwise.
-         
+
         """
 
         if self.in_concept_change:
@@ -134,7 +135,7 @@ class EDDM(BaseDriftDetector):
             self.m_mean = self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
             self.estimation = self.m_mean
             self.m_std_temp = self.m_std_temp + (distance - self.m_mean) * (distance - old_mean)
-            std = np.sqrt(self.m_std_temp/self.m_num_errors)
+            std = np.sqrt(self.m_std_temp / self.m_num_errors)
             m2s = self.m_mean + 2 * std
 
             if self.m_n < self.FDDM_MIN_NUM_INSTANCES:

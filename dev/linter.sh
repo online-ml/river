@@ -9,4 +9,5 @@ python3 -m flake8 \
   src/skmultiflow/anomaly_detection \
   src/skmultiflow/bayes \
   src/skmultiflow/core \
-  src/skmultiflow/data
+  src/skmultiflow/data \
+  src/skmultiflow/drift_detection

@@ -9,5 +9,5 @@ class AttributeExpandSuggestion(object):
     def num_splits(self):
         return len(self.resulting_class_distributions)
 
-    def resulting_class_distribution_from_split(self, split_idx):
+    def resulting_stats_from_split(self, split_idx):
         return self.resulting_class_distributions[split_idx]

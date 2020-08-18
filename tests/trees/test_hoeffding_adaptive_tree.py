@@ -48,7 +48,7 @@ def test_hoeffding_adaptive_tree_mc(test_path):
 
     assert info == expected_info
 
-    expected_model_1 = 'Leaf = Class 1.0 | {0.0: 398.0, 1.0: 1000.0}\n'
+    expected_model_1 = 'Leaf = Class 1 | {0: 398.0, 1: 1000.0}\n'
 
     assert (learner.get_model_description() == expected_model_1)
 
@@ -172,7 +172,7 @@ def test_hoeffding_adaptive_tree_categorical_features(test_path):
                            "if Attribute 0 = 3.0:\n" \
                            "  Leaf = Class 1 | {0: 244.0, 1: 644.0}\n" \
                            "if Attribute 0 = -30.0:\n" \
-                           "  Leaf = Class 3.0 | {3.0: 65.0, 4.0: 55.0}\n"
+                           "  Leaf = Class 3 | {3: 65.0, 4: 55.0}\n"
 
     assert learner.get_model_description() == expected_description
 
