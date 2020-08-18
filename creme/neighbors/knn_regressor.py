@@ -10,7 +10,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     """k-Nearest Neighbors regressor.
 
     This non-parametric regression method keeps track of the last
-    `max_window_size` training samples. Predictions are obtained by
+    `window_size` training samples. Predictions are obtained by
     aggregating the values of the closest n_neighbors stored-samples with
     respect to a query sample.
 
@@ -19,7 +19,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     n_neighbors : int (default=5)
         The number of nearest neighbors to search for.
 
-    max_window_size : int (default=1000)
+    window_size : int (default=1000)
         The maximum size of the window storing the last observed samples.
 
     leaf_size : int (default=30)
@@ -32,7 +32,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     p : float (default=2)
         p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
         Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid
-        values are in the interval $[1, +\infty)$
+        values are in the interval $[1, +\\infty)$
 
     aggregation_method : str (default='mean')
             | The method to aggregate the target values of neighbors.
@@ -58,7 +58,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
     >>> model = (
     ...  preprocessing.StandardScaler() |
-    ...  neighbors.KNNRegressor(max_window_size=50)
+    ...  neighbors.KNNRegressor(window_size=50)
     ... )
 
     >>> metric = metrics.MAE()
@@ -72,11 +72,11 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     _MEDIAN = 'median'
     _WEIGHTED_MEAN = 'weighted_mean'
 
-    def __init__(self, n_neighbors: int = 5, max_window_size: int = 1000, leaf_size: int = 30,
+    def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
                  p: float = 2, aggregation_method: str = 'mean'):
 
         super().__init__(n_neighbors=n_neighbors,
-                         max_window_size=max_window_size,
+                         window_size=window_size,
                          leaf_size=leaf_size,
                          p=p)
         if aggregation_method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
@@ -87,7 +87,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         self.aggregation_method = aggregation_method
 
     def learn_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
-        """Fits to a set of features ``x`` and a real-valued target ``y``.
+        """Fits to a set of features `x` and a real-valued target `y`.
 
         Parameters
         ----------
@@ -102,12 +102,12 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         -----
         For the K-Nearest Neighbors regressor, fitting the model is the
         equivalent of inserting the newer samples in the observed window,
-        and if the `max_window_size` is reached, removing older results.
+        and if the `window_size` is reached, removing older results.
 
         """
 
         x_arr = dict2numpy(x)
-        self.data_window.add_one(x_arr, y)
+        self.data_window.append(x_arr, y)
 
         return self
 
