@@ -1,6 +1,6 @@
 import numpy as np
 
-from creme.drift.base import DriftDetector
+from creme.base import DriftDetector
 
 
 class EDDM(DriftDetector):
@@ -41,25 +41,34 @@ class EDDM(DriftDetector):
 
     Examples
     --------
-    >>> # Imports
     >>> import numpy as np
-    >>> from creme.drift.eddm import EDDM
+    >>> from creme.drift import EDDM
+    >>> np.random.seed(12345)
+
     >>> eddm = EDDM()
-    >>> # Simulating a data stream as a normal distribution of 1's and 0's
+
+    >>> # Simulate a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Changing the data concept from index 999 to 1500, simulating an
-    >>> # increase in error rate
-    >>> for i in range(999, 1500):
-    ...     data_stream[i] = 0
-    >>> # Adding stream elements to EDDM and verifying if drift occurred
-    >>> for i in range(2000):
-    ...     eddm.add_element(data_stream[i])
-    ...     if eddm.detected_warning_zone():
-    ...         print("Warning zone has been detected in data: {}"
-    ...               " - of index: {}".format(data_stream[i], i))
-    ...     if eddm.detected_change():
-    ...         print("Change has been detected in data: {}"
-    ...               " - of index: {}".format(data_stream[i], i))
+    >>> # Change the data distribution from index 999 to 1500, simulating an
+    >>> # increase in error rate (1 indicates error)
+    >>> data_stream[999:1500] = 1
+
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, val in enumerate(data_stream):
+    ...     if eddm.add_element(val):
+    ...         print(f"Change detected at index {i}, input value: {val}")
+    Change detected at index 53, input value: 1
+    Change detected at index 121, input value: 1
+    Change detected at index 185, input value: 1
+    Change detected at index 272, input value: 1
+    Change detected at index 336, input value: 1
+    Change detected at index 391, input value: 1
+    Change detected at index 571, input value: 1
+    Change detected at index 627, input value: 1
+    Change detected at index 686, input value: 1
+    Change detected at index 754, input value: 1
+    Change detected at index 1033, input value: 1
+
     """
     FDDM_OUTCONTROL = 0.9
     FDDM_WARNING = 0.95

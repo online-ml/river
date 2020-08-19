@@ -1,6 +1,6 @@
 import numpy as np
 
-from creme.drift.base import DriftDetector
+from creme.base import DriftDetector
 
 
 class ADWIN(DriftDetector):
@@ -36,20 +36,23 @@ class ADWIN(DriftDetector):
 
     Examples
     --------
-    >>> # Imports
     >>> import numpy as np
     >>> from creme.drift import ADWIN
+    >>> np.random.seed(12345)
+
     >>> adwin = ADWIN()
-    >>> # Simulating a data stream as a normal distribution of 1's and 0's
-    >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Changing the data concept from index 999 to 2000
-    >>> for i in range(999, 2000):
-    ...     data_stream[i] = np.random.randint(4, high=8)
-    >>> # Adding stream elements to ADWIN and verifying if drift occurred
-    >>> for i in range(2000):
-    ...     adwin.add_element(data_stream[i])
-    ...     if adwin.detected_change():
-    ...         print('Change detected in data: ' + str(data_stream[i]) + ' - at index: ' + str(i))
+
+    >>> # Simulate a data stream composed by two data distributions
+    >>> data_stream = np.concatenate((np.random.randint(2, size=1000),
+    ...                               np.random.randint(4, high=8, size=1000)))
+
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, val in enumerate(data_stream):
+    ...     if adwin.add_element(val):
+    ...         print(f"Change detected at index {i}, input value: {val}")
+    Change detected at index 1023, input value: 5
+    Change detected at index 1055, input value: 7
+    Change detected at index 1087, input value: 5
 
     """
     MAX_BUCKETS = 5

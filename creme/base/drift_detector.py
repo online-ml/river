@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from creme.base import Estimator
+from . import Estimator
 
 
 class DriftDetector(Estimator, metaclass=ABCMeta):
