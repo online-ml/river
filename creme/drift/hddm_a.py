@@ -1,6 +1,6 @@
 from math import log, sqrt
 
-from creme.drift.base import DriftDetector
+from creme.base import DriftDetector
 
 
 class HDDM_A(DriftDetector):
@@ -15,9 +15,9 @@ class HDDM_A(DriftDetector):
     warning_confidence : float (default=0.005)
         Confidence to the warning
 
-    two_side_option : bool (default=True)
-        Option to monitor error increments and decrements (two-sided) or only increments
-        (one-sided)
+    two_sided_test : bool (default=False)
+        If True, will monitor error increments and decrements (two-sided). By default will only
+        monitor error increments (one-sided).
 
     Notes
     -----
@@ -38,29 +38,30 @@ class HDDM_A(DriftDetector):
 
     Examples
     --------
-    >>> # Imports
     >>> import numpy as np
     >>> from creme.drift import HDDM_A
+    >>> np.random.seed(12345)
+
     >>> hddm_a = HDDM_A()
-    >>> # Simulating a data stream as a normal distribution of 1's and 0's
+
+    >>> # Simulate a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Changing the data concept from index 999 to 1500, simulating an
-    >>> # increase in error rate
-    >>> for i in range(999, 1500):
-    ...     data_stream[i] = 0
-    >>> # Adding stream elements to HDDM_A and verifying if drift occurred
-    >>> for i in range(2000):
-    ...     hddm_a.add_element(data_stream[i])
-    ...     if hddm_a.detected_warning_zone():
-    ...         print("Warning zone has been detected in data: {} - of index: {}"
-    ...                .format(data_stream[i], i))
-    ...     if hddm_a.detected_change():
-    ...         print("Change has been detected in data: {} - of index: {}"
-    ...                .format(data_stream[i], i))
+    >>> # Change the data distribution from index 999 to 1500, simulating an
+    >>> # increase in error rate (1 indicates error)
+    >>> data_stream[999:1500] = 1
+
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, val in enumerate(data_stream):
+    ...     if hddm_a.add_element(val):
+    ...         print(f"Change detected at index {i}, input value: {val}")
+    Change detected at index 1013, input value: 1
 
     """
 
-    def __init__(self, drift_confidence=0.001, warning_confidence=0.005, two_side_option=True):
+    def __init__(self,
+                 drift_confidence=0.001,
+                 warning_confidence=0.005,
+                 two_sided_test=False):
         super().__init__()
         super().reset()
         self.n_min = 0
@@ -76,7 +77,7 @@ class HDDM_A(DriftDetector):
 
         self.drift_confidence = drift_confidence
         self.warning_confidence = warning_confidence
-        self.two_side_option = two_side_option
+        self.two_sided_test = two_sided_test
 
     def add_element(self, prediction):
         """ Add a new element to the statistics
@@ -136,7 +137,7 @@ class HDDM_A(DriftDetector):
             self._in_concept_change = False
             self._in_warning_zone = False
 
-        if self.two_side_option and self._mean_decr(
+        if self.two_sided_test and self._mean_decr(
                 self.c_max, self.n_max, self.total_c, self.total_n):
             self.n_estimation = self.total_n - self.n_max
             self.c_estimation = self.total_c - self.c_max
@@ -165,10 +166,7 @@ class HDDM_A(DriftDetector):
         return c_max / n_max - total_c / total_n >= cota
 
     def reset(self):
-        """ reset
-
-        Resets the change detector parameters.
-
+        """Reset the change detector.
         """
         super().reset()
         self.n_min = 0

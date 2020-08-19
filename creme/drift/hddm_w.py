@@ -1,6 +1,6 @@
 from math import sqrt, log
 
-from creme.drift.base import DriftDetector
+from creme.base import DriftDetector
 
 
 class HDDM_W(DriftDetector):
@@ -18,9 +18,9 @@ class HDDM_W(DriftDetector):
     lambda_option : float (default=0.050)
         The weight given to recent data. Smaller values mean less weight given to recent data.
 
-    two_side_option : bool (default=True)
-        Option to monitor error increments and decrements (two-sided) or only increments
-        (one-sided)
+    two_sided_test : bool (default=False)
+        If True, will monitor error increments and decrements (two-sided). By default will only
+        monitor error increments (one-sided).
 
     Notes
     -----
@@ -41,38 +41,36 @@ class HDDM_W(DriftDetector):
 
     Examples
     --------
-    >>> # Imports
     >>> import numpy as np
     >>> from creme.drift import HDDM_W
+    >>> np.random.seed(12345)
+
     >>> hddm_w = HDDM_W()
-    >>> # Simulating a data stream as a normal distribution of 1's and 0's
+
+    >>> # Simulate a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Changing the data concept from index 999 to 1500, simulating an
-    >>> # increase in error rate
-    >>> for i in range(999, 1500):
-    ...     data_stream[i] = 0
-    >>> # Adding stream elements to HDDM_A and verifying if drift occurred
-    >>> for i in range(2000):
-    ...     hddm_w.add_element(data_stream[i])
-    ...     if hddm_w.detected_warning_zone():
-    ...         print("Warning zone has been detected in data: {} - of index: {}"
-    ...             .format(data_stream[i], i))
-    ...     if hddm_w.detected_change():
-    ...         print("Change has been detected in data: {} - of index: {}"
-    ...                 .format(data_stream[i], i))
+    >>> # Change the data distribution from index 999 to 1500, simulating an
+    >>> # increase in error rate (1 indicates error)
+    >>> data_stream[999:1500] = 1
+
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, val in enumerate(data_stream):
+    ...     if hddm_w.add_element(val):
+    ...         print(f"Change detected at index {i}, input value: {val}")
+    Change detected at index 1011, input value: 1
+
     """
 
     class SampleInfo:
         def __init__(self):
             self.EWMA_estimator = -1.0
-            self.independent_bounded_condition_sum = None
+            self.independent_bounded_condition_sum = 0.
 
-    def __init__(
-            self,
-            drift_confidence=0.001,
-            warning_confidence=0.005,
-            lambda_option=0.050,
-            two_side_option=True):
+    def __init__(self,
+                 drift_confidence=0.001,
+                 warning_confidence=0.005,
+                 lambda_option=0.050,
+                 two_sided_test=False):
         super().__init__()
         super().reset()
         self.total = self.SampleInfo()
@@ -87,7 +85,7 @@ class HDDM_W(DriftDetector):
         self.drift_confidence = drift_confidence
         self.warning_confidence = warning_confidence
         self.lambda_option = lambda_option
-        self.two_side_option = two_side_option
+        self.two_sided_test = two_sided_test
         self.estimation = None
 
     def add_element(self, prediction):
@@ -124,7 +122,6 @@ class HDDM_W(DriftDetector):
             self.reset()
             self._in_concept_change = True
             self._in_warning_zone = False
-            return
         elif self._monitor_mean_incr(self.warning_confidence):
             self._in_concept_change = False
             self._in_warning_zone = True
@@ -133,7 +130,7 @@ class HDDM_W(DriftDetector):
             self._in_warning_zone = False
 
         self._update_decr_statistics(prediction, self.drift_confidence)
-        if self.two_side_option and self._monitor_mean_decr(self.drift_confidence):
+        if self.two_sided_test and self._monitor_mean_decr(self.drift_confidence):
             self.reset()
         self.estimation = self.total.EWMA_estimator
 
@@ -209,10 +206,7 @@ class HDDM_W(DriftDetector):
                     * self.sample2_decr_monitor.independent_bounded_condition_sum
 
     def reset(self):
-        """ reset
-
-        Resets the change detector parameters.
-
+        """Reset the change detector.
         """
         super().reset()
         self.total = self.SampleInfo()

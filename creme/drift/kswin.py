@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import stats
 
-from creme.drift.base import DriftDetector
+from creme.base import DriftDetector
 
 
 class KSWIN(DriftDetector):
@@ -52,26 +52,23 @@ class KSWIN(DriftDetector):
 
     Examples
     --------
-    >>> # Imports
     >>> import numpy as np
-    >>> from skmultiflow.data.sea_generator import SEAGenerator
     >>> from creme.drift import KSWIN
-    >>> # Initialize KSWIN and a data stream
-    >>> kswin = KSWIN(alpha=0.01)
-    >>> stream = SEAGenerator(classification_function = 2,
-    >>>     random_state = 112, balance_classes = False,noise_percentage = 0.28)
-    >>> # Store detections
-    >>> detections = []
-    >>> # Process stream via KSWIN and print detections
-    >>> for i in range(1000):
-    >>>         data = stream.next_sample(10)
-    >>>         batch = data[0][0][0]
-    >>>         kswin.add_element(batch)
-    >>>         if kswin.detected_change():
-    >>>             print("\rIteration {}".format(i))
-    >>>             print("\r KSWINReject Null Hyptheses")
-    >>>             detections.append(i)
-    >>> print("Number of detections: "+str(len(detections)))
+    >>> np.random.seed(12345)
+
+    >>> kswin = KSWIN()
+
+    >>> # Simulate a data stream composed by two data distributions
+    >>> data_stream = np.concatenate((np.random.randint(2, size=1000),
+    ...                               np.random.randint(4, high=8, size=1000)))
+
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, val in enumerate(data_stream):
+    ...     if kswin.add_element(val):
+    ...         print(f"Change detected at index {i}, input value: {val}")
+    Change detected at index 1014, input value: 5
+    Change detected at index 1828, input value: 6
+
     """
 
     def __init__(self, alpha=0.005, window_size=100, stat_size=30, data=None):

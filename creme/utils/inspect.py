@@ -7,7 +7,6 @@ thus provides utilities for determining an arbitrary model's type.
 
 """
 from creme import base
-from creme.drift.base import DriftDetector
 from creme import compose
 
 
@@ -58,4 +57,4 @@ def ismoregressor(model):
 
 
 def isdriftdetector(model):
-    return isinstance(extract_relevant(model), DriftDetector)
+    return isinstance(extract_relevant(model), base.DriftDetector)

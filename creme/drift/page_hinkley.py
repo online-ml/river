@@ -1,4 +1,4 @@
-from creme.drift.base import DriftDetector
+from creme.base import DriftDetector
 
 
 class PageHinkley(DriftDetector):
@@ -32,21 +32,21 @@ class PageHinkley(DriftDetector):
 
     Examples
     --------
-    >>> # Imports
     >>> import numpy as np
     >>> from creme.drift import PageHinkley
+    >>> np.random.seed(12345)
+
     >>> ph = PageHinkley()
-    >>> # Simulating a data stream as a normal distribution of 1's and 0's
-    >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Changing the data concept from index 999 to 2000
-    >>> for i in range(999, 2000):
-    ...     data_stream[i] = np.random.randint(4, high=8)
-    >>> # Adding stream elements to the PageHinkley drift detector and verifying if drift occurred
-    >>> for i in range(2000):
-    ...     ph.add_element(data_stream[i])
-    ...     if ph.detected_change():
-    ...         print("Change has been detected in data: {} - of index: {}"
-    ...                 .format(data_stream[i],i))
+
+    >>> # Simulate a data stream composed by two data distributions
+    >>> data_stream = np.concatenate((np.random.randint(2, size=1000),
+    ...                               np.random.randint(4, high=8, size=1000)))
+
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, val in enumerate(data_stream):
+    ...     if ph.add_element(val):
+    ...         print(f"Change detected at index {i}, input value: {val}")
+    Change detected at index 1009, input value: 5
 
     """
 

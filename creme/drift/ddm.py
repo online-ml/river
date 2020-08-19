@@ -1,6 +1,6 @@
 import numpy as np
 
-from creme.drift.base import DriftDetector
+from creme.base import DriftDetector
 
 
 class DDM(DriftDetector):
@@ -55,27 +55,26 @@ class DDM(DriftDetector):
 
     Examples
     --------
-    >>> # Imports
     >>> import numpy as np
     >>> from creme.drift import DDM
+    >>> np.random.seed(12345)
+
     >>> ddm = DDM()
-    >>> # Simulating a data stream as a normal distribution of 1's and 0's
+
+    >>> # Simulate a data stream as a normal distribution of 1's and 0's
     >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Changing the data concept from index 999 to 1500, simulating an
-    >>> # increase in error rate
-    >>> for i in range(999, 1500):
-    ...     data_stream[i] = 0
-    >>> # Adding stream elements to DDM and verifying if drift occurred
-    >>> for i in range(2000):
-    ...     ddm.add_element(data_stream[i])
-    ...     if ddm.detected_warning_zone():
-    ...         print("Warning zone has been detected in data: {} "
-    ...               "- of index: {}".format(data_stream[i],i))
-    ...     if ddm.detected_change():
-    ...         print("Change has been detected in data: {} "
-    ...               "- of index: {}".format(data_stream[i],i))
+    >>> # Change the data distribution from index 999 to 1500, simulating an
+    >>> # increase in error rate (1 indicates error)
+    >>> data_stream[999:1500] = 1
+
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, val in enumerate(data_stream):
+    ...     if ddm.add_element(val):
+    ...         print(f"Change detected at index {i}, input value: {val}")
+    Change detected at index 1077, input value: 1
 
     """
+
 
     def __init__(self, min_num_instances=30, warning_level=2.0, out_control_level=3.0):
         super().__init__()

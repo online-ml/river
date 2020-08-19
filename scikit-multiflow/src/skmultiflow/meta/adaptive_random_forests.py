@@ -5,7 +5,7 @@ import itertools
 import numpy as np
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
-from creme.drift.base import DriftDetector
+from creme.base import DriftDetector
 from creme.drift import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree import ARFHoeffdingTreeClassifier
 from skmultiflow.metrics import ClassificationPerformanceEvaluator
