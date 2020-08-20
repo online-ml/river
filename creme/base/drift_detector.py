@@ -1,8 +1,8 @@
 from abc import ABCMeta, abstractmethod
-from . import Estimator
+from . import estimator
 
 
-class DriftDetector(Estimator, metaclass=ABCMeta):
+class DriftDetector(estimator.Estimator, metaclass=ABCMeta):
     """ Abstract Drift Detector class.
     """
 
@@ -71,8 +71,9 @@ class DriftDetector(Estimator, metaclass=ABCMeta):
 
         Returns
         -------
-        bool
-            If True, indicates that a drift has been detected
+        tuple
+            A tuple (drift, warning) where its elements indicate if a drift or a warning is
+            detected.
 
         """
         return self.add_element(input_value=value)

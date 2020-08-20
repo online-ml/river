@@ -48,7 +48,8 @@ class ADWIN(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     if adwin.add_element(val):
+    ...     in_drift, in_warning = adwin.add_element(val)
+    ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1023, input value: 5
     Change detected at index 1055, input value: 7
@@ -116,9 +117,6 @@ class ADWIN(DriftDetector):
 
     def set_clock(self, clock):
         self.mint_clock = clock
-
-    def detected_warning_zone(self):
-        return False
 
     @property
     def _bucket_used_bucket(self):
@@ -203,7 +201,7 @@ class ADWIN(DriftDetector):
         self._total += value
         self.__compress_buckets()
 
-        return self.detected_change()
+        return self._detect_change()
 
     def __insert_element_bucket(self, variance, value, node):
         node.insert_bucket(value, variance)
@@ -275,7 +273,7 @@ class ADWIN(DriftDetector):
             cursor = cursor.get_next_item()
             i += 1
 
-    def detected_change(self):
+    def _detect_change(self):
         """ Detects concept change in a drifting data stream.
 
         The ADWIN algorithm is described in Bifet and Gavaldà's 'Learning from
@@ -365,8 +363,9 @@ class ADWIN(DriftDetector):
         self.mdbl_width += self.width
         if bln_change:
             self._n_detections += 1
-        self.in_concept_change = bln_change
-        return bln_change
+        self._in_concept_change = bln_change
+
+        return self._in_concept_change, self._in_warning_zone
 
     def __bln_cut_expression(self, n0, n1, u0, u1, v0, v1, abs_value, delta):
         n = self.width
