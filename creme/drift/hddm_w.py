@@ -24,20 +24,19 @@ class HDDM_W(DriftDetector):
 
     Notes
     -----
-    HDDM_W [1]_ is an online drift detection method based on McDiarmid's bounds. HDDM_W uses
+    HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses
     the EWMA statistic as estimator. It receives as input a stream of real predictions
     and returns the estimated status of the stream: STABLE, WARNING or DRIFT.
 
-    Implementation based on MOA [2]_.
+    Implementation based on MOA.
 
-    References
-    ----------
-    .. [1] Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al.
-       Online and non-parametric drift detection methods based on Hoeffding’s bounds.
-       IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
+    References:
+        1.  Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al.
+            Online and non-parametric drift detection methods based on Hoeffding’s bounds.
+            IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
 
-    .. [2] Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
-       MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+        2. Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
+           MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
 
     Examples
     --------

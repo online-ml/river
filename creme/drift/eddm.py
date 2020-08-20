@@ -8,7 +8,7 @@ class EDDM(DriftDetector):
 
     Notes
     -----
-    EDDM (Early Drift Detection Method) [1]_ aims to improve the
+    EDDM (Early Drift Detection Method) aims to improve the
     detection rate of gradual concept drift in DDM, while keeping
     a good performance against abrupt concept drift.
 
@@ -20,24 +20,23 @@ class EDDM(DriftDetector):
 
     The algorithm works similarly to the DDM algorithm, by keeping
     track of statistics only. It works with the running average
-    distance (:math:`p_i^'`) and the running standard deviation (:math:`s_i^'`), as
-    well as :math:`p^'_{max}` and :math:`s^'_{max}`, which are the values of :math:`p_i^'`
-    and :math:`s_i^'` when :math:`(p_i^' + 2 * s_i^')` reaches its maximum.
+    distance ($p_i^'$) and the running standard deviation ($s_i^'$), as
+    well as $p^'_{max}$ and $s^'_{max}$, which are the values of $p_i^'$
+    and $s_i^'$ when $(p_i^' + 2 * s_i^')$ reaches its maximum.
 
     Like DDM, there are two threshold values that define the
     borderline between no change, warning zone, and drift detected.
     These are as follows:
 
-    * if :math:`(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \alpha` -> Warning zone
-    * if :math:`(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \beta` -> Change detected
+    * if $(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \alpha$ -> Warning zone
+    * if $(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \beta$ -> Change detected
 
-    :math:`\alpha` and :math:`\beta` are set to 0.95 and 0.9, respectively.
+    $\alpha$ and $\beta$ are set to 0.95 and 0.9, respectively.
 
-    References
-    ----------
-    .. [1] Early Drift Detection Method. Manuel Baena-Garcia, Jose Del Campo-Avila,
-       Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. In Fourth
-       International Workshop on Knowledge Discovery from Data Streams, 2006.
+    References:
+        1.  Early Drift Detection Method. Manuel Baena-Garcia, Jose Del Campo-Avila,
+            Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. In Fourth
+            International Workshop on Knowledge Discovery from Data Streams, 2006.
 
     Examples
     --------

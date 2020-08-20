@@ -21,7 +21,7 @@ class DDM(DriftDetector):
 
     Notes
     -----
-    DDM (Drift Detection Method) [1]_ is a concept change detection method
+    DDM (Drift Detection Method) is a concept change detection method
     based on the PAC learning model premise, that the learner's error rate
     will decrease as the number of analysed samples increase, as long as the
     data distribution is stationary.
@@ -32,26 +32,25 @@ class DDM(DriftDetector):
     the warning zone.
 
     The detection threshold is calculated in function of two statistics,
-    obtained when `(pi + si)` is minimum:
+    obtained when $(pi + si)$ is minimum:
 
-    * :math:`p_{min}`: The minimum recorded error rate.
-    * `s_{min}`: The minimum recorded standard deviation.
+    * $p_{min}$: The minimum recorded error rate.
+    * $s_{min}$: The minimum recorded standard deviation.
 
-    At instant :math:`i`, the detection algorithm uses:
+    At instant $i$, the detection algorithm uses:
 
-    * :math:`p_i`: The error rate at instant i.
-    * :math:`s_i`: The standard deviation at instant i.
+    * $p_i$: The error rate at instant $i$.
+    * $s_i$: The standard deviation at instant $i$.
 
     The conditions for entering the warning zone and detecting change are
     as follows:
 
-    * if :math:`p_i + s_i \geq p_{min} + 2 * s_{min}` -> Warning zone
-    * if :math:`p_i + s_i \geq p_{min} + 3 * s_{min}` -> Change detected
+    * if $p_i + s_i \geq p_{min} + 2 * s_{min}$ -> Warning zone
+    * if $p_i + s_i \geq p_{min} + 3 * s_{min}$ -> Change detected
 
-    References
-    ----------
-    .. [1] João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning
-       with Drift Detection. SBIA 2004: 286-295
+    References:
+        1.  João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning
+            with Drift Detection. SBIA 2004: 286-295
 
     Examples
     --------
