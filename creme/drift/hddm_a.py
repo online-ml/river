@@ -52,7 +52,8 @@ class HDDM_A(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     if hddm_a.add_element(val):
+    ...     in_drift, in_warning = hddm_a.add_element(val)
+    ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1013, input value: 1
 
@@ -146,7 +147,7 @@ class HDDM_A(DriftDetector):
 
         self._update_estimations()
 
-        return self._in_concept_change
+        return self._in_concept_change, self._in_warning_zone
 
     @staticmethod
     def _mean_incr(c_min, n_min, total_c, total_n, confidence):

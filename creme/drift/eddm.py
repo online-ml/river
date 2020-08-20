@@ -55,7 +55,8 @@ class EDDM(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     if eddm.add_element(val):
+    ...     in_drift, in_warning = eddm.add_element(val)
+    ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 53, input value: 1
     Change detected at index 121, input value: 1
@@ -150,7 +151,7 @@ class EDDM(DriftDetector):
             m2s = self.m_mean + 2 * std
 
             if self.m_n < self.FDDM_MIN_NUM_INSTANCES:
-                return
+                return self._in_concept_change, self._in_warning_zone
 
             if m2s > self.m_m2s_max:
                 self.m_m2s_max = m2s
@@ -165,4 +166,4 @@ class EDDM(DriftDetector):
                 else:
                     self._in_warning_zone = False
 
-        return self._in_concept_change
+        return self._in_concept_change, self._in_warning_zone

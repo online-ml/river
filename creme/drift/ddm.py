@@ -69,12 +69,12 @@ class DDM(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     if ddm.add_element(val):
+    ...     in_drift, in_warning = ddm.add_element(val)
+    ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1077, input value: 1
 
     """
-
 
     def __init__(self, min_num_instances=30, warning_level=2.0, out_control_level=3.0):
         super().__init__()
@@ -135,7 +135,7 @@ class DDM(DriftDetector):
         self.delay = 0
 
         if self.sample_count < self.min_instances:
-            return
+            return self._in_concept_change, self._in_warning_zone
 
         if self.miss_prob + self.miss_std <= self.miss_prob_sd_min:
             self.miss_prob_min = self.miss_prob
@@ -153,4 +153,4 @@ class DDM(DriftDetector):
         else:
             self._in_warning_zone = False
 
-        return self._in_concept_change
+        return self._in_concept_change, self._in_warning_zone

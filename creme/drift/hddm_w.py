@@ -55,7 +55,8 @@ class HDDM_W(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     if hddm_w.add_element(val):
+    ...     in_drift, in_warning = hddm_w.add_element(val)
+    ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1011, input value: 1
 
@@ -134,7 +135,7 @@ class HDDM_W(DriftDetector):
             self.reset()
         self.estimation = self.total.EWMA_estimator
 
-        return self._in_concept_change
+        return self._in_concept_change, self._in_warning_zone
 
     @staticmethod
     def _detect_mean_increment(sample1, sample2, confidence):
