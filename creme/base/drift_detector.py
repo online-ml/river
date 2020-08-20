@@ -3,7 +3,7 @@ from . import estimator
 
 
 class DriftDetector(estimator.Estimator, metaclass=ABCMeta):
-    """ Abstract Drift Detector class.
+    """Abstract Drift Detector class.
     """
 
     @property
@@ -16,7 +16,7 @@ class DriftDetector(estimator.Estimator, metaclass=ABCMeta):
         self._in_warning_zone = False
 
     def reset(self):
-        """Resets the change detector.
+        """Reset the change detector.
         """
         self._in_concept_change = False
         self._in_warning_zone = False

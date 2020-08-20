@@ -80,7 +80,7 @@ class HDDM_A(DriftDetector):
         self.two_sided_test = two_sided_test
 
     def update(self, prediction):
-        """ Add a new element to the statistics
+        """Update the change detector with a single data point.
 
         Parameters
         ----------
@@ -88,13 +88,11 @@ class HDDM_A(DriftDetector):
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
 
-        Notes
-        -----
-        After calling this method, to verify if change was detected or if
-        the learner is in the warning zone, one should call the super method
-        detected_change, which returns True if concept drift was detected and
-        False otherwise.
-
+        Returns
+        -------
+        tuple
+            A tuple (drift, warning) where its elements indicate if a drift or a warning is
+            detected.
         """
         self.total_n += 1
         self.total_c += prediction
@@ -179,11 +177,6 @@ class HDDM_A(DriftDetector):
         self.n_estimation = 0
 
     def _update_estimations(self):
-        """ update_estimations
-
-        Update the length estimation and delay.
-
-        """
         if self.total_n >= self.n_estimation:
             self.c_estimation = self.n_estimation = 0
             self.estimation = self.total_c / self.total_n

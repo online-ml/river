@@ -95,7 +95,7 @@ class KSWIN(DriftDetector):
             self.window = data
 
     def update(self, input_value):
-        """ Add element to sliding window
+        """Update the change detector with a single data point.
 
         Adds an element on top of the sliding window and removes
         the oldest one from the window. Afterwards, the KS-test
@@ -105,6 +105,12 @@ class KSWIN(DriftDetector):
         ----------
         input_value: ndarray
             New data sample the sliding window should add.
+
+        Returns
+        -------
+        tuple
+            A tuple (drift, warning) where its elements indicate if a drift or a warning is
+            detected.
         """
         self.n += 1
         currentLength = self.window.shape[0]
@@ -128,9 +134,7 @@ class KSWIN(DriftDetector):
         return self._in_concept_change, self._in_warning_zone
 
     def reset(self):
-        """ reset
-
-        Resets the change detector parameters.
+        """Reset the change detector.
         """
         self.p_value = 0
         self.window = np.array([])

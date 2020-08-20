@@ -8,7 +8,7 @@ class PageHinkley(DriftDetector):
     -----
     This change detection method works by computing the observed
     values and their mean up to the current moment. Page-Hinkley
-    won't output warning zone warnings, only change detections.
+    does not signal warning zones, only change detections.
     The method works by means of the Page-Hinkley test. In general
     lines it will detect a concept drift if the observed mean at
     some instant is greater then a threshold value lambda.
@@ -62,10 +62,7 @@ class PageHinkley(DriftDetector):
         self.reset()
 
     def reset(self):
-        """ reset
-
-        Resets the change detector parameters.
-
+        """Reset the change detector.
         """
         super().reset()
         self.sample_count = 1
@@ -73,7 +70,7 @@ class PageHinkley(DriftDetector):
         self.sum = 0.0
 
     def update(self, x):
-        """ Add a new element to the statistics
+        """Update the change detector with a single data point.
 
         Parameters
         ----------
@@ -81,12 +78,11 @@ class PageHinkley(DriftDetector):
             The observed value, from which we want to detect the
             concept change.
 
-        Notes
-        -----
-        After calling this method, to verify if change was detected, one
-        should call the super method detected_change, which returns True
-        if concept drift was detected and False otherwise.
-
+        Returns
+        -------
+        tuple
+            A tuple (drift, warning) where its elements indicate if a drift or a warning is
+            detected.
         """
         if self._in_concept_change:
             self.reset()
