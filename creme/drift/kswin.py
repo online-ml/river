@@ -25,30 +25,31 @@ class KSWIN(DriftDetector):
 
     Notes
     -----
-    KSWIN (Kolmogorov-Smirnov Windowing) [1]_ is a concept change detection method based
+    KSWIN (Kolmogorov-Smirnov Windowing) is a concept change detection method based
     on the Kolmogorov-Smirnov (KS) statistical test. KS-test is a statistical test with
     no assumption of underlying data distribution. KSWIN can monitor data or performance
     distributions. Note that the detector accepts one dimensional input as array.
 
-    KSWIN maintains a sliding window :math:`\Psi` of fixed size :math:`n` (window_size). The
-    last :math:`r` (stat_size) samples of :math:`\Psi` are assumed to represent the last
-    concept considered as :math:`R`. From the first :math:`n-r` samples of :math:`\Psi`,
-    :math:`r` samples are uniformly drawn, representing an approximated last concept :math:`W`.
+    KSWIN maintains a sliding window $\Psi$ of fixed size $n$ (window_size). The
+    last $r$ (stat_size) samples of $\Psi$ are assumed to represent the last
+    concept considered as $R$. From the first $n-r$ samples of $\Psi$,
+    $r$ samples are uniformly drawn, representing an approximated last concept $W$.
 
-    The KS-test is performed on the windows :math:`R` and :math:`W` of the same size. KS
-    -test compares the distance of the empirical cumulative data distribution :math:`dist(R,W)`.
+    The KS-test is performed on the windows $R$ and $W$ of the same size. KS
+    -test compares the distance of the empirical cumulative data distribution $dist(R,W)$.
 
     A concept drift is detected by KSWIN if:
 
-    * :math:`dist(R,W) > \sqrt{-\frac{ln\alpha}{r}}`
+    $$
+    dist(R,W) > \sqrt{-\frac{ln\alpha}{r}}
+    $$
 
-    -> The difference in empirical data distributions between the windows :math:`R` and :math:`W`
-    is too large as that R and W come from the same distribution.
+    -> The difference in empirical data distributions between the windows $R$ and $W$
+    is too large since $R$ and $W$ come from the same distribution.
 
-    References
-    ----------
-    .. [1] Christoph Raab, Moritz Heusinger, Frank-Michael Schleif, Reactive
-       Soft Prototype Computing for Concept Drift Streams, Neurocomputing, 2020,
+    References:
+        1.  Christoph Raab, Moritz Heusinger, Frank-Michael Schleif,
+            Reactive Soft Prototype Computing for Concept Drift Streams, Neurocomputing, 2020,
 
     Examples
     --------

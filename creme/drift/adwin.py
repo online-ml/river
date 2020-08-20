@@ -13,7 +13,7 @@ class ADWIN(DriftDetector):
 
     Notes
     -----
-    ADWIN [1]_ (ADaptive WINdowing) is an adaptive sliding window algorithm
+    ADWIN (ADaptive WINdowing) is an adaptive sliding window algorithm
     for detecting change, and keeping updated statistics about a data stream.
     ADWIN allows algorithms not adapted for drifting data, to be resistant
     to this phenomenon.
@@ -27,12 +27,10 @@ class ADWIN(DriftDetector):
     averages surpasses a pre-defined threshold, change is detected at that point
     and all data before that time is discarded.
 
-    References
-    ----------
-    .. [1] Bifet, Albert, and Ricard Gavalda. "Learning from time-changing data with adaptive
-        windowing."
-       In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448.
-       Society for Industrial and Applied Mathematics, 2007.
+    References:
+        1.  Bifet, Albert, and Ricard Gavalda. "Learning from time-changing data with adaptive
+            windowing." In Proceedings of the 2007 SIAM international conference on data mining,
+            pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     Examples
     --------

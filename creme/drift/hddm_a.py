@@ -21,20 +21,19 @@ class HDDM_A(DriftDetector):
 
     Notes
     -----
-    HDDM_A [1]_ is a drift detection method based on the Hoeffding’s inequality. HDDM_A uses
+    HDDM_A is a drift detection method based on the Hoeffding’s inequality. HDDM_A uses
     the average as estimator. It receives as input a stream of real values and
     returns the estimated status of the stream: STABLE, WARNING or DRIFT.
 
-    Implementation based on MOA [2]_.
+    Implementation based on MOA.
 
-    References
-    ----------
-    .. [1] Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al.
-       Online and non-parametric drift detection methods based on Hoeffding’s bounds.
-       IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
+    References:
+        1.  Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al.
+            Online and non-parametric drift detection methods based on Hoeffding’s bounds.
+            IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
 
-    .. [2] Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
-       MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+        2. Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
+           MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
 
     Examples
     --------

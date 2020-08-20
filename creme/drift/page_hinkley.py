@@ -9,14 +9,13 @@ class PageHinkley(DriftDetector):
     This change detection method works by computing the observed
     values and their mean up to the current moment. Page-Hinkley
     won't output warning zone warnings, only change detections.
-    The method works by means of the Page-Hinkley test [1]_. In general
+    The method works by means of the Page-Hinkley test. In general
     lines it will detect a concept drift if the observed mean at
     some instant is greater then a threshold value lambda.
 
-    References
-    ----------
-    .. [1] E. S. Page. 1954. Continuous Inspection Schemes.
-       Biometrika 41, 1/2 (1954), 100–115.
+    References:
+        1.  E. S. Page. 1954. Continuous Inspection Schemes.
+            Biometrika 41, 1/2 (1954), 100–115.
 
     Parameters
     ----------
