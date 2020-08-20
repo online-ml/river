@@ -1,4 +1,6 @@
+import numbers
 from abc import ABCMeta, abstractmethod
+
 from . import estimator
 
 
@@ -49,13 +51,12 @@ class DriftDetector(estimator.Estimator, metaclass=ABCMeta):
         return self._in_warning_zone
 
     @abstractmethod
-    def update(self, value):
+    def update(self, value: numbers.Number):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value: int, float
-            Input value
+        value: Input value
 
         Returns
         -------
