@@ -45,17 +45,14 @@ class AdaSplitNodeRegressor(AdaSplitNode):
 
         old_error = self.error_estimation
 
-        # Add element to change detector
-        self._adwin.add_element(normalized_error)
+        # Update ADWIN
+        self._error_change, _ = self._adwin.update(normalized_error)
 
-        # Detect change
-        self.error_change = self._adwin.detected_change()
-
-        if self.error_change and old_error > self.error_estimation:
-            self.error_change = False
+        if self._error_change and old_error > self.error_estimation:
+            self._error_change = False
 
         # Check condition to build a new alternate tree
-        if self.error_change:
+        if self._error_change:
             self._alternate_tree = tree._new_learning_node()
             tree.alternate_trees_cnt += 1
 
@@ -206,10 +203,8 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodePerceptron, AdaNode):
 
         old_error = self.error_estimation
 
-        # Add element to Adwin
-        self._adwin.add_element(normalized_error)
-        # Detect change with Adwin
-        self._error_change = self._adwin.detected_change()
+        # Update ADWIN
+        self._error_change, _ = self._adwin.update(normalized_error)
 
         if self._error_change and old_error > self.error_estimation:
             self._error_change = False

@@ -55,7 +55,7 @@ class EDDM(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = eddm.add_element(val)
+    ...     in_drift, in_warning = eddm.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 53, input value: 1
@@ -106,7 +106,7 @@ class EDDM(DriftDetector):
         self.m_m2s_max = 0.0
         self.estimation = 0.0
 
-    def add_element(self, prediction):
+    def update(self, prediction):
         """ Add a new element to the statistics
 
         Parameters

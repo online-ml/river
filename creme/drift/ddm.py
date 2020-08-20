@@ -69,7 +69,7 @@ class DDM(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = ddm.add_element(val)
+    ...     in_drift, in_warning = ddm.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1077, input value: 1
@@ -105,7 +105,7 @@ class DDM(DriftDetector):
         self.miss_prob_min = float("inf")
         self.miss_sd_min = float("inf")
 
-    def add_element(self, prediction):
+    def update(self, prediction):
         """ Add a new element to the statistics
 
         Parameters

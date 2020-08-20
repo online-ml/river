@@ -101,10 +101,8 @@ class AdaLearningNode(ActiveLearningNodeNBA, AdaNode):
 
         old_error = self.error_estimation
 
-        # Add element to ADWIN
-        self._adwin.add_element(0.0 if is_correct else 1.0)
-        # Detect change with Adwin
-        self.error_change = self._adwin.detected_change()
+        # Update ADWIN
+        self.error_change, _ = self._adwin.update(0.0 if is_correct else 1.0)
 
         if self.error_change and old_error > self.error_estimation:
             self.error_change = False
@@ -161,7 +159,7 @@ class AdaSplitNode(SplitNode, AdaNode):
         super().__init__(split_test, stats)
         self._adwin = ADWIN()
         self._alternate_tree = None
-        self.error_change = False
+        self._error_change = False
 
         self._random_state = check_random_state(random_state)
 
@@ -204,18 +202,14 @@ class AdaSplitNode(SplitNode, AdaNode):
 
         old_error = self.error_estimation
 
-        # Add element to ADWIN
-        add = 0.0 if is_correct else 1.0
+        # Update ADWIN
+        self._error_change, _ = self._adwin.update(0.0 if is_correct else 1.0)
 
-        self._adwin.add_element(add)
-        # Detect change with ADWIN
-        self.error_change = self._adwin.detected_change()
-
-        if self.error_change and old_error > self.error_estimation:
-            self.error_change = False
+        if self._error_change and old_error > self.error_estimation:
+            self._error_change = False
 
         # Check condition to build a new alternate tree
-        if self.error_change:
+        if self._error_change:
             self._alternate_tree = tree._new_learning_node()
             tree.alternate_trees_cnt += 1
 

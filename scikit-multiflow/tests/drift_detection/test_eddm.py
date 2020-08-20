@@ -22,11 +22,8 @@ def test_eddm():
     detected_indices = []
 
     for i in range(data_stream.size):
-        eddm.add_element(data_stream[i])
-        if eddm.detected_change():
+        eddm.update(data_stream[i])
+        if eddm.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
-
-    expected_info = "EDDM()"
-    assert eddm.get_info() == expected_info

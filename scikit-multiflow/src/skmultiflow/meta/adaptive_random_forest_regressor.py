@@ -46,10 +46,10 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         | - 'mse': Weight predictions using trees' Mean Square Error
         | - 'mae': Weight predictions using trees' Mean Absolute Error
 
-    drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
+    drift_detection_method: DriftDetector or None, optional (default=ADWIN(0.001))
         Drift Detection method. Set to None to disable Drift detection.
 
-    warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
+    warning_detection_method: DriftDetector or None, default(ADWIN(0.01))
         Warning Detection method. Set to None to disable warning detection.
 
     drift_detection_criteria: str, optional (default='mse')
@@ -202,8 +202,8 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                  aggregation_method: str = 'median',
                  weighted_vote_strategy: str = None,
                  lambda_value: int = 6,
-                 drift_detection_method: BaseDriftDetector = ADWIN(0.001),
-                 warning_detection_method: BaseDriftDetector = ADWIN(0.01),
+                 drift_detection_method: DriftDetector = ADWIN(0.001),
+                 warning_detection_method: DriftDetector = ADWIN(0.01),
                  drift_detection_criteria: str = 'mse',
                  # Tree parameters
                  max_byte_size: int = 1048576000,
@@ -435,10 +435,10 @@ class ARFRegBaseLearner(BaseSKMObject):
     instances_seen: int
         Number of instances seen by the tree.
 
-    drift_detection_method: BaseDriftDetector
+    drift_detection_method: DriftDetector
         Drift Detection method.
 
-    warning_detection_method: BaseDriftDetector
+    warning_detection_method: DriftDetector
         Warning Detection method.
 
     performance_metric: str
@@ -470,8 +470,8 @@ class ARFRegBaseLearner(BaseSKMObject):
                  index_original: int,
                  estimator: ARFHoeffdingTreeRegressor,
                  instances_seen: int,
-                 drift_detection_method: BaseDriftDetector,
-                 warning_detection_method: BaseDriftDetector,
+                 drift_detection_method: DriftDetector,
+                 warning_detection_method: DriftDetector,
                  performance_metric: str,
                  drift_detection_criteria: str,
                  is_background_learner):
@@ -589,9 +589,9 @@ class ARFRegBaseLearner(BaseSKMObject):
 
             # Check for warning only if use_background_learner is active
             if self._use_background_learner:
-                self.warning_detection.add_element(drift_input)
+                self.warning_detection.update(drift_input)
                 # Check if there was a change
-                if self.warning_detection.detected_change():
+                if self.warning_detection.change_detected:
                     self.last_warning_on = instances_seen
                     self.n_warnings_detected += 1
 
@@ -614,10 +614,10 @@ class ARFRegBaseLearner(BaseSKMObject):
                     self.warning_detection.reset()
 
             # Update the drift detection
-            self.drift_detection.add_element(drift_input)
+            self.drift_detection.update(drift_input)
 
             # Check if there was a change
-            if self.drift_detection.detected_change():
+            if self.drift_detection.change_detected:
                 self.last_drift_on = instances_seen
                 self.n_drifts_detected += 1
 

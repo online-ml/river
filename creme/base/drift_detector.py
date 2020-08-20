@@ -21,46 +21,34 @@ class DriftDetector(estimator.Estimator, metaclass=ABCMeta):
         self._in_concept_change = False
         self._in_warning_zone = False
 
-    def detected_change(self):
-        """This function returns whether concept drift was detected or not.
+    @property
+    def change_detected(self):
+        """Concept Drift alarm.
 
         Returns
         -------
         bool
-            Whether concept drift was detected or not.
+            True if concept drift is detected.
 
         """
         return self._in_concept_change
 
-    def detected_warning_zone(self):
-        """If the change detector supports the warning zone, this function will return
-        whether it's inside the warning zone or not.
+    @property
+    def warning_detected(self):
+        """Warning zone alarm.
+
+        Indicates if the drift detector is in the warning zone.
+        Applicability depends on each drift detector implementation.
 
         Returns
         -------
         bool
-            Whether the change detector is in the warning zone or not.
+            True if the change detector is in the warning zone.
 
         """
         return self._in_warning_zone
 
     @abstractmethod
-    def add_element(self, input_value):
-        """Adds the relevant data from a sample into the change detector.
-
-        Parameters
-        ----------
-        input_value: Not defined
-            Whatever input value the change detector takes.
-
-        Returns
-        -------
-        bool
-            If True, indicates that a drift has been detected
-
-        """
-        raise NotImplementedError
-
     def update(self, value):
         """Update the change detector with a single data point.
 
@@ -76,15 +64,7 @@ class DriftDetector(estimator.Estimator, metaclass=ABCMeta):
             detected.
 
         """
-        return self.add_element(input_value=value)
+        raise NotImplementedError
 
     def __iadd__(self, other):
         self.update(other)
-
-    @property
-    def change_detected(self):
-        return self._in_concept_change
-
-    @property
-    def in_warning_zone(self):
-        return self._in_warning_zone

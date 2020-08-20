@@ -250,8 +250,8 @@ class OnlineAdaC2Classifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
                         error_estimation = self.adwin_ensemble[i].estimation
                         for k in range(r):
                             if pred[k] is not None:
-                                self.adwin_ensemble[i].add_element(int(pred[k] == y[k]))
-                        if self.adwin_ensemble[i].detected_change():
+                                self.adwin_ensemble[i].update(int(pred[k] == y[k]))
+                        if self.adwin_ensemble[i].change_detected:
                             if self.adwin_ensemble[i].estimation > error_estimation:
                                 change_detected = True
                     except ValueError:

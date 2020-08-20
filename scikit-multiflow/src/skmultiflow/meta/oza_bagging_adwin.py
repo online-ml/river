@@ -174,10 +174,10 @@ class OzaBaggingADWINClassifier(OzaBaggingClassifier):
                 for j in range(r):
                     if pred[j] is not None:
                         if pred[j] == y[j]:
-                            self.adwin_ensemble[i].add_element(1)
+                            self.adwin_ensemble[i].update(1)
                         else:
-                            self.adwin_ensemble[i].add_element(0)
-                if self.adwin_ensemble[i].detected_change():
+                            self.adwin_ensemble[i].update(0)
+                if self.adwin_ensemble[i].change_detected:
                     if self.adwin_ensemble[i].estimation > error_estimation:
                         change_detected = True
             except ValueError:

@@ -20,8 +20,8 @@ def AdaptiveRandomForest(n_estimators=10,
                          disable_weighted_vote=False,
                          lambda_value=6,
                          performance_metric='acc',
-                         drift_detection_method: BaseDriftDetector = ADWIN(0.001),
-                         warning_detection_method: BaseDriftDetector = ADWIN(0.01),
+                         drift_detection_method: DriftDetector = ADWIN(0.001),
+                         warning_detection_method: DriftDetector = ADWIN(0.01),
                          max_byte_size=33554432,
                          memory_estimate_period=2000000,
                          grace_period=50,
@@ -91,10 +91,10 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         - 'acc' - Accuracy
         - 'kappa' - Accuracy
 
-    drift_detection_method: BaseDriftDetector or None, optional (default=ADWIN(0.001))
+    drift_detection_method: DriftDetector or None, optional (default=ADWIN(0.001))
         Drift Detection method. Set to None to disable Drift detection.
 
-    warning_detection_method: BaseDriftDetector or None, default(ADWIN(0.01))
+    warning_detection_method: DriftDetector or None, default(ADWIN(0.01))
         Warning Detection method. Set to None to disable warning detection.
 
     max_byte_size: int, optional (default=33554432)
@@ -217,8 +217,8 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
                  disable_weighted_vote=False,
                  lambda_value=6,
                  performance_metric='acc',
-                 drift_detection_method: BaseDriftDetector=ADWIN(0.001),
-                 warning_detection_method: BaseDriftDetector=ADWIN(0.01),
+                 drift_detection_method: DriftDetector=ADWIN(0.001),
+                 warning_detection_method: DriftDetector=ADWIN(0.01),
                  max_byte_size=33554432,
                  memory_estimate_period=2000000,
                  grace_period=50,
@@ -239,11 +239,11 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
         self.max_features = max_features
         self.disable_weighted_vote = disable_weighted_vote
         self.lambda_value = lambda_value
-        if isinstance(drift_detection_method, BaseDriftDetector):
+        if isinstance(drift_detection_method, DriftDetector):
             self.drift_detection_method = drift_detection_method
         else:
             self.drift_detection_method = None
-        if isinstance(warning_detection_method, BaseDriftDetector):
+        if isinstance(warning_detection_method, DriftDetector):
             self.warning_detection_method = warning_detection_method
         else:
             self.warning_detection_method = None
@@ -499,9 +499,9 @@ class ARFBaseLearner(BaseSKMObject):
         Tree classifier.
     instances_seen: int
         Number of instances seen by the tree.
-    drift_detection_method: BaseDriftDetector
+    drift_detection_method: DriftDetector
         Drift Detection method.
-    warning_detection_method: BaseDriftDetector
+    warning_detection_method: DriftDetector
         Warning Detection method.
     is_background_learner: bool
         True if the tree is a background learner.
@@ -516,8 +516,8 @@ class ARFBaseLearner(BaseSKMObject):
                  index_original,
                  classifier: ARFHoeffdingTreeClassifier,
                  instances_seen,
-                 drift_detection_method: BaseDriftDetector,
-                 warning_detection_method: BaseDriftDetector,
+                 drift_detection_method: DriftDetector,
+                 warning_detection_method: DriftDetector,
                  is_background_learner):
         self.index_original = index_original
         self.classifier = classifier
@@ -577,9 +577,9 @@ class ARFBaseLearner(BaseSKMObject):
             correctly_classifies = self.classifier.predict(X) == y
             # Check for warning only if use_background_learner is active
             if self._use_background_learner:
-                self.warning_detection.add_element(int(not correctly_classifies))
+                self.warning_detection.update(int(not correctly_classifies))
                 # Check if there was a change
-                if self.warning_detection.detected_change():
+                if self.warning_detection.change_detected:
                     self.last_warning_on = instances_seen
                     self.nb_warnings_detected += 1
                     # Create a new background tree classifier
@@ -597,10 +597,10 @@ class ARFBaseLearner(BaseSKMObject):
                     self.warning_detection.reset()
 
             # Update the drift detection
-            self.drift_detection.add_element(int(not correctly_classifies))
+            self.drift_detection.update(int(not correctly_classifies))
 
             # Check if there was a change
-            if self.drift_detection.detected_change():
+            if self.drift_detection.change_detected:
                 self.last_drift_on = instances_seen
                 self.nb_drifts_detected += 1
                 self.reset(instances_seen)
