@@ -1,6 +1,7 @@
 import numpy as np
 from creme.drift import HDDM_A
 
+
 def test_hddm_a():
     """
     HDDM_A drift detection test.
@@ -8,7 +9,7 @@ def test_hddm_a():
     The second half corresponds to a normal distribution with mean 0.5 and sigma 0.1.
 
     """
-    hddm_a = HDDM_A()
+    hddm_a = HDDM_A(two_sided_test=True)
 
     # Data
     np.random.seed(1)
@@ -22,8 +23,8 @@ def test_hddm_a():
     detected_indices = []
 
     for i in range(data_stream.size):
-        hddm_a.add_element(data_stream[i])
-        if hddm_a.detected_change():
+        hddm_a.update(data_stream[i])
+        if hddm_a.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
@@ -45,11 +46,8 @@ def test_hddm_a():
     detected_indices = []
 
     for i in range(data_stream.size):
-        hddm_a.add_element(data_stream[i])
-        if hddm_a.detected_change():
+        hddm_a.update(data_stream[i])
+        if hddm_a.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
-
-    expected_info = "HDDM_A(drift_confidence=0.001, two_side_option=True, warning_confidence=0.005)"
-    assert hddm_a.get_info() == expected_info

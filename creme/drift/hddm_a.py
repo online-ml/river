@@ -52,7 +52,7 @@ class HDDM_A(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = hddm_a.add_element(val)
+    ...     in_drift, in_warning = hddm_a.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1013, input value: 1
@@ -80,7 +80,7 @@ class HDDM_A(DriftDetector):
         self.warning_confidence = warning_confidence
         self.two_sided_test = two_sided_test
 
-    def add_element(self, prediction):
+    def update(self, prediction):
         """ Add a new element to the statistics
 
         Parameters

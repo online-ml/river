@@ -16,11 +16,9 @@ def test_page_hinkley(test_path):
     detected_indices = []
 
     for i in range(data_stream.size):
-        ph.add_element(data_stream[i])
-        if ph.detected_change():
+        ph.update(data_stream[i])
+        if ph.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
 
-    expected_info = "PageHinkley(alpha=0.9999, delta=0.005, min_instances=30, threshold=50)"
-    assert ph.get_info() == expected_info

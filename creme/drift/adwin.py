@@ -48,7 +48,7 @@ class ADWIN(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = adwin.add_element(val)
+    ...     in_drift, in_warning = adwin.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1023, input value: 5
@@ -165,7 +165,7 @@ class ADWIN(DriftDetector):
         self._width = 0
         self.bucket_number = 0
 
-    def add_element(self, value):
+    def update(self, value):
         """ Add a new element to the sample window.
 
         Apart from adding the element value to the window, by inserting it in

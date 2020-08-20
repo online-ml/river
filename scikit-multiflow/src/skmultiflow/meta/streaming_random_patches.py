@@ -49,10 +49,10 @@ class StreamingRandomPatchesClassifier(BaseSKMObject, ClassifierMixin, MetaEstim
     lam: float, (default=6.0)
         Lambda value for bagging.
 
-    drift_detection_method: BaseDriftDetector, (default=ADWIN(delta=1e-5))
+    drift_detection_method: DriftDetector, (default=ADWIN(delta=1e-5))
         Drift detection method.
 
-    warning_detection_method: BaseDriftDetector, (default=ADWIN(delta=1e-4))
+    warning_detection_method: DriftDetector, (default=ADWIN(delta=1e-4))
         Warning detection method.
 
     disable_weighted_vote: bool (default=False)
@@ -133,8 +133,8 @@ class StreamingRandomPatchesClassifier(BaseSKMObject, ClassifierMixin, MetaEstim
                  subspace_size: int = 60,
                  training_method: str = "randompatches",
                  lam: float = 6.0,
-                 drift_detection_method: BaseDriftDetector = ADWIN(delta=1e-5),
-                 warning_detection_method: BaseDriftDetector = ADWIN(delta=1e-4),
+                 drift_detection_method: DriftDetector = ADWIN(delta=1e-5),
+                 warning_detection_method: DriftDetector = ADWIN(delta=1e-4),
                  disable_weighted_vote: bool = False,
                  disable_drift_detection: bool = False,
                  disable_background_learner: bool = False,
@@ -451,8 +451,8 @@ class StreamingRandomPatchesBaseLearner:
         # Drift detection
         self.disable_background_learner = disable_background_learner
         self.disable_drift_detector = disable_drift_detector
-        self.drift_detection_method = clone(drift_detection_method)   # type: BaseDriftDetector
-        self.warning_detection_method = clone(warning_detection_method)   # type: BaseDriftDetector
+        self.drift_detection_method = clone(drift_detection_method)   # type: DriftDetector
+        self.warning_detection_method = clone(warning_detection_method)   # type: DriftDetector
         self.drift_detection_criteria = drift_detection_criteria
 
         # Background learner
@@ -507,9 +507,9 @@ class StreamingRandomPatchesBaseLearner:
             # Check for warnings only if the background learner is active
             if not self.disable_background_learner:
                 # Update the warning detection method
-                self.warning_detection_method.add_element(0 if correctly_classifies else 1)
+                self.warning_detection_method.update(0 if correctly_classifies else 1)
                 # Check if there was a change
-                if self.warning_detection_method.detected_change():
+                if self.warning_detection_method.change_detected:
                     self.n_warnings_detected += 1
                     self._trigger_warning(n_features=n_features_total,
                                           n_samples_seen=n_samples_seen,
@@ -517,9 +517,9 @@ class StreamingRandomPatchesBaseLearner:
 
             # ===== Drift detection =====
             # Update the drift detection method
-            self.drift_detection_method.add_element(0 if correctly_classifies else 1)
+            self.drift_detection_method.update(0 if correctly_classifies else 1)
             # Check if the was a change
-            if self.drift_detection_method.detected_change():
+            if self.drift_detection_method.change_detected:
                 self.n_drifts_detected += 1
                 # There was a change, reset the model
                 self.reset(n_features=n_features_total, n_samples_seen=n_samples_seen,

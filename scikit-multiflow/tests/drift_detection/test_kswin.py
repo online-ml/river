@@ -60,8 +60,8 @@ def test_kswin_functionality(test_path):
     detected_indices = []
 
     for i in range(data_stream.size):
-        kswin.add_element(data_stream[i])
-        if kswin.detected_change():
+        kswin.update(data_stream[i])
+        if kswin.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices

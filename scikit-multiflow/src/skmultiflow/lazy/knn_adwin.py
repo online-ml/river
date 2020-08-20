@@ -149,12 +149,12 @@ class KNNADWINClassifier(KNNClassifier):
             self.data_window.add_sample(X[i], y[i])
             if self.data_window.size >= self.n_neighbors:
                 correctly_classifies = 1 if self.predict(np.asarray([X[i]])) == y[i] else 0
-                self.adwin.add_element(correctly_classifies)
+                self.adwin.update(correctly_classifies)
             else:
-                self.adwin.add_element(0)
+                self.adwin.update(0)
 
         if self.data_window.size >= self.n_neighbors:
-            if self.adwin.detected_change():
+            if self.adwin.change_detected:
                 if self.adwin.width < self.data_window.size:
                     for i in range(self.data_window.size, self.adwin.width, -1):
                         self.data_window.delete_oldest_sample()

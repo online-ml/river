@@ -64,7 +64,7 @@ class KSWIN(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = kswin.add_element(val)
+    ...     in_drift, in_warning = kswin.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1014, input value: 5
@@ -93,7 +93,7 @@ class KSWIN(DriftDetector):
         else:
             self.window = data
 
-    def add_element(self, input_value):
+    def update(self, input_value):
         """ Add element to sliding window
 
         Adds an element on top of the sliding window and removes
@@ -125,17 +125,6 @@ class KSWIN(DriftDetector):
         self.window = np.concatenate([self.window, [input_value]])
 
         return self._in_concept_change, self._in_warning_zone
-
-    def detected_change(self):
-        """ Get detected change
-
-        Returns
-        -------
-        bool
-            Whether or not a drift occurred
-
-        """
-        return self._in_concept_change
 
     def reset(self):
         """ reset

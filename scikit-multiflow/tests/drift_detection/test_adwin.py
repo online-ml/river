@@ -17,11 +17,9 @@ def test_adwin(test_path):
     detected_indices = []
 
     for i in range(data_stream.size):
-        adwin.add_element(data_stream[i])
-        if adwin.detected_change():
+        adwin.update(data_stream[i])
+        if adwin.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
 
-    expected_info = "ADWIN(delta=0.002)"
-    assert adwin.get_info() == expected_info

@@ -93,7 +93,7 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
         | Number of instances a leaf should observe before allowing Naive Bayes.
     nb_prediction: Bool (default=True)
         | Use Naive Bayes as prediction strategy in the leafs, else majority class is uses.
-    drift_detector: BaseDriftDetector (Default=None)
+    drift_detector: DriftDetector (Default=None)
         | The drift detector to use in rules. If None detection will be ignored.
         | If set, the estimator is effectively the Adaptive Very Fast Decision Rules classifier.
         | Supported detectors: ADWIN, DDM and EDDM.
@@ -159,7 +159,7 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
         ----------
         class_distribution: dict (class_value, weight)
             Class observations collected from the instances seen in the rule.
-        drift_detector: BaseDriftDetector (Default=None)
+        drift_detector: DriftDetector (Default=None)
             The drift detector used to signal the change in the concept.
 
         """
@@ -336,7 +336,7 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
         ----------
         class_distribution: dict (class_value, weight)
             Class observations collected from the instances seen in the rule.
-        drift_detector: BaseDriftDetector
+        drift_detector: DriftDetector
             The drift detector used to signal the change in the concept.
         class_idx: int or None
             The class the rule is describing.
@@ -519,8 +519,8 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
                     rule_fired = True
                     if self.drift_detector is not None:
                         prediction = rule.predict(y)
-                        rule.drift_detector.add_element(prediction)
-                        if rule.drift_detector.detected_change() and rule.get_weight_seen() > self.min_weight:
+                        rule.drift_detector.update(prediction)
+                        if rule.drift_detector.change_detected and rule.get_weight_seen() > self.min_weight:
                             self.rule_set.pop(i)
                             continue
                     rule.learn_from_instance(X, y, weight, self)
