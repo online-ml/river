@@ -150,7 +150,7 @@ class ADWIN(DriftDetector):
 
         Parameters
         ----------
-        value: int or float (a numeric value)
+        value: Input value
 
         Notes
         -----

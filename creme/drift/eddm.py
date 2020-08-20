@@ -102,12 +102,12 @@ class EDDM(DriftDetector):
         self.m_m2s_max = 0.0
         self.estimation = 0.0
 
-    def update(self, prediction):
+    def update(self, value):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        prediction: int (either 0 or 1)
+        value: Input value (0 or 1)
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
 
@@ -126,7 +126,7 @@ class EDDM(DriftDetector):
 
         self.m_n += 1
 
-        if prediction == 1.0:
+        if value == 1.0:
             self._in_warning_zone = False
             self.delay = 0
             self.m_num_errors += 1
