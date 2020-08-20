@@ -81,37 +81,14 @@ class ADWIN(DriftDetector):
         self.detect_twice = 0
         self.mint_clock = 32
 
-        self.bln_bucket_deleted = False
         self.bucket_num_max = 0
         self.mint_min_window_length = 5
         super().reset()
 
     def reset(self):
-        """ Reset detectors
-
-        Resets statistics and adwin's window.
-
-        Returns
-        -------
-        ADWIN
-            self
-
+        """Reset the change detector.
         """
         self.__init__(delta=self.delta)
-
-    def get_change(self):
-        """ Get drift
-
-        Returns
-        -------
-        bool
-            Whether or not a drift occurred
-
-        """
-        return self.bln_bucket_deleted
-
-    def reset_change(self):
-        self.bln_bucket_deleted = False
 
     def set_clock(self, clock):
         self.mint_clock = clock
@@ -164,7 +141,7 @@ class ADWIN(DriftDetector):
         self.bucket_number = 0
 
     def update(self, value):
-        """ Add a new element to the sample window.
+        """Update the change detector with a single data point.
 
         Apart from adding the element value to the window, by inserting it in
         the correct bucket, it will also update the relevant statistics, in
@@ -184,6 +161,12 @@ class ADWIN(DriftDetector):
         1: Means the learners prediction was correct
 
         This function should be used at every new sample analysed.
+
+        Returns
+        -------
+        tuple
+            A tuple (drift, warning) where its elements indicate if a drift or a warning is
+            detected.
 
         """
         self._width += 1

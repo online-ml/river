@@ -91,10 +91,7 @@ class DDM(DriftDetector):
         self.reset()
 
     def reset(self):
-        """ reset
-
-        Resets the change detector parameters.
-
+        """Reset the change detector.
         """
         super().reset()
         self.sample_count = 1
@@ -105,7 +102,7 @@ class DDM(DriftDetector):
         self.miss_sd_min = float("inf")
 
     def update(self, prediction):
-        """ Add a new element to the statistics
+        """Update the change detector with a single data point.
 
         Parameters
         ----------

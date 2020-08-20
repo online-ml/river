@@ -90,10 +90,7 @@ class EDDM(DriftDetector):
         self.reset()
 
     def reset(self):
-        """ reset
-
-        Resets the change detector parameters.
-
+        """Reset the change detector.
         """
         super().reset()
         self.m_n = 1
@@ -106,7 +103,7 @@ class EDDM(DriftDetector):
         self.estimation = 0.0
 
     def update(self, prediction):
-        """ Add a new element to the statistics
+        """Update the change detector with a single data point.
 
         Parameters
         ----------
@@ -116,15 +113,9 @@ class EDDM(DriftDetector):
 
         Returns
         -------
-        EDDM
-            self
-
-        Notes
-        -----
-        After calling this method, to verify if change was detected or if
-        the learner is in the warning zone, one should call the super method
-        detected_change, which returns True if concept drift was detected and
-        False otherwise.
+        tuple
+            A tuple (drift, warning) where its elements indicate if a drift or a warning is
+            detected.
 
         """
 

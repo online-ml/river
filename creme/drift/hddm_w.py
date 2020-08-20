@@ -89,7 +89,7 @@ class HDDM_W(DriftDetector):
         self.estimation = None
 
     def update(self, prediction):
-        """ Add a new element to the statistics
+        """Update the change detector with a single data point.
 
         Parameters
         ----------
@@ -97,12 +97,11 @@ class HDDM_W(DriftDetector):
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
 
-        Notes
-        -----
-        After calling self method, to verify if change was detected or if
-        the learner is in the warning zone, one should call the super method
-        detected_change, which returns True if concept drift was detected and
-        False otherwise.
+        Returns
+        -------
+        tuple
+            A tuple (drift, warning) where its elements indicate if a drift or a warning is
+            detected.
 
         """
         aux_decay_rate = 1.0 - self.lambda_option
