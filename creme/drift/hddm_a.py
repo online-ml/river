@@ -79,12 +79,12 @@ class HDDM_A(DriftDetector):
         self.warning_confidence = warning_confidence
         self.two_sided_test = two_sided_test
 
-    def update(self, prediction):
+    def update(self, value):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        prediction: int (either 0 or 1)
+        value: Input value (0 or 1)
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
 
@@ -95,7 +95,7 @@ class HDDM_A(DriftDetector):
             detected.
         """
         self.total_n += 1
-        self.total_c += prediction
+        self.total_c += value
         if self.n_min == 0:
             self.n_min = self.total_n
             self.c_min = self.total_c

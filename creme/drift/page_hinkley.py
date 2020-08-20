@@ -69,14 +69,12 @@ class PageHinkley(DriftDetector):
         self.x_mean = 0.0
         self.sum = 0.0
 
-    def update(self, x):
+    def update(self, value):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        x: numeric value
-            The observed value, from which we want to detect the
-            concept change.
+        value: Input value
 
         Returns
         -------
@@ -87,8 +85,8 @@ class PageHinkley(DriftDetector):
         if self._in_concept_change:
             self.reset()
 
-        self.x_mean = self.x_mean + (x - self.x_mean) / float(self.sample_count)
-        self.sum = max(0., self.alpha * self.sum + (x - self.x_mean - self.delta))
+        self.x_mean = self.x_mean + (value - self.x_mean) / float(self.sample_count)
+        self.sum = max(0., self.alpha * self.sum + (value - self.x_mean - self.delta))
 
         self.sample_count += 1
 

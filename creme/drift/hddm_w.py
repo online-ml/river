@@ -88,12 +88,12 @@ class HDDM_W(DriftDetector):
         self.two_sided_test = two_sided_test
         self.estimation = None
 
-    def update(self, prediction):
+    def update(self, value):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        prediction: int (either 0 or 1)
+        value: Input value (0 or 1)
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
 
@@ -107,16 +107,16 @@ class HDDM_W(DriftDetector):
         aux_decay_rate = 1.0 - self.lambda_option
         self.width += 1
         if self.total.EWMA_estimator < 0:
-            self.total.EWMA_estimator = prediction
+            self.total.EWMA_estimator = value
             self.total.independent_bounded_condition_sum = 1
         else:
             self.total.EWMA_estimator = self.lambda_option * \
-                                        prediction + aux_decay_rate * self.total.EWMA_estimator
+                                        value + aux_decay_rate * self.total.EWMA_estimator
             self.total.independent_bounded_condition_sum = \
                 self.lambda_option * self.lambda_option \
                 + aux_decay_rate * aux_decay_rate * self.total.independent_bounded_condition_sum
 
-        self._update_incr_statistics(prediction, self.drift_confidence)
+        self._update_incr_statistics(value, self.drift_confidence)
         if self._monitor_mean_incr(self.drift_confidence):
             self.reset()
             self._in_concept_change = True
@@ -128,7 +128,7 @@ class HDDM_W(DriftDetector):
             self._in_concept_change = False
             self._in_warning_zone = False
 
-        self._update_decr_statistics(prediction, self.drift_confidence)
+        self._update_decr_statistics(value, self.drift_confidence)
         if self.two_sided_test and self._monitor_mean_decr(self.drift_confidence):
             self.reset()
         self.estimation = self.total.EWMA_estimator

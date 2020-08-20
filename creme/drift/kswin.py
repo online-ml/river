@@ -94,7 +94,7 @@ class KSWIN(DriftDetector):
         else:
             self.window = data
 
-    def update(self, input_value):
+    def update(self, value):
         """Update the change detector with a single data point.
 
         Adds an element on top of the sliding window and removes
@@ -103,7 +103,7 @@ class KSWIN(DriftDetector):
 
         Parameters
         ----------
-        input_value: ndarray
+        value: Input value
             New data sample the sliding window should add.
 
         Returns
@@ -129,7 +129,7 @@ class KSWIN(DriftDetector):
         else:  # Not enough samples in sliding window for a valid test
             self._in_concept_change = False
 
-        self.window = np.concatenate([self.window, [input_value]])
+        self.window = np.concatenate([self.window, [value]])
 
         return self._in_concept_change, self._in_warning_zone
 

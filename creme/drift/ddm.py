@@ -101,12 +101,12 @@ class DDM(DriftDetector):
         self.miss_prob_min = float("inf")
         self.miss_sd_min = float("inf")
 
-    def update(self, prediction):
+    def update(self, value):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        prediction: int (either 0 or 1)
+        value: Input value (0 or 1)
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
 
@@ -121,7 +121,7 @@ class DDM(DriftDetector):
         if self._in_concept_change:
             self.reset()
 
-        self.miss_prob = self.miss_prob + (prediction - self.miss_prob) / float(self.sample_count)
+        self.miss_prob = self.miss_prob + (value - self.miss_prob) / float(self.sample_count)
         self.miss_std = np.sqrt(self.miss_prob * (1 - self.miss_prob) / float(self.sample_count))
         self.sample_count += 1
 
