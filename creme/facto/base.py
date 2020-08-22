@@ -3,44 +3,11 @@ import collections
 import numbers
 
 from .. import optim
-from .. import stats
 from .. import utils
 
 
 class BaseFM:
-    """Factorization Machines base class.
-
-    Parameters:
-        n_factors (int): Dimensionality of the factorization or number of latent factors.
-        weight_optimizer (optim.Optimizer): The sequential optimizer used for updating the feature
-            weights. Note that the intercept is handled separately.
-        latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the latent
-            factors.
-        loss (optim.Loss): The loss function to optimize for.
-        sample_normalization (bool): Whether to divide each element of ``x`` by ``x`` L2-norm.
-            Defaults to False.
-        l1_weight (float): Amount of L1 regularization used to push weights towards 0.
-        l2_weight (float): Amount of L2 regularization used to push weights towards 0.
-        l1_latent (float): Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent (float): Amount of L2 regularization used to push latent weights towards 0.
-        intercept (float or `stats.Univariate` instance): Initial intercept value.
-        intercept_lr (optim.schedulers.Scheduler or float): Learning rate scheduler used for
-            updating the intercept. If a `float` is passed, then an instance of
-            `optim.schedulers.Constant` will be used. Setting this to 0 implies that the intercept
-            will be not be updated.
-        weight_initializer (optim.initializers.Initializer): Weights initialization scheme. Defaults
-            to ``optim.initializers.Zeros()``.
-        latent_initializer (optim.initializers.Initializer): Latent factors initialization scheme.
-            Defaults to
-            ``optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)``.
-        clip_gradient (float): Clips the absolute value of each gradient value.
-        seed (int): Randomization seed used for reproducibility.
-
-    Attributes:
-        weights (collections.defaultdict): The current weights assigned to the features.
-        latents (collections.defaultdict): The current latent weights assigned to the features.
-
-    """
+    """Factorization Machines base class."""
 
     def __init__(self, n_factors, weight_optimizer, latent_optimizer, loss, sample_normalization,
                  l1_weight, l2_weight, l1_latent, l2_latent, intercept, intercept_lr,
@@ -94,10 +61,6 @@ class BaseFM:
 
     def _learn_one(self, x, y, sample_weight=1.):
 
-        # Update the intercept if statistic before calculating the gradient
-        if isinstance(self.intercept, stats.Univariate):
-            self.intercept.update(y)
-
         # Calculate the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
@@ -108,8 +71,8 @@ class BaseFM:
         g_loss *= sample_weight
 
         # Update the intercept
-        w0_lr = self.intercept_lr.get(self.weight_optimizer.n_iterations)
-        self.intercept -= w0_lr * g_loss
+        intercept_lr = self.intercept_lr.get(self.weight_optimizer.n_iterations)
+        self.intercept -= intercept_lr * g_loss
 
         # Update the weights
         weights_gradient = self._calculate_weights_gradients(x, g_loss)
