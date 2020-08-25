@@ -40,6 +40,9 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
             | 'median'
             | 'weighted_mean'
 
+    **kwargs
+        Other parameters passed to scipy.spatial.cKDTree.
+
     Notes
     -----
     This estimator is not optimal for a mixture of categorical and numerical
@@ -73,12 +76,10 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     _WEIGHTED_MEAN = 'weighted_mean'
 
     def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
-                 p: float = 2, aggregation_method: str = 'mean'):
+                 p: float = 2, aggregation_method: str = 'mean', **kwargs):
 
-        super().__init__(n_neighbors=n_neighbors,
-                         window_size=window_size,
-                         leaf_size=leaf_size,
-                         p=p)
+        super().__init__(n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size,
+                         p=p, **kwargs)
         if aggregation_method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
             raise ValueError('Invalid aggregation_method: {}.\n'
                              'Valid options are: {}'.format(aggregation_method,
@@ -86,8 +87,8 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
                                                              self.f_WEIGHTED_MEAN}))
         self.aggregation_method = aggregation_method
 
-    def learn_one(self, x: dict, y: base.typing.RegTarget) -> 'Regressor':
-        """Fits to a set of features `x` and a real-valued target `y`.
+    def learn_one(self, x, y):
+        """Update the model with a set of features `x` and a real target value `y`.
 
         Parameters
         ----------
@@ -111,8 +112,8 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
         return self
 
-    def predict_one(self, x: dict) -> base.typing.RegTarget:
-        """Predicts the target value of a set of features `x`.
+    def predict_one(self, x):
+        """Predict the target value of a set of features `x`.
 
         Search the KDTree for the `n_neighbors` nearest neighbors.
 

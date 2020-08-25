@@ -182,10 +182,12 @@ class KNeighborsBuffer:
 
 class BaseNeighbors:
     """Base class for neighbors-based estimators. """
-    def __init__(self, n_neighbors=5, window_size=1000, leaf_size=30, p=2):
+    def __init__(self, n_neighbors=5, window_size=1000, leaf_size=30, p=2, **kwargs):
         self.n_neighbors = n_neighbors
         self.window_size = window_size
         self.leaf_size = leaf_size
+        self._kwargs = kwargs
+
         if p < 1:
             raise ValueError('Invalid Minkowski p-norm value: {}.\n'
                              'Values must be greater than or equal to 1'.format(p))
@@ -194,7 +196,7 @@ class BaseNeighbors:
 
     def _get_neighbors(self, x):
         X = self.data_window.features_buffer
-        tree = cKDTree(X, leafsize=self.leaf_size)
+        tree = cKDTree(X, leafsize=self.leaf_size, **self._kwargs)
         dist, idx = tree.query(x.reshape(1, -1), k=self.n_neighbors, p=self.p)
         return dist, idx
 

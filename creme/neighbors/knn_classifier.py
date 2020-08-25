@@ -1,5 +1,3 @@
-import typing
-
 from creme import base
 from creme.utils import dict2numpy
 from creme.utils.math import softmax
@@ -42,6 +40,9 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         Whether to weight the contribution of each neighbor by it's inverse
         distance or not.
 
+    **kwargs
+        Other parameters passed to scipy.spatial.cKDTree.
+
     Notes
     -----
     This estimator is not optimal for a mixture of categorical and numerical
@@ -71,15 +72,13 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     """
 
     def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
-                 p: float = 2, weighted: bool = True):
-        super().__init__(n_neighbors=n_neighbors,
-                         window_size=window_size,
-                         leaf_size=leaf_size,
-                         p=p)
+                 p: float = 2, weighted: bool = True, **kwargs):
+        super().__init__(n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size,
+                         p=p, **kwargs)
         self.weighted = weighted
         self.classes_ = set()
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
+    def learn_one(self, x, y):
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters
@@ -106,7 +105,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         return self
 
-    def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(self, x):
         """Predict the probability of each label for a dictionary of features `x`.
 
         Parameters:
