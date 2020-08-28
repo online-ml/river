@@ -1,9 +1,10 @@
-from skmultiflow.utils import check_random_state
 from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
-from skmultiflow.trees.nodes import RandomLearningNodeClassification
-from skmultiflow.trees.nodes import RandomLearningNodeNB
-from skmultiflow.trees.nodes import RandomLearningNodeNBAdaptive
-from skmultiflow.trees.nodes import InactiveLearningNode
+from skmultiflow.utils import check_random_state
+
+from ._nodes import RandomActiveLearningNodeMC
+from ._nodes import RandomActiveLearningNodeNB
+from ._nodes import RandomActiveLearningNodeNBA
+from ._nodes import InactiveLearningNodeMC
 
 
 class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
@@ -108,33 +109,33 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
         self.random_state = random_state
         self._random_state = check_random_state(self.random_state)
 
-    def _new_learning_node(self, initial_class_observations=None, is_active_node=True):
+    def _new_learning_node(self, initial_class_observations=None, is_active=True):
         """Create a new learning node. The type of learning node depends on the
         tree configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
 
-        if is_active_node:
+        if is_active:
             # MAJORITY CLASS
             if self._leaf_prediction == self._MAJORITY_CLASS:
-                return RandomLearningNodeClassification(
+                return RandomActiveLearningNodeMC(
                     initial_class_observations, self.max_features,
                     random_state=self._random_state
                 )
             # NAIVE BAYES
             elif self._leaf_prediction == self._NAIVE_BAYES:
-                return RandomLearningNodeNB(
+                return RandomActiveLearningNodeNB(
                     initial_class_observations, self.max_features,
                     random_state=self._random_state
                 )
             # NAIVE BAYES ADAPTIVE
             else:
-                return RandomLearningNodeNBAdaptive(
+                return RandomActiveLearningNodeNBA(
                     initial_class_observations, self.max_features,
                     random_state=self._random_state
                 )
         else:
-            return InactiveLearningNode(initial_class_observations)
+            return InactiveLearningNodeMC(initial_class_observations)
 
     def reset(self):
         super().reset()

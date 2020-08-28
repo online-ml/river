@@ -18,7 +18,8 @@ __all__ = [
     'isclassifier',
     'isregressor',
     'ismoclassifier',
-    'ismoregressor'
+    'ismoregressor',
+    'isdriftdetector'
 ]
 
 
@@ -53,3 +54,7 @@ def istransformer(model):
 
 def ismoregressor(model):
     return isinstance(extract_relevant(model), base.MultiOutputRegressor)
+
+
+def isdriftdetector(model):
+    return isinstance(extract_relevant(model), base.DriftDetector)

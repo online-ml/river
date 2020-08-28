@@ -46,11 +46,12 @@ def test_hoeffding_adaptive_tree_regressor_mean():
     expected_error = 143.11351404083086
     assert np.isclose(error, expected_error)
 
-    expected_info = "HoeffdingAdaptiveTreeRegressor(binary_split=False, grace_period=200, leaf_prediction='mean', " \
-                    "learning_ratio_const=True, learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
+    expected_info = "HoeffdingAdaptiveTreeRegressor(binary_split=False, bootstrap_sampling=False, " \
+                    "grace_period=200, leaf_prediction='mean', learning_ratio_const=True, " \
+                    "learning_ratio_decay=0.001, learning_ratio_perceptron=0.02, " \
                     "max_byte_size=33554432, memory_estimate_period=1000000, no_preprune=False, " \
-                    "nominal_attributes=None, random_state=1, remove_poor_atts=False, split_confidence=1e-07, " \
-                    "stop_mem_management=False, tie_threshold=0.05)"
+                    "nominal_attributes=None, random_state=1, remove_poor_atts=False, " \
+                    "split_confidence=1e-07, stop_mem_management=False, tie_threshold=0.05)"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
 
@@ -103,11 +104,13 @@ def test_hoeffding_adaptive_tree_regressor_perceptron():
     expected_error = 126.11208652969131
     assert np.isclose(error, expected_error)
 
-    expected_info = "HoeffdingAdaptiveTreeRegressor(binary_split=False, grace_period=200, " \
-                    "leaf_prediction='perceptron', learning_ratio_const=True, learning_ratio_decay=0.001, " \
-                    "learning_ratio_perceptron=0.02, max_byte_size=33554432, memory_estimate_period=1000000, " \
-                    "no_preprune=False, nominal_attributes=None, random_state=1, " \
-                    "remove_poor_atts=False, split_confidence=1e-07, stop_mem_management=False, tie_threshold=0.05)"
+    expected_info = "HoeffdingAdaptiveTreeRegressor(binary_split=False, " \
+                    "bootstrap_sampling=False, grace_period=200, leaf_prediction='perceptron', " \
+                    "learning_ratio_const=True, learning_ratio_decay=0.001, " \
+                    "learning_ratio_perceptron=0.02, max_byte_size=33554432, " \
+                    "memory_estimate_period=1000000, no_preprune=False, " \
+                    "nominal_attributes=None, random_state=1, remove_poor_atts=False, " \
+                    "split_confidence=1e-07, stop_mem_management=False, tie_threshold=0.05)"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
 
@@ -121,50 +124,39 @@ def test_regression_hoeffding_adaptive_tree_categorical_features(test_path):
     data_path = os.path.join(test_path, 'ht_categorical_features_testcase.npy')
     stream = np.load(data_path)
     # Removes the last column (used only in the multi-target regression case)
-    stream = stream[1000:, :-1]
+    stream = stream[1500:, :-1]
     X, y = stream[:, :-1], stream[:, -1]
+    X = X[:, :-1]
 
-    nominal_attr_idx = np.arange(8)
+    nominal_attr_idx = np.arange(7)
     # Typo in leaf prediction
-    learner = HoeffdingAdaptiveTreeRegressor(
-        nominal_attributes=nominal_attr_idx,
-        leaf_prediction='percptron'
-    )
+    learner = HoeffdingAdaptiveTreeRegressor(nominal_attributes=nominal_attr_idx,
+                                             leaf_prediction='percptron',
+                                             random_state=1)
 
     learner.partial_fit(X, y)
 
-    expected_description = "if Attribute 1 = -1.0:\n" \
-                           "  if Attribute 0 = -15.0:\n" \
-                           "    Leaf = Statistics {0: 66.0000, 1: -164.9262, 2: 412.7679}\n" \
-                           "  if Attribute 0 = 0.0:\n" \
-                           "    Leaf = Statistics {0: 71.0000, 1: -70.3639, 2: 70.3179}\n" \
-                           "  if Attribute 0 = 1.0:\n" \
-                           "    Leaf = Statistics {0: 83.0000, 1: 0.9178, 2: 0.8395}\n" \
-                           "  if Attribute 0 = 2.0:\n" \
-                           "    Leaf = Statistics {0: 74.0000, 1: 73.6454, 2: 73.8353}\n" \
-                           "  if Attribute 0 = 3.0:\n" \
-                           "    Leaf = Statistics {0: 59.0000, 1: 75.2899, 2: 96.4856}\n" \
-                           "  if Attribute 0 = -30.0:\n" \
-                           "    Leaf = Statistics {0: 13.0000, 1: -40.6367, 2: 127.1607}\n" \
-                           "if Attribute 1 = 0.0:\n" \
-                           "  if Attribute 0 = -15.0:\n" \
-                           "    Leaf = Statistics {0: 64.0000, 1: -158.0874, 2: 391.2359}\n" \
-                           "  if Attribute 0 = 0.0:\n" \
-                           "    Leaf = Statistics {0: 72.0000, 1: -0.4503, 2: 0.8424}\n" \
-                           "  if Attribute 0 = 1.0:\n" \
-                           "    Leaf = Statistics {0: 67.0000, 1: 68.0365, 2: 69.6664}\n" \
-                           "  if Attribute 0 = 2.0:\n" \
-                           "    Leaf = Statistics {0: 60.0000, 1: 77.7032, 2: 101.3210}\n" \
-                           "  if Attribute 0 = 3.0:\n" \
-                           "    Leaf = Statistics {0: 54.0000, 1: 77.4519, 2: 111.7702}\n" \
-                           "  if Attribute 0 = -30.0:\n" \
-                           "    Leaf = Statistics {0: 27.0000, 1: -83.8745, 2: 260.8891}\n" \
-                           "if Attribute 1 = 1.0:\n" \
-                           "  Leaf = Statistics {0: 412.0000, 1: 180.7178, 2: 1143.9712}\n" \
-                           "if Attribute 1 = 2.0:\n" \
-                           "  Leaf = Statistics {0: 384.0000, 1: 268.3498, 2: 1193.4180}\n" \
-                           "if Attribute 1 = 3.0:\n" \
-                           "  Leaf = Statistics {0: 418.0000, 1: 289.5005, 2: 1450.7667}\n"
+    expected_description = "if Attribute 0 = -15.0:\n" \
+        "  if Attribute 1 = -1.0:\n" \
+        "    Leaf = Statistics {0: 37.0000, 1: -92.4231, 2: 231.1636}\n" \
+        "  if Attribute 1 = 0.0:\n" \
+        "    Leaf = Statistics {0: 38.0000, 1: -94.0931, 2: 233.4825}\n" \
+        "  if Attribute 1 = 1.0:\n" \
+        "    Leaf = Statistics {0: 55.0000, 1: -131.1069, 2: 312.9920}\n" \
+        "  if Attribute 1 = 2.0:\n" \
+        "    Leaf = Statistics {0: 38.0000, 1: -90.3821, 2: 215.5215}\n" \
+        "  if Attribute 1 = 3.0:\n" \
+        "    Leaf = Statistics {0: 54.0000, 1: -124.1223, 2: 285.7867}\n" \
+        "if Attribute 0 = 0.0:\n" \
+        "  Leaf = Statistics {0: 123.0000, 1: 60.9178, 2: 132.5396}\n" \
+        "if Attribute 0 = 1.0:\n" \
+        "  Leaf = Statistics {0: 124.0000, 1: 134.7770, 2: 184.4009}\n" \
+        "if Attribute 0 = 2.0:\n" \
+        "  Leaf = Statistics {0: 104.0000, 1: 145.5842, 2: 212.8880}\n" \
+        "if Attribute 0 = 3.0:\n" \
+        "  Leaf = Statistics {0: 118.0000, 1: 186.4441, 2: 300.6575}\n" \
+        "if Attribute 0 = -30.0:\n" \
+        "  Leaf = Statistics {0: 88.0000, 1: -269.7967, 2: 828.2289}\n"
 
     assert SequenceMatcher(
         None, expected_description, learner.get_model_description()
@@ -204,8 +196,8 @@ def test_hoeffding_adaptive_tree_regressor_alternate_tree():
                     "    Leaf = Statistics {0: 1716.0000, 1: -284.7812, 2: 17014.5944}\n" \
                     "if Attribute 0 > 0.7308480624289246:\n" \
                     "  Leaf = Statistics {0: 384.0000, 1: -40.5676, 2: 3855.0453}\n"
-
-                assert expected_info == learner.get_model_description()
+                model_description = learner.get_model_description()
+                assert expected_info == model_description
                 p1 = True
 
             # Keep almost the same generation function
@@ -219,18 +211,18 @@ def test_hoeffding_adaptive_tree_regressor_alternate_tree():
                 y = [np.random.normal(loc=-3, scale=1)]
 
             # But shift the normal mean in a specific region
-            if X[0][0] <= 0.73:
+            if X[0][0] <= 0.3:
                 y = [np.random.normal(loc=5, scale=0.1)]
         elif cnt < 6000:
             if not p2:
                 # Subtree swapped
                 expected_info = "if Attribute 0 <= 0.7308480624289246:\n" \
-                    "  if Attribute 0 <= 0.7210747610959465:\n" \
-                    "    Leaf = Statistics {0: 1447.0000, 1: 7229.8838, 2: 36138.9433}\n" \
-                    "  if Attribute 0 > 0.7210747610959465:\n" \
-                    "    Leaf = Statistics {0: 8.0000, 1: 30.5281, 2: 183.5354}\n" \
+                    "  if Attribute 0 <= 0.2979778083105622:\n" \
+                    "    Leaf = Statistics {0: 1108.0000, 1: 5539.5153, 2: 27706.8525}\n" \
+                    "  if Attribute 0 > 0.2979778083105622:\n" \
+                    "    Leaf = Statistics {0: 342.0000, 1: 48.2119, 2: 3518.3529}\n" \
                     "if Attribute 0 > 0.7308480624289246:\n" \
-                    "  Leaf = Statistics {0: 654.0000, 1: -24.9928, 2: 6519.0335}\n"
+                    "  Leaf = Statistics {0: 659.0000, 1: -28.8180, 2: 6546.5087}\n"
 
                 assert expected_info == learner.get_model_description()
                 p2 = True
@@ -246,9 +238,9 @@ def test_hoeffding_adaptive_tree_regressor_alternate_tree():
         cnt += 1
 
     # Root node changed
-    expected_info = "if Attribute 1 <= -0.00015267114158334927:\n" \
-        "  Leaf = Statistics {0: 904.0000, 1: 1098.6423, 2: 332597.7050}\n" \
-        "if Attribute 1 > -0.00015267114158334927:\n" \
-        "  Leaf = Statistics {0: 905.0000, 1: 17227.8522, 2: 332000.7548}\n"
+    expected_info = "if Attribute 1 <= 0.02469103490619995:\n" \
+        "  Leaf = Statistics {0: 941.0000, 1: -18769.1383, 2: 378390.2088}\n" \
+        "if Attribute 1 > 0.02469103490619995:\n" \
+        "  Leaf = Statistics {0: 900.0000, 1: -2030.2098, 2: 355715.9719}\n"
 
     assert expected_info == learner.get_model_description()
