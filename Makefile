@@ -4,16 +4,14 @@ cython:
 execute-notebooks:
 	jupyter nbconvert --execute --to notebook --inplace docs/*/*.ipynb --ExecutePreprocessor.timeout=-1
 
-user-guide:
+render-notebooks:
 	jupyter nbconvert --to markdown docs/getting-started.ipynb
 	jupyter nbconvert --to markdown docs/user-guide/*.ipynb --output-dir docs/user-guide
 	jupyter nbconvert --to markdown docs/examples/*.ipynb --output-dir docs/examples
 
-api-reference:
-	python docs/scripts/index_api.py
-
-doc: user-guide api-reference
-	#python docs/scripts/prepare_docs.py
+doc: render-notebooks
+	python docs/scripts/index.py
+	#python docs/scripts/linkify.py
 	mkdocs build
 
 livedoc: doc
