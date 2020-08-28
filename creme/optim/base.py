@@ -10,11 +10,14 @@ class Optimizer(abc.ABC):
 
     Every optimizer inherits from this base interface.
 
-    Parameters:
-        lr
+    Parameters
+    ----------
+    lr
 
-    Attributes:
-        learning_rate (float): Returns the current learning rate value.
+    Attributes
+    ----------
+    learning_rate : float
+        Returns the current learning rate value.
 
     """
 
