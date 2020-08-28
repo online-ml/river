@@ -16,6 +16,7 @@ from . import compose
 from . import datasets
 from . import dummy
 from . import decomposition
+from . import drift
 from . import ensemble
 from . import evaluate
 from . import expert
@@ -50,6 +51,7 @@ __all__ = [
     'datasets',
     'dummy',
     'decomposition',
+    'drift',
     'ensemble',
     'evaluate',
     'expert',

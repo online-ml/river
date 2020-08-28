@@ -4,8 +4,10 @@ from skmultiflow.utils.statistics import normal_probability
 
 class GaussianEstimator(object):
     """ GaussianEstimator
-    Gaussian incremental estimator that uses incremental method that is more resistant to floating point imprecision.
-    For more info, Donald Knuth's "The Art of Computer Programming, Volume 2: Seminumerical Algorithms", section 4.2.2.
+
+    Gaussian incremental estimator that uses incremental method that is more resistant to floating
+    point imprecision. For more info, Donald Knuth's "The Art of Computer Programming, Volume 2:
+    Seminumerical Algorithms", section 4.2.2.
     """
     def __init__(self):
         self._weight_sum = 0.0
@@ -70,7 +72,8 @@ class GaussianEstimator(object):
             mean = self.get_mean()
             if std_dev > 0.0:
                 diff = value - mean
-                return (1.0 / (self._NORMAL_CONSTANT * std_dev)) * math.exp(-(diff * diff / (2.0 * std_dev * std_dev)))
+                return ((1.0 / (self._NORMAL_CONSTANT * std_dev))
+                        * math.exp(-(diff * diff / (2.0 * std_dev * std_dev))))
             if value == mean:
                 return 1.0
         return 0.0
@@ -80,7 +83,8 @@ class GaussianEstimator(object):
         std_dev = self.get_std_dev()
         mean = self.get_mean()
         if std_dev > 0.0:
-            lessthan_weight = normal_probability((value - mean) / std_dev) * self._weight_sum - equalto_weight
+            lessthan_weight = normal_probability((value - mean) / std_dev) * self._weight_sum \
+                - equalto_weight
         else:
             if value < mean:
                 lessthan_weight = self._weight_sum - equalto_weight

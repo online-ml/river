@@ -1,22 +1,23 @@
 import numpy as np
 from skmultiflow.core import MultiOutputMixin
-from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
+from skmultiflow.trees import HoeffdingTreeClassifier
 from skmultiflow.utils import get_dimensions
 
-from skmultiflow.trees.nodes import LCActiveLearningNode
-from skmultiflow.trees.nodes import LCInactiveLearningNode
-from skmultiflow.trees.nodes import LCLearningNodeNB
-from skmultiflow.trees.nodes import LCLearningNodeNBA
+from ._nodes import LCActiveLearningNodeMC
+from ._nodes import LCInactiveLearningNodeMC
+from ._nodes import LCActiveLearningNodeNB
+from ._nodes import LCActiveLearningNodeNBA
 
 import warnings
 
 
-def LCHT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, split_criterion='info_gain',
-         split_confidence=0.0000001, tie_threshold=0.05, binary_split=False, stop_mem_management=False,
-         remove_poor_atts=False, no_preprune=False, leaf_prediction='nba', nb_threshold=0, nominal_attributes=None,
+def LCHT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
+         split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05,
+         binary_split=False, stop_mem_management=False, remove_poor_atts=False, no_preprune=False,
+         leaf_prediction='nba', nb_threshold=0, nominal_attributes=None,
          n_labels=None):     # pragma: no cover
-    warnings.warn("'LCHT' has been renamed to 'LabelCombinationHoeffdingTreeClassifier' in v0.5.0.\n"
-                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    warnings.warn("'LCHT' has been renamed to 'LabelCombinationHoeffdingTreeClassifier' in"
+                  "v0.5.0.\nThe old name will be removed in v0.7.0", category=FutureWarning)
     return LabelCombinationHoeffdingTreeClassifier(max_byte_size=max_byte_size,
                                                    memory_estimate_period=memory_estimate_period,
                                                    grace_period=grace_period,
@@ -159,8 +160,8 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
         self._n_labels = n_labels
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
-        """ Incrementally trains the model. Train samples (instances) are composed of X attributes and their
-            corresponding targets y.
+        """ Incrementally trains the model. Train samples (instances) are composed of X attributes
+        and their corresponding targets y.
 
         Parameters
         ----------
@@ -203,21 +204,21 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
 
         return np.array(predictions)
 
-    def _new_learning_node(self, initial_class_observations=None, is_active_node=True):
+    def _new_learning_node(self, initial_class_observations=None, is_active=True):
         """Create a new learning node. The type of learning node depends on the tree
         configuration."""
         if initial_class_observations is None:
             initial_class_observations = {}
 
-        if is_active_node:
+        if is_active:
             if self._leaf_prediction == self._MAJORITY_CLASS:
-                return LCActiveLearningNode(initial_class_observations)
+                return LCActiveLearningNodeMC(initial_class_observations)
             elif self._leaf_prediction == self._NAIVE_BAYES:
-                return LCLearningNodeNB(initial_class_observations)
+                return LCActiveLearningNodeNB(initial_class_observations)
             else:  # NAIVE BAYES ADAPTIVE (default)
-                return LCLearningNodeNBA(initial_class_observations)
+                return LCActiveLearningNodeNBA(initial_class_observations)
         else:
-            return LCInactiveLearningNode(initial_class_observations)
+            return LCInactiveLearningNodeMC(initial_class_observations)
 
     @staticmethod
     def _more_tags():
