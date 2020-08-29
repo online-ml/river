@@ -12,7 +12,7 @@ from . import ConfusionMatrix
 from ._confusion_matrix import MultiLabelConfusionMatrix
 
 
-class ClassificationPerformanceEvaluator:
+class ClassificationEvaluator:
     """"Classification report
 
     Incrementally tracks classification performance and provide, at any moment, updated
@@ -26,12 +26,12 @@ class ClassificationPerformanceEvaluator:
 
     Examples
     --------
-    >>> from creme.metrics._classification_evaluator import ClassificationPerformanceEvaluator
+    >>> from creme.metrics._classification_evaluator import ClassificationEvaluator
 
     >>> y_true = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     >>> y_pred = [0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2]
 
-    >>> evaluator = ClassificationPerformanceEvaluator()
+    >>> evaluator = ClassificationEvaluator()
 
     >>> for i in range(len(y_true)):
     ...     evaluator.add_result(y_true[i], y_pred[i])
@@ -158,7 +158,7 @@ class ClassificationPerformanceEvaluator:
         ])
 
 
-class WindowClassificationPerformanceEvaluator(ClassificationPerformanceEvaluator):
+class WindowClassificationEvaluator(ClassificationEvaluator):
     """Rolling classification report
 
     Incrementally tracks classification performance over a sliding window and provide,
@@ -175,12 +175,12 @@ class WindowClassificationPerformanceEvaluator(ClassificationPerformanceEvaluato
 
     Examples
     --------
-    >>> from creme.metrics._classification_evaluator import WindowClassificationPerformanceEvaluator
+    >>> from creme.metrics._classification_evaluator import WindowClassificationEvaluator
 
     >>> y_true = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     >>> y_pred = [0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2]
 
-    >>> evaluator = WindowClassificationPerformanceEvaluator(window_size=20)
+    >>> evaluator = WindowClassificationEvaluator(window_size=20)
 
     >>> for i in range(len(y_true)):
     ...     evaluator.add_result(y_true[i], y_pred[i])
@@ -233,7 +233,7 @@ class WindowClassificationPerformanceEvaluator(ClassificationPerformanceEvaluato
             ])
 
 
-class MultiLabelClassificationPerformanceEvaluator:
+class MLClassificationEvaluator:
     """Multi-label classification report.
 
     Incrementally tracks a classifier's performance and provide, at any moment, updated
@@ -247,7 +247,7 @@ class MultiLabelClassificationPerformanceEvaluator:
 
     Examples
     --------
-    >>> from creme.metrics._classification_evaluator import MultiLabelClassificationPerformanceEvaluator
+    >>> from creme.metrics._classification_evaluator import MLClassificationEvaluator
 
     >>> y_0 = [True]*100
     >>> y_1 = [True]*90 + [False]*10
@@ -258,7 +258,7 @@ class MultiLabelClassificationPerformanceEvaluator:
     ...     y_true.append({0:True, 1:True, 2:True})
     ...     y_pred.append({0:y_0[i], 1:y_1[i], 2:y_2[i]})
 
-    >>> evaluator = MultiLabelClassificationPerformanceEvaluator()
+    >>> evaluator = MLClassificationEvaluator()
 
     >>> for i in range(len(y_true)):
     ...     evaluator.add_result(y_true[i], y_pred[i])
@@ -341,7 +341,7 @@ class MultiLabelClassificationPerformanceEvaluator:
         ])
 
 
-class WindowMultiLabelClassificationPerformanceEvaluator(MultiLabelClassificationPerformanceEvaluator):
+class WindowMLClassificationEvaluator(MLClassificationEvaluator):
     """Multi-label classification report.
 
     Incrementally tracks a classifier's performance over a sliding window and provide,
@@ -358,7 +358,7 @@ class WindowMultiLabelClassificationPerformanceEvaluator(MultiLabelClassificatio
 
     Examples
     --------
-    >>> from creme.metrics._classification_evaluator import WindowMultiLabelClassificationPerformanceEvaluator
+    >>> from creme.metrics._classification_evaluator import WindowMLClassificationEvaluator
 
     >>> y_0 = [True]*100
     >>> y_1 = [True]*90 + [False]*10
@@ -369,7 +369,7 @@ class WindowMultiLabelClassificationPerformanceEvaluator(MultiLabelClassificatio
     ...     y_true.append({0:True, 1:True, 2:True})
     ...     y_pred.append({0:y_0[i], 1:y_1[i], 2:y_2[i]})
 
-    >>> evaluator = WindowMultiLabelClassificationPerformanceEvaluator(window_size=20)
+    >>> evaluator = WindowMLClassificationEvaluator(window_size=20)
     >>> for i in range(len(y_true)):
     ...     evaluator.add_result(y_true[i], y_pred[i])
 

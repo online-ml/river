@@ -59,14 +59,14 @@ def test_adaptive_random_forest_regressor_mean():
 
     expected_info = "AdaptiveRandomForestRegressor(aggregation_method='mean', " \
                     "binary_split=False, drift_detection_criteria='mse', " \
-                    "drift_detection_method=ADWIN(delta=0.001), grace_period=50, " \
+                    "drift_detection_method=ADWIN ( delta=0.001 ), grace_period=50, " \
                     "lambda_value=6, leaf_prediction='mean', learning_ratio_const=True, " \
                     "learning_ratio_decay=0.001, learning_ratio_perceptron=0.1, " \
                     "max_byte_size=inf, max_features=4, memory_estimate_period=2000000, " \
                     "n_estimators=3, no_preprune=False, nominal_attributes=None, " \
                     "random_state=1, remove_poor_atts=False, split_confidence=0.01, " \
                     "stop_mem_management=False, tie_threshold=0.05, " \
-                    "warning_detection_method=ADWIN(delta=0.01), weighted_vote_strategy=None)"
+                    "warning_detection_method=ADWIN ( delta=0.01 ), weighted_vote_strategy=None)"
     info = " ".join([line.strip() for line in learner1.get_info().split()])
     assert info == expected_info
     assert type(learner1.predict(X)) == np.ndarray
@@ -128,14 +128,14 @@ def test_adaptive_random_forest_regressor_perceptron():
 
     expected_info = "AdaptiveRandomForestRegressor(aggregation_method='median', " \
                     "binary_split=False, drift_detection_criteria='mse', " \
-                    "drift_detection_method=ADWIN(delta=0.001), grace_period=50, " \
+                    "drift_detection_method=ADWIN ( delta=0.001 ), grace_period=50, " \
                     "lambda_value=6, leaf_prediction='perceptron', learning_ratio_const=True, " \
                     "learning_ratio_decay=0.001, learning_ratio_perceptron=0.1, " \
                     "max_byte_size=inf, max_features=4, memory_estimate_period=2000000, " \
                     "n_estimators=3, no_preprune=False, nominal_attributes=None, " \
                     "random_state=1, remove_poor_atts=False, split_confidence=0.01, " \
                     "stop_mem_management=False, tie_threshold=0.05, " \
-                    "warning_detection_method=ADWIN(delta=0.01), weighted_vote_strategy=None)"
+                    "warning_detection_method=ADWIN ( delta=0.01 ), weighted_vote_strategy=None)"
 
     info = " ".join([line.strip() for line in learner2.get_info().split()])
     assert info == expected_info

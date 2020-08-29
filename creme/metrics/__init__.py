@@ -52,7 +52,10 @@ from .roc_auc import ROCAUC
 from .rolling import Rolling
 from .smape import SMAPE
 from .time_rolling import TimeRolling
-
+from ._classification_evaluator import ClassificationEvaluator
+from ._classification_evaluator import WindowClassificationEvaluator
+from ._classification_evaluator import MLClassificationEvaluator
+from ._classification_evaluator import WindowMLClassificationEvaluator
 
 __all__ = [
     'Accuracy',
