@@ -45,14 +45,14 @@ def test_adaptive_random_forests_mc():
     assert np.alltrue(y_pred == y_pred_expected)
 
     expected_info = "AdaptiveRandomForestClassifier(binary_split=False, " \
-                    "disable_weighted_vote=False, drift_detection_method=ADWIN(delta=0.001), " \
+                    "disable_weighted_vote=False, drift_detection_method=ADWIN ( delta=0.001 ), " \
                     "grace_period=50, lambda_value=6, leaf_prediction='mc', " \
                     "max_byte_size=33554432, max_features=5, memory_estimate_period=2000000, " \
                     "n_estimators=3, nb_threshold=0, no_preprune=False, " \
                     "nominal_attributes=None, performance_metric='acc', random_state=112, " \
                     "remove_poor_atts=False, split_confidence=0.01, " \
                     "split_criterion='info_gain', stop_mem_management=False, " \
-                    "tie_threshold=0.05, warning_detection_method=ADWIN(delta=0.01))"
+                    "tie_threshold=0.05, warning_detection_method=ADWIN ( delta=0.01 ))"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
 
@@ -99,14 +99,14 @@ def test_adaptive_random_forests_nb():
     assert np.alltrue(predictions == last_version_predictions)
 
     expected_info = "AdaptiveRandomForestClassifier(binary_split=False, " \
-                    "disable_weighted_vote=False, drift_detection_method=ADWIN(delta=0.001), " \
+                    "disable_weighted_vote=False, drift_detection_method=ADWIN ( delta=0.001 ), " \
                     "grace_period=50, lambda_value=6, leaf_prediction='nb', " \
                     "max_byte_size=33554432, max_features=5, memory_estimate_period=2000000, " \
                     "n_estimators=3, nb_threshold=0, no_preprune=False, " \
                     "nominal_attributes=None, performance_metric='acc', random_state=112, " \
                     "remove_poor_atts=False, split_confidence=0.01, " \
                     "split_criterion='info_gain', stop_mem_management=False, " \
-                    "tie_threshold=0.05, warning_detection_method=ADWIN(delta=0.01))"
+                    "tie_threshold=0.05, warning_detection_method=ADWIN ( delta=0.01 ))"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
 
@@ -159,13 +159,13 @@ def test_adaptive_random_forests_nba():
     assert np.alltrue(y_pred == y_pred_expected)
 
     expected_info = "AdaptiveRandomForestClassifier(binary_split=False, " \
-                    "disable_weighted_vote=False, drift_detection_method=ADWIN(delta=0.001), " \
+                    "disable_weighted_vote=False, drift_detection_method=ADWIN ( delta=0.001 ), " \
                     "grace_period=50, lambda_value=6, leaf_prediction='nba', " \
                     "max_byte_size=33554432, max_features=5, memory_estimate_period=2000000, " \
                     "n_estimators=3, nb_threshold=0, no_preprune=False, " \
                     "nominal_attributes=None, performance_metric='acc', random_state=112, " \
                     "remove_poor_atts=False, split_confidence=0.01, " \
                     "split_criterion='info_gain', stop_mem_management=False, " \
-                    "tie_threshold=0.05, warning_detection_method=ADWIN(delta=0.01))"
+                    "tie_threshold=0.05, warning_detection_method=ADWIN ( delta=0.01 ))"
     info = " ".join([line.strip() for line in learner.get_info().split()])
     assert info == expected_info
