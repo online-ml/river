@@ -1,3 +1,5 @@
+import typing
+
 from creme import base
 from creme.utils import dict2numpy
 from creme.utils.math import softmax
@@ -18,26 +20,22 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
     Parameters
     ----------
-    n_neighbors : int (default=5)
-        The number of nearest neighbors to search for.
+    n_neighbors : The number of nearest neighbors to search for.
 
-    window_size : int (default=1000)
-        The maximum size of the window storing the last observed samples.
+    window_size : The maximum size of the window storing the last observed samples.
 
-    leaf_size : int (default=30)
-        scipy.spatial.cKDTree parameter. The maximum number of samples that
-        can be stored in one leaf node, which determines from which point
-        the algorithm will switch for a brute-force approach. The bigger
-        this number the faster the tree construction time, but the slower
-        the query time will be.
+    leaf_size :  scipy.spatial.cKDTree parameter.
+        The maximum number of samples that can be stored in one leaf node,
+        which determines from which point the algorithm will switch for a
+        brute-force approach. The bigger this number the faster the tree construction
+        time, but the slower the query time will be.
 
-    p : float (default=2)
-        p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
-        Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid
-        values are in the interval $[1, +\\infty)$
+    p : p-norm value for the Minkowski metric.
+        When `p=1`, this corresponds to the Manhattan distance, while `p=2`
+        corresponds to the Euclidean distance. Valid values are in the
+        interval $[1, +\\infty)$
 
-    weighted : bool (default=True)
-        Whether to weight the contribution of each neighbor by it's inverse
+    weighted : Whether to weight the contribution of each neighbor by it's inverse
         distance or not.
 
     **kwargs
@@ -76,7 +74,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         super().__init__(n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size,
                          p=p, **kwargs)
         self.weighted = weighted
-        self.classes_ = set()
+        self.classes_: typing.Set = set()
 
     def learn_one(self, x, y):
         """Update the model with a set of features `x` and a label `y`.
