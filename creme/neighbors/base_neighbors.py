@@ -13,8 +13,8 @@ class KNeighborsBuffer:
 
     Parameters
     ----------
-    window_size : int, optional (default=1000)
-        The window's size.
+    window_size
+        The size of the window.
 
     Raises
     ------
@@ -34,17 +34,17 @@ class KNeighborsBuffer:
 
     """
 
-    def __init__(self, window_size=1000):
+    def __init__(self, window_size: int = 1000):
         self.window_size = window_size
-        self._n_features = -1
-        self._n_targets = -1
-        self._size = 0
-        self._next_insert = 0
-        self._oldest = 0
-        self._imask = None
-        self._X = None
-        self._y = None
-        self._is_initialized = False
+        self._n_features: int = -1
+        self._n_targets: int = -1
+        self._size: int = 0
+        self._next_insert: int = 0
+        self._oldest: int = 0
+        self._imask: np.ndarray
+        self._X: np.ndarray
+        self._y: typing.List
+        self._is_initialized: bool = False
 
     def _configure(self):
         # Binary instance mask to filter data in the buffer
@@ -67,14 +67,12 @@ class KNeighborsBuffer:
 
         return self
 
-    def append(self, x, y):
+    def append(self, x: np.ndarray, y: base.typing.Target) -> 'KNeighborsBuffer':
         """Add a (single) sample to the sample window.
 
-        x : numpy.ndarray of shape (, n_features)
-            1D-array of feature for a single sample.
+        x : 1D-array of feature for a single sample.
 
-        y : creme.base.typing.Target
-            The target data for a single sample.
+        y : The target data for a single sample.
 
         Raises
         ------
@@ -112,7 +110,7 @@ class KNeighborsBuffer:
 
         return self
 
-    def pop(self) -> typing.Tuple[np.ndarray, base.typing.Target]:
+    def pop(self) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
         """Remove and return the most recent element added to the buffer. """
         if self.size > 0:
             self._next_insert = self._next_insert - 1 if self._next_insert > 0 else \
@@ -125,7 +123,7 @@ class KNeighborsBuffer:
         else:
             return None
 
-    def popleft(self) -> typing.Tuple[np.ndarray, base.typing.Target]:
+    def popleft(self) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
         """ Remove and return the oldest element in the buffer. """
         if self.size > 0:
             x, y = self._X[self._oldest], self._y[self._oldest]
@@ -140,7 +138,7 @@ class KNeighborsBuffer:
         else:
             return None
 
-    def clear(self):
+    def clear(self) -> 'KNeighborsBuffer':
         """Clear all stored elements."""
         self._next_insert = 0
         self._oldest = 0
@@ -148,8 +146,10 @@ class KNeighborsBuffer:
         # Just reset the instance filtering mask, not the buffers
         self._imask = np.zeros(self.window_size, dtype=bool)
 
+        return self
+
     @property
-    def features_buffer(self):
+    def features_buffer(self) -> np.ndarray:
         """Get the features buffer.
 
         The shape of the buffer is (window_size, n_features).
@@ -157,7 +157,7 @@ class KNeighborsBuffer:
         return self._X[self._imask]  # Only return the actually filled instances
 
     @property
-    def targets_buffer(self):
+    def targets_buffer(self) -> typing.List:
         """Get the targets buffer
 
         The shape of the buffer is (window_size, n_targets).
@@ -165,24 +165,25 @@ class KNeighborsBuffer:
         return list(itertools.compress(self._y, self._imask))
 
     @property
-    def n_targets(self):
+    def n_targets(self) -> int:
         """Get the number of targets. """
         return self._n_targets
 
     @property
-    def n_features(self):
+    def n_features(self) -> int:
         """Get the number of features. """
         return self._n_features
 
     @property
-    def size(self):
+    def size(self) -> int:
         """Get the window size. """
         return self._size
 
 
 class BaseNeighbors:
     """Base class for neighbors-based estimators. """
-    def __init__(self, n_neighbors=5, window_size=1000, leaf_size=30, p=2, **kwargs):
+    def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
+                 p: float = 2, **kwargs):
         self.n_neighbors = n_neighbors
         self.window_size = window_size
         self.leaf_size = leaf_size
@@ -200,7 +201,8 @@ class BaseNeighbors:
         dist, idx = tree.query(x.reshape(1, -1), k=self.n_neighbors, p=self.p)
         return dist, idx
 
-    def reset(self):
+    def reset(self) -> 'BaseNeighbors':
         """Reset estimator. """
         self.data_window.reset()
+
         return self
