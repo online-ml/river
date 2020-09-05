@@ -14,7 +14,7 @@ cache:
     - $HOME/downloads
 
 install: skip
-script: skip # ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
+script: ./ci/test.sh ${TRAVIS_PYTHON_VERSION}
 
 jobs:
   include:
