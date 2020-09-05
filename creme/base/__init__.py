@@ -17,6 +17,7 @@ from .anomaly import AnomalyDetector
 from .classifier import Classifier
 from .classifier import MiniBatchClassifier
 from .clusterer import Clusterer
+from .drift_detector import DriftDetector
 from .ensemble import EnsembleMixin
 from .estimator import Estimator
 from .multi_output import MultiOutputClassifier
@@ -33,6 +34,7 @@ __all__ = [
     'BinaryMixin',
     'Classifier',
     'Clusterer',
+    'DriftDetector',
     'EnsembleMixin',
     'Estimator',
     'MiniBatchClassifier',

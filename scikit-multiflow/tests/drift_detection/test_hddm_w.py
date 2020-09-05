@@ -1,5 +1,5 @@
 import numpy as np
-from skmultiflow.drift_detection.hddm_w import HDDM_W
+from creme.drift.hddm_w import HDDM_W
 
 
 def test_hddm_w():
@@ -23,8 +23,8 @@ def test_hddm_w():
     detected_indices = []
 
     for i in range(data_stream.size):
-        hddm_w.add_element(data_stream[i])
-        if hddm_w.detected_change():
+        hddm_w.update(data_stream[i])
+        if hddm_w.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
@@ -46,12 +46,8 @@ def test_hddm_w():
     detected_indices = []
 
     for i in range(data_stream.size):
-        hddm_w.add_element(data_stream[i])
-        if hddm_w.detected_change():
+        hddm_w.update(data_stream[i])
+        if hddm_w.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
-
-    expected_info = "HDDM_W(drift_confidence=0.001, lambda_option=0.05, two_side_option=True,\n" \
-                    "       warning_confidence=0.005)"
-    assert hddm_w.get_info() == expected_info

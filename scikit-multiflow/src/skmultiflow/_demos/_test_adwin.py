@@ -1,5 +1,5 @@
 import numpy as np
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 
 
 def demo():
@@ -20,8 +20,8 @@ def demo():
     data_stream[change_start:] = np.random.randint(8, size=size-change_start)
 
     for i in range(size):
-        adwin.add_element(data_stream[i])
-        if adwin.detected_change():
+        change_detected, _ = adwin.update(data_stream[i])
+        if change_detected:
             print('Change has been detected in data: ' + str(data_stream[i]) + ' - of index: ' + str(i))
 
 if __name__ == '__main__':

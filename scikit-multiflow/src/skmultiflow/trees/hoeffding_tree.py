@@ -3,33 +3,31 @@ import itertools
 import numpy as np
 from operator import attrgetter, itemgetter
 
-from skmultiflow.utils import get_dimensions, normalize_values_in_dict, \
-    calculate_object_size
+from skmultiflow.utils import get_dimensions, normalize_values_in_dict, calculate_object_size
 from skmultiflow.core import BaseSKMObject, ClassifierMixin
-
-from skmultiflow.trees.split_criterion import GiniSplitCriterion
-from skmultiflow.trees.split_criterion import InfoGainSplitCriterion
-from skmultiflow.trees.split_criterion import HellingerDistanceCriterion
-
-from skmultiflow.trees.attribute_test import NominalAttributeMultiwayTest
-
-from skmultiflow.trees.nodes import Node
-from skmultiflow.trees.nodes import ActiveLearningNode
-from skmultiflow.trees.nodes import InactiveLearningNode
-from skmultiflow.trees.nodes import LearningNode
-from skmultiflow.trees.nodes import LearningNodeNB
-from skmultiflow.trees.nodes import LearningNodeNBAdaptive
-from skmultiflow.trees.nodes import SplitNode
-from skmultiflow.trees.nodes import FoundNode
-
 from skmultiflow.rules.base_rule import Rule
+
+from ._split_criterion import GiniSplitCriterion
+from ._split_criterion import InfoGainSplitCriterion
+from ._split_criterion import HellingerDistanceCriterion
+from ._attribute_test import NominalAttributeMultiwayTest
+from ._nodes import Node
+from ._nodes import FoundNode
+from ._nodes import SplitNode
+from ._nodes import ActiveLeaf, InactiveLeaf
+from ._nodes import LearningNode
+from ._nodes import ActiveLearningNodeMC
+from ._nodes import ActiveLearningNodeNB
+from ._nodes import ActiveLearningNodeNBA
+from ._nodes import InactiveLearningNodeMC
 
 import warnings
 
 
-def HoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, split_criterion='info_gain',
-                  split_confidence=0.0000001, tie_threshold=0.05, binary_split=False, stop_mem_management=False,
-                  remove_poor_atts=False, no_preprune=False, leaf_prediction='nba', nb_threshold=0,
+def HoeffdingTree(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
+                  split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05,
+                  binary_split=False, stop_mem_management=False, remove_poor_atts=False,
+                  no_preprune=False, leaf_prediction='nba', nb_threshold=0,
                   nominal_attributes=None):     # pragma: no cover
     warnings.warn("'HoeffdingTree' has been renamed to 'HoeffdingTreeClassifier' in v0.5.0.\n"
                   "The old name will be removed in v0.7.0", category=FutureWarning)
@@ -88,15 +86,18 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
 
     Notes
     -----
-    A Hoeffding Tree [1]_ is an incremental, anytime decision tree induction algorithm that is capable of learning from
-    massive data streams, assuming that the distribution generating examples does not change over time. Hoeffding trees
-    exploit the fact that a small sample can often be enough to choose an optimal splitting attribute. This idea is
-    supported mathematically by the Hoeffding bound, which quantifies the number of observations (in our case, examples)
-    needed to estimate some statistics within a prescribed precision (in our case, the goodness of an attribute).
+    A Hoeffding Tree [1]_ is an incremental, anytime decision tree induction algorithm that is
+    capable of learning from massive data streams, assuming that the distribution generating
+    examples does not change over time. Hoeffding trees exploit the fact that a small sample can
+    often be enough to choose an optimal splitting attribute. This idea is supported mathematically
+    by the Hoeffding bound, which quantifies the number of observations (in our case, examples)
+    needed to estimate some statistics within a prescribed precision (in our case, the goodness of
+    an attribute).
 
-    A theoretically appealing feature of Hoeffding Trees not shared by other incremental decision tree learners is that
-    it has sound guarantees of performance. Using the Hoeffding bound one can show that its output is asymptotically
-    nearly identical to that of a non-incremental learner using infinitely many examples.
+    A theoretically appealing feature of Hoeffding Trees not shared by other incremental decision
+    tree learners is that it has sound guarantees of performance. Using the Hoeffding bound one
+    can show that its output is asymptotically nearly identical to that of a non-incremental
+    learner using infinitely many examples.
 
     Implementation based on MOA [2]_.
 
@@ -191,37 +192,14 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         self.classes = None
 
     @property
-    def max_byte_size(self):
-        return self._max_byte_size
-
-    @max_byte_size.setter
-    def max_byte_size(self, max_byte_size):
-        self._max_byte_size = max_byte_size
-
-    @property
-    def memory_estimate_period(self):
-        return self._memory_estimate_period
-
-    @memory_estimate_period.setter
-    def memory_estimate_period(self, memory_estimate_period):
-        self._memory_estimate_period = memory_estimate_period
-
-    @property
-    def grace_period(self):
-        return self._grace_period
-
-    @grace_period.setter
-    def grace_period(self, grace_period):
-        self._grace_period = grace_period
-
-    @property
     def split_criterion(self):
         return self._split_criterion
 
     @split_criterion.setter
     def split_criterion(self, split_criterion):
-        if split_criterion != self._GINI_SPLIT and split_criterion != self._INFO_GAIN_SPLIT and \
-                split_criterion != self._HELLINGER:
+        if split_criterion not in [self._GINI_SPLIT,
+                                   self._INFO_GAIN_SPLIT,
+                                   self._HELLINGER]:
             print("Invalid split_criterion option {}', will use default '{}'".
                   format(split_criterion, self._INFO_GAIN_SPLIT))
             self._split_criterion = self._INFO_GAIN_SPLIT
@@ -229,90 +207,19 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
             self._split_criterion = split_criterion
 
     @property
-    def split_confidence(self):
-        return self._split_confidence
-
-    @split_confidence.setter
-    def split_confidence(self, split_confidence):
-        self._split_confidence = split_confidence
-
-    @property
-    def tie_threshold(self):
-        return self._tie_threshold
-
-    @tie_threshold.setter
-    def tie_threshold(self, tie_threshold):
-        self._tie_threshold = tie_threshold
-
-    @property
-    def binary_split(self):
-        return self._binary_split
-
-    @binary_split.setter
-    def binary_split(self, binary_split):
-        self._binary_split = binary_split
-
-    @property
-    def stop_mem_management(self):
-        return self._stop_mem_management
-
-    @stop_mem_management.setter
-    def stop_mem_management(self, stop_mem_management):
-        self._stop_mem_management = stop_mem_management
-
-    @property
-    def remove_poor_atts(self):
-        return self._remove_poor_atts
-
-    @remove_poor_atts.setter
-    def remove_poor_atts(self, remove_poor_atts):
-        self._remove_poor_atts = remove_poor_atts
-
-    @property
-    def no_preprune(self):
-        return self._no_preprune
-
-    @no_preprune.setter
-    def no_preprune(self, no_pre_prune):
-        self._no_preprune = no_pre_prune
-
-    @property
     def leaf_prediction(self):
         return self._leaf_prediction
 
     @leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction != self._MAJORITY_CLASS and leaf_prediction != self._NAIVE_BAYES \
-                and leaf_prediction != self._NAIVE_BAYES_ADAPTIVE:
+        if leaf_prediction not in [self._MAJORITY_CLASS,
+                                   self._NAIVE_BAYES,
+                                   self._NAIVE_BAYES_ADAPTIVE]:
             print("Invalid leaf_prediction option {}', will use default '{}'".
                   format(leaf_prediction, self._NAIVE_BAYES_ADAPTIVE))
             self._leaf_prediction = self._NAIVE_BAYES_ADAPTIVE
         else:
             self._leaf_prediction = leaf_prediction
-
-    @property
-    def nb_threshold(self):
-        return self._nb_threshold
-
-    @nb_threshold.setter
-    def nb_threshold(self, nb_threshold):
-        self._nb_threshold = nb_threshold
-
-    @property
-    def nominal_attributes(self):
-        return self._nominal_attributes
-
-    @nominal_attributes.setter
-    def nominal_attributes(self, nominal_attributes):
-        self._nominal_attributes = nominal_attributes
-
-    @property
-    def classes(self):
-        return self._classes
-
-    @classes.setter
-    def classes(self, value):
-        self._classes = value
 
     def measure_byte_size(self):
         """ Calculate the size of the tree.
@@ -335,8 +242,6 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         self._active_leaf_byte_size_estimate = 0.0
         self._byte_size_estimate_overhead_fraction = 1.0
         self._growth_allowed = True
-        if self._leaf_prediction != self._MAJORITY_CLASS:
-            self._remove_poor_atts = None
         self._train_weight_seen_by_model = 0.0
 
         return self
@@ -421,32 +326,33 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
             self._active_leaf_node_cnt += 1
         if isinstance(leaf_node, LearningNode):
             learning_node = leaf_node
-            learning_node.learn_from_instance(X, y, sample_weight, self)
-            if self._growth_allowed and isinstance(learning_node, ActiveLearningNode):
+            learning_node.learn_one(X, y, weight=sample_weight, tree=self)
+            if self._growth_allowed and isinstance(learning_node, ActiveLeaf):
                 active_learning_node = learning_node
-                weight_seen = active_learning_node.get_weight_seen()
-                weight_diff = weight_seen - active_learning_node.get_weight_seen_at_last_split_evaluation()
+                weight_seen = active_learning_node.total_weight
+                weight_diff = weight_seen - active_learning_node.last_split_attempt_at
                 if weight_diff >= self.grace_period:
-                    self._attempt_to_split(active_learning_node, found_node.parent, found_node.parent_branch)
-                    active_learning_node.set_weight_seen_at_last_split_evaluation(weight_seen)
+                    self._attempt_to_split(active_learning_node, found_node.parent,
+                                           found_node.parent_branch)
+                    active_learning_node.last_split_attempt_at = weight_seen
         # Split node encountered a previously unseen categorical value
-        # (in a multiway test)
+        # (in a multi-way test)
         elif isinstance(leaf_node, SplitNode) and \
-                isinstance(leaf_node.get_split_test(), NominalAttributeMultiwayTest):
+                isinstance(leaf_node.split_test, NominalAttributeMultiwayTest):
             # Creates a new branch to the new categorical value
             current = found_node.node
             leaf_node = self._new_learning_node()
-            branch_id = current.get_split_test().add_new_branch(
-                X[current.get_split_test().get_atts_test_depends_on()[0]]
+            branch_id = current.split_test.add_new_branch(
+                X[current.split_test.get_atts_test_depends_on()[0]]
             )
             current.set_child(branch_id, leaf_node)
             self._active_leaf_node_cnt += 1
-            leaf_node.learn_from_instance(X, y, sample_weight, self)
+            leaf_node.learn_one(X, y, weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
-            self.estimate_model_byte_size()
+            self._estimate_model_byte_size()
 
-    def get_votes_for_instance(self, X):
+    def _get_votes_for_instance(self, X):
         """ Get class votes for a single instance.
 
         Parameters
@@ -464,7 +370,8 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
             leaf_node = found_node.node
             if leaf_node is None:
                 leaf_node = found_node.parent
-            return leaf_node.get_class_votes(X, self)
+            return leaf_node.predict_one(X, tree=self) if not isinstance(leaf_node, SplitNode) \
+                else leaf_node.stats
         else:
             return {}
 
@@ -507,7 +414,7 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         r, _ = get_dimensions(X)
         predictions = []
         for i in range(r):
-            votes = copy.deepcopy(self.get_votes_for_instance(X[i]))
+            votes = copy.deepcopy(self._get_votes_for_instance(X[i]))
             if votes == {}:
                 # Tree is empty, all classes equal, default to zero
                 predictions.append([0])
@@ -530,7 +437,7 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         return predictions
 
     @property
-    def get_model_measurements(self):
+    def model_measurements(self):
         """ Collect metrics corresponding to the current status of the tree.
 
         Returns
@@ -539,17 +446,18 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
             A string buffer containing the measurements of the tree.
         """
         measurements = {'Tree size (nodes)': self._decision_node_cnt
-                                             + self._active_leaf_node_cnt
-                                             + self._inactive_leaf_node_cnt,
-                        'Tree size (leaves)': self._active_leaf_node_cnt + self._inactive_leaf_node_cnt,
-                        'Active learning nodes': self._active_leaf_node_cnt, 'Tree depth': self.measure_tree_depth(),
+                        + self._active_leaf_node_cnt + self._inactive_leaf_node_cnt,
+                        'Tree size (leaves)': self._active_leaf_node_cnt
+                        + self._inactive_leaf_node_cnt,
+                        'Active learning nodes': self._active_leaf_node_cnt,
+                        'Tree depth': self._measure_tree_depth(),
                         'Active leaf byte size estimate': self._active_leaf_byte_size_estimate,
                         'Inactive leaf byte size estimate': self._inactive_leaf_byte_size_estimate,
                         'Byte size estimate overhead': self._byte_size_estimate_overhead_fraction
                         }
         return measurements
 
-    def measure_tree_depth(self):
+    def _measure_tree_depth(self):
         """ Calculate the depth of the tree.
 
         Returns
@@ -561,19 +469,22 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
             return self._tree_root.subtree_depth()
         return 0
 
-    def _new_learning_node(self, initial_class_observations=None, is_active_node=True):
-        """ Create a new learning node. The type of learning node depends on the tree configuration."""
+    def _new_learning_node(self, initial_class_observations=None, is_active=True):
+        """ Create a new learning node.
+
+        The type of learning node depends on the tree configuration.
+        """
         if initial_class_observations is None:
             initial_class_observations = {}
-        if is_active_node:
+        if is_active:
             if self._leaf_prediction == self._MAJORITY_CLASS:
-                return ActiveLearningNode(initial_class_observations)
+                return ActiveLearningNodeMC(initial_class_observations)
             elif self._leaf_prediction == self._NAIVE_BAYES:
-                return LearningNodeNB(initial_class_observations)
+                return ActiveLearningNodeNB(initial_class_observations)
             else:  # NAIVE BAYES ADAPTIVE (default)
-                return LearningNodeNBAdaptive(initial_class_observations)
+                return ActiveLearningNodeNBA(initial_class_observations)
         else:
-            return InactiveLearningNode(initial_class_observations)
+            return InactiveLearningNodeMC(initial_class_observations)
 
     def get_model_description(self):
         """ Walk the tree and return its structure in a buffer.
@@ -593,8 +504,9 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
             return description
 
     @staticmethod
-    def compute_hoeffding_bound(range_val, confidence, n):
-        r""" Compute the Hoeffding bound, used to decide how many samples are necessary at each node.
+    def _hoeffding_bound(range_val, confidence, n):
+        r""" Compute the Hoeffding bound, used to decide how many samples are necessary at each
+        node.
 
         Notes
         -----
@@ -608,10 +520,11 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
 
         :math:`\epsilon`: Hoeffding bound.
 
-        :math:`R`: Range of a random variable. For a probability the range is 1, and for an information gain the range
-        is log *c*, where *c* is the number of classes.
+        :math:`R`: Range of a random variable. For a probability the range is 1, and for an
+        information gain the range is log *c*, where *c* is the number of classes.
 
-        :math:`\delta`: Confidence. 1 minus the desired probability of choosing the correct attribute at any given node.
+        :math:`\delta`: Confidence. 1 minus the desired probability of choosing the correct
+        attribute at any given node.
 
         :math:`n`: Number of samples.
 
@@ -632,11 +545,11 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         """
         return np.sqrt((range_val * range_val * np.log(1.0 / confidence)) / (2.0 * n))
 
-    def new_split_node(self, split_test, class_observations):
+    def _new_split_node(self, split_test, class_observations):
         """ Create a new split node."""
         return SplitNode(split_test, class_observations)
 
-    def _attempt_to_split(self, node: ActiveLearningNode, parent: SplitNode, parent_idx: int):
+    def _attempt_to_split(self, node, parent: SplitNode, parent_idx: int):
         """ Attempt to split a node.
 
         If the samples seen so far are not from the same class then:
@@ -652,7 +565,7 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
 
         Parameters
         ----------
-        node: ActiveLearningNode
+        node:
             The node to evaluate.
         parent: SplitNode
             The node's parent.
@@ -675,29 +588,24 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
             if len(best_split_suggestions) < 2:
                 should_split = len(best_split_suggestions) > 0
             else:
-                hoeffding_bound = self.compute_hoeffding_bound(split_criterion.get_range_of_merit(
-                    node.get_observed_class_distribution()), self.split_confidence, node.get_weight_seen())
+                hoeffding_bound = self._hoeffding_bound(split_criterion.get_range_of_merit(
+                    node.stats), self.split_confidence, node.total_weight)
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
                 if (best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
-                        or hoeffding_bound < self.tie_threshold):  # best_suggestion.merit > 1e-10 and \
+                        or hoeffding_bound < self.tie_threshold):
                     should_split = True
-                if self.remove_poor_atts is not None and self.remove_poor_atts:
+                if self.remove_poor_atts:
                     poor_atts = set()
-                    # Scan 1 - add any poor attribute to set
+                    # Add any poor attribute to set
                     for i in range(len(best_split_suggestions)):
                         if best_split_suggestions[i] is not None:
-                            split_atts = best_split_suggestions[i].split_test.get_atts_test_depends_on()
+                            split_atts = best_split_suggestions[i].split_test.\
+                                get_atts_test_depends_on()
                             if len(split_atts) == 1:
-                                if best_suggestion.merit - best_split_suggestions[i].merit > hoeffding_bound:
+                                if (best_suggestion.merit - best_split_suggestions[i].merit
+                                        > hoeffding_bound):
                                     poor_atts.add(int(split_atts[0]))
-                    # Scan 2 - remove good attributes from set
-                    for i in range(len(best_split_suggestions)):
-                        if best_split_suggestions[i] is not None:
-                            split_atts = best_split_suggestions[i].split_test.get_atts_test_depends_on()
-                            if len(split_atts) == 1:
-                                if best_suggestion.merit - best_split_suggestions[i].merit < hoeffding_bound:
-                                    poor_atts.remove(int(split_atts[0]))
                     for poor_att in poor_atts:
                         node.disable_attribute(poor_att)
             if should_split:
@@ -706,11 +614,11 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
                     # Preprune - null wins
                     self._deactivate_learning_node(node, parent, parent_idx)
                 else:
-                    new_split = self.new_split_node(split_decision.split_test,
-                                                    node.get_observed_class_distribution())
+                    new_split = self._new_split_node(split_decision.split_test, node.stats)
 
                     for i in range(split_decision.num_splits()):
-                        new_child = self._new_learning_node(split_decision.resulting_class_distribution_from_split(i))
+                        new_child = self._new_learning_node(
+                            split_decision.resulting_stats_from_split(i))
                         new_split.set_child(i, new_child)
                     self._active_leaf_node_cnt -= 1
                     self._decision_node_cnt += 1
@@ -720,14 +628,14 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
                     else:
                         parent.set_child(parent_idx, new_split)
                 # Manage memory
-                self.enforce_tracker_limit()
+                self._enforce_tracker_limit()
 
     def _sort_learning_nodes(self, learning_nodes):
         """ Define strategy to sort learning nodes according to their likeliness of being split."""
         learning_nodes.sort(key=lambda n: n.node.calculate_promise())
         return learning_nodes
 
-    def enforce_tracker_limit(self):
+    def _enforce_tracker_limit(self):
         """ Track the size of the tree and disable/enable nodes if required."""
         byte_size = (self._active_leaf_byte_size_estimate
                      + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate) \
@@ -741,55 +649,60 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         max_active = 0
         while max_active < len(learning_nodes):
             max_active += 1
-            if ((max_active * self._active_leaf_byte_size_estimate + (len(learning_nodes) - max_active)
-                 * self._inactive_leaf_byte_size_estimate) * self._byte_size_estimate_overhead_fraction) \
-                    > self.max_byte_size:
+            if (((max_active * self._active_leaf_byte_size_estimate
+                    + (len(learning_nodes) - max_active) * self._inactive_leaf_byte_size_estimate)
+                    * self._byte_size_estimate_overhead_fraction) > self.max_byte_size):
                 max_active -= 1
                 break
         cutoff = len(learning_nodes) - max_active
         for i in range(cutoff):
-            if isinstance(learning_nodes[i].node, ActiveLearningNode):
+            if isinstance(learning_nodes[i].node, ActiveLeaf):
                 self._deactivate_learning_node(learning_nodes[i].node,
                                                learning_nodes[i].parent,
                                                learning_nodes[i].parent_branch)
         for i in range(cutoff, len(learning_nodes)):
-            if isinstance(learning_nodes[i].node, InactiveLearningNode):
+            if isinstance(learning_nodes[i].node, InactiveLeaf):
                 self._activate_learning_node(learning_nodes[i].node,
                                              learning_nodes[i].parent,
                                              learning_nodes[i].parent_branch)
 
-    def estimate_model_byte_size(self):
-        """ Calculate the size of the model and trigger tracker function if the actual model size exceeds the max size
-        in the configuration."""
+    def _estimate_model_byte_size(self):
+        """ Calculate the size of the model and trigger tracker function if the actual model size
+        exceeds the max size in the configuration."""
         learning_nodes = self._find_learning_nodes()
         total_active_size = 0
         total_inactive_size = 0
         for found_node in learning_nodes:
-            if isinstance(found_node.node, ActiveLearningNode):
+            if not found_node.node.is_leaf():  # Safety check for non-trivial tree structures
+                continue
+            if isinstance(found_node.node, ActiveLeaf):
                 total_active_size += calculate_object_size(found_node.node)
             else:
                 total_inactive_size += calculate_object_size(found_node.node)
         if total_active_size > 0:
             self._active_leaf_byte_size_estimate = total_active_size / self._active_leaf_node_cnt
         if total_inactive_size > 0:
-            self._inactive_leaf_byte_size_estimate = total_inactive_size / self._inactive_leaf_node_cnt
+            self._inactive_leaf_byte_size_estimate = total_inactive_size \
+                / self._inactive_leaf_node_cnt
         actual_model_size = calculate_object_size(self)
         estimated_model_size = (self._active_leaf_node_cnt * self._active_leaf_byte_size_estimate
-                                + self._inactive_leaf_node_cnt * self._inactive_leaf_byte_size_estimate)
+                                + self._inactive_leaf_node_cnt
+                                * self._inactive_leaf_byte_size_estimate)
         self._byte_size_estimate_overhead_fraction = actual_model_size / estimated_model_size
         if actual_model_size > self.max_byte_size:
-            self.enforce_tracker_limit()
+            self._enforce_tracker_limit()
 
-    def deactivate_all_leaves(self):
+    def _deactivate_all_leaves(self):
         """ Deactivate all leaves. """
         learning_nodes = self._find_learning_nodes()
-        for i in range(len(learning_nodes)):
-            if isinstance(learning_nodes[i], ActiveLearningNode):
-                self._deactivate_learning_node(learning_nodes[i].node,
-                                               learning_nodes[i].parent,
-                                               learning_nodes[i].parent_branch)
+        for cur_node in learning_nodes:
+            if isinstance(cur_node, ActiveLeaf):
+                self._deactivate_learning_node(cur_node.node,
+                                               cur_node.parent,
+                                               cur_node.parent_branch)
 
-    def _deactivate_learning_node(self, to_deactivate: ActiveLearningNode, parent: SplitNode, parent_branch: int):
+    def _deactivate_learning_node(self, to_deactivate: ActiveLeaf, parent: SplitNode,
+                                  parent_branch: int):
         """ Deactivate a learning node.
 
         Parameters
@@ -803,7 +716,7 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
 
         """
         new_leaf = self._new_learning_node(
-            to_deactivate.get_observed_class_distribution(), is_active_node=False
+            to_deactivate.stats, is_active=False
         )
         if parent is None:
             self._tree_root = new_leaf
@@ -812,7 +725,8 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         self._active_leaf_node_cnt -= 1
         self._inactive_leaf_node_cnt += 1
 
-    def _activate_learning_node(self, to_activate: InactiveLearningNode, parent: SplitNode, parent_branch: int):
+    def _activate_learning_node(self, to_activate: InactiveLeaf, parent: SplitNode,
+                                parent_branch: int):
         """ Activate a learning node.
 
         Parameters
@@ -825,7 +739,7 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
             Parent node's branch index.
 
         """
-        new_leaf = self._new_learning_node(to_activate.get_observed_class_distribution())
+        new_leaf = self._new_learning_node(to_activate.stats)
         if parent is None:
             self._tree_root = new_leaf
         else:
@@ -869,13 +783,13 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
                 found.append(FoundNode(node, parent, parent_branch, depth))
             if isinstance(node, SplitNode):
                 split_node = node
-                for i in range(split_node.num_children()):
+                for i in range(split_node.n_children):
                     self.__find_learning_nodes(
                         split_node.get_child(i), split_node, i, found, depth + 1
                     )
 
     def get_model_rules(self):
-        """ Returns list of list describing the tree.
+        """ Returns list of rules describing the tree.
 
         Returns
         -------
@@ -893,8 +807,8 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
                     r.predicate_set.append(predicate)
                     recurse(child, r, ht)
             else:
-                cur_rule.observed_class_distribution = node.get_observed_class_distribution().copy()
-                cur_rule.class_idx = max(node.get_observed_class_distribution().items(), key=itemgetter(1))[0]
+                cur_rule.observed_class_distribution = node.stats.copy()
+                cur_rule.class_idx = max(node.stats.items(), key=itemgetter(1))[0]
                 rules.append(cur_rule)
 
         rule = Rule()
@@ -902,7 +816,7 @@ class HoeffdingTreeClassifier(BaseSKMObject, ClassifierMixin):
         return rules
 
     def get_rules_description(self):
-        """ Prints the the description of tree using rules."""
+        """ Prints the description of tree using rules."""
         description = ''
         for rule in self.get_model_rules():
             description += str(rule) + '\n'

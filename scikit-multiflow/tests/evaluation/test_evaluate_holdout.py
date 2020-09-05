@@ -34,7 +34,7 @@ def test_evaluate_holdout_classifier(tmpdir, test_path):
 
     assert isinstance(result_learner, HoeffdingTreeClassifier)
 
-    assert learner.get_model_measurements == result_learner.get_model_measurements
+    assert learner.model_measurements == result_learner.model_measurements
 
     expected_file = os.path.join(test_path, 'holdout_summary.csv')
     compare_files(output_file, expected_file)

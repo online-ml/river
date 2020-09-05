@@ -1,21 +1,24 @@
 import numpy as np
 
 from skmultiflow.trees import HoeffdingTreeRegressor
-from skmultiflow.trees.nodes import AdaSplitNodeForRegression
-from skmultiflow.trees.nodes import AdaLearningNodeForRegression
-from skmultiflow.trees.nodes import InactiveLearningNodeForRegression
 from skmultiflow.utils import add_dict_values
+
+from ._nodes import InactiveLeaf
+from ._nodes import AdaSplitNodeRegressor
+from ._nodes import AdaActiveLearningNodeRegressor
+from ._nodes import InactiveLearningNodeMean, InactiveLearningNodePerceptron
 
 import warnings
 
 
-def RegressionHAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200, split_confidence=0.0000001,
-                  tie_threshold=0.05, binary_split=False, stop_mem_management=False, remove_poor_atts=False,
-                  leaf_prediction="perceptron", no_preprune=False, nominal_attributes=None,
-                  learning_ratio_perceptron=0.02, learning_ratio_decay=0.001, learning_ratio_const=True,
+def RegressionHAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
+                  split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
+                  stop_mem_management=False, remove_poor_atts=False, leaf_prediction="perceptron",
+                  no_preprune=False, nominal_attributes=None, learning_ratio_perceptron=0.02,
+                  learning_ratio_decay=0.001, learning_ratio_const=True, bootstrap_sampling=False,
                   random_state=None):     # pragma: no cover
-    warnings.warn("'RegressionHAT' has been renamed to 'HoeffdingAdaptiveTreeRegressor' in v0.5.0.\n"
-                  "The old name will be removed in v0.7.0", category=FutureWarning)
+    warnings.warn("'RegressionHAT' has been renamed to 'HoeffdingAdaptiveTreeRegressor' in"
+                  "v0.5.0.\nThe old name will be removed in v0.7.0", category=FutureWarning)
     return HoeffdingAdaptiveTreeRegressor(max_byte_size=max_byte_size,
                                           memory_estimate_period=memory_estimate_period,
                                           grace_period=grace_period,
@@ -30,6 +33,7 @@ def RegressionHAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_
                                           learning_ratio_perceptron=learning_ratio_perceptron,
                                           learning_ratio_decay=learning_ratio_decay,
                                           learning_ratio_const=learning_ratio_const,
+                                          bootstrap_sampling=bootstrap_sampling,
                                           random_state=random_state)
 
 
@@ -70,6 +74,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         Decay multiplier for the learning rate of the perceptron
     learning_ratio_const: Bool
         If False the learning ratio will decay with the number of examples seen
+    bootstrap_sampling: bool, optional (default=False)
+        If True, perform bootstrap sampling in the leaf nodes.
     random_state: int, RandomState instance or None, optional (default=None)
        If int, random_state is the seed used by the random number generator;
        If RandomState instance, random_state is the random number generator;
@@ -130,6 +136,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  learning_ratio_perceptron=0.02,
                  learning_ratio_decay=0.001,
                  learning_ratio_const=True,
+                 bootstrap_sampling=False,
                  random_state=None):
 
         super().__init__(max_byte_size=max_byte_size,
@@ -147,31 +154,29 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                          learning_ratio_const=learning_ratio_const,
                          leaf_prediction=leaf_prediction,
                          random_state=random_state)
+        self.bootstrap_sampling = bootstrap_sampling
         self.alternate_trees_cnt = 0
         self.switch_alternate_trees_cnt = 0
         self.pruned_alternate_trees_cnt = 0
 
-    @property
-    def leaf_prediction(self):
-        return self._leaf_prediction
+    def _new_learning_node(self, initial_stats=None, parent_node=None,
+                           is_active=True):
+        """Create a new learning node.
 
-    @leaf_prediction.setter
-    def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in {self._TARGET_MEAN, self._PERCEPTRON}:
-            print("Invalid leaf_prediction option {}', will use default '{}'".
-                  format(leaf_prediction, self._PERCEPTRON))
-            self._leaf_prediction = self._PERCEPTRON
+        The type of learning node depends on the tree configuration.
+        """
+        if initial_stats is None:
+            initial_stats = {}
+
+        if is_active:
+            return AdaActiveLearningNodeRegressor(initial_stats, parent_node,
+                                                  random_state=self.random_state)
         else:
-            self._leaf_prediction = leaf_prediction
-
-    def _new_learning_node(self, initial_class_observations=None, parent_node=None):
-        """Create a new learning node. The type of learning node depends on the tree
-        configuration."""
-        if initial_class_observations is None:
-            initial_class_observations = {}
-
-        return AdaLearningNodeForRegression(initial_class_observations, parent_node,
-                                            random_state=self.random_state)
+            prediction_option = self.leaf_prediction
+            if prediction_option == self._TARGET_MEAN:
+                return InactiveLearningNodeMean
+            else:
+                return InactiveLearningNodePerceptron
 
     def _partial_fit(self, X, y, weight):
         """Trains the model on samples X and corresponding targets y.
@@ -197,14 +202,14 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             self.sum_of_attribute_values += weight * X
             self.sum_of_attribute_squares += weight * X * X
         except ValueError:
-            
+
             self.sum_of_attribute_values = weight * X
             self.sum_of_attribute_squares = weight * X * X
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._active_leaf_node_cnt = 1
-        self._tree_root.learn_from_instance(X, y, weight, self, None, -1)
+        self._tree_root.learn_one(X, y, weight, self, None, -1)
 
     def filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch,
                                   update_splitter_counts):
@@ -213,10 +218,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                                                   update_splitter_counts, nodes)
         return nodes
 
-    def get_votes_for_instance(self, X):
+    def _get_votes_for_instance(self, X):
         result = {}
         if self._tree_root is not None:
-            if isinstance(self._tree_root, InactiveLearningNodeForRegression):
+            if isinstance(self._tree_root, InactiveLeaf):
                 found_node = [self._tree_root.filter_instance_to_leaf(X, None, -1)]
             else:
                 found_node = self.filter_instance_to_leaves(X, -np.inf, -np.inf, None, -1, False)
@@ -230,5 +235,5 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                     result = add_dict_values(result, dist, inplace=True)
         return result
 
-    def new_split_node(self, split_test, class_observations):
-        return AdaSplitNodeForRegression(split_test, class_observations, self.random_state)
+    def _new_split_node(self, split_test, class_observations):
+        return AdaSplitNodeRegressor(split_test, class_observations, self.random_state)
