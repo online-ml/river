@@ -84,15 +84,15 @@ def test_finite_differences(lm, dataset):
 
         # Store the current gradient and weights
         gradient, _ = lm._eval_gradient_one(x, y, 1)
-        weights = lm.weights.copy()
+        weights = copy.deepcopy(lm._weights)
 
         # d is a set of weight perturbations
         for d in iter_perturbations(weights.keys()):
 
             # Pertubate the weights and obtain the loss with the new weights
-            lm.weights = {i: weights[i] + eps * di for i, di in d.items()}
+            lm._weights = utils.VectorDict({i: weights[i] + eps * di for i, di in d.items()})
             forward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
-            lm.weights = {i: weights[i] - eps * di for i, di in d.items()}
+            lm._weights = utils.VectorDict({i: weights[i] - eps * di for i, di in d.items()})
             backward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
 
             # We expect g and h to be equal
@@ -109,7 +109,7 @@ def test_finite_differences(lm, dataset):
 
         # Reset the weights to their original values in order not to influence
         # the training loop, even though it doesn't really matter.
-        lm.weights = weights
+        lm._weights = weights
         lm.learn_one(x, y)
 
 
