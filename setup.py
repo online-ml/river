@@ -68,7 +68,8 @@ docs_packages = dev_packages + [
     'mkdocs',
     'mkdocs-awesome-pages-plugin',
     'mkdocs-material',
-    'nbconvert'
+    'nbconvert',
+    'numpydoc'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
