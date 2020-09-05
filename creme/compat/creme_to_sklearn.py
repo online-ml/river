@@ -214,7 +214,8 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
     def _partial_fit(self, X, y, classes):
 
         # If first _partial_fit call, set the classes, else check consistency
-        utils.multiclass._check_partial_learn_first_call(self, classes)
+        if not hasattr(self, 'classes_'):
+            self.classes_ = classes
 
         # Check the inputs
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)

@@ -20,7 +20,7 @@ class KSWIN(DriftDetector):
     stat_size: float (default=30)
         Size of the statistic window
 
-    data: numpy.ndarray of shape (n_samples, 1) (default=None,optional)
+    window: numpy.ndarray of shape (n_samples, 1) (default=None,optional)
         Already collected data to avoid cold start.
 
     Notes
@@ -73,7 +73,7 @@ class KSWIN(DriftDetector):
 
     """
 
-    def __init__(self, alpha=0.005, window_size=100, stat_size=30, data=None):
+    def __init__(self, alpha=0.005, window_size=100, stat_size=30, window=None):
         super().__init__()
         self.window_size = window_size
         self.stat_size = stat_size
@@ -89,10 +89,10 @@ class KSWIN(DriftDetector):
         if self.window_size < self.stat_size:
             raise ValueError("stat_size must be smaller than window_size")
 
-        if not isinstance(data, np.ndarray) or data is None:
+        if not isinstance(window, np.ndarray) or window is None:
             self.window = np.array([])
         else:
-            self.window = data
+            self.window = window
 
     def update(self, value):
         """Update the change detector with a single data point.

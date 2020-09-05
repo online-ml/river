@@ -93,10 +93,10 @@ def test_kswin_coverage():
     kswin = KSWIN(alpha=0.5)
     assert kswin.alpha == 0.5
 
-    kswin = KSWIN(data="st")
+    kswin = KSWIN(window="st")
     assert isinstance(kswin.window, np.ndarray)
 
-    kswin = KSWIN(data=np.array([0.75, 0.80, 1, -1]))
+    kswin = KSWIN(window=np.array([0.75, 0.80, 1, -1]))
     assert isinstance(kswin.window, np.ndarray)
 
     try:

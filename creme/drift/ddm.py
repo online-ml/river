@@ -83,7 +83,7 @@ class DDM(DriftDetector):
         self.miss_prob_sd_min = None
         self.miss_prob_min = None
         self.miss_sd_min = None
-        self.min_instances = min_num_instances
+        self.min_num_instances = min_num_instances
         self.warning_level = warning_level
         self.out_control_level = out_control_level
         self.estimation = None
@@ -130,7 +130,7 @@ class DDM(DriftDetector):
         self._in_warning_zone = False
         self.delay = 0
 
-        if self.sample_count < self.min_instances:
+        if self.sample_count < self.min_num_instances:
             return self._in_concept_change, self._in_warning_zone
 
         if self.miss_prob + self.miss_std <= self.miss_prob_sd_min:
