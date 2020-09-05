@@ -1,6 +1,6 @@
 import numpy as np
 
-from skmultiflow.drift_detection import DDM
+from creme.drift import DDM
 
 
 def test_ddm():
@@ -23,11 +23,9 @@ def test_ddm():
     detected_indices = []
 
     for i in range(data_stream.size):
-        ddm.add_element(data_stream[i])
-        if ddm.detected_change():
+        ddm.update(data_stream[i])
+        if ddm.change_detected:
             detected_indices.append(i)
 
     assert detected_indices == expected_indices
 
-    expected_info = "DDM(min_num_instances=None, out_control_level=3.0, warning_level=2.0)"
-    assert ddm.get_info() == expected_info

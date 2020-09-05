@@ -1,8 +1,8 @@
 from skmultiflow.rules.attribute_expand_suggestion import AttributeExpandSuggestion
-from skmultiflow.trees.attribute_observer import AttributeClassObserver
+from skmultiflow.trees._attribute_observer import AttributeObserver
 
 
-class NominalAttributeClassObserver(AttributeClassObserver):
+class NominalAttributeClassObserver(AttributeObserver):
     """ NominalAttributeClassObserver
 
     Class for observing the class data distribution for a nominal attribute.
@@ -17,7 +17,7 @@ class NominalAttributeClassObserver(AttributeClassObserver):
         self._missing_weight_observed = 0.0
         self._att_val_dist_per_class = {}
 
-    def observe_attribute_class(self, att_val, class_val, weight):
+    def update(self, att_val, class_val, weight):
         if att_val is None:
             self._missing_weight_observed += weight
         else:

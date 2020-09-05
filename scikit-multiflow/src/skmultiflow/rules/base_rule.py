@@ -17,7 +17,7 @@ class Rule(BaseSKMObject):
     ----------
     class_distribution: dict (class_value, weight)
         Class observations collected from the instances seen in the rule.
-    drift_detector: BaseDriftDetector
+    drift_detector: DriftDetector
         The drift detector used to signal the change in the concept.
     class_idx: int
         The class that rule is describing

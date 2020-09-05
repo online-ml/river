@@ -13,7 +13,6 @@ def configuration(parent_package='', top_path=None):
     config.add_subpackage('bayes')
     config.add_subpackage('core')
     config.add_subpackage('data')
-    config.add_subpackage('drift_detection')
     config.add_subpackage('evaluation')
     config.add_subpackage('meta')
     config.add_subpackage('neural_networks')

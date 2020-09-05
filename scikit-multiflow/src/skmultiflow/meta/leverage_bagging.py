@@ -2,7 +2,7 @@ import copy as cp
 
 from skmultiflow.core.base import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.lazy import KNNClassifier
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
 
@@ -284,8 +284,8 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
             if pred is not None:
                 add = 0 if (pred[0] == y_coded) else 1
                 error = self.adwin_ensemble[i].estimation
-                self.adwin_ensemble[i].add_element(add)
-                if self.adwin_ensemble[i].detected_change():
+                self.adwin_ensemble[i].update(add)
+                if self.adwin_ensemble[i].change_detected:
                     if self.adwin_ensemble[i].estimation > error:
                         change_detected = True
 

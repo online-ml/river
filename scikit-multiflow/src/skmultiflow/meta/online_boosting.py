@@ -4,7 +4,7 @@ from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.lazy import KNNADWINClassifier
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *
-from skmultiflow.drift_detection import ADWIN
+from creme.drift import ADWIN
 
 import warnings
 
@@ -223,8 +223,8 @@ class OnlineBoostingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixi
                         error_estimation = self.adwin_ensemble[i].estimation
                         for k in range(r):
                             if pred[k] is not None:
-                                self.adwin_ensemble[i].add_element(int(pred[k] == y[k]))
-                        if self.adwin_ensemble[i].detected_change():
+                                self.adwin_ensemble[i].update(int(pred[k] == y[k]))
+                        if self.adwin_ensemble[i].change_detected:
                             if self.adwin_ensemble[i].estimation > error_estimation:
                                 change_detected = True
                     except ValueError:
