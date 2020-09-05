@@ -1,5 +1,5 @@
 """This script is responsible for building the API reference. The API reference is located in
-docs/api-reference. The script scans through all the modules, classes, and functions. It processes
+docs/api. The script scans through all the modules, classes, and functions. It processes
 the __doc__ of each object and formats it so that MkDocs can process it in turn.
 
 """
@@ -86,30 +86,31 @@ class Linkifier:
         }
 
         def index_module(mod_name, mod, path):
-            path = os.path.join(path, mod_name).replace('/', '.')
+            path = os.path.join(path, mod_name)
+            dotted_path = path.replace('/', '.')
 
             for func_name, func in inspect.getmembers(mod, inspect.isfunction):
                 for e in (
                     f'{mod_name}.{func_name}',
-                    f'{path}.{func_name}',
+                    f'{dotted_path}.{func_name}',
                     f'{func.__module__}.{func_name}'
                 ):
                     path_index[e] = os.path.join(path, snake_to_kebab(func_name))
-                    name_index[e] = f'{path}.{func_name}'
+                    name_index[e] = f'{dotted_path}.{func_name}'
 
             for klass_name, klass in inspect.getmembers(mod, inspect.isclass):
                 for e in (
                     f'{mod_name}.{klass_name}',
-                    f'{path}.{klass_name}',
+                    f'{dotted_path}.{klass_name}',
                     f'{klass.__module__}.{klass_name}'
                 ):
                     path_index[e] = os.path.join(path, klass_name)
-                    name_index[e] = f'{path}.{klass_name}'
+                    name_index[e] = f'{dotted_path}.{klass_name}'
 
             for submod_name, submod in inspect.getmembers(mod, inspect.ismodule):
                 if submod_name not in mod.__all__ or submod_name == 'typing':
                     continue
-                for e in (f'{mod_name}.{submod_name}', f'{path}.{submod_name}'):
+                for e in (f'{mod_name}.{submod_name}', f'{dotted_path}.{submod_name}'):
                     path_index[e] = os.path.join(path, snake_to_kebab(submod_name))
 
                 # Recurse
@@ -117,10 +118,6 @@ class Linkifier:
 
         for mod_name, mod in modules.items():
             index_module(mod_name, mod, path='')
-
-        # Prepend the location of the API reference to each path
-        for k, v in path_index.items():
-            path_index[k] = os.path.join('/api-reference', v)
 
         # Prepend creme to each index entry
         for k in list(path_index.keys()):
@@ -131,29 +128,30 @@ class Linkifier:
         self.path_index = path_index
         self.name_index = name_index
 
-    def linkify(self, text, use_fences):
+    def linkify(self, text, use_fences, depth):
         path = self.path_index.get(text)
         name = self.name_index.get(text)
         if path and name:
+            backwards = '../' * (depth + 1)
             if use_fences:
-                return f'[`{name}`]({path})'
-            return f'[{name}]({path})'
+                return f'[`{name}`]({backwards}{path})'
+            return f'[{name}]({backwards}{path})'
         return None
 
-    def linkify_fences(self, text):
+    def linkify_fences(self, text, depth):
         between_fences = re.compile('`[\w\.]+\.\w+`')
-        return between_fences.sub(lambda x: self.linkify(x.group().strip('`'), True) or x.group(), text)
+        return between_fences.sub(lambda x: self.linkify(x.group().strip('`'), True, depth) or x.group(), text)
 
-    def linkify_dotted(self, text):
+    def linkify_dotted(self, text, depth):
         dotted = re.compile('\w+\.[\.\w]+')
-        return dotted.sub(lambda x: self.linkify(x.group(), False) or x.group(), text)
+        return dotted.sub(lambda x: self.linkify(x.group(), False, depth) or x.group(), text)
 
 
 def concat_lines(lines):
     return inspect.cleandoc(' '.join('\n\n' if line == '' else line for line in lines))
 
 
-def print_docstring(obj, file):
+def print_docstring(obj, file, depth):
     """Prints a classes's docstring to a file.
 
     """
@@ -163,8 +161,8 @@ def print_docstring(obj, file):
     printf = functools.partial(print, file=file)
 
     printf(h1(obj.__name__))
-    printf(linkifier.linkify_fences(paragraph(concat_lines(doc['Summary']))))
-    printf(linkifier.linkify_fences(paragraph(concat_lines(doc['Extended Summary']))))
+    printf(linkifier.linkify_fences(paragraph(concat_lines(doc['Summary'])), depth))
+    printf(linkifier.linkify_fences(paragraph(concat_lines(doc['Extended Summary'])), depth))
 
     # We infer the type annotations from the signatures, and therefore rely on the signature
     # instead of the docstring for documenting parameters
@@ -179,7 +177,7 @@ def print_docstring(obj, file):
         # Type annotation
         if param.annotation is not param.empty:
             anno = inspect.formatannotation(param.annotation)
-            anno = linkifier.linkify_dotted(anno)
+            anno = linkifier.linkify_dotted(anno, depth)
             printf(f' (*{anno}*)', end='')
         # Default value
         if param.default is not param.empty:
@@ -293,6 +291,7 @@ def print_module(mod, path, overview, is_submodule=False):
     # Create a directory for the module
     mod_slug = snake_to_kebab(mod_name)
     mod_path = path.joinpath(mod_slug)
+    mod_short_path = str(mod_path).replace('docs/api/', '')
     os.makedirs(mod_path, exist_ok=True)
     with open(mod_path.joinpath('.pages'), 'w') as f:
         f.write(f'title: {mod_name}')
@@ -317,17 +316,18 @@ def print_module(mod, path, overview, is_submodule=False):
 
     for _, c in classes:
 
-        if c.__name__ not in ('LinearRegression', 'Optimizer'):
+        if c.__name__ not in ('LinearRegression', 'Optimizer', 'Scheduler', 'InverseScaling'):
             continue
         print(f'{mod_name}.{c.__name__}')
 
         # Add the class to the overview
         slug = snake_to_kebab(c.__name__)
-        print(li(link(c.__name__, f'/api-reference/{mod_slug}/{slug}')), end='', file=overview)
+        print(mod_short_path, mod_slug)
+        print(li(link(c.__name__, f'../{mod_short_path}/{slug}')), end='', file=overview)
 
         # Write down the class' docstring
         with open(mod_path.joinpath(slug).with_suffix('.md'), 'w') as file:
-            print_docstring(obj=c, file=file)
+            print_docstring(obj=c, file=file, depth=mod_short_path.count('/') + 1)
 
     # Functions
 
@@ -342,11 +342,11 @@ def print_module(mod, path, overview, is_submodule=False):
 
         # Add the function to the overview
         slug = snake_to_kebab(f.__name__)
-        print(li(link(f.__name__, f'/api-reference/{mod_slug}/{slug}')), end='', file=overview)
+        print(li(link(f.__name__, f'../{mod_short_path}/{slug}')), end='', file=overview)
 
         # Write down the function' docstring
         with open(mod_path.joinpath(slug).with_suffix('.md'), 'w') as file:
-            print_docstring(obj=f, file=file)
+            print_docstring(obj=f, file=file, depth=mod_short_path.count('.') + 1)
 
     # Sub-modules
     for name, submod in inspect.getmembers(mod, inspect.ismodule):
@@ -360,7 +360,7 @@ def print_module(mod, path, overview, is_submodule=False):
 
 if __name__ == '__main__':
 
-    api_path = pathlib.Path('docs/api-reference')
+    api_path = pathlib.Path('docs/api')
 
     # Create a directory for the API reference
     shutil.rmtree(api_path, ignore_errors=True)

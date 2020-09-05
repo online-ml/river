@@ -5,7 +5,7 @@ docs/user-guide/*.md
 docs/user-guide/*_files/
 docs/examples/*.md
 docs/examples/*_files/
-docs/api-reference/
+docs/api/
 site
 
 # Byte-compiled / optimized / DLL files

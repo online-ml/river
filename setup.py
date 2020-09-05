@@ -62,6 +62,7 @@ docs_packages = dev_packages + [
     'flask',
     'ipykernel',
     'jupyter-client',
+    'mike==0.5.3',
     'mkdocs',
     'mkdocs-awesome-pages-plugin',
     'mkdocs-material',

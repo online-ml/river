@@ -62,7 +62,7 @@ def build_index():
 
     # Prepend the location of the API reference to each path
     for k, v in path_index.items():
-        path_index[k] = os.path.join('/api-reference', v)
+        path_index[k] = os.path.join('/api', v)
 
     # Prepend creme to each index entry
     for k in list(path_index.keys()):
@@ -84,7 +84,7 @@ def build_index():
             return f'[{name}]({path})'
         return None
 
-    for path in pathlib.Path('docs/api-reference/').rglob('*.md'):
+    for path in pathlib.Path('docs/api/').rglob('*.md'):
 
         print(path)
 

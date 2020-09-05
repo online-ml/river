@@ -14,13 +14,16 @@ __all__ = [
 
 
 class Scheduler(abc.ABC):
+    """Can be used to program the learning rate shedule of an `optim.Optimizer`."""
 
     @abc.abstractmethod
     def get(self, t: int) -> float:
         """Returns the learning rate at a given iteration.
 
-        Parameters:
-            t: The iteration number.
+        Parameters
+        ----------
+        t
+            The iteration number.
 
         """
 
@@ -34,8 +37,9 @@ class Scheduler(abc.ABC):
 class Constant(Scheduler):
     """Always uses the same learning rate.
 
-    Parameters:
-        learning_rate
+    Parameters
+    ----------
+    learning_rate
 
     """
 
@@ -55,9 +59,10 @@ class InverseScaling(Scheduler):
 
     where $p$ is a user-defined parameter.
 
-    Parameters:
-        learning_rate
-        power
+    Parameters
+    ----------
+    learning_rate
+    power
 
     """
 
