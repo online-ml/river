@@ -55,17 +55,17 @@ jobs:
     script: *pypi-script
     if: tag IS present
 
-    - stage: dev-docs
-      install:
-        - sudo apt-get install graphviz pandoc
-        - python setup.py install
-        - pip install -e ".[docs]"
-      script: make doc
-      after_success:
-        - git config --global user.email "maxhalford25@gmail.com"
-        - git config --global user.name "MaxHalford"
-        - mike deploy dev --push
-      if: branch = "the-merge"
+  - stage: dev-docs
+    install:
+      - sudo apt-get install graphviz pandoc
+      - python setup.py install
+      - pip install -e ".[docs]"
+    script: make doc
+    after_success:
+      - git config --global user.email "maxhalford25@gmail.com"
+      - git config --global user.name "MaxHalford"
+      - mike deploy dev --push
+    if: branch = "the-merge"
 
   - stage: release-docs
     install:
