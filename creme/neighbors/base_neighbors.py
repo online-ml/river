@@ -70,9 +70,11 @@ class KNeighborsBuffer:
     def append(self, x: np.ndarray, y: base.typing.Target) -> 'KNeighborsBuffer':
         """Add a (single) sample to the sample window.
 
-        x : 1D-array of feature for a single sample.
+        x
+            1D-array of feature for a single sample.
 
-        y : The target data for a single sample.
+        y
+            The target data for a single sample.
 
         Raises
         ------
@@ -124,7 +126,7 @@ class KNeighborsBuffer:
             return None
 
     def popleft(self) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
-        """ Remove and return the oldest element in the buffer. """
+        """Remove and return the oldest element in the buffer. """
         if self.size > 0:
             x, y = self._X[self._oldest], self._y[self._oldest]
             self._imask[self._oldest] = False  # Mark slot as free
@@ -135,8 +137,6 @@ class KNeighborsBuffer:
             self._size -= 1
 
             return x, y
-        else:
-            return None
 
     def clear(self) -> 'KNeighborsBuffer':
         """Clear all stored elements."""

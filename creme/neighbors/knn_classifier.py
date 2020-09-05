@@ -8,7 +8,7 @@ from .base_neighbors import BaseNeighbors
 
 
 class KNNClassifier(BaseNeighbors, base.Classifier):
-    """ k-Nearest Neighbors classifier.
+    """k-Nearest Neighbors classifier.
 
     This non-parametric classification method keeps track of the last
     `window_size` training samples. The predicted class-label for a
@@ -20,24 +20,22 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
     Parameters
     ----------
-    n_neighbors : The number of nearest neighbors to search for.
-
-    window_size : The maximum size of the window storing the last observed samples.
-
-    leaf_size :  scipy.spatial.cKDTree parameter.
-        The maximum number of samples that can be stored in one leaf node,
-        which determines from which point the algorithm will switch for a
-        brute-force approach. The bigger this number the faster the tree construction
-        time, but the slower the query time will be.
-
-    p : p-norm value for the Minkowski metric.
-        When `p=1`, this corresponds to the Manhattan distance, while `p=2`
-        corresponds to the Euclidean distance. Valid values are in the
-        interval $[1, +\\infty)$
-
-    weighted : Whether to weight the contribution of each neighbor by it's inverse
+    n_neighbors
+        The number of nearest neighbors to search for.
+    window_size
+        The maximum size of the window storing the last observed samples.
+    leaf_size
+        scipy.spatial.cKDTree parameter. The maximum number of samples that can be
+        stored in one leaf node, which determines from which point the algorithm will
+        switch for a brute-force approach. The bigger this number the faster the
+        tree construction time, but the slower the query time will be.
+    p
+        p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
+        Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid
+        values are in the interval $[1, +\\infty)$
+    weighted
+        Whether to weight the contribution of each neighbor by it's inverse
         distance or not.
-
     **kwargs
         Other parameters passed to scipy.spatial.cKDTree.
 
@@ -49,23 +47,23 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
     Examples
     --------
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import metrics
-        >>> from creme import neighbors
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import metrics
+    >>> from creme import neighbors
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.Phishing()
+    >>> dataset = datasets.Phishing()
 
-        >>> model = (
-        ...    preprocessing.StandardScaler() |
-        ...    neighbors.KNNClassifier()
-        ... )
+    >>> model = (
+    ...    preprocessing.StandardScaler() |
+    ...    neighbors.KNNClassifier()
+    ... )
 
-        >>> metric = metrics.Accuracy()
+    >>> metric = metrics.Accuracy()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        Accuracy: 88.07%
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 88.07%
 
     """
 
@@ -81,8 +79,10 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         Parameters
         ----------
-            x : A dictionary of features.
-            y : The class label.
+        x
+            A dictionary of features.
+        y
+            The class label.
 
         Returns
         -------
@@ -106,10 +106,14 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     def predict_proba_one(self, x):
         """Predict the probability of each label for a dictionary of features `x`.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
+        Returns
+        -------
+        proba
             A dictionary which associates a probability which each label.
 
         """
