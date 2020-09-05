@@ -8,16 +8,18 @@ import setuptools
 try:
     from numpy import get_include
 except ImportError:
-    print('To proceed first install numpy.\n' +
-          'For example, using pip:\n' +
-          '$ pip install -U numpy')
-    sys.exit(1)
+    import subprocess
+    errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'numpy'])
+    if errno:
+        print('Please install numpy')
+        raise SystemExit(errno)
+    else:
+        from numpy import get_include
 
 try:
     from Cython.Build import cythonize
 except ImportError:
     import subprocess
-
     errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'Cython'])
     if errno:
         print('Please install Cython')
