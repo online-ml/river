@@ -16,26 +16,24 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
     Parameters
     ----------
-    n_neighbors : The number of nearest neighbors to search for.
-
-    window_size : The maximum size of the window storing the last observed samples.
-
-    leaf_size : scipy.spatial.cKDTree parameter.
-        The maximum number of samples that can be stored in one leaf node,
-        which determines from which point the algorithm will switch for a
-        brute-force approach. The bigger this number the faster the tree
-        construction time, but the slower the query time will be.
-
-    p : p-norm value for the Minkowski metric.
-        When `p=1`, this corresponds to the Manhattan distance, while `p=2`
-        corresponds to the Euclidean distance. Valid values are in the
-        interval $[1, +\\infty)$
-
-    aggregation_method : The method to aggregate the target values of neighbors.
-        | 'mean'
-        | 'median'
-        | 'weighted_mean'
-
+    n_neighbors
+        The number of nearest neighbors to search for.
+    window_size
+        The maximum size of the window storing the last observed samples.
+    leaf_size
+        scipy.spatial.cKDTree parameter. The maximum number of samples that can
+        be stored in one leaf node, which determines from which point the algorithm
+        will switch for a brute-force approach. The bigger this number the faster
+        the tree construction time, but the slower the query time will be.
+    p
+        p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
+        Manhattan distance, while `p=2` corresponds to the Euclidean distance.
+        Valid values are in the interval $[1, +\\infty)$
+    aggregation_method
+        The method to aggregate the target values of neighbors.
+            | 'mean'
+            | 'median'
+            | 'weighted_mean'
     **kwargs
         Other parameters passed to scipy.spatial.cKDTree.
 
@@ -88,8 +86,10 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
         Parameters
         ----------
-            x: A dictionary of features.
-            y: A numeric target.
+        x
+            A dictionary of features.
+        y
+            A numeric target.
 
         Returns
         -------
@@ -115,7 +115,8 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
         Parameters
         ----------
-            x : A dictionary of features.
+        x
+            A dictionary of features.
 
         Returns
         -------
