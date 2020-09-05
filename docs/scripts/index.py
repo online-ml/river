@@ -322,7 +322,6 @@ def print_module(mod, path, overview, is_submodule=False):
 
         # Add the class to the overview
         slug = snake_to_kebab(c.__name__)
-        print(mod_short_path, mod_slug)
         print(li(link(c.__name__, f'../{mod_short_path}/{slug}')), end='', file=overview)
 
         # Write down the class' docstring
