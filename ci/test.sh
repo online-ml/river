@@ -37,11 +37,15 @@ else
   pip install -e ".[compat,dev]" codecov
 fi
 
-# Download the datasets that are used for testing
+echo "Downloading the datasets that are used for testing"
 python -c "from creme import datasets; datasets.CreditCard().download()"
 
-# Run linting, type checking, unit tests, and coverage
-flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+echo "Running flake8"
+flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude scikit-multiflow
 #mypy creme
+
+echo "Running pytest"
 pytest --cov=creme -m "not datasets"
+
+echo "Running codecov"
 codecov

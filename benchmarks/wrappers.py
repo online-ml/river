@@ -117,7 +117,7 @@ class VW2CremeBase:
         self.vw = pyvw.vw(*args, **kwargs)
 
     def _format_x(self, x):
-        return self.vw.example(f'{y_vw} | {" ".join(map(lambda x: ":" + str(x), x.values()))}')
+        return self.vw.example(' '.join(map(lambda x: ':' + str(x), x.values())))
 
 
 class VW2CremeClassifier(VW2CremeBase, base.Classifier):
