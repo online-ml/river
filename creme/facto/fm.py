@@ -57,14 +57,9 @@ class FM(BaseFM):
         )
 
     def _calculate_weights_gradients(self, x, g_loss):
-
         # For notational convenience
-        w, l1, l2, sign = self.weights, self.l1_weight, self.l2_weight, utils.math.sign
-
-        return {
-            j: g_loss * xj + l1 * sign(w[j]) + l2 * w[j]
-            for j, xj in x.items()
-        }
+        w, l1, l2 = self._weights, self.l1_weight, self.l2_weight
+        return g_loss * x + l1 * w.sign() + l2 * w
 
     def _update_latents(self, x, g_loss):
 
@@ -192,6 +187,7 @@ class FMRegressor(FM, base.Regressor):
 
     def predict_one(self, x):
         x = self._ohe_cat_features(x)
+        x = utils.VectorDict(x)
         return self._raw_dot(x)
 
 
@@ -295,5 +291,6 @@ class FMClassifier(FM, base.Classifier):
 
     def predict_proba_one(self, x):
         x = self._ohe_cat_features(x)
+        x = utils.VectorDict(x)
         p = utils.math.sigmoid(self._raw_dot(x))  # Convert logit to probability
         return {False: 1. - p, True: p}
