@@ -433,6 +433,24 @@ cdef class VectorDict:
                        if key in self._mask)
         return max(self._data.values())
 
+    def sum(self):
+        if self._lazy_mask:
+            return sum(value for key, value in self._data.items()
+                       if key in self._mask)
+        return sum(self._data.values())
+
+    def sign(self):
+
+        def _sign(x):
+            return -1 if x < 0 else (1 if x > 0 else 0)
+
+        if self._lazy_mask:
+            res = {key: _sign(value) for key, value in self._data.items() if key in self._mask}
+        else:
+            res = {key: _sign(value) for key, value in self._data.items()}
+
+        return VectorDict(res)
+
     def minimum(self, other):
         if isinstance(other, VectorDict):  # minimum(vec, vec)
             other_ = <VectorDict> other
