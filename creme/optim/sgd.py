@@ -1,3 +1,5 @@
+from creme import utils
+
 from . import base
 
 
@@ -39,5 +41,10 @@ class SGD(base.Optimizer):
         super().__init__(lr)
 
     def _update_after_pred(self, w, g):
-        w -= self.learning_rate * g
+        if (isinstance(w, utils.VectorDict) and isinstance(g, utils.VectorDict) and
+                g.keys() == w.keys()):
+            w -= self.learning_rate * g
+        else:
+            for i, gi in g.items():
+                w[i] -= self.learning_rate * gi
         return w

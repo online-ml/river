@@ -50,7 +50,8 @@ class NesterovMomentum(base.Optimizer):
         # Move w back to it's initial position
         w += self.rho * self.s
 
-        if g.keys() == w.keys():
+        if (isinstance(w, utils.VectorDict) and isinstance(g, utils.VectorDict) and
+                g.keys() == w.keys()):
             self.s = self.rho * self.s + self.learning_rate * g
             w -= self.s
         else:

@@ -48,7 +48,8 @@ class RMSProp(base.Optimizer):
 
     def _update_after_pred(self, w, g):
 
-        if g.keys() == w.keys():
+        if (isinstance(w, utils.VectorDict) and isinstance(g, utils.VectorDict) and
+                g.keys() == w.keys()):
             self.g2 = self.rho * self.g2 + (1 - self.rho) * g ** 2
             w -= self.learning_rate / (self.g2 + self.eps) ** 0.5 * g
         else:
