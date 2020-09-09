@@ -1,4 +1,5 @@
-import collections
+from creme import optim
+from creme import utils
 
 from . import base
 
@@ -43,12 +44,16 @@ class RMSProp(base.Optimizer):
         super().__init__(lr)
         self.rho = rho
         self.eps = eps
-        self.g2 = collections.defaultdict(float)
+        self.g2 = utils.VectorDict(None, optim.initializers.Zeros())
 
     def _update_after_pred(self, w, g):
 
-        for i, gi in g.items():
-            self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi ** 2
-            w[i] -= self.learning_rate / (self.g2[i] + self.eps) ** 0.5 * gi
+        if g.keys() == w.keys():
+            self.g2 = self.rho * self.g2 + (1 - self.rho) * g ** 2
+            w -= self.learning_rate / (self.g2 + self.eps) ** 0.5 * g
+        else:
+            for i, gi in g.items():
+                self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi ** 2
+                w[i] -= self.learning_rate / (self.g2[i] + self.eps) ** 0.5 * gi
 
         return w

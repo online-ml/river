@@ -1,4 +1,5 @@
-import collections
+from creme import optim
+from creme import utils
 
 from . import base
 
@@ -38,23 +39,23 @@ class NesterovMomentum(base.Optimizer):
     def __init__(self, lr=.1, rho=.9):
         super().__init__(lr)
         self.rho = rho
-        self.s = collections.defaultdict(float)
+        self.s = utils.VectorDict(None, optim.initializers.Zeros())
 
     def update_before_pred(self, w):
-
-        for i in w:
-            w[i] -= self.rho * self.s[i]
-
+        w -= self.rho * self.s
         return w
 
     def _update_after_pred(self, w, g):
 
         # Move w back to it's initial position
-        for i in w:
-            w[i] += self.rho * self.s[i]
+        w += self.rho * self.s
 
-        for i, gi in g.items():
-            self.s[i] = self.rho * self.s[i] + self.learning_rate * gi
-            w[i] -= self.s[i]
+        if g.keys() == w.keys():
+            self.s = self.rho * self.s + self.learning_rate * g
+            w -= self.s
+        else:
+            for i, gi in g.items():
+                self.s[i] = self.rho * self.s[i] + self.learning_rate * gi
+                w[i] -= self.s[i]
 
         return w
