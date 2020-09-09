@@ -111,3 +111,6 @@ package.json
 
 # For MacOS
 .DS_store
+
+# ASV
+benchmarks/.asv

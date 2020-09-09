@@ -49,6 +49,7 @@ compat_packages = base_packages + [
 ]
 
 dev_packages = base_packages + [
+    'asv',
     'flake8>=3.7.9',
     'graphviz>=0.10.1',
     'matplotlib>=3.0.2',

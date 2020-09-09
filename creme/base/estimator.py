@@ -116,10 +116,8 @@ class Estimator(abc.ABC):
         return {}
 
     @property
-    def _memory_usage(self) -> str:
-        """Return the memory usage in a human readable format."""
-
-        from creme import utils
+    def _memory_usage_raw(self) -> int:
+        """Return the memory usage in bytes."""
 
         def get_size(obj, seen=None):
             """Recursively finds size of objects"""
@@ -141,8 +139,13 @@ class Estimator(abc.ABC):
                 size += sum([get_size(i, seen) for i in obj])
             return size
 
-        mem_usage = get_size(self)
-        return utils.pretty.humanize_bytes(mem_usage)
+        return get_size(self)
+
+    @property
+    def _memory_usage(self) -> str:
+        """Return the memory usage in a human readable format."""
+        from creme import utils
+        return utils.pretty.humanize_bytes(self._memory_usage_raw)
 
     # TAGS
 
