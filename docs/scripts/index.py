@@ -170,7 +170,8 @@ def print_docstring(obj, file, depth):
     params_desc = {param.name: ' '.join(param.desc) for param in doc['Parameters']}
 
     # Parameters
-    printf(h2('Parameters'))
+    if signature.parameters:
+        printf(h2('Parameters'))
     for param in signature.parameters.values():
         # Name
         printf(f'- **{param.name}**', end='')
@@ -196,12 +197,12 @@ def print_docstring(obj, file, depth):
             # Name
             printf(f'- **{attr.name}**', end='')
             # Type annotation
-            printf(f' (*{attr.type}*)', end='')
-            printf('', file=file)
+            #printf(f' (*{attr.type}*)', end='')
+            printf('\n', file=file)
             # Description
             desc = ' '.join(attr.desc)
             if desc:
-                printf(f'    {desc}')
+                printf(f'    {desc}\n')
     printf('')
 
     # Examples
@@ -260,6 +261,8 @@ def print_docstring(obj, file, depth):
             params_desc = {param.name: ' '.join(param.desc) for param in doc['Parameters']}
 
             # Parameters
+            if len(signature.parameters) > 1:  # signature is never empty, but self doesn't count
+                printf_indent('**Parameters**\n')
             for param in signature.parameters.values():
                 if param.name == 'self':
                     continue
@@ -267,16 +270,25 @@ def print_docstring(obj, file, depth):
                 printf_indent(f'- **{param.name}**', end='')
                 # Type annotation
                 if param.annotation is not param.empty:
-                    printf(f' (*{inspect.formatannotation(param.annotation)}*)', end='')
+                    printf_indent(f' (*{inspect.formatannotation(param.annotation)}*)', end='')
                 # Default value
                 if param.default is not param.empty:
-                    printf(f' – defaults to `{param.default}`', end='')
-                printf('', file=file)
+                    printf_indent(f' – defaults to `{param.default}`', end='')
+                printf_indent('', file=file)
                 # Description
                 desc = params_desc.get(param.name)
                 if desc:
                     printf_indent(f'    {desc}')
-            printf('')
+            printf_indent('')
+
+            # Returns
+            if meth_doc['Returns']:
+                printf_indent('**Returns**\n')
+                return_val = meth_doc['Returns'][0]
+                if signature.return_annotation:
+                    printf_indent(f'*{signature.return_annotation}*: ', end='')
+                printf_indent(return_val.type)
+                printf_indent('')
 
     # References
     if doc['References']:
@@ -315,9 +327,6 @@ def print_module(mod, path, overview, is_submodule=False):
         print('**Classes**', file=overview)
 
     for _, c in classes:
-
-        if c.__name__ not in ('LinearRegression', 'Optimizer', 'Scheduler', 'InverseScaling'):
-            continue
         print(f'{mod_name}.{c.__name__}')
 
         # Add the class to the overview
@@ -334,9 +343,6 @@ def print_module(mod, path, overview, is_submodule=False):
         print('**Functions**', file=overview)
 
     for _, f in funcs:
-
-        if f.__name__ != 'progressive_val_score':
-            continue
         print(f'{mod_name}.{f.__name__}')
 
         # Add the function to the overview
@@ -350,7 +356,7 @@ def print_module(mod, path, overview, is_submodule=False):
     # Sub-modules
     for name, submod in inspect.getmembers(mod, inspect.ismodule):
         # We only want to go through the public submodules, such as optim.schedulers
-        if name not in mod.__all__:
+        if name in ('tags', 'typing') or name not in mod.__all__:
             continue
         print_module(mod=submod, path=mod_path, overview=overview, is_submodule=True)
 
@@ -373,9 +379,7 @@ if __name__ == '__main__':
     linkifier = Linkifier()
 
     for mod_name, mod in inspect.getmembers(importlib.import_module('creme'), inspect.ismodule):
-
-        if mod_name not in ('linear_model', 'evaluate', 'optim'):
+        if mod_name != 'base':
             continue
         print(mod_name)
-
         print_module(mod, path=api_path, overview=overview)

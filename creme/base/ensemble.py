@@ -6,8 +6,9 @@ from .predictor import Predictor
 class EnsembleMixin:
     """An ensemble model.
 
-    Parameters:
-        models
+    Parameters
+    ----------
+    models
 
     """
 

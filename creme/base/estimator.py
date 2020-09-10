@@ -54,44 +54,45 @@ class Estimator(abc.ABC):
 
         The algorithm will be recursively called down `Pipeline`s and `TransformerUnion`s.
 
-        Example:
+        Examples
+        --------
 
-            >>> from creme import linear_model
-            >>> from creme import optim
-            >>> from creme import preprocessing
+        >>> from creme import linear_model
+        >>> from creme import optim
+        >>> from creme import preprocessing
 
-            >>> model = (
-            ...     preprocessing.StandardScaler() |
-            ...     linear_model.LinearRegression(
-            ...         optimizer=optim.SGD(lr=0.042),
-            ...     )
-            ... )
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LinearRegression(
+        ...         optimizer=optim.SGD(lr=0.042),
+        ...     )
+        ... )
 
-            >>> new_params = {
-            ...     'LinearRegression': {
-            ...         'l2': .001
-            ...     }
-            ... }
+        >>> new_params = {
+        ...     'LinearRegression': {
+        ...         'l2': .001
+        ...     }
+        ... }
 
-            >>> model._set_params(new_params)
-            Pipeline (
-              StandardScaler (),
-              LinearRegression (
-                optimizer=SGD (
-                  lr=Constant (
-                    learning_rate=0.042
-                  )
+        >>> model._set_params(new_params)
+        Pipeline (
+            StandardScaler (),
+            LinearRegression (
+            optimizer=SGD (
+                lr=Constant (
+                learning_rate=0.042
                 )
-                loss=Squared ()
-                l2=0.001
-                intercept=0.
-                intercept_lr=Constant (
-                  learning_rate=0.01
-                )
-                clip_gradient=1e+12
-                initializer=Zeros ()
-              )
             )
+            loss=Squared ()
+            l2=0.001
+            intercept=0.
+            intercept_lr=Constant (
+                learning_rate=0.01
+            )
+            clip_gradient=1e+12
+            initializer=Zeros ()
+            )
+        )
 
         """
 

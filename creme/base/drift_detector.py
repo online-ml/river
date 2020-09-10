@@ -1,12 +1,12 @@
+import abc
 import numbers
-from abc import ABCMeta, abstractmethod
+import typing
 
 from . import estimator
 
 
-class DriftDetector(estimator.Estimator, metaclass=ABCMeta):
-    """Abstract Drift Detector class.
-    """
+class DriftDetector(estimator.Estimator):
+    """A drift detector."""
 
     @property
     def _supervised(self):
@@ -18,51 +18,41 @@ class DriftDetector(estimator.Estimator, metaclass=ABCMeta):
         self._in_warning_zone = False
 
     def reset(self):
-        """Reset the change detector.
-        """
+        """Reset the change detector."""
         self._in_concept_change = False
         self._in_warning_zone = False
 
     @property
-    def change_detected(self):
-        """Concept Drift alarm.
+    def change_detected(self) -> bool:
+        """Concept drift alarm.
 
-        Returns
-        -------
-        bool
-            True if concept drift is detected.
+        True if concept drift is detected.
 
         """
         return self._in_concept_change
 
     @property
-    def warning_detected(self):
+    def warning_detected(self) -> bool:
         """Warning zone alarm.
 
-        Indicates if the drift detector is in the warning zone.
-        Applicability depends on each drift detector implementation.
-
-        Returns
-        -------
-        bool
-            True if the change detector is in the warning zone.
+        Indicates if the drift detector is in the warning zone. Applicability depends on each drift
+        detector implementation. True if the change detector is in the warning zone.
 
         """
         return self._in_warning_zone
 
-    @abstractmethod
-    def update(self, value: numbers.Number):
+    @abc.abstractmethod
+    def update(self, value: numbers.Number) -> typing.Tuple[bool, bool]:
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value: Input value
+        value
+            Input value.
 
         Returns
         -------
-        tuple
-            A tuple (drift, warning) where its elements indicate if a drift or a warning is
-            detected.
+        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
 
         """
         raise NotImplementedError

@@ -4,16 +4,20 @@ from . import estimator
 
 
 class AnomalyDetector(estimator.Estimator):
+    """An anomaly detector."""
 
     @abc.abstractmethod
     def learn_one(self, x: dict) -> 'AnomalyDetector':
         """Update the model.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -21,12 +25,16 @@ class AnomalyDetector(estimator.Estimator):
     def score_one(self, x: dict) -> float:
         """Return an outlier score.
 
-        A high score is indicative of an anomaly. A low score indicates a normal observation.
+        A high score is indicative of an anomaly. A low score corresponds a normal observation.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            The anomaly score.
+        Returns
+        -------
+        An anomaly score. A high score is indicative of an anomaly. A low score corresponds a
+        normal observation.
 
         """

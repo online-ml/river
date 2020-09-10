@@ -18,11 +18,14 @@ class Transformer(base.Estimator):
         nothing. Transformers that however do something during the `learn_one` can override this
         method.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
         return self
@@ -31,11 +34,14 @@ class Transformer(base.Estimator):
     def transform_one(self, x: dict) -> dict:
         """Transform a set of features `x`.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            dict
+        Returns
+        -------
+        The transformed values.
 
         """
 
@@ -73,11 +79,14 @@ class SupervisedTransformer(Transformer):
     def learn_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':
         """Update with a set of features `x` and a target `y`.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
         return self
