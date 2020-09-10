@@ -14,11 +14,14 @@ class Clusterer(estimator.Estimator):
     def learn_one(self, x: dict) -> 'Clusterer':
         """Update the model with a set of features `x`.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -26,10 +29,13 @@ class Clusterer(estimator.Estimator):
     def predict_one(self, x: dict) -> int:
         """Predicts the cluster number for a set of features `x`.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            A cluster number.
+        Returns
+        -------
+        A cluster number.
 
         """

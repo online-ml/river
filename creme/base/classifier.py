@@ -15,23 +15,30 @@ class Classifier(Predictor):
     def learn_one(self, x: dict, y: base.typing.ClfTarget) -> 'Classifier':
         """Update the model with a set of features `x` and a label `y`.
 
-        Parameters:
-            x: A dictionary of features.
-            y: A label.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        y
+            A label.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
     def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
         """Predict the probability of each label for a dictionary of features `x`.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            A dictionary which associates a probability which each label.
+        Returns
+        -------
+        A dictionary that associates a probability which each label.
 
         """
 
@@ -44,11 +51,14 @@ class Classifier(Predictor):
     def predict_one(self, x: dict) -> base.typing.ClfTarget:
         """Predict the label of a set of features `x`.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
-        Returns:
-            The predicted label.
+        Returns
+        -------
+        The predicted label.
 
         """
 
@@ -73,23 +83,30 @@ class MiniBatchClassifier:
     def learn_many(self, X: pd.DataFrame, y: pd.Series) -> 'MiniBatchClassifier':
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
-        Parameters:
-            X: A dataframe of features.
-            y: A series of boolean target values.
+        Parameters
+        ----------
+        X
+            A dataframe of features.
+        y
+            A series of boolean target values.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        """Predict the outcome probabilities for a mini-batch of features.
+        """Predict the outcome probabilities for each given sample.
 
-        Parameters:
-            X: A dataframe of features.
+        Parameters
+        ----------
+        X
+            A dataframe of features.
 
-        Returns:
-            A dataframe with probabilities of `True` and `False` for each sample.
+        Returns
+        -------
+        A dataframe with probabilities of `True` and `False` for each sample.
 
         """
 
@@ -100,13 +117,16 @@ class MiniBatchClassifier:
         raise NotImplementedError
 
     def predict_many(self, X: pd.DataFrame) -> pd.Series:
-        """Predict the outcome of a set of features `x`.
+        """Predict the outcome for each given sample.
 
-        Parameters:
-            X: A dataframe of features.
+        Parameters
+        ---------
+        X
+            A dataframe of features.
 
-        Returns:
-            The predicted outcome.
+        Returns
+        -------
+        The predicted outcome.
 
         """
 
