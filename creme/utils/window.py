@@ -58,6 +58,9 @@ class Window:
         self.values.append(x)
         return self
 
+    def popleft(self):
+        return self.values.popleft()
+
 
 class SortedWindow(collections.UserList):
     """Sorted running window data structure.
