@@ -46,46 +46,48 @@ class PyTorch2CremeBase:
 class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
     """PyTorch to `creme` regressor adapter.
 
-    Parameters:
-        net
-        loss_fn
-        optimizer
-        batch_size
+    Parameters
+    ----------
+    net
+    loss_fn
+    optimizer
+    batch_size
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import compat
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import metrics
-        >>> from creme import preprocessing
-        >>> import torch
-        >>> from torch import nn
-        >>> from torch import optim
+    >>> from creme import compat
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import metrics
+    >>> from creme import preprocessing
+    >>> import torch
+    >>> from torch import nn
+    >>> from torch import optim
 
-        >>> _ = torch.manual_seed(0)
+    >>> _ = torch.manual_seed(0)
 
-        >>> dataset = datasets.TrumpApproval()
+    >>> dataset = datasets.TrumpApproval()
 
-        >>> n_features = 6
-        >>> net = nn.Sequential(
-        ...     nn.Linear(n_features, 3),
-        ...     nn.Linear(3, 1)
-        ... )
+    >>> n_features = 6
+    >>> net = nn.Sequential(
+    ...     nn.Linear(n_features, 3),
+    ...     nn.Linear(3, 1)
+    ... )
 
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     compat.PyTorch2CremeRegressor(
-        ...         net=net,
-        ...         loss_fn=nn.MSELoss(),
-        ...         optimizer=optim.SGD(net.parameters(), lr=1e-3),
-        ...         batch_size=2
-        ...     )
-        ... )
-        >>> metric = metrics.MAE()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     compat.PyTorch2CremeRegressor(
+    ...         net=net,
+    ...         loss_fn=nn.MSELoss(),
+    ...         optimizer=optim.SGD(net.parameters(), lr=1e-3),
+    ...         batch_size=2
+    ...     )
+    ... )
+    >>> metric = metrics.MAE()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric).get()
-        2.78258
+    >>> evaluate.progressive_val_score(dataset, model, metric).get()
+    2.78258
 
     """
 

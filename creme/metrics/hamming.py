@@ -10,28 +10,29 @@ class Hamming(base.MultiOutputClassificationMetric):
 
     The Hamming score is the fraction of labels that are correctly predicted.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [
-        ...     {0: False, 1: True, 2: True},
-        ...     {0: True, 1: True, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> y_pred = [
-        ...     {0: True, 1: True, 2: True},
-        ...     {0: True, 1: False, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric = metrics.Hamming()
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> metric = metrics.Hamming()
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        >>> metric
-        Hamming: 0.555556
+    >>> metric
+    Hamming: 0.555556
 
     """
 
@@ -56,28 +57,29 @@ class HammingLoss(base.MultiOutputClassificationMetric):
 
     The Hamming loss is the complement of the Hamming score.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [
-        ...     {0: False, 1: True, 2: True},
-        ...     {0: True, 1: True, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> y_pred = [
-        ...     {0: True, 1: True, 2: True},
-        ...     {0: True, 1: False, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric = metrics.HammingLoss()
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> metric = metrics.HammingLoss()
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        >>> metric
-        HammingLoss: 0.444444
+    >>> metric
+    HammingLoss: 0.444444
 
     """
 

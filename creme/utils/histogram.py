@@ -39,28 +39,29 @@ class Bin:
 def coverage_ratio(x: Bin, y: Bin) -> float:
     """Returns the amount of y covered by x.
 
-    Examples:
+    Examples
+    --------
 
-        >>> coverage_ratio(Bin(1, 2, 0), Bin(1, 2, 0))
-        1.0
+    >>> coverage_ratio(Bin(1, 2, 0), Bin(1, 2, 0))
+    1.0
 
-        >>> coverage_ratio(Bin(1, 3, 0), Bin(2, 4, 0))
-        0.5
+    >>> coverage_ratio(Bin(1, 3, 0), Bin(2, 4, 0))
+    0.5
 
-        >>> coverage_ratio(Bin(1, 3, 0), Bin(3, 5, 0))
-        0.0
+    >>> coverage_ratio(Bin(1, 3, 0), Bin(3, 5, 0))
+    0.0
 
-        >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 4, 0))
-        0.5
+    >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 4, 0))
+    0.5
 
-        >>> coverage_ratio(Bin(0, 4, 0), Bin(1, 3, 0))
-        1.0
+    >>> coverage_ratio(Bin(0, 4, 0), Bin(1, 3, 0))
+    1.0
 
-        >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 1, 0))
-        0.0
+    >>> coverage_ratio(Bin(1, 3, 0), Bin(0, 1, 0))
+    0.0
 
-        >>> coverage_ratio(Bin(1, 1, 0), Bin(1, 1, 0))
-        1.0
+    >>> coverage_ratio(Bin(1, 1, 0), Bin(1, 1, 0))
+    1.0
 
     """
     if y.left == y.right:
@@ -71,42 +72,48 @@ def coverage_ratio(x: Bin, y: Bin) -> float:
 class Histogram(collections.UserList):
     """Streaming histogram.
 
-    Parameters:
-        max_bins: Maximal number of bins.
+    Parameters
+    ----------
+    max_bins
+        Maximal number of bins.
 
-    Attributes:
-        n (int): Total number of seen values.
+    Attributes
+    ----------
+    n
+        Total number of seen values.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import utils
-        >>> import matplotlib.pyplot as plt
-        >>> import numpy as np
+    >>> from creme import utils
+    >>> import matplotlib.pyplot as plt
+    >>> import numpy as np
 
-        >>> np.random.seed(42)
+    >>> np.random.seed(42)
 
-        >>> values = np.hstack((
-        ...     np.random.normal(-3, 1, 1000),
-        ...     np.random.normal(3, 1, 1000),
-        ... ))
+    >>> values = np.hstack((
+    ...     np.random.normal(-3, 1, 1000),
+    ...     np.random.normal(3, 1, 1000),
+    ... ))
 
-        >>> hist = utils.Histogram(max_bins=60)
+    >>> hist = utils.Histogram(max_bins=60)
 
-        >>> for x in values:
-        ...     hist = hist.update(x)
+    >>> for x in values:
+    ...     hist = hist.update(x)
 
-        >>> ax = plt.bar(
-        ...     x=[(b.left + b.right) / 2 for b in hist],
-        ...     height=[b.count for b in hist],
-        ...     width=[(b.right - b.left) / 2 for b in hist]
-        ... )
+    >>> ax = plt.bar(
+    ...     x=[(b.left + b.right) / 2 for b in hist],
+    ...     height=[b.count for b in hist],
+    ...     width=[(b.right - b.left) / 2 for b in hist]
+    ... )
 
     .. image:: ../../docs/img/histogram_docstring.svg
         :align: center
 
-    References:
-        1. [Ben-Haim, Y. and Tom-Tov, E., 2010. A streaming parallel decision tree algorithm. Journal of Machine Learning Research, 11(Feb), pp.849-872.](http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf)
-        2. [Go implementation](https://github.com/VividCortex/gohistogram)
+    References
+    ----------
+    [^1]: [Ben-Haim, Y. and Tom-Tov, E., 2010. A streaming parallel decision tree algorithm. Journal of Machine Learning Research, 11(Feb), pp.849-872.](http://jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf)
+    [^2]: [Go implementation](https://github.com/VividCortex/gohistogram)
 
     """
 

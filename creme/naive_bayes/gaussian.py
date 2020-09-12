@@ -18,22 +18,23 @@ class GaussianNB(base.BaseNB):
     in `proba.Gaussian`. The joint log-likelihood is then obtained by summing the log probabilities
     of each feature associated with each class.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import naive_bayes
-        >>> from creme import stream
-        >>> import numpy as np
+    >>> from creme import naive_bayes
+    >>> from creme import stream
+    >>> import numpy as np
 
-        >>> X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
-        >>> Y = np.array([1, 1, 1, 2, 2, 2])
+    >>> X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
+    >>> Y = np.array([1, 1, 1, 2, 2, 2])
 
-        >>> model = naive_bayes.GaussianNB()
+    >>> model = naive_bayes.GaussianNB()
 
-        >>> for x, y in stream.iter_array(X, Y):
-        ...     _ = model.learn_one(x, y)
+    >>> for x, y in stream.iter_array(X, Y):
+    ...     _ = model.learn_one(x, y)
 
-        >>> model.predict_one({0: -0.8, 1: -1})
-        1
+    >>> model.predict_one({0: -0.8, 1: -1})
+    1
 
     """
 

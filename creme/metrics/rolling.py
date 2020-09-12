@@ -15,6 +15,9 @@ class Rolling(base.WrapperMetric, utils.Window):
     buffer is full, the oldest pair is removed and the `revert` method of the metric is called with
     said pair.
 
+    You should use `metrics.Rolling` to evaluate a metric over a window of fixed sized. You can use
+    `metrics.TimeRolling` to instead evaluate a metric over a period of time.
+
     Parameters
     ----------
     metric
@@ -38,11 +41,6 @@ class Rolling(base.WrapperMetric, utils.Window):
     Rolling of size 2 MSE: 0.25
     Rolling of size 2 MSE: 0.125
     Rolling of size 2 MSE: 0.5
-
-    Notes
-    -----
-    You should use `metrics.Rolling` to evaluate a metric over a window of fixed sized. You can use
-    `metrics.TimeRolling` to instead evaluate a metric over a period of time.
 
     """
 

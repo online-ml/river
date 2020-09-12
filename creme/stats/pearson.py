@@ -6,7 +6,8 @@ from . import var
 class PearsonCorr(base.Bivariate):
     """Online Pearson correlation.
 
-    Parameters:
+    Parameters
+    ----------
         ddof: Delta Degrees of Freedom.
 
     Attributes:
@@ -61,33 +62,41 @@ class PearsonCorr(base.Bivariate):
 class RollingPearsonCorr(base.Bivariate):
     """Rolling Pearson correlation.
 
-    Parameters:
-        window_size: Amount of samples over which to compute the correlation.
-        ddof: Delta Degrees of Freedom.
+    Parameters
+    ----------
+    window_size
+        Amount of samples over which to compute the correlation.
+    ddof
+        Delta Degrees of Freedom.
 
-    Attributes:
-        var_x (stats.Var): Running variance of `x`.
-        var_y (stats.Var): Running variance of `y`.
-        cov_xy (stats.Cov): Running covariance of `x` and `y`.
+    Attributes
+    ----------
+    var_x : stats.Var
+        Running variance of `x`.
+    var_y : stats.Var
+        Running variance of `y`.
+    cov_xy : stats.Cov
+        Running covariance of `x` and `y`.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> x = [0, 0, 0, 1, 1, 1, 1]
-        >>> y = [0, 1, 2, 3, 4, 5, 6]
+    >>> x = [0, 0, 0, 1, 1, 1, 1]
+    >>> y = [0, 1, 2, 3, 4, 5, 6]
 
-        >>> pearson = stats.RollingPearsonCorr(window_size=4)
+    >>> pearson = stats.RollingPearsonCorr(window_size=4)
 
-        >>> for xi, yi in zip(x, y):
-        ...     print(pearson.update(xi, yi).get())
-        0
-        0
-        0
-        0.7745966692414834
-        0.894427190999916
-        0.7745966692414834
-        0
+    >>> for xi, yi in zip(x, y):
+    ...     print(pearson.update(xi, yi).get())
+    0
+    0
+    0
+    0.7745966692414834
+    0.894427190999916
+    0.7745966692414834
+    0
 
     """
 

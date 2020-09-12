@@ -11,8 +11,8 @@ __all__ = [
 class CohenKappa(base.MultiClassMetric):
     """Cohen's Kappa score.
 
-    Cohen's Kappa expresses the level of agreement between two annotators
-    on a classification problem. It is defined as
+    Cohen's Kappa expresses the level of agreement between two annotators on a classification
+    problem. It is defined as
 
     $$
     \kappa = (p_o - p_e) / (1 - p_e)
@@ -38,10 +38,9 @@ class CohenKappa(base.MultiClassMetric):
     >>> metric
     CohenKappa: 0.428571
 
-    References:
-        1. J. Cohen (1960). "A coefficient of agreement for nominal scales".
-           Educational and Psychological Measurement 20(1):37-46.
-           doi:10.1177/001316446002000104.
+    References
+    ----------
+    [^1]: J. Cohen (1960). "A coefficient of agreement for nominal scales". Educational and Psychological Measurement 20(1):37-46. doi:10.1177/001316446002000104.
     """
 
     def get(self):

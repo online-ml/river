@@ -9,36 +9,40 @@ __all__ = ['AdaDelta']
 class AdaDelta(base.Optimizer):
     """AdaDelta optimizer.
 
-    Parameters:
-        rho
-        eps
+    Parameters
+    ----------
+    rho
+    eps
 
-    Attributes:
-        g2 (collections.defaultdict)
-        s2 (collections.defaultdict)
+    Attributes
+    ----------
+    g2 : collections.defaultdict
+    s2 : collections.defaultdict
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.Phishing()
-        >>> optimizer = optim.AdaDelta()
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     linear_model.LogisticRegression(optimizer)
-        ... )
-        >>> metric = metrics.F1()
+    >>> dataset = datasets.Phishing()
+    >>> optimizer = optim.AdaDelta()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     linear_model.LogisticRegression(optimizer)
+    ... )
+    >>> metric = metrics.F1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        F1: 0.805611
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.805611
 
-    References:
-        1. [Zeiler, M.D., 2012. Adadelta: an adaptive learning rate method. arXiv preprint arXiv:1212.5701.](https://arxiv.org/pdf/1212.5701.pdf)
+    References
+    ----------
+    [^1]: [Zeiler, M.D., 2012. Adadelta: an adaptive learning rate method. arXiv preprint arXiv:1212.5701.](https://arxiv.org/pdf/1212.5701.pdf)
 
     """
 

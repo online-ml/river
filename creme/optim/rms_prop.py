@@ -9,33 +9,36 @@ __all__ = ['RMSProp']
 class RMSProp(base.Optimizer):
     """RMSProp optimizer.
 
-    Parameters:
-        lr
-        rho
-        eps
+    Parameters
+    ----------
+    lr
+    rho
+    eps
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.Phishing()
-        >>> optimizer = optim.RMSProp()
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     linear_model.LogisticRegression(optimizer)
-        ... )
-        >>> metric = metrics.F1()
+    >>> dataset = datasets.Phishing()
+    >>> optimizer = optim.RMSProp()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     linear_model.LogisticRegression(optimizer)
+    ... )
+    >>> metric = metrics.F1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        F1: 0.872378
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.872378
 
-    References:
-        1. [Divide the gradient by a running average of itsrecent magnitude](https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf)
+    References
+    ----------
+    [^1]: [Divide the gradient by a running average of itsrecent magnitude](https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf)
 
     """
 

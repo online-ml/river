@@ -16,36 +16,42 @@ def shuffle(stream: typing.Iterator, buffer_size: int, seed: int = None):
     split your dataset into smaller datasets and loop over them in a round-robin fashion. You may
     do this by using the ``roundrobin`` recipe from the `itertools` module.
 
-    Parameters:
-        stream: The stream to shuffle.
-        buffer_size: The size of the buffer which contains the elements help in memory. Increasing
-            this will increase randomness but will incur more memory usage.
-        seed: Random seed used for sampling.
+    Parameters
+    ----------
+    stream
+        The stream to shuffle.
+    buffer_size
+        The size of the buffer which contains the elements help in memory. Increasing this will
+        increase randomness but will incur more memory usage.
+    seed
+        Random seed used for sampling.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stream
+    >>> from creme import stream
 
-        >>> for i in stream.shuffle(range(15), buffer_size=5, seed=42):
-        ...     print(i)
-        0
-        5
-        2
-        1
-        8
-        9
-        6
-        4
-        11
-        12
-        10
-        7
-        14
-        13
-        3
+    >>> for i in stream.shuffle(range(15), buffer_size=5, seed=42):
+    ...     print(i)
+    0
+    5
+    2
+    1
+    8
+    9
+    6
+    4
+    11
+    12
+    10
+    7
+    14
+    13
+    3
 
-    References:
-        1. [Visualizing TensorFlow's streaming shufflers](http://www.moderndescartes.com/essays/shuffle_viz/)
+    References
+    ----------
+    [^1]: [Visualizing TensorFlow's streaming shufflers](http://www.moderndescartes.com/essays/shuffle_viz/)
 
     """
 

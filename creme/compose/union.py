@@ -28,99 +28,102 @@ class TransformerUnion(base.Transformer):
     through each transformer and updates them. Meanwhile, calling `transform_one` collects the
     output of each transformer and merges them into a single dictionary.
 
-    Parameters:
-        transformers: Ideally, a list of (name, estimator) tuples. A name is automatically inferred
-            if none is provided.
+    Parameters
+    ----------
+    transformers
+        Ideally, a list of (name, estimator) tuples. A name is automatically inferred if none is
+        provided.
 
-    Example:
+    Examples
+    --------
 
-        Take the following dataset:
+    Take the following dataset:
 
-        >>> X = [
-        ...     {'place': 'Taco Bell', 'revenue': 42},
-        ...     {'place': 'Burger King', 'revenue': 16},
-        ...     {'place': 'Burger King', 'revenue': 24},
-        ...     {'place': 'Taco Bell', 'revenue': 58},
-        ...     {'place': 'Burger King', 'revenue': 20},
-        ...     {'place': 'Taco Bell', 'revenue': 50}
-        ... ]
+    >>> X = [
+    ...     {'place': 'Taco Bell', 'revenue': 42},
+    ...     {'place': 'Burger King', 'revenue': 16},
+    ...     {'place': 'Burger King', 'revenue': 24},
+    ...     {'place': 'Taco Bell', 'revenue': 58},
+    ...     {'place': 'Burger King', 'revenue': 20},
+    ...     {'place': 'Taco Bell', 'revenue': 50}
+    ... ]
 
-        As an example, let's assume we want to compute two aggregates of a dataset. We therefore
-        define two `feature_extraction.Agg`s and initialize a `TransformerUnion` with them:
+    As an example, let's assume we want to compute two aggregates of a dataset. We therefore
+    define two `feature_extraction.Agg`s and initialize a `TransformerUnion` with them:
 
-        >>> from creme import compose
-        >>> from creme import feature_extraction
-        >>> from creme import stats
+    >>> from creme import compose
+    >>> from creme import feature_extraction
+    >>> from creme import stats
 
-        >>> mean = feature_extraction.Agg(
-        ...     on='revenue', by='place',
-        ...     how=stats.Mean()
-        ... )
-        >>> count = feature_extraction.Agg(
-        ...     on='revenue', by='place',
-        ...     how=stats.Count()
-        ... )
-        >>> agg = compose.TransformerUnion(mean, count)
+    >>> mean = feature_extraction.Agg(
+    ...     on='revenue', by='place',
+    ...     how=stats.Mean()
+    ... )
+    >>> count = feature_extraction.Agg(
+    ...     on='revenue', by='place',
+    ...     how=stats.Count()
+    ... )
+    >>> agg = compose.TransformerUnion(mean, count)
 
-        We can now update each transformer and obtain their output with a single function call:
+    We can now update each transformer and obtain their output with a single function call:
 
-        >>> from pprint import pprint
-        >>> for x in X:
-        ...     agg = agg.learn_one(x)
-        ...     pprint(agg.transform_one(x))
-        {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
-        {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
-        {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
-        {'revenue_count_by_place': 2, 'revenue_mean_by_place': 50.0}
-        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 20.0}
-        {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
+    >>> from pprint import pprint
+    >>> for x in X:
+    ...     agg = agg.learn_one(x)
+    ...     pprint(agg.transform_one(x))
+    {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
+    {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
+    {'revenue_count_by_place': 2, 'revenue_mean_by_place': 20.0}
+    {'revenue_count_by_place': 2, 'revenue_mean_by_place': 50.0}
+    {'revenue_count_by_place': 3, 'revenue_mean_by_place': 20.0}
+    {'revenue_count_by_place': 3, 'revenue_mean_by_place': 50.0}
 
-        Note that you can use the `+` operator as a shorthand notation:
+    Note that you can use the `+` operator as a shorthand notation:
 
-        agg = mean + count
+    agg = mean + count
 
-        This allows you to build complex pipelines in a very terse manner. For instance, we can
-        create a pipeline that scales each feature and fits a logistic regression as so:
+    This allows you to build complex pipelines in a very terse manner. For instance, we can
+    create a pipeline that scales each feature and fits a logistic regression as so:
 
-        >>> from creme import linear_model as lm
-        >>> from creme import preprocessing as pp
+    >>> from creme import linear_model as lm
+    >>> from creme import preprocessing as pp
 
-        >>> model = (
-        ...     (mean + count) |
-        ...     pp.StandardScaler() |
-        ...     lm.LogisticRegression()
-        ... )
+    >>> model = (
+    ...     (mean + count) |
+    ...     pp.StandardScaler() |
+    ...     lm.LogisticRegression()
+    ... )
 
-        Whice is equivalent to the following code:
+    Whice is equivalent to the following code:
 
-        >>> model = compose.Pipeline(
-        ...     compose.TransformerUnion(mean, count),
-        ...     pp.StandardScaler(),
-        ...     lm.LogisticRegression()
-        ... )
+    >>> model = compose.Pipeline(
+    ...     compose.TransformerUnion(mean, count),
+    ...     pp.StandardScaler(),
+    ...     lm.LogisticRegression()
+    ... )
 
-        Note that you access any part of a `TransformerUnion` by name:
+    Note that you access any part of a `TransformerUnion` by name:
 
-        >>> model['TransformerUnion']['Agg']
-        Agg (
-          on="revenue"
-          by=['place']
-          how=Mean ()
-        )
+    >>> model['TransformerUnion']['Agg']
+    Agg (
+        on="revenue"
+        by=['place']
+        how=Mean ()
+    )
 
-        >>> model['TransformerUnion']['Agg1']
-        Agg (
-          on="revenue"
-          by=['place']
-          how=Count ()
-        )
+    >>> model['TransformerUnion']['Agg1']
+    Agg (
+        on="revenue"
+        by=['place']
+        how=Count ()
+    )
 
-        You can also manually provide a name for each step:
+    You can also manually provide a name for each step:
 
-        >>> agg = compose.TransformerUnion(
-        ...     ('Mean revenue by place', mean),
-        ...     ('# by place', count)
-        ... )
+    >>> agg = compose.TransformerUnion(
+    ...     ('Mean revenue by place', mean),
+    ...     ('# by place', count)
+    ... )
 
     """
 
@@ -205,10 +208,13 @@ class TransformerUnion(base.Transformer):
     def learn_one(self, x, y=None):
         """Update each transformer.
 
-        Parameters:
-            x: Features.
-            y: An optional target, this is expected to be provided if at least one of the
-                transformers is supervised (i.e. it inherits from `base.SupervisedTransformer`).
+        Parameters
+        ----------
+        x
+            Features.
+        y
+            An optional target, this is expected to be provided if at least one of the transformers
+            is supervised (i.e. it inherits from `base.SupervisedTransformer`).
 
         """
         for t in self.transformers.values():

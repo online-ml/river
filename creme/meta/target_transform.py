@@ -11,34 +11,39 @@ class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
 
     The user is expected to check that `func` and `inverse_func` are coherent with each other.
 
-    Parameters:
-        regressor: regressor model applied for training.
-        func: A function modifying the target before training.
-        inverse_func: A function to return to the target's original space.
+    Parameters
+    ----------
+    regressor
+        Regression model to wrap.
+    func
+        A function modifying the target before training.
+    inverse_func
+        A function to return to the target's original space.
 
-    Example:
+    Examples
+    --------
 
-        >>> import math
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import meta
-        >>> from creme import metrics
-        >>> from creme import preprocessing
+    >>> import math
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import meta
+    >>> from creme import metrics
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.TrumpApproval()
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     meta.TransformedTargetRegressor(
-        ...         regressor=linear_model.LinearRegression(intercept_lr=0.15),
-        ...         func=math.log,
-        ...         inverse_func=math.exp
-        ...     )
-        ... )
-        >>> metric = metrics.MSE()
+    >>> dataset = datasets.TrumpApproval()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     meta.TransformedTargetRegressor(
+    ...         regressor=linear_model.LinearRegression(intercept_lr=0.15),
+    ...         func=math.log,
+    ...         inverse_func=math.exp
+    ...     )
+    ... )
+    >>> metric = metrics.MSE()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        MSE: 8.759624
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MSE: 8.759624
 
     """
 
@@ -70,32 +75,36 @@ class BoxCoxRegressor(TransformedTargetRegressor):
     The `power` parameter is denoted λ in the litterature. If `power` is equal to 0 than the
     Box-Cox transform will be equivalent to a log transform.
 
-    Parameters:
-        regressor: regressor model applied for training.
-        power: power value to do the transformation.
+    Parameters
+    ----------
+    regressor
+        Regression model to wrap.
+    power
+        power value to do the transformation.
 
-    Example:
+    Examples
+    --------
 
-        >>> import math
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import meta
-        >>> from creme import metrics
-        >>> from creme import preprocessing
+    >>> import math
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import meta
+    >>> from creme import metrics
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.TrumpApproval()
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     meta.BoxCoxRegressor(
-        ...         regressor=linear_model.LinearRegression(intercept_lr=0.2),
-        ...         power=0.05
-        ...     )
-        ... )
-        >>> metric = metrics.MSE()
+    >>> dataset = datasets.TrumpApproval()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     meta.BoxCoxRegressor(
+    ...         regressor=linear_model.LinearRegression(intercept_lr=0.2),
+    ...         power=0.05
+    ...     )
+    ... )
+    >>> metric = metrics.MSE()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        MSE: 5.898196
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MSE: 5.898196
 
     """
 

@@ -33,27 +33,31 @@ def safe_div(a, b):
 class Binarizer(base.Transformer):
     """Binarizes the data to 0 or 1 according to a threshold.
 
-    Parameters:
-        threshold: Values above this are replaced by 1 and the others by 0.
-        dtype: The desired data type to apply.
+    Parameters
+    ----------
+    threshold
+        Values above this are replaced by 1 and the others by 0.
+    dtype
+        The desired data type to apply.
 
-    Example:
+    Examples
+    --------
 
-        >>> import creme
-        >>> import numpy as np
+    >>> import creme
+    >>> import numpy as np
 
-        >>> rng = np.random.RandomState(42)
-        >>> X = [{'x1': v, 'x2': int(v)} for v in rng.uniform(low=-4, high=4, size=6)]
+    >>> rng = np.random.RandomState(42)
+    >>> X = [{'x1': v, 'x2': int(v)} for v in rng.uniform(low=-4, high=4, size=6)]
 
-        >>> binarizer = creme.preprocessing.Binarizer()
-        >>> for x in X:
-        ...     print(binarizer.learn_one(x).transform_one(x))
-        {'x1': False, 'x2': False}
-        {'x1': True, 'x2': True}
-        {'x1': True, 'x2': True}
-        {'x1': True, 'x2': False}
-        {'x1': False, 'x2': False}
-        {'x1': False, 'x2': False}
+    >>> binarizer = creme.preprocessing.Binarizer()
+    >>> for x in X:
+    ...     print(binarizer.learn_one(x).transform_one(x))
+    {'x1': False, 'x2': False}
+    {'x1': True, 'x2': True}
+    {'x1': True, 'x2': True}
+    {'x1': True, 'x2': False}
+    {'x1': False, 'x2': False}
+    {'x1': False, 'x2': False}
 
     """
 
@@ -84,57 +88,59 @@ class StandardScaler(base.Transformer):
     calls. In other words, this transformer will keep working even if you add and/or remove
     features every time you call `learn_many` and `transform_many`.
 
-    Example:
+    Examples
+    --------
 
-        >>> from pprint import pprint
-        >>> import random
-        >>> from creme import preprocessing
+    >>> from pprint import pprint
+    >>> import random
+    >>> from creme import preprocessing
 
-        >>> random.seed(42)
-        >>> X = [{'x': random.uniform(8, 12), 'y': random.uniform(8, 12)} for _ in range(6)]
-        >>> pprint(X)
-        [{'x': 10.557, 'y': 8.100},
-         {'x': 9.100, 'y': 8.892},
-         {'x': 10.945, 'y': 10.706},
-         {'x': 11.568, 'y': 8.347},
-         {'x': 9.687, 'y': 8.119},
-         {'x': 8.874, 'y': 10.021}]
+    >>> random.seed(42)
+    >>> X = [{'x': random.uniform(8, 12), 'y': random.uniform(8, 12)} for _ in range(6)]
+    >>> pprint(X)
+    [{'x': 10.557, 'y': 8.100},
+        {'x': 9.100, 'y': 8.892},
+        {'x': 10.945, 'y': 10.706},
+        {'x': 11.568, 'y': 8.347},
+        {'x': 9.687, 'y': 8.119},
+        {'x': 8.874, 'y': 10.021}]
 
-        >>> scaler = preprocessing.StandardScaler()
+    >>> scaler = preprocessing.StandardScaler()
 
-        >>> for x in X:
-        ...     print(scaler.learn_one(x).transform_one(x))
-        {'x': 0.0, 'y': 0.0}
-        {'x': -0.999, 'y': 0.999}
-        {'x': 0.937, 'y': 1.350}
-        {'x': 1.129, 'y': -0.651}
-        {'x': -0.776, 'y': -0.729}
-        {'x': -1.274, 'y': 0.992}
+    >>> for x in X:
+    ...     print(scaler.learn_one(x).transform_one(x))
+    {'x': 0.0, 'y': 0.0}
+    {'x': -0.999, 'y': 0.999}
+    {'x': 0.937, 'y': 1.350}
+    {'x': 1.129, 'y': -0.651}
+    {'x': -0.776, 'y': -0.729}
+    {'x': -1.274, 'y': 0.992}
 
-        This transformer also supports mini-batch updates. You can call `learn_many` and provide a
-        `pandas.DataFrame`:
+    This transformer also supports mini-batch updates. You can call `learn_many` and provide a
+    `pandas.DataFrame`:
 
-        >>> import pandas as pd
-        >>> X = pd.DataFrame.from_dict(X)
+    >>> import pandas as pd
+    >>> X = pd.DataFrame.from_dict(X)
 
-        >>> scaler = preprocessing.StandardScaler()
-        >>> scaler = scaler.learn_many(X[:3])
-        >>> scaler = scaler.learn_many(X[3:])
+    >>> scaler = preprocessing.StandardScaler()
+    >>> scaler = scaler.learn_many(X[:3])
+    >>> scaler = scaler.learn_many(X[3:])
 
-        You can then call `transform_many` to scale a mini-batch of features:
+    You can then call `transform_many` to scale a mini-batch of features:
 
-        >>> scaler.transform_many(X)
-           x         y
-        0  0.444600 -0.933384
-        1 -1.044259 -0.138809
-        2  0.841106  1.679208
-        3  1.477301 -0.685117
-        4 -0.444084 -0.914195
-        5 -1.274664  0.992296
+    >>> scaler.transform_many(X)
+        x         y
+    0  0.444600 -0.933384
+    1 -1.044259 -0.138809
+    2  0.841106  1.679208
+    3  1.477301 -0.685117
+    4 -0.444084 -0.914195
+    5 -1.274664  0.992296
 
-    References:
-        1. [Welford's Method (and Friends)](https://www.embeddedrelated.com/showarticle/785.php)
-        2. [Batch updates for simple statistics](https://notmatthancock.github.io/2017/03/23/simple-batch-stat-updates.html)
+    References
+    ----------
+    [^1]: [Welford's Method (and Friends)](https://www.embeddedrelated.com/showarticle/785.php)
+    [^2]: [Batch updates for simple statistics](https://notmatthancock.github.io/2017/03/23/simple-batch-stat-updates.html)
 
     """
 

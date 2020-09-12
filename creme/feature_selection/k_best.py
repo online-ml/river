@@ -9,51 +9,57 @@ from creme import stats
 class SelectKBest(base.SupervisedTransformer):
     """Removes all but the $k$ highest scoring features.
 
-    Parameters:
-        similarity
-        k: The number of features to keep.
+    Parameters
+    ----------
+    similarity
+    k
+        The number of features to keep.
 
-    Attributes:
-        similarities (dict): The similarity instances used for each feature.
-        leaderboard (dict): The actual similarity measures.
+    Attributes
+    ----------
+    similarities : dict
+        The similarity instances used for each feature.
+    leaderboard : dict
+        The actual similarity measures.
 
-    Example:
+    Examples
+    --------
 
-        >>> from pprint import pprint
-        >>> from creme import feature_selection
-        >>> from creme import stats
-        >>> from creme import stream
-        >>> from sklearn import datasets
+    >>> from pprint import pprint
+    >>> from creme import feature_selection
+    >>> from creme import stats
+    >>> from creme import stream
+    >>> from sklearn import datasets
 
-        >>> X, y = datasets.make_regression(
-        ...     n_samples=100,
-        ...     n_features=10,
-        ...     n_informative=2,
-        ...     random_state=42
-        ... )
+    >>> X, y = datasets.make_regression(
+    ...     n_samples=100,
+    ...     n_features=10,
+    ...     n_informative=2,
+    ...     random_state=42
+    ... )
 
-        >>> selector = feature_selection.SelectKBest(
-        ...     similarity=stats.PearsonCorr(),
-        ...     k=2
-        ... )
+    >>> selector = feature_selection.SelectKBest(
+    ...     similarity=stats.PearsonCorr(),
+    ...     k=2
+    ... )
 
-        >>> for xi, yi, in stream.iter_array(X, y):
-        ...     selector = selector.learn_one(xi, yi)
+    >>> for xi, yi, in stream.iter_array(X, y):
+    ...     selector = selector.learn_one(xi, yi)
 
-        >>> pprint(selector.leaderboard)
-        Counter({9: 0.7898,
-                7: 0.5444,
-                8: 0.1062,
-                2: 0.0638,
-                4: 0.0538,
-                5: 0.0271,
-                1: -0.0312,
-                6: -0.0657,
-                3: -0.1501,
-                0: -0.1895})
+    >>> pprint(selector.leaderboard)
+    Counter({9: 0.7898,
+            7: 0.5444,
+            8: 0.1062,
+            2: 0.0638,
+            4: 0.0538,
+            5: 0.0271,
+            1: -0.0312,
+            6: -0.0657,
+            3: -0.1501,
+            0: -0.1895})
 
-        >>> selector.transform_one(xi)
-        {7: -1.2795, 9: -1.8408}
+    >>> selector.transform_one(xi)
+    {7: -1.2795, 9: -1.8408}
 
     """
 

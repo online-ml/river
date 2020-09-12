@@ -8,7 +8,7 @@ class ADWIN(DriftDetector):
 
     Parameters
     ----------
-    delta : float (default=0.002)
+    delta
         The delta parameter for the ADWIN algorithm.
 
     Notes
@@ -26,11 +26,6 @@ class ADWIN(DriftDetector):
     these two windows. If the absolute value of the difference between the two
     averages surpasses a pre-defined threshold, change is detected at that point
     and all data before that time is discarded.
-
-    References:
-        1.  Bifet, Albert, and Ricard Gavalda. "Learning from time-changing data with adaptive
-            windowing." In Proceedings of the 2007 SIAM international conference on data mining,
-            pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     Examples
     --------
@@ -52,6 +47,10 @@ class ADWIN(DriftDetector):
     Change detected at index 1023, input value: 5
     Change detected at index 1055, input value: 7
     Change detected at index 1087, input value: 5
+
+    References
+    ----------
+    [^1]: Bifet, Albert, and Ricard Gavalda. "Learning from time-changing data with adaptive windowing." In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     """
     MAX_BUCKETS = 5
@@ -150,15 +149,17 @@ class ADWIN(DriftDetector):
 
         Parameters
         ----------
-        value: Input value
+        value
+            Input value
 
         Notes
         -----
-        The value parameter can be any numeric value relevant to the analysis
-        of concept change. For the learners in this framework we are using
-        either 0's or 1's, that are interpreted as follows:
-        0: Means the learners prediction was wrong
-        1: Means the learners prediction was correct
+        The input value can be any numeric value relevant to the analysis of concept change. For
+        the learners in this framework we are using either 0's or 1's, that are interpreted as
+        follows:
+
+        - 0: Means the learners prediction was wrong
+        - 1: Means the learners prediction was correct
 
         This function should be used at every new sample analysed.
 
@@ -195,15 +196,14 @@ class ADWIN(DriftDetector):
     def bucket_size(row):
         return np.power(2, row)
 
-    def delete_element(self):
-        """ Delete an Item from the bucket list.
+    def delete_element(self) -> int:
+        """Delete an item from the bucket list.
 
-        Deletes the last Item and updates relevant statistics kept by ADWIN.
+        Deletes the last item and updates relevant statistics kept by ADWIN.
 
         Returns
         -------
-        int
-            The bucket size from the updated bucket
+        The bucket size from the updated bucket
 
         """
         node = self.list_row_bucket.last
@@ -254,8 +254,8 @@ class ADWIN(DriftDetector):
             cursor = cursor.get_next_item()
             i += 1
 
-    def _detect_change(self):
-        """ Detects concept change in a drifting data stream.
+    def _detect_change(self) -> bool:
+        """Detects concept change in a drifting data stream.
 
         The ADWIN algorithm is described in Bifet and Gavaldà's 'Learning from
         Time-Changing Data with Adaptive Windowing'. The general idea is to keep
@@ -266,13 +266,12 @@ class ADWIN(DriftDetector):
 
         Returns
         -------
-        bln_change : bool
-            Whether change was detected or not
+        Whether change was detected or not
 
         Notes
         -----
-        If change was detected, one should verify the new window size, by reading
-        the width property.
+        If change was detected, one should verify the new window size, by reading the width
+        property.
 
         """
         bln_change = False
@@ -421,7 +420,7 @@ class List(object):
 
 
 class Item(object):
-    """ Item to be used by the List object.
+    """Item to be used by the List object.
 
     The Item object, alongside the List object, are the two main data
     structures used for storing the relevant statistics for the ADWIN

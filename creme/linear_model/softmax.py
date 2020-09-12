@@ -18,36 +18,43 @@ class SoftmaxRegression(base.Classifier):
     advantage of using this instead of a one-vs-all logistic regression is that the probabilities
     will be calibrated. Moreover softmax regression is more robust to outliers.
 
-    Parameters:
-        optimizer: The sequential optimizer used to tune the weights.
-        loss: The loss function to optimize for.
-        l2: Amount of L2 regularization used to push weights towards 0.
+    Parameters
+    ----------
+    optimizer
+        The sequential optimizer used to tune the weights.
+    loss
+        The loss function to optimize for.
+    l2
+        Amount of L2 regularization used to push weights towards 0.
 
-    Attributes:
-        weights (collections.defaultdict)
+    Attributes
+    ----------
+    weights : collections.defaultdict
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.ImageSegments()
+    >>> dataset = datasets.ImageSegments()
 
-        >>> model = preprocessing.StandardScaler()
-        >>> model |= linear_model.SoftmaxRegression()
+    >>> model = preprocessing.StandardScaler()
+    >>> model |= linear_model.SoftmaxRegression()
 
-        >>> metric = metrics.MacroF1()
+    >>> metric = metrics.MacroF1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        MacroF1: 0.818765
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MacroF1: 0.818765
 
-    References:
-        1. [Course on classification stochastic gradient descent](https://www.inf.ed.ac.uk/teaching/courses/mlp/2016/mlp02-sln.pdf)
-        2. [Binary vs. Multi-Class Logistic Regression](https://chrisyeh96.github.io/2018/06/11/logistic-regression.html)
+    References
+    ----------
+    [^1]: [Course on classification stochastic gradient descent](https://www.inf.ed.ac.uk/teaching/courses/mlp/2016/mlp02-sln.pdf)
+    [^2]: [Binary vs. Multi-Class Logistic Regression](https://chrisyeh96.github.io/2018/06/11/logistic-regression.html)
 
     """
 

@@ -6,8 +6,9 @@ from . import base
 class SurpriseWrapper(surprise.AlgoBase):
     """A wrapper to provide compatibility with surprise.
 
-    Parameters:
-        creme_recommender
+    Parameters
+    ----------
+    creme_recommender
 
     """
 

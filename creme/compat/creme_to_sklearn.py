@@ -58,8 +58,9 @@ SKLEARN_INPUT_Y_PARAMS = {
 def convert_creme_to_sklearn(estimator: base.Estimator):
     """Wraps a creme estimator to make it compatible with scikit-learn.
 
-    Parameters:
-        estimator
+    Parameters
+    ----------
+    estimator
 
     """
 
@@ -94,10 +95,11 @@ class Creme2SKLBase(sklearn_base.BaseEstimator, base.WrapperMixin):
 
 
 class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
-    """`creme` to `sklearn` regressor adapter.
+    """Convert a `creme` regressor to a `sklearn` regressor.
 
-    Parameters:
-        estimator
+    Parameters
+    ----------
+    estimator
 
     """
 
@@ -133,12 +135,16 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
-            y: array-like of shape n_samples.
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
+        y
+            array-like of shape n_samples.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -149,29 +155,36 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
         # Fit with one pass of the dataset
         return self._partial_fit(X, y)
 
-    def partial_fit(self, X, y, classes=None):
+    def partial_fit(self, X, y):
         """Fits incrementally on a portion of a dataset.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
-            y: array-like of shape n_samples.
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
+        y
+            array-like of shape n_samples.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
         # Fit with one pass of the dataset portion
         return self._partial_fit(X, y)
 
-    def predict(self, X):
+    def predict(self, X) -> np.ndarray:
         """Predicts the target of an entire dataset contained in memory.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
 
-        Returns:
-            array of shape (n_samples,): Predicted target values for each row of `X`.
+        Returns
+        -------
+        Predicted target values for each row of `X`.
 
         """
 
@@ -193,10 +206,11 @@ class Creme2SKLRegressor(Creme2SKLBase, sklearn_base.RegressorMixin):
 
 
 class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
-    """`creme` to `sklearn` classification adapter.
+    """Convert a `creme` classifier to a `sklearn` classifier.
 
-    Parameters:
-        estimator
+    Parameters
+    ----------
+    estimator
 
     """
 
@@ -259,12 +273,16 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
     def fit(self, X, y):
         """Fits to an entire dataset contained in memory.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
-            y: array-like of shape n_samples.
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
+        y
+            array-like of shape n_samples.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -279,17 +297,20 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
     def partial_fit(self, X, y, classes=None):
         """Fits incrementally on a portion of a dataset.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
-            y: array-like of shape n_samples.
-            classes: array-like of shape (n_classes,), default=None
-                Classes across all calls to partial_fit.
-                This argument is required for the first call to partial_fit
-                and can be omitted in the subsequent calls.
-                Note that y doesn't need to contain all labels in `classes`.
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
+        y
+            array-like of shape n_samples.
+        classes
+            Classes across all calls to partial_fit. This argument is required for the first call
+            to partial_fit and can be omitted in the subsequent calls. Note that y doesn't need to
+            contain all labels in `classes`.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -299,11 +320,14 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
     def predict_proba(self, X):
         """Predicts the target probability of an entire dataset contained in memory.
 
-        Parameters:
-            X (array-like of shape (n_samples, n_features))
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
 
-        Returns:
-            array of shape (n_samples,): Predicted target values for each row of `X`.
+        Returns
+        -------
+        Predicted target values for each row of `X`.
 
         """
 
@@ -330,11 +354,14 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
     def predict(self, X):
         """Predicts the target of an entire dataset contained in memory.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
 
-        Returns:
-            array of shape (n_samples,): Predicted target values for each row of `X`.
+        Returns
+        -------
+        Predicted target values for each row of `X`.
 
         """
 
@@ -361,10 +388,11 @@ class Creme2SKLClassifier(Creme2SKLBase, sklearn_base.ClassifierMixin):
 
 
 class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
-    """`creme` to `sklearn` transformer adapter.
+    """Convert a `creme` transformer to a `sklearn` transformer.
 
-    Parameters:
-        estimator
+    Parameters
+    ----------
+    estimator
 
     """
 
@@ -407,12 +435,16 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
     def fit(self, X, y=None):
         """Fits to an entire dataset contained in memory.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
-            y: array-like of shape n_samples.
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
+        y
+            array-like of shape n_samples.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -426,12 +458,16 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
     def partial_fit(self, X, y=None):
         """Fits incrementally on a portion of a dataset.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
-            y: array-like of shape n_samples.
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
+        y
+            array-like of shape n_samples.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -441,11 +477,14 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
     def transform(self, X):
         """Predicts the target of an entire dataset contained in memory.
 
-        Parameters:
-            X (array-like of shape (n_samples, n_features))
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features)
 
-        Returns:
-            array: Transformed output.
+        Returns
+        -------
+        Transformed output.
 
         """
 
@@ -469,8 +508,9 @@ class Creme2SKLTransformer(Creme2SKLBase, sklearn_base.TransformerMixin):
 class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
     """Wraps a `creme` clusterer to make it compatible with `sklearn`.
 
-    Parameters:
-        estimator
+    Parameters
+    ----------
+    estimator
 
     """
 
@@ -508,12 +548,16 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
     def fit(self, X, y=None):
         """Fits to an entire dataset contained in memory.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
-            y: array-like of shape n_samples.
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
+        y
+            array-like of shape n_samples.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -527,12 +571,16 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
     def partial_fit(self, X, y):
         """Fits incrementally on a portion of a dataset.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
-            y: array-like of shape n_samples.
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
+        y
+            array-like of shape n_samples.
 
-        Returns:
-            self
+        Returns
+        -------
+        self
 
         """
 
@@ -542,11 +590,14 @@ class Creme2SKLClusterer(Creme2SKLBase, sklearn_base.ClusterMixin):
     def predict(self, X):
         """Predicts the target of an entire dataset contained in memory.
 
-        Parameters:
-            X: array-like of shape (n_samples, n_features).
+        Parameters
+        ----------
+        X
+            array-like of shape (n_samples, n_features).
 
-        Returns:
-            array: Transformed output.
+        Returns
+        -------
+        Transformed output.
 
         """
 

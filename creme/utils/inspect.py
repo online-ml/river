@@ -26,8 +26,9 @@ __all__ = [
 def extract_relevant(model: base.Estimator):
     """Extracts the relevant part of a model.
 
-    Parameters:
-        model
+    Parameters
+    ----------
+    model
 
     """
 

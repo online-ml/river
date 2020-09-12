@@ -11,50 +11,56 @@ class RBFSampler(base.Transformer):
     This is a powerful way to give non-linear capacity to linear classifiers. This method is also
     called "random Fourier features" in the literature.
 
-    Parameters:
-        gamma: RBF kernel parameter in `(-gamma * x^2)`.
-        n_components: Number of samples per original feature. Equals the dimensionality of the
-            computed feature space.
-        seed: Random number seed.
+    Parameters
+    ----------
+    gamma
+        RBF kernel parameter in `(-gamma * x^2)`.
+    n_components
+        Number of samples per original feature. Equals the dimensionality of the computed feature
+        space.
+    seed
+        Random number seed.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import feature_extraction as fx
-        >>> from creme import linear_model as lm
-        >>> from creme import optim
-        >>> from creme import stream
+    >>> from creme import feature_extraction as fx
+    >>> from creme import linear_model as lm
+    >>> from creme import optim
+    >>> from creme import stream
 
-        >>> # XOR function
-        >>> X = [[0, 0], [1, 1], [1, 0], [0, 1]]
-        >>> Y = [0, 0, 1, 1]
+    >>> # XOR function
+    >>> X = [[0, 0], [1, 1], [1, 0], [0, 1]]
+    >>> Y = [0, 0, 1, 1]
 
-        >>> model = lm.LogisticRegression(optimizer=optim.SGD(.1))
+    >>> model = lm.LogisticRegression(optimizer=optim.SGD(.1))
 
-        >>> for x, y in stream.iter_array(X, Y):
-        ...     model = model.learn_one(x, y)
-        ...     y_pred = model.predict_one(x)
-        ...     print(y, int(y_pred))
-        0 0
-        0 0
-        1 0
-        1 1
+    >>> for x, y in stream.iter_array(X, Y):
+    ...     model = model.learn_one(x, y)
+    ...     y_pred = model.predict_one(x)
+    ...     print(y, int(y_pred))
+    0 0
+    0 0
+    1 0
+    1 1
 
-        >>> model = (
-        ...     fx.RBFSampler(seed=3) |
-        ...     lm.LogisticRegression(optimizer=optim.SGD(.1))
-        ... )
+    >>> model = (
+    ...     fx.RBFSampler(seed=3) |
+    ...     lm.LogisticRegression(optimizer=optim.SGD(.1))
+    ... )
 
-        >>> for x, y in stream.iter_array(X, Y):
-        ...     model = model.learn_one(x, y)
-        ...     y_pred = model.predict_one(x)
-        ...     print(y, int(y_pred))
-        0 0
-        0 0
-        1 1
-        1 1
+    >>> for x, y in stream.iter_array(X, Y):
+    ...     model = model.learn_one(x, y)
+    ...     y_pred = model.predict_one(x)
+    ...     print(y, int(y_pred))
+    0 0
+    0 0
+    1 1
+    1 1
 
-    References:
-        1. [Rahimi, A. and Recht, B., 2008. Random features for large-scale kernel machines. In Advances in neural information processing systems (pp. 1177-1184](https://people.eecs.berkeley.edu/~brecht/papers/07.rah.rec.nips.pdf)
+    References
+    ----------
+    [^1]: [Rahimi, A. and Recht, B., 2008. Random features for large-scale kernel machines. In Advances in neural information processing systems (pp. 1177-1184](https://people.eecs.berkeley.edu/~brecht/papers/07.rah.rec.nips.pdf)
 
     """
 

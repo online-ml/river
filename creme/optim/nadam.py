@@ -10,34 +10,37 @@ __all__ = ['Nadam']
 class Nadam(base.Optimizer):
     """Nadam optimizer.
 
-    Parameters:
-        lr
-        beta_1
-        beta_2
-        eps
+    Parameters
+    ----------
+    lr
+    beta_1
+    beta_2
+    eps
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.Phishing()
-        >>> optimizer = optim.Nadam()
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     linear_model.LogisticRegression(optimizer)
-        ... )
-        >>> metric = metrics.F1()
+    >>> dataset = datasets.Phishing()
+    >>> optimizer = optim.Nadam()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     linear_model.LogisticRegression(optimizer)
+    ... )
+    >>> metric = metrics.F1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        F1: 0.865961
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.865961
 
-    References:
-        1. [Nadam: A combination of adam and nesterov](https://ruder.io/optimizing-gradient-descent/index.html#nadam)
+    References
+    ----------
+    [^1]: [Nadam: A combination of adam and nesterov](https://ruder.io/optimizing-gradient-descent/index.html#nadam)
 
     """
 

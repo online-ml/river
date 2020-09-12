@@ -11,38 +11,44 @@ __all__ = ['ALMAClassifier']
 class ALMAClassifier(base.Classifier):
     """Approximate Large Margin Algorithm (ALMA).
 
-    Parameters:
-        p
-        alpha
-        B
-        C
+    Parameters
+    ----------
+    p
+    alpha
+    B
+    C
 
-    Attributes:
-        w (collections.defaultdict): The current weights.
-        k (int): The number of instances seen during training.
+    Attributes
+    ----------
+    w : collections.defaultdict
+        The current weights.
+    k : int
+        The number of instances seen during training.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.Phishing()
+    >>> dataset = datasets.Phishing()
 
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     linear_model.ALMAClassifier()
-        ... )
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     linear_model.ALMAClassifier()
+    ... )
 
-        >>> metric = metrics.Accuracy()
+    >>> metric = metrics.Accuracy()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        Accuracy: 82.64%
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 82.64%
 
-    References:
-        1. [Gentile, Claudio. "A new approximate maximal margin classification algorithm." Journal of Machine Learning Research 2.Dec (2001): 213-242](http://www.jmlr.org/papers/volume2/gentile01a/gentile01a.pdf)
+    References
+    ----------
+    [^1]: [Gentile, Claudio. "A new approximate maximal margin classification algorithm." Journal of Machine Learning Research 2.Dec (2001): 213-242](http://www.jmlr.org/papers/volume2/gentile01a/gentile01a.pdf)
 
     """
 

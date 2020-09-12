@@ -4,39 +4,25 @@ from creme.base import DriftDetector
 
 
 class HDDM_W(DriftDetector):
-    """
-    Drift Detection Method based on Hoeffding’s bounds with moving weighted average-test.
+    """Drift Detection Method based on Hoeffding’s bounds with moving weighted average-test.
 
-    Parameters
-    ----------
-    drift_confidence : float (default=0.001)
-        Confidence to the drift
-
-    warning_confidence : float (default=0.005)
-        Confidence to the warning
-
-    lambda_option : float (default=0.050)
-        The weight given to recent data. Smaller values mean less weight given to recent data.
-
-    two_sided_test : bool (default=False)
-        If True, will monitor error increments and decrements (two-sided). By default will only
-        monitor error increments (one-sided).
-
-    Notes
-    -----
     HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses
     the EWMA statistic as estimator. It receives as input a stream of real predictions
     and returns the estimated status of the stream: STABLE, WARNING or DRIFT.
 
     Implementation based on MOA.
 
-    References:
-        1.  Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al.
-            Online and non-parametric drift detection methods based on Hoeffding’s bounds.
-            IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
-
-        2. Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
-           MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+    Parameters
+    ----------
+    drift_confidence
+        Confidence to the drift
+    warning_confidence
+        Confidence to the warning
+    lambda_option
+        The weight given to recent data. Smaller values mean less weight given to recent data.
+    two_sided_test
+        If True, will monitor error increments and decrements (two-sided). By default will only
+        monitor error increments (one-sided).
 
     Examples
     --------
@@ -58,6 +44,11 @@ class HDDM_W(DriftDetector):
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1011, input value: 1
+
+    References
+    ----------
+    [^1]: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection methods based on Hoeffding’s bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
+    [^2]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer. MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
 
     """
 

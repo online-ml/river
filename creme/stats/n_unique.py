@@ -13,45 +13,51 @@ class NUnique(base.Univariate):
     [`hypy`](https://github.com/clarkduvall/hypy). The code is a bit too terse but it will do for
     now.
 
-    Parameters:
-        error_rate: Desired error rate. Memory usage is inversely proportional to this value.
-        seed: Set the seed to produce identical results.
+    Parameters
+    ----------
+    error_rate
+        Desired error rate. Memory usage is inversely proportional to this value.
+    seed
+        Set the seed to produce identical results.
 
-    Attributes:
-        n_bits (int)
-        n_buckets (int)
-        buckets (list)
+    Attributes
+    ----------
+    n_bits : int
+    n_buckets : int
+    buckets : list
 
-    Example:
+    Examples
+    --------
 
-        >>> import string
-        >>> from creme import stats
+    >>> import string
+    >>> from creme import stats
 
-        >>> alphabet = string.ascii_lowercase
-        >>> n_unique = stats.NUnique(error_rate=0.1, seed=42)
+    >>> alphabet = string.ascii_lowercase
+    >>> n_unique = stats.NUnique(error_rate=0.1, seed=42)
 
-        >>> n_unique.update('a').get()
-        1
+    >>> n_unique.update('a').get()
+    1
 
-        >>> n_unique.update('b').get()
-        2
+    >>> n_unique.update('b').get()
+    2
 
-        >>> for letter in alphabet:
-        ...     n_unique = n_unique.update(letter)
-        >>> n_unique.get()
-        27
+    >>> for letter in alphabet:
+    ...     n_unique = n_unique.update(letter)
+    >>> n_unique.get()
+    27
 
-        We can increase the precision by lowering the ``error_rate`` parameter.
+    We can increase the precision by lowering the ``error_rate`` parameter.
 
-        >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
-        >>> for letter in alphabet:
-        ...     n_unique = n_unique.update(letter)
-        >>> n_unique.get()
-        26
+    >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
+    >>> for letter in alphabet:
+    ...     n_unique = n_unique.update(letter)
+    >>> n_unique.get()
+    26
 
-    References:
-        1. [My favorite algorithm (and data structure): HyperLogLog](https://odino.org/my-favorite-data-structure-hyperloglog/)
-        2. [Flajolet, P., Fusy, É., Gandouet, O. and Meunier, F., 2007, June. Hyperloglog: the analysis of a near-optimal cardinality estimation algorithm.](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf)
+    References
+    ----------
+    [^1]: [My favorite algorithm (and data structure): HyperLogLog](https://odino.org/my-favorite-data-structure-hyperloglog/)
+    [^2]: [Flajolet, P., Fusy, É., Gandouet, O. and Meunier, F., 2007, June. Hyperloglog: the analysis of a near-optimal cardinality estimation algorithm.](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf)
 
     """
 

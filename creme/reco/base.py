@@ -18,10 +18,14 @@ class Recommender(base.Regressor):
                  y: float) -> 'Recommender':
         """Fits a `user`-`item` pair and a real-valued target `y`.
 
-        Parameters:
-            user: A user ID.
-            item: An item ID.
-            y: A rating.
+        Parameters
+        ----------
+        user
+            A user ID.
+        item
+            An item ID.
+        y
+            A rating.
 
         """
 
@@ -29,11 +33,15 @@ class Recommender(base.Regressor):
     def _predict_one(self, user: typing.Union[str, int], item: typing.Union[str, int]) -> float:
         """Predicts the target value of a set of features `x`.
 
-        Parameters:
-            user: A user ID.
-            item: An item ID.
+        Parameters
+        ----------
+        user
+            A user ID.
+        item
+            An item ID.
 
-        Returns:
-            The predicted rating.
+        Returns
+        -------
+        The predicted rating.
 
         """

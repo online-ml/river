@@ -21,53 +21,64 @@ class Baseline(base.Recommender):
 
     Where $bu_{u}$ and $bi_{i}$ are respectively the user and item biases.
 
-    Parameters:
-        optimizer: The sequential optimizer used for updating the weights.
-        loss: The loss function to optimize for.
-        l2: regularization amount used to push weights towards 0.
-        initializer: Weights initialization scheme.
-        clip_gradient: Clips the absolute value of each gradient value.
+    This model expects a dict input with a `user` and an `item` entries without any type constraint
+    on their values (i.e. can be strings or numbers). Other entries are ignored.
 
-    Attributes:
-        global_mean (stats.Mean): The target arithmetic mean.
-        u_biases (collections.defaultdict): The user bias weights.
-        i_biases (collections.defaultdict): The item bias weights.
-        u_optimizer (optim.Optimizer): The sequential optimizer used for updating the user bias
-            weights.
-        i_optimizer (optim.Optimizer): The sequential optimizer used for updating the item bias
-            weights.
+    Parameters
+    ----------
+    optimizer
+        The sequential optimizer used for updating the weights.
+    loss
+        The loss function to optimize for.
+    l2
+        regularization amount used to push weights towards 0.
+    initializer
+        Weights initialization scheme.
+    clip_gradient
+        Clips the absolute value of each gradient value.
 
-    Example:
+    Attributes
+    ----------
+    global_mean : stats.Mean
+        The target arithmetic mean.
+    u_biases : collections.defaultdict
+        The user bias weights.
+    i_biases : collections.defaultdict
+        The item bias weights.
+    u_optimizer : optim.Optimizer
+        The sequential optimizer used for updating the user bias weights.
+    i_optimizer : optim.Optimizer
+        The sequential optimizer used for updating the item bias weights.
 
-        >>> from creme import optim
-        >>> from creme import reco
+    Examples
+    --------
 
-        >>> dataset = (
-        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-        ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
-        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-        ... )
+    >>> from creme import optim
+    >>> from creme import reco
 
-        >>> model = reco.Baseline(optimizer=optim.SGD(0.005))
+    >>> dataset = (
+    ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+    ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
+    ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+    ... )
 
-        >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+    >>> model = reco.Baseline(optimizer=optim.SGD(0.005))
 
-        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-        6.538120
+    >>> for x, y in dataset:
+    ...     _ = model.learn_one(x, y)
 
-    Note:
-        This model expects a dict input with a `user` and an `item` entries without any
-        type constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+    6.538120
 
-    References:
-        1. [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
+    References
+    ----------
+    [^1]: [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
 
     """
 

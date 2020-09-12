@@ -30,17 +30,21 @@ class RandomUnderSampler(ClassificationSampler):
     stream of given observations so that the class distribution seen by the classifier follows
     a given desired distribution. The implementation is a discrete version of rejection sampling.
 
-    Parameters:
-        classifier
-        desired_dist: The desired class distribution. The keys are the classes whilst the
-            values are the desired class percentages. The values must sum up to 1.
-        seed: Random seed for reproducibility.
+    Parameters
+    ----------
+    classifier
+    desired_dist
+        The desired class distribution. The keys are the classes whilst the values are the desired
+        class percentages. The values must sum up to 1.
+    seed
+        Random seed for reproducibility.
 
     See the [user guide](/user-guide/imbalanced-learning) for example usage.
 
-    References:
-        1. [Under-sampling a dataset with desired ratios](https://maxhalford.github.io/blog/under-sampling-a-dataset-with-desired-ratios/)
-        2. [Wikipedia article on rejection sampling](https://www.wikiwand.com/en/Rejection_sampling)
+    References
+    ----------
+    [^1]: [Under-sampling a dataset with desired ratios](https://maxhalford.github.io/blog/under-sampling-a-dataset-with-desired-ratios/)
+    [^2]: [Wikipedia article on rejection sampling](https://www.wikiwand.com/en/Rejection_sampling)
 
     """
 

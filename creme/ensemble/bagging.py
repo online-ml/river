@@ -42,43 +42,49 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     chance of being equal to 3, a 1% chance of being equal to 4, etc. You can do
     `scipy.stats.poisson(1).pmf(k)` to obtain more detailed values.
 
-    Parameters:
-        model: The classifier to bag.
-        n_models: The number of models in the ensemble.
-        seed: Random number generator seed for reproducibility.
+    Parameters
+    ----------
+    model
+        The classifier to bag.
+    n_models
+        The number of models in the ensemble.
+    seed
+        Random number generator seed for reproducibility.
 
-    Example:
+    Examples
+    --------
 
-        In the following example three logistic regressions are bagged together. The performance is
-        slightly better than when using a single logistic regression.
+    In the following example three logistic regressions are bagged together. The performance is
+    slightly better than when using a single logistic regression.
 
-        >>> from creme import datasets
-        >>> from creme import ensemble
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import ensemble
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.Phishing()
-        >>> model = ensemble.BaggingClassifier(
-        ...     model=(
-        ...         preprocessing.StandardScaler() |
-        ...         linear_model.LogisticRegression()
-        ...     ),
-        ...     n_models=3,
-        ...     seed=42
-        ... )
-        >>> metric = metrics.F1()
+    >>> dataset = datasets.Phishing()
+    >>> model = ensemble.BaggingClassifier(
+    ...     model=(
+    ...         preprocessing.StandardScaler() |
+    ...         linear_model.LogisticRegression()
+    ...     ),
+    ...     n_models=3,
+    ...     seed=42
+    ... )
+    >>> metric = metrics.F1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        F1: 0.877788
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.877788
 
-        >>> print(model)
-        BaggingClassifier(StandardScaler | LogisticRegression)
+    >>> print(model)
+    BaggingClassifier(StandardScaler | LogisticRegression)
 
-    References:
-        1. [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
+    References
+    ----------
+    [^1]: [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
 
     """
 
@@ -111,38 +117,44 @@ class BaggingRegressor(BaseBagging, base.Regressor):
     chance of being equal to 3, a 1% chance of being equal to 4, etc. You can do
     `scipy.stats.poisson(1).pmf(k)` for more detailed values.
 
-    Parameters:
-        model: The regressor to bag.
-        n_models: The number of models in the ensemble.
-        seed: Random number generator seed for reproducibility.
+    Parameters
+    ----------
+    model
+        The regressor to bag.
+    n_models
+        The number of models in the ensemble.
+    seed
+        Random number generator seed for reproducibility.
 
-    Example:
+    Examples
+    --------
 
-        In the following example three logistic regressions are bagged together. The performance is
-        slightly better than when using a single logistic regression.
+    In the following example three logistic regressions are bagged together. The performance is
+    slightly better than when using a single logistic regression.
 
-        >>> from creme import datasets
-        >>> from creme import ensemble
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import ensemble
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.TrumpApproval()
-        >>> model = preprocessing.StandardScaler()
-        >>> model |= ensemble.BaggingRegressor(
-        ...     model=linear_model.LinearRegression(intercept_lr=0.1),
-        ...     n_models=3,
-        ...     seed=42
-        ... )
-        >>> metric = metrics.MAE()
+    >>> dataset = datasets.TrumpApproval()
+    >>> model = preprocessing.StandardScaler()
+    >>> model |= ensemble.BaggingRegressor(
+    ...     model=linear_model.LinearRegression(intercept_lr=0.1),
+    ...     n_models=3,
+    ...     seed=42
+    ... )
+    >>> metric = metrics.MAE()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        MAE: 0.641799
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 0.641799
 
-    References:
-        1. [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
+    References
+    ----------
+    [^1]: [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
 
     """
 

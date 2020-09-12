@@ -13,30 +13,33 @@ class Discard(base.Transformer):
     method is pure, and therefore returns a fresh new dictionary instead of removing the specified
     keys from the input.
 
-    Parameters:
-        blacklist: Key(s) to discard.
+    Parameters
+    ----------
+    blacklist
+        Key(s) to discard.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import compose
+    >>> from creme import compose
 
-        >>> x = {'a': 42, 'b': 12, 'c': 13}
-        >>> compose.Discard('a', 'b').transform_one(x)
-        {'c': 13}
+    >>> x = {'a': 42, 'b': 12, 'c': 13}
+    >>> compose.Discard('a', 'b').transform_one(x)
+    {'c': 13}
 
-        You can chain a discarder with any estimator in order to apply said estimator to the
-        desired features.
+    You can chain a discarder with any estimator in order to apply said estimator to the
+    desired features.
 
-        >>> from creme import feature_extraction as fx
+    >>> from creme import feature_extraction as fx
 
-        >>> x = {'sales': 10, 'shop': 'Ikea', 'country': 'Sweden'}
+    >>> x = {'sales': 10, 'shop': 'Ikea', 'country': 'Sweden'}
 
-        >>> pipeline = (
-        ...     compose.Discard('shop', 'country') |
-        ...     fx.PolynomialExtender()
-        ... )
-        >>> pipeline.transform_one(x)
-        {'sales': 10, 'sales*sales': 100}
+    >>> pipeline = (
+    ...     compose.Discard('shop', 'country') |
+    ...     fx.PolynomialExtender()
+    ... )
+    >>> pipeline.transform_one(x)
+    {'sales': 10, 'sales*sales': 100}
 
     """
 
@@ -67,30 +70,33 @@ class Select(base.Transformer):
     method is pure, and therefore returns a fresh new dictionary instead of removing the specified
     keys from the input.
 
-    Parameters:
-        whitelist: Key(s) to keep.
+    Parameters
+    ----------
+    whitelist
+        Key(s) to keep.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import compose
+    >>> from creme import compose
 
-        >>> x = {'a': 42, 'b': 12, 'c': 13}
-        >>> compose.Select('c').transform_one(x)
-        {'c': 13}
+    >>> x = {'a': 42, 'b': 12, 'c': 13}
+    >>> compose.Select('c').transform_one(x)
+    {'c': 13}
 
-        You can chain a selector with any estimator in order to apply said estimator to the
-        desired features.
+    You can chain a selector with any estimator in order to apply said estimator to the
+    desired features.
 
-        >>> from creme import feature_extraction as fx
+    >>> from creme import feature_extraction as fx
 
-        >>> x = {'sales': 10, 'shop': 'Ikea', 'country': 'Sweden'}
+    >>> x = {'sales': 10, 'shop': 'Ikea', 'country': 'Sweden'}
 
-        >>> pipeline = (
-        ...     compose.Select('sales') |
-        ...     fx.PolynomialExtender()
-        ... )
-        >>> pipeline.transform_one(x)
-        {'sales': 10, 'sales*sales': 100}
+    >>> pipeline = (
+    ...     compose.Select('sales') |
+    ...     fx.PolynomialExtender()
+    ... )
+    >>> pipeline.transform_one(x)
+    {'sales': 10, 'sales*sales': 100}
 
     """
 
@@ -124,20 +130,23 @@ class SelectType(base.Transformer):
     features. For instance, a common usecase is to apply a `preprocessing.StandardScaler` to
     numeric features and a `preprocessing.OneHotEncoder` to categorical features.
 
-    Parameters:
-        types: Python types which you want to select. Under the hood, the `isinstance` method
-            will be used to check if a value is of a given type.
+    Parameters
+    ----------
+    types
+        Python types which you want to select. Under the hood, the `isinstance` method will be used
+        to check if a value is of a given type.
 
-    Example:
+    Examples
+    --------
 
-        >>> import numbers
-        >>> from creme import compose
-        >>> from creme import linear_model
-        >>> from creme import preprocessing
+    >>> import numbers
+    >>> from creme import compose
+    >>> from creme import linear_model
+    >>> from creme import preprocessing
 
-        >>> num = compose.SelectType(numbers.Number) | preprocessing.StandardScaler()
-        >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder()
-        >>> model = (num + cat) | linear_model.LogisticRegression()
+    >>> num = compose.SelectType(numbers.Number) | preprocessing.StandardScaler()
+    >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder()
+    >>> model = (num + cat) | linear_model.LogisticRegression()
 
     """
 

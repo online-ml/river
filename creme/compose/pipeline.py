@@ -35,142 +35,145 @@ class Pipeline(base.Estimator):
     which is a supervised model. However, some transformers are supervised and are therefore
     obtained during calls to `learn_one`.
 
-    Parameters:
-        steps: Ideally, a list of (name, estimator) tuples. A name is automatically inferred
-            if none is provided.
+    Parameters
+    ----------
+    steps
+        Ideally, a list of (name, estimator) tuples. A name is automatically inferred if none is
+        provided.
 
-    Example:
+    Examples
+    --------
 
-        The recommended way to declare a pipeline is to use the `|` operator. The latter allows you
-        to chain estimators in a very terse manner:
+    The recommended way to declare a pipeline is to use the `|` operator. The latter allows you
+    to chain estimators in a very terse manner:
 
-        >>> from creme import linear_model
-        >>> from creme import preprocessing
+    >>> from creme import linear_model
+    >>> from creme import preprocessing
 
-        >>> scaler = preprocessing.StandardScaler()
-        >>> log_reg = linear_model.LinearRegression()
-        >>> model = scaler | log_reg
+    >>> scaler = preprocessing.StandardScaler()
+    >>> log_reg = linear_model.LinearRegression()
+    >>> model = scaler | log_reg
 
-        This results in a pipeline that stores each step inside a dictionary.
+    This results in a pipeline that stores each step inside a dictionary.
 
-        >>> model
-        Pipeline (
-          StandardScaler (),
-          LinearRegression (
-            optimizer=SGD (
-              lr=Constant (
-                learning_rate=0.01
-              )
-            )
-            loss=Squared ()
-            l2=0.
-            intercept=0.
-            intercept_lr=Constant (
-            learning_rate=0.01
-            )
-            clip_gradient=1e+12
-            initializer=Zeros ()
-          )
-        )
-
-        You can access parts of a pipeline in the same manner as a dictionary:
-
-        >>> model['LinearRegression']
+    >>> model
+    Pipeline (
+        StandardScaler (),
         LinearRegression (
-          optimizer=SGD (
+        optimizer=SGD (
             lr=Constant (
-              learning_rate=0.01
-            )
-          )
-          loss=Squared ()
-          l2=0.
-          intercept=0.
-          intercept_lr=Constant (
             learning_rate=0.01
-          )
-          clip_gradient=1e+12
-          initializer=Zeros ()
+            )
         )
+        loss=Squared ()
+        l2=0.
+        intercept=0.
+        intercept_lr=Constant (
+        learning_rate=0.01
+        )
+        clip_gradient=1e+12
+        initializer=Zeros ()
+        )
+    )
 
-        Note that you can also declare a pipeline by using the `compose.Pipeline` constructor
-        method, which is slighly more verbose:
+    You can access parts of a pipeline in the same manner as a dictionary:
 
-        >>> from creme import compose
+    >>> model['LinearRegression']
+    LinearRegression (
+        optimizer=SGD (
+        lr=Constant (
+            learning_rate=0.01
+        )
+        )
+        loss=Squared ()
+        l2=0.
+        intercept=0.
+        intercept_lr=Constant (
+        learning_rate=0.01
+        )
+        clip_gradient=1e+12
+        initializer=Zeros ()
+    )
 
-        >>> model = compose.Pipeline(scaler, log_reg)
+    Note that you can also declare a pipeline by using the `compose.Pipeline` constructor
+    method, which is slighly more verbose:
 
-        By using a `compose.TransformerUnion`, you can define complex pipelines that apply
-        different steps to different parts of the data. For instance, we can extract word counts
-        from text data, and extract polynomial features from numeric data.
+    >>> from creme import compose
 
-        >>> from creme import feature_extraction as fx
+    >>> model = compose.Pipeline(scaler, log_reg)
 
-        >>> tfidf = fx.TFIDF('text')
-        >>> counts = fx.BagOfWords('text')
-        >>> text_part = compose.Select('text') | (tfidf + counts)
+    By using a `compose.TransformerUnion`, you can define complex pipelines that apply
+    different steps to different parts of the data. For instance, we can extract word counts
+    from text data, and extract polynomial features from numeric data.
 
-        >>> num_part = compose.Select('a', 'b') | fx.PolynomialExtender()
+    >>> from creme import feature_extraction as fx
 
-        >>> model = text_part + num_part
-        >>> model |= preprocessing.StandardScaler()
-        >>> model |= linear_model.LinearRegression()
+    >>> tfidf = fx.TFIDF('text')
+    >>> counts = fx.BagOfWords('text')
+    >>> text_part = compose.Select('text') | (tfidf + counts)
 
-        You can obtain a visual representation of the pipeline by calling it's `draw` method.
+    >>> num_part = compose.Select('a', 'b') | fx.PolynomialExtender()
 
-        >>> dot = model.draw()
+    >>> model = text_part + num_part
+    >>> model |= preprocessing.StandardScaler()
+    >>> model |= linear_model.LinearRegression()
 
-        ![pipeline_example](/img/pipeline_docstring.svg)
+    You can obtain a visual representation of the pipeline by calling it's `draw` method.
 
-        The following shows an example of using `debug_one` to visualize how the information
-        flows and changes throughout the pipeline.
+    >>> dot = model.draw()
 
-        >>> from creme import compose
-        >>> from creme import naive_bayes
+    ![pipeline_example](/img/pipeline_docstring.svg)
 
-        >>> dataset = [
-        ...     ('A positive comment', True),
-        ...     ('A negative comment', False),
-        ...     ('A happy comment', True),
-        ...     ('A lovely comment', True),
-        ...     ('A harsh comment', False)
-        ... ]
+    The following shows an example of using `debug_one` to visualize how the information
+    flows and changes throughout the pipeline.
 
-        >>> tfidf = fx.TFIDF() | compose.Renamer(prefix='tfidf_')
-        >>> counts = fx.BagOfWords() | compose.Renamer(prefix='count_')
-        >>> mnb = naive_bayes.MultinomialNB()
-        >>> model = (tfidf + counts) | mnb
+    >>> from creme import compose
+    >>> from creme import naive_bayes
 
-        >>> for x, y in dataset:
-        ...     model = model.learn_one(x, y)
+    >>> dataset = [
+    ...     ('A positive comment', True),
+    ...     ('A negative comment', False),
+    ...     ('A happy comment', True),
+    ...     ('A lovely comment', True),
+    ...     ('A harsh comment', False)
+    ... ]
 
-        >>> x = dataset[0][0]
-        >>> report = model.debug_one(dataset[0][0])
-        >>> print(report)
-        0. Input
-        --------
-        A positive comment
-        <BLANKLINE>
-        1. Transformer union
-        --------------------
-            1.0 TFIDF | Renamer
-            -------------------
-            tfidf_comment: 0.47606 (float)
-            tfidf_positive: 0.87942 (float)
-        <BLANKLINE>
-            1.1 BagOfWords | Renamer
-            ------------------------
-            count_comment: 1 (int)
-            count_positive: 1 (int)
-        <BLANKLINE>
+    >>> tfidf = fx.TFIDF() | compose.Renamer(prefix='tfidf_')
+    >>> counts = fx.BagOfWords() | compose.Renamer(prefix='count_')
+    >>> mnb = naive_bayes.MultinomialNB()
+    >>> model = (tfidf + counts) | mnb
+
+    >>> for x, y in dataset:
+    ...     model = model.learn_one(x, y)
+
+    >>> x = dataset[0][0]
+    >>> report = model.debug_one(dataset[0][0])
+    >>> print(report)
+    0. Input
+    --------
+    A positive comment
+    <BLANKLINE>
+    1. Transformer union
+    --------------------
+        1.0 TFIDF | Renamer
+        -------------------
+        tfidf_comment: 0.47606 (float)
+        tfidf_positive: 0.87942 (float)
+    <BLANKLINE>
+        1.1 BagOfWords | Renamer
+        ------------------------
         count_comment: 1 (int)
         count_positive: 1 (int)
-        tfidf_comment: 0.50854 (float)
-        tfidf_positive: 0.86104 (float)
-        <BLANKLINE>
-        2. MultinomialNB
-        ----------------
-        False: 0.19313
-        True: 0.80687
+    <BLANKLINE>
+    count_comment: 1 (int)
+    count_positive: 1 (int)
+    tfidf_comment: 0.50854 (float)
+    tfidf_positive: 0.86104 (float)
+    <BLANKLINE>
+    2. MultinomialNB
+    ----------------
+    False: 0.19313
+    True: 0.80687
 
     """
 
@@ -238,7 +241,7 @@ class Pipeline(base.Estimator):
         """Add a step to either end of the pipeline.
 
         This method takes care of sanitizing the input. For instance, if a function is passed,
-        then it will be wrapped with a `FuncTransformer`.
+        then it will be wrapped with a `compose.FuncTransformer`.
 
         """
 
@@ -285,9 +288,12 @@ class Pipeline(base.Estimator):
     def learn_one(self, x: dict, y=None, **params):
         """Fit to a single instance.
 
-        Parameters:
-            X: A dictionary of features.
-            y: A target value.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        y
+            A target value.
 
         """
 
@@ -376,9 +382,12 @@ class Pipeline(base.Estimator):
         Only works if each estimator has a `transform_one` method and the final estimator has a
         `forecast` method. This is the case of time series models from the `time_series` module.
 
-        Parameters:
-            horizon: The forecast horizon.
-            xs: A list of features for each step in the horizon.
+        Parameters
+        ----------
+        horizon
+            The forecast horizon.
+        xs
+            A list of features for each step in the horizon.
 
         """
         if xs is not None:
@@ -389,10 +398,14 @@ class Pipeline(base.Estimator):
     def debug_one(self, x: dict, show_types=True, n_decimals=5) -> str:
         """Displays the state of a set of features as it goes through the pipeline.
 
-        Parameters:
-            x A set of features.
-            show_types: Whether or not to display the type of feature along with it's value.
-            n_decimals: Number of decimals to display for each floating point value.
+        Parameters
+        ----------
+        x
+            A set of features.
+        show_types
+            Whether or not to display the type of feature along with it's value.
+        n_decimals
+            Number of decimals to display for each floating point value.
 
         """
 
@@ -470,10 +483,12 @@ class Pipeline(base.Estimator):
     def learn_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
         """Fit to a mini-batch.
 
-        Parameters:
-            X: A dataframe of features. Columns can be added and/or removed between successive
-                calls.
-            y: A series of target values.
+        Parameters
+        ----------
+        X
+            A dataframe of features. Columns can be added and/or removed between successive calls.
+        y
+            A series of target values.
 
         """
 

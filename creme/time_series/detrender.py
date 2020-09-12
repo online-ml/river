@@ -13,10 +13,12 @@ class Detrender(base.Regressor, base.WrapperMixin):
     to the provided regression model. During the `predict_one` step, the current mean is added
     to the prediction of the regression model.
 
-    Parameters:
-        regressor
-        window_size: Window size used for calculating the rolling mean. If `None`, then a mean over
-            the whole target data will instead be used.
+    Parameters
+    ----------
+    regressor
+    window_size
+        Window size used for calculating the rolling mean. If `None`, then a mean over the whole
+        target data will instead be used.
 
     """
 
@@ -40,11 +42,13 @@ class Detrender(base.Regressor, base.WrapperMixin):
 class GroupDetrender(base.Regressor, base.WrapperMixin):
     """Removes the trend of the target inside each group.
 
-    Parameters:
-        regressor
-        by
-        window_size: Window size used for calculating each rolling mean. If `None`, then a
-            mean over the whole target data will instead be used.
+    Parameters
+    ----------
+    regressor
+    by
+    window_size
+        Window size used for calculating each rolling mean. If `None`, then a mean over the whole
+        target data will instead be used.
 
     """
 

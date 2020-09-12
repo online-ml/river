@@ -5,17 +5,24 @@ from . import count
 class CentralMoments(base.Univariate):
     """Computes central moments using Welford's algorithm.
 
-    Attributes:
-        count (stats.Count)
-        delta (float): Mean of differences.
-        sum_delta (float): Mean of sum of differences.
-        M1 (float): sums of powers of differences from the mean order 1.
-        M2 (float): sums of powers of differences from the mean order 2.
-        M3 (float): sums of powers of differences from the mean order 3.
-        M4 (float): sums of powers of differences from the mean order 4.
+    Attributes
+    ----------
+    count : stats.Count
+    delta: float
+    sum_delta : float
+        Mean of sum of differences.
+    M1 : float
+        Sums of powers of differences from the mean order 1.
+    M2 : float)
+        Sums of powers of differences from the mean order 2.
+    M3 : float
+        Sums of powers of differences from the mean order 3.
+    M4 : float
+        Sums of powers of differences from the mean order 4.
 
-    References:
-        1. [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+    References
+    ----------
+    [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
 
     """
 

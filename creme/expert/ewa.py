@@ -13,65 +13,70 @@ __all__ = ['EWARegressor']
 class EWARegressor(base.EnsembleMixin, base.Regressor):
     """Exponentially Weighted Average regressor.
 
-    Parameters:
-        regressors: The regressors to hedge.
-        loss: The loss function that has to be minimized. Defaults to `optim.losses.Squared`.
-        learning_rate: The learning rate by which the model weights are multiplied at each
-            iteration.
+    Parameters
+    ----------
+    regressors
+        The regressors to hedge.
+    loss
+        The loss function that has to be minimized. Defaults to `optim.losses.Squared`.
+    learning_rate
+        The learning rate by which the model weights are multiplied at each iteration.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import expert
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import expert
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> optimizers = [
-        ...     optim.SGD(0.01),
-        ...     optim.RMSProp(),
-        ...     optim.AdaGrad()
-        ... ]
+    >>> optimizers = [
+    ...     optim.SGD(0.01),
+    ...     optim.RMSProp(),
+    ...     optim.AdaGrad()
+    ... ]
 
-        >>> for optimizer in optimizers:
-        ...
-        ...     dataset = datasets.TrumpApproval()
-        ...     metric = metrics.MAE()
-        ...     model = (
-        ...         preprocessing.StandardScaler() |
-        ...         linear_model.LinearRegression(
-        ...             optimizer=optimizer,
-        ...             intercept_lr=.1
-        ...         )
-        ...     )
-        ...
-        ...     print(optimizer, evaluate.progressive_val_score(dataset, model, metric))
-        SGD MAE: 0.555971
-        RMSProp MAE: 0.528284
-        AdaGrad MAE: 0.481461
+    >>> for optimizer in optimizers:
+    ...
+    ...     dataset = datasets.TrumpApproval()
+    ...     metric = metrics.MAE()
+    ...     model = (
+    ...         preprocessing.StandardScaler() |
+    ...         linear_model.LinearRegression(
+    ...             optimizer=optimizer,
+    ...             intercept_lr=.1
+    ...         )
+    ...     )
+    ...
+    ...     print(optimizer, evaluate.progressive_val_score(dataset, model, metric))
+    SGD MAE: 0.555971
+    RMSProp MAE: 0.528284
+    AdaGrad MAE: 0.481461
 
-        >>> dataset = datasets.TrumpApproval()
-        >>> metric = metrics.MAE()
-        >>> hedge = (
-        ...     preprocessing.StandardScaler() |
-        ...     expert.EWARegressor(
-        ...         regressors=[
-        ...             linear_model.LinearRegression(optimizer=o, intercept_lr=.1)
-        ...             for o in optimizers
-        ...         ],
-        ...         learning_rate=0.005
-        ...     )
-        ... )
+    >>> dataset = datasets.TrumpApproval()
+    >>> metric = metrics.MAE()
+    >>> hedge = (
+    ...     preprocessing.StandardScaler() |
+    ...     expert.EWARegressor(
+    ...         regressors=[
+    ...             linear_model.LinearRegression(optimizer=o, intercept_lr=.1)
+    ...             for o in optimizers
+    ...         ],
+    ...         learning_rate=0.005
+    ...     )
+    ... )
 
-        >>> evaluate.progressive_val_score(dataset, hedge, metric)
-        MAE: 0.494832
+    >>> evaluate.progressive_val_score(dataset, hedge, metric)
+    MAE: 0.494832
 
-    References:
-        1. [Online Learning from Experts: Weighed Majority and Hedge](https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf)
-        2. [Wikipedia page on the multiplicative weight update method](https://www.wikiwand.com/en/Multiplicative_weight_update_method)
-        3. [Kivinen, J. and Warmuth, M.K., 1997. Exponentiated gradient versus gradient descent for linear predictors. information and computation, 132(1), pp.1-63.](https://users.soe.ucsc.edu/~manfred/pubs/J36.pdf)
+    References
+    ----------
+    [^1]: [Online Learning from Experts: Weighed Majority and Hedge](https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf)
+    [^2]: [Wikipedia page on the multiplicative weight update method](https://www.wikiwand.com/en/Multiplicative_weight_update_method)
+    [^3]: [Kivinen, J. and Warmuth, M.K., 1997. Exponentiated gradient versus gradient descent for linear predictors. information and computation, 132(1), pp.1-63.](https://users.soe.ucsc.edu/~manfred/pubs/J36.pdf)
 
     """
 

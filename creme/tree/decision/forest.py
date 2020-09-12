@@ -11,33 +11,38 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
 
     This is a thin wrapper over `ensemble.BaggingClassifier` and `tree.DecisionTreeClassifier`.
 
-    Parameters:
-        n_trees: The number of trees in the forest.
-        seed: Random number generator seed for reproducibility.
-        tree_params: The parameters of the decision tree.
+    Parameters
+    ----------
+    n_trees
+        The number of trees in the forest.
+    seed
+        Random number generator seed for reproducibility.
+    tree_params
+        The parameters of the decision tree.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import metrics
-        >>> from creme import tree
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import metrics
+    >>> from creme import tree
 
-        >>> dataset = datasets.Phishing()
+    >>> dataset = datasets.Phishing()
 
-        >>> model = tree.RandomForestClassifier(
-        ...     n_trees=10,
-        ...     seed=42,
-        ...     # Tree parameters
-        ...     patience=100,
-        ...     confidence=1e-5,
-        ...     criterion='gini'
-        ... )
+    >>> model = tree.RandomForestClassifier(
+    ...     n_trees=10,
+    ...     seed=42,
+    ...     # Tree parameters
+    ...     patience=100,
+    ...     confidence=1e-5,
+    ...     criterion='gini'
+    ... )
 
-        >>> metric = metrics.LogLoss()
+    >>> metric = metrics.LogLoss()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        LogLoss: 0.456533
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    LogLoss: 0.456533
 
     """
 

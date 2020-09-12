@@ -8,36 +8,41 @@ __all__ = ['PredClipper']
 class PredClipper(base.Regressor, base.WrapperMixin):
     """Clips the target after predicting.
 
-    Parameters:
-        regressor: regressor model applied for training.
-        y_min: minimum value.
-        y_max: maximum value.
+    Parameters
+    ----------
+    regressor
+        Regressor model for which to clip the predictions.
+    y_min
+        minimum value.
+    y_max
+        maximum value.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import linear_model
-        >>> from creme import meta
+    >>> from creme import linear_model
+    >>> from creme import meta
 
-        >>> dataset = (
-        ...     ({'a': 2, 'b': 4}, 80),
-        ...     ({'a': 3, 'b': 5}, 100),
-        ...     ({'a': 4, 'b': 6}, 120)
-        ... )
+    >>> dataset = (
+    ...     ({'a': 2, 'b': 4}, 80),
+    ...     ({'a': 3, 'b': 5}, 100),
+    ...     ({'a': 4, 'b': 6}, 120)
+    ... )
 
-        >>> model = meta.PredClipper(
-        ...     regressor=linear_model.LinearRegression(),
-        ...     y_min=0,
-        ...     y_max=200
-        ... )
+    >>> model = meta.PredClipper(
+    ...     regressor=linear_model.LinearRegression(),
+    ...     y_min=0,
+    ...     y_max=200
+    ... )
 
-        >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+    >>> for x, y in dataset:
+    ...     _ = model.learn_one(x, y)
 
-        >>> model.predict_one({'a': -100, 'b': -200})
-        0
+    >>> model.predict_one({'a': -100, 'b': -200})
+    0
 
-        >>> model.predict_one({'a': 50, 'b': 60})
-        200
+    >>> model.predict_one({'a': 50, 'b': 60})
+    200
 
     """
 

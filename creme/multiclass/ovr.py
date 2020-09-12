@@ -23,38 +23,43 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
     classes. If you have a very large number of classes, then you might want to consider using an
     `multiclass.OutputCodeClassifier` instead.
 
-    Parameters:
-        classifier: A binary classifier, although a multi-class classifier will work too.
+    Parameters
+    ----------
+    classifier
+        A binary classifier, although a multi-class classifier will work too.
 
-    Attributes:
-        classifiers (dict): A mapping between classes and classifiers.
+    Attributes
+    ----------
+    classifiers : dict
+        A mapping between classes and classifiers.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import multiclass
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import multiclass
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.ImageSegments()
+    >>> dataset = datasets.ImageSegments()
 
-        >>> scaler = preprocessing.StandardScaler()
-        >>> ovr = multiclass.OneVsRestClassifier(linear_model.LogisticRegression())
-        >>> model = scaler | ovr
+    >>> scaler = preprocessing.StandardScaler()
+    >>> ovr = multiclass.OneVsRestClassifier(linear_model.LogisticRegression())
+    >>> model = scaler | ovr
 
-        >>> metric = metrics.MacroF1()
+    >>> metric = metrics.MacroF1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        MacroF1: 0.774573
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MacroF1: 0.774573
 
-        This estimator also also supports mini-batching.
+    This estimator also also supports mini-batching.
 
-        >>> for X in pd.read_csv(dataset.path, chunksize=64):
-        ...     y = X.pop('category')
-        ...     y_pred = model.predict_many(X)
-        ...     model = model.learn_many(X, y)
+    >>> for X in pd.read_csv(dataset.path, chunksize=64):
+    ...     y = X.pop('category')
+    ...     y_pred = model.predict_many(X)
+    ...     model = model.learn_many(X, y)
 
     """
 

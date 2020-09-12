@@ -4,23 +4,8 @@ from creme.base import DriftDetector
 
 
 class DDM(DriftDetector):
-    r""" Drift Detection Method.
+    """Drift Detection Method.
 
-    Parameters
-    ----------
-    min_num_instances: int (default=30)
-        The minimum required number of analyzed samples so change can be
-        detected. This is used to avoid false detections during the early
-        moments of the detector, when the weight of one sample is important.
-
-    warning_level: float (default=2.0)
-        Warning Level
-
-    out_control_level: float (default=3.0)
-        Out-control Level
-
-    Notes
-    -----
     DDM (Drift Detection Method) is a concept change detection method
     based on the PAC learning model premise, that the learner's error rate
     will decrease as the number of analysed samples increase, as long as the
@@ -48,9 +33,16 @@ class DDM(DriftDetector):
     * if $p_i + s_i \geq p_{min} + 2 * s_{min}$ -> Warning zone
     * if $p_i + s_i \geq p_{min} + 3 * s_{min}$ -> Change detected
 
-    References:
-        1.  João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning
-            with Drift Detection. SBIA 2004: 286-295
+    Parameters
+    ----------
+    min_num_instances
+        The minimum required number of analyzed samples so change can be detected. This is used to
+        avoid false detections during the early moments of the detector, when the weight of one
+        sample is important.
+    warning_level
+        Warning level.
+    out_control_level
+        Out-control level.
 
     Examples
     --------
@@ -72,6 +64,10 @@ class DDM(DriftDetector):
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1077, input value: 1
+
+    References
+    ----------
+    [^1]: João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning with Drift Detection. SBIA 2004: 286-295
 
     """
 
@@ -104,18 +100,15 @@ class DDM(DriftDetector):
     def update(self, value):
         """Update the change detector with a single data point.
 
+        After calling this method, to verify if change was detected or if the learner is in the
+        warning zone, one should call the super method detected_change, which returns `True` if
+        concept drift was detected and `False` otherwise.
+
         Parameters
         ----------
-        value: Input value (0 or 1)
-            This parameter indicates whether the last sample analyzed was
-            correctly classified or not. 1 indicates an error (miss-classification).
-
-        Notes
-        -----
-        After calling this method, to verify if change was detected or if
-        the learner is in the warning zone, one should call the super method
-        detected_change, which returns True if concept drift was detected and
-        False otherwise.
+        value
+            This parameter indicates whether the last sample analyzed was correctly classified or
+            not. 1 indicates an error (miss-classification).
 
         """
         if self._in_concept_change:

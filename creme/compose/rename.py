@@ -7,17 +7,19 @@ __all__ = ['Renamer']
 class Renamer(base.Transformer):
     """Renames keys based on given parameters.
 
-    Parameters:
-        prefix
-        suffix
+    Parameters
+    ----------
+    prefix
+    suffix
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import compose
+    >>> from creme import compose
 
-        >>> x = {'a': 42, 'b': 12}
-        >>> compose.Renamer(prefix='prefix_', suffix='_suffix').transform_one(x)
-        {'prefix_a_suffix': 42, 'prefix_b_suffix': 12}
+    >>> x = {'a': 42, 'b': 12}
+    >>> compose.Renamer(prefix='prefix_', suffix='_suffix').transform_one(x)
+    {'prefix_a_suffix': 42, 'prefix_b_suffix': 12}
 
     """
 

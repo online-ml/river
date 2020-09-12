@@ -14,40 +14,45 @@ class RandomNormal(base.Recommender):
     The parameters of the normal distribution are fitted with running statistics. This is
     equivalent to using `surprise.prediction_algorithms.random_pred.NormalPredictor`.
 
-    Parameters:
-        seed: Randomization seed used for reproducibility.
+    This model expects a dict input with a `user` and an `item` entries without any type constraint
+    on their values (i.e. can be strings or numbers). Other entries are ignored.
 
-    Attributes:
-        mean (stats.Mean)
-        variance (stats.Var)
+    Parameters
+    ----------
+    seed
+        Randomization seed used for reproducibility.
 
-    Example:
+    Attributes
+    ----------
+    mean
+        stats.Mean
+    variance
+        stats.Var
 
-        >>> from creme import reco
+    Examples
+    --------
 
-        >>> dataset = (
-        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-        ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
-        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-        ... )
+    >>> from creme import reco
 
-        >>> model = reco.RandomNormal(seed=42)
+    >>> dataset = (
+    ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+    ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
+    ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+    ... )
 
-        >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+    >>> model = reco.RandomNormal(seed=42)
 
-        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-        6.883895
+    >>> for x, y in dataset:
+    ...     _ = model.learn_one(x, y)
 
-    Note:
-        This model expects a dict input with a `user` and an `item` entries without any type
-        constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+    6.883895
 
     """
 

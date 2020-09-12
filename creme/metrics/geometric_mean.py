@@ -10,10 +10,9 @@ __all__ = ['GeometricMean']
 class GeometricMean(base.MultiClassMetric):
     """Geometric mean score.
 
-    The geometric mean is a good indicator of a classifier's performance
-    in the presence of class imbalance because it is independent of the
-    distribution of examples between classes. This implementation
-    computes the geometric mean of class-wise sensitivity (recall)
+    The geometric mean is a good indicator of a classifier's performance in the presence of class
+    imbalance because it is independent of the distribution of examples between classes. This
+    implementation computes the geometric mean of class-wise sensitivity (recall).
 
     $$
     gm = \sqrt[n]{s_1\cdot s_2\cdot s_3\cdot \ldots\cdot s_n}
@@ -38,9 +37,10 @@ class GeometricMean(base.MultiClassMetric):
     >>> metric
     GeometricMean: 0.693361
 
-    References:
-        1. Barandela, R. et al. “Strategies for learning in class imbalance problems”,
-           Pattern Recognition, 36(3), (2003), pp 849-851.
+    References
+    ----------
+    [^1]: Barandela, R. et al. “Strategies for learning in class imbalance problems”, Pattern Recognition, 36(3), (2003), pp 849-851.
+
     """
 
     def get(self):

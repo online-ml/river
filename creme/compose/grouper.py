@@ -17,10 +17,12 @@ class Grouper(base.Transformer):
     A separate copy of the provided transformer is made whenever a new group appears. The groups
     are defined according to one or more keys.
 
-    Parameters:
-        transformer
-        by: The field on which to group the data. This can either by a single value, or a list of
-            values.
+    Parameters
+    ----------
+    transformer
+    by
+        The field on which to group the data. This can either by a single value, or a list of
+        values.
 
     """
 

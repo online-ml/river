@@ -4,10 +4,8 @@ from creme.base import DriftDetector
 
 
 class EDDM(DriftDetector):
-    """ Early Drift Detection Method.
+    """Early Drift Detection Method.
 
-    Notes
-    -----
     EDDM (Early Drift Detection Method) aims to improve the
     detection rate of gradual concept drift in DDM, while keeping
     a good performance against abrupt concept drift.
@@ -32,11 +30,6 @@ class EDDM(DriftDetector):
     * if $(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \beta$ -> Change detected
 
     $\alpha$ and $\beta$ are set to 0.95 and 0.9, respectively.
-
-    References:
-        1.  Early Drift Detection Method. Manuel Baena-Garcia, Jose Del Campo-Avila,
-            Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. In Fourth
-            International Workshop on Knowledge Discovery from Data Streams, 2006.
 
     Examples
     --------
@@ -68,6 +61,10 @@ class EDDM(DriftDetector):
     Change detected at index 686, input value: 1
     Change detected at index 754, input value: 1
     Change detected at index 1033, input value: 1
+
+    References
+    ----------
+    [^1]: Early Drift Detection Method. Manuel Baena-Garcia, Jose Del Campo-Avila, Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. In Fourth International Workshop on Knowledge Discovery from Data Streams, 2006.
 
     """
     FDDM_OUTCONTROL = 0.9
@@ -102,20 +99,18 @@ class EDDM(DriftDetector):
         self.m_m2s_max = 0.0
         self.estimation = 0.0
 
-    def update(self, value):
+    def update(self, value) -> tuple:
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value: Input value (0 or 1)
-            This parameter indicates whether the last sample analyzed was
-            correctly classified or not. 1 indicates an error (miss-classification).
+        value
+            This parameter indicates whether the last sample analyzed was correctly classified or
+            not. 1 indicates an error (miss-classification).
 
         Returns
         -------
-        tuple
-            A tuple (drift, warning) where its elements indicate if a drift or a warning is
-            detected.
+        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
 
         """
 

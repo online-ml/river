@@ -10,23 +10,26 @@ class Window:
     is that deepcopying a class which inherits from `collections.deque` seems to bug out when the
     class has a parameter with no default value.
 
-    Parameters:
-        size: Size of the rolling window.
+    Parameters
+    ----------
+    size
+        Size of the rolling window.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import utils
+    >>> from creme import utils
 
-        >>> window = utils.Window(size=2)
+    >>> window = utils.Window(size=2)
 
-        >>> for x in [1, 2, 3, 4, 5, 6]:
-        ...     print(window.append(x))
-        [1]
-        [1, 2]
-        [2, 3]
-        [3, 4]
-        [4, 5]
-        [5, 6]
+    >>> for x in [1, 2, 3, 4, 5, 6]:
+    ...     print(window.append(x))
+    [1]
+    [1, 2]
+    [2, 3]
+    [3, 4]
+    [4, 5]
+    [5, 6]
 
     """
 
@@ -65,29 +68,33 @@ class Window:
 class SortedWindow(collections.UserList):
     """Sorted running window data structure.
 
-    Parameters:
-        size: size of the window to compute the rolling quantile.
+    Parameters
+    ----------
+    size
+        Size of the window to compute the rolling quantile.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import utils
+    >>> from creme import utils
 
-        >>> window = utils.SortedWindow(size=3)
+    >>> window = utils.SortedWindow(size=3)
 
-        >>> for i in reversed(range(9)):
-        ...     print(window.append(i))
-        [8]
-        [7, 8]
-        [6, 7, 8]
-        [5, 6, 7]
-        [4, 5, 6]
-        [3, 4, 5]
-        [2, 3, 4]
-        [1, 2, 3]
-        [0, 1, 2]
+    >>> for i in reversed(range(9)):
+    ...     print(window.append(i))
+    [8]
+    [7, 8]
+    [6, 7, 8]
+    [5, 6, 7]
+    [4, 5, 6]
+    [3, 4, 5]
+    [2, 3, 4]
+    [1, 2, 3]
+    [0, 1, 2]
 
-    References:
-       1. [Left sorted inserts in Python](https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python)
+    References
+    ----------
+    [^1]: [Left sorted inserts in Python](https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python)
 
     """
 

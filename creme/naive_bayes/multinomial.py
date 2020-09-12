@@ -14,88 +14,96 @@ class MultinomialNB(base.BaseNB):
 
     The input vector has to contain positive values, such as counts or TF-IDF values.
 
-    Parameters:
-        alpha: Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+    Parameters
+    ----------
+    alpha
+        Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
 
-    Attributes:
-        class_dist (proba.Multinomial): Class prior probability distribution.
-        feature_counts (collections.defaultdict): Total frequencies per feature and class.
-        class_totals (collections.Counter): Total frequencies per class.
+    Attributes
+    ----------
+    class_dist : proba.Multinomial
+        Class prior probability distribution.
+    feature_counts : collections.defaultdict
+        Total frequencies per feature and class.
+    class_totals : collections.Counter
+        Total frequencies per class.
 
-    Example:
+    Examples
+    --------
 
-        >>> import math
-        >>> from creme import compose
-        >>> from creme import feature_extraction
-        >>> from creme import naive_bayes
+    >>> import math
+    >>> from creme import compose
+    >>> from creme import feature_extraction
+    >>> from creme import naive_bayes
 
-        >>> docs = [
-        ...     ('Chinese Beijing Chinese', 'yes'),
-        ...     ('Chinese Chinese Shanghai', 'yes'),
-        ...     ('Chinese Macao', 'yes'),
-        ...     ('Tokyo Japan Chinese', 'no')
-        ... ]
-        >>> model = compose.Pipeline(
-        ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
-        ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
-        ... )
-        >>> for sentence, label in docs:
-        ...     model = model.learn_one(sentence, label)
+    >>> docs = [
+    ...     ('Chinese Beijing Chinese', 'yes'),
+    ...     ('Chinese Chinese Shanghai', 'yes'),
+    ...     ('Chinese Macao', 'yes'),
+    ...     ('Tokyo Japan Chinese', 'no')
+    ... ]
+    >>> model = compose.Pipeline(
+    ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
+    ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
+    ... )
+    >>> for sentence, label in docs:
+    ...     model = model.learn_one(sentence, label)
 
-        >>> model['nb'].p_class('yes')
-        0.75
-        >>> model['nb'].p_class('no')
-        0.25
+    >>> model['nb'].p_class('yes')
+    0.75
+    >>> model['nb'].p_class('no')
+    0.25
 
-        >>> cp = model['nb'].p_feature_given_class
+    >>> cp = model['nb'].p_feature_given_class
 
-        >>> cp('Chinese', 'yes') == (5 + 1) / (8 + 6)
-        True
+    >>> cp('Chinese', 'yes') == (5 + 1) / (8 + 6)
+    True
 
-        >>> cp('Tokyo', 'yes') == (0 + 1) / (8 + 6)
-        True
-        >>> cp('Japan', 'yes') == (0 + 1) / (8 + 6)
-        True
+    >>> cp('Tokyo', 'yes') == (0 + 1) / (8 + 6)
+    True
+    >>> cp('Japan', 'yes') == (0 + 1) / (8 + 6)
+    True
 
-        >>> cp('Chinese', 'no') == (1 + 1) / (3 + 6)
-        True
+    >>> cp('Chinese', 'no') == (1 + 1) / (3 + 6)
+    True
 
-        >>> cp('Tokyo', 'no') == (1 + 1) / (3 + 6)
-        True
-        >>> cp('Japan', 'no') == (1 + 1) / (3 + 6)
-        True
+    >>> cp('Tokyo', 'no') == (1 + 1) / (3 + 6)
+    True
+    >>> cp('Japan', 'no') == (1 + 1) / (3 + 6)
+    True
 
-        >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
-        >>> tokens = model['tokenize'].transform_one(new_text)
-        >>> jlh = model['nb'].joint_log_likelihood(tokens)
-        >>> math.exp(jlh['yes'])
-        0.000301
-        >>> math.exp(jlh['no'])
-        0.000135
-        >>> model.predict_one(new_text)
-        'yes'
+    >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
+    >>> tokens = model['tokenize'].transform_one(new_text)
+    >>> jlh = model['nb'].joint_log_likelihood(tokens)
+    >>> math.exp(jlh['yes'])
+    0.000301
+    >>> math.exp(jlh['no'])
+    0.000135
+    >>> model.predict_one(new_text)
+    'yes'
 
-        >>> new_unseen_text = 'Taiwanese Taipei'
-        >>> tokens = model['tokenize'].transform_one(new_unseen_text)
-        >>> # P(Taiwanese|yes)
-        >>> #   = (N_Taiwanese_yes + 1) / (N_yes + N_terms)
-        >>> cp('Taiwanese', 'yes') == cp('Taipei', 'yes') == (0 + 1) / (8 + 6)
-        True
-        >>> cp('Taiwanese', 'no') == cp('Taipei', 'no') == (0 + 1) / (3 + 6)
-        True
+    >>> new_unseen_text = 'Taiwanese Taipei'
+    >>> tokens = model['tokenize'].transform_one(new_unseen_text)
+    >>> # P(Taiwanese|yes)
+    >>> #   = (N_Taiwanese_yes + 1) / (N_yes + N_terms)
+    >>> cp('Taiwanese', 'yes') == cp('Taipei', 'yes') == (0 + 1) / (8 + 6)
+    True
+    >>> cp('Taiwanese', 'no') == cp('Taipei', 'no') == (0 + 1) / (3 + 6)
+    True
 
-        >>> # P(yes|Taiwanese Taipei)
-        >>> #   ∝ P(Taiwanese|yes) * P(Taipei|yes) * P(yes)
-        >>> posterior_yes_given_new_text = (0 + 1) / (8 + 6) * (0 + 1) / (8 + 6) * 0.75
-        >>> jlh = model['nb'].joint_log_likelihood(tokens)
-        >>> jlh['yes'] == math.log(posterior_yes_given_new_text)
-        True
+    >>> # P(yes|Taiwanese Taipei)
+    >>> #   ∝ P(Taiwanese|yes) * P(Taipei|yes) * P(yes)
+    >>> posterior_yes_given_new_text = (0 + 1) / (8 + 6) * (0 + 1) / (8 + 6) * 0.75
+    >>> jlh = model['nb'].joint_log_likelihood(tokens)
+    >>> jlh['yes'] == math.log(posterior_yes_given_new_text)
+    True
 
-        >>> model.predict_one(new_unseen_text)
-        'yes'
+    >>> model.predict_one(new_unseen_text)
+    'yes'
 
-    References:
-        1. [Naive Bayes text classification](https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html)
+    References
+    ----------
+    [^1]: [Naive Bayes text classification](https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html)
 
     """
 

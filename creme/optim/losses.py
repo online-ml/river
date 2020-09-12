@@ -45,25 +45,33 @@ class Loss(abc.ABC):
     def __call__(self, y_true, y_pred):
         """Returns the loss.
 
-        Parameters:
-            y_true: Ground truth(s).
-            y_pred: Prediction(s).
+        Parameters
+        ----------
+        y_true
+            Ground truth(s).
+        y_pred
+            Prediction(s).
 
-        Returns:
-            The losses.
+        Returns
+        -------
+        The loss(es).
 
         """
 
     @abc.abstractmethod
     def gradient(self, y_true, y_pred):
-        """Returns the gradient with respect to y_pred.
+        """Return the gradient with respect to y_pred.
 
-        Parameters:
-            y_true: Ground truth(s).
-            y_pred: Prediction(s).
+        Parameters
+        ----------
+        y_true
+            Ground truth(s).
+        y_pred
+            Prediction(s).
 
-        Returns:
-            The gradient(s).
+        Returns
+        -------
+        The gradient(s).
 
         """
 
@@ -76,14 +84,18 @@ class Loss(abc.ABC):
         function can be used to convert the raw output into a value that makes sense to the user,
         such as a probability.
 
-        Parameters:
-            y_pred: Raw prediction(s).
+        Parameters
+        ----------
+        y_pred
+            Raw prediction(s).
 
-        Returns:
-            The adjusted prediction(s).
+        Returns
+        -------
+        The adjusted prediction(s).
 
-        References:
-            1. [Wikipedia section on link and mean function](https://www.wikiwand.com/en/Generalized_linear_model#/Link_function)
+        References
+        ----------
+        [^1]: [Wikipedia section on link and mean function](https://www.wikiwand.com/en/Generalized_linear_model#/Link_function)
 
         """
 
@@ -124,17 +136,18 @@ class Absolute(RegressionLoss):
 
     $$\\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i)$$
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import optim
+    >>> from creme import optim
 
-        >>> loss = optim.losses.Absolute()
-        >>> loss(-42, 42)
-        84
-        >>> loss.gradient(1, 2)
-        1
-        >>> loss.gradient(2, 1)
-        -1
+    >>> loss = optim.losses.Absolute()
+    >>> loss(-42, 42)
+    84
+    >>> loss.gradient(1, 2)
+    1
+    >>> loss.gradient(2, 1)
+    -1
 
     """
 
@@ -156,12 +169,14 @@ class Absolute(RegressionLoss):
 class Cauchy(RegressionLoss):
     """Cauchy loss function.
 
-    Parameters:
-        C
+    Parameters
+    ----------
+    C
 
-    References:
-        1. ["Effect of MAE" Kaggle discussion](https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163)
-        2. [Paris Madness Kaggle kernel](https://www.kaggle.com/raddar/paris-madness)
+    References
+    ----------
+    [^1]: ["Effect of MAE" Kaggle discussion](https://www.kaggle.com/c/allstate-claims-severity/discussion/24520#140163)
+    [^2]: [Paris Madness Kaggle kernel](https://www.kaggle.com/raddar/paris-madness)
 
     """
 
@@ -183,39 +198,43 @@ class CrossEntropy(MultiClassLoss):
 
     This is a generalization of logistic loss to multiple classes.
 
-    Parameters:
-        class_weight: A dictionary that indicates what weight to associate with each class.
+    Parameters
+    ----------
+    class_weight
+        A dictionary that indicates what weight to associate with each class.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import optim
+    >>> from creme import optim
 
-        >>> y_true = [0, 1, 2, 2]
-        >>> y_pred = [
-        ...     {0: 0.29450637, 1: 0.34216758, 2: 0.36332605},
-        ...     {0: 0.21290077, 1: 0.32728332, 2: 0.45981591},
-        ...     {0: 0.42860913, 1: 0.33380113, 2: 0.23758974},
-        ...     {0: 0.44941979, 1: 0.32962558, 2: 0.22095463}
-        ... ]
+    >>> y_true = [0, 1, 2, 2]
+    >>> y_pred = [
+    ...     {0: 0.29450637, 1: 0.34216758, 2: 0.36332605},
+    ...     {0: 0.21290077, 1: 0.32728332, 2: 0.45981591},
+    ...     {0: 0.42860913, 1: 0.33380113, 2: 0.23758974},
+    ...     {0: 0.44941979, 1: 0.32962558, 2: 0.22095463}
+    ... ]
 
-        >>> loss = optim.losses.CrossEntropy()
+    >>> loss = optim.losses.CrossEntropy()
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     print(loss(yt, yp))
-        1.222454
-        1.116929
-        1.437209
-        1.509797
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(loss(yt, yp))
+    1.222454
+    1.116929
+    1.437209
+    1.509797
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     print(loss.gradient(yt, yp))
-        {0: -0.70549363, 1: 0.34216758, 2: 0.36332605}
-        {0: 0.21290077, 1: -0.67271668, 2: 0.45981591}
-        {0: 0.42860913, 1: 0.33380113, 2: -0.76241026}
-        {0: 0.44941979, 1: 0.32962558, 2: -0.77904537}
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(loss.gradient(yt, yp))
+    {0: -0.70549363, 1: 0.34216758, 2: 0.36332605}
+    {0: 0.21290077, 1: -0.67271668, 2: 0.45981591}
+    {0: 0.42860913, 1: 0.33380113, 2: -0.76241026}
+    {0: 0.44941979, 1: 0.32962558, 2: -0.77904537}
 
-    References:
-        1. [What is Softmax regression and how is it related to Logistic regression?](https://github.com/rasbt/python-machine-learning-book/blob/master/faq/softmax_regression.md)
+    References
+    ----------
+    [^1]: [What is Softmax regression and how is it related to Logistic regression?](https://github.com/rasbt/python-machine-learning-book/blob/master/faq/softmax_regression.md)
 
     """
 

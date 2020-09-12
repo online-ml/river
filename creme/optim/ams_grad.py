@@ -11,40 +11,45 @@ __all__ = ['AMSGrad']
 class AMSGrad(base.Optimizer):
     """AMSGrad optimizer.
 
-    Parameters:
-        lr: The learning rate.
-        beta_1
-        beta_2
-        eps
-        correct_bias
+    Parameters
+    ----------
+    lr
+        The learning rate.
+    beta_1
+    beta_2
+    eps
+    correct_bias
 
-    Attributes:
-        m (collections.defaultdict)
-        v (collections.defaultdict)
-        v_hat (collections.defaultdict)
+    Attributes
+    ----------
+    m : collections.defaultdict
+    v : collections.defaultdict
+    v_hat : collections.defaultdict
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.Phishing()
-        >>> optimizer = optim.AMSGrad()
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     linear_model.LogisticRegression(optimizer)
-        ... )
-        >>> metric = metrics.F1()
+    >>> dataset = datasets.Phishing()
+    >>> optimizer = optim.AMSGrad()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     linear_model.LogisticRegression(optimizer)
+    ... )
+    >>> metric = metrics.F1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        F1: 0.865724
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.865724
 
-    References:
-        1. [Reddi, S.J., Kale, S. and Kumar, S., 2019. On the convergence of adam and beyond. arXiv preprint arXiv:1904.09237](https://arxiv.org/pdf/1904.09237.pdf)
+    References
+    ----------
+    [^1]: [Reddi, S.J., Kale, S. and Kumar, S., 2019. On the convergence of adam and beyond. arXiv preprint arXiv:1904.09237](https://arxiv.org/pdf/1904.09237.pdf)
 
     """
 

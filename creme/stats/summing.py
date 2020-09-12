@@ -6,23 +6,26 @@ from . import base
 class Sum(base.Univariate):
     """Running sum.
 
-    Attributes:
-        sum (float): The running sum.
+    Attributes
+    ----------
+    sum : float
+        The running sum.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> X = [-5, -3, -1, 1, 3, 5]
-        >>> mean = stats.Sum()
-        >>> for x in X:
-        ...     print(mean.update(x).get())
-        -5.0
-        -8.0
-        -9.0
-        -8.0
-        -5.0
-        0.0
+    >>> X = [-5, -3, -1, 1, 3, 5]
+    >>> mean = stats.Sum()
+    >>> for x in X:
+    ...     print(mean.update(x).get())
+    -5.0
+    -8.0
+    -9.0
+    -8.0
+    -5.0
+    0.0
 
     """
 
@@ -40,26 +43,31 @@ class Sum(base.Univariate):
 class RollingSum(base.RollingUnivariate, utils.Window):
     """Running sum over a window.
 
-    Parameters:
-        window_size: Size of the rolling window.
+    Parameters
+    ----------
+    window_size
+        Size of the rolling window.
 
-    Attributes:
-        sum (int): The running rolling sum.
+    Attributes
+    ----------
+    sum : int
+        The running rolling sum.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> X = [1, -4, 3, -2, 2, 1]
-        >>> rolling_sum = stats.RollingSum(2)
-        >>> for x in X:
-        ...     print(rolling_sum.update(x).get())
-        1
-        -3
-        -1
-        1
-        0
-        3
+    >>> X = [1, -4, 3, -2, 2, 1]
+    >>> rolling_sum = stats.RollingSum(2)
+    >>> for x in X:
+    ...     print(rolling_sum.update(x).get())
+    1
+    -3
+    -1
+    1
+    0
+    3
 
     """
 

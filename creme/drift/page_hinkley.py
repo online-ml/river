@@ -2,10 +2,8 @@ from creme.base import DriftDetector
 
 
 class PageHinkley(DriftDetector):
-    """ Page-Hinkley method for concept drift detection.
+    """Page-Hinkley method for concept drift detection.
 
-    Notes
-    -----
     This change detection method works by computing the observed
     values and their mean up to the current moment. Page-Hinkley
     does not signal warning zones, only change detections.
@@ -13,21 +11,16 @@ class PageHinkley(DriftDetector):
     lines it will detect a concept drift if the observed mean at
     some instant is greater then a threshold value lambda.
 
-    References:
-        1.  E. S. Page. 1954. Continuous Inspection Schemes.
-            Biometrika 41, 1/2 (1954), 100–115.
-
     Parameters
     ----------
-    min_instances: int (default=30)
+    min_instances
         The minimum number of instances before detecting change.
-    delta: float (default=0.005)
+    delta
         The delta factor for the Page Hinkley test.
-    threshold: int (default=50)
+    threshold
         The change detection threshold (lambda).
-    alpha: float (default=1 - 0.0001)
-        The forgetting factor, used to weight the observed value
-        and the mean.
+    alpha
+        The forgetting factor, used to weight the observed value and the mean.
 
     Examples
     --------
@@ -47,6 +40,10 @@ class PageHinkley(DriftDetector):
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1009, input value: 5
+
+    References
+    ----------
+    [^1]: E. S. Page. 1954. Continuous Inspection Schemes. Biometrika 41, 1/2 (1954), 100–115.
 
     """
 
@@ -69,18 +66,18 @@ class PageHinkley(DriftDetector):
         self.x_mean = 0.0
         self.sum = 0.0
 
-    def update(self, value):
+    def update(self, value) -> tuple:
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value: Input value
+        value
+            Input value
 
         Returns
         -------
-        tuple
-            A tuple (drift, warning) where its elements indicate if a drift or a warning is
-            detected.
+        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
+
         """
         if self._in_concept_change:
             self.reset()

@@ -115,65 +115,86 @@ class FFMRegressor(FFM, base.Regressor):
     field, and \\mathbf{v}_{j', f_j} is the latent vector corresponding to $j'$ feature for $f_j$
     field.
 
-    Parameters:
-        n_factors: Dimensionality of the factorization or number of latent factors.
-        weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
-            the intercept is handled separately.
-        latent_optimizer: The sequential optimizer used for updating the latent factors.
-        loss: The loss function to optimize for.
-        sample_normalization: Whether to divide each element of `x` by `x`'s L2-norm.
-        l1_weight: Amount of L1 regularization used to push weights towards 0.
-        l2_weight: Amount of L2 regularization used to push weights towards 0.
-        l1_latent: Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
-        intercept: Initial intercept value.
-        intercept_lr: Learning rate scheduler used for updating the intercept. An instance of
-            `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
-            if this is set to 0.
-        weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
-        latent_initializer: Latent factors initialization scheme. Defaults to
-            `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
-        clip_gradient: Clips the absolute value of each gradient value.
-        seed: Randomization seed used for reproducibility.
+    For more efficiency, this model automatically one-hot encodes strings features considering them
+    as categorical variables. Field names are inferred from feature names by taking everything
+    before the first underscore: `feature_name.split('_')[0]`.
 
-    Attributes:
-        weights: The current weights assigned to the features.
-        latents: The current latent weights assigned to the features.
+    Parameters
+    ----------
+    n_factors
+        Dimensionality of the factorization or number of latent factors.
+    weight_optimizer
+        The sequential optimizer used for updating the feature weights. Note that the intercept is
+        handled separately.
+    latent_optimizer
+        The sequential optimizer used for updating the latent factors.
+    loss
+        The loss function to optimize for.
+    sample_normalization
+        Whether to divide each element of `x` by `x`'s L2-norm.
+    l1_weight
+        Amount of L1 regularization used to push weights towards 0.
+    l2_weight
+        Amount of L2 regularization used to push weights towards 0.
+    l1_latent
+        Amount of L1 regularization used to push latent weights towards 0.
+    l2_latent
+        Amount of L2 regularization used to push latent weights towards 0.
+    intercept
+        Initial intercept value.
+    intercept_lr
+        Learning rate scheduler used for updating the intercept. An instance of
+        `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
+        if this is set to 0.
+    weight_initializer
+        Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
+    latent_initializer
+        Latent factors initialization scheme. Defaults to
+        `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
+    clip_gradient
+        Clips the absolute value of each gradient value.
+    seed
+        Randomization seed used for reproducibility.
 
-    Example:
+    Attributes
+    ----------
+    weights
+        The current weights assigned to the features.
+    latents
+        The current latent weights assigned to the features.
 
-        >>> from creme import facto
+    Examples
+    --------
 
-        >>> dataset = (
-        ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
-        ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
-        ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
-        ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, 2),
-        ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, 5),
-        ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, 8),
-        ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, 9),
-        ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, 8),
-        ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
-        ... )
+    >>> from creme import facto
 
-        >>> model = facto.FFMRegressor(
-        ...     n_factors=10,
-        ...     intercept=5,
-        ...     seed=42,
-        ... )
+    >>> dataset = (
+    ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, 8),
+    ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, 9),
+    ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, 8),
+    ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, 2),
+    ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, 5),
+    ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, 8),
+    ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, 9),
+    ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, 8),
+    ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, 2)
+    ... )
 
-        >>> for x, y in dataset:
-        ...     model = model.learn_one(x, y)
+    >>> model = facto.FFMRegressor(
+    ...     n_factors=10,
+    ...     intercept=5,
+    ...     seed=42,
+    ... )
 
-        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-        5.319945
+    >>> for x, y in dataset:
+    ...     model = model.learn_one(x, y)
 
-    .. note::
-        - For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.
-        - Field names are inferred from feature names by taking everything before the first underscore: `feature_name.split('_')[0]`.
+    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+    5.319945
 
-    References:
-        1. [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
+    References
+    ----------
+    [^1]: [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
 
     """
 
@@ -220,65 +241,86 @@ class FFMClassifier(FFM, base.Classifier):
     field, and \\mathbf{v}_{j', f_j} is the latent vector corresponding to $j'$ feature for $f_j$
     field.
 
-    Parameters:
-        n_factors: Dimensionality of the factorization or number of latent factors.
-        weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
-            the intercept is handled separately.
-        latent_optimizer: The sequential optimizer used for updating the latent factors.
-        loss: The loss function to optimize for.
-        sample_normalization: Whether to divide each element of `x` by `x`'s L2-norm.
-        l1_weight: Amount of L1 regularization used to push weights towards 0.
-        l2_weight: Amount of L2 regularization used to push weights towards 0.
-        l1_latent: Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
-        intercept: Initial intercept value.
-        intercept_lr: Learning rate scheduler used for updating the intercept. An instance of
-            `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
-            if this is set to 0.
-        weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
-        latent_initializer: Latent factors initialization scheme. Defaults to
-            `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
-        clip_gradient: Clips the absolute value of each gradient value.
-        seed: Randomization seed used for reproducibility.
+    For more efficiency, this model automatically one-hot encodes strings features considering them
+    as categorical variables. Field names are inferred from feature names by taking everything
+    before the first underscore: `feature_name.split('_')[0]`.
 
-    Attributes:
-        weights: The current weights assigned to the features.
-        latents: The current latent weights assigned to the features.
+    Parameters
+    ----------
+    n_factors
+        Dimensionality of the factorization or number of latent factors.
+    weight_optimizer
+        The sequential optimizer used for updating the feature weights. Note that the intercept is
+        handled separately.
+    latent_optimizer
+        The sequential optimizer used for updating the latent factors.
+    loss
+        The loss function to optimize for.
+    sample_normalization
+        Whether to divide each element of `x` by `x`'s L2-norm.
+    l1_weight
+        Amount of L1 regularization used to push weights towards 0.
+    l2_weight
+        Amount of L2 regularization used to push weights towards 0.
+    l1_latent
+        Amount of L1 regularization used to push latent weights towards 0.
+    l2_latent
+        Amount of L2 regularization used to push latent weights towards 0.
+    intercept
+        Initial intercept value.
+    intercept_lr
+        Learning rate scheduler used for updating the intercept. An instance of
+        `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
+        if this is set to 0.
+    weight_initializer
+        Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
+    latent_initializer
+        Latent factors initialization scheme. Defaults to
+        `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
+    clip_gradient
+        Clips the absolute value of each gradient value.
+    seed
+        Randomization seed used for reproducibility.
 
-    Example:
+    Attributes
+    ----------
+    weights
+        The current weights assigned to the features.
+    latents
+        The current latent weights assigned to the features.
 
-        >>> from creme import facto
+    Examples
+    --------
 
-        >>> dataset = (
-        ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
-        ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
-        ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
-        ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, False),
-        ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, True),
-        ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, True),
-        ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, True),
-        ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, True),
-        ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
-        ... )
+    >>> from creme import facto
 
-        >>> model = facto.FFMClassifier(
-        ...     n_factors=10,
-        ...     intercept=.5,
-        ...     seed=42,
-        ... )
+    >>> dataset = (
+    ...     ({'user': 'Alice', 'item': 'Superman', 'time': .12}, True),
+    ...     ({'user': 'Alice', 'item': 'Terminator', 'time': .13}, True),
+    ...     ({'user': 'Alice', 'item': 'Star Wars', 'time': .14}, True),
+    ...     ({'user': 'Alice', 'item': 'Notting Hill', 'time': .15}, False),
+    ...     ({'user': 'Alice', 'item': 'Harry Potter ', 'time': .16}, True),
+    ...     ({'user': 'Bob', 'item': 'Superman', 'time': .13}, True),
+    ...     ({'user': 'Bob', 'item': 'Terminator', 'time': .12}, True),
+    ...     ({'user': 'Bob', 'item': 'Star Wars', 'time': .16}, True),
+    ...     ({'user': 'Bob', 'item': 'Notting Hill', 'time': .10}, False)
+    ... )
 
-        >>> for x, y in dataset:
-        ...     model = model.learn_one(x, y)
+    >>> model = facto.FFMClassifier(
+    ...     n_factors=10,
+    ...     intercept=.5,
+    ...     seed=42,
+    ... )
 
-        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
-        True
+    >>> for x, y in dataset:
+    ...     model = model.learn_one(x, y)
 
-    .. note::
-        - For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.
-        - Field names are inferred from feature names by taking everything before the first underscore: `feature_name.split('_')[0]`.
+    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+    True
 
-    References:
-        1. [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
+    References
+    ----------
+    1. [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
 
     """
 
