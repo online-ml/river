@@ -103,7 +103,7 @@ class HOFM(BaseFM):
         # Finally update the latent weights
         for j in x.keys():
             for l in range(2, self.degree + 1):
-                self.latents[j][l] = self.latent_optimizer.update_after_pred(
+                self.latents[j][l] = self.latent_optimizer.step(
                     w=v[j][l],
                     g={
                         f: g_loss * gradients[j][l][f] + l1 * sign(v[j][l][f]) + 2 * l2 * v[j][l][f]

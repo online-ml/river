@@ -31,6 +31,7 @@ from . import multiclass
 from . import multioutput
 from . import naive_bayes
 from . import neighbors
+from . import neural_network
 from . import optim
 from . import preprocessing
 from . import proba
@@ -66,6 +67,7 @@ __all__ = [
     'multioutput',
     'naive_bayes',
     'neighbors',
+    'neural_network',
     'optim',
     'preprocessing',
     'proba',

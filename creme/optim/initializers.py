@@ -90,6 +90,9 @@ class Normal(Initializer):
         The mean of the normal distribution
     sigma
         The standard deviation of the normal distribution
+    seed
+        Set the seed to produce identical results.
+
 
     Examples
     --------
@@ -106,7 +109,7 @@ class Normal(Initializer):
 
     """
 
-    def __init__(self, mu=0., sigma=1., seed=None):
+    def __init__(self, mu=0., sigma=1., seed: int = None):
         self.mu = mu
         self.sigma = sigma
         self.seed = seed

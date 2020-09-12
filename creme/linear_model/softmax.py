@@ -76,7 +76,7 @@ class SoftmaxRegression(base.Classifier):
 
         # Some optimizers need to do something before a prediction is made
         for label, weights in self.weights.items():
-            self.optimizers[label].update_before_pred(w=weights)
+            self.optimizers[label].look_ahead(w=weights)
 
         # Make a prediction for the given features
         y_pred = self.predict_proba_one(x)
@@ -89,7 +89,7 @@ class SoftmaxRegression(base.Classifier):
             # Compute the gradient w.r.t. each feature
             weights = self.weights[label]
             gradient = {i: xi * loss + self.l2 * weights.get(i, 0) for i, xi in x.items()}
-            self.weights[label] = self.optimizers[label].update_after_pred(w=weights, g=gradient)
+            self.weights[label] = self.optimizers[label].step(w=weights, g=gradient)
 
         return self
 

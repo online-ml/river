@@ -280,20 +280,23 @@ class Hinge(BinaryLoss):
     \\right.
     $$
 
-    Parameters:
-        threshold: Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to
-            the loss used in the Perceptron algorithm.
+    Parameters
+    ----------
+    threshold
+        Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to the loss used
+        in the Perceptron algorithm.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import optim
+    >>> from creme import optim
 
-        >>> loss = optim.losses.Hinge(threshold=1)
-        >>> loss(1, .2)
-        0.8
+    >>> loss = optim.losses.Hinge(threshold=1)
+    >>> loss(1, .2)
+    0.8
 
-        >>> loss.gradient(1, .2)
-        -1
+    >>> loss.gradient(1, .2)
+    -1
 
     """
 
@@ -322,8 +325,9 @@ class Hinge(BinaryLoss):
 class EpsilonInsensitiveHinge(RegressionLoss):
     """Epsilon-insensitive hinge loss.
 
-    Parameters:
-        eps
+    Parameters
+    ----------
+    eps
 
     """
 
@@ -360,12 +364,14 @@ class Log(BinaryLoss):
     This loss function expects each provided `y_pred` to be a logit. In other words if must be
     the raw output of a linear model or a neural network.
 
-    Parameters:
-        weight_pos
-        weight_neg
+    Parameters
+    ----------
+    weight_pos
+    weight_neg
 
-    References:
-        1. [Logit Wikipedia page](https://www.wikiwand.com/en/Logit>)
+    References
+    ----------
+    [^1]: [Logit Wikipedia page](https://www.wikiwand.com/en/Logit>)
 
     """
 
@@ -417,26 +423,30 @@ class Log(BinaryLoss):
 class Quantile(RegressionLoss):
     """Quantile loss.
 
-    Parameters:
-        alpha: Desired quantile to attain.
+    Parameters
+    ----------
+    alpha
+        Desired quantile to attain.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import optim
+    >>> from creme import optim
 
-        >>> loss = optim.losses.Quantile(0.5)
-        >>> loss(1, 3)
-        1.0
+    >>> loss = optim.losses.Quantile(0.5)
+    >>> loss(1, 3)
+    1.0
 
-        >>> loss.gradient(1, 3)
-        0.5
+    >>> loss.gradient(1, 3)
+    0.5
 
-        >>> loss.gradient(3, 1)
-        -0.5
+    >>> loss.gradient(3, 1)
+    -0.5
 
-    References:
-        1. [Wikipedia article on quantile regression](https://www.wikiwand.com/en/Quantile_regression)
-        2. [Derivative from WolframAlpha](https://www.wolframalpha.com/input/?i=derivative+(y+-+p)+*+(alpha+-+Boole(y+-+p))+wrt+p)
+    References
+    ----------
+    [^1]: [Wikipedia article on quantile regression](https://www.wikiwand.com/en/Quantile_regression)
+    [^2]: [Derivative from WolframAlpha](https://www.wolframalpha.com/input/?i=derivative+(y+-+p)+*+(alpha+-+Boole(y+-+p))+wrt+p)
 
     """
 
@@ -466,17 +476,18 @@ class Squared(RegressionLoss):
     not with scikit-learn. Indeed, scikit-learn divides the loss by 2, making the 2 disappear in
     the gradient.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import optim
+    >>> from creme import optim
 
-        >>> loss = optim.losses.Squared()
-        >>> loss(-4, 5)
-        81
-        >>> loss.gradient(-4, 5)
-        18
-        >>> loss.gradient(5, -4)
-        -18
+    >>> loss = optim.losses.Squared()
+    >>> loss(-4, 5)
+    81
+    >>> loss.gradient(-4, 5)
+    18
+    >>> loss.gradient(5, -4)
+    -18
 
     """
 
@@ -492,12 +503,14 @@ class BinaryFocalLoss(BinaryLoss):
 
     This implements the "star" algorithm from the appendix of the focal loss paper.
 
-    Parameters:
-        gamma
-        beta
+    Parameters
+    ---------
+    gamma
+    beta
 
-    Refenrences:
-        1. [Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988)](https://arxiv.org/pdf/1708.02002.pdf)
+    References
+    ----------
+    [^1]: [Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988)](https://arxiv.org/pdf/1708.02002.pdf)
 
     """
 
