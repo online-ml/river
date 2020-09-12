@@ -37,48 +37,52 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
     for the third, etc. This "chain model" is therefore capable of capturing dependencies between
     outputs.
 
-    Parameters:
-        model
-        order: The order in which to construct the chain. If it not provided then it will be
-            inferred from the order of the keys in the first provided target dictionary.
+    Parameters
+    ----------
+    model
+    order
+        The order in which to construct the chain. If it not provided then it will be inferred from
+        the order of the keys in the first provided target dictionary.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import feature_selection
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import multioutput
-        >>> from creme import preprocessing
-        >>> from creme import stream
-        >>> from sklearn import datasets
+    >>> from creme import feature_selection
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import multioutput
+    >>> from creme import preprocessing
+    >>> from creme import stream
+    >>> from sklearn import datasets
 
-        >>> dataset = stream.iter_sklearn_dataset(
-        ...     dataset=datasets.fetch_openml('yeast', version=4),
-        ...     shuffle=True,
-        ...     seed=42
-        ... )
+    >>> dataset = stream.iter_sklearn_dataset(
+    ...     dataset=datasets.fetch_openml('yeast', version=4),
+    ...     shuffle=True,
+    ...     seed=42
+    ... )
 
-        >>> model = feature_selection.VarianceThreshold(threshold=0.01)
-        >>> model |= preprocessing.StandardScaler()
-        >>> model |= multioutput.ClassifierChain(
-        ...     model=linear_model.LogisticRegression(),
-        ...     order=list(range(14))
-        ... )
+    >>> model = feature_selection.VarianceThreshold(threshold=0.01)
+    >>> model |= preprocessing.StandardScaler()
+    >>> model |= multioutput.ClassifierChain(
+    ...     model=linear_model.LogisticRegression(),
+    ...     order=list(range(14))
+    ... )
 
-        >>> metric = metrics.Jaccard()
+    >>> metric = metrics.Jaccard()
 
-        >>> for x, y in dataset:
-        ...     # Convert y values to booleans
-        ...     y = {i: yi == 'TRUE' for i, yi in y.items()}
-        ...     y_pred = model.predict_one(x)
-        ...     metric = metric.update(y, y_pred)
-        ...     model = model.learn_one(x, y)
+    >>> for x, y in dataset:
+    ...     # Convert y values to booleans
+    ...     y = {i: yi == 'TRUE' for i, yi in y.items()}
+    ...     y_pred = model.predict_one(x)
+    ...     metric = metric.update(y, y_pred)
+    ...     model = model.learn_one(x, y)
 
-        >>> metric
-        Jaccard: 0.451524
+    >>> metric
+    Jaccard: 0.451524
 
-    References:
-        1. [Multi-Output Chain Models and their Application in Data Streams](https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf)
+    References
+    ----------
+    [^1]: [Multi-Output Chain Models and their Application in Data Streams](https://jmread.github.io/talks/2019_03_08-Imperial_Stats_Seminar.pdf)
 
     """
 

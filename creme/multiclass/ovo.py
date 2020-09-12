@@ -21,32 +21,37 @@ class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
     pertain to the given label have to be trained. Meanwhile, making a prediction requires going
     through each and every model.
 
-    Parameters:
-        classifier: A binary classifier, although a multi-class classifier will work too.
+    Parameters
+    ----------
+    classifier
+        A binary classifier, although a multi-class classifier will work too.
 
-    Attributes:
-        classifiers (dict): A mapping between pairs of classes and classifiers. The keys are tuples
-            which contain a pair of classes. Each pair is sorted in lexicographical order.
+    Attributes
+    ----------
+    classifiers : dict
+        A mapping between pairs of classes and classifiers. The keys are tuples which contain a
+        pair of classes. Each pair is sorted in lexicographical order.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import multiclass
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import multiclass
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.ImageSegments()
+    >>> dataset = datasets.ImageSegments()
 
-        >>> scaler = preprocessing.StandardScaler()
-        >>> ovo = multiclass.OneVsOneClassifier(linear_model.LogisticRegression())
-        >>> model = scaler | ovo
+    >>> scaler = preprocessing.StandardScaler()
+    >>> ovo = multiclass.OneVsOneClassifier(linear_model.LogisticRegression())
+    >>> model = scaler | ovo
 
-        >>> metric = metrics.MacroF1()
+    >>> metric = metrics.MacroF1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        MacroF1: 0.807573
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MacroF1: 0.807573
 
     """
 

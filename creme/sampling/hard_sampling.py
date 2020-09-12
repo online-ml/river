@@ -83,45 +83,51 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     is added to the buffer. If the buffer is full and the new sample has a bigger loss than the
     lowest loss in the buffer, then the sample takes it's place.
 
-    Parameters:
-        regressor
-        size: Size of the buffer.
-        p: Probability of updating the model with a sample from the buffer instead of a new
-            incoming sample.
-        loss: Criterion used to evaluate the hardness of a sample.
-        seed: Random seed.
+    Parameters
+    ----------
+    regressor
+    size
+        Size of the buffer.
+    p
+        Probability of updating the model with a sample from the buffer instead of a new incoming
+        sample.
+    loss
+        Criterion used to evaluate the hardness of a sample.
+    seed
+        Random seed.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
-        >>> from creme import sampling
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
+    >>> from creme import sampling
 
-        >>> model = preprocessing.StandardScaler()
+    >>> model = preprocessing.StandardScaler()
 
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     sampling.HardSamplingRegressor(
-        ...         regressor=linear_model.LinearRegression(),
-        ...         p=.2,
-        ...         size=30,
-        ...         seed=42,
-        ...     )
-        ... )
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     sampling.HardSamplingRegressor(
+    ...         regressor=linear_model.LinearRegression(),
+    ...         p=.2,
+    ...         size=30,
+    ...         seed=42,
+    ...     )
+    ... )
 
-        >>> evaluate.progressive_val_score(
-        ...     datasets.TrumpApproval(),
-        ...     model,
-        ...     metrics.MAE(),
-        ...     print_every=500
-        ... )
-        [500] MAE: 2.292501
-        [1,000] MAE: 1.395797
-        MAE: 1.394693
+    >>> evaluate.progressive_val_score(
+    ...     datasets.TrumpApproval(),
+    ...     model,
+    ...     metrics.MAE(),
+    ...     print_every=500
+    ... )
+    [500] MAE: 2.292501
+    [1,000] MAE: 1.395797
+    MAE: 1.394693
 
     """
 

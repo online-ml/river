@@ -11,35 +11,40 @@ class Averager(base.Optimizer):
     weights is usually only used at the end of the optimisation, once all the data has been seen.
     However, in this implementation the optimiser returns the current averaged weights.
 
-    Parameters:
-        optimizer: An optimiser for which the produced weights will be averaged.
-        start: Indicates the number of iterations to wait before starting the average. Essentially,
-            nothing happens differently before the number of iterations reaches this value.
+    Parameters
+    ----------
+    optimizer
+        An optimizer for which the produced weights will be averaged.
+    start
+        Indicates the number of iterations to wait before starting the average. Essentially,
+        nothing happens differently before the number of iterations reaches this value.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.Phishing()
-        >>> optimizer = optim.Averager(optim.SGD(0.01), 100)
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     linear_model.LogisticRegression(optimizer)
-        ... )
-        >>> metric = metrics.F1()
+    >>> dataset = datasets.Phishing()
+    >>> optimizer = optim.Averager(optim.SGD(0.01), 100)
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     linear_model.LogisticRegression(optimizer)
+    ... )
+    >>> metric = metrics.F1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        F1: 0.878924
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.878924
 
-    References:
-        1. [Bottou, L., 2010. Large-scale machine learning with stochastic gradient descent. In Proceedings of COMPSTAT'2010 (pp. 177-186). Physica-Verlag HD.](https://leon.bottou.org/publications/pdf/compstat-2010.pdf)
-        2. [Stochastic Algorithms for One-Pass Learning slides by Léon Bottou](https://leon.bottou.org/slides/onepass/onepass.pdf)
-        3. [Xu, W., 2011. Towards optimal one pass large scale learning with averaged stochastic gradient descent. arXiv preprint arXiv:1107.2490.](https://arxiv.org/pdf/1107.2490.pdf)
+    References
+    ----------
+    [^1]: [Bottou, L., 2010. Large-scale machine learning with stochastic gradient descent. In Proceedings of COMPSTAT'2010 (pp. 177-186). Physica-Verlag HD.](https://leon.bottou.org/publications/pdf/compstat-2010.pdf)
+    [^2]: [Stochastic Algorithms for One-Pass Learning slides by Léon Bottou](https://leon.bottou.org/slides/onepass/onepass.pdf)
+    [^3]: [Xu, W., 2011. Towards optimal one pass large scale learning with averaged stochastic gradient descent. arXiv preprint arXiv:1107.2490.](https://arxiv.org/pdf/1107.2490.pdf)
 
     """
 

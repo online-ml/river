@@ -4,8 +4,10 @@ from . import base
 class Count(base.Univariate):
     """A simple counter.
 
-    Attributes:
-        n (int): The current number of observations.
+    Attributes
+    ----------
+    n : int
+        The current number of observations.
 
     """
 

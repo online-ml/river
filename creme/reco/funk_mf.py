@@ -21,61 +21,73 @@ class FunkMF(base.Recommender):
 
     $$\\hat{y}(x) = \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}$$
 
-    Where $k$ is the number of latent factors.
+    where $k$ is the number of latent factors.
 
-    Parameters:
-        n_factors: Dimensionality of the factorization or number of latent factors.
-        optimizer: The sequential optimizer used for updating the latent factors.
-        loss: The loss function to optimize for.
-        l2: Amount of L2 regularization used to push weights towards 0.
-        initializer: Latent factors initialization scheme.
-        clip_gradient: Clips the absolute value of each gradient value.
-        seed: Randomization seed used for reproducibility.
+    This model expects a dict input with a `user` and an `item` entries without any type
+    constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
 
-    Attributes:
-        u_latents (collections.defaultdict): The user latent vectors randomly initialized.
-        i_latents (collections.defaultdict): The item latent vectors randomly initialized.
-        u_optimizer (optim.Optimizer): The sequential optimizer used for updating the user latent
-            weights.
-        i_optimizer (optim.Optimizer): The sequential optimizer used for updating the item latent
-            weights.
+    Parameters
+    ----------
+    n_factors
+        Dimensionality of the factorization or number of latent factors.
+    optimizer
+        The sequential optimizer used for updating the latent factors.
+    loss
+        The loss function to optimize for.
+    l2
+        Amount of L2 regularization used to push weights towards 0.
+    initializer
+        Latent factors initialization scheme.
+    clip_gradient
+        Clips the absolute value of each gradient value.
+    seed
+        Randomization seed used for reproducibility.
 
-    Example:
+    Attributes
+    ----------
+    u_latents : collections.defaultdict
+        The user latent vectors randomly initialized.
+    i_latents : collections.defaultdict
+        The item latent vectors randomly initialized.
+    u_optimizer : optim.Optimizer
+        The sequential optimizer used for updating the user latent weights.
+    i_optimizer : optim.Optimizer
+        The sequential optimizer used for updating the item latent weights.
 
-        >>> from creme import optim
-        >>> from creme import reco
+    Examples
+    --------
 
-        >>> dataset = (
-        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-        ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
-        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-        ... )
+    >>> from creme import optim
+    >>> from creme import reco
 
-        >>> model = reco.FunkMF(
-        ...     n_factors=10,
-        ...     optimizer=optim.SGD(0.1),
-        ...     initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=11),
-        ... )
+    >>> dataset = (
+    ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+    ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
+    ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+    ... )
 
-        >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+    >>> model = reco.FunkMF(
+    ...     n_factors=10,
+    ...     optimizer=optim.SGD(0.1),
+    ...     initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=11),
+    ... )
 
-        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-        1.866272
+    >>> for x, y in dataset:
+    ...     _ = model.learn_one(x, y)
 
-    .. note::
-        This model expects a dict input with a `user` and an `item` entries without any type
-        constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+    1.866272
 
-    References:
-        1. [Netflix update: Try this at home](https://sifter.org/simon/journal/20061211.html)
-        2. [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
+    References
+    ----------
+    [^1]: [Netflix update: Try this at home](https://sifter.org/simon/journal/20061211.html)
+    [^2]: [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
 
     """
 

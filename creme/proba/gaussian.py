@@ -11,17 +11,18 @@ __all__ = ['Gaussian']
 class Gaussian(base.ContinuousDistribution):
     """Normal distribution with parameters mu and sigma.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import proba
+    >>> from creme import proba
 
-        >>> p = proba.Gaussian().update(6).update(7)
+    >>> p = proba.Gaussian().update(6).update(7)
 
-        >>> p
-        𝒩(μ=6.500, σ=0.707)
+    >>> p
+    𝒩(μ=6.500, σ=0.707)
 
-        >>> p.pdf(6.5)
-        0.564189
+    >>> p.pdf(6.5)
+    0.564189
 
     """
 

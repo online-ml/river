@@ -12,12 +12,14 @@ class Newton(base.Optimizer):
     This optimizer uses second-order information (i.e. the Hessian of the cost function) in
     addition to first-order information (i.e. the gradient of the cost function).
 
-    Parameters:
-        lr
-        eps
+    Parameters
+    ----------
+    lr
+    eps
 
-    References:
-        1. [Hazan, E., Agarwal, A. and Kale, S., 2007. Logarithmic regret algorithms for online convex optimization. Machine Learning, 69(2-3), pp.169-192](https://www.cs.princeton.edu/~ehazan/papers/log-journal.pdf)
+    References
+    ----------
+    [^1]: [Hazan, E., Agarwal, A. and Kale, S., 2007. Logarithmic regret algorithms for online convex optimization. Machine Learning, 69(2-3), pp.169-192](https://www.cs.princeton.edu/~ehazan/papers/log-journal.pdf)
 
     """
 

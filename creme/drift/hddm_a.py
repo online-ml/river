@@ -4,36 +4,23 @@ from creme.base import DriftDetector
 
 
 class HDDM_A(DriftDetector):
-    """
-    Drift Detection Method based on Hoeffding’s bounds with moving average-test.
+    """Drift Detection Method based on Hoeffding’s bounds with moving average-test.
 
-    Parameters
-    ----------
-    drift_confidence : float (default=0.001)
-        Confidence to the drift
-
-    warning_confidence : float (default=0.005)
-        Confidence to the warning
-
-    two_sided_test : bool (default=False)
-        If True, will monitor error increments and decrements (two-sided). By default will only
-        monitor error increments (one-sided).
-
-    Notes
-    -----
     HDDM_A is a drift detection method based on the Hoeffding’s inequality. HDDM_A uses
     the average as estimator. It receives as input a stream of real values and
     returns the estimated status of the stream: STABLE, WARNING or DRIFT.
 
     Implementation based on MOA.
 
-    References:
-        1.  Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al.
-            Online and non-parametric drift detection methods based on Hoeffding’s bounds.
-            IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
-
-        2. Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
-           MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+    Parameters
+    ----------
+    drift_confidence
+        Confidence to the drift
+    warning_confidence
+        Confidence to the warning
+    two_sided_test
+        If `True`, will monitor error increments and decrements (two-sided). By default will only
+        monitor error increments (one-sided).
 
     Examples
     --------
@@ -56,12 +43,14 @@ class HDDM_A(DriftDetector):
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1013, input value: 1
 
+    References
+    ----------
+    [^1]: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection methods based on Hoeffding’s bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
+    [^2]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer. MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+
     """
 
-    def __init__(self,
-                 drift_confidence=0.001,
-                 warning_confidence=0.005,
-                 two_sided_test=False):
+    def __init__(self, drift_confidence=0.001, warning_confidence=0.005, two_sided_test=False):
         super().__init__()
         super().reset()
         self.n_min = 0
@@ -79,20 +68,19 @@ class HDDM_A(DriftDetector):
         self.warning_confidence = warning_confidence
         self.two_sided_test = two_sided_test
 
-    def update(self, value):
+    def update(self, value) -> tuple:
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value: Input value (0 or 1)
-            This parameter indicates whether the last sample analyzed was
-            correctly classified or not. 1 indicates an error (miss-classification).
+        value
+            This parameter indicates whether the last sample analyzed was correctly classified or
+            not. 1 indicates an error (miss-classification).
 
         Returns
         -------
-        tuple
-            A tuple (drift, warning) where its elements indicate if a drift or a warning is
-            detected.
+        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
+
         """
         self.total_n += 1
         self.total_c += value
@@ -164,8 +152,7 @@ class HDDM_A(DriftDetector):
         return c_max / n_max - total_c / total_n >= cota
 
     def reset(self):
-        """Reset the change detector.
-        """
+        """Reset the change detector."""
         super().reset()
         self.n_min = 0
         self.c_min = 0

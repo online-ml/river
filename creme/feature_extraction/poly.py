@@ -21,67 +21,73 @@ class PolynomialExtender(base.Transformer):
 
     Generate features consisting of all polynomial combinations of the features with degree less
     than or equal to the specified degree.
+
     Be aware that the number of outputed features scales polynomially in the number of input
     features and exponentially in the degree. High degrees can cause overfitting.
 
-    Parameters:
-        degree: The maximum degree of the polynomial features.
-        interaction_only: If `True` then only combinations that include an element at most
-            once will be computed.
-        include_bias: Whether or not to include a dummy feature which is always equal to 1.
-        bias_name: Name to give to the bias feature.
+    Parameters
+    ----------
+    degree
+        The maximum degree of the polynomial features.
+    interaction_only
+        If `True` then only combinations that include an element at most once will be computed.
+    include_bias
+        Whether or not to include a dummy feature which is always equal to 1.
+    bias_name
+        Name to give to the bias feature.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import feature_extraction as fx
+    >>> from creme import feature_extraction as fx
 
-        >>> X = [
-        ...     {'x': 0, 'y': 1},
-        ...     {'x': 2, 'y': 3},
-        ...     {'x': 4, 'y': 5}
-        ... ]
+    >>> X = [
+    ...     {'x': 0, 'y': 1},
+    ...     {'x': 2, 'y': 3},
+    ...     {'x': 4, 'y': 5}
+    ... ]
 
-        >>> poly = fx.PolynomialExtender(degree=2, include_bias=True)
-        >>> for x in X:
-        ...     print(poly.transform_one(x))
-        {'x': 0, 'y': 1, 'x*x': 0, 'x*y': 0, 'y*y': 1, 'bias': 1}
-        {'x': 2, 'y': 3, 'x*x': 4, 'x*y': 6, 'y*y': 9, 'bias': 1}
-        {'x': 4, 'y': 5, 'x*x': 16, 'x*y': 20, 'y*y': 25, 'bias': 1}
+    >>> poly = fx.PolynomialExtender(degree=2, include_bias=True)
+    >>> for x in X:
+    ...     print(poly.transform_one(x))
+    {'x': 0, 'y': 1, 'x*x': 0, 'x*y': 0, 'y*y': 1, 'bias': 1}
+    {'x': 2, 'y': 3, 'x*x': 4, 'x*y': 6, 'y*y': 9, 'bias': 1}
+    {'x': 4, 'y': 5, 'x*x': 16, 'x*y': 20, 'y*y': 25, 'bias': 1}
 
-        >>> X = [
-        ...     {'x': 0, 'y': 1, 'z': 2},
-        ...     {'x': 2, 'y': 3, 'z': 2},
-        ...     {'x': 4, 'y': 5, 'z': 2}
-        ... ]
+    >>> X = [
+    ...     {'x': 0, 'y': 1, 'z': 2},
+    ...     {'x': 2, 'y': 3, 'z': 2},
+    ...     {'x': 4, 'y': 5, 'z': 2}
+    ... ]
 
-        >>> poly = fx.PolynomialExtender(degree=3, interaction_only=True)
-        >>> for x in X:
-        ...     print(poly.transform_one(x))
-        {'x': 0, 'y': 1, 'z': 2, 'x*y': 0, 'x*z': 0, 'y*z': 2, 'x*y*z': 0}
-        {'x': 2, 'y': 3, 'z': 2, 'x*y': 6, 'x*z': 4, 'y*z': 6, 'x*y*z': 12}
-        {'x': 4, 'y': 5, 'z': 2, 'x*y': 20, 'x*z': 8, 'y*z': 10, 'x*y*z': 40}
+    >>> poly = fx.PolynomialExtender(degree=3, interaction_only=True)
+    >>> for x in X:
+    ...     print(poly.transform_one(x))
+    {'x': 0, 'y': 1, 'z': 2, 'x*y': 0, 'x*z': 0, 'y*z': 2, 'x*y*z': 0}
+    {'x': 2, 'y': 3, 'z': 2, 'x*y': 6, 'x*z': 4, 'y*z': 6, 'x*y*z': 12}
+    {'x': 4, 'y': 5, 'z': 2, 'x*y': 20, 'x*z': 8, 'y*z': 10, 'x*y*z': 40}
 
-        Polynomial features are typically used for a linear model to capture interactions between
-        features. This may done by setting up a pipeline, as so:
+    Polynomial features are typically used for a linear model to capture interactions between
+    features. This may done by setting up a pipeline, as so:
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model as lm
-        >>> from creme import metrics
-        >>> from creme import preprocessing as pp
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model as lm
+    >>> from creme import metrics
+    >>> from creme import preprocessing as pp
 
-        >>> dataset = datasets.Phishing()
+    >>> dataset = datasets.Phishing()
 
-        >>> model = (
-        ...     fx.PolynomialExtender() |
-        ...     pp.StandardScaler() |
-        ...     lm.LogisticRegression()
-        ... )
+    >>> model = (
+    ...     fx.PolynomialExtender() |
+    ...     pp.StandardScaler() |
+    ...     lm.LogisticRegression()
+    ... )
 
-        >>> metric = metrics.Accuracy()
+    >>> metric = metrics.Accuracy()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        Accuracy: 88.88%
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 88.88%
 
     """
 

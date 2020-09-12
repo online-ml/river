@@ -11,14 +11,15 @@ from creme import utils
 def decimal_range(start, stop, num):
     """
 
-    Example:
+    Examples
+    --------
 
-        >>> for x in decimal_range(0, 1, 4):
-        ...     print(x)
-        0.2
-        0.4
-        0.6
-        0.8
+    >>> for x in decimal_range(0, 1, 4):
+    ...     print(x)
+    0.2
+    0.4
+    0.6
+    0.8
 
     """
     step = (stop - start) / (num + 1)

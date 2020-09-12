@@ -9,79 +9,81 @@ class Shift(stats.Univariate):
     This can be used to compute statistics over past data. For instance, if you're computing daily
     averages, then shifting by 7 will be equivalent to computing averages from a week ago.
 
-    Parameters:
-        amount: Shift amount. The `get` method will return the `t - amount` value, where `t` is the
-            current moment.
-        fill_value: This value will be returned by the `get` method if not enough values have been
-            observed.
+    Shifting values is useful when you're calculating an average over a target value. Indeed,
+    in this case it's important to shift the values in order not to introduce leakage. The
+    recommended way to do this is to `feature_extraction.TargetAgg`, which already takes care
+    of shifting the target values once.
 
-    Example:
+    Parameters
+    ----------
+    amount
+        Shift amount. The `get` method will return the `t - amount` value, where `t` is the
+        current moment.
+    fill_value
+        This value will be returned by the `get` method if not enough values have been observed.
 
-        It is rare to have to use `Shift` by itself. A more common usage is to compose it with
-        other statistics. This can be done via the `|` operator.
+    Examples
+    --------
 
-        >>> from creme import stats
+    It is rare to have to use `Shift` by itself. A more common usage is to compose it with
+    other statistics. This can be done via the `|` operator.
 
-        >>> stat = stats.Shift(1) | stats.Mean()
+    >>> from creme import stats
 
-        >>> for i in range(5):
-        ...     stat = stat.update(i)
-        ...     print(stat.get())
-        0.0
-        0.0
-        0.5
-        1.0
-        1.5
+    >>> stat = stats.Shift(1) | stats.Mean()
 
-        A common usecase for using `Shift` is when computing statistics on shifted data. For
-        instance, say you have a dataset which records the amount of sales for a set of shops. You
-        might then have a `shop` field and a `sales` field. Let's say you want to look at the
-        average amount of sales per shop. You can do this by using a `feature_extraction.Agg`. When
-        you call `transform_one`, you're expecting it to return the average amount of sales,
-        *without* including today's sales. You can do this by prepending an instance of
-        `stats.Mean` with an instance of `stats.Shift`.
+    >>> for i in range(5):
+    ...     stat = stat.update(i)
+    ...     print(stat.get())
+    0.0
+    0.0
+    0.5
+    1.0
+    1.5
 
-        >>> from creme import feature_extraction
+    A common usecase for using `Shift` is when computing statistics on shifted data. For
+    instance, say you have a dataset which records the amount of sales for a set of shops. You
+    might then have a `shop` field and a `sales` field. Let's say you want to look at the
+    average amount of sales per shop. You can do this by using a `feature_extraction.Agg`. When
+    you call `transform_one`, you're expecting it to return the average amount of sales,
+    *without* including today's sales. You can do this by prepending an instance of
+    `stats.Mean` with an instance of `stats.Shift`.
 
-        >>> agg = feature_extraction.Agg(
-        ...     on='sales',
-        ...     how=stats.Shift(1) | stats.Mean(),
-        ...     by='shop'
-        ... )
+    >>> from creme import feature_extraction
 
-        Let's define a little example dataset.
+    >>> agg = feature_extraction.Agg(
+    ...     on='sales',
+    ...     how=stats.Shift(1) | stats.Mean(),
+    ...     by='shop'
+    ... )
 
-        >>> X = iter([
-        ...     {'shop': 'Ikea', 'sales': 10},
-        ...     {'shop': 'Ikea', 'sales': 15},
-        ...     {'shop': 'Ikea', 'sales': 20}
-        ... ])
+    Let's define a little example dataset.
 
-        Now let's call the `learn_one` method to update our feature extractor.
+    >>> X = iter([
+    ...     {'shop': 'Ikea', 'sales': 10},
+    ...     {'shop': 'Ikea', 'sales': 15},
+    ...     {'shop': 'Ikea', 'sales': 20}
+    ... ])
 
-        >>> x = next(X)
-        >>> agg = agg.learn_one(x)
+    Now let's call the `learn_one` method to update our feature extractor.
 
-        At this point, the average defaults to the initial value of `stats.Mean`, which is 0.
+    >>> x = next(X)
+    >>> agg = agg.learn_one(x)
 
-        >>> agg.transform_one(x)
-        {'sales_mean_of_shift_1_by_shop': 0.0}
+    At this point, the average defaults to the initial value of `stats.Mean`, which is 0.
 
-        We can now update our feature extractor with the next data point and check the output.
+    >>> agg.transform_one(x)
+    {'sales_mean_of_shift_1_by_shop': 0.0}
 
-        >>> agg = agg.learn_one(next(X))
-        >>> agg.transform_one(x)
-        {'sales_mean_of_shift_1_by_shop': 10.0}
+    We can now update our feature extractor with the next data point and check the output.
 
-        >>> agg = agg.learn_one(next(X))
-        >>> agg.transform_one(x)
-        {'sales_mean_of_shift_1_by_shop': 12.5}
+    >>> agg = agg.learn_one(next(X))
+    >>> agg.transform_one(x)
+    {'sales_mean_of_shift_1_by_shop': 10.0}
 
-    .. tip::
-        Shifting values is useful when you're calculating an average over a target value. Indeed,
-        in this case it's important to shift the values in order not to introduce leakage. The
-        recommended way to do this is to `feature_extraction.TargetAgg`, which already takes care
-        of shifting the target values once.
+    >>> agg = agg.learn_one(next(X))
+    >>> agg.transform_one(x)
+    {'sales_mean_of_shift_1_by_shop': 12.5}
 
     """
 

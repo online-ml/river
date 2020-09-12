@@ -77,12 +77,14 @@ class InverseScaling(Scheduler):
 class Optimal(Scheduler):
     """Optimal learning schedule as proposed by Léon Bottou.
 
-    Parameters:
-        loss
-        alpha
+    Parameters
+    ----------
+    loss
+    alpha
 
-    References:
-        1. [Bottou, L., 2012. Stochastic gradient descent tricks. In Neural networks: Tricks of the trade (pp. 421-436). Springer, Berlin, Heidelberg.](https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf)
+    References
+    ----------
+    [^1]: [Bottou, L., 2012. Stochastic gradient descent tricks. In Neural networks: Tricks of the trade (pp. 421-436). Springer, Berlin, Heidelberg.](https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf)
 
     """
 

@@ -23,68 +23,71 @@ class FuncTransformer(base.Transformer):
     that doesn't modify its input. However, we recommend writing pure functions because this
     reduces the chances of inserting bugs into your pipeline.
 
-    Parameters:
-        func: A function that takes as input a `dict` and outputs a `dict`.
+    Parameters
+    ----------
+    func
+        A function that takes as input a `dict` and outputs a `dict`.
 
-    Example:
+    Examples
+    --------
 
-        >>> from pprint import pprint
-        >>> import datetime as dt
-        >>> from creme import compose
+    >>> from pprint import pprint
+    >>> import datetime as dt
+    >>> from creme import compose
 
-        >>> x = {'date': '2019-02-14'}
+    >>> x = {'date': '2019-02-14'}
 
-        >>> def parse_date(x):
-        ...     date = dt.datetime.strptime(x['date'], '%Y-%m-%d')
-        ...     x['is_weekend'] = date.day in (5, 6)
-        ...     x['hour'] = date.hour
-        ...     return x
+    >>> def parse_date(x):
+    ...     date = dt.datetime.strptime(x['date'], '%Y-%m-%d')
+    ...     x['is_weekend'] = date.day in (5, 6)
+    ...     x['hour'] = date.hour
+    ...     return x
 
-        >>> t = compose.FuncTransformer(parse_date)
-        >>> pprint(t.transform_one(x))
-        {'date': '2019-02-14', 'hour': 0, 'is_weekend': False}
+    >>> t = compose.FuncTransformer(parse_date)
+    >>> pprint(t.transform_one(x))
+    {'date': '2019-02-14', 'hour': 0, 'is_weekend': False}
 
-        The above example is not pure because it modifies the input. The following example is pure
-        and produces the same output:
+    The above example is not pure because it modifies the input. The following example is pure
+    and produces the same output:
 
-        >>> def parse_date(x):
-        ...     date = dt.datetime.strptime(x['date'], '%Y-%m-%d')
-        ...     return {'is_weekend': date.day in (5, 6), 'hour': date.hour}
+    >>> def parse_date(x):
+    ...     date = dt.datetime.strptime(x['date'], '%Y-%m-%d')
+    ...     return {'is_weekend': date.day in (5, 6), 'hour': date.hour}
 
-        >>> t = compose.FuncTransformer(parse_date)
-        >>> pprint(t.transform_one(x))
-        {'hour': 0, 'is_weekend': False}
+    >>> t = compose.FuncTransformer(parse_date)
+    >>> pprint(t.transform_one(x))
+    {'hour': 0, 'is_weekend': False}
 
-        The previous example doesn't include the `date` feature because it returns a new `dict`.
-        However, a common usecase is to add a feature to an existing set of features. You can do
-        this in a pure way by unpacking the input `dict` into the output `dict`:
+    The previous example doesn't include the `date` feature because it returns a new `dict`.
+    However, a common usecase is to add a feature to an existing set of features. You can do
+    this in a pure way by unpacking the input `dict` into the output `dict`:
 
-        >>> def parse_date(x):
-        ...     date = dt.datetime.strptime(x['date'], '%Y-%m-%d')
-        ...     return {'is_weekend': date.day in (5, 6), 'hour': date.hour, **x}
+    >>> def parse_date(x):
+    ...     date = dt.datetime.strptime(x['date'], '%Y-%m-%d')
+    ...     return {'is_weekend': date.day in (5, 6), 'hour': date.hour, **x}
 
-        >>> t = compose.FuncTransformer(parse_date)
-        >>> pprint(t.transform_one(x))
-        {'date': '2019-02-14', 'hour': 0, 'is_weekend': False}
+    >>> t = compose.FuncTransformer(parse_date)
+    >>> pprint(t.transform_one(x))
+    {'date': '2019-02-14', 'hour': 0, 'is_weekend': False}
 
-        You can add `FuncTransformer` to a pipeline just like you would with any other transformer.
+    You can add `FuncTransformer` to a pipeline just like you would with any other transformer.
 
-        >>> from creme import naive_bayes
+    >>> from creme import naive_bayes
 
-        >>> pipeline = compose.FuncTransformer(parse_date) | naive_bayes.MultinomialNB()
-        >>> pipeline
-        Pipeline (
-          FuncTransformer (
-            func="parse_date"
-          ),
-          MultinomialNB (
-            alpha=1.
-          )
+    >>> pipeline = compose.FuncTransformer(parse_date) | naive_bayes.MultinomialNB()
+    >>> pipeline
+    Pipeline (
+        FuncTransformer (
+        func="parse_date"
+        ),
+        MultinomialNB (
+        alpha=1.
         )
+    )
 
-        If you provide a function with wrapping it, then the pipeline will do it for you:
+    If you provide a function with wrapping it, then the pipeline will do it for you:
 
-        >>> pipeline = parse_date | naive_bayes.MultinomialNB()
+    >>> pipeline = parse_date | naive_bayes.MultinomialNB()
 
     """
 

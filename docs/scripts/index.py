@@ -61,6 +61,46 @@ def inherit_docstring(c, meth):
 
     return doc
 
+
+def inherit_signature(c, method_name):
+
+    m = getattr(c, method_name)
+    sig = inspect.signature(m)
+
+    params = []
+
+    for param in sig.parameters.values():
+
+        if param.name == 'self' or param.annotation is not param.empty:
+            params.append(param)
+            continue
+
+        for ancestor in inspect.getmro(c):
+            try:
+                ancestor_meth = inspect.signature(getattr(ancestor, m.__name__))
+            except AttributeError:
+                break
+            ancestor_param = ancestor_meth.parameters[param.name]
+            if ancestor_param.annotation is not param.empty:
+                param = param.replace(annotation=ancestor_param.annotation)
+                break
+
+        params.append(param)
+
+    return_annotation = sig.return_annotation
+    if return_annotation is inspect._empty:
+        for ancestor in inspect.getmro(c):
+            try:
+                ancestor_meth = inspect.signature(getattr(ancestor, m.__name__))
+            except AttributeError:
+                break
+            if ancestor_meth.return_annotation is not inspect._empty:
+                return_annotation = ancestor_meth.return_annotation
+                break
+
+    return sig.replace(parameters=params, return_annotation=return_annotation)
+
+
 def snake_to_kebab(snake: str) -> str:
     return snake.replace('_', '-')
 
@@ -193,16 +233,17 @@ def print_docstring(obj, file, depth):
     # Attributes
     if doc['Attributes']:
         printf(h2('Attributes'))
-        for attr in doc['Attributes']:
-            # Name
-            printf(f'- **{attr.name}**', end='')
-            # Type annotation
-            #printf(f' (*{attr.type}*)', end='')
-            printf('\n', file=file)
-            # Description
-            desc = ' '.join(attr.desc)
-            if desc:
-                printf(f'    {desc}\n')
+    for attr in doc['Attributes']:
+        # Name
+        printf(f'- **{attr.name}**', end='')
+        # Type annotation
+        if attr.type:
+            printf(f' (*{attr.type}*)', end='')
+        printf('\n', file=file)
+        # Description
+        desc = ' '.join(attr.desc)
+        if desc:
+            printf(f'    {desc}\n')
     printf('')
 
     # Examples
@@ -257,7 +298,7 @@ def print_docstring(obj, file, depth):
 
             # We infer the type annotations from the signatures, and therefore rely on the signature
             # instead of the docstring for documenting parameters
-            signature = inspect.signature(getattr(obj, meth.name))
+            signature = inherit_signature(obj, meth.name)
             params_desc = {param.name: ' '.join(param.desc) for param in doc['Parameters']}
 
             # Parameters
@@ -285,14 +326,17 @@ def print_docstring(obj, file, depth):
             if meth_doc['Returns']:
                 printf_indent('**Returns**\n')
                 return_val = meth_doc['Returns'][0]
-                if signature.return_annotation:
-                    printf_indent(f'*{signature.return_annotation}*: ', end='')
+                if signature.return_annotation is not inspect._empty:
+                    if inspect.isclass(signature.return_annotation):
+                        printf_indent(f'*{signature.return_annotation.__name__}*: ', end='')
+                    else:
+                        printf_indent(f'*{signature.return_annotation}*: ', end='')
                 printf_indent(return_val.type)
                 printf_indent('')
 
     # References
     if doc['References']:
-        printf('**References**')
+        printf(h2('References'))
         printf(paragraph('\n'.join(doc['References'])))
 
 
@@ -379,7 +423,7 @@ if __name__ == '__main__':
     linkifier = Linkifier()
 
     for mod_name, mod in inspect.getmembers(importlib.import_module('creme'), inspect.ismodule):
-        if mod_name != 'base':
+        if mod_name not in ('base', 'cluster'):
             continue
         print(mod_name)
         print_module(mod, path=api_path, overview=overview)

@@ -7,18 +7,19 @@ __all__ = ['PreviousImputer']
 class PreviousImputer(base.Transformer):
     """Imputes missing values by using the most recent value.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import impute
+    >>> from creme import impute
 
-        >>> imputer = impute.PreviousImputer()
+    >>> imputer = impute.PreviousImputer()
 
-        >>> imputer = imputer.learn_one({'x': 1, 'y': 2})
-        >>> imputer.transform_one({'y': None})
-        {'y': 2}
+    >>> imputer = imputer.learn_one({'x': 1, 'y': 2})
+    >>> imputer.transform_one({'y': None})
+    {'y': 2}
 
-        >>> imputer.transform_one({'x': None})
-        {'x': 1}
+    >>> imputer.transform_one({'x': None})
+    {'x': 1}
 
     """
 

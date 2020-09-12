@@ -11,11 +11,15 @@ def iter_vaex(X: vaex.dataframe.DataFrame, y: typing.Union[str, vaex.expression.
               **kwargs) -> base.typing.Stream:
     """Yields rows from a ``vaex.DataFrame``.
 
-    Parameters:
-        X: A vaex DataFrame housing the training featuers.
-        y: The column or expression containing the target variable.
-        features: A list of features used for training. If None, all columns in `X` will be used.
-            Features specifying in `y` are ignored.
+    Parameters
+    ----------
+    X
+        A vaex DataFrame housing the training featuers.
+    y
+        The column or expression containing the target variable.
+    features
+        A list of features used for training. If None, all columns in `X` will be used. Features
+        specifying in `y` are ignored.
 
     """
 

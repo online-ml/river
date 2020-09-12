@@ -15,152 +15,155 @@ class StatImputer(base.Transformer):
     is observed. When `transform_one` is called, each feature with a `None` value is replaced with
     the current value of the corresponding statistic.
 
-    Parameters:
-        imputers: A list of tuples where each tuple has two elements. The first elements is a
-            feature name and the second value is an instance of `stats.Univariate`. The second
-            value can also be an arbitrary value, such as -1, in which case the missing values will
-            be replaced with it.
+    Parameters
+    ----------
+    imputers
+        A list of tuples where each tuple has two elements. The first elements is a
+        feature name and the second value is an instance of `stats.Univariate`. The second
+        value can also be an arbitrary value, such as -1, in which case the missing values will
+        be replaced with it.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import impute
-        >>> from creme import stats
+    >>> from creme import impute
+    >>> from creme import stats
 
-        For numeric data, we can use a `stats.Mean()` to replace missing values by the running
-        average of the previously seen values:
+    For numeric data, we can use a `stats.Mean()` to replace missing values by the running
+    average of the previously seen values:
 
-        >>> X = [
-        ...     {'temperature': 1},
-        ...     {'temperature': 8},
-        ...     {'temperature': 3},
-        ...     {'temperature': None},
-        ...     {'temperature': 4}
-        ... ]
+    >>> X = [
+    ...     {'temperature': 1},
+    ...     {'temperature': 8},
+    ...     {'temperature': 3},
+    ...     {'temperature': None},
+    ...     {'temperature': 4}
+    ... ]
 
-        >>> imp = impute.StatImputer(('temperature', stats.Mean()))
+    >>> imp = impute.StatImputer(('temperature', stats.Mean()))
 
-        >>> for x in X:
-        ...     imp = imp.learn_one(x)
-        ...     print(imp.transform_one(x))
-        {'temperature': 1}
-        {'temperature': 8}
-        {'temperature': 3}
-        {'temperature': 4.0}
-        {'temperature': 4}
+    >>> for x in X:
+    ...     imp = imp.learn_one(x)
+    ...     print(imp.transform_one(x))
+    {'temperature': 1}
+    {'temperature': 8}
+    {'temperature': 3}
+    {'temperature': 4.0}
+    {'temperature': 4}
 
-        For discrete/categorical data, a common practice is to `stats.Mode` to replace missing
-        values by the most commonly seen value:
+    For discrete/categorical data, a common practice is to `stats.Mode` to replace missing
+    values by the most commonly seen value:
 
-        >>> X = [
-        ...     {'weather': 'sunny'},
-        ...     {'weather': 'rainy'},
-        ...     {'weather': 'sunny'},
-        ...     {'weather': None},
-        ...     {'weather': 'rainy'},
-        ...     {'weather': 'rainy'},
-        ...     {'weather': None}
-        ... ]
+    >>> X = [
+    ...     {'weather': 'sunny'},
+    ...     {'weather': 'rainy'},
+    ...     {'weather': 'sunny'},
+    ...     {'weather': None},
+    ...     {'weather': 'rainy'},
+    ...     {'weather': 'rainy'},
+    ...     {'weather': None}
+    ... ]
 
-        >>> imp = impute.StatImputer(('weather', stats.Mode()))
+    >>> imp = impute.StatImputer(('weather', stats.Mode()))
 
-        >>> for x in X:
-        ...     imp = imp.learn_one(x)
-        ...     print(imp.transform_one(x))
-        {'weather': 'sunny'}
-        {'weather': 'rainy'}
-        {'weather': 'sunny'}
-        {'weather': 'sunny'}
-        {'weather': 'rainy'}
-        {'weather': 'rainy'}
-        {'weather': 'rainy'}
+    >>> for x in X:
+    ...     imp = imp.learn_one(x)
+    ...     print(imp.transform_one(x))
+    {'weather': 'sunny'}
+    {'weather': 'rainy'}
+    {'weather': 'sunny'}
+    {'weather': 'sunny'}
+    {'weather': 'rainy'}
+    {'weather': 'rainy'}
+    {'weather': 'rainy'}
 
-        You can also choose to replace missing values with a constant value, as so:
+    You can also choose to replace missing values with a constant value, as so:
 
-        >>> imp = impute.StatImputer(('weather', 'missing'))
+    >>> imp = impute.StatImputer(('weather', 'missing'))
 
-        >>> for x in X:
-        ...     imp = imp.learn_one(x)
-        ...     print(imp.transform_one(x))
-        {'weather': 'sunny'}
-        {'weather': 'rainy'}
-        {'weather': 'sunny'}
-        {'weather': 'missing'}
-        {'weather': 'rainy'}
-        {'weather': 'rainy'}
-        {'weather': 'missing'}
+    >>> for x in X:
+    ...     imp = imp.learn_one(x)
+    ...     print(imp.transform_one(x))
+    {'weather': 'sunny'}
+    {'weather': 'rainy'}
+    {'weather': 'sunny'}
+    {'weather': 'missing'}
+    {'weather': 'rainy'}
+    {'weather': 'rainy'}
+    {'weather': 'missing'}
 
-        Multiple imputers can be defined by providing a tuple for each feature which you want to
-        impute:
+    Multiple imputers can be defined by providing a tuple for each feature which you want to
+    impute:
 
-        >>> X = [
-        ...     {'weather': 'sunny', 'temperature': 8},
-        ...     {'weather': 'rainy', 'temperature': 3},
-        ...     {'weather': 'sunny', 'temperature': None},
-        ...     {'weather': None, 'temperature': 4},
-        ...     {'weather': 'snowy', 'temperature': -4},
-        ...     {'weather': 'snowy', 'temperature': -3},
-        ...     {'weather': 'snowy', 'temperature': -3},
-        ...     {'weather': None, 'temperature': None}
-        ... ]
+    >>> X = [
+    ...     {'weather': 'sunny', 'temperature': 8},
+    ...     {'weather': 'rainy', 'temperature': 3},
+    ...     {'weather': 'sunny', 'temperature': None},
+    ...     {'weather': None, 'temperature': 4},
+    ...     {'weather': 'snowy', 'temperature': -4},
+    ...     {'weather': 'snowy', 'temperature': -3},
+    ...     {'weather': 'snowy', 'temperature': -3},
+    ...     {'weather': None, 'temperature': None}
+    ... ]
 
-        >>> imp = impute.StatImputer(
-        ...     ('temperature', stats.Mean()),
-        ...     ('weather', stats.Mode())
-        ... )
+    >>> imp = impute.StatImputer(
+    ...     ('temperature', stats.Mean()),
+    ...     ('weather', stats.Mode())
+    ... )
 
-        >>> for x in X:
-        ...     imp = imp.learn_one(x)
-        ...     print(imp.transform_one(x))
-        {'weather': 'sunny', 'temperature': 8}
-        {'weather': 'rainy', 'temperature': 3}
-        {'weather': 'sunny', 'temperature': 5.5}
-        {'weather': 'sunny', 'temperature': 4}
-        {'weather': 'snowy', 'temperature': -4}
-        {'weather': 'snowy', 'temperature': -3}
-        {'weather': 'snowy', 'temperature': -3}
-        {'weather': 'snowy', 'temperature': 0.8333}
+    >>> for x in X:
+    ...     imp = imp.learn_one(x)
+    ...     print(imp.transform_one(x))
+    {'weather': 'sunny', 'temperature': 8}
+    {'weather': 'rainy', 'temperature': 3}
+    {'weather': 'sunny', 'temperature': 5.5}
+    {'weather': 'sunny', 'temperature': 4}
+    {'weather': 'snowy', 'temperature': -4}
+    {'weather': 'snowy', 'temperature': -3}
+    {'weather': 'snowy', 'temperature': -3}
+    {'weather': 'snowy', 'temperature': 0.8333}
 
-        A sophisticated way to go about imputation is condition the statistics on a given feature.
-        For instance, we might want to replace a missing temperature with the average temperature
-        of a particular weather condition. As an example, consider the following dataset where the
-        temperature is missing, but not the weather condition:
+    A sophisticated way to go about imputation is condition the statistics on a given feature.
+    For instance, we might want to replace a missing temperature with the average temperature
+    of a particular weather condition. As an example, consider the following dataset where the
+    temperature is missing, but not the weather condition:
 
-        >>> X = [
-        ...     {'weather': 'sunny', 'temperature': 8},
-        ...     {'weather': 'rainy', 'temperature': 3},
-        ...     {'weather': 'sunny', 'temperature': None},
-        ...     {'weather': 'rainy', 'temperature': 4},
-        ...     {'weather': 'sunny', 'temperature': 10},
-        ...     {'weather': 'sunny', 'temperature': None},
-        ...     {'weather': 'sunny', 'temperature': 12},
-        ...     {'weather': 'rainy', 'temperature': None}
-        ... ]
+    >>> X = [
+    ...     {'weather': 'sunny', 'temperature': 8},
+    ...     {'weather': 'rainy', 'temperature': 3},
+    ...     {'weather': 'sunny', 'temperature': None},
+    ...     {'weather': 'rainy', 'temperature': 4},
+    ...     {'weather': 'sunny', 'temperature': 10},
+    ...     {'weather': 'sunny', 'temperature': None},
+    ...     {'weather': 'sunny', 'temperature': 12},
+    ...     {'weather': 'rainy', 'temperature': None}
+    ... ]
 
-        Each missing temperature can be replaced with the average temperature of the corresponding
-        weather condition as so:
+    Each missing temperature can be replaced with the average temperature of the corresponding
+    weather condition as so:
 
-        >>> from creme import compose
+    >>> from creme import compose
 
-        >>> imp = compose.Grouper(
-        ...     impute.StatImputer(('temperature', stats.Mean())),
-        ...     by='weather'
-        ... )
+    >>> imp = compose.Grouper(
+    ...     impute.StatImputer(('temperature', stats.Mean())),
+    ...     by='weather'
+    ... )
 
-        >>> for x in X:
-        ...     imp = imp.learn_one(x)
-        ...     print(imp.transform_one(x))
-        {'weather': 'sunny', 'temperature': 8}
-        {'weather': 'rainy', 'temperature': 3}
-        {'weather': 'sunny', 'temperature': 8.0}
-        {'weather': 'rainy', 'temperature': 4}
-        {'weather': 'sunny', 'temperature': 10}
-        {'weather': 'sunny', 'temperature': 9.0}
-        {'weather': 'sunny', 'temperature': 12}
-        {'weather': 'rainy', 'temperature': 3.5}
+    >>> for x in X:
+    ...     imp = imp.learn_one(x)
+    ...     print(imp.transform_one(x))
+    {'weather': 'sunny', 'temperature': 8}
+    {'weather': 'rainy', 'temperature': 3}
+    {'weather': 'sunny', 'temperature': 8.0}
+    {'weather': 'rainy', 'temperature': 4}
+    {'weather': 'sunny', 'temperature': 10}
+    {'weather': 'sunny', 'temperature': 9.0}
+    {'weather': 'sunny', 'temperature': 12}
+    {'weather': 'rainy', 'temperature': 3.5}
 
-        Note that you can also create a `Grouper` with the `*` operator:
+    Note that you can also create a `Grouper` with the `*` operator:
 
-        >>> imp = impute.StatImputer(('temperature', stats.Mean())) * 'weather'
+    >>> imp = impute.StatImputer(('temperature', stats.Mean())) * 'weather'
 
     """
 
@@ -193,8 +196,9 @@ class StatImputer(base.Transformer):
 class Constant(stats.Univariate):
     """Implements the `stats.Univariate` interface but always returns the same value.
 
-    Parameters:
-        value
+    Parameters
+    ----------
+    value
 
     """
 

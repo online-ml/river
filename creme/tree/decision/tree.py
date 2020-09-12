@@ -68,28 +68,31 @@ class BaseDecisionTree(abc.ABC):
     def draw(self, max_depth: int = None):
         """Draws the tree using the `graphviz` library.
 
-        Parameters:
-            max_depth: Only the root will be drawn when set to `0`. Every node will be drawn when
-                set to `None`.
+        Parameters
+        ----------
+        max_depth
+            Only the root will be drawn when set to `0`. Every node will be drawn when
+            set to `None`.
 
-        Example:
+        Examples
+        --------
 
-            >>> from creme import datasets
-            >>> from creme import tree
+        >>> from creme import datasets
+        >>> from creme import tree
 
-            >>> model = tree.DecisionTreeClassifier(
-            ...    patience=10,
-            ...    confidence=1e-5,
-            ...    criterion='gini',
-            ...    max_depth=10,
-            ...    tie_threshold=0.05,
-            ...    min_child_samples=0,
-            ... )
+        >>> model = tree.DecisionTreeClassifier(
+        ...    patience=10,
+        ...    confidence=1e-5,
+        ...    criterion='gini',
+        ...    max_depth=10,
+        ...    tie_threshold=0.05,
+        ...    min_child_samples=0,
+        ... )
 
-            >>> for x, y in datasets.Phishing():
-            ...    model = model.learn_one(x, y)
+        >>> for x, y in datasets.Phishing():
+        ...    model = model.learn_one(x, y)
 
-            >>> dot = model.draw()
+        >>> dot = model.draw()
 
         .. image:: /img/dtree_draw.svg
             :align: center
@@ -147,8 +150,10 @@ class BaseDecisionTree(abc.ABC):
     def debug_one(self, x: dict) -> str:
         """Prints an explanation of how `x` is predicted.
 
-        Parameters:
-            x: A dictionary of features.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
 
         """
 
@@ -177,53 +182,67 @@ class DecisionTreeClassifier(BaseDecisionTree, base.Classifier):
     Numeric features will be treated as continuous features. You can cast a feature to a string in
     order to treat it as a categorical feature.
 
-    Parameters:
-        criterion: The function to measure the quality of a split. Set to `'gini'` in order
-            to use Gini impurity and `'entropy'` for information gain.
-        patience: Time to wait between split attempts.
-        max_depth: Maximum tree depth.
-        min_split_gain: Minimum impurity gain required to make a split eligible.
-        min_child_samples: Minimum number of data needed in a leaf.
-        confidence: Threshold used to compare with the Hoeffding bound.
-        tie_threshold: Threshold to handle ties between equally performing attributes.
-        n_split_points: Number of split points considered for splitting numerical variables.
-        max_bins: Number of histogram bins used for approximating the distribution of
-            numerical variables.
-        curtail_under: Determines the minimum amount of samples for a node to be eligible to
-            make predictions. For instance, if a leaf doesn't contain at least `curtail_under`
-            samples, then it's parent will be used instead. If said parent also doesn't contain at
-            leaf `curtail_under` samples, then it's parent is used, etc. This helps to counter
-            the fact that new leaves start with no samples at all, therefore their predictions
-            might be unreliable. No curtailment will be applied if you set this to `0`. However,
-            note that using even a small amount of curtailment almost always results in better
-            performance.
+    Parameters
+    ----------
+    criterion
+        The function to measure the quality of a split. Set to `'gini'` in order
+        to use Gini impurity and `'entropy'` for information gain.
+    patience
+        Time to wait between split attempts.
+    max_depth
+        Maximum tree depth.
+    min_split_gain
+        Minimum impurity gain required to make a split eligible.
+    min_child_samples
+        Minimum number of data needed in a leaf.
+    confidence
+        Threshold used to compare with the Hoeffding bound.
+    tie_threshold
+        Threshold to handle ties between equally performing attributes.
+    n_split_points
+        Number of split points considered for splitting numerical variables.
+    max_bins
+        Number of histogram bins used for approximating the distribution of
+        numerical variables.
+    curtail_under
+        Determines the minimum amount of samples for a node to be eligible to
+        make predictions. For instance, if a leaf doesn't contain at least `curtail_under`
+        samples, then it's parent will be used instead. If said parent also doesn't contain at
+        leaf `curtail_under` samples, then it's parent is used, etc. This helps to counter
+        the fact that new leaves start with no samples at all, therefore their predictions
+        might be unreliable. No curtailment will be applied if you set this to `0`. However,
+        note that using even a small amount of curtailment almost always results in better
+        performance.
 
-    Attributes:
-        root
+    Attributes
+    ----------
+    root
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import metrics
-        >>> from creme import tree
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import metrics
+    >>> from creme import tree
 
-        >>> dataset = datasets.Phishing()
+    >>> dataset = datasets.Phishing()
 
-        >>> model = tree.DecisionTreeClassifier(
-        ...     patience=100,
-        ...     confidence=1e-5,
-        ...     criterion='gini'
-        ... )
+    >>> model = tree.DecisionTreeClassifier(
+    ...     patience=100,
+    ...     confidence=1e-5,
+    ...     criterion='gini'
+    ... )
 
-        >>> metric = metrics.LogLoss()
+    >>> metric = metrics.LogLoss()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        LogLoss: 0.51755
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    LogLoss: 0.51755
 
-    References:
-        1. [Domingos, P. and Hulten, G., 2000, August. Mining high-speed data streams. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 71-80).](https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf)
-        2. [Article by The Morning Paper](https://blog.acolyer.org/2015/08/26/mining-high-speed-data-streams/)
+    References
+    ----------
+    [^1]: [Domingos, P. and Hulten, G., 2000, August. Mining high-speed data streams. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 71-80).](https://homes.cs.washington.edu/~pedrod/papers/kdd00.pdf)
+    [^2]: [Article by The Morning Paper](https://blog.acolyer.org/2015/08/26/mining-high-speed-data-streams/)
 
     """
 

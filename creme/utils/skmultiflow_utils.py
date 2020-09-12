@@ -8,17 +8,18 @@ from collections import deque
 import numpy as np
 
 
-def get_dimensions(X):
+def get_dimensions(X) -> tuple:
     """ Return the dimensions from a numpy.array, numpy.ndarray or list.
 
     Parameters
     ----------
-    X: numpy.array, numpy.ndarray, list, list of lists.
+    X
+        numpy.array, numpy.ndarray, list, list of lists.
 
     Returns
     -------
-    tuple
-        A tuple representing the X structure's dimensions.
+    A tuple representing the X structure's dimensions.
+
     """
     r, c = 1, 1
     if isinstance(X, type(np.array([0]))):
@@ -37,17 +38,18 @@ def get_dimensions(X):
 
 
 def normalize_values_in_dict(dictionary, factor=None, inplace=True):
-    """ Normalize the values in a dictionary using the given factor.
-    For each element in the dictionary, applies ``value/factor``.
+    """Normalize the values in a dictionary using the given factor.
+
+    For each element in the dictionary, applies `value/factor`.
 
     Parameters
     ----------
-    dictionary: dict
+    dictionary
         Dictionary to normalize.
-    factor: float, optional (default=None)
+    factor
         Normalization factor value. If not set, use the sum of values.
-    inplace : bool, default True
-        if True, perform operation in-place
+    inplace
+        If True, perform operation in-place
 
     """
     if factor is None:
@@ -69,13 +71,14 @@ def get_max_value_key(dictionary):
 
     Parameters
     ----------
-    dictionary: dict
+    dictionary
         Dictionary to evaluate.
 
     Returns
     -------
     int
         Key of the maximum value.
+
     """
     if dictionary and isinstance(dictionary, dict):
         return max(dictionary, key=dictionary.get)
@@ -83,7 +86,7 @@ def get_max_value_key(dictionary):
         return 0
 
 
-def calculate_object_size(obj, unit='byte'):
+def calculate_object_size(obj, unit='byte') -> int:
     """Iteratively calculates the `obj` size in bytes.
 
     Visits all the elements related to obj accounting for their respective
@@ -91,17 +94,16 @@ def calculate_object_size(obj, unit='byte'):
 
     Parameters
     ----------
-    object: obj
+    object
         Object to evaluate.
-    string: unit
+    string
         The unit in which the accounted value is going to be returned.
         Values: 'byte', 'kB', 'MB' (Default: 'byte').
 
     Returns
     -------
-    int
-        The size of the object and its related properties and objects,
-        in 'unit'.
+    The size of the object and its related properties and objects, in 'unit'.
+
     """
     seen = set()
     to_visit = deque()
@@ -149,7 +151,7 @@ def calculate_object_size(obj, unit='byte'):
     return final_size
 
 
-def is_scalar_nan(x):
+def is_scalar_nan(x) -> bool:
     """Tests if x is NaN
 
     This function is meant to overcome the issue that np.isnan does not allow
@@ -157,11 +159,8 @@ def is_scalar_nan(x):
 
     Parameters
     ----------
-    x : any type
-
-    Returns
-    -------
-    boolean
+    x
+        any type
 
     Examples
     --------
@@ -190,17 +189,18 @@ def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
 
     Parameters
     ----------
-    dict_a: dictionary to update.
-    dict_b: dictionary whose values will be added to `dict_a`.
-    inplace: boolean (default: False)
+    dict_a
+        dictionary to update.
+    dict_b
+        dictionary whose values will be added to `dict_a`.
+    inplace
         If `True`, the addition is performed in-place and results are stored in `dict_a`.
         If `False`, `dict_a` is not changed and the results are returned in a new dictionary.
 
     Returns
     -------
-        dict
-            A dictionary containing the result of the operation.
-            Either a pointer to `dict_a` or a new dictionary depending on parameter `inplace`.
+    A dictionary containing the result of the operation. Either a pointer to `dict_a` or a new dictionary depending on parameter `inplace`.
+
     """
     if inplace:
         result = dict_a
@@ -222,13 +222,15 @@ def add_delay_to_timestamps(timestamps, delay):
 
     Parameters
     ----------
-    timestamps: np.ndarray(dtype=datetime64).
-    delay: np.timedelta64.
+    timestamps
+        np.ndarray(dtype=datetime64).
+    delay
+        np.timedelta64.
 
     Returns
     -------
-        np.ndarray(dtype=datetime64)
-            A list of timestamps with a delay added to all timestamp..
+    A list of timestamps with a delay added to all timestamp.
+
     """
 
     delay_timestamps = []

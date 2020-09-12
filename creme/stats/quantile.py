@@ -8,40 +8,45 @@ from . import base
 class Quantile(base.Univariate):
     """Running quantile.
 
-    Uses the P-square algorithm. The code is inspired by LiveStat's implementation [2].
+    Uses the P-square algorithm. The code is inspired by LiveStat's implementation [^2].
 
-    Parameters:
-        q: Determines which quantile to compute, must be comprised between 0 and 1.
+    Parameters
+    ----------
+    q
+        Determines which quantile to compute, must be comprised between 0 and 1.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
-        >>> import numpy as np
+    >>> from creme import stats
+    >>> import numpy as np
 
-        >>> np.random.seed(42 * 1337)
-        >>> mu, sigma = 0, 1
-        >>> s = np.random.normal(mu, sigma, 500)
+    >>> np.random.seed(42 * 1337)
+    >>> mu, sigma = 0, 1
+    >>> s = np.random.normal(mu, sigma, 500)
 
-        >>> median = stats.Quantile(0.5)
-        >>> for x in s:
-        ...    _ = median.update(x)
+    >>> median = stats.Quantile(0.5)
+    >>> for x in s:
+    ...    _ = median.update(x)
 
-        >>> print(f'The estimated value of the 50th (median) quantile is {median.get():.4f}')
-        The estimated value of the 50th (median) quantile is -0.0275
-        >>> print(f'The real value of the 50th (median) quantile is {np.median(s):.4f}')
-        The real value of the 50th (median) quantile is -0.0135
+    >>> print(f'The estimated value of the 50th (median) quantile is {median.get():.4f}')
+    The estimated value of the 50th (median) quantile is -0.0275
+    >>> print(f'The real value of the 50th (median) quantile is {np.median(s):.4f}')
+    The real value of the 50th (median) quantile is -0.0135
 
-        >>> percentile_17 = stats.Quantile(0.17)
-        >>> for x in s:
-        ...    _ = percentile_17.update(x)
+    >>> percentile_17 = stats.Quantile(0.17)
+    >>> for x in s:
+    ...    _ = percentile_17.update(x)
 
-        >>> print(f'The estimated value of the 17th quantile is {percentile_17.get():.4f}')
-        The estimated value of the 17th quantile is -0.8652
-        >>> print(f'The real value of the 17th quantile is {np.percentile(s,17):.4f}')
-        The real value of the 17th quantile is -0.9072
+    >>> print(f'The estimated value of the 17th quantile is {percentile_17.get():.4f}')
+    The estimated value of the 17th quantile is -0.8652
+    >>> print(f'The real value of the 17th quantile is {np.percentile(s,17):.4f}')
+    The real value of the 17th quantile is -0.9072
 
-    References:
-        1. [The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations](https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf)
+    References
+    ----------
+    [^1]: [The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations](https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf)
+    [^2]: [LiveStats](https://github.com/cxxr/LiveStats)
 
     """
 
@@ -170,37 +175,42 @@ class Quantile(base.Univariate):
 class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
     """Running quantile over a window.
 
-    Parameters:
-        q: Determines which quantile to compute, must be comprised between 0 and 1.
-        window_size: Size of the window.
+    Parameters
+    ----------
+    q
+        Determines which quantile to compute, must be comprised between 0 and 1.
+    window_size
+        Size of the window.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> rolling_quantile = stats.RollingQuantile(
-        ...     q=.5,
-        ...     window_size=100,
-        ... )
+    >>> rolling_quantile = stats.RollingQuantile(
+    ...     q=.5,
+    ...     window_size=100,
+    ... )
 
-        >>> for i in range(0, 1001):
-        ...     rolling_quantile = rolling_quantile.update(i)
-        ...     if i % 100 == 0:
-        ...         print(rolling_quantile.get())
-        0
-        50
-        150
-        250
-        350
-        450
-        550
-        650
-        750
-        850
-        950
+    >>> for i in range(0, 1001):
+    ...     rolling_quantile = rolling_quantile.update(i)
+    ...     if i % 100 == 0:
+    ...         print(rolling_quantile.get())
+    0
+    50
+    150
+    250
+    350
+    450
+    550
+    650
+    750
+    850
+    950
 
-    References:
-        1. [Left sorted](https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python)
+    References
+    ----------
+    [^1]: [Left sorted](https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python)
 
     """
 

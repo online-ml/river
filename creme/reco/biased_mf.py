@@ -27,73 +27,90 @@ class BiasedMF(base.Recommender):
 
     $$\\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}$$
 
-    Where $k$ is the number of latent factors.
+    where $k$ is the number of latent factors.
 
-    Parameters:
-        n_factors: Dimensionality of the factorization or number of latent factors.
-        bias_optimizer: The sequential optimizer used for updating the bias
-            weights.
-        latent_optimizer: The sequential optimizer used for updating the latent weights.
-        loss: The loss function to optimize for.
-        l2_bias: Amount of L2 regularization used to push bias weights towards 0.
-        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
-        weight_initializer: Weights initialization scheme.
-        latent_initializer: Latent factors initialization scheme.
-        clip_gradient: Clips the absolute value of each gradient value.
-        seed: Randomization seed used for reproducibility.
+    This model expects a dict input with a `user` and an `item` entries without any type constraint
+    on their values (i.e. can be strings or numbers). Other entries are ignored.
 
-    Attributes:
-        global_mean (stats.Mean): The target arithmetic mean.
-        u_biases (collections.defaultdict): The user bias weights.
-        i_biases (collections.defaultdict): The item bias weights.
-        u_latents (collections.defaultdict): The user latent vectors randomly initialized.
-        i_latents (collections.defaultdict): The item latent vectors randomly initialized.
-        u_bias_optimizer (optim.Optimizer): The sequential optimizer used for updating the user bias
-            weights.
-        i_bias_optimizer (optim.Optimizer): The sequential optimizer used for updating the item bias
-            weights.
-        u_latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the user
-            latent weights.
-        i_latent_optimizer (optim.Optimizer): The sequential optimizer used for updating the item
-            latent weights.
+    Parameters
+    ----------
+    n_factors
+        Dimensionality of the factorization or number of latent factors.
+    bias_optimizer
+        The sequential optimizer used for updating the bias weights.
+    latent_optimizer
+        The sequential optimizer used for updating the latent weights.
+    loss
+        The loss function to optimize for.
+    l2_bias
+        Amount of L2 regularization used to push bias weights towards 0.
+    l2_latent
+        Amount of L2 regularization used to push latent weights towards 0.
+    weight_initializer
+        Weights initialization scheme.
+    latent_initializer
+        Latent factors initialization scheme.
+    clip_gradient
+        Clips the absolute value of each gradient value.
+    seed
+        Randomization seed used for reproducibility.
 
-    Example:
+    Attributes
+    ----------
+    global_mean : stats.Mean
+        The target arithmetic mean.
+    u_biases : collections.defaultdict
+        The user bias weights.
+    i_biases : collections.defaultdict
+        The item bias weights.
+    u_latents : collections.defaultdict
+        The user latent vectors randomly initialized.
+    i_latents : collections.defaultdict
+        The item latent vectors randomly initialized.
+    u_bias_optimizer : optim.Optimizer
+        The sequential optimizer used for updating the user bias weights.
+    i_bias_optimizer : optim.Optimizer
+        The sequential optimizer used for updating the item bias weights.
+    u_latent_optimizer : optim.Optimizer
+        The sequential optimizer used for updating the user latent weights.
+    i_latent_optimizer : optim.Optimizer
+        The sequential optimizer used for updating the item latent weights.
 
-        >>> from creme import optim
-        >>> from creme import reco
+    Examples
+    --------
 
-        >>> dataset = (
-        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-        ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
-        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-        ... )
+    >>> from creme import optim
+    >>> from creme import reco
 
-        >>> model = reco.BiasedMF(
-        ...     n_factors=10,
-        ...     bias_optimizer=optim.SGD(0.025),
-        ...     latent_optimizer=optim.SGD(0.025),
-        ...     latent_initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=71)
-        ... )
+    >>> dataset = (
+    ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+    ...     ({'user': 'Alice', 'item': 'Harry Potter'}, 5),
+    ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+    ... )
 
-        >>> for x, y in dataset:
-        ...     _ = model.learn_one(x, y)
+    >>> model = reco.BiasedMF(
+    ...     n_factors=10,
+    ...     bias_optimizer=optim.SGD(0.025),
+    ...     latent_optimizer=optim.SGD(0.025),
+    ...     latent_initializer=optim.initializers.Normal(mu=0., sigma=0.1, seed=71)
+    ... )
 
-        >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-        6.489025
+    >>> for x, y in dataset:
+    ...     _ = model.learn_one(x, y)
 
-    .. note::
-        This model expects a dict input with a `user` and an `item` entries without any type
-        constraint on their values (i.e. can be strings or numbers). Other entries are ignored.
+    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+    6.489025
 
-    References:
-        1. [Paterek, A., 2007, August. Improving regularized singular value decomposition for collaborative filtering. In Proceedings of KDD cup and workshop (Vol. 2007, pp. 5-8)](https://www.cs.uic.edu/~liub/KDD-cup-2007/proceedings/Regular-Paterek.pdf)
-        2. [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
+    References
+    ----------
+    [^1]: [Paterek, A., 2007, August. Improving regularized singular value decomposition for collaborative filtering. In Proceedings of KDD cup and workshop (Vol. 2007, pp. 5-8)](https://www.cs.uic.edu/~liub/KDD-cup-2007/proceedings/Regular-Paterek.pdf)
+    [^2]: [Matrix factorization techniques for recommender systems](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
 
     """
 

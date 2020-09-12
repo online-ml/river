@@ -16,58 +16,62 @@ class Cache:
     apart from reading the data, the cache will save some time because it is using the pickle
     binary protocol. It can thus improve the speed in common cases such as reading from a CSV file.
 
-    Parameters:
-        directory (str): The path where to store the pickled data streams. If not provided, then
-            it will be automatically inferred whenever possible, if not an exception will be
-            raised.
+    Parameters
+    ----------
+    directory
+        The path where to store the pickled data streams. If not provided, then it will be
+        automatically inferred whenever possible, if not an exception will be raised.
 
-    Attributes:
-        keys (set): The set of keys that are being cached.
+    Attributes
+    ----------
+    keys : set
+        The set of keys that are being cached.
 
-    Example:
+    Examples
+    --------
 
-        >>> import time
-        >>> from creme import datasets
-        >>> from creme import stream
+    >>> import time
+    >>> from creme import datasets
+    >>> from creme import stream
 
-        >>> dataset = datasets.Phishing()
-        >>> cache = stream.Cache()
+    >>> dataset = datasets.Phishing()
+    >>> cache = stream.Cache()
 
-        The cache can be used by wrapping it around an iterable. Because this is the first time
-        are iterating over the data, nothing is cached.
+    The cache can be used by wrapping it around an iterable. Because this is the first time
+    are iterating over the data, nothing is cached.
 
-        >>> tic = time.time()
-        >>> for x, y in cache(dataset, key='phishing'):
-        ...     pass
-        >>> toc = time.time()
-        >>> print(toc - tic)  # doctest: +SKIP
-        0.012813
+    >>> tic = time.time()
+    >>> for x, y in cache(dataset, key='phishing'):
+    ...     pass
+    >>> toc = time.time()
+    >>> print(toc - tic)  # doctest: +SKIP
+    0.012813
 
-        If we do the same thing again, we can see the loop is now faster.
+    If we do the same thing again, we can see the loop is now faster.
 
-        >>> tic = time.time()
-        >>> for x, y in cache(dataset, key='phishing'):
-        ...     pass
-        >>> toc = time.time()
-        >>> print(toc - tic)  # doctest: +SKIP
-        0.001927
+    >>> tic = time.time()
+    >>> for x, y in cache(dataset, key='phishing'):
+    ...     pass
+    >>> toc = time.time()
+    >>> print(toc - tic)  # doctest: +SKIP
+    0.001927
 
-        We can see an overview of the cache. The first line indicates the location of the
-        cache.
+    We can see an overview of the cache. The first line indicates the location of the
+    cache.
 
-        >>> cache  # doctest: +SKIP
-        /tmp
-        phishing - 125.2KiB
+    >>> cache  # doctest: +SKIP
+    /tmp
+    phishing - 125.2KiB
 
-        Finally, we can clear the stream from the cache.
+    Finally, we can clear the stream from the cache.
 
-        >>> cache.clear('phishing')
-        >>> cache
-        /tmp
+    >>> cache.clear('phishing')
+    >>> cache
+    /tmp
 
-        There is also a ``clear_all`` method to remove all the items in the cache.
+    There is also a `clear_all` method to remove all the items in the cache.
 
-        >>> cache.clear_all()
+    >>> cache.clear_all()
 
     """
 
@@ -125,17 +129,18 @@ class Cache:
                 yield unpickler.load()
 
     def clear(self, key: str):
-        """Deletes the cached stream associated with the given key.
+        """Delete the cached stream associated with the given key.
 
-        Parameters:
-            key
+        Parameters
+        ----------
+        key
 
         """
         os.remove(self._get_path(key))
         self.keys.remove(key)
 
     def clear_all(self):
-        """Deletes all the cached streams."""
+        """Delete all the cached streams."""
         for key in list(self.keys):
             os.remove(self._get_path(key))
             self.keys.remove(key)

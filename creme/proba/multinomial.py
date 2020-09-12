@@ -10,21 +10,24 @@ __all__ = ['Multinomial']
 class Multinomial(base.DiscreteDistribution):
     """Multinomial distribution for categorical data.
 
-    Parameters:
-        events: An optional list of events that already occurred.
+    Parameters
+    ----------
+    events
+        An optional list of events that already occurred.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import proba
+    >>> from creme import proba
 
-        >>> p = proba.Multinomial(['green'] * 3)
-        >>> p = p.update('red')
+    >>> p = proba.Multinomial(['green'] * 3)
+    >>> p = p.update('red')
 
-        >>> p.pmf('red')
-        0.25
+    >>> p.pmf('red')
+    0.25
 
-        >>> p.update('red').update('red').pmf('green')
-        0.5
+    >>> p.update('red').update('red').pmf('green')
+    0.5
 
     """
 

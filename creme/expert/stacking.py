@@ -9,43 +9,47 @@ __all__ = ['StackingClassifier']
 class StackingClassifier(base.EnsembleMixin, base.Classifier):
     """Stacking for binary classification.
 
-    Parameters:
-        classifiers
-        meta_classifier
-        include_features: Indicates whether or not the original features should be provided
-            to the meta-model along with the predictions from each model.
+    Parameters
+    ----------
+    classifiers
+    meta_classifier
+    include_features
+        Indicates whether or not the original features should be provided to the meta-model along
+        with the predictions from each model.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import compose
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import expert
-        >>> from creme import linear_model as lm
-        >>> from creme import metrics
-        >>> from creme import preprocessing as pp
+    >>> from creme import compose
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import expert
+    >>> from creme import linear_model as lm
+    >>> from creme import metrics
+    >>> from creme import preprocessing as pp
 
-        >>> dataset = datasets.Phishing()
+    >>> dataset = datasets.Phishing()
 
-        >>> model = compose.Pipeline(
-        ...     ('scale', pp.StandardScaler()),
-        ...     ('stack', expert.StackingClassifier(
-        ...         classifiers=[
-        ...             lm.LogisticRegression(),
-        ...             lm.PAClassifier(mode=1, C=0.01),
-        ...             lm.PAClassifier(mode=2, C=0.01)
-        ...         ],
-        ...         meta_classifier=lm.LogisticRegression()
-        ...     ))
-        ... )
+    >>> model = compose.Pipeline(
+    ...     ('scale', pp.StandardScaler()),
+    ...     ('stack', expert.StackingClassifier(
+    ...         classifiers=[
+    ...             lm.LogisticRegression(),
+    ...             lm.PAClassifier(mode=1, C=0.01),
+    ...             lm.PAClassifier(mode=2, C=0.01)
+    ...         ],
+    ...         meta_classifier=lm.LogisticRegression()
+    ...     ))
+    ... )
 
-        >>> metric = metrics.F1()
+    >>> metric = metrics.F1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        F1: 0.881387
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.881387
 
-    References:
-        1. [A Kaggler's Guide to Model Stacking in Practice](http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/)
+    References
+    ----------
+    [^1]: [A Kaggler's Guide to Model Stacking in Practice](http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/)
 
     """
 

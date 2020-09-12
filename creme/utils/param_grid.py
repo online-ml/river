@@ -23,78 +23,81 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
     The syntax for the parameter grid is quite flexible. It allows nesting parameters and can
     therefore be used to generate parameters for a pipeline.
 
-    Parameters:
-        grid: The grid of parameters to expand. The provided dictionary can be nested. The only
-            requirement is that the values at the leaves need to be lists.
+    Parameters
+    ----------
+    grid
+        The grid of parameters to expand. The provided dictionary can be nested. The only
+        requirement is that the values at the leaves need to be lists.
 
-    Example:
+    Examples
+    --------
 
-        As an initial example, we can expand a grid of parameters for a single model.
+    As an initial example, we can expand a grid of parameters for a single model.
 
-        >>> from creme import linear_model
-        >>> from creme import optim
-        >>> from creme import utils
+    >>> from creme import linear_model
+    >>> from creme import optim
+    >>> from creme import utils
 
-        >>> model = linear_model.LinearRegression()
+    >>> model = linear_model.LinearRegression()
 
-        >>> grid = {'optimizer': [optim.SGD(.1), optim.SGD(.01), optim.SGD(.001)]}
-        >>> models = utils.expand_param_grid(model, grid)
-        >>> len(models)
-        3
+    >>> grid = {'optimizer': [optim.SGD(.1), optim.SGD(.01), optim.SGD(.001)]}
+    >>> models = utils.expand_param_grid(model, grid)
+    >>> len(models)
+    3
 
-        >>> models[0]
-        LinearRegression (
-          optimizer=SGD (
-            lr=Constant (
-              learning_rate=0.1
-            )
-          )
-          loss=Squared ()
-          l2=0.
-          intercept=0.
-          intercept_lr=Constant (
-            learning_rate=0.01
-          )
-          clip_gradient=1e+12
-          initializer=Zeros ()
+    >>> models[0]
+    LinearRegression (
+        optimizer=SGD (
+        lr=Constant (
+            learning_rate=0.1
         )
+        )
+        loss=Squared ()
+        l2=0.
+        intercept=0.
+        intercept_lr=Constant (
+        learning_rate=0.01
+        )
+        clip_gradient=1e+12
+        initializer=Zeros ()
+    )
 
-        You can expand parameters for multiple choices like so:
+    You can expand parameters for multiple choices like so:
 
-        >>> grid = {
-        ...     'optimizer': [
-        ...         (optim.SGD, {'lr': [.1, .01, .001]}),
-        ...         (optim.Adam, {'lr': [.1, .01, .01]})
-        ...     ]
-        ... }
-        >>> models = utils.expand_param_grid(model, grid)
-        >>> len(models)
-        6
+    >>> grid = {
+    ...     'optimizer': [
+    ...         (optim.SGD, {'lr': [.1, .01, .001]}),
+    ...         (optim.Adam, {'lr': [.1, .01, .01]})
+    ...     ]
+    ... }
+    >>> models = utils.expand_param_grid(model, grid)
+    >>> len(models)
+    6
 
-        You may specify a grid of parameters for a pipeline via nesting:
+    You may specify a grid of parameters for a pipeline via nesting:
 
-        >>> from creme import feature_extraction
+    >>> from creme import feature_extraction
 
-        >>> model = (
-        ...     feature_extraction.BagOfWords() |
-        ...     linear_model.LinearRegression()
-        ... )
+    >>> model = (
+    ...     feature_extraction.BagOfWords() |
+    ...     linear_model.LinearRegression()
+    ... )
 
-        >>> grid = {
-        ...     'BagOfWords': {
-        ...         'strip_accents': [False, True]
-        ...     },
-        ...     'LinearRegression': {
-        ...         'optimizer': [
-        ...             (optim.SGD, {'lr': [.1, .01]}),
-        ...             (optim.Adam, {'lr': [.1, .01]})
-        ...         ]
-        ...     }
-        ... }
+    >>> grid = {
+    ...     'BagOfWords': {
+    ...         'strip_accents': [False, True]
+    ...     },
+    ...     'LinearRegression': {
+    ...         'optimizer': [
+    ...             (optim.SGD, {'lr': [.1, .01]}),
+    ...             (optim.Adam, {'lr': [.1, .01]})
+    ...         ]
+    ...     }
+    ... }
 
-        >>> models = utils.expand_param_grid(model, grid)
-        >>> len(models)
-        8
+    >>> models = utils.expand_param_grid(model, grid)
+    >>> len(models)
+    8
 
     """
 

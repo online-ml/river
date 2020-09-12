@@ -2,13 +2,11 @@
 The tests performed here confirm that the outputs of the online LDA are exactly the same as those of
 the original with a batch_size of size 1. Coverage is 100%.
 
-References:
-    1. Jordan Boyd-Graber, Ke Zhai, Online Latent Dirichlet Allocation with Infinite Vocabulary.
+References
+----------
+[^1]: Jordan Boyd-Graber, Ke Zhai, Online Latent Dirichlet Allocation with Infinite Vocabulary.
     http://proceedings.mlr.press/v28/zhai13.pdf
-
-    2. Creme's Online LDA reproduces exactly the same results of the original one with a size of
-    batch 1:
-    https://github.com/kzhai/PyInfVoc.
+[^2]: Creme's Online LDA reproduces exactly the same results of the original one with a batch size of 1: https://github.com/kzhai/PyInfVoc.
 """
 import numpy as np
 

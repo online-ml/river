@@ -16,19 +16,20 @@ __all__ = ['SNARIMAX']
 def make_coeffs(d, m):
     """Precomputes the coefficients of the backshift operator.
 
-    Example:
+    Examples
+    --------
 
-        >>> make_coeffs(1, 1)
-        {0: -1}
+    >>> make_coeffs(1, 1)
+    {0: -1}
 
-        >>> make_coeffs(2, 1)
-        {0: -2, 1: 1}
+    >>> make_coeffs(2, 1)
+    {0: -2, 1: 1}
 
-        >>> make_coeffs(3, 1)
-        {0: -3, 1: 3, 2: -1}
+    >>> make_coeffs(3, 1)
+    {0: -3, 1: 3, 2: -1}
 
-        >>> make_coeffs(2, 7)
-        {6: -2, 13: 1}
+    >>> make_coeffs(2, 7)
+    {6: -2, 13: 1}
 
     """
 
@@ -48,19 +49,21 @@ def make_coeffs(d, m):
 class Differencer:
     """A time series differencer.
 
-    Example:
+    Examples
+    --------
 
-        >>> differencer = Differencer(2); differencer.coeffs
-        {0: -2, 1: 1}
+    >>> differencer = Differencer(2); differencer.coeffs
+    {0: -2, 1: 1}
 
-        >>> differencer.diff(7, [3, 1])
-        2
+    >>> differencer.diff(7, [3, 1])
+    2
 
-        >>> differencer.undiff(2, [3, 1])
-        7
+    >>> differencer.undiff(2, [3, 1])
+    7
 
-    References:
-        1. [Stationarity and differencing](https://otexts.com/fpp2/stationarity.html)
+    References
+    ----------
+    [^1]: [Stationarity and differencing](https://otexts.com/fpp2/stationarity.html)
 
     """
 
@@ -77,21 +80,23 @@ class Differencer:
     def __add__(self, other):
         """Composes two differencers together.
 
-        Example:
+        Examples
+        --------
 
-            >>> differencer = Differencer(d=3, m=2) + Differencer(d=3, m=1)
-            >>> for t, c in sorted(differencer.coeffs.items()):
-            ...     print(t, c)
-            0 -3
-            2 8
-            3 -6
-            4 -6
-            5 8
-            7 -3
-            8 1
+        >>> differencer = Differencer(d=3, m=2) + Differencer(d=3, m=1)
+        >>> for t, c in sorted(differencer.coeffs.items()):
+        ...     print(t, c)
+        0 -3
+        2 8
+        3 -6
+        4 -6
+        5 8
+        7 -3
+        8 1
 
-        References:
-            1. [Backshift notation](https://otexts.com/fpp2/backshift.html)
+        References
+        ----------
+        [^1]: [Backshift notation](https://otexts.com/fpp2/backshift.html)
 
         """
         coeffs = collections.Counter()
@@ -110,12 +115,16 @@ class Differencer:
         differencer.coeffs = dict(coeffs)
         return differencer
 
-    def diff(self, y, y_previous):
+    def diff(self, y: float, y_previous: list):
         """Differentiates a value.
 
-            y (float): The value to differentiate.
-            y_previous (list of float): The window of previous values. The first element is assumed
-                to be the most recent value.
+        Parameters
+        ----------
+        y
+            The value to differentiate.
+        y_previous
+            The window of previous values. The first element is assumed to be the most recent
+            value.
 
         """
         return y + sum(
@@ -127,9 +136,11 @@ class Differencer:
     def undiff(self, y: float, y_previous: typing.List[float]):
         """Undifferentiates a value.
 
-            y: The value to differentiate.
-            y_previous: The window of previous values. The first element is assumed to be the most
-                recent value.
+        y
+            The value to differentiate.
+        y_previous
+            The window of previous values. The first element is assumed to be the most recent
+            value.
 
         """
         return y - sum(
@@ -163,116 +174,129 @@ class SNARIMAX(base.Forecaster):
     Classical time series models such as AR, MA, ARMA, and ARIMA can thus be seen as special
     parametrizations of the SNARIMAX model.
 
-    Parameters:
-        p: Order of the autoregressive part. This is the number of past target values that will be
-            included as features.
-        d: Differencing order.
-        q: Order of the moving average part. This is the number of past error terms that will be
-            included as features.
-        m: Season length used for extracting seasonal features. If you believe your data has a
-            seasonal pattern, then set this accordingly. For instance, if the data seems to exhibit
-            a yearly seasonality, and that your data is spaced by month, then you should set this
-            to 12. Note that for this parameter to have any impact you should also set at least one
-            of the `p`, `d`, and `q` parameters.
-        sp: Seasonal order of the autoregressive part. This is the number of past target values
-            that will be included as features.
-        sd: Seasonal differencing order.
-        sq: Seasonal order of the moving average part. This is the number of past error terms that
-            will be included as features.
-        regressor: The online regression model to use. By default, a `preprocessing.StandardScaler`
-            piped with a `linear_model.LinearRegression` will be used.
+    This model is tailored for time series that are homoskedastic. In other words, it might not
+    work well if the variance of the time series varies widely along time.
 
-    Attributes:
-        differencer (Differencer)
-        y_trues (collections.deque): The `p` past target values.
-        errors (collections.deque): The `q` past error values.
+    Parameters
+    ----------
+    p
+        Order of the autoregressive part. This is the number of past target values that will be
+        included as features.
+    d
+        Differencing order.
+    q
+        Order of the moving average part. This is the number of past error terms that will be
+        included as features.
+    m
+        Season length used for extracting seasonal features. If you believe your data has a
+        seasonal pattern, then set this accordingly. For instance, if the data seems to exhibit
+        a yearly seasonality, and that your data is spaced by month, then you should set this
+        to 12. Note that for this parameter to have any impact you should also set at least one
+        of the `p`, `d`, and `q` parameters.
+    sp
+        Seasonal order of the autoregressive part. This is the number of past target values
+        that will be included as features.
+    sd
+        Seasonal differencing order.
+    sq
+        Seasonal order of the moving average part. This is the number of past error terms that
+        will be included as features.
+    regressor
+        The online regression model to use. By default, a `preprocessing.StandardScaler`
+        piped with a `linear_model.LinearRegression` will be used.
 
-    Example:
+    Attributes
+    ----------
+    differencer : Differencer
+    y_trues : collections.deque
+        The `p` past target values.
+    errors : collections.deque
+        The `q` past error values.
 
-        >>> import calendar
-        >>> import datetime as dt
-        >>> from creme import compose
-        >>> from creme import datasets
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
-        >>> from creme import time_series
+    Examples
+    --------
 
-        >>> def get_month_distances(x):
-        ...     return {
-        ...         calendar.month_name[month]: math.exp(-(x['month'].month - month) ** 2)
-        ...         for month in range(1, 13)
-        ...     }
+    >>> import calendar
+    >>> import datetime as dt
+    >>> from creme import compose
+    >>> from creme import datasets
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
+    >>> from creme import time_series
 
-        >>> def get_ordinal_date(x):
-        ...     return {'ordinal_date': x['month'].toordinal()}
+    >>> def get_month_distances(x):
+    ...     return {
+    ...         calendar.month_name[month]: math.exp(-(x['month'].month - month) ** 2)
+    ...         for month in range(1, 13)
+    ...     }
 
-        >>> extract_features = compose.TransformerUnion(
-        ...     get_ordinal_date,
-        ...     get_month_distances
-        ... )
+    >>> def get_ordinal_date(x):
+    ...     return {'ordinal_date': x['month'].toordinal()}
 
-        >>> model = (
-        ...     extract_features |
-        ...     time_series.SNARIMAX(
-        ...         p=0,
-        ...         d=0,
-        ...         q=0,
-        ...         m=12,
-        ...         sp=3,
-        ...         sq=6,
-        ...         regressor=(
-        ...             preprocessing.StandardScaler() |
-        ...             linear_model.LinearRegression(
-        ...                 intercept=110,
-        ...                 optimizer=optim.SGD(0.01),
-        ...                 intercept_lr=0.3
-        ...             )
-        ...         )
-        ...     )
-        ... )
+    >>> extract_features = compose.TransformerUnion(
+    ...     get_ordinal_date,
+    ...     get_month_distances
+    ... )
 
-        >>> metric = metrics.Rolling(metrics.MAE(), 12)
+    >>> model = (
+    ...     extract_features |
+    ...     time_series.SNARIMAX(
+    ...         p=0,
+    ...         d=0,
+    ...         q=0,
+    ...         m=12,
+    ...         sp=3,
+    ...         sq=6,
+    ...         regressor=(
+    ...             preprocessing.StandardScaler() |
+    ...             linear_model.LinearRegression(
+    ...                 intercept=110,
+    ...                 optimizer=optim.SGD(0.01),
+    ...                 intercept_lr=0.3
+    ...             )
+    ...         )
+    ...     )
+    ... )
 
-        >>> for x, y in datasets.AirlinePassengers():
-        ...     y_pred = model.forecast(horizon=1, xs=[x])
-        ...     model = model.learn_one(x, y)
-        ...     metric = metric.update(y, y_pred[0])
+    >>> metric = metrics.Rolling(metrics.MAE(), 12)
 
-        >>> metric
-        Rolling of size 12 MAE: 11.636563
+    >>> for x, y in datasets.AirlinePassengers():
+    ...     y_pred = model.forecast(horizon=1, xs=[x])
+    ...     model = model.learn_one(x, y)
+    ...     metric = metric.update(y, y_pred[0])
 
-        >>> horizon = 12
-        >>> future = [
-        ...     {'month': dt.date(year=1961, month=m, day=1)}
-        ...     for m in range(1, horizon + 1)
-        ... ]
-        >>> forecast = model.forecast(horizon=horizon, xs=future)
-        >>> for x, y_pred in zip(future, forecast):
-        ...     print(x['month'], f'{y_pred:.3f}')
-        1961-01-01 442.554
-        1961-02-01 427.305
-        1961-03-01 471.861
-        1961-04-01 483.978
-        1961-05-01 489.995
-        1961-06-01 544.270
-        1961-07-01 632.882
-        1961-08-01 633.229
-        1961-09-01 531.349
-        1961-10-01 457.258
-        1961-11-01 405.978
-        1961-12-01 439.674
+    >>> metric
+    Rolling of size 12 MAE: 11.636563
 
-    .. tip::
-        This model is tailored for time series that are homoskedastic. In other words, it might not
-        work well if the variance of the time series varies widely along time.
+    >>> horizon = 12
+    >>> future = [
+    ...     {'month': dt.date(year=1961, month=m, day=1)}
+    ...     for m in range(1, horizon + 1)
+    ... ]
+    >>> forecast = model.forecast(horizon=horizon, xs=future)
+    >>> for x, y_pred in zip(future, forecast):
+    ...     print(x['month'], f'{y_pred:.3f}')
+    1961-01-01 442.554
+    1961-02-01 427.305
+    1961-03-01 471.861
+    1961-04-01 483.978
+    1961-05-01 489.995
+    1961-06-01 544.270
+    1961-07-01 632.882
+    1961-08-01 633.229
+    1961-09-01 531.349
+    1961-10-01 457.258
+    1961-11-01 405.978
+    1961-12-01 439.674
 
-    References:
-        1. [Wikipedia page on ARMA](https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model)
-        2. [Wikipedia page on NARX](https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model)
-        3. [ARIMA models](https://otexts.com/fpp2/arima.html)
-        4. [Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184)](https://arxiv.org/pdf/1302.6927.pdf)
+    References
+    ----------
+    [^1]: [Wikipedia page on ARMA](https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model)
+    [^2]: [Wikipedia page on NARX](https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model)
+    [^3]: [ARIMA models](https://otexts.com/fpp2/arima.html)
+    [^4]: [Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184)](https://arxiv.org/pdf/1302.6927.pdf)
 
     """
 
@@ -332,10 +356,13 @@ class SNARIMAX(base.Forecaster):
     def _learn_predict_one(self, y: float, x: dict = None):
         """Updates the model and returns the prediction for the next time step.
 
-        Parameters:
-            x: Optional additional features to learn from. In the litterature these are called the
-                exogenous variables.
-            y: In the litterature this is called the endogenous variable.
+        Parameters
+        ----------
+        x
+            Optional additional features to learn from. In the litterature these are called the
+            exogenous variables.
+        y
+            In the litterature this is called the endogenous variable.
 
         """
 

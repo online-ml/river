@@ -15,34 +15,37 @@ class Mode(base.Univariate):
     The mode is simply the most common value. An approximate mode can be computed by setting the
     number of first unique values to count.
 
-    Parameters:
-        k: Only the first `k` unique values will be included. If `k` equals -1, the exact mode is
-            computed.
+    Parameters
+    ----------
+    k
+        Only the first `k` unique values will be included. If `k` equals -1, the exact mode is
+        computed.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
-        >>> mode = stats.Mode(k=2)
-        >>> for x in X:
-        ...     print(mode.update(x).get())
-        sunny
-        sunny
-        cloudy
-        cloudy
-        cloudy
-        cloudy
+    >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
+    >>> mode = stats.Mode(k=2)
+    >>> for x in X:
+    ...     print(mode.update(x).get())
+    sunny
+    sunny
+    cloudy
+    cloudy
+    cloudy
+    cloudy
 
-        >>> mode = stats.Mode(k=-1)
-        >>> for x in X:
-        ...     print(mode.update(x).get())
-        sunny
-        sunny
-        cloudy
-        cloudy
-        cloudy
-        rainy
+    >>> mode = stats.Mode(k=-1)
+    >>> for x in X:
+    ...     print(mode.update(x).get())
+    sunny
+    sunny
+    cloudy
+    cloudy
+    cloudy
+    rainy
 
     """
 
@@ -68,38 +71,43 @@ class RollingMode(base.RollingUnivariate, utils.Window):
 
     The mode is the most common value.
 
-    Parameters:
-        window_size: Size of the rolling window.
+    Parameters
+    ----------
+    window_size
+        Size of the rolling window.
 
-    Attributes:
-        counts (collections.defaultdict): Value counts.
+    Attributes
+    ----------
+    counts : collections.defaultdict
+        Value counts.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']
-        >>> rolling_mode = stats.RollingMode(window_size=2)
-        >>> for x in X:
-        ...     print(rolling_mode.update(x).get())
-        sunny
-        sunny
-        sunny
-        sunny
-        rainy
-        rainy
-        rainy
+    >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']
+    >>> rolling_mode = stats.RollingMode(window_size=2)
+    >>> for x in X:
+    ...     print(rolling_mode.update(x).get())
+    sunny
+    sunny
+    sunny
+    sunny
+    rainy
+    rainy
+    rainy
 
-        >>> rolling_mode = stats.RollingMode(window_size=5)
-        >>> for x in X:
-        ...     print(rolling_mode.update(x).get())
-        sunny
-        sunny
-        sunny
-        sunny
-        sunny
-        rainy
-        rainy
+    >>> rolling_mode = stats.RollingMode(window_size=5)
+    >>> for x in X:
+    ...     print(rolling_mode.update(x).get())
+    sunny
+    sunny
+    sunny
+    sunny
+    sunny
+    rainy
+    rainy
 
     """
 

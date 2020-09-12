@@ -71,6 +71,7 @@ class Transformer(base.Estimator):
 
 
 class SupervisedTransformer(Transformer):
+    """A supervised transformer."""
 
     @property
     def _supervised(self):

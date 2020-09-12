@@ -6,26 +6,30 @@ from . import summing
 class Cov(base.Bivariate):
     """Covariance.
 
-    Parameters:
-        ddof: Delta Degrees of Freedom.
+    Parameters
+    ----------
+    ddof
+        Delta Degrees of Freedom.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> x = [-2.1,  -1,  4.3]
-        >>> y = [   3, 1.1, 0.12]
+    >>> x = [-2.1,  -1,  4.3]
+    >>> y = [   3, 1.1, 0.12]
 
-        >>> cov = stats.Cov()
+    >>> cov = stats.Cov()
 
-        >>> for xi, yi in zip(x, y):
-        ...     print(cov.update(xi, yi).get())
-        0.0
-        -1.044999
-        -4.286
+    >>> for xi, yi in zip(x, y):
+    ...     print(cov.update(xi, yi).get())
+    0.0
+    -1.044999
+    -4.286
 
-    References:
-        1. [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+    References
+    ----------
+    [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
 
     """
 
@@ -50,48 +54,52 @@ class Cov(base.Bivariate):
 class RollingCov(base.Bivariate):
     """Rolling covariance.
 
-    Parameters:
-        window_size: Size of the window over which to compute the covariance.
-        ddof: Delta Degrees of Freedom.
+    Parameters
+    ----------
+    window_size
+        Size of the window over which to compute the covariance.
+    ddof
+        Delta Degrees of Freedom.
 
     Here is the derivation, where $C$ denotes the covariance and $d$ is the amount of degrees of
     freedom:
 
-    $$C = \frac{1}{n - d} \sum_{i=1}^n (x_i - \bar{x}) (y_i - \bar{y})$$
+    $$C = \\frac{1}{n - d} \\sum_{i=1}^n (x_i - \\bar{x}) (y_i - \\bar{y})$$
 
-    $$C = \frac{1}{n - d} \sum_{i=1}^n x_i y_i - x_i \bar{y} - \bar{x} y_i + \bar{x} \bar{y}$$
+    $$C = \\frac{1}{n - d} \\sum_{i=1}^n x_i y_i - x_i \\bar{y} - \\bar{x} y_i + \\bar{x} \\bar{y}$$
 
-    $$C = \frac{1}{n - d} (\sum_{i=1}^n x_i y_i - \bar{y} \sum_{i=1}^n x_i - \bar{x} \sum_{i=1}^n y_i + \sum_{i=1}^n \bar{x}\bar{y})$$
+    $$C = \\frac{1}{n - d} (\\sum_{i=1}^n x_i y_i - \\bar{y} \\sum_{i=1}^n x_i - \\bar{x} \\sum_{i=1}^n y_i + \\sum_{i=1}^n \\bar{x}\\bar{y})$$
 
-    $$C = \frac{1}{n - d} (\sum_{i=1}^n x_i y_i - \bar{y} n \bar{x} - \bar{x} n \bar{y} + n \bar{x}\bar{y})$$
+    $$C = \\frac{1}{n - d} (\\sum_{i=1}^n x_i y_i - \\bar{y} n \\bar{x} - \\bar{x} n \\bar{y} + n \\bar{x}\\bar{y})$$
 
-    $$C = \frac{1}{n - d} (\sum_{i=1}^n x_i y_i - n \bar{x} \bar{y})$$
+    $$C = \\frac{1}{n - d} (\\sum_{i=1}^n x_i y_i - n \\bar{x} \\bar{y})$$
 
-    $$C = \frac{1}{n - d} (\sum_{i=1}^n x_i y_i - \frac{\sum_{i=1}^n x_i \sum_{i=1}^n y_i}{n})$$
+    $$C = \\frac{1}{n - d} (\\sum_{i=1}^n x_i y_i - \\frac{\\sum_{i=1}^n x_i \\sum_{i=1}^n y_i}{n})$$
 
     The derivation is straighforward and somewhat trivial, but is a nice example of reformulating
     an equation so that it can be updated online. Note that we cannot apply this derivation to the
     non-rolling version of covariance because that would result in sums that grow infinitely, which
     can potentially cause numeric overflow.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> x = [-2.1,  -1, 4.3, 1, -2.1,  -1, 4.3]
-        >>> y = [   3, 1.1, .12, 1,    3, 1.1, .12]
+    >>> x = [-2.1,  -1, 4.3, 1, -2.1,  -1, 4.3]
+    >>> y = [   3, 1.1, .12, 1,    3, 1.1, .12]
 
-        >>> rcov = stats.RollingCov(3)
+    >>> rcov = stats.RollingCov(3)
 
-        >>> for xi, yi in zip(x, y):
-        ...     print(rcov.update(xi, yi).get())
-        0.0
-        -1.045
-        -4.286
-        -1.382
-        -4.589
-        -1.415
-        -4.286
+    >>> for xi, yi in zip(x, y):
+    ...     print(rcov.update(xi, yi).get())
+    0.0
+    -1.045
+    -4.286
+    -1.382
+    -4.589
+    -1.415
+    -4.286
 
     """
 

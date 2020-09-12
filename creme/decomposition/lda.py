@@ -1,5 +1,6 @@
 from collections import defaultdict
 import functools
+import typing
 
 import numpy as np
 from scipy import special
@@ -24,68 +25,88 @@ class LDA(base.Transformer):
     This class takes as input token counts. Therefore, it requires you to tokenize beforehand. You
     can do so by using a `feature_extraction.BagOfWords` instance, as shown in the example below.
 
-    Parameters:
-        n_components: Number of topics of the latent Drichlet allocation.
-        number_of_documents: Estimated number of documents.
-        alpha_theta: Hyper-parameter of the Dirichlet distribution of topics.
-        alpha_beta: Hyper-parameter of the Dirichlet process of distribution over words.
-        tau: Learning inertia to prevent premature convergence.
-        kappa: The learning rate kappa controls how quickly new parameters estimates
-            replace the old ones. kappa ∈ (0.5, 1] is required for convergence.
-        vocab_prune_interval: Interval at which to refresh the words topics distribution.
-        number_of_samples: Number of iteration to computes documents topics distribution.
-        burn_in_sweeps: Number of iteration necessaries while analyzing a document
-            before updating document topics distribution.
-        maximum_size_vocabulary: Maximum size of the stored vocabulary.
-        seed: Random number seed used for reproducibility.
+    Parameters
+    ----------
+    n_components
+        Number of topics of the latent Drichlet allocation.
+    number_of_documents
+        Estimated number of documents.
+    alpha_theta
+        Hyper-parameter of the Dirichlet distribution of topics.
+    alpha_beta
+        Hyper-parameter of the Dirichlet process of distribution over words.
+    tau
+        Learning inertia to prevent premature convergence.
+    kappa
+        The learning rate kappa controls how quickly new parameters estimates replace the old ones.
+        kappa ∈ (0.5, 1] is required for convergence.
+    vocab_prune_interval
+        Interval at which to refresh the words topics distribution.
+    number_of_samples
+        Number of iteration to computes documents topics distribution.
+    burn_in_sweeps
+        Number of iteration necessaries while analyzing a document before updating document topics
+        distribution.
+    maximum_size_vocabulary
+        Maximum size of the stored vocabulary.
+    seed
+        Random number seed used for reproducibility.
 
-    Attributes:
-        counter (int): The current number of observed documents.
-        truncation_size_prime (int): Number of distincts words stored in the vocabulary. Updated
-            before processing a document.
-        truncation_size (int) : Number of distincts words stored in the vocabulary. Updated after
-            processing a document.
-        word_to_index (dict): Words as keys and indexes as values.
-        index_to_word (dict): Indexes as keys and words as values.
-        nu_1 (dict): Weights of the words. Component of the variational inference.
-        nu_2 (dict): Weights of the words. Component of the variational inference.
+    Attributes
+    ----------
+    counter : int
+        The current number of observed documents.
+    truncation_size_prime : int
+        Number of distincts words stored in the vocabulary. Updated before processing a document.
+    truncation_size : int
+        Number of distincts words stored in the vocabulary. Updated after processing a document.
+    word_to_index : dict
+        Words as keys and indexes as values.
+    index_to_word : dict
+        Indexes as keys and words as values.
+    nu_1 : dict
+        Weights of the words. Component of the variational inference.
+    nu_2 : dict
+        Weights of the words. Component of the variational inference.
 
-    Example:
+    Examples
+    --------
 
         >>> from creme import compose
-        >>> from creme import decomposition
-        >>> from creme import feature_extraction
+    >>> from creme import decomposition
+    >>> from creme import feature_extraction
 
-        >>> X = [
-        ...    'weather cold',
-        ...    'weather hot dry',
-        ...    'weather cold rainy',
-        ...    'weather hot',
-        ...    'weather cold humid',
-        ... ]
+    >>> X = [
+    ...    'weather cold',
+    ...    'weather hot dry',
+    ...    'weather cold rainy',
+    ...    'weather hot',
+    ...    'weather cold humid',
+    ... ]
 
-        >>> lda = compose.Pipeline(
-        ...     feature_extraction.BagOfWords(),
-        ...     decomposition.LDA(
-        ...         n_components=2,
-        ...         number_of_documents=60,
-        ...         seed=42
-        ...     )
-        ... )
+    >>> lda = compose.Pipeline(
+    ...     feature_extraction.BagOfWords(),
+    ...     decomposition.LDA(
+    ...         n_components=2,
+    ...         number_of_documents=60,
+    ...         seed=42
+    ...     )
+    ... )
 
-        >>> for x in X:
-        ...     lda = lda.learn_one(x)
-        ...     topics = lda.transform_one(x)
-        ...     print(topics)
-        {0: 2.5, 1: 0.5}
-        {0: 2.5, 1: 1.5}
-        {0: 1.5, 1: 2.5}
-        {0: 1.5, 1: 1.5}
-        {0: 0.5, 1: 3.5}
+    >>> for x in X:
+    ...     lda = lda.learn_one(x)
+    ...     topics = lda.transform_one(x)
+    ...     print(topics)
+    {0: 2.5, 1: 0.5}
+    {0: 2.5, 1: 1.5}
+    {0: 1.5, 1: 2.5}
+    {0: 1.5, 1: 1.5}
+    {0: 0.5, 1: 3.5}
 
-    References:
-        1. [Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569).](http://proceedings.mlr.press/v28/zhai13.pdf)
-        2. [PyInfVoc on GitHub](https://github.com/kzhai/PyInfVoc)
+    References
+    ----------
+    [^1]: [Zhai, K. and Boyd-Graber, J., 2013, February. Online latent Dirichlet allocation with infinite vocabulary. In International Conference on Machine Learning (pp. 561-569).](http://proceedings.mlr.press/v28/zhai13.pdf)
+    [^2]: [PyInfVoc on GitHub](https://github.com/kzhai/PyInfVoc)
 
     """
 
@@ -125,11 +146,13 @@ class LDA(base.Transformer):
     def learn_transform_one(self, x: dict) -> dict:
         """Equivalent to `lda.learn_one(x).transform_one(x)`s, but faster.
 
-        Parameters:
-            x: A document.
+        Parameters
+        ----------
+        x: A document.
 
         Returns
-            Component attributions for the input document.
+        -------
+        Component attributions for the input document.
 
         """
 
@@ -178,16 +201,16 @@ class LDA(base.Transformer):
 
         return dict(enumerate(components))
 
-    def _update_indexes(self, word_list):
+    def _update_indexes(self, word_list: list):
         """
         Adds the words of the document to the index if they are not part of the current vocabulary.
         Updates of the number of distinct words seen.
 
-        Args:
-            word_list (list): Content of the document as a list of words.
+        Parameters
+        ----------
+        word_list
+            Content of the document as a list of words.
 
-        Returns:
-            None
         """
         for word in word_list:
             if word not in self.word_to_index:
@@ -197,18 +220,25 @@ class LDA(base.Transformer):
                 self.truncation_size_prime += 1
 
     @classmethod
-    def _compute_weights(cls, n_components, nu_1, nu_2):
-        """
-        Calculates the vocabulary weighting according to the word distribution present in the
-        vocabulary. The Psi function is the logarithmic derivative of the gamma function.
+    def _compute_weights(cls, n_components: int, nu_1: dict, nu_2: dict) -> typing.Tuple[dict, dict]:
+        """Calculates the vocabulary weighting according to the word distribution present in the
+        vocabulary.
 
-        Args:
-            n_components (int): Number of topics.
-            nu_1 (dict): Weights of the words of the vocabulary.
-            nu_2 (dict): Weights of the words of the vocabulary.
+        The Psi function is the logarithmic derivative of the gamma function.
 
-        Returns:
-            Tuple[dict, dict]: Weights of the words of the current vocabulary.
+        Parameters
+        ----------
+        n_components
+            Number of topics.
+        nu_1
+            Weights of the words of the vocabulary.
+        nu_2
+            Weights of the words of the vocabulary.
+
+        Returns
+        -------
+        Weights of the words of the current vocabulary.
+
         """
         exp_weights = {}
         exp_oov_weights = {}
@@ -235,14 +265,13 @@ class LDA(base.Transformer):
         return exp_weights, exp_oov_weights
 
     def _update_weights(self, statistics):
-        """
-        Learns documents and word representations. Calculates the variational approximation.
+        """Learn documents and word representations. Calculate the variational approximation.
 
-        Args:
-            statistics (defaultdict): Weights associated to the words.
+        Parameters
+        ----------
+        statistics
+            Weights associated to the words.
 
-        Returns:
-            None
         """
         reverse_cumulated_phi = {}
 
@@ -280,16 +309,18 @@ class LDA(base.Transformer):
 
         self.truncation_size = self.truncation_size_prime
 
-    def _compute_statistics_components(self, words_indexes_list):
-        """
-        Extract latent variables from the document and words.
+    def _compute_statistics_components(self, words_indexes_list: list) -> typing.Tuple[dict, dict]:
+        """Extract latent variables from the document and words.
 
-        Args:
-            words_indexes_list (list): Ids of the words of the input document.
+        Parameters
+        ----------
+        words_indexes_list
+            Ids of the words of the input document.
 
-        Returns:
-            Tuple[dict, dict]: Computed statistics over the words. Document reprensetation across
-            topics.
+        Returns
+        -------
+        Computed statistics over the words. Document reprensetation across topics.
+
         """
         statistics = defaultdict(lambda: np.zeros(self.truncation_size_prime))
 
@@ -350,15 +381,7 @@ class LDA(base.Transformer):
         return statistics, document_topic_distribution
 
     def _prune_vocabulary(self):
-        """
-        Reduces the size of the index exceeds the maximum size.
-
-        Args:
-            None
-
-        Returns:
-            None
-        """
+        """Reduce the size of the index exceeds the maximum size."""
         if self.nu_1[0].shape[0] > self.maximum_size_vocabulary:
 
             for topic in range(self.n_components):

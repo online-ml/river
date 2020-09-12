@@ -34,39 +34,45 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
     Therefore, a random procedure generates random codes on the fly whenever a previously unseed
     label appears.
 
-    Parameters:
-        classifier:  A binary classifier, although a multi-class classifier will work too.
-        code_size: The code size, which dictates how many copies of the provided classifiers to
-            train. Must be strictly positive.
-        seed: A random seed number that can be set for reproducibility.
+    Parameters
+    ----------
+    classifier
+        A binary classifier, although a multi-class classifier will work too.
+    code_size
+        The code size, which dictates how many copies of the provided classifiers to train. Must be
+        strictly positive.
+    seed
+        A random seed number that can be set for reproducibility.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import multiclass
-        >>> from creme import preprocessing
+    >>> from creme import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import multiclass
+    >>> from creme import preprocessing
 
-        >>> dataset = datasets.ImageSegments()
+    >>> dataset = datasets.ImageSegments()
 
-        >>> scaler = preprocessing.StandardScaler()
-        >>> ooc = OutputCodeClassifier(
-        ...     classifier=linear_model.LogisticRegression(),
-        ...     code_size=10,
-        ...     seed=24
-        ... )
-        >>> model = scaler | ooc
+    >>> scaler = preprocessing.StandardScaler()
+    >>> ooc = OutputCodeClassifier(
+    ...     classifier=linear_model.LogisticRegression(),
+    ...     code_size=10,
+    ...     seed=24
+    ... )
+    >>> model = scaler | ooc
 
-        >>> metric = metrics.MacroF1()
+    >>> metric = metrics.MacroF1()
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        MacroF1: 0.797119
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MacroF1: 0.797119
 
-    References:
-        1. [Dietterich, T.G. and Bakiri, G., 1994. Solving multiclass learning problems via error-correcting output codes. Journal of artificial intelligence research, 2, pp.263-286.](https://arxiv.org/pdf/cs/9501101.pdf)
-        2. [Allwein, E.L., Schapire, R.E. and Singer, Y., 2000. Reducing multiclass to binary: A unifying approach for margin classifiers. Journal of machine learning research, 1(Dec), pp.113-141.](https://www.cs.princeton.edu/~schapire/talks/ecoc-icml10.pdf)
+    References
+    ----------
+    [^1]: [Dietterich, T.G. and Bakiri, G., 1994. Solving multiclass learning problems via error-correcting output codes. Journal of artificial intelligence research, 2, pp.263-286.](https://arxiv.org/pdf/cs/9501101.pdf)
+    [^2]: [Allwein, E.L., Schapire, R.E. and Singer, Y., 2000. Reducing multiclass to binary: A unifying approach for margin classifiers. Journal of machine learning research, 1(Dec), pp.113-141.](https://www.cs.princeton.edu/~schapire/talks/ecoc-icml10.pdf)
 
     """
 

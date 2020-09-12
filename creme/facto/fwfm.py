@@ -124,68 +124,90 @@ class FwFMRegressor(FwFM, base.Regressor):
     Where $f_j$ and $f_{j'}$ are $j$ and $j'$ fields, respectively, and $\\mathbf{v}_j$ and
     $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
 
-    Parameters:
-        n_factors: Dimensionality of the factorization or number of latent factors.
-        weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
-            the intercept is handled separately.
-        latent_optimizer: The sequential optimizer used for updating the latent factors.
-        int_weight_optimizer: The sequential optimizer used for updating the field pairs
-            interaction weights.
-        loss: The loss function to optimize for.
-        sample_normalization: Whether to divide each element of `x` by `x`'s L2-norm.
-        l1_weight: Amount of L1 regularization used to push weights towards 0.
-        l2_weight: Amount of L2 regularization used to push weights towards 0.
-        l1_latent: Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
-        intercept: Initial intercept value.
-        intercept_lr: Learning rate scheduler used for updating the intercept. An instance of
-            `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
-            if this is set to 0.
-        weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
-        latent_initializer: Latent factors initialization scheme. Defaults to
-            `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
-        clip_gradient: Clips the absolute value of each gradient value.
-        seed: Randomization seed used for reproducibility.
+    For more efficiency, this model automatically one-hot encodes strings features considering them
+    as categorical variables. Field names are inferred from feature names by taking everything
+    before the first underscore: `feature_name.split('_')[0]`.
 
-    Attributes:
-        weights: The current weights assigned to the features.
-        latents: The current latent weights assigned to the features.
-        interaction_weights: The current interaction strengths of field pairs.
+    Parameters
+    ----------
+    n_factors
+        Dimensionality of the factorization or number of latent factors.
+    weight_optimizer
+        The sequential optimizer used for updating the feature weights. Note that the intercept is
+        handled separately.
+    latent_optimizer
+        The sequential optimizer used for updating the latent factors.
+    int_weight_optimizer
+        The sequential optimizer used for updating the field pairs interaction weights.
+    loss
+        The loss function to optimize for.
+    sample_normalization
+        Whether to divide each element of `x` by `x`'s L2-norm.
+    l1_weight
+        Amount of L1 regularization used to push weights towards 0.
+    l2_weight
+        Amount of L2 regularization used to push weights towards 0.
+    l1_latent
+        Amount of L1 regularization used to push latent weights towards 0.
+    l2_latent
+        Amount of L2 regularization used to push latent weights towards 0.
+    intercept
+        Initial intercept value.
+    intercept_lr
+        Learning rate scheduler used for updating the intercept. An instance of
+        `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
+        if this is set to 0.
+    weight_initializer
+        Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
+    latent_initializer
+        Latent factors initialization scheme. Defaults to
+        `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
+    clip_gradient
+        Clips the absolute value of each gradient value.
+    seed
+        Randomization seed used for reproducibility.
 
-    Example:
+    Attributes
+    ----------
+    weights
+        The current weights assigned to the features.
+    latents
+        The current latent weights assigned to the features.
+    interaction_weights
+        The current interaction strengths of field pairs.
 
-        >>> from creme import facto
+    Examples
+    --------
 
-        >>> dataset = (
-        ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
-        ...     ({'user': 'Alice', 'item': 'Harry Potter '}, 5),
-        ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
-        ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
-        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
-        ... )
+    >>> from creme import facto
 
-        >>> model = facto.FwFMRegressor(
-        ...     n_factors=10,
-        ...     intercept=5,
-        ...     seed=42,
-        ... )
+    >>> dataset = (
+    ...     ({'user': 'Alice', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Alice', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Alice', 'item': 'Notting Hill'}, 2),
+    ...     ({'user': 'Alice', 'item': 'Harry Potter '}, 5),
+    ...     ({'user': 'Bob', 'item': 'Superman'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Terminator'}, 9),
+    ...     ({'user': 'Bob', 'item': 'Star Wars'}, 8),
+    ...     ({'user': 'Bob', 'item': 'Notting Hill'}, 2)
+    ... )
 
-        >>> for x, y in dataset:
-        ...     model = model.learn_one(x, y)
+    >>> model = facto.FwFMRegressor(
+    ...     n_factors=10,
+    ...     intercept=5,
+    ...     seed=42,
+    ... )
 
-        >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
-        5.236501
+    >>> for x, y in dataset:
+    ...     model = model.learn_one(x, y)
 
-    .. note::
-        - For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.
-        - Field names are inferred from feature names by taking everything before the first underscore: `feature_name.split('_')[0]`.
+    >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
+    5.236501
 
-    References:
-        1. [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://arxiv.org/abs/1806.03514)
+    References
+    ----------
+    [^1]: [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://arxiv.org/abs/1806.03514)
 
     """
 
@@ -234,67 +256,89 @@ class FwFMClassifier(FwFM, base.Classifier):
     Where $f_j$ and $f_{j'}$ are $j$ and $j'$ fields, respectively, and $\\mathbf{v}_j$ and
     $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
 
-    Parameters:
-        n_factors: Dimensionality of the factorization or number of latent factors.
-        weight_optimizer: The sequential optimizer used for updating the feature weights. Note that
-            the intercept is handled separately.
-        latent_optimizer: The sequential optimizer used for updating the latent factors.
-        int_weight_optimizer: The sequential optimizer used for updating the field pairs
-            interaction weights.
-        loss: The loss function to optimize for.
-        sample_normalization: Whether to divide each element of `x` by `x`'s L2-norm.
-        l1_weight: Amount of L1 regularization used to push weights towards 0.
-        l2_weight: Amount of L2 regularization used to push weights towards 0.
-        l1_latent: Amount of L1 regularization used to push latent weights towards 0.
-        l2_latent: Amount of L2 regularization used to push latent weights towards 0.
-        intercept: Initial intercept value.
-        intercept_lr: Learning rate scheduler used for updating the intercept. An instance of
-            `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
-            if this is set to 0.
-        weight_initializer: Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
-        latent_initializer: Latent factors initialization scheme. Defaults to
-            `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
-        clip_gradient: Clips the absolute value of each gradient value.
-        seed: Randomization seed used for reproducibility.
+    For more efficiency, this model automatically one-hot encodes strings features considering them
+    as categorical variables. Field names are inferred from feature names by taking everything
+    before the first underscore: `feature_name.split('_')[0]`.
 
-    Attributes:
-        weights: The current weights assigned to the features.
-        latents: The current latent weights assigned to the features.
-        interaction_weights: The current interaction strengths of field pairs.
+    Parameters
+    ----------
+    n_factors
+        Dimensionality of the factorization or number of latent factors.
+    weight_optimizer
+        The sequential optimizer used for updating the feature weights. Note that the intercept is
+        handled separately.
+    latent_optimizer
+        The sequential optimizer used for updating the latent factors.
+    int_weight_optimizer
+        The sequential optimizer used for updating the field pairs interaction weights.
+    loss
+        The loss function to optimize for.
+    sample_normalization
+        Whether to divide each element of `x` by `x`'s L2-norm.
+    l1_weight
+        Amount of L1 regularization used to push weights towards 0.
+    l2_weight
+        Amount of L2 regularization used to push weights towards 0.
+    l1_latent
+        Amount of L1 regularization used to push latent weights towards 0.
+    l2_latent
+        Amount of L2 regularization used to push latent weights towards 0.
+    intercept
+        Initial intercept value.
+    intercept_lr
+        Learning rate scheduler used for updating the intercept. An instance of
+        `optim.schedulers.Constant` is used if a `float` is passed. No intercept will be used
+        if this is set to 0.
+    weight_initializer
+        Weights initialization scheme. Defaults to `optim.initializers.Zeros()`.
+    latent_initializer
+        Latent factors initialization scheme. Defaults to
+        `optim.initializers.Normal(mu=.0, sigma=.1, random_state=self.random_state)`.
+    clip_gradient
+        Clips the absolute value of each gradient value.
+    seed
+        Randomization seed used for reproducibility.
 
-    Example:
+    Attributes
+    ----------
+    weights
+        The current weights assigned to the features.
+    latents
+        The current latent weights assigned to the features.
+    interaction_weights
+        The current interaction strengths of field pairs.
 
-        >>> from creme import facto
+    Examples
+    --------
 
-        >>> dataset = (
-        ...     ({'user': 'Alice', 'item': 'Superman'}, True),
-        ...     ({'user': 'Alice', 'item': 'Terminator'}, True),
-        ...     ({'user': 'Alice', 'item': 'Star Wars'}, True),
-        ...     ({'user': 'Alice', 'item': 'Notting Hill'}, False),
-        ...     ({'user': 'Alice', 'item': 'Harry Potter '}, True),
-        ...     ({'user': 'Bob', 'item': 'Superman'}, True),
-        ...     ({'user': 'Bob', 'item': 'Terminator'}, True),
-        ...     ({'user': 'Bob', 'item': 'Star Wars'}, True),
-        ...     ({'user': 'Bob', 'item': 'Notting Hill'}, False)
-        ... )
+    >>> from creme import facto
 
-        >>> model = facto.FwFMClassifier(
-        ...     n_factors=10,
-        ...     seed=42,
-        ... )
+    >>> dataset = (
+    ...     ({'user': 'Alice', 'item': 'Superman'}, True),
+    ...     ({'user': 'Alice', 'item': 'Terminator'}, True),
+    ...     ({'user': 'Alice', 'item': 'Star Wars'}, True),
+    ...     ({'user': 'Alice', 'item': 'Notting Hill'}, False),
+    ...     ({'user': 'Alice', 'item': 'Harry Potter '}, True),
+    ...     ({'user': 'Bob', 'item': 'Superman'}, True),
+    ...     ({'user': 'Bob', 'item': 'Terminator'}, True),
+    ...     ({'user': 'Bob', 'item': 'Star Wars'}, True),
+    ...     ({'user': 'Bob', 'item': 'Notting Hill'}, False)
+    ... )
 
-        >>> for x, y in dataset:
-        ...     model = model.learn_one(x, y)
+    >>> model = facto.FwFMClassifier(
+    ...     n_factors=10,
+    ...     seed=42,
+    ... )
 
-        >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
-        True
+    >>> for x, y in dataset:
+    ...     model = model.learn_one(x, y)
 
-    .. note::
-        - For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.
-        - Field names are inferred from feature names by taking everything before the first underscore: `feature_name.split('_')[0]`.
+    >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
+    True
 
-    References:
-        1. [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://arxiv.org/abs/1806.03514)
+    References
+    ----------
+    [^1]: [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://arxiv.org/abs/1806.03514)
 
     """
 

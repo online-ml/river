@@ -25,98 +25,107 @@ class Agg(base.Transformer):
     Note that you can use a `compose.TransformerUnion` to extract many aggregate statistics in a
     concise manner.
 
-    Parameters:
-        on: The feature on which to compute the aggregate statistic.
-        by: The feature by which to group the data.
-        how: The statistic to compute.
+    Parameters
+    ----------
+    on
+        The feature on which to compute the aggregate statistic.
+    by
+        The feature by which to group the data.
+    how
+        The statistic to compute.
 
-    Attributes:
-        groups (collections.defaultdict): Maps group keys to univariate statistics.
-        feature_name (str): The name of the feature used in the output.
+    Attributes
+    ----------
+    groups : collections.defaultdict
+        Maps group keys to univariate statistics.
+    feature_name : str
+        The name of the feature used in the output.
 
-    Example:
+    Examples
+    --------
 
-        Consider the following dataset:
+    Consider the following dataset:
 
-        >>> X = [
-        ...     {'country': 'France', 'place': 'Taco Bell', 'revenue': 42},
-        ...     {'country': 'Sweden', 'place': 'Burger King', 'revenue': 16},
-        ...     {'country': 'France', 'place': 'Burger King', 'revenue': 24},
-        ...     {'country': 'Sweden', 'place': 'Taco Bell', 'revenue': 58},
-        ...     {'country': 'Sweden', 'place': 'Burger King', 'revenue': 20},
-        ...     {'country': 'France', 'place': 'Taco Bell', 'revenue': 50},
-        ...     {'country': 'France', 'place': 'Burger King', 'revenue': 10},
-        ...     {'country': 'Sweden', 'place': 'Taco Bell', 'revenue': 80}
-        ... ]
+    >>> X = [
+    ...     {'country': 'France', 'place': 'Taco Bell', 'revenue': 42},
+    ...     {'country': 'Sweden', 'place': 'Burger King', 'revenue': 16},
+    ...     {'country': 'France', 'place': 'Burger King', 'revenue': 24},
+    ...     {'country': 'Sweden', 'place': 'Taco Bell', 'revenue': 58},
+    ...     {'country': 'Sweden', 'place': 'Burger King', 'revenue': 20},
+    ...     {'country': 'France', 'place': 'Taco Bell', 'revenue': 50},
+    ...     {'country': 'France', 'place': 'Burger King', 'revenue': 10},
+    ...     {'country': 'Sweden', 'place': 'Taco Bell', 'revenue': 80}
+    ... ]
 
-        As an example, we can calculate the average (how) revenue (on) for each place (by):
+    As an example, we can calculate the average (how) revenue (on) for each place (by):
 
-        >>> from creme import feature_extraction as fx
-        >>> from creme import stats
+    >>> from creme import feature_extraction as fx
+    >>> from creme import stats
 
-        >>> agg = fx.Agg(
-        ...     on='revenue',
-        ...     by='place',
-        ...     how=stats.Mean()
-        ... )
+    >>> agg = fx.Agg(
+    ...     on='revenue',
+    ...     by='place',
+    ...     how=stats.Mean()
+    ... )
 
-        >>> for x in X:
-        ...     agg = agg.learn_one(x)
-        ...     print(agg.transform_one(x))
-        {'revenue_mean_by_place': 42.0}
-        {'revenue_mean_by_place': 16.0}
-        {'revenue_mean_by_place': 20.0}
-        {'revenue_mean_by_place': 50.0}
-        {'revenue_mean_by_place': 20.0}
-        {'revenue_mean_by_place': 50.0}
-        {'revenue_mean_by_place': 17.5}
-        {'revenue_mean_by_place': 57.5}
+    >>> for x in X:
+    ...     agg = agg.learn_one(x)
+    ...     print(agg.transform_one(x))
+    {'revenue_mean_by_place': 42.0}
+    {'revenue_mean_by_place': 16.0}
+    {'revenue_mean_by_place': 20.0}
+    {'revenue_mean_by_place': 50.0}
+    {'revenue_mean_by_place': 20.0}
+    {'revenue_mean_by_place': 50.0}
+    {'revenue_mean_by_place': 17.5}
+    {'revenue_mean_by_place': 57.5}
 
-        You can compute an aggregate over multiple keys by passing a tuple to the `by` argument.
-        For instance, we can compute the maximum (how) revenue (on) per place as well as per
-        day (by):
+    You can compute an aggregate over multiple keys by passing a tuple to the `by` argument.
+    For instance, we can compute the maximum (how) revenue (on) per place as well as per
+    day (by):
 
-        >>> agg = fx.Agg(
-        ...     on='revenue',
-        ...     by=['place', 'country'],
-        ...     how=stats.Max()
-        ... )
+    >>> agg = fx.Agg(
+    ...     on='revenue',
+    ...     by=['place', 'country'],
+    ...     how=stats.Max()
+    ... )
 
-        >>> for x in X:
-        ...     agg = agg.learn_one(x)
-        ...     print(agg.transform_one(x))
-        {'revenue_max_by_place_and_country': 42}
-        {'revenue_max_by_place_and_country': 16}
-        {'revenue_max_by_place_and_country': 24}
-        {'revenue_max_by_place_and_country': 58}
-        {'revenue_max_by_place_and_country': 20}
-        {'revenue_max_by_place_and_country': 50}
-        {'revenue_max_by_place_and_country': 24}
-        {'revenue_max_by_place_and_country': 80}
+    >>> for x in X:
+    ...     agg = agg.learn_one(x)
+    ...     print(agg.transform_one(x))
+    {'revenue_max_by_place_and_country': 42}
+    {'revenue_max_by_place_and_country': 16}
+    {'revenue_max_by_place_and_country': 24}
+    {'revenue_max_by_place_and_country': 58}
+    {'revenue_max_by_place_and_country': 20}
+    {'revenue_max_by_place_and_country': 50}
+    {'revenue_max_by_place_and_country': 24}
+    {'revenue_max_by_place_and_country': 80}
 
-        You can use a `compose.TransformerUnion` in order to calculate multiple aggregates in one
-        go. The latter can be constructed by using the `+` operator:
+    You can use a `compose.TransformerUnion` in order to calculate multiple aggregates in one
+    go. The latter can be constructed by using the `+` operator:
 
-        >>> agg = (
-        ...     fx.Agg(on='revenue', by='place', how=stats.Mean()) +
-        ...     fx.Agg(on='revenue', by=['place', 'country'], how=stats.Max())
-        ... )
+    >>> agg = (
+    ...     fx.Agg(on='revenue', by='place', how=stats.Mean()) +
+    ...     fx.Agg(on='revenue', by=['place', 'country'], how=stats.Max())
+    ... )
 
-        >>> import pprint
-        >>> for x in X:
-        ...     agg = agg.learn_one(x)
-        ...     pprint.pprint(agg.transform_one(x))
-        {'revenue_max_by_place_and_country': 42, 'revenue_mean_by_place': 42.0}
-        {'revenue_max_by_place_and_country': 16, 'revenue_mean_by_place': 16.0}
-        {'revenue_max_by_place_and_country': 24, 'revenue_mean_by_place': 20.0}
-        {'revenue_max_by_place_and_country': 58, 'revenue_mean_by_place': 50.0}
-        {'revenue_max_by_place_and_country': 20, 'revenue_mean_by_place': 20.0}
-        {'revenue_max_by_place_and_country': 50, 'revenue_mean_by_place': 50.0}
-        {'revenue_max_by_place_and_country': 24, 'revenue_mean_by_place': 17.5}
-        {'revenue_max_by_place_and_country': 80, 'revenue_mean_by_place': 57.5}
+    >>> import pprint
+    >>> for x in X:
+    ...     agg = agg.learn_one(x)
+    ...     pprint.pprint(agg.transform_one(x))
+    {'revenue_max_by_place_and_country': 42, 'revenue_mean_by_place': 42.0}
+    {'revenue_max_by_place_and_country': 16, 'revenue_mean_by_place': 16.0}
+    {'revenue_max_by_place_and_country': 24, 'revenue_mean_by_place': 20.0}
+    {'revenue_max_by_place_and_country': 58, 'revenue_mean_by_place': 50.0}
+    {'revenue_max_by_place_and_country': 20, 'revenue_mean_by_place': 20.0}
+    {'revenue_max_by_place_and_country': 50, 'revenue_mean_by_place': 50.0}
+    {'revenue_max_by_place_and_country': 24, 'revenue_mean_by_place': 17.5}
+    {'revenue_max_by_place_and_country': 80, 'revenue_mean_by_place': 57.5}
 
-    References:
-        1. [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
+    References
+    ----------
+    [^1]: [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
 
     """
 
@@ -149,83 +158,92 @@ class TargetAgg(base.SupervisedTransformer):
     target values in group `by` is updated with the target. It is therefore a supervised
     transformer.
 
-    Parameters:
-        by: The feature by which to group the target values.
-        how: The statistic to compute.
-        target_name: The target name which is used in the result.
+    Parameters
+    ----------
+    by
+        The feature by which to group the target values.
+    how
+        The statistic to compute.
+    target_name
+        The target name which is used in the result.
 
-    Attributes:
-        groups (dict): Maps group keys to univariate statistics.
-        feature_name (str): The name of the feature in the output.
+    Attributes
+    ----------
+    groups
+        Maps group keys to univariate statistics.
+    feature_name
+        The name of the feature in the output.
 
-    Example:
+    Examples
+    --------
 
-        Consider the following dataset, where the second value of each value is the target:
+    Consider the following dataset, where the second value of each value is the target:
 
-        >>> dataset = [
-        ...     ({'country': 'France', 'place': 'Taco Bell'}, 42),
-        ...     ({'country': 'Sweden', 'place': 'Burger King'}, 16),
-        ...     ({'country': 'France', 'place': 'Burger King'}, 24),
-        ...     ({'country': 'Sweden', 'place': 'Taco Bell'}, 58),
-        ...     ({'country': 'Sweden', 'place': 'Burger King'}, 20),
-        ...     ({'country': 'France', 'place': 'Taco Bell'}, 50),
-        ...     ({'country': 'France', 'place': 'Burger King'}, 10),
-        ...     ({'country': 'Sweden', 'place': 'Taco Bell'}, 80)
-        ... ]
+    >>> dataset = [
+    ...     ({'country': 'France', 'place': 'Taco Bell'}, 42),
+    ...     ({'country': 'Sweden', 'place': 'Burger King'}, 16),
+    ...     ({'country': 'France', 'place': 'Burger King'}, 24),
+    ...     ({'country': 'Sweden', 'place': 'Taco Bell'}, 58),
+    ...     ({'country': 'Sweden', 'place': 'Burger King'}, 20),
+    ...     ({'country': 'France', 'place': 'Taco Bell'}, 50),
+    ...     ({'country': 'France', 'place': 'Burger King'}, 10),
+    ...     ({'country': 'Sweden', 'place': 'Taco Bell'}, 80)
+    ... ]
 
-        As an example, let's perform a target encoding of the `place` feature. Instead of simply
-        updating a running average, we use a `stats.BayesianMean` which allows us to incorporate
-        some prior knowledge. This makes subsequent models less prone to overfitting. Indeed, it
-        dampens the fact that too few samples might have been seen within a group.
+    As an example, let's perform a target encoding of the `place` feature. Instead of simply
+    updating a running average, we use a `stats.BayesianMean` which allows us to incorporate
+    some prior knowledge. This makes subsequent models less prone to overfitting. Indeed, it
+    dampens the fact that too few samples might have been seen within a group.
 
-        >>> from creme import feature_extraction
-        >>> from creme import stats
+    >>> from creme import feature_extraction
+    >>> from creme import stats
 
-        >>> agg = feature_extraction.TargetAgg(
-        ...     by='place',
-        ...     how=stats.BayesianMean(
-        ...         prior=3,
-        ...         prior_weight=1
-        ...     )
-        ... )
+    >>> agg = feature_extraction.TargetAgg(
+    ...     by='place',
+    ...     how=stats.BayesianMean(
+    ...         prior=3,
+    ...         prior_weight=1
+    ...     )
+    ... )
 
-        >>> for x, y in dataset:
-        ...     print(agg.transform_one(x))
-        ...     agg = agg.learn_one(x, y)
-        {'target_bayes_mean_by_place': 3.0}
-        {'target_bayes_mean_by_place': 3.0}
-        {'target_bayes_mean_by_place': 9.5}
-        {'target_bayes_mean_by_place': 22.5}
-        {'target_bayes_mean_by_place': 14.333}
-        {'target_bayes_mean_by_place': 34.333}
-        {'target_bayes_mean_by_place': 15.75}
-        {'target_bayes_mean_by_place': 38.25}
+    >>> for x, y in dataset:
+    ...     print(agg.transform_one(x))
+    ...     agg = agg.learn_one(x, y)
+    {'target_bayes_mean_by_place': 3.0}
+    {'target_bayes_mean_by_place': 3.0}
+    {'target_bayes_mean_by_place': 9.5}
+    {'target_bayes_mean_by_place': 22.5}
+    {'target_bayes_mean_by_place': 14.333}
+    {'target_bayes_mean_by_place': 34.333}
+    {'target_bayes_mean_by_place': 15.75}
+    {'target_bayes_mean_by_place': 38.25}
 
-        Just like with `feature_extraction.Agg`, we can specify multiple features on which to
-        group the data:
+    Just like with `feature_extraction.Agg`, we can specify multiple features on which to
+    group the data:
 
-        >>> agg = feature_extraction.TargetAgg(
-        ...     by=['place', 'country'],
-        ...     how=stats.BayesianMean(
-        ...         prior=3,
-        ...         prior_weight=1
-        ...     )
-        ... )
+    >>> agg = feature_extraction.TargetAgg(
+    ...     by=['place', 'country'],
+    ...     how=stats.BayesianMean(
+    ...         prior=3,
+    ...         prior_weight=1
+    ...     )
+    ... )
 
-        >>> for x, y in dataset:
-        ...     print(agg.transform_one(x))
-        ...     agg = agg.learn_one(x, y)
-        {'target_bayes_mean_by_place_and_country': 3.0}
-        {'target_bayes_mean_by_place_and_country': 3.0}
-        {'target_bayes_mean_by_place_and_country': 3.0}
-        {'target_bayes_mean_by_place_and_country': 3.0}
-        {'target_bayes_mean_by_place_and_country': 9.5}
-        {'target_bayes_mean_by_place_and_country': 22.5}
-        {'target_bayes_mean_by_place_and_country': 13.5}
-        {'target_bayes_mean_by_place_and_country': 30.5}
+    >>> for x, y in dataset:
+    ...     print(agg.transform_one(x))
+    ...     agg = agg.learn_one(x, y)
+    {'target_bayes_mean_by_place_and_country': 3.0}
+    {'target_bayes_mean_by_place_and_country': 3.0}
+    {'target_bayes_mean_by_place_and_country': 3.0}
+    {'target_bayes_mean_by_place_and_country': 3.0}
+    {'target_bayes_mean_by_place_and_country': 9.5}
+    {'target_bayes_mean_by_place_and_country': 22.5}
+    {'target_bayes_mean_by_place_and_country': 13.5}
+    {'target_bayes_mean_by_place_and_country': 30.5}
 
-    References:
-        1. [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
+    References
+    ----------
+    1. [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
 
     """
 

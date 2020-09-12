@@ -96,7 +96,7 @@ def check_predict_proba_one_binary(classifier, dataset):
         assert set(y_pred.keys()) == {False, True}
 
 
-def check_shuffling_no_impact(model, dataset):
+def check_shuffle_features_no_impact(model, dataset):
 
     from creme import utils
 
@@ -117,16 +117,7 @@ def check_shuffling_no_impact(model, dataset):
         y_pred_shuffled = shuffled.predict_one(x_shuffled)
 
         if is_reg:
-            try:
-                assert math.isclose(y_pred, y_pred_shuffled)
-            except AssertionError as e:
-
-                for i in model['LinearRegression'].weights:
-                    print(i, model['LinearRegression'].weights[i], shuffled['LinearRegression'].weights[i])
-
-                print(y_pred, y_pred_shuffled)
-
-                raise e
+            assert math.isclose(y_pred, y_pred_shuffled)
         elif is_moreg:
             for o in y_pred:
                 assert math.isclose(y_pred[o], y_pred[o])
@@ -233,7 +224,7 @@ def yield_checks(model):
         yield wrapped_partial(check_pickling, dataset=dataset)
         if hasattr(model, 'debug_one'):
             yield wrapped_partial(check_debug_one, dataset=dataset)
-        yield wrapped_partial(check_shuffling_no_impact, dataset=dataset)
+        yield wrapped_partial(check_shuffle_features_no_impact, dataset=dataset)
 
         # Classifier checks
         if utils.inspect.isclassifier(model):

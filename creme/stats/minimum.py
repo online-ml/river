@@ -8,8 +8,10 @@ from . import base
 class Min(base.Univariate):
     """Running min.
 
-    Attributes:
-        min (float): The current min.
+    Attributes
+    ----------
+    min : float
+        The current min.
 
     """
 
@@ -28,23 +30,26 @@ class Min(base.Univariate):
 class RollingMin(base.RollingUnivariate, utils.SortedWindow):
     """Running min over a window.
 
-    Parameters:
-        window_size: Size of the rolling window.
+    Parameters
+    ----------
+    window_size
+        Size of the rolling window.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> X = [1, -4, 3, -2, 2, 1]
-        >>> rolling_min = stats.RollingMin(2)
-        >>> for x in X:
-        ...     print(rolling_min.update(x).get())
-        1
-        -4
-        -4
-        -2
-        -2
-        1
+    >>> X = [1, -4, 3, -2, 2, 1]
+    >>> rolling_min = stats.RollingMin(2)
+    >>> for x in X:
+    ...     print(rolling_min.update(x).get())
+    1
+    -4
+    -4
+    -2
+    -2
+    1
 
     """
 

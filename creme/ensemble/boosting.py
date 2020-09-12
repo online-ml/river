@@ -18,52 +18,59 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     `k` is sampled from a Poisson distribution of parameter lambda. The lambda parameter is
     updated when the weaks learners fit successively the same observation.
 
-    Parameters:
-        model: The classifier to boost.
-        n_models: The number of models in the ensemble.
-        seed: Random number generator seed for reproducibility.
+    Parameters
+    ---------
+    model
+        The classifier to boost.
+    n_models
+        The number of models in the ensemble.
+    seed
+        Random number generator seed for reproducibility.
 
-    Attributes:
-        wrong_weight (collections.defaultdict): Number of times a model has made a mistake
-            when making predictions.
-        correct_weight (collections.defaultdict): Number of times a model has predicted the right
-            label when making predictions.
+    Attributes
+    ----------
+    wrong_weight (collections.defaultdict)
+        Number of times a model has made a mistake when making predictions.
+    correct_weight (collections.defaultdict)
+        Number of times a model has predicted the right label when making predictions.
 
-    Example:
+    Examples
+    --------
 
-        In the following example three tree classifiers are boosted together. The performance is
-        slightly better than when using a single tree.
+    In the following example three tree classifiers are boosted together. The performance is
+    slightly better than when using a single tree.
 
-        >>> from creme import datasets
-        >>> from creme import ensemble
-        >>> from creme import evaluate
-        >>> from creme import metrics
-        >>> from creme import tree
+    >>> from creme import datasets
+    >>> from creme import ensemble
+    >>> from creme import evaluate
+    >>> from creme import metrics
+    >>> from creme import tree
 
-        >>> dataset = datasets.Phishing()
+    >>> dataset = datasets.Phishing()
 
-        >>> metric = metrics.LogLoss()
+    >>> metric = metrics.LogLoss()
 
-        >>> model = ensemble.AdaBoostClassifier(
-        ...     model=(
-        ...         tree.DecisionTreeClassifier(
-        ...             criterion='gini',
-        ...             confidence=1e-5,
-        ...             patience=2000
-        ...         )
-        ...     ),
-        ...     n_models=5,
-        ...     seed=42
-        ... )
+    >>> model = ensemble.AdaBoostClassifier(
+    ...     model=(
+    ...         tree.DecisionTreeClassifier(
+    ...             criterion='gini',
+    ...             confidence=1e-5,
+    ...             patience=2000
+    ...         )
+    ...     ),
+    ...     n_models=5,
+    ...     seed=42
+    ... )
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        LogLoss: 0.741097
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    LogLoss: 0.741097
 
-        >>> print(model)
-        AdaBoostClassifier(DecisionTreeClassifier)
+    >>> print(model)
+    AdaBoostClassifier(DecisionTreeClassifier)
 
-    References:
-        1. [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
+    References
+    ----------
+    [^1]: [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
 
     """
 

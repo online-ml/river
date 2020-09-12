@@ -9,22 +9,29 @@ class Forecaster(base.Estimator):
     def _supervised(self):
         return True
 
-    def learn_one(self, y, x=None) -> 'Forecaster':
+    def learn_one(self, y: float, x: dict = None) -> 'Forecaster':
         """Updates the model.
 
-        Parameters:
-            y (float): In the litterature this is called the endogenous variable.
-            x (dict): Optional additional features to learn from. In the litterature these are
-                called the exogenous variables.
+        Parameters
+        ----------
+        y
+            In the litterature this is called the endogenous variable.
+        x
+            Optional additional features to learn from. In the litterature these are called the
+            exogenous variables.
 
         """
 
     @abc.abstractmethod
-    def forecast(self, horizon: int, xs=None) -> list:
+    def forecast(self, horizon: int, xs: list = None) -> list:
         """Makes forecast at each step of the given horizon.
 
-        Parameters:
-            horizon (int): The number of steps ahead to forecast.
-            xs (list): The set of . If given, then it's length should be equal to horizon.
+        Parameters
+        ----------
+        horizon
+            The number of steps ahead to forecast.
+        xs
+            The set of optional additional features. If given, then it's length should be equal to
+            the horizon.
 
         """

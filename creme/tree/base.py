@@ -70,26 +70,27 @@ class Branch(Node):
     def __repr__(self):
         """
 
-        Example:
+        Examples
+        --------
 
-            >>> tree = Branch(
-            ...     Split('x', LT, 17.42),
-            ...     Branch(
-            ...         Split('y', LT, -4.38),
-            ...         Leaf(no=2),
-            ...         Leaf(no=3),
-            ...         no=1
-            ...     ),
-            ...     Leaf(no=4),
-            ...     no=0
-            ... )
+        >>> tree = Branch(
+        ...     Split('x', LT, 17.42),
+        ...     Branch(
+        ...         Split('y', LT, -4.38),
+        ...         Leaf(no=2),
+        ...         Leaf(no=3),
+        ...         no=1
+        ...     ),
+        ...     Leaf(no=4),
+        ...     no=0
+        ... )
 
-            >>> tree
-            x < 17.42000 {'no': 0}
-                y < -4.38000 {'no': 1}
-                {'no': 2}
-                {'no': 3}
-                {'no': 4}
+        >>> tree
+        x < 17.42000 {'no': 0}
+            y < -4.38000 {'no': 1}
+            {'no': 2}
+            {'no': 3}
+            {'no': 4}
 
         """
         return (
@@ -111,27 +112,28 @@ class Branch(Node):
     def iter_dfs(self, depth=0):
         """Iterate over nodes in a depth-first manner.
 
-        Example:
+        Examples
+        --------
 
-            >>> tree = Branch(
-            ...     None,
-            ...     Branch(
-            ...         None,
-            ...         Leaf(no=2),
-            ...         Leaf(no=3),
-            ...         no=1
-            ...     ),
-            ...     Leaf(no=4),
-            ...     no=0
-            ... )
+        >>> tree = Branch(
+        ...     None,
+        ...     Branch(
+        ...         None,
+        ...         Leaf(no=2),
+        ...         Leaf(no=3),
+        ...         no=1
+        ...     ),
+        ...     Leaf(no=4),
+        ...     no=0
+        ... )
 
-            >>> for node, depth in tree.iter_dfs():
-            ...     print(f'#{node.no}, depth {depth}')
-            #0, depth 0
-            #1, depth 1
-            #2, depth 2
-            #3, depth 2
-            #4, depth 1
+        >>> for node, depth in tree.iter_dfs():
+        ...     print(f'#{node.no}, depth {depth}')
+        #0, depth 0
+        #1, depth 1
+        #2, depth 2
+        #3, depth 2
+        #4, depth 1
 
         """
         yield self, depth
@@ -141,27 +143,26 @@ class Branch(Node):
     def iter_leaves(self):
         """Iterate over the leaves in a depth-first manner.
 
-        Example:
+        Examples
+        --------
 
-            ::
+        >>> tree = Branch(
+        ...     None,
+        ...     Branch(
+        ...         None,
+        ...         Leaf(no=2),
+        ...         Leaf(no=3),
+        ...         no=1
+        ...     ),
+        ...     Leaf(no=4),
+        ...     no=0
+        ... )
 
-                >>> tree = Branch(
-                ...     None,
-                ...     Branch(
-                ...         None,
-                ...         Leaf(no=2),
-                ...         Leaf(no=3),
-                ...         no=1
-                ...     ),
-                ...     Leaf(no=4),
-                ...     no=0
-                ... )
-
-                >>> for leaf in tree.iter_leaves():
-                ...     print(f'#{leaf.no}')
-                #2
-                #3
-                #4
+        >>> for leaf in tree.iter_leaves():
+        ...     print(f'#{leaf.no}')
+        #2
+        #3
+        #4
 
         """
         yield from self.left.iter_leaves()
@@ -170,26 +171,25 @@ class Branch(Node):
     def iter_branches(self):
         """Iterate over branches in a depth-first manner.
 
-        Example:
+        Examples
+        --------
 
-            ::
+        >>> tree = Branch(
+        ...     None,
+        ...     Branch(
+        ...         None,
+        ...         Leaf(no=2),
+        ...         Leaf(no=3),
+        ...         no=1
+        ...     ),
+        ...     Leaf(no=4),
+        ...     no=0
+        ... )
 
-                >>> tree = Branch(
-                ...     None,
-                ...     Branch(
-                ...         None,
-                ...         Leaf(no=2),
-                ...         Leaf(no=3),
-                ...         no=1
-                ...     ),
-                ...     Leaf(no=4),
-                ...     no=0
-                ... )
-
-                >>> for branch in tree.iter_branches():
-                ...     print(f'#{branch.no}')
-                #0
-                #1
+        >>> for branch in tree.iter_branches():
+        ...     print(f'#{branch.no}')
+        #0
+        #1
 
         """
         yield self
@@ -199,29 +199,28 @@ class Branch(Node):
     def iter_edges(self):
         """Iterate over edges in a depth-first manner.
 
-        Example:
+        Examples
+        --------
 
-            ::
+        >>> tree = Branch(
+        ...     None,
+        ...     Branch(
+        ...         None,
+        ...         Leaf(no=2),
+        ...         Leaf(no=3),
+        ...         no=1
+        ...     ),
+        ...     Leaf(no=4),
+        ...     no=0
+        ... )
 
-                >>> tree = Branch(
-                ...     None,
-                ...     Branch(
-                ...         None,
-                ...         Leaf(no=2),
-                ...         Leaf(no=3),
-                ...         no=1
-                ...     ),
-                ...     Leaf(no=4),
-                ...     no=0
-                ... )
-
-                >>> for parent_no, child_no, parent, child, child_depth in tree.iter_edges():
-                ...     print(parent_no, child_no, child_depth)
-                None 0 0
-                0 1 1
-                1 2 2
-                1 3 2
-                0 4 1
+        >>> for parent_no, child_no, parent, child, child_depth in tree.iter_edges():
+        ...     print(parent_no, child_no, child_depth)
+        None 0 0
+        0 1 1
+        1 2 2
+        1 3 2
+        0 4 1
 
         """
         counter = 0
@@ -244,33 +243,34 @@ class Branch(Node):
     def iter_blocks(self, limits: typing.Dict[typing.Hashable, typing.Tuple[float, float]], depth=-1):
         """Iterate over the blocks which enclose each node.
 
-        This only makes sense if the branches of the provided tree use the ``<`` operator as a
+        This only makes sense if the branches of the provided tree use the `<` operator as a
         split rule.
 
-        Parameters:
-            limits (dict)
-            depth (int): Desired tree depth. Set to ``-1`` to iterate over the leaves.
+        Parameters
+        ----------
+        limits
+        depth
+            Desired tree depth. Set to `-1` to iterate over the leaves.
 
-        Example:
+        Examples
+        --------
 
-            ::
+        >>> import operator
+        >>> tree = Branch(
+        ...     Split('x', operator.lt, .5),
+        ...     Leaf(no=0),
+        ...     Branch(
+        ...         Split('y', operator.lt, .5),
+        ...         Leaf(no=1),
+        ...         Leaf(no=2)
+        ...     )
+        ... )
 
-                >>> import operator
-                >>> tree = Branch(
-                ...     Split('x', operator.lt, .5),
-                ...     Leaf(no=0),
-                ...     Branch(
-                ...         Split('y', operator.lt, .5),
-                ...         Leaf(no=1),
-                ...         Leaf(no=2)
-                ...     )
-                ... )
-
-                >>> for leaf, block in tree.iter_blocks(limits={'x': (0, 1), 'y': (0, 1)}):
-                ...     print(leaf.no, block)
-                0 {'x': (0, 0.5), 'y': (0, 1)}
-                1 {'x': (0.5, 1), 'y': (0, 0.5)}
-                2 {'x': (0.5, 1), 'y': (0.5, 1)}
+        >>> for leaf, block in tree.iter_blocks(limits={'x': (0, 1), 'y': (0, 1)}):
+        ...     print(leaf.no, block)
+        0 {'x': (0, 0.5), 'y': (0, 1)}
+        1 {'x': (0.5, 1), 'y': (0, 0.5)}
+        2 {'x': (0.5, 1), 'y': (0.5, 1)}
 
         """
         if depth == 0:
@@ -288,32 +288,32 @@ class Branch(Node):
     def iter_splits(self, limits: typing.Dict[typing.Hashable, typing.Tuple[float, float]]):
         """Iterate over splits.
 
-        This only makes sense if the branches of the provided tree use the ``<`` operator as a split
+        This only makes sense if the branches of the provided tree use the `<` operator as a split
         rule.
 
-        Parameters:
-            limits (dict)
-            depth (int)
+        Parameters
+        ----------
+        limits
+        depth
 
-        Example:
+        Examples
+        --------
 
-            ::
+        >>> import operator
+        >>> tree = Branch(
+        ...     Split('x', operator.lt, .5),
+        ...     Leaf(no=0),
+        ...     Branch(
+        ...         Split('y', operator.lt, .5),
+        ...         Leaf(no=1),
+        ...         Leaf(no=2)
+        ...     )
+        ... )
 
-                >>> import operator
-                >>> tree = Branch(
-                ...     Split('x', operator.lt, .5),
-                ...     Leaf(no=0),
-                ...     Branch(
-                ...         Split('y', operator.lt, .5),
-                ...         Leaf(no=1),
-                ...         Leaf(no=2)
-                ...     )
-                ... )
-
-                >>> for line in tree.iter_splits({'x': (0, 1), 'y': (0, 1)}):
-                ...     print(line)
-                {'x': (0.5, 0.5), 'y': (0, 1)}
-                {'x': (0.5, 1), 'y': (0.5, 0.5)}
+        >>> for line in tree.iter_splits({'x': (0, 1), 'y': (0, 1)}):
+        ...     print(line)
+        {'x': (0.5, 0.5), 'y': (0, 1)}
+        {'x': (0.5, 1), 'y': (0.5, 0.5)}
 
         """
 

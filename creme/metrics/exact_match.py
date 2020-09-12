@@ -11,28 +11,29 @@ class ExactMatch(base.MultiOutputClassificationMetric):
     samples that have all their labels correctly classified, divided by the
     total number of samples.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [
-        ...     {0: False, 1: True, 2: True},
-        ...     {0: True, 1: True, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> y_pred = [
-        ...     {0: True, 1: True, 2: True},
-        ...     {0: True, 1: False, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric = metrics.ExactMatch()
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> metric = metrics.ExactMatch()
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        >>> metric
-        ExactMatch: 0.333333
+    >>> metric
+    ExactMatch: 0.333333
 
     """
 

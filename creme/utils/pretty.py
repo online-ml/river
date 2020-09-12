@@ -10,11 +10,15 @@ def print_table(headers: typing.List[str], columns: typing.List[typing.List[str]
                 order: typing.List[int] = None):
     """Pretty-prints a table.
 
-    Parameters:
-        headers: The column names.
-        columns: The column values.
-        order: Order in which to print the column the values. Defaults to the order in which the
-            values are given.
+    Parameters
+    ----------
+    headers
+        The column names.
+    columns
+        The column values.
+    order
+        Order in which to print the column the values. Defaults to the order in which the values
+        are given.
 
     """
 

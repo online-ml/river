@@ -7,31 +7,37 @@ from creme import stats
 class VarianceThreshold(base.Transformer):
     """Removes low-variance features.
 
-    Parameters:
-        threshold: Only features with a variance above the threshold will be kept.
-        min_samples: The minimum number of samples required to perform selection.
+    Parameters
+    ----------
+    threshold
+        Only features with a variance above the threshold will be kept.
+    min_samples
+        The minimum number of samples required to perform selection.
 
-    Attributes:
-        variances (dict): The variance of each feature.
+    Attributes
+    ----------
+    variances : dict
+        The variance of each feature.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import feature_selection
-        >>> from creme import stream
+    >>> from creme import feature_selection
+    >>> from creme import stream
 
-        >>> X = [
-        ...     [0, 2, 0, 3],
-        ...     [0, 1, 4, 3],
-        ...     [0, 1, 1, 3]
-        ... ]
+    >>> X = [
+    ...     [0, 2, 0, 3],
+    ...     [0, 1, 4, 3],
+    ...     [0, 1, 1, 3]
+    ... ]
 
-        >>> selector = feature_selection.VarianceThreshold()
+    >>> selector = feature_selection.VarianceThreshold()
 
-        >>> for x, _ in stream.iter_array(X):
-        ...     print(selector.learn_one(x).transform_one(x))
-        {0: 0, 1: 2, 2: 0, 3: 3}
-        {1: 1, 2: 4}
-        {1: 1, 2: 1}
+    >>> for x, _ in stream.iter_array(X):
+    ...     print(selector.learn_one(x).transform_one(x))
+    {0: 0, 1: 2, 2: 0, 3: 3}
+    {1: 1, 2: 4}
+    {1: 1, 2: 1}
 
     """
 

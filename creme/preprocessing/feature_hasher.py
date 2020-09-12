@@ -16,28 +16,34 @@ class FeatureHasher(base.Transformer):
     used to make sure the hash is in a certain range. We use the Murmurhash implementation from
     scikit-learn.
 
-    Parameters:
-        n_features: The number by which each hash will be moduloed by.
-        alternate_sign: Whether or not half of the hashes will be negated.
-        seed: Set the seed to produce identical results.
+    Parameters
+    ----------
+    n_features
+        The number by which each hash will be moduloed by.
+    alternate_sign
+        Whether or not half of the hashes will be negated.
+    seed
+        Set the seed to produce identical results.
 
-    Example:
+    Examples
+    --------
 
-        >>> import creme
+    >>> import creme
 
-        >>> hasher = creme.preprocessing.FeatureHasher(n_features=10, seed=0)
+    >>> hasher = creme.preprocessing.FeatureHasher(n_features=10, seed=0)
 
-        >>> X = [
-        ...     {'dog': 1, 'cat': 2, 'elephant': 4},
-        ...     {'dog': 2, 'run': 5}
-        ... ]
-        >>> for x in X:
-        ...     print(hasher.transform_one(x))
-        defaultdict(<class 'int'>, {0: 1, 3: -2, 4: 4})
-        defaultdict(<class 'int'>, {0: -3})
+    >>> X = [
+    ...     {'dog': 1, 'cat': 2, 'elephant': 4},
+    ...     {'dog': 2, 'run': 5}
+    ... ]
+    >>> for x in X:
+    ...     print(hasher.transform_one(x))
+    defaultdict(<class 'int'>, {0: 1, 3: -2, 4: 4})
+    defaultdict(<class 'int'>, {0: -3})
 
-    References:
-        1. [Wikipedia article on feature vectorization using the hashing trick](https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick)
+    References
+    ----------
+    [^1]: [Wikipedia article on feature vectorization using the hashing trick](https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick)
 
     """
 

@@ -21,9 +21,11 @@ class Initializer(abc.ABC):
     def __call__(self, shape=1):
         """Returns a fresh set of weights.
 
-        Parameters:
-            shape: Indicates how many weights to return. If `1`, then a single scalar value will
-                be returned.
+        Parameters
+        ----------
+        shape
+            Indicates how many weights to return. If `1`, then a single scalar value will be
+            returned.
 
         """
 
@@ -31,20 +33,22 @@ class Initializer(abc.ABC):
 class Constant(Initializer):
     """Constant initializer which always returns the same value.
 
-    Parameters:
-        value
+    Parameters
+    ----------
+    value
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import optim
+    >>> from creme import optim
 
-        >>> init = optim.initializers.Constant(value=3.14)
+    >>> init = optim.initializers.Constant(value=3.14)
 
-        >>> init(shape=1)
-        3.14
+    >>> init(shape=1)
+    3.14
 
-        >>> init(shape=2)
-        array([3.14, 3.14])
+    >>> init(shape=2)
+    array([3.14, 3.14])
 
     """
 
@@ -58,17 +62,18 @@ class Constant(Initializer):
 class Zeros(Constant):
     """Constant initializer which always returns zeros.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import optim
+    >>> from creme import optim
 
-        >>> init = optim.initializers.Zeros()
+    >>> init = optim.initializers.Zeros()
 
-        >>> init(shape=1)
-        0.0
+    >>> init(shape=1)
+    0.0
 
-        >>> init(shape=2)
-        array([0., 0.])
+    >>> init(shape=2)
+    array([0., 0.])
 
     """
 
@@ -79,21 +84,25 @@ class Zeros(Constant):
 class Normal(Initializer):
     """Random normal initializer which simulate a normal distribution with specified parameters.
 
-    Parameters:
-        mu: The mean of the normal distribution
-        sigma: The standard deviation of the normal distribution
+    Parameters
+    ----------
+    mu
+        The mean of the normal distribution
+    sigma
+        The standard deviation of the normal distribution
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import optim
+    >>> from creme import optim
 
-        >>> init = optim.initializers.Normal(mu=0, sigma=1, seed=42)
+    >>> init = optim.initializers.Normal(mu=0, sigma=1, seed=42)
 
-        >>> init(shape=1)
-        0.496714
+    >>> init(shape=1)
+    0.496714
 
-        >>> init(shape=2)
-        array([-0.1382643 ,  0.64768854])
+    >>> init(shape=2)
+    array([-0.1382643 ,  0.64768854])
 
     """
 

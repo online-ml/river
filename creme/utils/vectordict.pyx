@@ -66,16 +66,23 @@ cdef class VectorDict:
         exception is raised, and if it is accessed internally as part of an
         operation, its value is taken as 0, but is not inserted for that key.
 
-        Parameters:
-            data: a VectorDict or dict to initialize key-values from, or None
-            default_value: a scalar, or None
-            default_factory: a callable returning a scalar, or None
-            mask: a VectorDict or set-like object such that keys not in mask
-                will not be considered in operations and will always result in
-                a KeyError if accessed by __getitem__, or None
-            copy: if data and/or mask are specified, whether to store a copy of
-                the underlying dictionaries or references at initialization
-        """
+        Parameters
+        ----------
+        data
+            A VectorDict or dict to initialize key-values from, or None
+        default_value
+            A scalar, or None.
+        default_factory
+            A callable returning a scalar, or None.
+        mask
+            A VectorDict or set-like object such that keys not in mask
+            will not be considered in operations and will always result in
+            a KeyError if accessed by __getitem__, or None.
+        copy
+            If data and/or mask are specified, whether to store a copy of
+            the underlying dictionaries or references at initialization.
+
+    """
         if data is None:
             data = dict()
         elif isinstance(data, VectorDict):
