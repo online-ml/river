@@ -1,9 +1,9 @@
 import collections
-import random
+import hashlib
 
-import mmh3
+import numpy as np
 
-from .. import base
+from creme import base
 
 
 __all__ = ['FeatureHasher']
@@ -30,7 +30,7 @@ class FeatureHasher(base.Transformer):
 
     >>> import creme
 
-    >>> hasher = creme.preprocessing.FeatureHasher(n_features=10, seed=0)
+    >>> hasher = creme.preprocessing.FeatureHasher(n_features=10, seed=42)
 
     >>> X = [
     ...     {'dog': 1, 'cat': 2, 'elephant': 4},
@@ -38,8 +38,8 @@ class FeatureHasher(base.Transformer):
     ... ]
     >>> for x in X:
     ...     print(hasher.transform_one(x))
-    defaultdict(<class 'int'>, {0: 1, 3: -2, 4: 4})
-    defaultdict(<class 'int'>, {0: -3})
+    Counter({1: 4, 9: 2, 8: 1})
+    Counter({4: 5, 8: 2})
 
     References
     ----------
@@ -47,15 +47,18 @@ class FeatureHasher(base.Transformer):
 
     """
 
-    def __init__(self, n_features=1048576, alternate_sign=True, seed: int = None):
+    def __init__(self, n_features=1048576, seed: int = None):
         self.n_features = n_features
-        self.alternate_sign = alternate_sign
         self.seed = seed
-        self._hash_seed = random.Random(seed).randint(0, 2 ** 10)
+        self._salt = np.random.RandomState(seed).bytes(hashlib.blake2s.SALT_SIZE)
+
+    def _hash(self, x):
+        hexa = hashlib.blake2s(bytes(x, encoding='utf8'), salt=self._salt).hexdigest()
+        return int(hexa, 16)
 
     def transform_one(self, x):
 
-        x_hashed = collections.defaultdict(int)
+        x_hashed = collections.Counter()
 
         for feature, value in x.items():
 
@@ -63,15 +66,7 @@ class FeatureHasher(base.Transformer):
                 feature = f'{feature}={value}'
                 value = 1
 
-            if value == 0:
-                continue
-
-            h = mmh3.hash(feature, seed=self._hash_seed)
-            i = h % self.n_features
-
-            if self.alternate_sign:
-                value *= (h >= 0) * 2 - 1
-
+            i = self._hash(feature) % self.n_features
             x_hashed[i] += value
 
         return x_hashed

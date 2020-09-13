@@ -1,7 +1,7 @@
+import hashlib
 import math
-import random
 
-import mmh3
+import numpy as np
 
 from . import base
 
@@ -33,7 +33,7 @@ class NUnique(base.Univariate):
     >>> from creme import stats
 
     >>> alphabet = string.ascii_lowercase
-    >>> n_unique = stats.NUnique(error_rate=0.1, seed=42)
+    >>> n_unique = stats.NUnique(error_rate=0.2, seed=42)
 
     >>> n_unique.update('a').get()
     1
@@ -44,9 +44,9 @@ class NUnique(base.Univariate):
     >>> for letter in alphabet:
     ...     n_unique = n_unique.update(letter)
     >>> n_unique.get()
-    27
+    31
 
-    We can increase the precision by lowering the ``error_rate`` parameter.
+    Lowering the `error_rate` parameter will increase the precision.
 
     >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
     >>> for letter in alphabet:
@@ -63,26 +63,32 @@ class NUnique(base.Univariate):
 
     P32 = 2 ** 32
 
-    def __init__(self, error_rate=.01, seed=None):
+    def __init__(self, error_rate=.01, seed: int = None):
+        self.error_rate = error_rate
+        self.seed = seed
+
         self.n_bits = int(math.ceil(math.log((1.04 / error_rate) ** 2, 2)))
         self.n_buckets = 1 << self.n_bits
         self.buckets = [0] * self.n_buckets
-        self.seed = seed
-        self._hash_seed = random.Random(seed).randint(0, 2 ** 10)
+        self._salt = np.random.RandomState(seed).bytes(hashlib.blake2s.SALT_SIZE)
 
     @property
     def name(self):
         return 'n_unique'
 
+    def _hash(self, x):
+        hexa = hashlib.blake2s(bytes(x, encoding='utf8'), salt=self._salt).hexdigest()
+        return int(hexa, 16)
+
     def update(self, x):
-        x = mmh3.hash(x, seed=self._hash_seed)
+        x = self._hash(x)
         i = x & NUnique.P32 - 1 >> 32 - self.n_bits
         z = 35 - len(bin(NUnique.P32 - 1 & x << self.n_bits | 1 << self.n_bits - 1))
         self.buckets[i] = max(self.buckets[i], z)
         return self
 
     def get(self):
-        a = ({16: 0.673, 32: 0.697, 64: 0.709}[self.m]
+        a = ({16: 0.673, 32: 0.697, 64: 0.709}[self.n_buckets]
              if self.n_buckets <= 64 else 0.7213 / (1 + 1.079 / self.n_buckets))
         e = a * self.n_buckets * self.n_buckets / sum(1.0 / (1 << x) for x in self.buckets)
         if e <= self.n_buckets * 2.5:
