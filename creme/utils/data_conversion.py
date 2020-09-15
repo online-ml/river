@@ -23,7 +23,7 @@ def dict2numpy(data) -> np.ndarray:
     array([1, 2, 3])
 
     """
-    return np.asarray(list(data.values()))
+    return np.asarray(list(x for _, x in sorted(data.items())))
 
 
 def numpy2dict(data: np.ndarray) -> dict:
@@ -36,7 +36,7 @@ def numpy2dict(data: np.ndarray) -> dict:
 
     Returns
     -------
-    A dictionary where keys are integers $k \in \{0, 1, ..., |\text{data}| - 1\}$,
+    A dictionary where keys are integers $k \\in \\left{0, 1, ..., |\\text{data}| - 1\\right}$,
     and the values are each one of the $k$ entries in `data`.
 
     Examples
