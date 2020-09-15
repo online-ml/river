@@ -47,6 +47,28 @@ cdef inline get_union_keys(VectorDict left, VectorDict right):
     return itertools.chain(left_keys, right_only_keys)
 
 
+cdef inline get_intersection_keys(VectorDict left, VectorDict right):
+    if len(right._data) < len(left._data):
+        left, right = right, left
+    if left._lazy_mask:
+        if right._lazy_mask:
+            return (
+                key for key in left._data if key in left._mask
+                and key in right._data and key in right._mask)
+        else:
+            return (
+                key for key in left._data
+                if key in left._mask and key in right._data)
+    else:
+        if right._lazy_mask:
+            return (
+                key for key in left._data
+                if key in right._data and key in right._mask)
+        else:
+            return (
+                key for key in left._data if key in right._data)
+
+
 cdef class VectorDict:
     cdef dict _data
     cdef object _mask
@@ -409,8 +431,12 @@ cdef class VectorDict:
             return NotImplemented
         left_, right_ = <VectorDict> left, <VectorDict> right
         res = 0
-        for key in get_union_keys(left_, right_):
-            res += get_value(left_, key) * get_value(right_, key)
+        if left_._use_factory or right_._use_factory:
+            for key in get_union_keys(left_, right_):
+                res += get_value(left_, key) * get_value(right_, key)
+        else:
+            for key in get_intersection_keys(left_, right_):
+                res += left_._data[key] * right_._data[key]
         return res
 
     def __neg__(self):
