@@ -423,7 +423,5 @@ if __name__ == '__main__':
     linkifier = Linkifier()
 
     for mod_name, mod in inspect.getmembers(importlib.import_module('creme'), inspect.ismodule):
-        if mod_name not in ('base', 'cluster'):
-            continue
         print(mod_name)
         print_module(mod, path=api_path, overview=overview)

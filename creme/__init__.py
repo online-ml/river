@@ -15,7 +15,6 @@ from . import compat
 from . import compose
 from . import datasets
 from . import dummy
-from . import decomposition
 from . import drift
 from . import ensemble
 from . import evaluate
@@ -50,7 +49,6 @@ __all__ = [
     'compose',
     'datasets',
     'dummy',
-    'decomposition',
     'drift',
     'ensemble',
     'evaluate',
