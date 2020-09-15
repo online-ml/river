@@ -21,18 +21,29 @@ cdef inline get_value(VectorDict vec, key):
 
 cdef inline get_keys(VectorDict vec):
     if vec._lazy_mask:
-        return filter(vec._mask.__contains__, vec._data.keys())
+        return (key for key in vec._data if key in vec._mask)
     return vec._data.keys()
 
 
 cdef inline get_union_keys(VectorDict left, VectorDict right):
     left_keys = get_keys(left)
-    right_keys = get_keys(right)
     if left._lazy_mask:
-        right_only_keys = (key for key in right_keys
-                           if key not in left._data or key not in left._mask)
+        if right._lazy_mask:
+            right_only_keys = (
+                key for key in right._data if key in right._mask
+                and not (key in left._data and key in left._mask))
+        else:
+            right_only_keys = (
+                key for key in right._data
+                if not (key in left._data and key in left._mask))
     else:
-        right_only_keys = (key for key in right_keys if key not in left._data)
+        if right._lazy_mask:
+            right_only_keys = (
+                key for key in right._data
+                if key in right._mask and key not in left._data)
+        else:
+            right_only_keys = (
+                key for key in right._data if key not in left._data)
     return itertools.chain(left_keys, right_only_keys)
 
 
