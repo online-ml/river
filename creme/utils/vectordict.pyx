@@ -21,15 +21,52 @@ cdef inline get_value(VectorDict vec, key):
 
 cdef inline get_keys(VectorDict vec):
     if vec._lazy_mask:
-        return filter(vec._mask.__contains__, vec._data.keys())
+        return (key for key in vec._data if key in vec._mask)
     return vec._data.keys()
 
 
 cdef inline get_union_keys(VectorDict left, VectorDict right):
     left_keys = get_keys(left)
-    right_keys = get_keys(right)
-    right_only_keys = itertools.filterfalse(left._data.__contains__, right_keys)
+    if left._lazy_mask:
+        if right._lazy_mask:
+            right_only_keys = (
+                key for key in right._data if key in right._mask
+                and not (key in left._data and key in left._mask))
+        else:
+            right_only_keys = (
+                key for key in right._data
+                if not (key in left._data and key in left._mask))
+    else:
+        if right._lazy_mask:
+            right_only_keys = (
+                key for key in right._data
+                if key in right._mask and key not in left._data)
+        else:
+            right_only_keys = (
+                key for key in right._data if key not in left._data)
     return itertools.chain(left_keys, right_only_keys)
+
+
+cdef inline get_intersection_keys(VectorDict left, VectorDict right):
+    if len(right._data) < len(left._data):
+        left, right = right, left
+    if left._lazy_mask:
+        if right._lazy_mask:
+            return (
+                key for key in left._data if key in left._mask
+                and key in right._data and key in right._mask)
+        else:
+            return (
+                key for key in left._data
+                if key in left._mask and key in right._data)
+    else:
+        if right._lazy_mask:
+            return (
+                key for key in left._data
+                if key in right._data and key in right._mask)
+        else:
+            return (
+                key for key in left._data if key in right._data)
 
 
 cdef class VectorDict:
@@ -394,8 +431,12 @@ cdef class VectorDict:
             return NotImplemented
         left_, right_ = <VectorDict> left, <VectorDict> right
         res = 0
-        for key in get_union_keys(left_, right_):
-            res += get_value(left_, key) * get_value(right_, key)
+        if left_._use_factory or right_._use_factory:
+            for key in get_union_keys(left_, right_):
+                res += get_value(left_, key) * get_value(right_, key)
+        else:
+            for key in get_intersection_keys(left_, right_):
+                res += left_._data[key] * right_._data[key]
         return res
 
     def __neg__(self):
