@@ -9,8 +9,9 @@ class Bikes(base.RemoteDataset):
     The goal is to predict the number of bikes in 5 different bike stations from the city of
     Toulouse.
 
-    References:
-        1. [A short introduction and conclusion to the OpenBikes 2016 Challenge](https://maxhalford.github.io/blog/a-short-introduction-and-conclusion-to-the-openbikes-2016-challenge/)
+    References
+    ----------
+    [^1]: [A short introduction and conclusion to the OpenBikes 2016 Challenge](https://maxhalford.github.io/blog/a-short-introduction-and-conclusion-to-the-openbikes-2016-challenge/)
 
     """
 

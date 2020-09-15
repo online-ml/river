@@ -11,27 +11,33 @@ class SEA(base.SyntheticDataset):
     are 4 thresholds to choose from. Concept drift can be introduced by switching the threshold
     anytime during the stream.
 
-    Parameters:
-        variant: Determines the classification function to use. Possible choices are 0, 1, 2, 3.
-        noise: Determines the amount of observations for which the target sign will be flipped.
-        seed: Random seed number used for reproducibility.
+    Parameters
+    ----------
+    variant
+        Determines the classification function to use. Possible choices are 0, 1, 2, 3.
+    noise
+        Determines the amount of observations for which the target sign will be flipped.
+    seed
+        Random seed number used for reproducibility.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
+    >>> from creme import datasets
 
-        >>> dataset = datasets.synth.SEA(variant=0, seed=42)
+    >>> dataset = datasets.synth.SEA(variant=0, seed=42)
 
-        >>> for x, y in dataset.take(5):
-        ...     print(x, y)
-        {0: 6.39426, 1: 0.25010, 2: 2.75029} False
-        {0: 2.23210, 1: 7.36471, 2: 6.76699} True
-        {0: 8.92179, 1: 0.86938, 2: 4.21921} True
-        {0: 0.29797, 1: 2.18637, 2: 5.05355} False
-        {0: 0.26535, 1: 1.98837, 2: 6.49884} False
+    >>> for x, y in dataset.take(5):
+    ...     print(x, y)
+    {0: 6.39426, 1: 0.25010, 2: 2.75029} False
+    {0: 2.23210, 1: 7.36471, 2: 6.76699} True
+    {0: 8.92179, 1: 0.86938, 2: 4.21921} True
+    {0: 0.29797, 1: 2.18637, 2: 5.05355} False
+    {0: 0.26535, 1: 1.98837, 2: 6.49884} False
 
-    References:
-        1. [A Streaming Ensemble Algorithm (SEA) for Large-Scale Classification](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.482.3991&rep=rep1&type=pdf)
+    References
+    ----------
+    [^1]: [A Streaming Ensemble Algorithm (SEA) for Large-Scale Classification](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.482.3991&rep=rep1&type=pdf)
 
     """
 

@@ -23,12 +23,15 @@ class Insects(base.RemoteDataset):
     The number of samples and the difficulty change from one variant to another. The number of
     classes is always the same (6), except for the last variant (24).
 
-    Parameters:
-        variant: Indicates which variant of the dataset to load.
+    Parameters
+    ----------
+    variant
+        Indicates which variant of the dataset to load.
 
-    References:
-        1. [USP DS repository](https://sites.google.com/view/uspdsrepository)
-        2. [Souza, V., Reis, D.M.D., Maletzke, A.G. and Batista, G.E., 2020. Challenges in Benchmarking Stream Learning Algorithms with Real-world Data. arXiv preprint arXiv:2005.00113.](https://arxiv.org/abs/2005.00113)
+    References
+    ----------
+    [^1]: [USP DS repository](https://sites.google.com/view/uspdsrepository)
+    [^2]: [Souza, V., Reis, D.M.D., Maletzke, A.G. and Batista, G.E., 2020. Challenges in Benchmarking Stream Learning Algorithms with Real-world Data. arXiv preprint arXiv:2005.00113.](https://arxiv.org/abs/2005.00113)
 
     """
 

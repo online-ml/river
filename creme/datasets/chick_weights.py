@@ -10,8 +10,9 @@ class ChickWeights(base.FileDataset):
     along time, according to the diet the chick is on. The data is ordered by time and then by
     chick.
 
-    References:
-        1. [Chick weight dataset overview](http://rstudio-pubs-static.s3.amazonaws.com/107631_131ad1c022df4f90aa2d214a5c5609b2.html)
+    References
+    ----------
+    [^1]: [Chick weight dataset overview](http://rstudio-pubs-static.s3.amazonaws.com/107631_131ad1c022df4f90aa2d214a5c5609b2.html)
 
     """
 

@@ -8,8 +8,9 @@ class Phishing(base.FileDataset):
 
     This dataset contains features from web pages that are classified as phishing or not.
 
-    References:
-        1. [UCI page](http://archive.ics.uci.edu/ml/datasets/Website+Phishing)
+    References
+    ----------
+    [^1]: [UCI page](http://archive.ics.uci.edu/ml/datasets/Website+Phishing)
 
     """
 

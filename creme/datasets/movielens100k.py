@@ -12,8 +12,9 @@ class MovieLens100K(base.RemoteDataset):
     collected through the MovieLens web site (movielens.umn.edu) during the seven-month period from
     September 19th, 1997 through April 22nd, 1998.
 
-    References:
-        1. [The MovieLens Datasets: History and Context](http://dx.doi.org/10.1145/2827872)
+    References
+    ----------
+    [^1]: [The MovieLens Datasets: History and Context](http://dx.doi.org/10.1145/2827872)
 
     """
 
