@@ -28,7 +28,11 @@ cdef inline get_keys(VectorDict vec):
 cdef inline get_union_keys(VectorDict left, VectorDict right):
     left_keys = get_keys(left)
     right_keys = get_keys(right)
-    right_only_keys = itertools.filterfalse(left._data.__contains__, right_keys)
+    if left._lazy_mask:
+        right_only_keys = (key for key in right_keys
+                           if key not in left._data or key not in left._mask)
+    else:
+        right_only_keys = (key for key in right_keys if key not in left._data)
     return itertools.chain(left_keys, right_only_keys)
 
 
