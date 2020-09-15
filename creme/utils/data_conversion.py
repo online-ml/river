@@ -4,7 +4,10 @@ import numpy as np
 def dict2numpy(data) -> np.ndarray:
     """Convert a dictionary containing data to a numpy array.
 
-    There is not restriction to the type of keys in `data`, but values must be strictly numeric.
+    There is not restriction to the type of keys in `data`, but values must
+    be strictly numeric. To make sure random permutations of the features
+    do not impact on the learning algorithms, keys are first converted to
+    strings and then sorted prior to the conversion.
 
     Parameters
     ----------
@@ -20,10 +23,11 @@ def dict2numpy(data) -> np.ndarray:
     --------
     >>> from creme.utils import dict2numpy
     >>> dict2numpy({'a': 1, 'b': 2, 3: 3})
-    array([1, 2, 3])
+    array([3, 1, 2])
 
     """
-    return np.asarray(list(x for _, x in sorted(data.items())))
+    data_ = {str(k): v for k, v in data.items()}
+    return np.asarray(list(x for _, x in sorted(data_.items())))
 
 
 def numpy2dict(data: np.ndarray) -> dict:
