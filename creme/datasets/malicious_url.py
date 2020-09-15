@@ -8,9 +8,10 @@ class MaliciousURL(base.RemoteDataset):
 
     This dataset contains features about URLs that are classified as malicious or not.
 
-    References:
-        1. [Detecting Malicious URLs](http://www.sysnet.ucsd.edu/projects/url/)
-        2. [Identifying Suspicious URLs: An Application of Large-Scale Online Learning](http://cseweb.ucsd.edu/~jtma/papers/url-icml2009.pdf)
+    References
+    ----------
+    [^1]: [Detecting Malicious URLs](http://www.sysnet.ucsd.edu/projects/url/)
+    [^2]: [Identifying Suspicious URLs: An Application of Large-Scale Online Learning](http://cseweb.ucsd.edu/~jtma/papers/url-icml2009.pdf)
 
     """
 

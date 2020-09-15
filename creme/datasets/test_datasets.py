@@ -13,7 +13,7 @@ def _iter_datasets():
     for variant in datasets.Insects.variant_sizes:
         yield datasets.Insects(variant=variant)
 
-    for _, dataset in inspect.getmembers(importlib.import_module(f'creme.datasets'), inspect.isclass):
+    for _, dataset in inspect.getmembers(importlib.import_module('creme.datasets'), inspect.isclass):
         if not issubclass(dataset, datasets.Insects):
             yield dataset()
 

@@ -9,8 +9,9 @@ class HTTP(base.RemoteDataset):
     The goal is to predict whether or not an HTTP connection is anomalous or not. The dataset only
     contains 2,211 (0.4%) positive labels.
 
-    References:
-        1. [HTTP (KDDCUP99) dataset](http://odds.cs.stonybrook.edu/http-kddcup99-dataset/)
+    References
+    ----------
+    [^1]: [HTTP (KDDCUP99) dataset](http://odds.cs.stonybrook.edu/http-kddcup99-dataset/)
 
     """
 

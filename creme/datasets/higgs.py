@@ -11,8 +11,9 @@ class Higgs(base.RemoteDataset):
     features are functions of the first 21 features; these are high-level features derived by
     physicists to help discriminate between the two classes.
 
-    References:
-        1. [UCI page](https://archive.ics.uci.edu/ml/datasets/HIGGS)
+    References
+    ----------
+    [^1]: [UCI page](https://archive.ics.uci.edu/ml/datasets/HIGGS)
 
     """
 
