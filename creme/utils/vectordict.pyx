@@ -434,9 +434,14 @@ cdef class VectorDict:
         if left_._use_factory or right_._use_factory:
             for key in get_union_keys(left_, right_):
                 res += get_value(left_, key) * get_value(right_, key)
-        else:
+        elif left_._use_mask or right_._use_mask:
             for key in get_intersection_keys(left_, right_):
                 res += left_._data[key] * right_._data[key]
+        else:
+            if len(right_._data) < len(left_._data):
+                left_, right_ = right_, left_
+            for key, left_value in left_._data.items():
+                res += left_value * right_._data.get(key, 0)
         return res
 
     def __neg__(self):
