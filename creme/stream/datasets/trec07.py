@@ -12,9 +12,10 @@ class TREC07(base.RemoteDataset):
 
     The available raw features are: sender, recipients, date, subject, body.
 
-    References:
-        1. [TREC 2007 Spam Track Overview](https://trec.nist.gov/pubs/trec16/papers/SPAM.OVERVIEW16.pdf)
-        2. [Code ran to parse the dataset](https://gist.github.com/gbolmier/b6a942699aaaedec54041a32e4f34d40)
+    References
+    ----------
+    [^1]: [TREC 2007 Spam Track Overview](https://trec.nist.gov/pubs/trec16/papers/SPAM.OVERVIEW16.pdf)
+    [^2]: [Code ran to parse the dataset](https://gist.github.com/gbolmier/b6a942699aaaedec54041a32e4f34d40)
 
     """
 

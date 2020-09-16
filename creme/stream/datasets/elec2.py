@@ -14,9 +14,10 @@ class Elec2(base.RemoteDataset):
     five minutes. Electricity transfers to/from the neighboring state of Victoria were done to
     alleviate fluctuations.
 
-    References:
-        1. [SPLICE-2 Comparative Evaluation: Electricity Pricing](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.12.9405)
-        2. [DataHub description](https://datahub.io/machine-learning/electricity#readme)
+    References
+    ----------
+    [^1]: [SPLICE-2 Comparative Evaluation: Electricity Pricing](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.12.9405)
+    [^2]: [DataHub description](https://datahub.io/machine-learning/electricity#readme)
 
     """
 

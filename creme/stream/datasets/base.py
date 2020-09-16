@@ -1,7 +1,9 @@
 import abc
+import inspect
 import itertools
 import pathlib
 import os
+import re
 import shutil
 import tarfile
 from urllib import request
@@ -54,8 +56,10 @@ class Dataset(abc.ABC):
         return itertools.islice(self, k)
 
     @property
-    def _repr_title(self):
-        return f'{self.__class__.__name__} dataset'
+    def desc(self):
+        """Return the description from the docstring."""
+        desc = re.split(pattern=r'\w+\n\s{4}\-{3,}', string=self.__doc__, maxsplit=0)[0]
+        return inspect.cleandoc(desc)
 
     @property
     def _repr_content(self):
@@ -66,15 +70,18 @@ class Dataset(abc.ABC):
         """
 
         content = {}
+        content['Name'] = self.__class__.__name__
         content['Task'] = self.task
-        if self.n_samples:
-            content['Number of samples'] = f'{self.n_samples:,}'
+        if isinstance(self, SyntheticDataset):
+            content['Samples'] = '∞'
+        elif self.n_samples:
+            content['Samples'] = f'{self.n_samples:,}'
         if self.n_features:
-            content['Number of features'] = f'{self.n_features:,}'
+            content['Features'] = f'{self.n_features:,}'
         if self.n_outputs:
-            content['Number of outputs'] = f'{self.n_outputs:,}'
+            content['Outputs'] = f'{self.n_outputs:,}'
         if self.n_classes:
-            content['Number of classes'] = f'{self.n_classes:,}'
+            content['Classes'] = f'{self.n_classes:,}'
         content['Sparse'] = str(self.sparse)
 
         return content
@@ -84,20 +91,26 @@ class Dataset(abc.ABC):
         l_len = max(map(len, self._repr_content.keys()))
         r_len = max(map(len, self._repr_content.values()))
 
-        return (
-            f'{self._repr_title}\n\n' +
+        out = (
+            f'{self.desc}\n\n' +
             '\n'.join(
                 k.rjust(l_len) + '  ' + v.ljust(r_len)
                 for k, v in self._repr_content.items()
             )
         )
 
+        if 'Parameters\n    ----------' in self.__doc__:
+            params = re.split(
+                r'\w+\n\s{4}\-{3,}',
+                re.split('Parameters\n    ----------', self.__doc__)[1]
+            )[0].rstrip()
+            out += f'\n\nParameters:\n{params}'
+
+        return out
+
 
 class SyntheticDataset(Dataset):
-
-    @property
-    def _repr_title(self):
-        return f'{self.__class__.__name__} synthetic dataset'
+    """A synthetic dataset."""
 
 
 class FileDataset(Dataset):

@@ -9,8 +9,9 @@ class ImageSegments(base.FileDataset):
     This dataset contains features that describe image segments into 7 classes: brickface, sky,
     foliage, cement, window, path, and grass.
 
-    References:
-        1. [UCI page](https://archive.ics.uci.edu/ml/datasets/Statlog+(Image+Segmentation))
+    References
+    ----------
+    [^1]: [UCI page](https://archive.ics.uci.edu/ml/datasets/Statlog+(Image+Segmentation))
 
     """
 

@@ -6,8 +6,9 @@ from . import base
 class SolarFlare(base.FileDataset):
     """Solar flare multi-output regression.
 
-    References:
-        1. [UCI page](https://archive.ics.uci.edu/ml/datasets/Solar+Flare)
+    References
+    ----------
+    [^1]: [UCI page](https://archive.ics.uci.edu/ml/datasets/Solar+Flare)
 
     """
 
