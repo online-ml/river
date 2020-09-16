@@ -1,16 +1,16 @@
 """
-The tests performed here confirm that the outputs of the online LDA are exactly the same as those of
+The tests performed here confirm that the outputs of the online preprocessing.LDA are exactly the same as those of
 the original with a batch_size of size 1. Coverage is 100%.
 
 References
 ----------
 [^1]: Jordan Boyd-Graber, Ke Zhai, Online Latent Dirichlet Allocation with Infinite Vocabulary.
     http://proceedings.mlr.press/v28/zhai13.pdf
-[^2]: Creme's Online LDA reproduces exactly the same results of the original one with a batch size of 1: https://github.com/kzhai/PyInfVoc.
+[^2]: Creme's Online preprocessing.LDA reproduces exactly the same results of the original one with a batch size of 1: https://github.com/kzhai/PyInfVoc.
 """
 import numpy as np
 
-from creme.decomposition import LDA
+from creme import preprocessing
 
 
 DOC_SET = [
@@ -112,7 +112,7 @@ def test_extraction_words_ids():
     Assert that indexes are updated and extractable.
     """
 
-    lda = LDA(2, number_of_documents=5, seed=42)
+    lda = preprocessing.LDA(2, number_of_documents=5, seed=42)
 
     word_indexes_list = []
 
@@ -141,7 +141,7 @@ def test_statistics_two_components():
     """
     n_components = 2
 
-    lda = LDA(n_components, number_of_documents=60, seed=42)
+    lda = preprocessing.LDA(n_components, number_of_documents=60, seed=42)
 
     statistics_list = []
 
@@ -178,7 +178,7 @@ def test_statistics_five_components():
 
     n_components = 5
 
-    lda = LDA(
+    lda = preprocessing.LDA(
         n_components=n_components,
         number_of_documents=60,
         maximum_size_vocabulary=100,
@@ -222,7 +222,7 @@ def test_five_components():
 
     n_components = 5
 
-    lda = LDA(
+    lda = preprocessing.LDA(
         n_components=n_components,
         number_of_documents=60,
         maximum_size_vocabulary=100,
@@ -251,7 +251,7 @@ def test_prunning_vocabulary():
     maximum_size_vocabulary (int).
     """
 
-    lda = LDA(
+    lda = preprocessing.LDA(
         n_components=2,
         number_of_documents=60,
         vocab_prune_interval=2,
@@ -277,7 +277,7 @@ def test_learn_transform():
     Assert that learn_one and transform_one methods returns waited ouput.
     """
 
-    lda = LDA(
+    lda = preprocessing.LDA(
         n_components=2,
         number_of_documents=60,
         vocab_prune_interval=2,
