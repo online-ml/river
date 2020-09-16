@@ -72,9 +72,9 @@ class LDA(base.Transformer):
     Examples
     --------
 
-        >>> from creme import compose
-    >>> from creme import decomposition
+    >>> from creme import compose
     >>> from creme import feature_extraction
+    >>> from creme import preprocessing
 
     >>> X = [
     ...    'weather cold',
@@ -86,7 +86,7 @@ class LDA(base.Transformer):
 
     >>> lda = compose.Pipeline(
     ...     feature_extraction.BagOfWords(),
-    ...     decomposition.LDA(
+    ...     preprocessing.LDA(
     ...         n_components=2,
     ...         number_of_documents=60,
     ...         seed=42
