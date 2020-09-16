@@ -48,9 +48,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
     """Half-Space Trees (HST).
 
     Half-space trees are an online variant of isolation forests. They work well when anomalies are
-    spread out, such as in the `datasets.CreditCard` dataset. However, they do not work well if
-    anomalies are packed together in windows, such as in the `datasets.HTTP` and `datasets.SMTP`
-    datasets.
+    spread out. However, they do not work well if anomalies are packed together in windows.
 
     By default, this implementation assumes that each feature has values that are comprised
     between 0 and 1. If this isn't the case, then you can manually specify the limits via the
@@ -112,9 +110,9 @@ class HalfSpaceTrees(base.AnomalyDetector):
     and ensures that the values of each feature are comprised between 0 and 1.
 
     >>> from creme import compose
-    >>> from creme import datasets
     >>> from creme import metrics
     >>> from creme import preprocessing
+    >>> from creme import stream
 
     >>> model = compose.Pipeline(
     ...     preprocessing.MinMaxScaler(),
@@ -123,7 +121,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     >>> auc = metrics.ROCAUC()
 
-    >>> for x, y in datasets.CreditCard().take(8000):
+    >>> for x, y in stream.iter_dataset('CreditCard').take(8000):
     ...     score = model.score_one(x)
     ...     model = model.learn_one(x, y)
     ...     auc = auc.update(y, score)

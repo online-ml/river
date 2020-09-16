@@ -13,7 +13,6 @@ from . import base
 from . import cluster
 from . import compat
 from . import compose
-from . import datasets
 from . import dummy
 from . import decomposition
 from . import drift
@@ -48,7 +47,6 @@ __all__ = [
     'cluster',
     'compat',
     'compose',
-    'datasets',
     'dummy',
     'decomposition',
     'drift',

@@ -77,7 +77,7 @@ class BaseDecisionTree(abc.ABC):
         Examples
         --------
 
-        >>> from creme import datasets
+        >>> from creme import stream
         >>> from creme import tree
 
         >>> model = tree.DecisionTreeClassifier(
@@ -89,7 +89,7 @@ class BaseDecisionTree(abc.ABC):
         ...    min_child_samples=0,
         ... )
 
-        >>> for x, y in datasets.Phishing():
+        >>> for x, y in stream.iter_dataset('Phishing'):
         ...    model = model.learn_one(x, y)
 
         >>> dot = model.draw()
@@ -221,12 +221,12 @@ class DecisionTreeClassifier(BaseDecisionTree, base.Classifier):
     Examples
     --------
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
+    >>> from creme import stream
     >>> from creme import tree
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
 
     >>> model = tree.DecisionTreeClassifier(
     ...     patience=100,
@@ -276,16 +276,21 @@ class DecisionTreeClassifier(BaseDecisionTree, base.Classifier):
 def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
     """Generate n colors with equally spaced hues.
 
-    Parameters:
-        n: The number of colors required.
+    Parameters
+    ----------
+    n
+        The number of colors required.
 
-    Returns:
-        List of n tuples of form (R, G, B) being the components of each color.
+    Returns
+    -------
+    List of n tuples of form (R, G, B) being the components of each color.
 
-    References:
-        https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py
+    References
+    ----------
+    [^1]: https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py
 
     """
+
     colors = []
 
     # Initialize saturation & value; calculate chroma & value shift

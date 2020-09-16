@@ -99,13 +99,13 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     Examples
     --------
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
     >>> from creme import sampling
+    >>> from creme import stream
 
     >>> model = preprocessing.StandardScaler()
 
@@ -120,7 +120,7 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     ... )
 
     >>> evaluate.progressive_val_score(
-    ...     datasets.TrumpApproval(),
+    ...     stream.iter_dataset('TrumpApproval'),
     ...     model,
     ...     metrics.MAE(),
     ...     print_every=500
@@ -151,45 +151,51 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     is added to the buffer. If the buffer is full and the new sample has a bigger loss than the
     lowest loss in the buffer, then the sample takes it's place.
 
-    Parameters:
-        classifier
-        size: Size of the buffer.
-        p: Probability of updating the model with a sample from the buffer instead of a new
-            incoming sample.
-        loss: Criterion used to evaluate the hardness of a sample.
-        seed: Random seed.
+    Parameters
+    ----------
+    classifier
+    size
+        Size of the buffer.
+    p
+        Probability of updating the model with a sample from the buffer instead of a new
+        incoming sample.
+    loss
+        Criterion used to evaluate the hardness of a sample.
+    seed
+        Random seed.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import datasets
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import optim
-        >>> from creme import preprocessing
-        >>> from creme import sampling
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import optim
+    >>> from creme import preprocessing
+    >>> from creme import sampling
+    >>> from creme import stream
 
-        >>> model = preprocessing.StandardScaler()
+    >>> model = preprocessing.StandardScaler()
 
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     sampling.HardSamplingClassifier(
-        ...         classifier=linear_model.LogisticRegression(),
-        ...         p=0.1,
-        ...         size=40,
-        ...         seed=42,
-        ...     )
-        ... )
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     sampling.HardSamplingClassifier(
+    ...         classifier=linear_model.LogisticRegression(),
+    ...         p=0.1,
+    ...         size=40,
+    ...         seed=42,
+    ...     )
+    ... )
 
-        >>> evaluate.progressive_val_score(
-        ...     dataset=datasets.Phishing(),
-        ...     model=model,
-        ...     metric=metrics.ROCAUC(),
-        ...     print_every=500,
-        ... )
-        [500] ROCAUC: 0.927112
-        [1,000] ROCAUC: 0.947515
-        ROCAUC: 0.950541
+    >>> evaluate.progressive_val_score(
+    ...     dataset=stream.iter_dataset('Phishing'),
+    ...     model=model,
+    ...     metric=metrics.ROCAUC(),
+    ...     print_every=500,
+    ... )
+    [500] ROCAUC: 0.927112
+    [1,000] ROCAUC: 0.947515
+    ROCAUC: 0.950541
 
     """
 

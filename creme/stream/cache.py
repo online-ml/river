@@ -31,10 +31,9 @@ class Cache:
     --------
 
     >>> import time
-    >>> from creme import datasets
     >>> from creme import stream
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
     >>> cache = stream.Cache()
 
     The cache can be used by wrapping it around an iterable. Because this is the first time

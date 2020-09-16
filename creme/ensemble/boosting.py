@@ -40,13 +40,13 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     In the following example three tree classifiers are boosted together. The performance is
     slightly better than when using a single tree.
 
-    >>> from creme import datasets
     >>> from creme import ensemble
     >>> from creme import evaluate
     >>> from creme import metrics
+    >>> from creme import stream
     >>> from creme import tree
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
 
     >>> metric = metrics.LogLoss()
 

@@ -77,5 +77,5 @@ class Insects(base.RemoteDataset):
         return stream.iter_arff(self.path, target='class')
 
     @property
-    def _repr_title(self):
-        return f'{self.__class__.__name__} dataset, {self.variant} variant'
+    def _repr_content(self):
+        return {**super()._repr_content, 'Variant': self.variant}

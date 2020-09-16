@@ -4,17 +4,18 @@ from urllib import request
 
 import pytest
 
-from creme import datasets
+from creme import stream
+
 from . import base
 
 
 def _iter_datasets():
 
-    for variant in datasets.Insects.variant_sizes:
-        yield datasets.Insects(variant=variant)
+    for variant in stream.iter_dataset('Insects').variant_sizes:
+        yield stream.iter_dataset('Insects', variant=variant)
 
-    for _, dataset in inspect.getmembers(importlib.import_module('creme.datasets'), inspect.isclass):
-        if not issubclass(dataset, datasets.Insects):
+    for _, dataset in inspect.getmembers(importlib.import_module('creme.stream.datasets'), inspect.isclass):
+        if dataset.__class__.__name__ != 'Insects':
             yield dataset()
 
 
@@ -65,3 +66,14 @@ def test_dimensions(dataset):
             assert len(x) == dataset.n_features
         n += 1
     assert n == dataset.n_samples
+
+
+@pytest.mark.parametrize(
+    'dataset',
+    [
+        pytest.param(dataset, id=dataset.__class__.__name__)
+        for dataset in _iter_datasets()
+    ]
+)
+def test_repr(dataset):
+    assert repr(dataset)
