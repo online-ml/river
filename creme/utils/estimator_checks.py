@@ -12,42 +12,41 @@ __all__ = ['check_estimator']
 def yield_datasets(model):
 
     from creme import compose
-    from creme import datasets
     from creme import preprocessing
     from creme import stream
     from creme import utils
-    from sklearn import datasets as sk_datasets
+    from sklearn import datasets
 
     # Classification
     if utils.inspect.isclassifier(model):
-        yield datasets.Phishing()
+        yield stream.iter_dataset('Phishing')
 
         # Multi-class classification
         if model._multiclass:
-            yield datasets.ImageSegments().take(500)
+            yield stream.iter_dataset('ImageSegments').take(500)
 
     # Regression
     if utils.inspect.isregressor(model):
-        yield datasets.TrumpApproval()
+        yield stream.iter_dataset('TrumpApproval')
 
     # Multi-output regression
     if utils.inspect.ismoregressor(model):
 
         # 1
-        yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
+        yield stream.iter_sklearn_dataset(datasets.load_linnerud())
 
         # 2
         class SolarFlare:
-            """One-hot encoded version of `datasets.SolarFlare`."""
+            """One-hot encoded version of `stream.iter_dataset('SolarFlare')"""
             def __iter__(self):
                 oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(int)
-                for x, y in datasets.SolarFlare():
+                for x, y in stream.iter_dataset('SolarFlare'):
                     yield oh.transform_one(x), y
         yield SolarFlare()
 
     # Multi-output classification
     if utils.inspect.ismoclassifier(model):
-        yield datasets.Music()
+        yield stream.iter_dataset('Music')
 
 
 def check_learn_one(model, dataset):

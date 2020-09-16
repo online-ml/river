@@ -9,7 +9,10 @@ __all__ = [
 
 
 def _available_datasets():
-    return dict(inspect.getmembers(importlib.import_module('creme.datasets'), inspect.isclass))
+    return dict(inspect.getmembers(
+        importlib.import_module('creme.stream.datasets'),
+        inspect.isclass
+    ))
 
 
 def available_datasets():

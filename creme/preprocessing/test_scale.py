@@ -1,6 +1,5 @@
 import math
 
-from creme import datasets
 from creme import preprocessing
 from creme import stream
 
@@ -11,7 +10,7 @@ import pandas as pd
 def test_standard_scaler_one_many_consistent():
     """Checks that using learn_one or learn_many produces the same result."""
 
-    X = pd.read_csv(datasets.TrumpApproval().path)
+    X = pd.read_csv(stream.iter_dataset('TrumpApproval').path)
 
     one = preprocessing.StandardScaler()
     for x, _ in stream.iter_pandas(X):
@@ -30,7 +29,7 @@ def test_standard_scaler_one_many_consistent():
 def test_standard_scaler_shuffle_columns():
     """Checks that learn_many works identically whether columns are shuffled or not."""
 
-    X = pd.read_csv(datasets.TrumpApproval().path)
+    X = pd.read_csv(stream.iter_dataset('TrumpApproval').path)
 
     normal = preprocessing.StandardScaler()
     for xb in np.array_split(X, 10):
@@ -50,7 +49,7 @@ def test_standard_scaler_shuffle_columns():
 def test_standard_scaler_add_remove_columns():
     """Checks that no exceptions are raised whenever columns are dropped and/or added."""
 
-    X = pd.read_csv(datasets.TrumpApproval().path)
+    X = pd.read_csv(stream.iter_dataset('TrumpApproval').path)
 
     ss = preprocessing.StandardScaler()
     for xb in np.array_split(X, 10):

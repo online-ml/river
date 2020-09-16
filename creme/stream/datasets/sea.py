@@ -1,6 +1,6 @@
 import random
 
-from .. import base
+from . import base
 
 
 class SEA(base.SyntheticDataset):
@@ -23,9 +23,9 @@ class SEA(base.SyntheticDataset):
     Examples
     --------
 
-    >>> from creme import datasets
+    >>> from creme import stream
 
-    >>> dataset = datasets.synth.SEA(variant=0, seed=42)
+    >>> dataset = stream.iter_dataset('SEA', variant=0, seed=42)
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
@@ -41,7 +41,7 @@ class SEA(base.SyntheticDataset):
 
     """
 
-    def __init__(self, variant: int, noise=0., seed: int = None):
+    def __init__(self, variant=0, noise=0., seed: int = None):
 
         super().__init__(n_features=3, task=base.BINARY_CLF)
 
@@ -67,5 +67,5 @@ class SEA(base.SyntheticDataset):
             yield x, y
 
     @property
-    def _repr_title(self):
-        return f'{self.__class__.__name__} dataset, variant #{self.variant}'
+    def _repr_content(self):
+        return {**super()._repr_content, 'Variant': str(self.variant)}
