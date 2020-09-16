@@ -14,7 +14,6 @@ from . import cluster
 from . import compat
 from . import compose
 from . import dummy
-from . import decomposition
 from . import drift
 from . import ensemble
 from . import evaluate
@@ -48,7 +47,6 @@ __all__ = [
     'compat',
     'compose',
     'dummy',
-    'decomposition',
     'drift',
     'ensemble',
     'evaluate',
