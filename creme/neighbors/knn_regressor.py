@@ -45,17 +45,17 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
     Examples
     --------
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
     >>> from creme import neighbors
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.TrumpApproval()
+    >>> dataset = stream.iter_dataset('TrumpApproval')
 
     >>> model = (
-    ...  preprocessing.StandardScaler() |
-    ...  neighbors.KNNRegressor(window_size=50)
+    ...     preprocessing.StandardScaler() |
+    ...     neighbors.KNNRegressor(window_size=50)
     ... )
 
     >>> metric = metrics.MAE()

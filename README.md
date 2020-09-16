@@ -43,11 +43,11 @@ As a quick example, we'll train a logistic regression to classify the [website p
 
 ```python
 >>> from pprint import pprint
->>> from creme import datasets
+>>> from creme import stream
 
->>> X_y = datasets.Phishing()  # this is a generator
+>>> dataset = stream.iter_dataset('Phishing')
 
->>> for x, y in X_y:
+>>> for x, y in dataset:
 ...     pprint(x)
 ...     print(y)
 ...     break
@@ -79,10 +79,10 @@ Now let's run the model on the dataset in a streaming fashion. We sequentially i
 
 >>> metric = metrics.Accuracy()
 
->>> for x, y in X_y:
+>>> for x, y in dataset:
 ...     y_pred = model.predict_one(x)      # make a prediction
 ...     metric = metric.update(y, y_pred)  # update the metric
-...     model = model.learn_one(x, y)        # make the model learn
+...     model = model.learn_one(x, y)      # make the model learn
 
 >>> metric
 Accuracy: 89.20%

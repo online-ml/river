@@ -1,4 +1,3 @@
-from creme import datasets
 from creme import linear_model
 from creme import metrics
 from creme import multiclass
@@ -18,7 +17,7 @@ def test_online_batch_consistent():
         )
     )
 
-    dataset = datasets.ImageSegments()
+    dataset = stream.iter_dataset('ImageSegments')
 
     batch_metric = metrics.MacroF1()
 

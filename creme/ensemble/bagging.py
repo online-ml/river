@@ -57,15 +57,16 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     In the following example three logistic regressions are bagged together. The performance is
     slightly better than when using a single logistic regression.
 
-    >>> from creme import datasets
     >>> from creme import ensemble
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
+
     >>> model = ensemble.BaggingClassifier(
     ...     model=(
     ...         preprocessing.StandardScaler() |
@@ -74,6 +75,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     ...     n_models=3,
     ...     seed=42
     ... )
+
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
@@ -132,21 +134,23 @@ class BaggingRegressor(BaseBagging, base.Regressor):
     In the following example three logistic regressions are bagged together. The performance is
     slightly better than when using a single logistic regression.
 
-    >>> from creme import datasets
     >>> from creme import ensemble
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.TrumpApproval()
+    >>> dataset = stream.iter_dataset('TrumpApproval')
+
     >>> model = preprocessing.StandardScaler()
     >>> model |= ensemble.BaggingRegressor(
     ...     model=linear_model.LinearRegression(intercept_lr=0.1),
     ...     n_models=3,
     ...     seed=42
     ... )
+
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)

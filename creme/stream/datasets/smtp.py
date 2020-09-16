@@ -9,8 +9,9 @@ class SMTP(base.RemoteDataset):
     The goal is to predict whether or not an SMTP connection is anomalous or not. The dataset only
     contains 2,211 (0.4%) positive labels.
 
-    References:
-        1. [SMTP (KDDCUP99) dataset](http://odds.cs.stonybrook.edu/smtp-kddcup99-dataset/)
+    References
+    ----------
+    [^1]: [SMTP (KDDCUP99) dataset](http://odds.cs.stonybrook.edu/smtp-kddcup99-dataset/)
 
     """
 

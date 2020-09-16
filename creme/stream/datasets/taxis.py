@@ -8,8 +8,9 @@ class Taxis(base.RemoteDataset):
 
     The goal is to predict the duration of taxi rides in New York City.
 
-    References:
-        1. [New York City Taxi Trip Duration competition on Kaggle](https://www.kaggle.com/c/nyc-taxi-trip-duration)
+    References
+    ----------
+    [^1]: [New York City Taxi Trip Duration competition on Kaggle](https://www.kaggle.com/c/nyc-taxi-trip-duration)
 
     """
 

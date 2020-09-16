@@ -11,8 +11,9 @@ class Restaurants(base.RemoteDataset):
     The goal is to predict the number of visitors in each of 829 Japanese restaurants over a priod
     of roughly 16 weeks. The data is ordered by date and then by restaurant ID.
 
-    References:
-        1. [Recruit Restaurant Visitor Forecasting](https://www.kaggle.com/c/recruit-restaurant-visitor-forecasting)
+    References
+    ----------
+    [^1]: [Recruit Restaurant Visitor Forecasting](https://www.kaggle.com/c/recruit-restaurant-visitor-forecasting)
 
     """
 

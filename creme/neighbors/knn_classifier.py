@@ -47,13 +47,13 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
     Examples
     --------
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
     >>> from creme import neighbors
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
 
     >>> model = (
     ...    preprocessing.StandardScaler() |

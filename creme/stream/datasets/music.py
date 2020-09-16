@@ -8,8 +8,9 @@ class Music(base.RemoteDataset):
 
     The goal is to predict to which kinds of moods a song pertains to.
 
-    References:
-        1. [Read, J., Reutemann, P., Pfahringer, B. and Holmes, G., 2016. MEKA: a multi-label/multi-target extension to WEKA. The Journal of Machine Learning Research, 17(1), pp.667-671.](http://www.jmlr.org/papers/v17/12-164.html)
+    References
+    ----------
+    [^1]: [Read, J., Reutemann, P., Pfahringer, B. and Holmes, G., 2016. MEKA: a multi-label/multi-target extension to WEKA. The Journal of Machine Learning Research, 17(1), pp.667-671.](http://www.jmlr.org/papers/v17/12-164.html)
 
     """
 

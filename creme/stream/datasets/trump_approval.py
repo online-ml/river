@@ -11,8 +11,9 @@ class TrumpApproval(base.FileDataset):
     5 polling agencies. The target is the approval rating from FiveThirtyEight's model. The goal of
     this task is to see if we can reproduce FiveThirtyEight's model.
 
-    References:
-        1. [Trump Approval Ratings](https://projects.fivethirtyeight.com/trump-approval-ratings/)
+    References
+    ----------
+    [^1]: [Trump Approval Ratings](https://projects.fivethirtyeight.com/trump-approval-ratings/)
 
     """
 
