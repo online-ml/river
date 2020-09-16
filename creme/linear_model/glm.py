@@ -95,7 +95,7 @@ class GLM:
         self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
 
         # Update the weights
-        self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient)
+        self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient, x=x)
 
         return self
 

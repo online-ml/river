@@ -16,6 +16,7 @@ from .nesterov import NesterovMomentum
 from .nadam import Nadam
 from .rms_prop import RMSProp
 from .sgd import SGD
+from .kalman_filter import KalmanFilter
 
 
 __all__ = [
@@ -35,5 +36,6 @@ __all__ = [
     'Optimizer',
     'RMSProp',
     'schedulers',
-    'SGD'
+    'SGD',
+    'KalmanFilter'
 ]
