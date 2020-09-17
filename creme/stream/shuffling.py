@@ -8,7 +8,7 @@ def shuffle(stream: typing.Iterator, buffer_size: int, seed: int = None):
     """Shuffles a stream of data.
 
     This works by maintaining a buffer of elements. The first `buffer_size` elements are stored in
-    memory. Once the buffer is full, a random element inside the buffer is yielded. Everytime an
+    memory. Once the buffer is full, a random element inside the buffer is yielded. Every time an
     element is yielded, the next element in the stream replaces it and the buffer is sampled again.
     Increasing `buffer_size` will improve the quality of the shuffling.
 

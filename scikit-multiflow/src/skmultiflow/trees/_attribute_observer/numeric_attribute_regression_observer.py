@@ -33,7 +33,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             self._left = None
             self._right = None
 
-        # Incremental implementation of the insert method. Avoiding unecessary
+        # Incremental implementation of the insert method. Avoiding unnecessary
         # stack tracing must decrease memory costs
         def insert_value(self, att_val, target, weight):
             current = self
