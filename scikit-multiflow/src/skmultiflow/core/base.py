@@ -55,7 +55,8 @@ def clone(estimator, safe=True):
     # XXX: not handling dictionaries
     if estimator_type in (list, tuple, set, frozenset):
         return estimator_type([clone(e, safe=safe) for e in estimator])
-    elif not hasattr(estimator, 'get_params') or isinstance(estimator, type):
+    elif not (hasattr(estimator, 'get_params') or hasattr(estimator, '_get_params')) \
+            or isinstance(estimator, type):
         if not safe:
             return copy.deepcopy(estimator)
         else:
@@ -64,11 +65,17 @@ def clone(estimator, safe=True):
                             "as it does not implement a 'get_params' methods."
                             % (repr(estimator), type(estimator)))
     klass = estimator.__class__
-    new_object_params = estimator.get_params(deep=False)
+    try:
+        new_object_params = estimator.get_params(deep=False)
+    except AttributeError:
+        new_object_params = estimator._get_params()
     for name, param in new_object_params.items():
         new_object_params[name] = clone(param, safe=False)
     new_object = klass(**new_object_params)
-    params_set = new_object.get_params(deep=False)
+    try:
+        params_set = new_object.get_params(deep=False)
+    except AttributeError:
+        params_set = estimator._get_params()
 
     # quick sanity check of the parameters of the clone
     for name in new_object_params:
