@@ -52,10 +52,14 @@ from .roc_auc import ROCAUC
 from .rolling import Rolling
 from .smape import SMAPE
 from .time_rolling import TimeRolling
-from ._classification_evaluator import ClassificationEvaluator
-from ._classification_evaluator import WindowClassificationEvaluator
-from ._classification_evaluator import MLClassificationEvaluator
-from ._classification_evaluator import WindowMLClassificationEvaluator
+from ._performance_evaluator import ClassificationEvaluator
+from ._performance_evaluator import WindowClassificationEvaluator
+from ._performance_evaluator import MLClassificationEvaluator
+from ._performance_evaluator import WindowMLClassificationEvaluator
+from ._performance_evaluator import RegressionMeasurements
+from ._performance_evaluator import WindowRegressionMeasurements
+from ._performance_evaluator import MultiTargetRegressionMeasurements
+from ._performance_evaluator import WindowMultiTargetRegressionMeasurements
 
 __all__ = [
     'Accuracy',
