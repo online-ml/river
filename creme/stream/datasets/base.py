@@ -65,7 +65,7 @@ class Dataset(abc.ABC):
     def _repr_content(self):
         """The items that are displayed in the __repr__ method.
 
-        This property can be overriden in order to modify the output of the __repr__ method.
+        This property can be overridden in order to modify the output of the __repr__ method.
 
         """
 

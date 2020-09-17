@@ -72,7 +72,7 @@ class BoxCoxRegressor(TransformedTargetRegressor):
     sub-populations that have different variabilities from others) allowing to transform it towards
     normality.
 
-    The `power` parameter is denoted λ in the litterature. If `power` is equal to 0 than the
+    The `power` parameter is denoted λ in the literature. If `power` is equal to 0 than the
     Box-Cox transform will be equivalent to a log transform.
 
     Parameters

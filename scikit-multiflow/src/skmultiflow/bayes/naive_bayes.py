@@ -20,7 +20,7 @@ class NaiveBayes(BaseSKMObject, ClassifierMixin):
     Parameters
     ----------
     nominal_attributes: numpy.ndarray (optional, default=None)
-        List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+        List of Nominal attributes. If empty, then assume that all attributes are numerical.
 
     Notes
     -----
