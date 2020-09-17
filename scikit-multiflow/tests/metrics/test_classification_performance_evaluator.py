@@ -1,16 +1,16 @@
 import numpy as np
 
-from creme.metrics import ClassificationEvaluator
-from creme.metrics import WindowClassificationEvaluator
-from creme.metrics import MLClassificationEvaluator
-from creme.metrics import WindowMLClassificationEvaluator
+from creme.metrics import _ClassificationReport
+from creme.metrics import _RollingClassificationReport
+from creme.metrics import _MLClassificationReport
+from creme.metrics import _RollingMLClassificationReport
 
 
 def test_binary_classification():
     y_true = np.concatenate((np.ones(85), np.zeros(10), np.ones(5)))
     y_pred = np.concatenate((np.ones(90), np.zeros(10)))
 
-    performance_evaluator = ClassificationEvaluator()
+    performance_evaluator = _ClassificationReport()
     [performance_evaluator.add_result(y_true[i], y_pred[i]) for i in range(len(y_true))]
 
     expected_accuracy_score = 90/100
@@ -58,7 +58,7 @@ def test_window_binary_classification():
     y_true = np.concatenate((np.ones(85), np.zeros(10), np.ones(5)))
     y_pred = np.concatenate((np.ones(90), np.zeros(10)))
 
-    performance_evaluator = WindowClassificationEvaluator(window_size=20)
+    performance_evaluator = _RollingClassificationReport(window_size=20)
     for i in range(len(y_true)):
         performance_evaluator.add_result(y_true[i], y_pred[i])
 
@@ -107,7 +107,7 @@ def test_multi_class_classification():
     y_true = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
     y_pred = np.array([0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2])
 
-    performance_evaluator = ClassificationEvaluator()
+    performance_evaluator = _ClassificationReport()
     [performance_evaluator.add_result(y_true[i], y_pred[i]) for i in range(len(y_true))]
 
     expected_accuracy_score = 0.48
@@ -155,7 +155,7 @@ def test_window_multi_class_classification():
     y_true = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2])
     y_pred = np.array([0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2])
 
-    performance_evaluator = WindowClassificationEvaluator(window_size=20)
+    performance_evaluator = _RollingClassificationReport(window_size=20)
     for i in range(len(y_true)):
         performance_evaluator.add_result(y_true[i], y_pred[i])
 
@@ -206,7 +206,7 @@ def test_multi_label_classification_measurements():
     y_true = np.ones((100, 3))
     y_pred = np.vstack((y_0, y_1, y_2)).T
 
-    performance_evaluator = MLClassificationEvaluator()
+    performance_evaluator = _MLClassificationReport()
     for i in range(len(y_true)):
         performance_evaluator.add_result(y_true[i], y_pred[i])
 
@@ -243,7 +243,7 @@ def test_window_multi_label_classification_measurements():
     y_true = np.ones((100, 3))
     y_pred = np.vstack((y_0, y_1, y_2)).T
 
-    performance_evaluator = WindowMLClassificationEvaluator(window_size=20)
+    performance_evaluator = _RollingMLClassificationReport(window_size=20)
     for i in range(len(y_true)):
         performance_evaluator.add_result(y_true[i], y_pred[i])
 

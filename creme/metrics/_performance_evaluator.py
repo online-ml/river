@@ -19,7 +19,7 @@ from timeit import default_timer as timer
 import numpy as np
 
 
-class ClassificationEvaluator:
+class _ClassificationReport:
     """"Classification report
 
     Incrementally tracks classification performance and provide, at any moment, updated
@@ -33,19 +33,19 @@ class ClassificationEvaluator:
 
     Examples
     --------
-    >>> from creme.metrics import ClassificationEvaluator
+    >>> from creme.metrics import _ClassificationReport
 
     >>> y_true = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     >>> y_pred = [0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2]
 
-    >>> evaluator = ClassificationEvaluator()
+    >>> report = _ClassificationReport()
 
     >>> for i in range(len(y_true)):
-    ...     evaluator.add_result(y_true[i], y_pred[i])
+    ...     report.add_result(y_true[i], y_pred[i])
 
-    >>> evaluator
+    >>> report
     Classification report
-    ==============================
+    <BLANKLINE>
     n_classes:		         3
     n_samples:		        25
     Accuracy:		    0.4800
@@ -62,7 +62,6 @@ class ClassificationEvaluator:
     MacroPrecision:	    0.5470
     MacroRecall:	    0.5111
     MacroF1:		    0.4651
-    ------------------------------
 
     """
 
@@ -133,16 +132,12 @@ class ClassificationEvaluator:
         self.cm.reset()
 
     def __repr__(self):
-        t_line = '=============================='
-        b_line = '------------------------------'
         return ''.join([
-            'Classification report\n',
-            f'{t_line}\n',
+            'Classification report\n\n',
             f'n_classes:\t\t{self.n_classes:>10}\n',
             f'n_samples:\t\t{self.n_samples:>10}\n',
             '\n',
             self._info(),
-            f'{b_line}',
         ])
 
     def _info(self):
@@ -165,7 +160,7 @@ class ClassificationEvaluator:
         ])
 
 
-class WindowClassificationEvaluator(ClassificationEvaluator):
+class _RollingClassificationReport(_ClassificationReport):
     """Rolling classification report
 
     Incrementally tracks classification performance over a sliding window and provide,
@@ -182,19 +177,19 @@ class WindowClassificationEvaluator(ClassificationEvaluator):
 
     Examples
     --------
-    >>> from creme.metrics import WindowClassificationEvaluator
+    >>> from creme.metrics import _RollingClassificationReport
 
     >>> y_true = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     >>> y_pred = [0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2]
 
-    >>> evaluator = WindowClassificationEvaluator(window_size=20)
+    >>> report = _RollingClassificationReport(window_size=20)
 
     >>> for i in range(len(y_true)):
-    ...     evaluator.add_result(y_true[i], y_pred[i])
+    ...     report.add_result(y_true[i], y_pred[i])
 
-    >>> evaluator
-    Classification report [rolling]
-    ==============================
+    >>> report
+    Rolling classification report
+    <BLANKLINE>
     n_classes:		         3
     n_samples:		        20
     window_size:	        20
@@ -212,7 +207,6 @@ class WindowClassificationEvaluator(ClassificationEvaluator):
     MacroPrecision:	    0.4722
     MacroRecall:	    0.2889
     MacroF1:		    0.3379
-    ------------------------------
 
     """
 
@@ -226,21 +220,17 @@ class WindowClassificationEvaluator(ClassificationEvaluator):
         self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
 
     def __repr__(self):
-        t_line = '=============================='
-        b_line = '------------------------------'
         return ''.join([
-            'Classification report [rolling]\n',
-            f'{t_line}\n',
+            'Rolling classification report\n\n',
             f'n_classes:\t\t{self.n_classes:>10}\n',
             f'n_samples:\t\t{self.n_samples:>10}\n',
             f'window_size:\t{self.window_size:>10}\n',
             '\n',
             self._info(),
-            f'{b_line}',
             ])
 
 
-class MLClassificationEvaluator:
+class _MLClassificationReport:
     """Multi-label classification report.
 
     Incrementally tracks a classifier's performance and provide, at any moment, updated
@@ -254,7 +244,7 @@ class MLClassificationEvaluator:
 
     Examples
     --------
-    >>> from creme.metrics import MLClassificationEvaluator
+    >>> from creme.metrics import _MLClassificationReport
 
     >>> y_0 = [True]*100
     >>> y_1 = [True]*90 + [False]*10
@@ -265,21 +255,20 @@ class MLClassificationEvaluator:
     ...     y_true.append({0:True, 1:True, 2:True})
     ...     y_pred.append({0:y_0[i], 1:y_1[i], 2:y_2[i]})
 
-    >>> evaluator = MLClassificationEvaluator()
+    >>> evaluator = _MLClassificationReport()
 
     >>> for i in range(len(y_true)):
     ...     evaluator.add_result(y_true[i], y_pred[i])
 
     >>> evaluator
     Multi-label classification report
-    ==============================
+    <BLANKLINE>
     n_classes:		         3
     n_samples:		       100
     Hamming:		    0.9333
     HammingLoss:	    0.0667
     ExactMatch:		    0.8500
     JaccardIndex:	    0.9333
-    ------------------------------
 
     """
 
@@ -327,16 +316,12 @@ class MLClassificationEvaluator:
         self.cm.reset()
 
     def __repr__(self):
-        t_line = '=============================='
-        b_line = '------------------------------'
         return ''.join([
-            'Multi-label classification report\n',
-            f'{t_line}\n',
+            'Multi-label classification report\n\n',
             f'n_classes:\t\t{self.n_labels:>10}\n',
             f'n_samples:\t\t{self.n_samples:>10}\n',
             '\n',
             self._info(),
-            f'{b_line}',
         ])
 
     def _info(self):
@@ -348,7 +333,7 @@ class MLClassificationEvaluator:
         ])
 
 
-class WindowMLClassificationEvaluator(MLClassificationEvaluator):
+class _RollingMLClassificationReport(_MLClassificationReport):
     """Rolling multi-label classification report.
 
     Incrementally tracks a classifier's performance over a sliding window and provide,
@@ -365,7 +350,7 @@ class WindowMLClassificationEvaluator(MLClassificationEvaluator):
 
     Examples
     --------
-    >>> from creme.metrics import WindowMLClassificationEvaluator
+    >>> from creme.metrics import _RollingMLClassificationReport
 
     >>> y_0 = [True]*100
     >>> y_1 = [True]*90 + [False]*10
@@ -376,13 +361,13 @@ class WindowMLClassificationEvaluator(MLClassificationEvaluator):
     ...     y_true.append({0:True, 1:True, 2:True})
     ...     y_pred.append({0:y_0[i], 1:y_1[i], 2:y_2[i]})
 
-    >>> evaluator = WindowMLClassificationEvaluator(window_size=20)
+    >>> evaluator = _RollingMLClassificationReport(window_size=20)
     >>> for i in range(len(y_true)):
     ...     evaluator.add_result(y_true[i], y_pred[i])
 
     >>> evaluator
-    Multi-label classification report [rolling]
-    ==============================
+    Rolling multi-label classification report
+    <BLANKLINE>
     n_labels:		         3
     n_samples:		        20
     window_size:	        20
@@ -390,7 +375,6 @@ class WindowMLClassificationEvaluator(MLClassificationEvaluator):
     HammingLoss:	    0.3333
     ExactMatch:		    0.2500
     JaccardIndex:	    0.6667
-    ------------------------------
 
     """
 
@@ -404,21 +388,17 @@ class WindowMLClassificationEvaluator(MLClassificationEvaluator):
         self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
 
     def __repr__(self):
-        t_line = '=============================='
-        b_line = '------------------------------'
         return ''.join([
-            'Multi-label classification report [rolling]\n',
-            f'{t_line}\n',
+            'Rolling multi-label classification report\n\n',
             f'n_labels:\t\t{self.n_labels:>10}\n',
             f'n_samples:\t\t{self.n_samples:>10}\n',
             f'window_size:\t{self.window_size:>10}\n',
             '\n',
             self._info(),
-            f'{b_line}',
             ])
 
 
-class RegressionMeasurements(object):
+class _RegressionReport(object):
     """Regression report.
 
      Keeps incremental performance metrics in a regression problem.
@@ -426,23 +406,22 @@ class RegressionMeasurements(object):
     Examples
     --------
     >>> import numpy
-    >>> from creme.metrics import RegressionMeasurements
+    >>> from creme.metrics import _RegressionReport
     >>>
     >>> y_true = numpy.sin(range(100))
     >>> y_pred = numpy.sin(range(100)) + .05
     >>>
-    >>> measurements = RegressionMeasurements()
+    >>> measurements = _RegressionReport()
     >>>
     >>> for y_t, y_p in zip(y_true, y_pred):
     ...     measurements.add_result(y_t, y_p)
     >>>
     >>> measurements
     Regression report
-    ==============================
+    <BLANKLINE>
     n_samples:		       100
     MAE:				0.050000
     MSE:				0.002500
-    ------------------------------
 
     """
 
@@ -483,15 +462,11 @@ class RegressionMeasurements(object):
         return int(self.mae._mean.n)
 
     def __repr__(self):
-        t_line = '=============================='
-        b_line = '------------------------------'
         return ''.join([
-            'Regression report\n',
-            f'{t_line}\n',
+            'Regression report\n\n',
             f'n_samples:\t\t{self.n_samples:>10}\n',
             '\n',
             self._info(),
-            f'{b_line}',
         ])
 
     def _info(self):
@@ -501,7 +476,7 @@ class RegressionMeasurements(object):
         ])
 
 
-class WindowRegressionMeasurements(RegressionMeasurements):
+class _RollingRegressionReport(_RegressionReport):
     """Rolling regression report
 
     Keeps incremental performance metrics in a regression problem over a fixed-size window.
@@ -509,24 +484,23 @@ class WindowRegressionMeasurements(RegressionMeasurements):
     Examples
     --------
     >>> import numpy
-    >>> from creme.metrics import WindowRegressionMeasurements
+    >>> from creme.metrics import _RollingRegressionReport
     >>>
     >>> y_true = numpy.sin(range(100))
     >>> y_pred = numpy.sin(range(100)) + .05
     >>>
-    >>> measurements = WindowRegressionMeasurements(window_size=20)
+    >>> measurements = _RollingRegressionReport(window_size=20)
     >>>
     >>> for y_t, y_p in zip(y_true, y_pred):
     ...     measurements.add_result(y_t, y_p)
     >>>
     >>> measurements
-    Regression report [rolling]
-    ==============================
+    Rolling regression report
+    <BLANKLINE>
     n_samples:		        20
     window_size:            20
     MAE:				0.050000
     MSE:				0.002500
-    ------------------------------
 
     """
 
@@ -551,20 +525,16 @@ class WindowRegressionMeasurements(RegressionMeasurements):
         return int(self.mae._metric._mean.n)
 
     def __repr__(self):
-        t_line = '=============================='
-        b_line = '------------------------------'
         return ''.join([
-            'Regression report [rolling]\n',
-            f'{t_line}\n',
+            'Rolling regression report\n\n',
             f'n_samples:\t\t{self.n_samples:>10}\n',
             f'window_size:\t{self.window_size:>10}\n',
             '\n',
             self._info(),
-            f'{b_line}',
         ])
 
 
-class MultiTargetRegressionMeasurements(object):
+class _MTRegressionReport(object):
     """Multi-target regression report
 
     Keeps incremental performance metrics in a multi-target regression problem.
@@ -572,7 +542,7 @@ class MultiTargetRegressionMeasurements(object):
     Examples
     --------
     >>> import numpy
-    >>> from creme.metrics import MultiTargetRegressionMeasurements
+    >>> from creme.metrics import _MTRegressionReport
     >>>
     >>> y_true = numpy.zeros((100, 3))
     >>> y_pred = numpy.zeros((100, 3))
@@ -580,20 +550,20 @@ class MultiTargetRegressionMeasurements(object):
     ...     y_true[:, t] = numpy.sin(range(100))
     ...     y_pred[:, t] = numpy.sin(range(100)) + (t + 1) * .05
     >>>
-    >>> measurements = MultiTargetRegressionMeasurements()
+    >>> measurements = _MTRegressionReport()
     >>>
     >>> for y_t, y_p in zip(y_true, y_pred):
     ...     measurements.add_result(y_t, y_p)
     >>>
     >>> measurements
     Multi-target regression report
-    ==============================
+    <BLANKLINE>
     n_targets:		         3
     n_samples:		       100
     Average MAE:			0.100000
     Average MSE:			0.011667
     Average RMSE:			0.100000
-    ------------------------------
+
     """
 
     # Define the format specification used for string representation.
@@ -649,16 +619,12 @@ class MultiTargetRegressionMeasurements(object):
         return self.last_true_label, self.last_prediction
 
     def __repr__(self):
-        t_line = '=============================='
-        b_line = '------------------------------'
         return ''.join([
-            'Multi-target regression report\n',
-            f'{t_line}\n',
+            'Multi-target regression report\n\n',
             f'n_targets:\t\t{self.n_targets:>10}\n',
             f'n_samples:\t\t{self.n_samples:>10}\n',
             '\n',
             self._info(),
-            f'{b_line}',
         ])
 
     def _info(self):
@@ -669,7 +635,7 @@ class MultiTargetRegressionMeasurements(object):
         ])
 
 
-class WindowMultiTargetRegressionMeasurements(MultiTargetRegressionMeasurements):
+class _RollingMTRegressionReport(_MTRegressionReport):
     """Rolling multi-target regression report
 
     Keeps incremental performance metrics in a multi-target regression problem over a
@@ -678,7 +644,7 @@ class WindowMultiTargetRegressionMeasurements(MultiTargetRegressionMeasurements)
     Examples
     --------
     >>> import numpy
-    >>> from creme.metrics import WindowMultiTargetRegressionMeasurements
+    >>> from creme.metrics import _RollingMTRegressionReport
     >>>
     >>> y_true = numpy.zeros((100, 3))
     >>> y_pred = numpy.zeros((100, 3))
@@ -686,21 +652,20 @@ class WindowMultiTargetRegressionMeasurements(MultiTargetRegressionMeasurements)
     ...     y_true[:, t] = numpy.sin(range(100))
     ...     y_pred[:, t] = numpy.sin(range(100)) + (t + 1) * .05
     >>>
-    >>> measurements = WindowMultiTargetRegressionMeasurements(window_size=20)
+    >>> measurements = _RollingMTRegressionReport(window_size=20)
     >>>
     >>> for y_t, y_p in zip(y_true, y_pred):
     ...     measurements.add_result(y_t, y_p)
     >>>
     >>> measurements
-    Multi-target regression report [rolling]
-    ==============================
+    Rolling multi-target regression report
+    <BLANKLINE>
     n_targets:		         3
     n_samples:		        20
     window_size:	        20
     Average MAE:			0.100000
     Average MSE:			0.011667
     Average RMSE:			0.100000
-    ------------------------------
 
     """
 
@@ -752,17 +717,13 @@ class WindowMultiTargetRegressionMeasurements(MultiTargetRegressionMeasurements)
         pass
 
     def __repr__(self):
-        t_line = '=============================='
-        b_line = '------------------------------'
         return ''.join([
-            'Multi-target regression report [rolling]\n',
-            f'{t_line}\n',
+            'Rolling multi-target regression report\n\n',
             f'n_targets:\t\t{self.n_targets:>10}\n',
             f'n_samples:\t\t{self.n_samples:>10}\n',
             f'window_size:\t{self.window_size:>10}\n',
             '\n',
             self._info(),
-            f'{b_line}',
         ])
 
 
