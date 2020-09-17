@@ -76,6 +76,14 @@ def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
 
 
 def dotvecmat(x, A):
+    """Vectors times matrix.
+
+    Parameters
+    ----------
+    x
+    A
+
+    """
 
     C = {}
 
@@ -187,8 +195,14 @@ def minkowski_distance(a: dict, b: dict, p: int):
     return sum((abs(a.get(k, 0.) - b.get(k, 0.))) ** p for k in set([*a.keys(), *b.keys()]))
 
 
-def softmax(y_pred):
-    """Normalizes a dictionary of predicted probabilities, in-place."""
+def softmax(y_pred: dict):
+    """Normalizes a dictionary of predicted probabilities, in-place.
+
+    Parameters
+    ----------
+    y_pred
+
+    """
 
     if not y_pred:
         return y_pred
@@ -207,11 +221,23 @@ def softmax(y_pred):
 
 
 def prod(iterable):
+    """Product function.
+
+    Parameters
+    ----------
+    iterable
+
+    """
     return functools.reduce(operator.mul, iterable, 1)
 
 
 def dot(x: dict, y: dict):
     """Returns the dot product of two vectors represented as dicts.
+
+    Parameters
+    ----------
+    x
+    y
 
     Examples
     --------
@@ -234,6 +260,10 @@ def dot(x: dict, y: dict):
 def chain_dot(*xs):
     """Returns the dot product of multiple vectors represented as dicts.
 
+    Parameters
+    ----------
+    xs
+
     Examples
     --------
 
@@ -252,6 +282,13 @@ def chain_dot(*xs):
 
 
 def sigmoid(x: float):
+    """Sigmoid function.
+
+    Parameters
+    ----------
+    x
+
+    """
     if x < -30:
         return 0
     if x > 30:
@@ -260,12 +297,38 @@ def sigmoid(x: float):
 
 
 def clamp(x: float, minimum=0., maximum=1.):
+    """Clamp a number.
+
+    This is a synonym of clipping.
+
+    Parameters
+    ----------
+    x
+    minimum
+    maximum
+
+    """
     return max(min(x, maximum), minimum)
 
 
-def norm(x, order=None):
+def norm(x: dict, order=None):
+    """Compute the norm of a dictionaries values.
+
+    Parameters
+    ----------
+    x
+    order
+
+    """
     return np.linalg.norm(list(x.values()), ord=order)
 
 
 def sign(x: float):
+    """Sign function.
+
+    Parameters
+    ----------
+    x
+
+    """
     return -1 if x < 0 else (1 if x > 0 else 0)

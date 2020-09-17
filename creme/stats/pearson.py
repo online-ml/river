@@ -8,31 +8,37 @@ class PearsonCorr(base.Bivariate):
 
     Parameters
     ----------
-        ddof: Delta Degrees of Freedom.
+    ddof
+        Delta Degrees of Freedom.
 
-    Attributes:
-        var_x (stats.Var): Running variance of `x`.
-        var_y (stats.Var): Running variance of `y`.
-        cov_xy (stats.Cov): Running covariance of `x` and `y`.
+    Attributes
+    ----------
+    var_x : stats.Var
+        Running variance of `x`.
+    var_y : stats.Var
+        Running variance of `y`.
+    cov_xy : stats.Cov
+        Running covariance of `x` and `y`.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import stats
+    >>> from creme import stats
 
-        >>> x = [0, 0, 0, 1, 1, 1, 1]
-        >>> y = [0, 1, 2, 3, 4, 5, 6]
+    >>> x = [0, 0, 0, 1, 1, 1, 1]
+    >>> y = [0, 1, 2, 3, 4, 5, 6]
 
-        >>> pearson = stats.PearsonCorr()
+    >>> pearson = stats.PearsonCorr()
 
-        >>> for xi, yi in zip(x, y):
-        ...     print(pearson.update(xi, yi).get())
-        0
-        0
-        0
-        0.774596
-        0.866025
-        0.878310
-        0.866025
+    >>> for xi, yi in zip(x, y):
+    ...     print(pearson.update(xi, yi).get())
+    0
+    0
+    0
+    0.774596
+    0.866025
+    0.878310
+    0.866025
 
     """
 

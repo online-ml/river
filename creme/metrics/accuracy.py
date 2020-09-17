@@ -7,6 +7,13 @@ __all__ = ['Accuracy']
 class Accuracy(base.MultiClassMetric):
     """Accuracy score, which is the percentage of exact matches.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
 

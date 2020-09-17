@@ -60,7 +60,7 @@ def iter_csv(filepath_or_buffer, target: typing.Union[str, typing.List[str]] = N
         Fields to ignore.
     fraction
         Sampling fraction.
-    compression:
+    compression
         For on-the-fly decompression of on-disk data. If this is set to 'infer' and
         `filepath_or_buffer` is a path, then the decompression method is inferred for the
         following extensions: '.gz', '.zip'.

@@ -15,6 +15,14 @@ __all__ = [
 class Precision(base.BinaryMetric):
     """Binary precision score.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+    pos_val
+        Value to treat as "positive".
+
     Examples
     --------
 
@@ -46,6 +54,13 @@ class Precision(base.BinaryMetric):
 
 class MacroPrecision(base.MultiClassMetric):
     """Macro-average precision score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -85,6 +100,13 @@ class MicroPrecision(base.MultiClassMetric):
 
     The micro-average precision score is exactly equivalent to the micro-average recall as well as
     the micro-average F1 score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -128,6 +150,13 @@ class WeightedPrecision(base.MultiClassMetric):
     This uses the support of each label to compute an average score, whereas
     `metrics.MacroPrecision` ignores the support.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
 
@@ -164,31 +193,37 @@ class WeightedPrecision(base.MultiClassMetric):
 class ExamplePrecision(base.MultiOutputClassificationMetric):
     """Example-based precision score for multilabel classification.
 
-        Examples
-        --------
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
 
-        >>> from creme import metrics
+    Examples
+    --------
 
-        >>> y_true = [
-        ...     {0: False, 1: True, 2: True},
-        ...     {0: True, 1: True, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> from creme import metrics
 
-        >>> y_pred = [
-        ...     {0: True, 1: True, 2: True},
-        ...     {0: True, 1: False, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric = metrics.ExamplePrecision()
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric
-        ExamplePrecision: 0.888889
+    >>> metric = metrics.ExamplePrecision()
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        """
+    >>> metric
+    ExamplePrecision: 0.888889
+
+    """
 
     @property
     def bigger_is_better(self):

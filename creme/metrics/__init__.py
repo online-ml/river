@@ -9,7 +9,7 @@ the `update` method of each binary metric. You will obtain incorrect results if 
 
 from .accuracy import Accuracy
 from .base import Metric
-from ._confusion_matrix import ConfusionMatrix
+from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
 from .fbeta import F1

@@ -1,7 +1,7 @@
 from scipy import integrate
 
 from . import base
-from . import _confusion_matrix
+from . import confusion
 
 
 __all__ = ['ROCAUC']
@@ -20,6 +20,8 @@ class ROCAUC(base.BinaryMetric):
     n_thresholds
         The number of thresholds used for discretizing the ROC curve. A higher value will lead to
         more accurate results, but will also cost more time and memory.
+    pos_val
+        Value to treat as "positive".
 
     Examples
     --------
@@ -56,7 +58,7 @@ class ROCAUC(base.BinaryMetric):
         self.thresholds = [i / (n_thresholds - 1) for i in range(n_thresholds)]
         self.thresholds[0] -= 1e-7
         self.thresholds[-1] += 1e-7
-        self.cms = [_confusion_matrix.ConfusionMatrix() for _ in range(n_thresholds)]
+        self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
 
     def update(self, y_true, y_pred, sample_weight=1.):
         p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred

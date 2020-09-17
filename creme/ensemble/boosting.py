@@ -19,7 +19,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     updated when the weaks learners fit successively the same observation.
 
     Parameters
-    ---------
+    ----------
     model
         The classifier to boost.
     n_models
@@ -29,9 +29,9 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
 
     Attributes
     ----------
-    wrong_weight (collections.defaultdict)
+    wrong_weight : collections.defaultdict
         Number of times a model has made a mistake when making predictions.
-    correct_weight (collections.defaultdict)
+    correct_weight : collections.defaultdict
         Number of times a model has predicted the right label when making predictions.
 
     Examples

@@ -171,8 +171,10 @@ class StandardScaler(base.Transformer):
         Note that the update formulas for mean and variance are slightly different than in the
         single instance case, but they produce exactly the same result.
 
-        Parameters:
-            X: A dataframe where each column is a feature.
+        Parameters
+        ----------
+        X
+            A dataframe where each column is a feature.
 
         """
 
@@ -211,9 +213,11 @@ class StandardScaler(base.Transformer):
     def transform_many(self, X: pd.DataFrame):
         """Scale a mini-batch of features.
 
-        Parameters:
-            X: A dataframe where each column is a feature. An exception will be raised if any of
-                the features has not been seen during a previous call to `learn_many`.
+        Parameters
+        ----------
+        X
+            A dataframe where each column is a feature. An exception will be raised if any of
+            the features has not been seen during a previous call to `learn_many`.
 
         """
 
@@ -231,34 +235,38 @@ class MinMaxScaler(base.Transformer):
 
     Under the hood a running min and a running peak to peak (max - min) are maintained.
 
-    Attributes:
-        min (dict): Mapping between features and instances of `stats.Min`.
-        max (dict): Mapping between features and instances of `stats.Max`.
+    Attributes
+    ----------
+    min : dict
+        Mapping between features and instances of `stats.Min`.
+    max : dict
+        Mapping between features and instances of `stats.Max`.
 
-    Example:
+    Examples
+    --------
 
-        >>> from pprint import pprint
-        >>> import random
-        >>> from creme import preprocessing
+    >>> from pprint import pprint
+    >>> import random
+    >>> from creme import preprocessing
 
-        >>> random.seed(42)
-        >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
-        >>> pprint(X)
-        [{'x': 10.557707},
-         {'x': 8.100043},
-         {'x': 9.100117},
-         {'x': 8.892842},
-         {'x': 10.945884}]
+    >>> random.seed(42)
+    >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
+    >>> pprint(X)
+    [{'x': 10.557707},
+        {'x': 8.100043},
+        {'x': 9.100117},
+        {'x': 8.892842},
+        {'x': 10.945884}]
 
-        >>> scaler = preprocessing.MinMaxScaler()
+    >>> scaler = preprocessing.MinMaxScaler()
 
-        >>> for x in X:
-        ...     print(scaler.learn_one(x).transform_one(x))
-        {'x': 0.0}
-        {'x': 0.0}
-        {'x': 0.406920}
-        {'x': 0.322582}
-        {'x': 1.0}
+    >>> for x in X:
+    ...     print(scaler.learn_one(x).transform_one(x))
+    {'x': 0.0}
+    {'x': 0.0}
+    {'x': 0.406920}
+    {'x': 0.322582}
+    {'x': 1.0}
 
     """
 
@@ -288,33 +296,36 @@ class MaxAbsScaler(base.Transformer):
     data that is already centered at zero or sparse data. It does not shift/center
     the data, and thus does not destroy any sparsity.
 
-    Attributes:
-        abs_max (dict): Mapping between features and instances of `stats.AbsMax`.
+    Attributes
+    ----------
+    abs_max : dict
+        Mapping between features and instances of `stats.AbsMax`.
 
-    Example:
+    Examples
+    --------
 
-        >>> from pprint import pprint
-        >>> import random
-        >>> from creme import preprocessing
+    >>> from pprint import pprint
+    >>> import random
+    >>> from creme import preprocessing
 
-        >>> random.seed(42)
-        >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
-        >>> pprint(X)
-        [{'x': 10.557707},
-         {'x': 8.100043},
-         {'x': 9.100117},
-         {'x': 8.892842},
-         {'x': 10.945884}]
+    >>> random.seed(42)
+    >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
+    >>> pprint(X)
+    [{'x': 10.557707},
+        {'x': 8.100043},
+        {'x': 9.100117},
+        {'x': 8.892842},
+        {'x': 10.945884}]
 
-        >>> scaler = preprocessing.MaxAbsScaler()
+    >>> scaler = preprocessing.MaxAbsScaler()
 
-        >>> for x in X:
-        ...     print(scaler.learn_one(x).transform_one(x))
-        {'x': 1.0}
-        {'x': 0.767216}
-        {'x': 0.861940}
-        {'x': 0.842308}
-        {'x': 1.0}
+    >>> for x in X:
+    ...     print(scaler.learn_one(x).transform_one(x))
+    {'x': 1.0}
+    {'x': 0.767216}
+    {'x': 0.861940}
+    {'x': 0.842308}
+    {'x': 1.0}
 
     """
 
@@ -341,40 +352,49 @@ class RobustScaler(base.Transformer):
     This Scaler removes the median and scales the data according to the
     interquantile range.
 
-    Parameters:
-        with_centering: Whether to centre the data before scaling.
-        with_scaling: Whether to scale data to IQR.
-        q_inf: Desired inferior quantile, must be between 0 and 1.
-        q_sup: Desired superior quantile, must be between 0 and 1.
+    Parameters
+    ----------
+    with_centering
+        Whether to centre the data before scaling.
+    with_scaling
+        Whether to scale data to IQR.
+    q_inf
+        Desired inferior quantile, must be between 0 and 1.
+    q_sup
+        Desired superior quantile, must be between 0 and 1.
 
-    Attributes:
-        median (dict): Mapping between features and instances of `stats.Quantile(0.5)`.
-        iqr (dict): Mapping between features and instances of `stats.IQR`.
+    Attributes
+    ----------
+    median : dict
+        Mapping between features and instances of `stats.Quantile(0.5)`.
+    iqr : dict
+        Mapping between features and instances of `stats.IQR`.
 
-    Example:
+    Examples
+    --------
 
-        >>> from pprint import pprint
-        >>> import random
-        >>> from creme import preprocessing
+    >>> from pprint import pprint
+    >>> import random
+    >>> from creme import preprocessing
 
-        >>> random.seed(42)
-        >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
-        >>> pprint(X)
-        [{'x': 10.557707},
-         {'x': 8.100043},
-         {'x': 9.100117},
-         {'x': 8.892842},
-         {'x': 10.945884}]
+    >>> random.seed(42)
+    >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
+    >>> pprint(X)
+    [{'x': 10.557707},
+        {'x': 8.100043},
+        {'x': 9.100117},
+        {'x': 8.892842},
+        {'x': 10.945884}]
 
-        >>> scaler = preprocessing.RobustScaler()
+    >>> scaler = preprocessing.RobustScaler()
 
-        >>> for x in X:
-        ...     print(scaler.learn_one(x).transform_one(x))
-        {'x': 0.0}
-        {'x': -1.0}
-        {'x': 0.0}
-        {'x': -0.124499}
-        {'x': 1.108659}
+    >>> for x in X:
+    ...     print(scaler.learn_one(x).transform_one(x))
+    {'x': 0.0}
+    {'x': -1.0}
+    {'x': 0.0}
+    {'x': -0.124499}
+    {'x': 1.108659}
 
     """
 
@@ -414,25 +434,28 @@ class Normalizer(base.Transformer):
 
     This is particularly useful when used after a `feature_extraction.TFIDF`.
 
-    Parameters:
-        order: Order of the norm (e.g. 2 corresponds to the $L^2$ norm).
+    Parameters
+    ----------
+    order
+        Order of the norm (e.g. 2 corresponds to the $L^2$ norm).
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import preprocessing
-        >>> from creme import stream
+    >>> from creme import preprocessing
+    >>> from creme import stream
 
-        >>> scaler = preprocessing.Normalizer(order=2)
+    >>> scaler = preprocessing.Normalizer(order=2)
 
-        >>> X = [[4, 1, 2, 2],
-        ...      [1, 3, 9, 3],
-        ...      [5, 7, 5, 1]]
+    >>> X = [[4, 1, 2, 2],
+    ...      [1, 3, 9, 3],
+    ...      [5, 7, 5, 1]]
 
-        >>> for x, _ in stream.iter_array(X):
-        ...     print(scaler.transform_one(x))
-        {0: 0.8, 1: 0.2, 2: 0.4, 3: 0.4}
-        {0: 0.1, 1: 0.3, 2: 0.9, 3: 0.3}
-        {0: 0.5, 1: 0.7, 2: 0.5, 3: 0.1}
+    >>> for x, _ in stream.iter_array(X):
+    ...     print(scaler.transform_one(x))
+    {0: 0.8, 1: 0.2, 2: 0.4, 3: 0.4}
+    {0: 0.1, 1: 0.3, 2: 0.9, 3: 0.3}
+    {0: 0.5, 1: 0.7, 2: 0.5, 3: 0.1}
 
     """
 

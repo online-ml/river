@@ -44,6 +44,7 @@ class LDA(base.Transformer):
         Interval at which to refresh the words topics distribution.
     number_of_samples
         Number of iteration to computes documents topics distribution.
+    ranking_smooth_factor
     burn_in_sweeps
         Number of iteration necessaries while analyzing a document before updating document topics
         distribution.

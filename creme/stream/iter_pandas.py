@@ -16,6 +16,8 @@ def iter_pandas(X: pd.DataFrame, y: typing.Union[pd.Series, pd.DataFrame] = None
         A dataframe of features.
     y
         A series or a dataframe with one column per target.
+    kwargs
+        Extra keyword arguments are passed to the underlying call to `stream.iter_array`.
 
     Examples
     --------

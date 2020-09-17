@@ -90,6 +90,8 @@ class Normal(Initializer):
         The mean of the normal distribution
     sigma
         The standard deviation of the normal distribution
+    seed
+        Random number generation seed that can be set for reproducibility.
 
     Examples
     --------

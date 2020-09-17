@@ -9,25 +9,33 @@ __all__ = ['MCC']
 class MCC(base.BinaryMetric):
     """Matthews correlation coefficient.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+    pos_val
+        Value to treat as "positive".
+
     Examples
     --------
 
-        >>> from creme import metrics
+    >>> from creme import metrics
 
-        >>> y_true = [True, True, True, False]
-        >>> y_pred = [True, False, True, True]
+    >>> y_true = [True, True, True, False]
+    >>> y_pred = [True, False, True, True]
 
-        >>> mcc = metrics.MCC()
+    >>> mcc = metrics.MCC()
 
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     mcc = mcc.update(yt, yp)
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     mcc = mcc.update(yt, yp)
 
-        >>> mcc
-        MCC: -0.333333
+    >>> mcc
+    MCC: -0.333333
 
     References
     ----------
-    1. [Wikipedia article](https://www.wikiwand.com/en/Matthews_correlation_coefficient)
+    [^1]: [Wikipedia article](https://www.wikiwand.com/en/Matthews_correlation_coefficient)
 
     """
 

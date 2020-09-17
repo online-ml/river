@@ -25,6 +25,7 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
 
     Parameters
     ----------
+    model
     grid
         The grid of parameters to expand. The provided dictionary can be nested. The only
         requirement is that the values at the leaves need to be lists.

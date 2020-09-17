@@ -18,6 +18,8 @@ class PoissonInclusion(base.Transformer):
     ----------
     p
         Probability of including a feature the first time it is encountered.
+    seed
+        Random seed value used for reproducibility.
 
     References
     ----------
@@ -25,7 +27,7 @@ class PoissonInclusion(base.Transformer):
 
     """
 
-    def __init__(self, p: float, seed=None):
+    def __init__(self, p: float, seed: int = None):
         self.p = p
         self.seed = seed
         self.rng = random.Random(seed)

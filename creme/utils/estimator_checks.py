@@ -245,8 +245,12 @@ def yield_checks(model):
 def check_estimator(model):
     """Check if a model adheres to `creme`'s conventions.
 
-    Parameters:
-        model
+    This will run a series of unit tests. The nature of the unit tests depends on the type of
+    model.
+
+    Parameters
+    ----------
+    model
 
     """
     for check in yield_checks(model):
