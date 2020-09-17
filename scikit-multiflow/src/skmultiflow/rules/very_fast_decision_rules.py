@@ -86,7 +86,7 @@ class VeryFastDecisionRulesClassifier(BaseSKMObject, ClassifierMixin):
         - 'weighted_sum' - Uses the weighted sum of votes of all the rules that fire.
 
     nominal_attributes: list, optional
-        | List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+        | List of Nominal attributes. If empty, then assume that all attributes are numerical.
     max_rules: int (default=20)
         | Maximum number of rules the model can have.
     nb_threshold: int (default=0)
