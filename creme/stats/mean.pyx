@@ -68,34 +68,37 @@ cdef class Mean(creme.stats.base.Univariate):
 class RollingMean(summing.RollingSum):
     """Running average over a window.
 
-    Parameters:
-        window_size: Size of the rolling window.
+    Parameters
+    ----------
+    window_size
+        Size of the rolling window.
 
-    Example:
+    Examples
+    --------
 
-        >>> import creme
+    >>> from creme import stats
 
-        >>> X = [1, 2, 3, 4, 5, 6]
+    >>> X = [1, 2, 3, 4, 5, 6]
 
-        >>> rmean = creme.stats.RollingMean(window_size=2)
-        >>> for x in X:
-        ...     print(rmean.update(x).get())
-        1.0
-        1.5
-        2.5
-        3.5
-        4.5
-        5.5
+    >>> rmean = stats.RollingMean(window_size=2)
+    >>> for x in X:
+    ...     print(rmean.update(x).get())
+    1.0
+    1.5
+    2.5
+    3.5
+    4.5
+    5.5
 
-        >>> rmean = creme.stats.RollingMean(window_size=3)
-        >>> for x in X:
-        ...     print(rmean.update(x).get())
-        1.0
-        1.5
-        2.0
-        3.0
-        4.0
-        5.0
+    >>> rmean = stats.RollingMean(window_size=3)
+    >>> for x in X:
+    ...     print(rmean.update(x).get())
+    1.0
+    1.5
+    2.0
+    3.0
+    4.0
+    5.0
 
     """
 
@@ -106,14 +109,16 @@ class RollingMean(summing.RollingSum):
 class BayesianMean(base.Univariate):
     """Estimates a mean using outside information.
 
-    Parameters:
-        prior
-        prior_weight
+    Parameters
+    ----------
+    prior
+    prior_weight
 
-    References:
-        1. [Additive smoothing](https://www.wikiwand.com/en/Additive_smoothing)
-        2. [Bayesian average](https://www.wikiwand.com/en/Bayesian_average)
-        3. [Practical example of Bayes estimators](https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators)
+    References
+    ----------
+    [^1]: [Additive smoothing](https://www.wikiwand.com/en/Additive_smoothing)
+    [^2]: [Bayesian average](https://www.wikiwand.com/en/Bayesian_average)
+    [^3]: [Practical example of Bayes estimators](https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators)
 
     """
 

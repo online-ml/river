@@ -11,7 +11,7 @@ from . import Rolling
 from . import ConfusionMatrix
 from . import MSE
 from . import MAE
-from ._confusion_matrix import MultiLabelConfusionMatrix
+from .confusion import MultiLabelConfusionMatrix
 
 from collections import deque
 from timeit import default_timer as timer

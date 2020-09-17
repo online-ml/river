@@ -25,6 +25,10 @@ class ClassificationReport(base.MultiClassMetric):
     ----------
     decimals
         The number of decimals to display in each cell.
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------

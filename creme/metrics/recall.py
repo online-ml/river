@@ -16,6 +16,14 @@ __all__ = [
 class Recall(base.BinaryMetric):
     """Binary recall score.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+    pos_val
+        Value to treat as "positive".
+
     Examples
     --------
 
@@ -47,6 +55,12 @@ class Recall(base.BinaryMetric):
 
 class MacroRecall(base.MultiClassMetric):
     """Macro-average recall score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
 
     Examples
     --------
@@ -87,6 +101,12 @@ class MicroRecall(precision.MicroPrecision):
     The micro-average recall is exactly equivalent to the micro-average precision as well as the
     micro-average F1 score.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+
     Examples
     --------
 
@@ -117,6 +137,12 @@ class WeightedRecall(base.MultiClassMetric):
 
     This uses the support of each label to compute an average score, whereas `MacroRecall`
     ignores the support.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
 
     Examples
     --------
@@ -154,31 +180,37 @@ class WeightedRecall(base.MultiClassMetric):
 class ExampleRecall(base.MultiOutputClassificationMetric):
     """Example-based recall score for multilabel classification.
 
-        Examples
-        --------
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
 
-        >>> from creme import metrics
+    Examples
+    --------
 
-        >>> y_true = [
-        ...     {0: False, 1: True, 2: True},
-        ...     {0: True, 1: True, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> from creme import metrics
 
-        >>> y_pred = [
-        ...     {0: True, 1: True, 2: True},
-        ...     {0: True, 1: False, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric = metrics.ExampleRecall()
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric
-        ExampleRecall: 0.833333
+    >>> metric = metrics.ExampleRecall()
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        """
+    >>> metric
+    ExampleRecall: 0.833333
+
+    """
 
     @property
     def bigger_is_better(self):

@@ -14,6 +14,8 @@ def iter_sklearn_dataset(dataset: 'sklearn.utils.Bunch', **kwargs) -> base.typin
     ----------
     dataset
         A scikit-learn dataset.
+    kwargs
+        Extra keyword arguments are passed to the underlying call to `stream.iter_array`.
 
     Examples
     --------

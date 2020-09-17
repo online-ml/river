@@ -34,7 +34,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
             | 'mean'
             | 'median'
             | 'weighted_mean'
-    **kwargs
+    kwargs
         Other parameters passed to scipy.spatial.cKDTree.
 
     Notes

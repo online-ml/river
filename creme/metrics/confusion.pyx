@@ -12,7 +12,7 @@ cdef class ConfusionMatrix:
 
     Parameters
     ----------
-    classes: set, list (default=None)
+    classes
         The initial set of classes.
 
     Examples
@@ -39,11 +39,11 @@ cdef class ConfusionMatrix:
 
     Notes
     -----
-    This confusion matrix is a 2D matrix of shape ``(n_classes, n_classes)``, corresponding
+    This confusion matrix is a 2D matrix of shape `(n_classes, n_classes)`, corresponding
     to a single-target (binary and multi-class) classification task.
 
-    Each row represents ``true`` (actual) class-labels, while each column corresponds
-    to the ``predicted`` class-labels. For example, an entry in position ``[1, 2]`` means
+    Each row represents `true` (actual) class-labels, while each column corresponds
+    to the `predicted` class-labels. For example, an entry in position `[1, 2]` means
     that the true class-label is 1, and the predicted class-label is 2 (incorrect prediction).
 
     This structure is used to keep updated statistics about a single-output classifier's
@@ -202,12 +202,12 @@ cdef class MultiLabelConfusionMatrix:
 
     Notes
     -----
-    This confusion matrix corresponds to a 3D matrix of shape ``(n_labels, 2, 2)`` meaning
-    that each ``label`` has a corresponding binary ``(2x2)`` confusion matrix.
+    This confusion matrix corresponds to a 3D matrix of shape `(n_labels, 2, 2)` meaning
+    that each `label` has a corresponding binary `(2x2)` confusion matrix.
 
-    The first dimension corresponds to the ``label``, the second and third dimensions
-    are binary indicators for the ``true`` (actual) vs ``predicted`` values. For example,
-    an entry in position ``[2, 0, 1]`` represents a miss-classification of label 2.
+    The first dimension corresponds to the `label`, the second and third dimensions
+    are binary indicators for the `true` (actual) vs `predicted` values. For example,
+    an entry in position `[2, 0, 1]` represents a miss-classification of label 2.
 
     This structure is used to keep updated statistics about a multi-output classifier's
     performance and to compute multiple evaluation metrics.

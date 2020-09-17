@@ -39,7 +39,7 @@ class RandomUnderSampler(ClassificationSampler):
     seed
         Random seed for reproducibility.
 
-    See the [user guide](/user-guide/imbalanced-learning) for example usage.
+    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
 
     References
     ----------
@@ -85,17 +85,20 @@ class RandomOverSampler(ClassificationSampler):
     a given desired distribution. The implementation is a discrete version of reverse rejection
     sampling.
 
-    Parameters:
-        classifier (base.Classifier)
-        desired_dist (dict): The desired class distribution. The keys are the classes whilst the
-            values are the desired class percentages. The values must sum up to 1.
-        seed (int): Random seed for reproducibility.
+    Parameters
+    ----------
+    classifier
+    desired_dist
+        The desired class distribution. The keys are the classes whilst the values are the desired
+        class percentages. The values must sum up to 1.
+    seed
+        Random seed for reproducibility.
 
-    See :ref:`Working with imbalanced data` for example usage.
+    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
 
     """
 
-    def __init__(self, classifier, desired_dist, seed=None):
+    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int = None):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
         self._actual_dist = collections.Counter()
@@ -130,20 +133,25 @@ class RandomSampler(ClassificationSampler):
     and over-sampling the stream of given observations so that the class distribution seen by the
     classifier follows a given desired distribution.
 
-    Parameters:
-        classifier (base.Classifier)
-        desired_dist (dict): The desired class distribution. The keys are the classes whilst the
-            values are the desired class percentages. The values must sum up to 1. If set to
-            ``None``, then the observations will be sampled uniformly at random, which is stricly
-            equivalent to using `ensemble.BaggingClassifier`.
-        sampling_rate (float): The desired ratio of data to sample.
-        seed (int): Random seed for reproducibility.
+    Parameters
+    ----------
+    classifier
+    desired_dist
+        The desired class distribution. The keys are the classes whilst the values are the desired
+        class percentages. The values must sum up to 1. If set to `None`, then the observations
+        will be sampled uniformly at random, which is stricly equivalent to using
+        `ensemble.BaggingClassifier`.
+    sampling_rate
+        The desired ratio of data to sample.
+    seed
+        Random seed for reproducibility.
 
-    See :ref:`Working with imbalanced data` for example usage.
+    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
 
     """
 
-    def __init__(self, classifier, desired_dist, sampling_rate=1., seed=None):
+    def __init__(self, classifier: base.Classifier, desired_dist: dict, sampling_rate=1.,
+                 seed: int = None):
         super().__init__(classifier=classifier, seed=seed)
         self.sampling_rate = sampling_rate
         self._actual_dist = collections.Counter()

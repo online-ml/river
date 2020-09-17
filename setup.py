@@ -128,7 +128,7 @@ setuptools.setup(
         compiler_directives={
             'language_level': 3,
             'binding': True,
-            #'embedsignature': True
+            'embedsignature': True
         }
     )
 )

@@ -57,8 +57,14 @@ def print_table(headers: typing.List[str], columns: typing.List[typing.List[str]
     return table
 
 
-def humanize_bytes(n_bytes):
-    """Returns a human-friendly byte size."""
+def humanize_bytes(n_bytes: int):
+    """Returns a human-friendly byte size.
+
+    Parameters
+    ----------
+    n_bytes
+
+    """
     suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
     human = n_bytes
     rank = 0

@@ -36,8 +36,8 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     weighted
         Whether to weight the contribution of each neighbor by it's inverse
         distance or not.
-    **kwargs
-        Other parameters passed to scipy.spatial.cKDTree.
+    kwargs
+        Other parameters passed to `scipy.spatial.cKDTree`.
 
     Notes
     -----

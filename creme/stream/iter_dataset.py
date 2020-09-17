@@ -27,7 +27,14 @@ def available_datasets():
 def iter_dataset(name: str, **kwargs):
     """Iterate over a dataset.
 
-    You can check the list of available datasets by calling `stream.available_datasets`.
+    Parameters
+    ----------
+    name
+        The name of the dataset to load. You can check the list of available datasets by calling
+        `stream.available_datasets`.
+    kwargs
+        Extra keyword arguments are used to parametrize certain datasets that come under different
+        variants.
 
     """
     return _available_datasets()[name](**kwargs)

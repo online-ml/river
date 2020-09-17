@@ -10,6 +10,12 @@ class Hamming(base.MultiOutputClassificationMetric):
 
     The Hamming score is the fraction of labels that are correctly predicted.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+
     Examples
     --------
 
@@ -56,6 +62,12 @@ class HammingLoss(base.MultiOutputClassificationMetric):
     """Hamming loss score.
 
     The Hamming loss is the complement of the Hamming score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
 
     Examples
     --------
