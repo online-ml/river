@@ -4,7 +4,47 @@ from creme import base
 from creme import stats
 
 
-__all__ = ['StatImputer']
+__all__ = ['PreviousImputer', 'StatImputer']
+
+
+class PreviousImputer(base.Transformer):
+    """Imputes missing values by using the most recent value.
+
+    Examples
+    --------
+
+    >>> from creme import preprocessing
+
+    >>> imputer = preprocessing.PreviousImputer()
+
+    >>> imputer = imputer.learn_one({'x': 1, 'y': 2})
+    >>> imputer.transform_one({'y': None})
+    {'y': 2}
+
+    >>> imputer.transform_one({'x': None})
+    {'x': 1}
+
+    """
+
+    def __init__(self):
+        self._latest = {}
+
+    def learn_one(self, x):
+
+        for i, v in x.items():
+            if v is not None:
+                self._latest[i] = v
+
+        return self
+
+    def transform_one(self, x):
+
+        for i, v in x.items():
+            if v is None:
+                x[i] = self._latest.get(i)
+
+        return x
+
 
 
 class StatImputer(base.Transformer):
@@ -26,7 +66,7 @@ class StatImputer(base.Transformer):
     Examples
     --------
 
-    >>> from creme import impute
+    >>> from creme import preprocessing
     >>> from creme import stats
 
     For numeric data, we can use a `stats.Mean()` to replace missing values by the running
@@ -40,7 +80,7 @@ class StatImputer(base.Transformer):
     ...     {'temperature': 4}
     ... ]
 
-    >>> imp = impute.StatImputer(('temperature', stats.Mean()))
+    >>> imp = preprocessing.StatImputer(('temperature', stats.Mean()))
 
     >>> for x in X:
     ...     imp = imp.learn_one(x)
@@ -64,7 +104,7 @@ class StatImputer(base.Transformer):
     ...     {'weather': None}
     ... ]
 
-    >>> imp = impute.StatImputer(('weather', stats.Mode()))
+    >>> imp = preprocessing.StatImputer(('weather', stats.Mode()))
 
     >>> for x in X:
     ...     imp = imp.learn_one(x)
@@ -79,7 +119,7 @@ class StatImputer(base.Transformer):
 
     You can also choose to replace missing values with a constant value, as so:
 
-    >>> imp = impute.StatImputer(('weather', 'missing'))
+    >>> imp = preprocessing.StatImputer(('weather', 'missing'))
 
     >>> for x in X:
     ...     imp = imp.learn_one(x)
@@ -106,7 +146,7 @@ class StatImputer(base.Transformer):
     ...     {'weather': None, 'temperature': None}
     ... ]
 
-    >>> imp = impute.StatImputer(
+    >>> imp = preprocessing.StatImputer(
     ...     ('temperature', stats.Mean()),
     ...     ('weather', stats.Mode())
     ... )
@@ -145,7 +185,7 @@ class StatImputer(base.Transformer):
     >>> from creme import compose
 
     >>> imp = compose.Grouper(
-    ...     impute.StatImputer(('temperature', stats.Mean())),
+    ...     preprocessing.StatImputer(('temperature', stats.Mean())),
     ...     by='weather'
     ... )
 
@@ -163,7 +203,7 @@ class StatImputer(base.Transformer):
 
     Note that you can also create a `Grouper` with the `*` operator:
 
-    >>> imp = impute.StatImputer(('temperature', stats.Mean())) * 'weather'
+    >>> imp = preprocessing.StatImputer(('temperature', stats.Mean())) * 'weather'
 
     """
 

@@ -13,7 +13,6 @@ from creme import expert
 from creme import facto
 from creme import feature_extraction
 from creme import feature_selection
-from creme import impute
 from creme import linear_model
 from creme import meta
 from creme import multiclass
@@ -50,12 +49,12 @@ def get_all_estimators():
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_selection.PoissonInclusion,
-        impute.PreviousImputer,
-        impute.StatImputer,
         linear_model.SoftmaxRegression,
         meta.PredClipper,
         meta.TransformedTargetRegressor,
+        preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
+        preprocessing.StatImputer,
         reco.Baseline,
         reco.BiasedMF,
         reco.FunkMF,

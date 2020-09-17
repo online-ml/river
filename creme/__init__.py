@@ -21,7 +21,6 @@ from . import expert
 from . import facto
 from . import feature_extraction
 from . import feature_selection
-from . import impute
 from . import linear_model
 from . import meta
 from . import metrics
@@ -54,7 +53,6 @@ __all__ = [
     'facto',
     'feature_extraction',
     'feature_selection',
-    'impute',
     'linear_model',
     'meta',
     'metrics',

@@ -7,6 +7,8 @@ the latter extracts new information from the data
 
 """
 from .feature_hasher import FeatureHasher
+from .impute import PreviousImputer
+from .impute import StatImputer
 from .lda import LDA
 from .one_hot import OneHotEncoder
 from .scale import Binarizer
