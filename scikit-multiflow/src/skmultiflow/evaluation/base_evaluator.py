@@ -7,9 +7,10 @@ from skmultiflow.core import BaseSKMObject
 from skmultiflow.data.base_stream import Stream
 from .evaluation_data_buffer import EvaluationDataBuffer
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
-from skmultiflow.metrics import ClassificationPerformanceEvaluator, WindowClassificationPerformanceEvaluator, \
-    MultiLabelClassificationPerformanceEvaluator, WindowMultiLabelClassificationPerformanceEvaluator,\
-    RegressionMeasurements, WindowRegressionMeasurements,\
+from creme.metrics import _ClassificationReport,\
+    _RollingClassificationReport, _MLClassificationReport,\
+    _RollingMLClassificationReport
+from skmultiflow.metrics import RegressionMeasurements, WindowRegressionMeasurements,\
     MultiTargetRegressionMeasurements, WindowMultiTargetRegressionMeasurements,\
     RunningTimeMeasurements
 import skmultiflow.utils.constants as constants
@@ -257,14 +258,14 @@ class StreamEvaluator(BaseSKMObject, metaclass=ABCMeta):
 
         if self._task_type == constants.CLASSIFICATION:
             for i in range(self.n_models):
-                self.mean_eval_measurements.append(ClassificationPerformanceEvaluator())
-                self.current_eval_measurements.append(WindowClassificationPerformanceEvaluator
+                self.mean_eval_measurements.append(_ClassificationReport())
+                self.current_eval_measurements.append(_RollingClassificationReport
                                                       (window_size=self.n_sliding))
 
         elif self._task_type == constants.MULTI_TARGET_CLASSIFICATION:
             for i in range(self.n_models):
-                self.mean_eval_measurements.append(MultiLabelClassificationPerformanceEvaluator())
-                self.current_eval_measurements.append(WindowMultiLabelClassificationPerformanceEvaluator
+                self.mean_eval_measurements.append(_MLClassificationReport())
+                self.current_eval_measurements.append(_RollingMLClassificationReport
                                                       (window_size=self.n_sliding))
 
         elif self._task_type == constants.REGRESSION:

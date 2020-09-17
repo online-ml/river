@@ -11,7 +11,7 @@ from creme.base import DriftDetector
 from skmultiflow.trees import HoeffdingTreeClassifier
 from creme.drift import ADWIN
 from skmultiflow.utils import check_random_state, get_dimensions
-from skmultiflow.metrics import ClassificationPerformanceEvaluator
+from creme.metrics import _ClassificationReport
 
 
 class StreamingRandomPatchesClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
@@ -177,7 +177,7 @@ class StreamingRandomPatchesClassifier(BaseSKMObject, ClassifierMixin, MetaEstim
         self._n_samples_seen = 0
         self._subspaces = None
 
-        self._base_performance_evaluator = ClassificationPerformanceEvaluator()
+        self._base_performance_evaluator = _ClassificationReport()
         self._base_learner_class = StreamingRandomPatchesBaseLearner
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
