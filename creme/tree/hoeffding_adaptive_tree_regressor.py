@@ -8,34 +8,6 @@ from ._nodes import AdaSplitNodeRegressor
 from ._nodes import AdaActiveLearningNodeRegressor
 from ._nodes import InactiveLearningNodeMean, InactiveLearningNodePerceptron
 
-import warnings
-
-
-def RegressionHAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
-                  split_confidence=0.0000001, tie_threshold=0.05, binary_split=False,
-                  stop_mem_management=False, remove_poor_atts=False, leaf_prediction="perceptron",
-                  no_preprune=False, nominal_attributes=None, learning_ratio_perceptron=0.02,
-                  learning_ratio_decay=0.001, learning_ratio_const=True, bootstrap_sampling=False,
-                  random_state=None):     # pragma: no cover
-    warnings.warn("'RegressionHAT' has been renamed to 'HoeffdingAdaptiveTreeRegressor' in"
-                  "v0.5.0.\nThe old name will be removed in v0.7.0", category=FutureWarning)
-    return HoeffdingAdaptiveTreeRegressor(max_byte_size=max_byte_size,
-                                          memory_estimate_period=memory_estimate_period,
-                                          grace_period=grace_period,
-                                          split_confidence=split_confidence,
-                                          tie_threshold=tie_threshold,
-                                          binary_split=binary_split,
-                                          stop_mem_management=stop_mem_management,
-                                          remove_poor_atts=remove_poor_atts,
-                                          leaf_prediction=leaf_prediction,
-                                          no_preprune=no_preprune,
-                                          nominal_attributes=nominal_attributes,
-                                          learning_ratio_perceptron=learning_ratio_perceptron,
-                                          learning_ratio_decay=learning_ratio_decay,
-                                          learning_ratio_const=learning_ratio_const,
-                                          bootstrap_sampling=bootstrap_sampling,
-                                          random_state=random_state)
-
 
 class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     """ Hoeffding Adaptive Tree regressor.
