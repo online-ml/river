@@ -8,31 +8,6 @@ from ._nodes import LCInactiveLearningNodeMC
 from ._nodes import LCActiveLearningNodeNB
 from ._nodes import LCActiveLearningNodeNBA
 
-import warnings
-
-
-def LCHT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
-         split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05,
-         binary_split=False, stop_mem_management=False, remove_poor_atts=False, no_preprune=False,
-         leaf_prediction='nba', nb_threshold=0, nominal_attributes=None,
-         n_labels=None):     # pragma: no cover
-    warnings.warn("'LCHT' has been renamed to 'LabelCombinationHoeffdingTreeClassifier' in"
-                  "v0.5.0.\nThe old name will be removed in v0.7.0", category=FutureWarning)
-    return LabelCombinationHoeffdingTreeClassifier(max_byte_size=max_byte_size,
-                                                   memory_estimate_period=memory_estimate_period,
-                                                   grace_period=grace_period,
-                                                   split_criterion=split_criterion,
-                                                   split_confidence=split_confidence,
-                                                   tie_threshold=tie_threshold,
-                                                   binary_split=binary_split,
-                                                   stop_mem_management=stop_mem_management,
-                                                   remove_poor_atts=remove_poor_atts,
-                                                   no_preprune=no_preprune,
-                                                   leaf_prediction=leaf_prediction,
-                                                   nb_threshold=nb_threshold,
-                                                   nominal_attributes=nominal_attributes,
-                                                   n_labels=n_labels)
-
 
 class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutputMixin):
     """ Label Combination Hoeffding Tree for multi-label classification.

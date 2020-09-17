@@ -8,32 +8,6 @@ from ._nodes import InactiveLearningNodeMC
 from ._nodes import AdaLearningNode
 from ._nodes import AdaSplitNode
 
-import warnings
-
-
-def HAT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
-        split_criterion='info_gain', split_confidence=0.0000001, tie_threshold=0.05,
-        binary_split=False, stop_mem_management=False, remove_poor_atts=False, no_preprune=False,
-        leaf_prediction='nba', nb_threshold=0, nominal_attributes=None, bootstrap_sampling=True,
-        random_state=None):     # pragma: no cover
-    warnings.warn("'HAT' has been renamed to 'HoeffdingAdaptiveTreeClassifier' in v0.5.0.\n"
-                  "The old name will be removed in v0.7.0", category=FutureWarning)
-    return HoeffdingAdaptiveTreeClassifier(max_byte_size=max_byte_size,
-                                           memory_estimate_period=memory_estimate_period,
-                                           grace_period=grace_period,
-                                           split_criterion=split_criterion,
-                                           split_confidence=split_confidence,
-                                           tie_threshold=tie_threshold,
-                                           binary_split=binary_split,
-                                           stop_mem_management=stop_mem_management,
-                                           remove_poor_atts=remove_poor_atts,
-                                           no_preprune=no_preprune,
-                                           leaf_prediction=leaf_prediction,
-                                           nb_threshold=nb_threshold,
-                                           nominal_attributes=nominal_attributes,
-                                           bootstrap_sampling=bootstrap_sampling,
-                                           random_state=random_state)
-
 
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     """ Hoeffding Adaptive Tree classifier.

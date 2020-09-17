@@ -14,28 +14,6 @@ from ._nodes import EFDTInactiveLearningNodeMC
 from ._nodes import EFDTActiveLearningNodeNB
 from ._nodes import EFDTActiveLearningNodeNBA
 
-import warnings
-
-
-def HATT(max_byte_size=33554432, memory_estimate_period=1000000, grace_period=200,
-         min_samples_reevaluate=20, split_criterion='info_gain', split_confidence=0.0000001,
-         tie_threshold=0.05, binary_split=False, stop_mem_management=False, leaf_prediction='nba',
-         nb_threshold=0, nominal_attributes=None):  # pragma: no cover
-    warnings.warn("'HATT' has been renamed to 'ExtremelyFastDecisionTreeClassifier' in v0.5.0.\n"
-                  "The old name will be removed in v0.7.0", category=FutureWarning)
-    return ExtremelyFastDecisionTreeClassifier(max_byte_size=max_byte_size,
-                                               memory_estimate_period=memory_estimate_period,
-                                               grace_period=grace_period,
-                                               min_samples_reevaluate=min_samples_reevaluate,
-                                               split_criterion=split_criterion,
-                                               split_confidence=split_confidence,
-                                               tie_threshold=tie_threshold,
-                                               binary_split=binary_split,
-                                               stop_mem_management=stop_mem_management,
-                                               leaf_prediction=leaf_prediction,
-                                               nb_threshold=nb_threshold,
-                                               nominal_attributes=nominal_attributes)
-
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     """ Extremely Fast Decision Tree classifier.
