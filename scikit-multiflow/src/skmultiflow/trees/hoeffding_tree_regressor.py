@@ -1,4 +1,4 @@
-femptyimport numpy as np
+import numpy as np
 from operator import attrgetter
 
 from skmultiflow.core import RegressorMixin
