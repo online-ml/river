@@ -15,9 +15,9 @@ class Forecaster(base.Estimator):
         Parameters
         ----------
         y
-            In the litterature this is called the endogenous variable.
+            In the literature this is called the endogenous variable.
         x
-            Optional additional features to learn from. In the litterature these are called the
+            Optional additional features to learn from. In the literature these are called the
             exogenous variables.
 
         """

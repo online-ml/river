@@ -19,7 +19,7 @@ Depending on what you want to do, you might have to run the `download_data.sh` s
 
 ## ASV
 
-These benchmarks are located in the [`benchmarks`](benchmarks) subdirectory. You can run with the `asv` command-line tool. As a developper, you should run these tests on your laptop when you're working on a feature that is expected to affect performance, as so:
+These benchmarks are located in the [`benchmarks`](benchmarks) subdirectory. You can run with the `asv` command-line tool. As a developer, you should run these tests on your laptop when you're working on a feature that is expected to affect performance, as so:
 
 ```sh
 $ make bench

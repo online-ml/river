@@ -32,7 +32,7 @@ def simulate_qa(dataset: base.typing.Stream, moment: typing.Union[str, typing.Ca
         A stream of (features, target) tuples.
     moment
         The attribute used for measuring time. If a callable is passed, then it is expected
-        to take as input a `dict` of features. If `None`, then the observations are implicitely
+        to take as input a `dict` of features. If `None`, then the observations are implicitly
         timestamped in the order in which they arrive. If a `str` is passed, then it will be
         used to obtain the time from the input features.
     delay

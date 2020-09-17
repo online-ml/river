@@ -154,7 +154,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
 
     nominal_attributes: list, optional
         (`ARFHoeffdingTreeClassifier` parameter)
-        List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+        List of Nominal attributes. If empty, then assume that all attributes are numerical.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;

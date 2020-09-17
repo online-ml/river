@@ -57,7 +57,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
         Number of instances a leaf should observe before allowing Naive Bayes.
 
     nominal_attributes: list, optional
-        List of Nominal attributes. If emtpy, then assume that all attributes
+        List of Nominal attributes. If empty, then assume that all attributes
         are numerical.
 
     random_state: int, RandomState instance or None, optional (default=None)

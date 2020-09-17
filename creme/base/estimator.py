@@ -111,7 +111,7 @@ class Estimator(abc.ABC):
         case, in particular for meta-models where the wrapped model is typically not given a
         default value. It's useful to have a default value set for testing reasons, which is the
         purpose of this method. By default it simply calls the __init__ function. It may be
-        overriden on an individual as needed.
+        overridden on an individual as needed.
 
         """
         return {}
@@ -156,7 +156,7 @@ class Estimator(abc.ABC):
 
         Tags can be used to specify what kind of inputs an estimator is able to process. For
         instance, some estimators can handle text, whilst others don't. Inheriting from
-        `base.Estimator` will imply a set of default tags which can be overriden by implementing
+        `base.Estimator` will imply a set of default tags which can be overridden by implementing
         the `_more_tags` property.
 
         TODO: this could be a cachedproperty.
