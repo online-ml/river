@@ -50,11 +50,6 @@ from .isouptr_nodes import ActiveLearningNodePerceptronMultiTarget
 from .isouptr_nodes import ActiveLearningNodeAdaptiveMultiTarget
 from .isouptr_nodes import InactiveLearningNodePerceptronMultiTarget
 from .isouptr_nodes import InactiveLearningNodeAdaptiveMultiTarget
-# Stacked Single-target Hoeffding Tree regressor nodes
-from .sst_htr_nodes import SSTActiveLearningNode
-from .sst_htr_nodes import SSTInactiveLearningNode
-from .sst_htr_nodes import SSTActiveLearningNodeAdaptive
-from .sst_htr_nodes import SSTInactiveLearningNodeAdaptive
 
 
 __all__ = ["FoundNode", "Node", "SplitNode", "LearningNode", "ActiveLeaf", "InactiveLeaf",
@@ -69,6 +64,4 @@ __all__ = ["FoundNode", "Node", "SplitNode", "LearningNode", "ActiveLeaf", "Inac
            "RandomActiveLearningNodePerceptron", "AdaSplitNodeRegressor",
            "AdaActiveLearningNodeRegressor", "ActiveLearningNodePerceptronMultiTarget",
            "ActiveLearningNodeAdaptiveMultiTarget", "InactiveLearningNodePerceptronMultiTarget",
-           "InactiveLearningNodeAdaptiveMultiTarget", "SSTActiveLearningNode",
-           "SSTActiveLearningNodeAdaptive", "SSTInactiveLearningNode",
-           "SSTInactiveLearningNodeAdaptive"]
+           "InactiveLearningNodeAdaptiveMultiTarget"]
