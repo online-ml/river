@@ -1,6 +1,6 @@
 """Loss functions.
 
-Each loss function is intented to work with both single values as well as numpy vectors.
+Each loss function is intended to work with both single values as well as numpy vectors.
 
 """
 import abc

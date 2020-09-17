@@ -108,7 +108,7 @@ REFERENCE_LEARN_ONE_PREDICT_ONE = [
 
 def test_extraction_words_ids():
     """
-    Assert that inputs words are splitted.
+    Assert that input words are split.
     Assert that indexes are updated and extractable.
     """
 
@@ -274,7 +274,7 @@ def test_prunning_vocabulary():
 
 def test_learn_transform():
     """
-    Assert that learn_one and transform_one methods returns waited ouput.
+    Assert that learn_one and transform_one methods returns waited output.
     """
 
     lda = preprocessing.LDA(

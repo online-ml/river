@@ -67,7 +67,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         | 'mean' - Target mean
         | 'perceptron' - Perceptron
     nominal_attributes: list, optional
-        List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+        List of Nominal attributes. If empty, then assume that all attributes are numerical.
     learning_ratio_perceptron: float
         The learning rate of the perceptron.
     learning_ratio_decay: float

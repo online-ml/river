@@ -66,7 +66,7 @@ class StreamingRandomPatchesClassifier(BaseSKMObject, ClassifierMixin, MetaEstim
         immediately if drift is detected.
 
     nominal_attributes: list, optional
-        List of Nominal attributes. If emtpy, then assume that all
+        List of Nominal attributes. If empty, then assume that all
         attributes are numerical.
 
     random_state: int, RandomState instance or None, optional (default=None)

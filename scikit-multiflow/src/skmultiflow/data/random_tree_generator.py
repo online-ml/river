@@ -12,7 +12,7 @@ class RandomTreeGenerator(Stream):
     tree that splits features at random and sets labels to its leafs.
 
     The tree structure is composed on Node objects, which can be either inner
-    nodes or leaf nodes. The choice comes as a function fo the parameters
+    nodes or leaf nodes. The choice comes as a function of the parameters
     passed to its initializer.
 
     Since the concepts are generated and classified according to a tree

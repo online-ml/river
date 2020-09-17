@@ -104,7 +104,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
 
     nominal_attributes: list, optional (default=None)
         (`ARFHoeffdingTreeRegressor` parameter)
-        List of Nominal attributes. If emtpy, then assume that all
+        List of Nominal attributes. If empty, then assume that all
         attributes are numerical.
 
     learning_ratio_perceptron: float (default=0.1)
