@@ -62,7 +62,7 @@ class Classifier(Predictor):
 
         """
 
-        # The following code acts as a default for each classifier, and may be overriden on an
+        # The following code acts as a default for each classifier, and may be overridden on an
         # individual basis.
         y_pred = self.predict_proba_one(x)
         if y_pred:
@@ -130,6 +130,6 @@ class MiniBatchClassifier:
 
         """
 
-        # The following code acts as a default for each classifier, and may be overriden on an
+        # The following code acts as a default for each classifier, and may be overridden on an
         # individual basis.
         return self.predict_proba_many(X).idxmax(axis='columns')

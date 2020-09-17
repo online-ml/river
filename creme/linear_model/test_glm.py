@@ -16,7 +16,7 @@ from creme import utils
 
 
 def iter_perturbations(keys, n=10):
-    """Enumerate pertubations that will be applied to the weights."""
+    """Enumerate perturbations that will be applied to the weights."""
 
     # Enumerate unit vectors
     for i in keys:

@@ -9,7 +9,7 @@ from creme import stats
 class Detrender(base.Regressor, base.WrapperMixin):
     """A linear detrender which centers the target in zero.
 
-    At each `learn_one` step, the current mean of `y` is substracted from `y` before being fed
+    At each `learn_one` step, the current mean of `y` is subtracted from `y` before being fed
     to the provided regression model. During the `predict_one` step, the current mean is added
     to the prediction of the regression model.
 

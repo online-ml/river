@@ -52,7 +52,7 @@ class SplitEnum(abc.ABC):
 
     @abc.abstractmethod
     def update(self, x, y):
-        """Updates the sufficient statistics used for evaluting splits."""
+        """Updates the sufficient statistics used for evaluating splits."""
 
     @abc.abstractmethod
     def enumerate_splits(self, target_dist):

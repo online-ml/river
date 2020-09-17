@@ -47,7 +47,7 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
         The metric used to evaluate the model's predictions.
     moment
         The attribute used for measuring time. If a callable is passed, then it is expected to take
-        as input a `dict` of features. If `None`, then the observations are implicitely timestamped
+        as input a `dict` of features. If `None`, then the observations are implicitly timestamped
         in the order in which they arrive.
     delay
         The amount to wait before revealing the target associated with each observation to the

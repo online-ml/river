@@ -76,7 +76,7 @@ class RollingCov(base.Bivariate):
 
     $$C = \\frac{1}{n - d} (\\sum_{i=1}^n x_i y_i - \\frac{\\sum_{i=1}^n x_i \\sum_{i=1}^n y_i}{n})$$
 
-    The derivation is straighforward and somewhat trivial, but is a nice example of reformulating
+    The derivation is straightforward and somewhat trivial, but is a nice example of reformulating
     an equation so that it can be updated online. Note that we cannot apply this derivation to the
     non-rolling version of covariance because that would result in sums that grow infinitely, which
     can potentially cause numeric overflow.

@@ -339,7 +339,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -382,7 +382,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -430,7 +430,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -478,7 +478,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -535,7 +535,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -592,7 +592,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -642,7 +642,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -685,7 +685,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -728,7 +728,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float
@@ -771,7 +771,7 @@ class AGRAWALGenerator(Stream):
         zipcode; int
             Categorical feature: Zipcode.
 
-        hvalue: flaot
+        hvalue: float
             Numeric feature: Value of the house.
 
         hyears: float

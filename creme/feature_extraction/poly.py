@@ -22,7 +22,7 @@ class PolynomialExtender(base.Transformer):
     Generate features consisting of all polynomial combinations of the features with degree less
     than or equal to the specified degree.
 
-    Be aware that the number of outputed features scales polynomially in the number of input
+    Be aware that the number of outputted features scales polynomially in the number of input
     features and exponentially in the degree. High degrees can cause overfitting.
 
     Parameters
