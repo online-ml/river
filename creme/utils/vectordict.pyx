@@ -57,6 +57,9 @@ cdef class VectorDict:
     cdef bint _lazy_mask
     cdef bint _use_factory
     cdef object _default_factory
+    cdef object _scale
+    cdef object _shift
+    cdef bint _evaluated
 
     def __init__(self, data=None, default_factory=None, mask=None, copy=False):
         """A dictionary-like object that supports vector-like operations.
@@ -109,6 +112,9 @@ cdef class VectorDict:
                 if data_._lazy_mask and mask is not data_._mask:
                     raise ValueError(
                         "Cannot mask a masked VectorDict without copy")
+                if not data_._evaluated:
+                    raise ValueError(
+                        "Cannot wrap an unevaluated VectorDict without copy")
                 data = data_._data
         elif not isinstance(data, dict):
             raise ValueError(f"Unsupported type for data: {type(data)}")
@@ -125,6 +131,26 @@ cdef class VectorDict:
         self._lazy_mask = mask is not None and not copy
         self._use_factory = default_factory is not None
         self._default_factory = default_factory
+        self._scale = 1
+        self._shift = 0
+        self._evaluated = True
+
+    cdef inline _ensure_evaluated(self):
+        # NOTE call this function before dealing with values in self._data
+        #      or deal with scale and shift directly
+        if self._evaluated:
+            return
+        if self._lazy_mask:
+            self._data = {key: value * self._scale + self._shift
+                          for key, value in self._data.items()
+                          if key in self._mask}
+        else:
+            self._data = {key: value * self._scale + self._shift
+                          for key, value in self._data.items()}
+        self._scale = 1
+        self._shift = 0
+        self._lazy_mask = False
+        self._evaluated = True
 
     cdef inline _get(self, key):
         if self._use_mask and key not in self._mask:
@@ -132,11 +158,14 @@ cdef class VectorDict:
         value = self._data.get(key, missing)
         if value is missing:
             if self._use_factory:
+                self._ensure_evaluated()
                 value = self._default_factory()
                 self._data[key] = value
                 return value
             return 0
-        return value
+        if self._evaluated:
+            return value
+        return self._scale * value + self._shift
 
     cdef inline _keys(self):
         if self._lazy_mask:
@@ -144,8 +173,9 @@ cdef class VectorDict:
         return self._data.keys()
 
     cdef dict _to_dict(self, force_copy=False):
-        # NOTE this is potentially slow (makes a copy if lazy_mask is True),
-        #      use with caution
+        # NOTE this is potentially slow (makes a copy if lazy_mask is True or
+        #      evaluated is False), use with caution
+        self._ensure_evaluated()
         if not self._lazy_mask:
             if force_copy:
                 return dict(self._data)
@@ -153,8 +183,17 @@ cdef class VectorDict:
         return {key: value for key, value in self._data.items()
                 if key in self._mask}
 
+    cdef _transformed(self, scale=1, shift=0):
+        vec = VectorDict(self._data, self._default_factory, self._mask)
+        vec._scale = scale * self._scale
+        vec._shift = scale * self._shift + shift
+        vec._evaluated = False
+        return vec
+
     def with_mask(self, mask, copy=False):
-        return VectorDict(self._data, self._default_factory, mask, copy)
+        if not copy:
+            self._ensure_evaluated()
+        return VectorDict(self, self._default_factory, mask, copy)
 
     def to_dict(self):
         return self._to_dict(force_copy=True)
@@ -182,13 +221,17 @@ cdef class VectorDict:
         if self._use_mask and key not in self._mask:
             raise KeyError(key)
         try:
-            return self._data[key]
+            value = self._data[key]
         except KeyError:
             if self._use_factory:
+                self._ensure_evaluated()
                 value = self._default_factory()
                 self._data[key] = value
                 return value
             raise
+        if self._evaluated:
+            return value
+        return self._scale * value + self._shift
 
     def __iter__(self):
         return self._to_dict().__iter__()
@@ -204,12 +247,14 @@ cdef class VectorDict:
     def __setitem__(self, key, value):
         if self._use_mask and key not in self._mask:
             raise KeyError(key)
+        self._ensure_evaluated()
         self._data[key] = value
 
     def __str__(self):
         return self._to_dict().__str__()
 
     def clear(self):
+        self._ensure_evaluated()
         if self._lazy_mask:
             keep = {key: value for key, value in self._data.items()
                     if key in self._mask}
@@ -219,6 +264,7 @@ cdef class VectorDict:
             self._data.clear()
 
     def get(self, key, *args, **kwargs):
+        self._ensure_evaluated()
         if self._lazy_mask and key not in self._mask:
             return dict().get(key, *args, **kwargs)
         return self._data.get(key, *args, **kwargs)
@@ -230,9 +276,11 @@ cdef class VectorDict:
         return self._to_dict().keys()
 
     def pop(self, *args, **kwargs):
+        self._ensure_evaluated()
         return self._data.pop(*args, **kwargs)
 
     def popitem(self):
+        self._ensure_evaluated()
         if self._lazy_mask:
             keep = []
             while True:
@@ -247,11 +295,13 @@ cdef class VectorDict:
         return self._data.popitem()
 
     def setdefault(self, key, *args, **kwargs):
+        self._ensure_evaluated()
         if self._lazy_mask and key not in self._mask:
             return dict().setdefault(key, *args, **kwargs)
         return self._data.setdefault(key, *args, **kwargs)
 
     def update(self, *args, **kwargs):
+        self._ensure_evaluated()
         if self._lazy_mask:
             keep1 = {key: value for key, value in self._data.items()
                      if key in self._mask}
@@ -288,16 +338,12 @@ cdef class VectorDict:
             res = dict()
             for key in get_union_keys(left_, right_):
                 res[key] = left_._get(key) + right_._get(key)
+            return VectorDict(res)
         else:  # vec + scalar
-            res = left_._to_dict(force_copy=True)
-            try:
-                for key, value in res.items():
-                    res[key] = value + right
-            except TypeError:
-                return NotImplemented
-        return VectorDict(res)
+            return left_._transformed(scale=1, shift=right)
 
     def __iadd__(VectorDict self, other):
+        self._ensure_evaluated()
         if isinstance(other, VectorDict):  # vec += vec
             other_ = <VectorDict> other
             for key in get_union_keys(self, other_):
@@ -317,25 +363,16 @@ cdef class VectorDict:
             res = dict()
             for key in get_union_keys(left_, right_):
                 res[key] = left_._get(key) - right_._get(key)
+            return VectorDict(res)
         elif isinstance(left, VectorDict):  # vec - scalar
             left_ = <VectorDict> left
-            res = left_._to_dict(force_copy=True)
-            try:
-                for key, value in res.items():
-                    res[key] = value - right
-            except TypeError:
-                return NotImplemented
+            return left_._transformed(scale=1, shift=-right)
         else:  # scalar - vec
             right_ = <VectorDict> right
-            res = right_._to_dict(force_copy=True)
-            try:
-                for key, value in res.items():
-                    res[key] = left - value
-            except TypeError:
-                return NotImplemented
-        return VectorDict(res)
+            return right_._transformed(scale=-1, shift=left)
 
     def __isub__(VectorDict self, other):
+        self._ensure_evaluated()
         if isinstance(other, VectorDict):  # vec -= vec
             other_ = <VectorDict> other
             for key in get_union_keys(self, other_):
@@ -357,16 +394,12 @@ cdef class VectorDict:
             res = dict()
             for key in get_union_keys(left_, right_):
                 res[key] = left_._get(key) * right_._get(key)
+            return VectorDict(res)
         else:  # vec * scalar
-            res = left_._to_dict(force_copy=True)
-            try:
-                for key, value in res.items():
-                    res[key] = value * right
-            except TypeError:
-                return NotImplemented
-        return VectorDict(res)
+            return left_._transformed(scale=right)
 
     def __imul__(VectorDict self, other):
+        self._ensure_evaluated()
         if isinstance(other, VectorDict):  # vec *= vec
             other_ = <VectorDict> other
             for key in get_union_keys(self, other_):
@@ -388,12 +421,7 @@ cdef class VectorDict:
                 res[key] = left_._get(key) / right_._get(key)
         elif isinstance(left, VectorDict):  # vec / scalar
             left_ = <VectorDict> left
-            res = left_._to_dict(force_copy=True)
-            try:
-                for key, value in res.items():
-                    res[key] = value / right
-            except TypeError:
-                return NotImplemented
+            return left_._transformed(scale=1 / right)
         else:  # scalar / vec
             right_ = <VectorDict> right
             res = right_._to_dict(force_copy=True)
@@ -405,6 +433,7 @@ cdef class VectorDict:
         return VectorDict(res)
 
     def __itruediv__(VectorDict self, other):
+        self._ensure_evaluated()
         if isinstance(other, VectorDict):  # vec /= vec
             other_ = <VectorDict> other
             for key in get_union_keys(self, other_):
@@ -427,6 +456,7 @@ cdef class VectorDict:
         return VectorDict(res)
 
     def __ipow__(VectorDict self, other):
+        self._ensure_evaluated()
         for key in self._keys():
             self._data[key] **= other
         return self
@@ -435,6 +465,8 @@ cdef class VectorDict:
         if not (isinstance(left, VectorDict) and isinstance(right, VectorDict)):
             return NotImplemented
         left_, right_ = <VectorDict> left, <VectorDict> right
+        left_._ensure_evaluated()
+        right_._ensure_evaluated()
         res = 0
         if left_._use_factory or right_._use_factory:
             for key in get_union_keys(left_, right_):
@@ -473,20 +505,24 @@ cdef class VectorDict:
         return self.__abs__()
 
     def min(self):
+        self._ensure_evaluated()
         if self._lazy_mask:
             return min(value for key, value in self._data.items()
                        if key in self._mask)
         return min(self._data.values())
 
     def max(self):
+        self._ensure_evaluated()
         if self._lazy_mask:
             return max(value for key, value in self._data.items()
                        if key in self._mask)
         return max(self._data.values())
 
     def minimum(self, other):
+        self._ensure_evaluated()
         if isinstance(other, VectorDict):  # minimum(vec, vec)
             other_ = <VectorDict> other
+            other_._ensure_evaluated()
             res = dict()
             for key in get_union_keys(self, other_):
                 res[key] = min(self._get(key), other_._get(key))
@@ -500,8 +536,10 @@ cdef class VectorDict:
         return VectorDict(res)
 
     def maximum(self, other):
+        self._ensure_evaluated()
         if isinstance(other, VectorDict):  # maximum(vec, vec)
             other_ = <VectorDict> other
+            other_._ensure_evaluated()
             res = dict()
             for key in get_union_keys(self, other_):
                 res[key] = max(self._get(key), other_._get(key))
