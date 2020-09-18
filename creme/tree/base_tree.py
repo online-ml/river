@@ -30,7 +30,7 @@ class DecisionTree(ABC):
     Parameters
     ----------
     max_depth
-    The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     max_size
         The max size of the tree, in Megabytes (MB).
     memory_estimate_period
