@@ -1,6 +1,6 @@
-from skmultiflow.bayes import do_naive_bayes_prediction
-from skmultiflow.trees._attribute_observer import NominalAttributeClassObserver
-from skmultiflow.trees._attribute_observer import NumericAttributeClassObserverGaussian
+from creme.tree._tree_utils import do_naive_bayes_prediction
+from creme.tree._attribute_observer import NominalAttributeClassObserver
+from creme.tree._attribute_observer import NumericAttributeClassObserverGaussian
 
 from .base import LearningNode, ActiveLeaf, InactiveLeaf
 
