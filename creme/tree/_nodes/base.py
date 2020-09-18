@@ -5,7 +5,7 @@ from skmultiflow.trees._attribute_test import AttributeSplitSuggestion
 from skmultiflow.trees._attribute_observer import AttributeObserverNull
 
 
-class FoundNode(object):
+class FoundNode:
     """ Base class for tree nodes.
 
     Parameters
@@ -42,7 +42,7 @@ class Node(metaclass=ABCMeta):
         self.stats = stats
 
     @staticmethod
-    def is_leaf():
+    def is_leaf() -> bool:
         """ Determine if the node is a leaf.
 
         Returns
@@ -53,7 +53,7 @@ class Node(metaclass=ABCMeta):
         """
         return True
 
-    def filter_instance_to_leaf(self, X, parent, parent_branch):
+    def filter_instance_to_leaf(self, X, parent, parent_branch) -> FoundNode:
         """ Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
@@ -74,7 +74,7 @@ class Node(metaclass=ABCMeta):
         return FoundNode(self, parent, parent_branch)
 
     @property
-    def stats(self):
+    def stats(self) -> dict:
         """ Statistics observed by the node.
         """
         return self._stats
@@ -86,25 +86,7 @@ class Node(metaclass=ABCMeta):
         """
         self._stats = stats if stats is not None else {}
 
-    def get_class_votes(self, X, tree):
-        """ Get the votes per class for a given instance.
-
-        Parameters
-        ----------
-        X: numpy.ndarray of length equal to the number of features.
-           Data instances.
-        tree: HoeffdingTreeClassifier
-            The tree object.
-
-        Returns
-        -------
-        dict
-            Class votes for the given instance.
-
-        """
-        return self._stats
-
-    def subtree_depth(self):
+    def subtree_depth(self) -> int:
         """ Calculate the depth of the subtree from this node.
 
         Returns
@@ -115,7 +97,7 @@ class Node(metaclass=ABCMeta):
         """
         return 0
 
-    def calculate_promise(self):
+    def calculate_promise(self) -> int:
         """ Calculate node's promise.
 
         Returns
@@ -188,12 +170,12 @@ class SplitNode(Node):
         self._children = {}
 
     @property
-    def n_children(self):
+    def n_children(self) -> int:
         """ Count the number of children for a node."""
         return len(self._children)
 
     @property
-    def split_test(self):
+    def split_test(self) -> InstanceConditionalTest:
         """ The split test of this node.
 
         Returns
@@ -221,7 +203,7 @@ class SplitNode(Node):
             raise IndexError
         self._children[index] = node
 
-    def get_child(self, index):
+    def get_child(self, index) -> Node:
         """ Retrieve a node's child given its branch index.
 
         Parameters
@@ -240,7 +222,7 @@ class SplitNode(Node):
         else:
             return None
 
-    def instance_child_index(self, X):
+    def instance_child_index(self, X) -> int:
         """ Get the branch index for a given instance at the current node.
 
         Returns
@@ -367,7 +349,7 @@ class LearningNode(Node, metaclass=ABCMeta):
         self.update_attribute_observers(X, y, weight, tree)
 
     @abstractmethod
-    def predict_one(self, X, *, tree=None):
+    def predict_one(self, X, *, tree=None) -> dict:
         pass
 
     @property
@@ -436,7 +418,7 @@ class ActiveLeaf(metaclass=ABCMeta):
         self._attribute_observers = attr_obs       # noqa
 
     def update_attribute_observers(self, X, y, weight, tree):
-        for idx, x in enumerate(X):
+        for idx, x in X.items():
             try:
                 obs = self.attribute_observers[idx]
             except KeyError:

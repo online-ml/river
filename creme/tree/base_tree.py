@@ -171,7 +171,6 @@ class DecisionTree(ABC):
         node
             A new learning node.
         """
-        pass
 
     @property
     def depth(self) -> int:
@@ -195,7 +194,6 @@ class DecisionTree(ABC):
     @abstractmethod
     def split_criterion(self, split_criterion):
         """ Define the split criterion to be used by the tree. """
-        pass
 
     @property
     def leaf_prediction(self) -> str:

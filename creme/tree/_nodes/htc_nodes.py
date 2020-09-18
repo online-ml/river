@@ -21,11 +21,9 @@ class LearningNodeMC(LearningNode):
             self.stats[y] += weight
         except KeyError:
             self.stats[y] = weight
-            self.stats = dict(sorted(self.stats.items()))
 
     def learn_one(self, X, y, *, weight=1.0, tree=None):
-        # Enforce y is an integer
-        super().learn_one(X, int(y), weight=weight, tree=tree)
+        super().learn_one(X, y, weight=weight, tree=tree)
 
     def predict_one(self, X, *, tree=None):
         return self.stats
@@ -80,13 +78,13 @@ class LearningNodeNBA(LearningNodeMC):
 
         Parameters
         ----------
-        X: numpy.ndarray of length equal to the number of features.
+        X
             Instance attributes for updating the node.
-        y: int
+        y
             Instance class.
-        weight: float
+        weight
             The instance's weight.
-        tree: HoeffdingTreeClassifier
+        tree
             The Hoeffding Tree to update.
 
         """
@@ -107,14 +105,14 @@ class LearningNodeNBA(LearningNodeMC):
 
         Parameters
         ----------
-        X: numpy.ndarray of length equal to the number of features.
+        X
             Instance attributes.
-        tree: HoeffdingTreeClassifier
+        tree
             Hoeffding Tree.
 
         Returns
         -------
-        dict (class_value, weight)
+        dict
             Class votes for the given instance.
 
         """
@@ -128,7 +126,7 @@ class ActiveLearningNodeMC(LearningNodeMC, ActiveLeafClass):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats
         Initial class observations
     """
 
@@ -141,7 +139,7 @@ class InactiveLearningNodeMC(LearningNodeMC, InactiveLeaf):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats
         Initial class observations
     """
 
@@ -154,7 +152,7 @@ class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats
         Initial class observations
     """
 
@@ -169,7 +167,7 @@ class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
 
         Parameters
         ----------
-        att_index: int
+        att_index
             Attribute index.
         """
         pass
@@ -180,7 +178,7 @@ class ActiveLearningNodeNBA(LearningNodeNBA, ActiveLeafClass):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats
         Initial class observations
     """
 
@@ -195,7 +193,7 @@ class ActiveLearningNodeNBA(LearningNodeNBA, ActiveLeafClass):
 
         Parameters
         ----------
-        att_index: int
+        att_index
             Attribute index.
         """
         pass
