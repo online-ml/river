@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 import textwrap
 
+from skmultiflow.trees._attribute_test import InstanceConditionalTest
 from skmultiflow.trees._attribute_test import AttributeSplitSuggestion
 from skmultiflow.trees._attribute_observer import AttributeObserverNull
 
