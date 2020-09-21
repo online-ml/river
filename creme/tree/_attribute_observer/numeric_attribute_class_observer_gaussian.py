@@ -19,7 +19,7 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
         self._att_dist_per_class = {}
         self.n_bins = n_bins
 
-    def update(self, att_val, class_val, weight):
+    def update(self, att_val, class_val, sample_weight):
         if att_val is None:
             return
         else:
@@ -35,7 +35,7 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
                 self._min_per_class[class_val] = att_val
                 self._max_per_class[class_val] = att_val
 
-            val_dist.update(att_val, weight)
+            val_dist.update(att_val, sample_weight)
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         if class_val in self._att_dist_per_class:

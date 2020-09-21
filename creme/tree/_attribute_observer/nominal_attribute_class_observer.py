@@ -17,9 +17,9 @@ class NominalAttributeClassObserver(AttributeObserver):
         self._missing_weight_observed = 0.0
         self._att_val_dist_per_class = {}
 
-    def update(self, att_val, class_val, weight):
+    def update(self, att_val, class_val, sample_weight):
         if att_val is None:
-            self._missing_weight_observed += weight
+            self._missing_weight_observed += sample_weight
         else:
             try:
                 self._att_val_dist_per_class[class_val]
@@ -27,14 +27,14 @@ class NominalAttributeClassObserver(AttributeObserver):
                 self._att_val_dist_per_class[class_val] = {att_val: 0.0}
                 self._att_val_dist_per_class = dict(sorted(self._att_val_dist_per_class.items()))
             try:
-                self._att_val_dist_per_class[class_val][att_val] += weight
+                self._att_val_dist_per_class[class_val][att_val] += sample_weight
             except KeyError:
-                self._att_val_dist_per_class[class_val][att_val] = weight
+                self._att_val_dist_per_class[class_val][att_val] = sample_weight
                 self._att_val_dist_per_class[class_val] = dict(
                     sorted(self._att_val_dist_per_class[class_val].items())
                 )
 
-        self._total_weight_observed += weight
+        self._total_weight_observed += sample_weight
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         obs = self._att_val_dist_per_class.get(class_val, None)

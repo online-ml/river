@@ -13,32 +13,32 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
 
     class Node:
 
-        def __init__(self, val, label, weight):
+        def __init__(self, val, label, sample_weight):
             self._class_count_left = {}
             self._class_count_right = {}
             self._left = None
             self._right = None
 
             self._cut_point = val
-            self._class_count_left[label] += weight
+            self._class_count_left[label] += sample_weight
 
-        def insert_value(self, val, label, weight):
+        def insert_value(self, val, label, sample_weight):
             if val == self._cut_point:
-                self._class_count_left[label] += weight
+                self._class_count_left[label] += sample_weight
             elif val < self._cut_point:
-                self._class_count_left[label] += weight
+                self._class_count_left[label] += sample_weight
                 if self._left is None:
                     self._left = NumericAttributeClassObserverBinaryTree.\
-                        Node(val, label, weight)
+                        Node(val, label, sample_weight)
                 else:
-                    self._left.insert_value(val, label, weight)
+                    self._left.insert_value(val, label, sample_weight)
             else:
-                self._class_count_right[label] += weight
+                self._class_count_right[label] += sample_weight
                 if self._right is None:
                     self._right = NumericAttributeClassObserverBinaryTree.\
-                        Node(val, label, weight)
+                        Node(val, label, sample_weight)
                 else:
-                    self._right.insert_value(val, label, weight)
+                    self._right.insert_value(val, label, sample_weight)
 
     """
     end of class Node
@@ -49,15 +49,15 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         super().__init__()
         self._root = None
 
-    def update(self, att_val, class_val, weight):
+    def update(self, att_val, class_val, sample_weight):
         if att_val is None:
             return
         else:
             if self._root is None:
                 self._root = NumericAttributeClassObserverBinaryTree.\
-                    Node(att_val, class_val, weight)
+                    Node(att_val, class_val, sample_weight)
             else:
-                self._root.insert_value(att_val, class_val, weight)
+                self._root.insert_value(att_val, class_val, sample_weight)
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         return 0.0
