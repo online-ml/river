@@ -100,18 +100,18 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     --------
 
     >>> from creme import evaluate
+    >>> from creme import imblearn
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
-    >>> from creme import sampling
     >>> from creme import stream
 
     >>> model = preprocessing.StandardScaler()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     sampling.HardSamplingRegressor(
+    ...     imblearn.HardSamplingRegressor(
     ...         regressor=linear_model.LinearRegression(),
     ...         p=.2,
     ...         size=30,
@@ -168,18 +168,18 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     --------
 
     >>> from creme import evaluate
+    >>> from creme import imblearn
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
-    >>> from creme import sampling
     >>> from creme import stream
 
     >>> model = preprocessing.StandardScaler()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     sampling.HardSamplingClassifier(
+    ...     imblearn.HardSamplingClassifier(
     ...         classifier=linear_model.LogisticRegression(),
     ...         p=0.1,
     ...         size=40,
