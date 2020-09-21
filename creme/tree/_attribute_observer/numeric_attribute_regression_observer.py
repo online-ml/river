@@ -1,7 +1,7 @@
 import numpy as np
 
-from skmultiflow.trees._attribute_test import NumericAttributeBinaryTest
-from skmultiflow.trees._attribute_test import AttributeSplitSuggestion
+from creme.tree._attribute_test import NumericAttributeBinaryTest
+from creme.tree._attribute_test import AttributeSplitSuggestion
 from .attribute_observer import AttributeObserver
 
 

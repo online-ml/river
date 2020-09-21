@@ -1,6 +1,6 @@
-from skmultiflow.trees._attribute_test import NominalAttributeBinaryTest
-from skmultiflow.trees._attribute_test import NominalAttributeMultiwayTest
-from skmultiflow.trees._attribute_test import AttributeSplitSuggestion
+from creme.tree._attribute_test import NominalAttributeBinaryTest
+from creme.tree._attribute_test import NominalAttributeMultiwayTest
+from creme.tree._attribute_test import AttributeSplitSuggestion
 from .attribute_observer import AttributeObserver
 
 
