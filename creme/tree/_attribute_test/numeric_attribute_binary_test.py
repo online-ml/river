@@ -9,10 +9,10 @@ class NumericAttributeBinaryTest(InstanceConditionalTest):
         self._att_value = att_value
         self._equals_passes_test = equal_passes_test
 
-    def branch_for_instance(self, X):
-        if self._att_idx > len(X) or self._att_idx < 0:
+    def branch_for_instance(self, x):
+        if self._att_idx not in x:
             return -1
-        v = X[self._att_idx]
+        v = x[self._att_idx]
         if v == self._att_value:
             return 0 if self._equals_passes_test else 1
         return 0 if v < self._att_value else 1
@@ -26,7 +26,7 @@ class NumericAttributeBinaryTest(InstanceConditionalTest):
             compare_char = '<' if branch == 0 else '>'
             equals_branch = 0 if self._equals_passes_test else 1
             compare_char += '=' if branch == equals_branch else ''
-            return 'Attribute {} {} {}'.format(
+            return '{} {} {}'.format(
                 self._att_idx, compare_char, self._att_value
             )
 

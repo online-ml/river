@@ -24,20 +24,17 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
             b: v for v, b in branch_mapping.items()
         }
 
-    def branch_for_instance(self, X):
-        if self._att_idx > len(X) or self._att_idx < 0:
-            return -1
-        else:
-            # Return branch for feature value or -1 in case the element was not
-            # observed yet
-            return self._branch_mapping.get(X[self._att_idx], -1)
+    def branch_for_instance(self, x):
+        # Return branch for feature value or -1 in case the element was not
+        # observed yet
+        return self._branch_mapping.get(x[self._att_idx], -1)
 
     @staticmethod
     def max_branches():
         return -1
 
     def describe_condition_for_branch(self, branch):
-        return 'Attribute {} = {}'.format(
+        return '{} = {}'.format(
             self._att_idx, self._reverse_branch_mapping[branch]
         )
 

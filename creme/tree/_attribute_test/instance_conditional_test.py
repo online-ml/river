@@ -16,12 +16,12 @@ class InstanceConditionalTest(metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def branch_for_instance(self, X):
+    def branch_for_instance(self, x: dict):
         """Return the number of the branch for an instance, -1 if unknown.
 
         Parameters
         ----------
-        X : Numpy.ndarray of shape (n_samples, n_features)
+        X
             The instance to be used.
 
         Returns
@@ -45,12 +45,12 @@ class InstanceConditionalTest(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def describe_condition_for_branch(self, branch):
+    def describe_condition_for_branch(self, branch: int):
         """Describe the condition of a branch. It is used to describe the branch.
 
         Parameters
         ----------
-        branch: int
+        branch
             The index of the branch to describe
 
         Returns
