@@ -13,19 +13,19 @@ class NominalAttributeRegressionObserver(AttributeObserver):
         super().__init__()
         self._statistics = {}
 
-    def update(self, att_val, target, weight=1.0):
-        if att_val is None or weight is None:
+    def update(self, att_val, target, sample_weight=1.0):
+        if att_val is None or sample_weight is None:
             return
         else:
             try:
-                self._statistics[att_val][0] += weight
-                self._statistics[att_val][1] += weight * target
-                self._statistics[att_val][2] += weight * target * target
+                self._statistics[att_val][0] += sample_weight
+                self._statistics[att_val][1] += sample_weight * target
+                self._statistics[att_val][2] += sample_weight * target * target
             except KeyError:
                 self._statistics[att_val] = {
-                    0: weight,
-                    1: weight * target,
-                    2: weight * target * target
+                    0: sample_weight,
+                    1: sample_weight * target,
+                    2: sample_weight * target * target
                 }
                 self._statistics = dict(
                     sorted(self._statistics.items())

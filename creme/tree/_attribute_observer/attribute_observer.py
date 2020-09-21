@@ -17,7 +17,7 @@ class AttributeObserver(metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def update(self, att_val, class_val, weight):
+    def update(self, att_val, class_val, sample_weight):
         """Update statistics of this observer given an attribute value, a class
         and the weight of the instance observed.
 
@@ -29,7 +29,7 @@ class AttributeObserver(metaclass=ABCMeta):
         class_val: int
             The class value.
 
-        weight: float
+        sample_weight: float
             The weight of the instance.
 
         """

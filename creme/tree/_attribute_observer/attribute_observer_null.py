@@ -10,7 +10,7 @@ class AttributeObserverNull(AttributeObserver):
     def __init__(self):
         super().__init__()
 
-    def update(self, att_val, class_val, weight):
+    def update(self, att_val, class_val, sample_weight):
         pass
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):

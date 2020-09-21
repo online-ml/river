@@ -23,33 +23,33 @@ class NumericAttributeRegressionObserver(AttributeObserver):
     """
 
     class Node:
-        def __init__(self, att_val, target, weight):
+        def __init__(self, att_val, target, sample_weight):
             self.att_val = att_val
 
-            self.sum_weight = weight
-            self.sum_target = weight * target
-            self.sum_sq_target = weight * target * target
+            self.sum_weight = sample_weight
+            self.sum_target = sample_weight * target
+            self.sum_sq_target = sample_weight * target * target
 
             self._left = None
             self._right = None
 
         # Incremental implementation of the insert method. Avoiding unnecessary
         # stack tracing must decrease memory costs
-        def insert_value(self, att_val, target, weight):
+        def insert_value(self, att_val, target, sample_weight):
             current = self
             antecedent = None
 
             while current is not None:
                 antecedent = current
                 if att_val == current.att_val:
-                    current.sum_weight += weight
-                    current.sum_target += weight * target
-                    current.sum_sq_target += weight * target * target
+                    current.sum_weight += sample_weight
+                    current.sum_target += sample_weight * target
+                    current.sum_sq_target += sample_weight * target * target
                     return
                 elif att_val < current.att_val:
-                    current.sum_weight += weight
-                    current.sum_target += weight * target
-                    current.sum_sq_target += weight * target * target
+                    current.sum_weight += sample_weight
+                    current.sum_target += sample_weight * target
+                    current.sum_sq_target += sample_weight * target * target
 
                     current = current._left
                     is_right = False
@@ -60,25 +60,26 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             # Value was not yet added to the tree
             if is_right:
                 antecedent._right = NumericAttributeRegressionObserver.Node(
-                    att_val, target, weight
+                    att_val, target, sample_weight
                 )
             else:
                 antecedent._left = NumericAttributeRegressionObserver.Node(
-                    att_val, target, weight
+                    att_val, target, sample_weight
                 )
 
     def __init__(self):
         super().__init__()
         self._root = None
 
-    def update(self, att_val, class_val, weight):
+    def update(self, att_val, class_val, sample_weight):
         if att_val is None:
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeRegressionObserver.Node(att_val, class_val, weight)
+                self._root = NumericAttributeRegressionObserver.Node(att_val, class_val,
+                                                                     sample_weight)
             else:
-                self._root.insert_value(att_val, class_val, weight)
+                self._root.insert_value(att_val, class_val, sample_weight)
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         raise NotImplementedError
