@@ -11,7 +11,7 @@ class LearningNodePerceptronMultiTarget(LearningNodePerceptron):
     def __init__(self, initial_stats=None, parent_node=None, random_state=None):
         super().__init__(initial_stats, parent_node, random_state)
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
         """Update the node with the provided instance.
 
         Parameters
@@ -20,13 +20,13 @@ class LearningNodePerceptronMultiTarget(LearningNodePerceptron):
             Instance attributes for updating the node.
         y: numpy.ndarray of length equal to the number of targets.
             Instance targets.
-        weight: float
+        sample_weight: float
             Instance weight.
         tree: HoeffdingTreeRegressor
             Regression Hoeffding Tree to update.
         """
-        self.update_stats(y, weight)
-        self.update_attribute_observers(X, y, weight, tree)
+        self.update_stats(y, sample_weight)
+        self.update_attribute_observers(X, y, sample_weight, tree)
 
         if self.perceptron_weights is None:
             # Creates matrix of perceptron random weights
@@ -42,7 +42,7 @@ class LearningNodePerceptronMultiTarget(LearningNodePerceptron):
             learning_ratio = tree.learning_ratio_perceptron / (
                 1 + self.stats[0] * tree.learning_ratio_decay)
 
-        for i in range(int(weight)):
+        for i in range(int(sample_weight)):
             self._update_weights(X, y, learning_ratio, tree)
 
     def predict_one(self, X, *, tree=None):

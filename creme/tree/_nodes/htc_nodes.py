@@ -16,14 +16,14 @@ class ActiveLeafClass(ActiveLeaf):
 
 
 class LearningNodeMC(LearningNode):
-    def update_stats(self, y, weight):
+    def update_stats(self, y, sample_weight):
         try:
-            self.stats[y] += weight
+            self.stats[y] += sample_weight
         except KeyError:
-            self.stats[y] = weight
+            self.stats[y] = sample_weight
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
-        super().learn_one(X, y, weight=weight, tree=tree)
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
+        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
 
     def predict_one(self, X, *, tree=None):
         return self.stats
@@ -73,7 +73,7 @@ class LearningNodeNBA(LearningNodeMC):
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
         """ Update the node with the provided instance.
 
         Parameters
@@ -82,7 +82,7 @@ class LearningNodeNBA(LearningNodeMC):
             Instance attributes for updating the node.
         y
             Instance class.
-        weight
+        sample_weight
             The instance's weight.
         tree
             The Hoeffding Tree to update.
@@ -90,14 +90,14 @@ class LearningNodeNBA(LearningNodeMC):
         """
         if self.stats == {}:
             # All classes equal, give preference to the one that appears the most
-            self._mc_correct_weight += weight
+            self._mc_correct_weight += sample_weight
         elif max(self.stats, key=self.stats.get) == y:
-            self._mc_correct_weight += weight
+            self._mc_correct_weight += sample_weight
         nb_prediction = do_naive_bayes_prediction(X, self.stats, self.attribute_observers)
         if max(nb_prediction, key=nb_prediction.get) == y:
-            self._nb_correct_weight += weight
+            self._nb_correct_weight += sample_weight
 
-        super().learn_one(X, y, weight=weight, tree=tree)
+        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
 
     def predict_one(self, X, *, tree=None):
         """ Get the votes per class for a given instance.

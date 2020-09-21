@@ -49,15 +49,15 @@ class LearningNodeMean(LearningNode):
     def __init__(self, initial_stats=None):
         super().__init__(initial_stats)
 
-    def update_stats(self, y, weight):
+    def update_stats(self, y, sample_weight):
         try:
-            self._stats[0] += weight
-            self._stats[1] += y * weight
-            self._stats[2] += y * y * weight
+            self._stats[0] += sample_weight
+            self._stats[1] += y * sample_weight
+            self._stats[2] += y * y * sample_weight
         except KeyError:
-            self._stats[0] = weight
-            self._stats[1] = y * weight
-            self._stats[2] = y * y * weight
+            self._stats[0] = sample_weight
+            self._stats[1] = y * sample_weight
+            self._stats[2] = y * y * sample_weight
 
     def predict_one(self, X, *, tree=None):
         return self._stats[1] / self._stats[0] if len(self._stats) > 0 else 0.0
@@ -85,8 +85,8 @@ class LearningNodePerceptron(LearningNodeMean):
         else:
             self.perceptron_weights = deepcopy(parent_node.perceptron_weights)
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
-        super().learn_one(X, y, weight=weight, tree=tree)
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
+        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
 
         if self.perceptron_weights is None:
             self.perceptron_weights = self._random_state.uniform(-1, 1, len(X) + 1)
@@ -98,7 +98,7 @@ class LearningNodePerceptron(LearningNodeMean):
                               / (1 + self.stats[0] * tree.learning_ratio_decay))
 
         # Loop for compatibility with bagging methods
-        for i in range(int(weight)):
+        for i in range(int(sample_weight)):
             self._update_weights(X, y, learning_ratio, tree)
 
     def predict_one(self, X, *, tree=None):

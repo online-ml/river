@@ -328,10 +328,10 @@ class LearningNode(Node, metaclass=ABCMeta):
         self.last_split_attempt_at = self.total_weight
 
     @abstractmethod
-    def update_stats(self, y, weight):
+    def update_stats(self, y, sample_weight):
         pass
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
         """Update the node with the provided sample.
 
         Parameters
@@ -340,14 +340,14 @@ class LearningNode(Node, metaclass=ABCMeta):
             Sample attributes for updating the node.
         y: int or float
             Target value.
-        weight: float
+        sample_weight: float
             Sample weight.
         tree:
             Tree to update.
 
         """
-        self.update_stats(y, weight)
-        self.update_attribute_observers(X, y, weight, tree)
+        self.update_stats(y, sample_weight)
+        self.update_attribute_observers(X, y, sample_weight, tree)
 
     @abstractmethod
     def predict_one(self, X, *, tree=None) -> dict:
@@ -418,7 +418,7 @@ class ActiveLeaf(metaclass=ABCMeta):
     def attribute_observers(self, attr_obs):
         self._attribute_observers = attr_obs       # noqa
 
-    def update_attribute_observers(self, X, y, weight, tree):
+    def update_attribute_observers(self, X, y, sample_weight, tree):
         for idx, x in X.items():
             try:
                 obs = self.attribute_observers[idx]
@@ -428,7 +428,7 @@ class ActiveLeaf(metaclass=ABCMeta):
                 else:
                     obs = self.new_numeric_attribute_observer()
                 self.attribute_observers[idx] = obs
-            obs.update(x, y, weight)
+            obs.update(x, y, sample_weight)
 
     def get_best_split_suggestions(self, criterion, tree):
         """ Find possible split candidates.
@@ -484,7 +484,7 @@ class InactiveLeaf:
     def new_numeric_attribute_observer():
         return None
 
-    def update_attribute_observers(self, X, y, weight, tree):
+    def update_attribute_observers(self, X, y, sample_weight, tree):
         # An inactive learning nodes does nothing here
         # We use it as a dummy class
         pass

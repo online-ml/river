@@ -33,7 +33,7 @@ class AdaSplitNodeRegressor(AdaSplitNode):
         self._n = 0
 
     # Override AdaSplitNode
-    def learn_one(self, X, y, weight, tree, parent, parent_branch):
+    def learn_one(self, X, y, sample_weight, tree, parent, parent_branch):
         normalized_error = 0.0
 
         leaf = self.filter_instance_to_leaf(X, parent, parent_branch).node
@@ -90,12 +90,12 @@ class AdaSplitNodeRegressor(AdaSplitNode):
 
         # Learn one sample in alternate tree and child nodes
         if self._alternate_tree is not None:
-            self._alternate_tree.learn_one(X, y, weight, tree, parent, parent_branch)
+            self._alternate_tree.learn_one(X, y, sample_weight, tree, parent, parent_branch)
         child_branch = self.instance_child_index(X)
         child = self.get_child(child_branch)
 
         if child is not None:
-            child.learn_one(X, y, weight, tree, parent=self, parent_branch=child_branch)
+            child.learn_one(X, y, sample_weight, tree, parent=self, parent_branch=child_branch)
         # Instance contains a categorical value previously unseen by the split node
         else:
             # Creates a new learning node to encompass the new observed feature
@@ -106,7 +106,7 @@ class AdaSplitNodeRegressor(AdaSplitNode):
             )
             self.set_child(branch_id, leaf_node)
             tree._active_leaf_node_cnt += 1
-            leaf_node.learn_one(X, y, weight, tree, parent, parent_branch)
+            leaf_node.learn_one(X, y, sample_weight, tree, parent, parent_branch)
 
     def predict_one(self, X, *, tree=None):
         # Called in case an emerging categorical feature has no path down the split node to be
@@ -114,30 +114,30 @@ class AdaSplitNodeRegressor(AdaSplitNode):
         return self.stats[1] / self.stats[0] if len(self.stats) > 0 else 0.0
 
     # override AdaNode
-    def filter_instance_to_leaves(self, X, y, weight, parent, parent_branch,
+    def filter_instance_to_leaves(self, X, y, sample_weight, parent, parent_branch,
                                   update_splitter_counts=False, found_nodes=None):
         if found_nodes is None:
             found_nodes = []
         if update_splitter_counts:
             try:
-                self._stats[0] += weight
-                self._stats[1] += y * weight
-                self._stats[2] += y * y * weight
+                self._stats[0] += sample_weight
+                self._stats[1] += y * sample_weight
+                self._stats[2] += y * y * sample_weight
             except KeyError:
-                self._stats[0] = weight
-                self._stats[1] = y * weight
-                self._stats[2] = y * y * weight
+                self._stats[0] = sample_weight
+                self._stats[1] = y * sample_weight
+                self._stats[2] = y * y * sample_weight
 
         child_index = self.instance_child_index(X)
         if child_index >= 0:
             child = self.get_child(child_index)
             if child is not None:
-                child.filter_instance_to_leaves(X, y, weight, parent, parent_branch,
+                child.filter_instance_to_leaves(X, y, sample_weight, parent, parent_branch,
                                                 update_splitter_counts, found_nodes)
             else:
                 found_nodes.append(FoundNode(None, self, child_index))
         if self._alternate_tree is not None:
-            self._alternate_tree.filter_instance_to_leaves(X, y, weight, self, -999,
+            self._alternate_tree.filter_instance_to_leaves(X, y, sample_weight, self, -999,
                                                            update_splitter_counts, found_nodes)
 
 
@@ -188,7 +188,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodePerceptron, AdaNode):
     def kill_tree_children(self, hat):
         pass
 
-    def learn_one(self, X, y, weight, tree, parent, parent_branch):
+    def learn_one(self, X, y, sample_weight, tree, parent, parent_branch):
         y_pred = self.predict_one(X, tree=tree)
         normalized_error = get_normalized_error(y, y_pred, self)
 
@@ -196,7 +196,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodePerceptron, AdaNode):
             # Perform bootstrap-sampling
             k = self._random_state.poisson(1.0)
             if k > 0:
-                weight = weight * k
+                sample_weight = sample_weight * k
 
         if self._adwin is None:
             self._adwin = ADWIN()
@@ -210,7 +210,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodePerceptron, AdaNode):
             self._error_change = False
 
         # Update statistics
-        super().learn_one(X, y, weight=weight, tree=tree)
+        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
 
         weight_seen = self.total_weight
 
@@ -227,7 +227,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodePerceptron, AdaNode):
             return super().predict_one(X, tree=tree)
 
     # New for option votes
-    def filter_instance_to_leaves(self, X, y, weight, parent, parent_branch,
+    def filter_instance_to_leaves(self, X, y, sample_weight, parent, parent_branch,
                                   update_splitter_counts, found_nodes=None):
         if found_nodes is None:
             found_nodes = []
