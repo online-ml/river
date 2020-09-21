@@ -47,8 +47,8 @@ class PARegressor(BasePA, base.Regressor):
     eps
     learn_intercept
 
-    Example
-    -------
+    Examples
+    --------
 
     The following example is taken from [this blog post](https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/).
 
@@ -108,59 +108,62 @@ class PARegressor(BasePA, base.Regressor):
 class PAClassifier(BasePA, base.Classifier):
     """Passive-aggressive learning for classification.
 
-    Parameters:
-        C
-        mode
-        eps
-        learn_intercept
+    Parameters
+    ----------
+    C
+    mode
+    eps
+    learn_intercept
 
-    Example:
+    Examples
+    --------
 
-        The following example is taken from [this blog post](https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/).
+    The following example is taken from [this blog post](https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/).
 
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import stream
-        >>> import numpy as np
-        >>> from sklearn import datasets
-        >>> from sklearn import model_selection
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import stream
+    >>> import numpy as np
+    >>> from sklearn import datasets
+    >>> from sklearn import model_selection
 
-        >>> np.random.seed(1000)
-        >>> X, y = datasets.make_classification(
-        ...     n_samples=5000,
-        ...     n_features=4,
-        ...     n_informative=2,
-        ...     n_redundant=0,
-        ...     n_repeated=0,
-        ...     n_classes=2,
-        ...     n_clusters_per_class=2
-        ... )
+    >>> np.random.seed(1000)
+    >>> X, y = datasets.make_classification(
+    ...     n_samples=5000,
+    ...     n_features=4,
+    ...     n_informative=2,
+    ...     n_redundant=0,
+    ...     n_repeated=0,
+    ...     n_classes=2,
+    ...     n_clusters_per_class=2
+    ... )
 
-        >>> X_train, X_test, y_train, y_test = model_selection.train_test_split(
-        ...     X,
-        ...     y,
-        ...     test_size=0.35,
-        ...     random_state=1000
-        ... )
+    >>> X_train, X_test, y_train, y_test = model_selection.train_test_split(
+    ...     X,
+    ...     y,
+    ...     test_size=0.35,
+    ...     random_state=1000
+    ... )
 
-        >>> model = linear_model.PAClassifier(
-        ...     C=0.01,
-        ...     mode=1
-        ... )
+    >>> model = linear_model.PAClassifier(
+    ...     C=0.01,
+    ...     mode=1
+    ... )
 
-        >>> for xi, yi in stream.iter_array(X_train, y_train):
-        ...     y_pred = model.learn_one(xi, yi)
+    >>> for xi, yi in stream.iter_array(X_train, y_train):
+    ...     y_pred = model.learn_one(xi, yi)
 
-        >>> metric = metrics.Accuracy() + metrics.LogLoss()
+    >>> metric = metrics.Accuracy() + metrics.LogLoss()
 
-        >>> for xi, yi in stream.iter_array(X_test, y_test):
-        ...     metric = metric.update(yi, model.predict_proba_one(xi))
+    >>> for xi, yi in stream.iter_array(X_test, y_test):
+    ...     metric = metric.update(yi, model.predict_proba_one(xi))
 
-        >>> print(metric)
-        Accuracy: 88.46%, LogLoss: 0.325727
+    >>> print(metric)
+    Accuracy: 88.46%, LogLoss: 0.325727
 
-    References:
-        1. [Crammer, K., Dekel, O., Keshet, J., Shalev-Shwartz, S. and Singer, Y., 2006. Online passive-aggressive algorithms. Journal of Machine Learning Research, 7(Mar), pp.551-585](http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf)
+    References
+    ----------
+    [^1]: [Crammer, K., Dekel, O., Keshet, J., Shalev-Shwartz, S. and Singer, Y., 2006. Online passive-aggressive algorithms. Journal of Machine Learning Research, 7(Mar), pp.551-585](http://jmlr.csail.mit.edu/papers/volume7/crammer06a/crammer06a.pdf)
 
     """
 

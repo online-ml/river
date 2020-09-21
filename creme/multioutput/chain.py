@@ -152,39 +152,42 @@ class RegressorChain(BaseChain, base.MultiOutputRegressor):
     for the third, etc. This "chain model" is therefore capable of capturing dependencies between
     outputs.
 
-    Parameters:
-        model
-        order: The order in which to construct the chain. If it not provided then it will be
-            inferred from the order of the keys in the first provided target dictionary.
+    Parameters
+    ----------
+    model
+    order
+        The order in which to construct the chain. If it not provided then it will be inferred from
+        the order of the keys in the first provided target dictionary.
 
-    Example:
+    Examples
+    --------
 
-        >>> from creme import evaluate
-        >>> from creme import linear_model
-        >>> from creme import metrics
-        >>> from creme import multioutput
-        >>> from creme import preprocessing
-        >>> from creme import stream
-        >>> from sklearn import datasets
+    >>> from creme import evaluate
+    >>> from creme import linear_model
+    >>> from creme import metrics
+    >>> from creme import multioutput
+    >>> from creme import preprocessing
+    >>> from creme import stream
+    >>> from sklearn import datasets
 
-        >>> dataset = stream.iter_sklearn_dataset(
-        ...     dataset=datasets.load_linnerud(),
-        ...     shuffle=True,
-        ...     seed=42
-        ... )
+    >>> dataset = stream.iter_sklearn_dataset(
+    ...     dataset=datasets.load_linnerud(),
+    ...     shuffle=True,
+    ...     seed=42
+    ... )
 
-        >>> model = multioutput.RegressorChain(
-        ...     model=(
-        ...         preprocessing.StandardScaler() |
-        ...         linear_model.LinearRegression(intercept_lr=0.3)
-        ...     ),
-        ...     order=[0, 1, 2]
-        ... )
+    >>> model = multioutput.RegressorChain(
+    ...     model=(
+    ...         preprocessing.StandardScaler() |
+    ...         linear_model.LinearRegression(intercept_lr=0.3)
+    ...     ),
+    ...     order=[0, 1, 2]
+    ... )
 
-        >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
+    >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
-        >>> evaluate.progressive_val_score(dataset, model, metric)
-        MAE: 16.396347
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 16.396347
 
     """
 

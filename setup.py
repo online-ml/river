@@ -38,7 +38,7 @@ AUTHOR = 'Max Halford'
 REQUIRES_PYTHON = '>=3.6.0'
 
 # Package requirements.
-base_packages = ['mmh3==2.5.1', 'numpy>=1.18.1', 'scipy>=1.4.1', 'pandas>=1.0.1']
+base_packages = ['numpy>=1.18.1', 'scipy>=1.4.1', 'pandas>=1.0.1']
 
 compat_packages = base_packages + [
     'scikit-learn',
@@ -128,7 +128,7 @@ setuptools.setup(
         compiler_directives={
             'language_level': 3,
             'binding': True,
-            #'embedsignature': True
+            'embedsignature': True
         }
     )
 )

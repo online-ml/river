@@ -80,7 +80,10 @@ def inherit_signature(c, method_name):
                 ancestor_meth = inspect.signature(getattr(ancestor, m.__name__))
             except AttributeError:
                 break
-            ancestor_param = ancestor_meth.parameters[param.name]
+            try:
+                ancestor_param = ancestor_meth.parameters[param.name]
+            except KeyError:
+                break
             if ancestor_param.annotation is not param.empty:
                 param = param.replace(annotation=ancestor_param.annotation)
                 break
@@ -206,7 +209,10 @@ def print_docstring(obj, file, depth):
 
     # We infer the type annotations from the signatures, and therefore rely on the signature
     # instead of the docstring for documenting parameters
-    signature = inspect.signature(obj)
+    try:
+        signature = inspect.signature(obj)
+    except ValueError:
+        signature = inspect.Signature()  # TODO: this is necessary for Cython classes, but it's not correct
     params_desc = {param.name: ' '.join(param.desc) for param in doc['Parameters']}
 
     # Parameters
@@ -361,7 +367,7 @@ def print_module(mod, path, overview, is_submodule=False):
         print(paragraph(mod.__doc__), file=overview)
 
     # Extract all public classes and functions
-    ispublic = lambda x: x.__name__ in mod.__all__
+    ispublic = lambda x: x.__name__ in mod.__all__ and not x.__name__.startswith('_')
     classes = inspect.getmembers(mod, lambda x: inspect.isclass(x) and ispublic(x))
     funcs = inspect.getmembers(mod, lambda x: inspect.isfunction(x) and ispublic(x))
 
@@ -400,7 +406,11 @@ def print_module(mod, path, overview, is_submodule=False):
     # Sub-modules
     for name, submod in inspect.getmembers(mod, inspect.ismodule):
         # We only want to go through the public submodules, such as optim.schedulers
-        if name in ('tags', 'typing') or name not in mod.__all__:
+        if (
+            name in ('tags', 'typing', 'inspect', 'skmultiflow_utils') or
+            name not in mod.__all__
+            or name.startswith('_')
+        ):
             continue
         print_module(mod=submod, path=mod_path, overview=overview, is_submodule=True)
 
@@ -423,7 +433,7 @@ if __name__ == '__main__':
     linkifier = Linkifier()
 
     for mod_name, mod in inspect.getmembers(importlib.import_module('creme'), inspect.ismodule):
-        if mod_name not in ('base', 'cluster'):
+        if mod_name.startswith('_'):
             continue
         print(mod_name)
         print_module(mod, path=api_path, overview=overview)

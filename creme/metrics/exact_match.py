@@ -11,6 +11,12 @@ class ExactMatch(base.MultiOutputClassificationMetric):
     samples that have all their labels correctly classified, divided by the
     total number of samples.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+
     Examples
     --------
 

@@ -8,7 +8,7 @@ from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from creme.base import DriftDetector
 from creme.drift import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree import ARFHoeffdingTreeClassifier
-from skmultiflow.metrics import ClassificationPerformanceEvaluator
+from creme.metrics import _ClassificationReport
 from skmultiflow.utils import get_dimensions, normalize_values_in_dict, check_random_state,\
     check_weights
 
@@ -154,7 +154,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
 
     nominal_attributes: list, optional
         (`ARFHoeffdingTreeClassifier` parameter)
-        List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+        List of Nominal attributes. If empty, then assume that all attributes are numerical.
 
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -322,7 +322,7 @@ class AdaptiveRandomForestClassifier(BaseSKMObject, ClassifierMixin, MetaEstimat
 
         for i in range(self.n_estimators):
             y_predicted = self.ensemble[i].predict(np.asarray([X]))
-            self.ensemble[i].evaluator.add_result(y_predicted, y, sample_weight)
+            self.ensemble[i].evaluator.add_result(y_predicted[0], y, sample_weight)
             k = self._random_state.poisson(self.lambda_value)
             if k > 0:
                 self.ensemble[i].partial_fit(np.asarray([X]), np.asarray([y]),
@@ -523,7 +523,7 @@ class ARFBaseLearner(BaseSKMObject):
         self.classifier = classifier
         self.created_on = instances_seen
         self.is_background_learner = is_background_learner
-        self.evaluator_method = ClassificationPerformanceEvaluator
+        self.evaluator_method = _ClassificationReport
 
         # Drift and warning
         self.drift_detection_method = drift_detection_method

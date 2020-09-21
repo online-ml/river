@@ -34,6 +34,12 @@ class FBeta(base.BinaryMetric):
     ----------
     beta
         Weight of precision in the harmonic mean.
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+    pos_val
+        Value to treat as "positive".
 
     Attributes
     ----------
@@ -82,6 +88,10 @@ class MacroFBeta(base.MultiClassMetric):
     ----------
     beta
         Weight of precision in harmonic mean.
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -144,6 +154,10 @@ class MicroFBeta(base.MultiClassMetric):
     ----------
     beta
         Weight of precision in the harmonic mean.
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -192,6 +206,10 @@ class WeightedFBeta(base.MultiClassMetric):
     ----------
     beta
         Weight of precision in the harmonic mean.
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -256,6 +274,10 @@ class MultiFBeta(base.MultiClassMetric):
         Weight of precision in the harmonic mean of each class.
     weights
         Class weights. If not provided then uniform weights will be used.
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -324,6 +346,9 @@ class ExampleFBeta(base.MultiOutputClassificationMetric):
     ----------
     beta
         Weight of precision in the harmonic mean.
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
 
     Attributes
     ----------
@@ -383,6 +408,15 @@ class ExampleFBeta(base.MultiOutputClassificationMetric):
 class F1(FBeta):
     """Binary F1 score.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+    pos_val
+        Value to treat as "positive".
+
     Examples
     --------
 
@@ -409,6 +443,13 @@ class MacroF1(MacroFBeta):
     """Macro-average F1 score.
 
     This works by computing the F1 score per class, and then performs a global average.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -440,6 +481,13 @@ class MicroF1(MicroFBeta):
     This computes the F1 score by merging all the predictions and true labels, and then computes a
     global F1 score.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
 
@@ -457,7 +505,7 @@ class MicroF1(MicroFBeta):
 
     References
     ----------
-    1. [Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem?](https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/)
+    [^1]: [Why are precision, recall and F1 score equal when using micro averaging in a multi-class problem?](https://simonhessner.de/why-are-precision-recall-and-f1-score-equal-when-using-micro-averaging-in-a-multi-class-problem/)
 
     """
 
@@ -470,6 +518,15 @@ class WeightedF1(WeightedFBeta):
 
     This works by computing the F1 score per class, and then performs a global weighted average by
     using the support of each class.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+    pos_val
+        Value to treat as "positive".
 
     Examples
     --------
@@ -498,31 +555,38 @@ class WeightedF1(WeightedFBeta):
 class ExampleF1(ExampleFBeta):
     """Example-based F1 score for multilabel classification.
 
-        Examples
-        --------
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
-        >>> from creme import metrics
+    Examples
+    --------
 
-        >>> y_true = [
-        ...     {0: False, 1: True, 2: True},
-        ...     {0: True, 1: True, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> from creme import metrics
 
-        >>> y_pred = [
-        ...     {0: True, 1: True, 2: True},
-        ...     {0: True, 1: False, 2: False},
-        ...     {0: True, 1: True, 2: False},
-        ... ]
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric = metrics.ExampleF1()
-        >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
 
-        >>> metric
-        ExampleF1: 0.860215
+    >>> metric = metrics.ExampleF1()
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     metric = metric.update(yt, yp)
 
-        """
+    >>> metric
+    ExampleF1: 0.860215
+
+    """
 
     def __init__(self, cm=None):
         super().__init__(beta=1., cm=cm)

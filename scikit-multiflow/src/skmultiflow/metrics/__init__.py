@@ -19,9 +19,7 @@ from .measure_collection import WindowClassificationMeasurements
 from .measure_collection import WindowMultiTargetClassificationMeasurements
 
 
-__all__ = ["ClassificationPerformanceEvaluator", "WindowClassificationPerformanceEvaluator",
-           "MultiLabelClassificationPerformanceEvaluator", "WindowMultiLabelClassificationPerformanceEvaluator",
-           "ClassificationMeasurements", "RegressionMeasurements",
+__all__ = ["ClassificationMeasurements", "RegressionMeasurements",
            "MultiTargetClassificationMeasurements", "MultiTargetRegressionMeasurements",
            "WindowClassificationMeasurements", "WindowRegressionMeasurements",
            "WindowMultiTargetClassificationMeasurements",

@@ -6,7 +6,7 @@ import typing
 from creme import base
 from creme import utils
 from creme import stats
-from . import _confusion_matrix
+from . import confusion
 
 
 __all__ = [
@@ -56,9 +56,9 @@ class Metric(abc.ABC):
 class ClassificationMetric(Metric):
     """Mother class for all classification metrics."""
 
-    def __init__(self, cm=None):
+    def __init__(self, cm: confusion.ConfusionMatrix = None):
         if cm is None:
-            cm = _confusion_matrix.ConfusionMatrix()
+            cm = confusion.ConfusionMatrix()
         self.cm = cm
 
     def update(self, y_true, y_pred, sample_weight=1):
@@ -99,6 +99,15 @@ class ClassificationMetric(Metric):
 
 class BinaryMetric(ClassificationMetric):
     """Mother class for all binary classification metrics.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+    pos_val
+        Value to treat as "positive".
 
     """
 
@@ -155,7 +164,7 @@ class MultiOutputClassificationMetric(Metric):
 
     def __init__(self, cm=None):
         if cm is None:
-            cm = _confusion_matrix.MultiLabelConfusionMatrix()
+            cm = confusion.MultiLabelConfusionMatrix()
         self.cm = cm
 
     def update(

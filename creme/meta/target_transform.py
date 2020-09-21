@@ -24,14 +24,14 @@ class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
     --------
 
     >>> import math
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import meta
     >>> from creme import metrics
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.TrumpApproval()
+    >>> dataset = stream.iter_dataset('TrumpApproval')
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     meta.TransformedTargetRegressor(
@@ -72,7 +72,7 @@ class BoxCoxRegressor(TransformedTargetRegressor):
     sub-populations that have different variabilities from others) allowing to transform it towards
     normality.
 
-    The `power` parameter is denoted λ in the litterature. If `power` is equal to 0 than the
+    The `power` parameter is denoted λ in the literature. If `power` is equal to 0 than the
     Box-Cox transform will be equivalent to a log transform.
 
     Parameters
@@ -86,14 +86,14 @@ class BoxCoxRegressor(TransformedTargetRegressor):
     --------
 
     >>> import math
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import meta
     >>> from creme import metrics
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.TrumpApproval()
+    >>> dataset = stream.iter_dataset('TrumpApproval')
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     meta.BoxCoxRegressor(

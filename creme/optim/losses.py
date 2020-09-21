@@ -1,6 +1,6 @@
 """Loss functions.
 
-Each loss function is intented to work with both single values as well as numpy vectors.
+Each loss function is intended to work with both single values as well as numpy vectors.
 
 """
 import abc
@@ -283,8 +283,8 @@ class Hinge(BinaryLoss):
     Parameters
     ----------
     threshold
-        Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to the loss used
-        in the Perceptron algorithm.
+        Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to the loss used in
+        the Perceptron algorithm.
 
     Examples
     --------
@@ -504,13 +504,13 @@ class BinaryFocalLoss(BinaryLoss):
     This implements the "star" algorithm from the appendix of the focal loss paper.
 
     Parameters
-    ---------
+    ----------
     gamma
     beta
 
     References
     ----------
-    [^1]: [Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988)](https://arxiv.org/pdf/1708.02002.pdf)
+    1. [Lin, T.Y., Goyal, P., Girshick, R., He, K. and Dollár, P., 2017. Focal loss for dense object detection. In Proceedings of the IEEE international conference on computer vision (pp. 2980-2988)](https://arxiv.org/pdf/1708.02002.pdf)
 
     """
 

@@ -14,7 +14,7 @@ __all__ = [
 
 
 class Scheduler(abc.ABC):
-    """Can be used to program the learning rate shedule of an `optim.Optimizer`."""
+    """Can be used to program the learning rate schedule of an `optim.Optimizer`."""
 
     @abc.abstractmethod
     def get(self, t: int) -> float:

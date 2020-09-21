@@ -22,7 +22,7 @@ class PolynomialExtender(base.Transformer):
     Generate features consisting of all polynomial combinations of the features with degree less
     than or equal to the specified degree.
 
-    Be aware that the number of outputed features scales polynomially in the number of input
+    Be aware that the number of outputted features scales polynomially in the number of input
     features and exponentially in the degree. High degrees can cause overfitting.
 
     Parameters
@@ -70,13 +70,13 @@ class PolynomialExtender(base.Transformer):
     Polynomial features are typically used for a linear model to capture interactions between
     features. This may done by setting up a pipeline, as so:
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model as lm
     >>> from creme import metrics
     >>> from creme import preprocessing as pp
+    >>> from creme import stream
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
 
     >>> model = (
     ...     fx.PolynomialExtender() |

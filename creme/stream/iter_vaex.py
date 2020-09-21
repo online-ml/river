@@ -7,8 +7,7 @@ from creme import base
 
 
 def iter_vaex(X: vaex.dataframe.DataFrame, y: typing.Union[str, vaex.expression.Expression] = None,
-              features: typing.Union[typing.List[str], vaex.expression.Expression] = None,
-              **kwargs) -> base.typing.Stream:
+              features: typing.Union[typing.List[str], vaex.expression.Expression] = None) -> base.typing.Stream:
     """Yields rows from a ``vaex.DataFrame``.
 
     Parameters

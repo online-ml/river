@@ -15,6 +15,12 @@ class Jaccard(base.MultiOutputClassificationMetric):
     The Jaccard index is undefined if there are no true or predicted labels, this implementation
     will return a score of 0.0 if this is the case.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+
     Examples
     --------
 

@@ -89,18 +89,18 @@ def test_vectordict():
     assert x['f'] == 2
 
     # test mask
-    x = {'a': 1, 'b': -5}
+    x = {'a': 1, 'b': -5, 'e': 2}
     y = {'b': 0.5, 'd': 4, 'e': 3, 'f': 8}
     z = {'b': 4, 'd': 2, 'g': -1}
     vx = VectorDict(x)
     vy = VectorDict(y)
-    assert vx + vy == {'a': 1, 'b': -4.5, 'd': 4, 'e': 3, 'f': 8}
+    assert vx + vy == vy + vx == {'a': 1, 'b': -4.5, 'd': 4, 'e': 5, 'f': 8}
     vy = VectorDict(y, mask=z)
-    assert vx + vy == {'a': 1, 'b': -4.5, 'd': 4}
+    assert vx + vy == vy + vx == {'a': 1, 'b': -4.5, 'd': 4, 'e': 2}
     vy = VectorDict(y).with_mask(z.keys())
-    assert vx + vy == {'a': 1, 'b': -4.5, 'd': 4}
+    assert vx + vy == vy + vx == {'a': 1, 'b': -4.5, 'd': 4, 'e': 2}
     vy = VectorDict(y).with_mask(x)
-    assert vy / vx == {'b': -0.1, 'a': 0.0}
+    assert vy / vx == {'b': -0.1, 'a': 0.0, 'e': 1.5}
 
     # test export
     x = {'a': 1, 'b': -5}

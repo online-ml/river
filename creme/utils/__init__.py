@@ -11,7 +11,7 @@ from .skyline import Skyline
 from .vectordict import VectorDict
 from .window import Window
 from .window import SortedWindow
-# Data convertion utilities: to be removed in the future
+# Data conversion utilities: to be removed in the future
 from .data_conversion import dict2numpy
 from .data_conversion import numpy2dict
 

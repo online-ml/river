@@ -36,8 +36,8 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     weighted
         Whether to weight the contribution of each neighbor by it's inverse
         distance or not.
-    **kwargs
-        Other parameters passed to scipy.spatial.cKDTree.
+    kwargs
+        Other parameters passed to `scipy.spatial.cKDTree`.
 
     Notes
     -----
@@ -47,13 +47,13 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
     Examples
     --------
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
     >>> from creme import neighbors
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
 
     >>> model = (
     ...    preprocessing.StandardScaler() |

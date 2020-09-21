@@ -80,7 +80,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
     nb_threshold: int (default=0)
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes: list, optional
-        List of Nominal attributes. If emtpy, then assume that all attributes are numerical.
+        List of Nominal attributes. If empty, then assume that all attributes are numerical.
     n_labels: int (default=None)
         the number of labels the problem has.
 

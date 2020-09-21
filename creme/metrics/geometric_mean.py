@@ -21,6 +21,12 @@ class GeometricMean(base.MultiClassMetric):
     where $s_i$ is the sensitivity (recall) of class $i$ and $n$ is the
     number of classes.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+
     Examples
     --------
 

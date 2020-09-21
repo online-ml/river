@@ -47,7 +47,7 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
         The metric used to evaluate the model's predictions.
     moment
         The attribute used for measuring time. If a callable is passed, then it is expected to take
-        as input a `dict` of features. If `None`, then the observations are implicitely timestamped
+        as input a `dict` of features. If `None`, then the observations are implicitly timestamped
         in the order in which they arrive.
     delay
         The amount to wait before revealing the target associated with each observation to the
@@ -83,13 +83,13 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
 
     We can evaluate it on the `Phishing` dataset as so:
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
+    >>> from creme import stream
 
     >>> evaluate.progressive_val_score(
     ...     model=model,
-    ...     dataset=datasets.Phishing(),
+    ...     dataset=stream.iter_dataset('Phishing'),
     ...     metric=metrics.ROCAUC(),
     ...     print_every=200
     ... )
@@ -111,7 +111,7 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
 
     >>> metric = metrics.ROCAUC()
 
-    >>> for x, y in datasets.Phishing():
+    >>> for x, y in stream.iter_dataset('Phishing'):
     ...     y_pred = model.predict_proba_one(x)
     ...     metric = metric.update(y, y_pred)
     ...     model = model.learn_one(x, y)
@@ -127,7 +127,7 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
     >>> with open('progress.log', 'w') as f:
     ...     metric = evaluate.progressive_val_score(
     ...         model=model,
-    ...         dataset=datasets.Phishing(),
+    ...         dataset=stream.iter_dataset('Phishing'),
     ...         metric=metrics.ROCAUC(),
     ...         print_every=200,
     ...         file=f

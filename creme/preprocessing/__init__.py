@@ -7,6 +7,9 @@ the latter extracts new information from the data
 
 """
 from .feature_hasher import FeatureHasher
+from .impute import PreviousImputer
+from .impute import StatImputer
+from .lda import LDA
 from .one_hot import OneHotEncoder
 from .scale import Binarizer
 from .scale import MaxAbsScaler
@@ -19,6 +22,7 @@ from .scale import StandardScaler
 __all__ = [
     'Binarizer',
     'FeatureHasher',
+    'LDA',
     'MaxAbsScaler',
     'MinMaxScaler',
     'Normalizer',

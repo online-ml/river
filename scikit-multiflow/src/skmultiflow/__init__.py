@@ -4,7 +4,6 @@
 from . import bayes
 from . import core
 from . import data
-from creme import drift
 from . import evaluation
 from . import lazy
 from . import meta
@@ -17,5 +16,5 @@ from . import visualization
 from ._version import __version__
 from .utils._show_versions import show_versions
 
-__all__ = ['__version__', 'bayes', 'core', 'data', 'drift_detection', 'evaluation', 'lazy',
+__all__ = ['__version__', 'bayes', 'core', 'data', 'evaluation', 'lazy',
            'meta', 'metrics', 'neural_networks', 'trees', 'utils', 'visualization', 'show_versions']

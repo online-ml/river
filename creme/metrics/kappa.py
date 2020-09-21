@@ -22,6 +22,13 @@ class CohenKappa(base.MultiClassMetric):
     assigned to any sample (prequential accuracy), and $p_e$ is
     the expected agreement when both annotators assign labels randomly.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
 
@@ -77,6 +84,12 @@ class KappaM(base.MultiClassMetric):
     assigned to any sample (prequential accuracy), and $p_e$ is
     the prequential accuracy of the `majority classifier`.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+
     Examples
     --------
 
@@ -93,10 +106,11 @@ class KappaM(base.MultiClassMetric):
     >>> metric
     KappaM: 0.25
 
-    References:
-        1. A. Bifet et al. "Efficient online evaluation of big data stream classifiers."
-           In Proceedings of the 21th ACM SIGKDD international conference on knowledge discovery
-           and data mining, pp. 59-68. ACM, 2015.
+    References
+    ----------
+    [1^]: A. Bifet et al. "Efficient online evaluation of big data stream classifiers."
+        In Proceedings of the 21th ACM SIGKDD international conference on knowledge discovery
+        and data mining, pp. 59-68. ACM, 2015.
 
     """
 
@@ -129,6 +143,12 @@ class KappaT(base.MultiClassMetric):
     the prequential accuracy of the `no-change classifier` that predicts
     only using the last class seen by the classifier.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
+        confusion matrix reduces the amount of storage and computation time.
+
     Examples
     --------
 
@@ -145,11 +165,12 @@ class KappaT(base.MultiClassMetric):
     >>> metric
     KappaT: 0.6
 
-    References:
-        1. A. Bifet et al. (2013). "Pitfalls in benchmarking data stream classification
-           and how to avoid them." Proc. of the European Conference on Machine Learning
-           and Principles and Practice of Knowledge Discovery in Databases (ECMLPKDD'13),
-           Springer LNAI 8188, p. 465-479.
+    References
+    ----------
+    [^1]: A. Bifet et al. (2013). "Pitfalls in benchmarking data stream classification
+        and how to avoid them." Proc. of the European Conference on Machine Learning
+        and Principles and Practice of Knowledge Discovery in Databases (ECMLPKDD'13),
+        Springer LNAI 8188, p. 465-479.
 
     """
 

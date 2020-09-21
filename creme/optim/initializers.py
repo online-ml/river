@@ -91,7 +91,7 @@ class Normal(Initializer):
     sigma
         The standard deviation of the normal distribution
     seed
-        Set the seed to produce identical results.
+        Random number generation seed that can be set for reproducibility.
 
 
     Examples

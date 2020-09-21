@@ -19,7 +19,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     updated when the weaks learners fit successively the same observation.
 
     Parameters
-    ---------
+    ----------
     model
         The classifier to boost.
     n_models
@@ -29,9 +29,9 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
 
     Attributes
     ----------
-    wrong_weight (collections.defaultdict)
+    wrong_weight : collections.defaultdict
         Number of times a model has made a mistake when making predictions.
-    correct_weight (collections.defaultdict)
+    correct_weight : collections.defaultdict
         Number of times a model has predicted the right label when making predictions.
 
     Examples
@@ -40,13 +40,13 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     In the following example three tree classifiers are boosted together. The performance is
     slightly better than when using a single tree.
 
-    >>> from creme import datasets
     >>> from creme import ensemble
     >>> from creme import evaluate
     >>> from creme import metrics
+    >>> from creme import stream
     >>> from creme import tree
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
 
     >>> metric = metrics.LogLoss()
 

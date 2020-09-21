@@ -195,12 +195,12 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     method. We can therefore evaluate it like any other classifier with
     `evaluate.progressive_val_score`.
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
+    >>> from creme import stream
 
     >>> evaluate.progressive_val_score(
-    ...     dataset=datasets.TrumpApproval(),
+    ...     dataset=stream.iter_dataset('TrumpApproval'),
     ...     model=sh,
     ...     metric=metrics.MAE()
     ... )
@@ -341,12 +341,12 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     `predict_proba_one` method. We can therefore evaluate it like any other classifier with
     `evaluate.progressive_val_score`.
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
+    >>> from creme import stream
 
     >>> evaluate.progressive_val_score(
-    ...     dataset=datasets.Phishing(),
+    ...     dataset=stream.iter_dataset('Phishing'),
     ...     model=sh,
     ...     metric=metrics.ROCAUC()
     ... )

@@ -96,7 +96,7 @@ class Pipeline(base.Estimator):
     )
 
     Note that you can also declare a pipeline by using the `compose.Pipeline` constructor
-    method, which is slighly more verbose:
+    method, which is slightly more verbose:
 
     >>> from creme import compose
 

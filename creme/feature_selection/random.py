@@ -9,7 +9,7 @@ __all__ = ['PoissonInclusion']
 class PoissonInclusion(base.Transformer):
     """Randomly selects features with an inclusion trial.
 
-    When a new feature is encoutered, it is selected with probability `p`. The number of times a
+    When a new feature is encountered, it is selected with probability `p`. The number of times a
     feature needs to beseen before it is added to the model follows a geometric distribution with
     expected value `1 / p`. This feature selection method is meant to be used when you have a
     very large amount of sparse features.
@@ -18,6 +18,8 @@ class PoissonInclusion(base.Transformer):
     ----------
     p
         Probability of including a feature the first time it is encountered.
+    seed
+        Random seed value used for reproducibility.
 
     References
     ----------
@@ -25,7 +27,7 @@ class PoissonInclusion(base.Transformer):
 
     """
 
-    def __init__(self, p: float, seed=None):
+    def __init__(self, p: float, seed: int = None):
         self.p = p
         self.seed = seed
         self.rng = random.Random(seed)

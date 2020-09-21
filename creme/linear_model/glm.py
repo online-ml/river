@@ -142,8 +142,6 @@ class LinearRegression(GLM, base.Regressor):
     intercept_lr
         Learning rate scheduler used for updating the intercept. A `optim.schedulers.Constant` is
         used if a `float` is provided. The intercept is not updated when this is set to 0.
-    l2
-        Amount of L2 regularization used to push weights towards 0.
     clip_gradient
         Clips the absolute value of each gradient value.
     initializer
@@ -157,13 +155,13 @@ class LinearRegression(GLM, base.Regressor):
     Examples
     --------
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.TrumpApproval()
+    >>> dataset = stream.iter_dataset('TrumpApproval')
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
@@ -300,8 +298,6 @@ class LogisticRegression(GLM, base.Classifier, base.MiniBatchClassifier):
     intercept_lr
         Learning rate scheduler used for updating the intercept. A `optim.schedulers.Constant` is
         used if a `float` is provided. The intercept is not updated when this is set to 0.
-    l2
-        Amount of L2 regularization used to push weights towards 0.
     clip_gradient
         Clips the absolute value of each gradient value.
     initializer
@@ -315,14 +311,14 @@ class LogisticRegression(GLM, base.Classifier, base.MiniBatchClassifier):
     Examples
     --------
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
+    >>> from creme import stream
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
@@ -368,16 +364,30 @@ class Perceptron(LogisticRegression):
     rate of the stochastic gradient descent procedure is set to 1 for both the weights and the
     intercept.
 
+    Parameters
+    ----------
+    l2
+        Amount of L2 regularization used to push weights towards 0.
+    clip_gradient
+        Clips the absolute value of each gradient value.
+    initializer
+        Weights initialization scheme.
+
+    Attributes
+    ----------
+    weights
+        The current weights.
+
     Examples
     --------
 
-    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model as lm
     >>> from creme import metrics
     >>> from creme import preprocessing as pp
+    >>> from creme import stream
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = stream.iter_dataset('Phishing')
 
     >>> model = pp.StandardScaler() | lm.Perceptron()
 
