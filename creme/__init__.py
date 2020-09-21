@@ -21,6 +21,7 @@ from . import expert
 from . import facto
 from . import feature_extraction
 from . import feature_selection
+from . import imblearn
 from . import linear_model
 from . import meta
 from . import metrics
@@ -32,7 +33,6 @@ from . import optim
 from . import preprocessing
 from . import proba
 from . import reco
-from . import sampling
 from . import stats
 from . import stream
 from . import time_series
@@ -53,6 +53,7 @@ __all__ = [
     'facto',
     'feature_extraction',
     'feature_selection',
+    'imblearn',
     'linear_model',
     'meta',
     'metrics',
@@ -64,7 +65,6 @@ __all__ = [
     'preprocessing',
     'proba',
     'reco',
-    'sampling',
     'stats',
     'stream',
     'time_series',
