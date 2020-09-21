@@ -48,8 +48,8 @@ class Gaussian(base.ContinuousDistribution):
     def __str__(self):
         return f'𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})'
 
-    def update(self, x):
-        self._var.update(x)
+    def update(self, x, w=1.):
+        self._var.update(x, w)
         return self
 
     def pdf(self, x):
