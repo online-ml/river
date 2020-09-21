@@ -89,9 +89,8 @@ class LearningNodeNBA(LearningNodeMC):
 
         """
         if self.stats == {}:
-            # All classes equal, default to class 0
-            if y == 0:
-                self._mc_correct_weight += weight
+            # All classes equal, give preference to the one that appears the most
+            self._mc_correct_weight += weight
         elif max(self.stats, key=self.stats.get) == y:
             self._mc_correct_weight += weight
         nb_prediction = do_naive_bayes_prediction(X, self.stats, self.attribute_observers)
