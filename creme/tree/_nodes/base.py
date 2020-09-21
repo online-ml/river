@@ -1,32 +1,35 @@
 from abc import ABCMeta, abstractmethod
 import textwrap
 
-from skmultiflow.trees._attribute_test import InstanceConditionalTest
-from skmultiflow.trees._attribute_test import AttributeSplitSuggestion
-from skmultiflow.trees._attribute_observer import AttributeObserverNull
+from typing import Type, TypeVar
+
+from creme import base
+from creme.tree._attribute_test import InstanceConditionalTest
+from creme.tree._attribute_test import AttributeSplitSuggestion
+from creme.tree._attribute_observer import AttributeObserverNull
+
+
+NT = TypeVar('NT', bound='Node')
 
 
 class FoundNode:
-    """ Base class for tree nodes.
+    """ Helper class to manage nodes.
 
     Parameters
     ----------
-    node: SplitNode or LearningNode
+    node
         The node object.
-    parent: SplitNode or None
+    parent
         The node's parent.
-    parent_branch: int
+    parent_branch
         The parent node's branch.
-    depth: int
-        Depth of the tree where the node is located.
 
     """
 
-    def __init__(self, node=None, parent=None, parent_branch=None, depth=None):
+    def __init__(self, node: Type[NT] = None, parent: Type[NT] = None, parent_branch: int = None):
         self.node = node
         self.parent = parent
         self.parent_branch = parent_branch
-        self.depth = depth
 
 
 class Node(metaclass=ABCMeta):
@@ -34,13 +37,16 @@ class Node(metaclass=ABCMeta):
 
     Parameters
     ----------
-    stats: dict or None
+    stats
         Statistics kept by the node.
+    depth
+        The depth of the node.
 
     """
 
-    def __init__(self, stats=None):
+    def __init__(self, stats: dict = None, depth: int = 0):
         self.stats = stats
+        self._depth = depth
 
     @staticmethod
     def is_leaf() -> bool:
@@ -54,7 +60,7 @@ class Node(metaclass=ABCMeta):
         """
         return True
 
-    def filter_instance_to_leaf(self, X, parent, parent_branch) -> FoundNode:
+    def filter_instance_to_leaf(self, x: dict, parent: Type[NT], parent_branch: int) -> FoundNode:
         """ Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
@@ -87,6 +93,10 @@ class Node(metaclass=ABCMeta):
         """
         self._stats = stats if stats is not None else {}
 
+    @property
+    def depth(self) -> int:
+        return self._depth
+
     def subtree_depth(self) -> int:
         """ Calculate the depth of the subtree from this node.
 
@@ -98,45 +108,24 @@ class Node(metaclass=ABCMeta):
         """
         return 0
 
-    def calculate_promise(self) -> int:
-        """ Calculate node's promise.
-
-        Returns
-        -------
-        int
-            A small value indicates that the node has seen more samples of a
-            given class than the other classes.
-
-        """
-        total_seen = sum(self._stats.values())
-        if total_seen > 0:
-            return total_seen - max(self._stats.values())
-        else:
-            return 0
-
-    def describe_subtree(self, tree, buffer, indent=0):
+    def describe_subtree(self, tree, buffer: str, indent: int = 0):
         """ Walk the tree and write its structure to a buffer string.
 
         Parameters
         ----------
-        tree: HoeffdingTreeClassifier
+        tree
             The tree to describe.
-        buffer: string
+        buffer
             The string buffer where the tree's structure will be stored
-        indent: int
+        indent
             Indentation level (number of white spaces for current node.)
 
         """
         buffer[0] += textwrap.indent('Leaf = ', ' ' * indent)
 
-        if tree._estimator_type == 'classifier':
-            class_val = max(
-                self._stats,
-                key=self._stats.get
-            )
-            buffer[0] += 'Class {} | {}\n'.format(
-                class_val, self._stats
-            )
+        if isinstance(tree, base.Classifier):
+            class_val = max(self._stats, key=self._stats.get)
+            buffer[0] += 'Class {} | {}\n'.format(class_val, self._stats)
         else:
             text = '{'
             for i, (k, v) in enumerate(self._stats.items()):
@@ -157,15 +146,17 @@ class SplitNode(Node):
 
     Parameters
     ----------
-    split_test: InstanceConditionalTest
+    split_test
         Split test.
-    stats: dict (class_value, weight) or None
-        Class observations
+    stats
+        Class observations.
+    depth
+        The depth of the node.
 
     """
 
-    def __init__(self, split_test, stats):
-        super().__init__(stats)
+    def __init__(self, split_test: InstanceConditionalTest, stats: dict, depth: int = 0):
+        super().__init__(stats, depth)
         self._split_test = split_test
         # Dict of tuples (branch, child)
         self._children = {}
@@ -188,15 +179,14 @@ class SplitNode(Node):
 
         return self._split_test
 
-    def set_child(self, index, node):
+    def set_child(self, index: int, node: Node):
         """ Set node as child.
 
         Parameters
         ----------
-        index: int
+        index
             Branch index where the node will be inserted.
-
-        node: skmultiflow.trees.nodes.Node
+        node
             The node to insert.
 
         """
@@ -204,18 +194,17 @@ class SplitNode(Node):
             raise IndexError
         self._children[index] = node
 
-    def get_child(self, index) -> Node:
+    def get_child(self, index: int) -> Node:
         """ Retrieve a node's child given its branch index.
 
         Parameters
         ----------
-        index: int
+        index
             Node's branch index.
 
         Returns
         -------
-        skmultiflow.trees.nodes.Node or None
-            Child node.
+            Child node or None if the corresponding branch index does not exists.
 
         """
         if index in self._children:
@@ -223,7 +212,7 @@ class SplitNode(Node):
         else:
             return None
 
-    def instance_child_index(self, X) -> int:
+    def instance_child_index(self, x: dict) -> int:
         """ Get the branch index for a given instance at the current node.
 
         Returns
@@ -232,7 +221,7 @@ class SplitNode(Node):
             Branch index, -1 if unknown.
 
         """
-        return self._split_test.branch_for_instance(X)
+        return self._split_test.branch_for_instance(x)
 
     @staticmethod
     def is_leaf():
@@ -246,16 +235,16 @@ class SplitNode(Node):
         """
         return False
 
-    def filter_instance_to_leaf(self, X, parent, parent_branch):
+    def filter_instance_to_leaf(self, x: dict, parent: Node, parent_branch: int):
         """ Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
-           Data instances.
-        parent: skmultiflow.trees.nodes.Node
+        x
+           Data instance.
+        parent
             Parent node.
-        parent_branch: int
+        parent_branch
             Parent branch index.
 
         Returns
@@ -264,17 +253,17 @@ class SplitNode(Node):
             Leaf node for the instance.
 
         """
-        child_index = self.instance_child_index(X)
+        child_index = self.instance_child_index(x)
         if child_index >= 0:
             child = self.get_child(child_index)
             if child is not None:
-                return child.filter_instance_to_leaf(X, self, child_index)
+                return child.filter_instance_to_leaf(x, self, child_index)
             else:
                 return FoundNode(None, self, child_index)
         else:
             return FoundNode(self, parent, parent_branch)
 
-    def subtree_depth(self):
+    def subtree_depth(self) -> int:
         """ Calculate the depth of the subtree from this node.
 
         Returns
@@ -290,16 +279,16 @@ class SplitNode(Node):
                     max_child_depth = depth
         return max_child_depth + 1
 
-    def describe_subtree(self, tree, buffer, indent=0):
+    def describe_subtree(self, tree, buffer: str, indent: int = 0):
         """ Walk the tree and write its structure to a buffer string.
 
         Parameters
         ----------
-        tree: HoeffdingTreeClassifier
+        tree
             The tree to describe.
-        buffer: string
+        buffer
             The buffer where the tree's structure will be stored.
-        indent: int
+        indent
             Indentation level (number of white spaces for current node).
 
         """
@@ -323,9 +312,21 @@ class LearningNode(Node, metaclass=ABCMeta):
     initial_stats: dict (class_value, weight) or None
         Initial stats (they differ in classification and regression tasks).
     """
-    def __init__(self, initial_stats):
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats: dict, depth: int = 0):
+        super().__init__(initial_stats, depth)
         self.last_split_attempt_at = self.total_weight
+
+    @staticmethod
+    def is_leaf():
+        """ Determine if the node is a leaf.
+
+        Returns
+        -------
+        boolean
+            True if node is a leaf, False otherwise
+
+        """
+        return True
 
     @abstractmethod
     def update_stats(self, y, sample_weight):
@@ -393,6 +394,22 @@ class LearningNode(Node, metaclass=ABCMeta):
 
         """
         self._last_split_attempt_at = weight
+
+    def calculate_promise(self) -> int:
+        """ Calculate node's promise.
+
+        Returns
+        -------
+        int
+            A small value indicates that the node has seen more samples of a
+            given class than the other classes.
+
+        """
+        total_seen = sum(self._stats.values())
+        if total_seen > 0:
+            return total_seen - max(self._stats.values())
+        else:
+            return 0
 
 
 class ActiveLeaf(metaclass=ABCMeta):

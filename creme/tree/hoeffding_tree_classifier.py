@@ -134,8 +134,6 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
 
-        self.reset()
-
         self.classes = set()
 
     @DecisionTree.split_criterion.setter
@@ -195,7 +193,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
         found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
         leaf_node = found_node.node
         if leaf_node is None:
-            leaf_node = self._new_learning_node()
+            leaf_node = self._new_learning_node(parent=found_node.parent)
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._active_leaf_node_cnt += 1
 
@@ -214,7 +212,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
         elif isinstance(leaf_node, SplitNode):
             # Creates a new branch to the new categorical value
             current = found_node.node
-            leaf_node = self._new_learning_node()
+            leaf_node = self._new_learning_node(parent=current)
             branch_id = current.split_test.add_new_branch(
                 x[current.split_test.get_atts_test_depends_on()[0]])
             current.set_child(branch_id, leaf_node)
@@ -244,22 +242,26 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                 else leaf.stats
             proba.update(pred)
             proba = softmax(proba)
-
         return proba
 
     def _new_learning_node(self, initial_stats: dict = None, parent: LearningNode = None,
                            is_active: bool = True):
         if initial_stats is None:
             initial_stats = {}
+        if parent is None:
+            depth = 0
+        else:
+            depth = parent.depth + 1
+
         if is_active:
             if self._leaf_prediction == self._MAJORITY_CLASS:
-                return ActiveLearningNodeMC(initial_stats)
+                return ActiveLearningNodeMC(initial_stats, depth)
             elif self._leaf_prediction == self._NAIVE_BAYES:
-                return ActiveLearningNodeNB(initial_stats)
+                return ActiveLearningNodeNB(initial_stats, depth)
             else:  # NAIVE BAYES ADAPTIVE (default)
-                return ActiveLearningNodeNBA(initial_stats)
+                return ActiveLearningNodeNBA(initial_stats, depth)
         else:
-            return InactiveLearningNodeMC(initial_stats)
+            return InactiveLearningNodeMC(initial_stats, depth)
 
     def _attempt_to_split(self, node: ActiveLeaf, parent: SplitNode, parent_idx: int):
         """ Attempt to split a node.
@@ -325,11 +327,12 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                     # Preprune - null wins
                     self._deactivate_learning_node(node, parent, parent_idx)
                 else:
-                    new_split = self._new_split_node(split_decision.split_test, node.stats)
+                    new_split = self._new_split_node(split_decision.split_test, node.stats,
+                                                     node.depth)
 
                     for i in range(split_decision.num_splits()):
                         new_child = self._new_learning_node(
-                            split_decision.resulting_stats_from_split(i))
+                            split_decision.resulting_stats_from_split(i), parent=new_split)
                         new_split.set_child(i, new_child)
                     self._active_leaf_node_cnt -= 1
                     self._decision_node_cnt += 1

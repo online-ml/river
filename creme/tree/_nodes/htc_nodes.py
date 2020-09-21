@@ -68,8 +68,8 @@ class LearningNodeNB(LearningNodeMC):
 
 
 class LearningNodeNBA(LearningNodeMC):
-    def __init__(self, initial_stats=None):
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats=None, depth=0):
+        super().__init__(initial_stats, depth)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
@@ -94,7 +94,7 @@ class LearningNodeNBA(LearningNodeMC):
         elif max(self.stats, key=self.stats.get) == y:
             self._mc_correct_weight += sample_weight
         nb_prediction = do_naive_bayes_prediction(X, self.stats, self.attribute_observers)
-        if max(nb_prediction, key=nb_prediction.get) == y:
+        if nb_prediction is not None and max(nb_prediction, key=nb_prediction.get) == y:
             self._nb_correct_weight += sample_weight
 
         super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
@@ -127,10 +127,12 @@ class ActiveLearningNodeMC(LearningNodeMC, ActiveLeafClass):
     ----------
     initial_stats
         Initial class observations
+    depth
+        The depth of the node.
     """
 
-    def __init__(self, initial_stats=None):
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats=None, depth=0):
+        super().__init__(initial_stats, depth)
 
 
 class InactiveLearningNodeMC(LearningNodeMC, InactiveLeaf):
@@ -140,10 +142,12 @@ class InactiveLearningNodeMC(LearningNodeMC, InactiveLeaf):
     ----------
     initial_stats
         Initial class observations
+    depth
+        The depth of the node.
     """
 
-    def __init__(self, initial_stats=None):
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats=None, depth=0):
+        super().__init__(initial_stats, depth)
 
 
 class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
@@ -153,10 +157,12 @@ class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
     ----------
     initial_stats
         Initial class observations
+    depth
+        The depth of the node.
     """
 
-    def __init__(self, initial_stats=None):
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats=None, depth=0):
+        super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
         """ Disable an attribute observer.
@@ -179,10 +185,12 @@ class ActiveLearningNodeNBA(LearningNodeNBA, ActiveLeafClass):
     ----------
     initial_stats
         Initial class observations
+    depth
+        The depth of the node.
     """
 
-    def __init__(self, initial_stats=None):
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats=None, depth=0):
+        super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
         """ Disable an attribute observer.
