@@ -14,7 +14,7 @@ class RandomActiveLeafClass(ActiveLeafClass):
     A Random Active Leaf (used in ARF implementations) just changes the way how the nodes update
     the attribute observers (by using subsets of features).
     """
-    def update_attribute_observers(self, X, y, weight, tree):
+    def update_attribute_observers(self, X, y, sample_weight, tree):
         if self.feature_indices.size == 0:
             self.feature_indices = self._sample_features(get_dimensions(X)[1])
 
@@ -27,7 +27,7 @@ class RandomActiveLeafClass(ActiveLeafClass):
                 else:
                     obs = self.new_numeric_attribute_observer()
                 self.attribute_observers[idx] = obs
-            obs.update(X[idx], y, weight)
+            obs.update(X[idx], y, sample_weight)
 
     def _sample_features(self, n_features):
         return self._random_state.choice(
@@ -40,7 +40,7 @@ class RandomActiveLearningNodeMC(LearningNodeMC, RandomActiveLeafClass):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats: dict (class_value, sample_weight) or None
         Initial class observations.
 
     max_features: int
@@ -66,7 +66,7 @@ class RandomActiveLearningNodeNB(LearningNodeNB, RandomActiveLeafClass):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats: dict (class_value, sample_weight) or None
         Initial class observations.
 
     max_features: int
@@ -93,7 +93,7 @@ class RandomActiveLearningNodeNBA(LearningNodeNBA, RandomActiveLeafClass):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats: dict (class_value, sample_weight) or None
         Initial class observations.
 
     max_features: int

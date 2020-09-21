@@ -84,7 +84,7 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
     ----------
     split_test: InstanceConditionalTest
         Split test.
-    stats: dict (class_value, weight) or None
+    stats: dict (class_value, sample_weight) or None
         Class observations
     attribute_observers : dict (attribute id, AttributeObserver)
         Attribute Observers
@@ -96,14 +96,14 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
         self.attribute_observers = attribute_observers
         self._weight_seen_at_last_split_reevaluation = 0
 
-    def update_stats(self, y, weight):
+    def update_stats(self, y, sample_weight):
         try:
-            self.stats[y] += weight
+            self.stats[y] += sample_weight
         except KeyError:
-            self.stats[y] = weight
+            self.stats[y] = sample_weight
             self.stats = dict(sorted(self.stats.items()))
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
         """Update the node with the provided sample.
 
         Parameters
@@ -112,15 +112,15 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
             Sample attributes for updating the node.
         y: int or float
             Target value.
-        weight: float
+        sample_weight: float
             Sample weight.
         tree:
             Tree to update.
 
         """
         y = int(y)
-        self.update_stats(y, weight)
-        self.update_attribute_observers(X, y, weight, tree)
+        self.update_stats(y, sample_weight)
+        self.update_attribute_observers(X, y, sample_weight, tree)
 
     @staticmethod
     def find_attribute(id_att, split_suggestions):

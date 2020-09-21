@@ -157,7 +157,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
         else:
             self._leaf_prediction = leaf_prediction
 
-    def learn_one(self, x, y, *, weight=1.):
+    def learn_one(self, x, y, *, sample_weight=1.):
         """ Trains the model on instance x and corresponding target y.
 
         Parameters
@@ -166,7 +166,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
             Instance attributes.
         y
             Class label for sample X.
-        w
+        sample_weight
             Sample weight.
 
         Notes
@@ -180,13 +180,13 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
           observed between split attempts exceed the grace period then attempt
           to split.
         """
-        if weight == 0:
+        if sample_weight == 0:
             return
 
         # Updates the set of observed classes
         self.classes.add(y)
 
-        self._train_weight_seen_by_model += weight
+        self._train_weight_seen_by_model += sample_weight
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
@@ -201,7 +201,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
 
         if isinstance(leaf_node, LearningNode):
             learning_node = leaf_node
-            learning_node.learn_one(x, y, weight=weight, tree=self)
+            learning_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
             if self._growth_allowed and isinstance(learning_node, ActiveLeaf):
                 weight_seen = learning_node.total_weight
                 weight_diff = weight_seen - learning_node.last_split_attempt_at
@@ -219,7 +219,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                 x[current.split_test.get_atts_test_depends_on()[0]])
             current.set_child(branch_id, leaf_node)
             self._active_leaf_node_cnt += 1
-            leaf_node.learn_one(x, y, weight=weight, tree=self)
+            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()

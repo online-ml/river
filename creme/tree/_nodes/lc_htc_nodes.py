@@ -19,9 +19,9 @@ class LCActiveLearningNodeMC(ActiveLearningNodeMC):
     def __init__(self, initial_stats=None):
         super().__init__(initial_stats)
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
         y = transform_label(y)
-        super().learn_one(X, y, weight=weight, tree=tree)
+        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
 
 
 class LCInactiveLearningNodeMC(InactiveLearningNodeMC):
@@ -37,9 +37,9 @@ class LCInactiveLearningNodeMC(InactiveLearningNodeMC):
         """ LCInactiveLearningNode class constructor. """
         super().__init__(initial_stats)
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
         y = transform_label(y)
-        super().learn_one(X, y, weight=weight, tree=tree)
+        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
 
 
 class LCActiveLearningNodeNB(ActiveLearningNodeNB):
@@ -56,9 +56,9 @@ class LCActiveLearningNodeNB(ActiveLearningNodeNB):
         """ LCLearningNodeNB class constructor. """
         super().__init__(initial_stats)
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
         y = transform_label(y)
-        super().learn_one(X, y, weight=weight, tree=tree)
+        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
 
 
 class LCActiveLearningNodeNBA(ActiveLearningNodeNBA):
@@ -75,6 +75,6 @@ class LCActiveLearningNodeNBA(ActiveLearningNodeNBA):
         """LCLearningNodeNBA class constructor. """
         super().__init__(initial_stats)
 
-    def learn_one(self, X, y, *, weight=1.0, tree=None):
+    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
         y = transform_label(y)
-        super().learn_one(X, y, weight=weight, tree=tree)
+        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
