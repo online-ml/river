@@ -41,7 +41,7 @@ class KalmanFilter(base.Optimizer):
 
     def __init__(self, lr=1.0):
         super().__init__(lr)
-        self.H_inv = collections.defaultdict(float)
+        self.K = collections.defaultdict(float)
 
 
     def _update_after_pred(self, w, g, x):
@@ -67,10 +67,10 @@ class KalmanFilter(base.Optimizer):
         #         self.H[i,j] = H_inv[i,j]
             
         # Update the Kalman matrix
-        self.K = utils.math.sherman_morrison(A_inv=self.H_inv, u=x, v=x)
+        self.K = utils.math.sherman_morrison(A_inv=self.K, u=x, v=x)
 
         # Calculate the update step
-        step = utils.math.dotvecmat(x=g, A=self.H_inv)
+        step = utils.math.dotvecmat(x=g, A=self.K)
         
         # Update the weights
         for i, s in step.items():
