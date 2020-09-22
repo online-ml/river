@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-class Activation:
+class Activation(abc.ABC):
     """An activation function.
 
     Each activation function is represented by a class and implements two methods.
