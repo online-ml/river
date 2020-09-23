@@ -199,7 +199,8 @@ def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
 
     Returns
     -------
-    A dictionary containing the result of the operation. Either a pointer to `dict_a` or a new dictionary depending on parameter `inplace`.
+    A dictionary containing the result of the operation. Either a pointer to `dict_a` or a new
+    dictionary depending on parameter `inplace`.
 
     """
     if inplace:

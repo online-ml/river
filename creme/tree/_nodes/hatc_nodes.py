@@ -276,6 +276,10 @@ class AdaSplitNode(SplitNode, AdaNode):
             leaf_node.learn_one(x, y, sample_weight, tree, parent, parent_branch)
 
     def predict_one(self, X, *, tree=None):
+        # The softmax operation is necessary because the adaptive tree might combine predictions
+        # from the main tree and an alternate tree. If split nodes end up being used (in case an
+        # emerging categorical feature appears, for instance), we have to ensure that they also
+        # output probabilities.
         return softmax(self.stats)  # Use the MC (majority class) prediction strategy
 
     # Override AdaNode
