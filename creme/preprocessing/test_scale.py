@@ -41,9 +41,9 @@ def test_standard_scaler_shuffle_columns():
         shuffled.learn_many(xb[cols])
 
     for i in X:
-        assert math.isclose(shuffled.counts[i], shuffled.counts[i])
-        assert math.isclose(shuffled.means[i], shuffled.means[i])
-        assert math.isclose(shuffled.vars[i], shuffled.vars[i])
+        assert math.isclose(normal.counts[i], shuffled.counts[i])
+        assert math.isclose(normal.means[i], shuffled.means[i])
+        assert math.isclose(normal.vars[i], shuffled.vars[i])
 
 
 def test_standard_scaler_add_remove_columns():
@@ -56,3 +56,4 @@ def test_standard_scaler_add_remove_columns():
         # Pick half of the columns at random
         cols = np.random.choice(X.columns, len(X.columns) // 2, replace=False)
         ss.learn_many(xb[cols])
+        ss.transform_many(xb[cols])
