@@ -1,4 +1,5 @@
 """Datasets."""
+from .agrawal import AGRAWALGenerator
 from .airline_passengers import AirlinePassengers
 from .bananas import Bananas
 from .bikes import Bikes
@@ -25,6 +26,7 @@ from .trump_approval import TrumpApproval
 
 
 __all__ = [
+    'AGRAWALGenerator',
     'AirlinePassengers',
     'Bananas',
     'Bikes',
