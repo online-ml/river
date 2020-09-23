@@ -220,7 +220,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
-            self._active_leaf_node_cnt = 1
+            self._n_active_leaves = 1
 
         # Sort instance X into a leaf
         self._sort_instance_into_leaf(X, y, sample_weight)
@@ -313,7 +313,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         if leaf_node is None:
             leaf_node = self._new_learning_node()
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
-            self._active_leaf_node_cnt += 1
+            self._n_active_leaves += 1
 
         if isinstance(leaf_node, LearningNode):
             learning_node = leaf_node
@@ -397,9 +397,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                     deleted_node_cnt = node.count_nodes()
 
-                    self._active_leaf_node_cnt += 1
-                    self._active_leaf_node_cnt -= deleted_node_cnt[1]
-                    self._decision_node_cnt -= deleted_node_cnt[0]
+                    self._n_active_leaves += 1
+                    self._n_active_leaves -= deleted_node_cnt[1]
+                    self._n_decision_nodes -= deleted_node_cnt[0]
                     stop_flag = True
 
                     # Manage memory
@@ -420,10 +420,10 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                     deleted_node_cnt = node.count_nodes()
 
-                    self._active_leaf_node_cnt -= deleted_node_cnt[1]
-                    self._decision_node_cnt -= deleted_node_cnt[0]
-                    self._decision_node_cnt += 1
-                    self._active_leaf_node_cnt += x_best.num_splits()
+                    self._n_active_leaves -= deleted_node_cnt[1]
+                    self._n_decision_nodes -= deleted_node_cnt[0]
+                    self._n_decision_nodes += 1
+                    self._n_active_leaves += x_best.num_splits()
 
                     if parent is None:
                         # Root case : replace the root node by a new split node
@@ -502,9 +502,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     for i in range(x_best.num_splits()):
                         new_child = self._new_learning_node(x_best.resulting_stats_from_split(i))
                         new_split.set_child(i, new_child)
-                    self._active_leaf_node_cnt -= 1
-                    self._decision_node_cnt += 1
-                    self._active_leaf_node_cnt += x_best.num_splits()
+                    self._n_active_leaves -= 1
+                    self._n_decision_nodes += 1
+                    self._n_active_leaves += x_best.num_splits()
 
                     if parent is None:
                         # root case : replace the root node by a new split node

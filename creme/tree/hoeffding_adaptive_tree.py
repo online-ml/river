@@ -155,7 +155,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     def _partial_fit(self, X, y, sample_weight):
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
-            self._active_leaf_node_cnt = 1
+            self._n_active_leaves = 1
         if isinstance(self._tree_root, InactiveLeaf):
             self._tree_root.learn_one(X, y, weight=sample_weight, tree=self)
         else:

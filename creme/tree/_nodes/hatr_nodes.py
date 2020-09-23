@@ -70,8 +70,8 @@ class AdaSplitNodeRegressor(AdaSplitNode):
                 bound = math.sqrt(sq_term) if sq_term > 0 else 0.0
 
                 if bound < (old_error_rate - alt_error_rate):
-                    tree._active_leaf_node_cnt -= self.n_leaves
-                    tree._active_leaf_node_cnt += self._alternate_tree.n_leaves
+                    tree._n_active_leaves -= self.n_leaves
+                    tree._n_active_leaves += self._alternate_tree.n_leaves
                     self.kill_tree_children(tree)
 
                     if parent is not None:
@@ -105,7 +105,7 @@ class AdaSplitNodeRegressor(AdaSplitNode):
                 X[self.split_test.get_atts_test_depends_on()[0]]
             )
             self.set_child(branch_id, leaf_node)
-            tree._active_leaf_node_cnt += 1
+            tree._n_active_leaves += 1
             leaf_node.learn_one(X, y, sample_weight, tree, parent, parent_branch)
 
     def predict_one(self, X, *, tree=None):

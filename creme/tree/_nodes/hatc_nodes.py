@@ -226,8 +226,8 @@ class AdaSplitNode(SplitNode, AdaNode):
                                   math.log(2.0 / fDelta) * fN)
                 # To check, bound never less than (old_error_rate - alt_error_rate)
                 if bound < (old_error_rate - alt_error_rate):
-                    tree._active_leaf_node_cnt -= self.n_leaves
-                    tree._active_leaf_node_cnt += self._alternate_tree.n_leaves
+                    tree._n_active_leaves -= self.n_leaves
+                    tree._n_active_leaves += self._alternate_tree.n_leaves
                     self.kill_tree_children(tree)
 
                     if parent is not None:
@@ -261,7 +261,7 @@ class AdaSplitNode(SplitNode, AdaNode):
                 X[self.split_test.get_atts_test_depends_on()[0]]
             )
             self.set_child(branch_id, leaf_node)
-            tree._active_leaf_node_cnt += 1
+            tree._n_active_leaves += 1
             leaf_node.learn_one(X, y, sample_weight, tree, parent, parent_branch)
 
     def predict_one(self, X, *, tree=None):
@@ -281,10 +281,10 @@ class AdaSplitNode(SplitNode, AdaNode):
 
                 if isinstance(child, ActiveLeaf):
                     child = None
-                    tree._active_leaf_node_cnt -= 1
+                    tree._n_active_leaves -= 1
                 elif isinstance(child, InactiveLeaf):
                     child = None
-                    tree._inactive_leaf_node_cnt -= 1
+                    tree._n_inactive_leaves -= 1
 
     # override AdaNode
     def filter_instance_to_leaves(self, X, y, sample_weight, parent, parent_branch,

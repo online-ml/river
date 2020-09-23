@@ -16,3 +16,6 @@ __all__ = ['HoeffdingTreeClassifier', 'HoeffdingAdaptiveTreeClassifier',
            'ExtremelyFastDecisionTreeClassifier', 'LabelCombinationHoeffdingTreeClassifier',
            'HoeffdingTreeRegressor', 'HoeffdingAdaptiveTreeRegressor', 'iSOUPTreeRegressor',
            'DecisionTreeClassifier', 'RandomForestClassifier']
+
+
+__pdoc__ = {'decision': False}

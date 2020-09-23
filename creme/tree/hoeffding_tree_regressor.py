@@ -142,9 +142,9 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
         self.split_criterion = 'vr'   # variance reduction
 
         self._tree_root = None
-        self._decision_node_cnt = 0
-        self._active_leaf_node_cnt = 0
-        self._inactive_leaf_node_cnt = 0
+        self._n_decision_nodes = 0
+        self._n_active_leaves = 0
+        self._n_inactive_leaves = 0
         self._inactive_leaf_byte_size_estimate = 0.0
         self._active_leaf_byte_size_estimate = 0.0
         self._byte_size_estimate_overhead_fraction = 1.0
@@ -332,13 +332,13 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
-            self._active_leaf_node_cnt = 1
+            self._n_active_leaves = 1
         found_node = self._tree_root.filter_instance_to_leaf(X, None, -1)
         leaf_node = found_node.node
         if leaf_node is None:
             leaf_node = self._new_learning_node()
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
-            self._active_leaf_node_cnt += 1
+            self._n_active_leaves += 1
 
         if isinstance(leaf_node, LearningNode):
             learning_node = leaf_node
@@ -361,7 +361,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
                 X[current.split_test.get_atts_test_depends_on()[0]]
             )
             current.set_child(branch_id, leaf_node)
-            self._active_leaf_node_cnt += 1
+            self._n_active_leaves += 1
             leaf_node.learn_one(X, y, weight=sample_weight, tree=self)
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_byte_size()
@@ -460,16 +460,16 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
             split_decision = best_split_suggestions[-1]
             if split_decision.split_test is None:
                 # Preprune - null wins
-                self._deactivate_learning_node(node, parent, parent_idx)
+                self._deactivate_leaf(node, parent, parent_idx)
             else:
                 new_split = self._new_split_node(split_decision.split_test, node.stats)
                 for i in range(split_decision.num_splits()):
                     new_child = self._new_learning_node(
                         split_decision.resulting_stats_from_split(i), node)
                     new_split.set_child(i, new_child)
-                self._active_leaf_node_cnt -= 1
-                self._decision_node_cnt += 1
-                self._active_leaf_node_cnt += split_decision.num_splits()
+                self._n_active_leaves -= 1
+                self._n_decision_nodes += 1
+                self._n_active_leaves += split_decision.num_splits()
                 if parent is None:
                     self._tree_root = new_split
                 else:
@@ -488,8 +488,7 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
         learning_nodes.sort(key=lambda n: n.depth, reverse=True)
         return learning_nodes
 
-    def _activate_learning_node(self, to_activate: InactiveLeaf, parent: SplitNode,
-                                parent_branch: int):
+    def _activate_leaf(self, to_activate: InactiveLeaf, parent: SplitNode, parent_branch: int):
         """ Activate a learning node.
 
         Parameters
@@ -509,11 +508,10 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
             self._tree_root = new_leaf
         else:
             parent.set_child(parent_branch, new_leaf)
-        self._active_leaf_node_cnt += 1
-        self._inactive_leaf_node_cnt -= 1
+        self._n_active_leaves += 1
+        self._n_inactive_leaves -= 1
 
-    def _deactivate_learning_node(self, to_deactivate: ActiveLeaf,
-                                  parent: SplitNode, parent_branch: int):
+    def _deactivate_leaf(self, to_deactivate: ActiveLeaf, parent: SplitNode, parent_branch: int):
         """Deactivate a learning node.
 
         Parameters
@@ -534,5 +532,5 @@ class HoeffdingTreeRegressor(RegressorMixin, HoeffdingTreeClassifier):
             self._tree_root = new_leaf
         else:
             parent.set_child(parent_branch, new_leaf)
-        self._active_leaf_node_cnt -= 1
-        self._inactive_leaf_node_cnt += 1
+        self._n_active_leaves -= 1
+        self._n_inactive_leaves += 1
