@@ -54,7 +54,7 @@ class AdaSplitNodeRegressor(AdaSplitNode):
         # Check condition to build a new alternate tree
         if self._error_change:
             self._alternate_tree = tree._new_learning_node()
-            tree.alternate_trees_cnt += 1
+            tree._n_alternate_trees += 1
 
         # Condition to replace alternate tree
         elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
@@ -78,7 +78,7 @@ class AdaSplitNodeRegressor(AdaSplitNode):
                         parent.set_child(parent_branch, self._alternate_tree)
                     else:
                         tree._tree_root = tree._tree_root._alternate_tree
-                    tree.switch_alternate_trees_cnt += 1
+                    tree._n_switch_alternate_trees += 1
                 elif bound < alt_error_rate - old_error_rate:
                     if isinstance(self._alternate_tree, ActiveLeaf):
                         self._alternate_tree = None
@@ -86,7 +86,7 @@ class AdaSplitNodeRegressor(AdaSplitNode):
                         self._alternate_tree = None
                     else:
                         self._alternate_tree.kill_tree_children(tree)
-                    tree.pruned_alternate_trees_cnt += 1  # hat.pruned_alternate_trees_cnt to check
+                    tree._n_pruned_alternate_trees += 1  # hat._n_pruned_alternate_trees to check
 
         # Learn one sample in alternate tree and child nodes
         if self._alternate_tree is not None:

@@ -42,14 +42,14 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
-        List of Nominal attributes identifiers. If empty, then assume that all attributes
-        are numerical.
+        List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
+        should be treated as continuous.
     **kwargs
         Other parameters passed to river.tree.DecisionTree.
 
     Notes
     -----
-    A Hoeffding Tree [1]_ is an incremental, anytime decision tree induction algorithm that is
+    A Hoeffding Tree [^1] is an incremental, anytime decision tree induction algorithm that is
     capable of learning from massive data streams, assuming that the distribution generating
     examples does not change over time. Hoeffding trees exploit the fact that a small sample can
     often be enough to choose an optimal splitting attribute. This idea is supported mathematically
@@ -62,7 +62,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     can show that its output is asymptotically nearly identical to that of a non-incremental
     learner using infinitely many examples.
 
-    Implementation based on MOA [2]_.
+    Implementation based on MOA [^2].
 
     References:
     .. [1] G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.

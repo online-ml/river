@@ -2,10 +2,10 @@ from abc import ABCMeta, abstractmethod
 import math
 
 from creme.drift import ADWIN
-from skmultiflow.bayes import do_naive_bayes_prediction
-from skmultiflow.utils import check_random_state, get_max_value_key, normalize_values_in_dict
+from creme.tree._tree_utils import do_naive_bayes_prediction
+from creme.utils.skmultiflow_utils import check_random_state, normalize_values_in_dict
+from creme.utils.math import softmax
 
-from skmultiflow.trees._attribute_test import NominalAttributeMultiwayTest
 from .base import FoundNode
 from .base import SplitNode
 from .base import ActiveLeaf, InactiveLeaf
@@ -55,12 +55,16 @@ class AdaLearningNode(ActiveLearningNodeNBA, AdaNode):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
-        Initial class observations
+    initial_stats
+        Initial class observations.
+    depth
+        The depth of the learning node in the tree.
+    random_state
+        Seed to control the generation of random numbers and support reproducibility.
 
     """
-    def __init__(self, initial_stats=None, random_state=None):
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats=None, depth=0, random_state=None):
+        super().__init__(initial_stats, depth)
         self._adwin = ADWIN()
         self.error_change = False
         self._random_state = check_random_state(random_state)
@@ -92,7 +96,8 @@ class AdaLearningNode(ActiveLearningNodeNBA, AdaNode):
             if k > 0:
                 sample_weight = sample_weight * k
 
-        class_prediction = get_max_value_key(self.predict_one(X, tree=tree))
+        aux = self.predict_one(X, tree=tree)
+        class_prediction = max(aux, key=aux.get)
 
         is_correct = (true_class == class_prediction)
 
@@ -104,6 +109,7 @@ class AdaLearningNode(ActiveLearningNodeNBA, AdaNode):
         # Update ADWIN
         self.error_change, _ = self._adwin.update(0.0 if is_correct else 1.0)
 
+        # Error is decreasing
         if self.error_change and old_error > self.error_estimation:
             self.error_change = False
 
@@ -113,8 +119,12 @@ class AdaLearningNode(ActiveLearningNodeNBA, AdaNode):
         weight_seen = self.total_weight
 
         if weight_seen - self.last_split_attempt_at >= tree.grace_period:
-            tree._attempt_to_split(self, parent, parent_branch)
-            self.last_split_attempt_at = weight_seen
+            if self.depth >= tree.max_depth:
+                # Depth-based pre-pruning
+                self._deactivate_leaf(self, parent, parent_branch)
+            else:
+                tree._attempt_to_split(self, parent, parent_branch)
+                self.last_split_attempt_at = weight_seen
 
     # Override LearningNodeNBAdaptive
     def predict_one(self, X, *, tree=None):
@@ -132,6 +142,10 @@ class AdaLearningNode(ActiveLearningNodeNBA, AdaNode):
         dist_sum = sum(dist.values())  # sum all values in dictionary
         normalization_factor = dist_sum * self.error_estimation * self.error_estimation
 
+        dist = softmax(dist)
+        # Weight node's responses accordingly to the estimated error monitored by ADWIN
+        # Useful if both the predictions of the alternate tree and the ones from the main tree
+        # are combined -> give preference to the most accurate one
         if normalization_factor > 0.0:
             dist = normalize_values_in_dict(dist, normalization_factor, inplace=False)
 
@@ -155,8 +169,8 @@ class AdaSplitNode(SplitNode, AdaNode):
     stats: dict (class_value, weight) or None
         Class observations
     """
-    def __init__(self, split_test, stats=None, random_state=None):
-        super().__init__(split_test, stats)
+    def __init__(self, split_test, stats=None, depth=0, random_state=None):
+        super().__init__(split_test, stats, depth)
         self._adwin = ADWIN()
         self._alternate_tree = None
         self._error_change = False
@@ -187,13 +201,14 @@ class AdaSplitNode(SplitNode, AdaNode):
     def error_is_null(self):
         return self._adwin is None
 
-    def learn_one(self, X, y, sample_weight, tree, parent, parent_branch):
+    def learn_one(self, x, y, sample_weight, tree, parent, parent_branch):
         true_class = y
         class_prediction = 0
 
-        leaf = self.filter_instance_to_leaf(X, parent, parent_branch)
+        leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
         if leaf.node is not None:
-            class_prediction = get_max_value_key(leaf.node.predict_one(X, tree=tree))
+            aux = leaf.node.predict_one(x, tree=tree)
+            class_prediction = max(aux, key=aux.get)
 
         is_correct = (true_class == class_prediction)
 
@@ -210,8 +225,8 @@ class AdaSplitNode(SplitNode, AdaNode):
 
         # Check condition to build a new alternate tree
         if self._error_change:
-            self._alternate_tree = tree._new_learning_node()
-            tree.alternate_trees_cnt += 1
+            self._alternate_tree = tree._new_learning_node(parent=self)
+            tree._n_alternate_trees += 1
 
         # Condition to replace alternate tree
         elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
@@ -224,7 +239,6 @@ class AdaSplitNode(SplitNode, AdaNode):
 
                 bound = math.sqrt(2.0 * old_error_rate * (1.0 - old_error_rate) *
                                   math.log(2.0 / fDelta) * fN)
-                # To check, bound never less than (old_error_rate - alt_error_rate)
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves
                     tree._n_active_leaves += self._alternate_tree.n_leaves
@@ -235,75 +249,77 @@ class AdaSplitNode(SplitNode, AdaNode):
                     else:
                         # Switch tree root
                         tree._tree_root = tree._tree_root._alternate_tree
-                    tree.switch_alternate_trees_cnt += 1
+                    tree._n_switch_alternate_trees += 1
                 elif bound < alt_error_rate - old_error_rate:
                     if isinstance(self._alternate_tree, SplitNode):
                         self._alternate_tree.kill_tree_children(tree)
-                    else:
-                        self._alternate_tree = None
-                    tree.pruned_alternate_trees_cnt += 1  # hat.pruned_alternate_trees_cnt to check
+                    self._alternate_tree = None
+                    tree._n_pruned_alternate_trees += 1
 
         # Learn one sample in alternate tree and child nodes
         if self._alternate_tree is not None:
-            self._alternate_tree.learn_one(X, y, sample_weight, tree, parent, parent_branch)
-        child_branch = self.instance_child_index(X)
+            self._alternate_tree.learn_one(x, y, sample_weight, tree, parent, parent_branch)
+        child_branch = self.instance_child_index(x)
         child = self.get_child(child_branch)
         if child is not None:
-            child.learn_one(X, y, sample_weight, tree, parent=self, parent_branch=child_branch)
+            child.learn_one(x, y, sample_weight, tree, parent=self, parent_branch=child_branch)
         # Instance contains a categorical value previously unseen by the split
         # node
-        elif isinstance(self.split_test, NominalAttributeMultiwayTest) and \
-                self.split_test.branch_for_instance(X) < 0:
+        elif self.split_test.branch_for_instance(x) < 0:
             # Creates a new learning node to encompass the new observed feature
             # value
-            leaf_node = tree._new_learning_node()
+            leaf_node = tree._new_learning_node(parent=self)
             branch_id = self.split_test.add_new_branch(
-                X[self.split_test.get_atts_test_depends_on()[0]]
-            )
+                x[self.split_test.get_atts_test_depends_on()[0]])
             self.set_child(branch_id, leaf_node)
             tree._n_active_leaves += 1
-            leaf_node.learn_one(X, y, sample_weight, tree, parent, parent_branch)
+            leaf_node.learn_one(x, y, sample_weight, tree, parent, parent_branch)
 
     def predict_one(self, X, *, tree=None):
-        return self.stats
+        return softmax(self.stats)  # Use the MC (majority class) prediction strategy
 
     # Override AdaNode
     def kill_tree_children(self, tree):
-        for child in self._children.values():
+        for child_id, child in self._children.items():
             if child is not None:
                 # Delete alternate tree if it exists
-                if isinstance(child, SplitNode) and child._alternate_tree is not None:
-                    child._alternate_tree.kill_tree_children(tree)
-                    tree.pruned_alternate_trees_cnt += 1
-                # Recursive delete of SplitNodes
                 if isinstance(child, SplitNode):
+                    if child._alternate_tree is not None:
+                        child._alternate_tree.kill_tree_children(tree)
+                        tree._n_pruned_alternate_trees += 1
+
+                    # Recursive delete of SplitNodes
                     child.kill_tree_children(tree)
+                    self._n_decision_nodes -= 1
 
                 if isinstance(child, ActiveLeaf):
-                    child = None
                     tree._n_active_leaves -= 1
                 elif isinstance(child, InactiveLeaf):
-                    child = None
                     tree._n_inactive_leaves -= 1
 
+                self._children[child_id] = None
+
     # override AdaNode
-    def filter_instance_to_leaves(self, X, y, sample_weight, parent, parent_branch,
+    def filter_instance_to_leaves(self, x, y, sample_weight, parent, parent_branch,
                                   update_splitter_counts=False, found_nodes=None):
         if found_nodes is None:
             found_nodes = []
+        # Update stats as traverse the tree to improve predictions (in case split nodes are used
+        # to provide responses)
         if update_splitter_counts:
             try:
                 self.stats[y] += sample_weight  # Dictionary (class_value, weight)
             except KeyError:
                 self.stats[y] = sample_weight
-        child_index = self.instance_child_index(X)
+
+        child_index = self.instance_child_index(x)
         if child_index >= 0:
             child = self.get_child(child_index)
             if child is not None:
-                child.filter_instance_to_leaves(X, y, sample_weight, parent, parent_branch,
+                child.filter_instance_to_leaves(x, y, sample_weight, parent, parent_branch,
                                                 update_splitter_counts, found_nodes)
             else:
                 found_nodes.append(FoundNode(None, self, child_index))
         if self._alternate_tree is not None:
-            self._alternate_tree.filter_instance_to_leaves(X, y, sample_weight, self, -999,
+            self._alternate_tree.filter_instance_to_leaves(x, y, sample_weight, self, -999,
                                                            update_splitter_counts, found_nodes)
