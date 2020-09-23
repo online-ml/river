@@ -42,13 +42,15 @@ class Friedman(base.SyntheticDataset):
 
     def __init__(self, seed: int = None):
         super().__init__(task=base.REG, n_features=10)
-        self._rng = random.Random(seed)
+        self.seed = seed
 
     def __iter__(self):
 
+        rng = random.Random(self.seed)
+
         while True:
 
-            x = {i: self._rng.uniform(a=0, b=1) for i in range(10)}
+            x = {i: rng.uniform(a=0, b=1) for i in range(10)}
             y = 10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - .5) ** 2 + 10 * x[3] + 5 * x[4]
 
             yield x, y
