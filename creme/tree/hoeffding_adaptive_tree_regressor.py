@@ -127,9 +127,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                          leaf_prediction=leaf_prediction,
                          random_state=random_state)
         self.bootstrap_sampling = bootstrap_sampling
-        self.alternate_trees_cnt = 0
-        self.switch_alternate_trees_cnt = 0
-        self.pruned_alternate_trees_cnt = 0
+        self._n_alternate_trees = 0
+        self._n_switch_alternate_trees = 0
+        self._n_pruned_alternate_trees = 0
 
     def _new_learning_node(self, initial_stats=None, parent_node=None,
                            is_active=True):
