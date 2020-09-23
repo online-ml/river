@@ -251,25 +251,24 @@ class MLPRegressor(base.Regressor, MLP):
 
     >>> dataset = stream.iter_dataset('TrumpApproval')
     >>> batch_size = 32
-    >>> train_batches = pd.read_csv(dataset.path, chunksize=batch_size)
 
     >>> for epoch in range(10):
-    ...     for xb in train_batches:
+    ...     for xb in pd.read_csv(dataset.path, chunksize=batch_size):
     ...         yb = xb.pop('five_thirty_eight')
     ...         y_pred = model.predict_many(xb)
     ...         model = model.learn_many(xb, yb)
 
     >>> model.predict_many(xb)
           five_thirty_eight
-    992           38.668570
-    993           39.319377
-    994           42.627574
-    995           42.437279
-    996           40.184255
-    997           40.259950
-    998           40.335646
-    999           40.044621
-    1000          41.386290
+    992           39.361609
+    993           46.398536
+    994           42.094086
+    995           40.195802
+    996           40.782954
+    997           40.839678
+    998           40.896403
+    999           48.362659
+    1000          42.021849
 
     """
 
