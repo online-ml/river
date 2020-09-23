@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import textwrap
+import numbers
 
 from typing import Type, TypeVar
 
@@ -440,7 +441,8 @@ class ActiveLeaf(metaclass=ABCMeta):
             try:
                 obs = self.attribute_observers[idx]
             except KeyError:
-                if tree.nominal_attributes is not None and idx in tree.nominal_attributes:
+                if ((tree.nominal_attributes is not None and idx in tree.nominal_attributes)
+                        or not isinstance(x, numbers.Number)):
                     obs = self.new_nominal_attribute_observer()
                 else:
                     obs = self.new_numeric_attribute_observer()

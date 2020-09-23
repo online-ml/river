@@ -46,7 +46,8 @@ class DecisionTree(ABC):
                  memory_estimate_period: int = 1000000, stop_mem_management: bool = False,
                  remove_poor_atts: bool = False, no_preprune: bool = False):
         self.max_depth = max_depth if max_depth is not None else math.inf
-        self.max_size = max_size
+        self._max_size = max_size
+        self._max_byte_size = self._max_size * (2 ** 20)  # convert to byte
         self.memory_estimate_period = memory_estimate_period
         self.stop_mem_management = stop_mem_management
         self.remove_poor_atts = remove_poor_atts
@@ -68,9 +69,9 @@ class DecisionTree(ABC):
     def reset(self):
         """ Reset the Hoeffding Tree to default values."""
         self._tree_root = None
-        self._decision_node_cnt = 0
-        self._active_leaf_node_cnt = 0
-        self._inactive_leaf_node_cnt = 0
+        self._n_decision_nodes = 0
+        self._n_active_leaves = 0
+        self._n_inactive_leaves = 0
         self._inactive_leaf_size_estimate = 0.0
         self._active_leaf_size_estimate = 0.0
         self._size_estimate_overhead_fraction = 1.0
@@ -111,6 +112,15 @@ class DecisionTree(ABC):
         return math.sqrt((range_val * range_val * math.log(1. / confidence)) / (2. * n))
 
     @property
+    def max_size(self):
+        return self._max_size
+
+    @max_size.setter
+    def max_size(self, size):
+        self._max_size = size
+        self._max_byte_size = self._max_size * (2 ** 20)
+
+    @property
     def model_measurements(self):
         """ Collect metrics corresponding to the current status of the tree.
 
@@ -119,11 +129,11 @@ class DecisionTree(ABC):
         string
             A string buffer containing the measurements of the tree.
         """
-        measurements = {'Tree size (nodes)': self._decision_node_cnt
-                        + self._active_leaf_node_cnt + self._inactive_leaf_node_cnt,
-                        'Tree size (leaves)': self._active_leaf_node_cnt
-                        + self._inactive_leaf_node_cnt,
-                        'Active learning nodes': self._active_leaf_node_cnt,
+        measurements = {'Tree size (nodes)': self._n_decision_nodes
+                        + self._n_active_leaves + self._n_inactive_leaves,
+                        'Tree size (leaves)': self._n_active_leaves
+                        + self._n_inactive_leaves,
+                        'Active learning nodes': self._n_active_leaves,
                         'Tree depth': self._measure_tree_depth(),
                         'Active leaf byte size estimate': self._active_leaf_size_estimate,
                         'Inactive leaf byte size estimate': self._inactive_leaf_size_estimate,
@@ -210,9 +220,9 @@ class DecisionTree(ABC):
     def _enforce_size_limit(self):
         """ Track the size of the tree and disable/enable nodes if required."""
         tree_size = (self._active_leaf_size_estimate
-                     + self._inactive_leaf_node_cnt * self._inactive_leaf_size_estimate) \
+                     + self._n_inactive_leaves * self._inactive_leaf_size_estimate) \
             * self._size_estimate_overhead_fraction
-        if self._inactive_leaf_node_cnt > 0 or tree_size > self.max_size:
+        if self._n_inactive_leaves > 0 or tree_size > self._max_byte_size:
             if self.stop_mem_management:
                 self._growth_allowed = False
                 return
@@ -223,20 +233,20 @@ class DecisionTree(ABC):
             max_active += 1
             if (((max_active * self._active_leaf_size_estimate
                     + (len(learning_nodes) - max_active) * self._inactive_leaf_size_estimate)
-                    * self._size_estimate_overhead_fraction) > self.max_size):
+                    * self._size_estimate_overhead_fraction) > self._max_byte_size):
                 max_active -= 1
                 break
         cutoff = len(learning_nodes) - max_active
         for i in range(cutoff):
             if isinstance(learning_nodes[i].node, ActiveLeaf):
-                self._deactivate_learning_node(learning_nodes[i].node,
-                                               learning_nodes[i].parent,
-                                               learning_nodes[i].parent_branch)
+                self._deactivate_leaf(learning_nodes[i].node,
+                                      learning_nodes[i].parent,
+                                      learning_nodes[i].parent_branch)
         for i in range(cutoff, len(learning_nodes)):
-            if isinstance(learning_nodes[i].node, InactiveLeaf):
-                self._activate_learning_node(learning_nodes[i].node,
-                                             learning_nodes[i].parent,
-                                             learning_nodes[i].parent_branch)
+            if isinstance(learning_nodes[i].node, InactiveLeaf) and learning_nodes[i].node.depth \
+                    < self.max_depth:
+                self._activate_leaf(learning_nodes[i].node, learning_nodes[i].parent,
+                                    learning_nodes[i].parent_branch)
 
     def _estimate_model_size(self):
         """ Calculate the size of the model and trigger tracker function
@@ -252,16 +262,16 @@ class DecisionTree(ABC):
             else:
                 total_inactive_size += calculate_object_size(found_node.node)
         if total_active_size > 0:
-            self._active_leaf_size_estimate = total_active_size / self._active_leaf_node_cnt
+            self._active_leaf_size_estimate = total_active_size / self._n_active_leaves
         if total_inactive_size > 0:
             self._inactive_leaf_size_estimate = total_inactive_size \
-                / self._inactive_leaf_node_cnt
+                / self._n_inactive_leaves
         actual_model_size = calculate_object_size(self)
-        estimated_model_size = (self._active_leaf_node_cnt * self._active_leaf_size_estimate
-                                + self._inactive_leaf_node_cnt
+        estimated_model_size = (self._n_active_leaves * self._active_leaf_size_estimate
+                                + self._n_inactive_leaves
                                 * self._inactive_leaf_size_estimate)
         self._size_estimate_overhead_fraction = actual_model_size / estimated_model_size
-        if actual_model_size > self.max_size:
+        if actual_model_size > self._max_byte_size:
             self._enforce_size_limit()
 
     def _deactivate_all_leaves(self):
@@ -269,9 +279,7 @@ class DecisionTree(ABC):
         learning_nodes = self._find_learning_nodes()
         for cur_node in learning_nodes:
             if isinstance(cur_node, ActiveLeaf):
-                self._deactivate_learning_node(cur_node.node,
-                                               cur_node.parent,
-                                               cur_node.parent_branch)
+                self._deactivate_leaf(cur_node.node, cur_node.parent, cur_node.parent_branch)
 
     def _deactivate_leaf(self, to_deactivate: ActiveLeaf, parent: SplitNode, parent_branch: int):
         """ Deactivate a learning node.
@@ -290,8 +298,8 @@ class DecisionTree(ABC):
             self._tree_root = new_leaf
         else:
             parent.set_child(parent_branch, new_leaf)
-        self._active_leaf_node_cnt -= 1
-        self._inactive_leaf_node_cnt += 1
+        self._n_active_leaves -= 1
+        self._n_inactive_leaves += 1
 
     def _activate_leaf(self, to_activate: InactiveLeaf, parent: SplitNode, parent_branch: int):
         """ Activate a learning node.
@@ -310,8 +318,8 @@ class DecisionTree(ABC):
             self._tree_root = new_leaf
         else:
             parent.set_child(parent_branch, new_leaf)
-        self._active_leaf_node_cnt += 1
-        self._inactive_leaf_node_cnt -= 1
+        self._n_active_leaves += 1
+        self._n_inactive_leaves -= 1
 
     def _find_learning_nodes(self):
         """ Find learning nodes in the tree.

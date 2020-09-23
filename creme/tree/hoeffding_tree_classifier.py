@@ -188,25 +188,27 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
-            self._active_leaf_node_cnt = 1
+            self._n_active_leaves = 1
 
         found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
         leaf_node = found_node.node
         if leaf_node is None:
             leaf_node = self._new_learning_node(parent=found_node.parent)
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
-            self._active_leaf_node_cnt += 1
+            self._n_active_leaves += 1
 
         if isinstance(leaf_node, LearningNode):
-            learning_node = leaf_node
-            learning_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-            if self._growth_allowed and isinstance(learning_node, ActiveLeaf):
-                weight_seen = learning_node.total_weight
-                weight_diff = weight_seen - learning_node.last_split_attempt_at
-                if weight_diff >= self.grace_period and learning_node.depth < self.max_depth:
-                    self._attempt_to_split(learning_node, found_node.parent,
-                                           found_node.parent_branch)
-                    learning_node.last_split_attempt_at = weight_seen
+            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            if self._growth_allowed and isinstance(leaf_node, ActiveLeaf):
+                if leaf_node.depth >= self.max_depth:  # Max depth reached
+                    self._deactivate_leaf(leaf_node, found_node.parent, found_node.parent_branch)
+                else:
+                    weight_seen = leaf_node.total_weight
+                    weight_diff = weight_seen - leaf_node.last_split_attempt_at
+                    if weight_diff >= self.grace_period:
+                        self._attempt_to_split(leaf_node, found_node.parent,
+                                               found_node.parent_branch)
+                        leaf_node.last_split_attempt_at = weight_seen
         # Split node encountered a previously unseen categorical value
         # (in a multi-way test)
         elif isinstance(leaf_node, SplitNode):
@@ -216,7 +218,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
             branch_id = current.split_test.add_new_branch(
                 x[current.split_test.get_atts_test_depends_on()[0]])
             current.set_child(branch_id, leaf_node)
-            self._active_leaf_node_cnt += 1
+            self._n_active_leaves += 1
             leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
@@ -325,7 +327,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                 split_decision = best_split_suggestions[-1]
                 if split_decision.split_test is None:
                     # Preprune - null wins
-                    self._deactivate_learning_node(node, parent, parent_idx)
+                    self._deactivate_leaf(node, parent, parent_idx)
                 else:
                     new_split = self._new_split_node(split_decision.split_test, node.stats,
                                                      node.depth)
@@ -334,9 +336,9 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                         new_child = self._new_learning_node(
                             split_decision.resulting_stats_from_split(i), parent=new_split)
                         new_split.set_child(i, new_child)
-                    self._active_leaf_node_cnt -= 1
-                    self._decision_node_cnt += 1
-                    self._active_leaf_node_cnt += split_decision.num_splits()
+                    self._n_active_leaves -= 1
+                    self._n_decision_nodes += 1
+                    self._n_active_leaves += split_decision.num_splits()
                     if parent is None:
                         self._tree_root = new_split
                     else:

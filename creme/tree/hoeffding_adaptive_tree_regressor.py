@@ -180,7 +180,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
-            self._active_leaf_node_cnt = 1
+            self._n_active_leaves = 1
         self._tree_root.learn_one(X, y, weight, self, None, -1)
 
     def filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch,
