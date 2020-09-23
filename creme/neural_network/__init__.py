@@ -1,2 +1,2 @@
 from . import activations
-from .mlp import MLP
+from .mlp import MLPRegressor

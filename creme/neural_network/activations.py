@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-class Activation(abc.ABC):
+class Activation:
     """An activation function.
 
     Each activation function is represented by a class and implements two methods.
@@ -19,7 +19,7 @@ class Activation(abc.ABC):
 
     The second method is `gradient`, which computes the gradient with respect to the input array.
 
-    Both methods are intented to be pure with no side-effects. In other words they do not modify
+    Both methods are intended to be pure with no side-effects. In other words they do not modify
     their inputs.
 
     """
