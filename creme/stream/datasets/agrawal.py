@@ -1,19 +1,19 @@
-import numpy as np
+import random
 
 from . import base
 from creme.utils.skmultiflow_utils import check_random_state
 
 
-class AGRAWALGenerator(base.SyntheticDataset):
+class Agrawal(base.SyntheticDataset):
     """Agrawal stream generator.
 
-    The generator was introduced by Agrawal et al., and was common source
-    of data for early work on scaling up decision tree learners.
+    The generator was introduced by Agrawal et al. [^1], and was a common
+    source of data for early work on scaling up decision tree learners.
     The generator produces a stream containing nine features, six numeric and
     three categorical.
     There are ten functions defined for generating binary class labels from the
     features. Presumably these determine whether the loan should be approved.
-    The features and functions are listed in the original paper [1]_.
+    The features and functions are listed in the original paper [^1].
 
     | feature name | feature description  | values                                                              |
     |--------------|----------------------|---------------------------------------------------------------------|
@@ -29,52 +29,45 @@ class AGRAWALGenerator(base.SyntheticDataset):
 
     Parameters
     ----------
-    classification_function: int (Default=0)
+    classification_function
         Which of the four classification functions to use for the generation.
         The value can vary from 0 to 9.
-
-    random_state: int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
-
-    balance_classes: bool (Default: False)
+    seed
+        Random seed number used for reproducibility.
+    balance_classes
         Whether to balance classes or not. If balanced, the class
         distribution will converge to a uniform distribution.
-
-    perturbation: float (Default: 0.0)
+    perturbation
         The probability that noise will happen in the generation. At each
         new sample generated, the sample with will perturbed by the amount of
-        perturbation.
-        Values go from 0.0 to 1.0.
+        perturbation. Vavlid values are in the range from 0.0 to 1.0.
 
     Examples
     --------
 
     >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('AGRAWALGenerator',
+    >>> dataset = stream.iter_dataset('Agrawal',
     ...                               classification_function=0,
-    ...                               random_state=42)
+    ...                               seed=42)
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'salary': 68690.21545015712, 'commission': 81303.57298074372, 'age': 62, 'elevel': 4, 'car': 6, 'zipcode': 2, 'hvalue': 419982.441072602, 'hyears': 11, 'loan': 433088.07288746757} 0
-    {'salary': 98144.95152661715, 'commission': 0, 'age': 43, 'elevel': 2, 'car': 1, 'zipcode': 7, 'hvalue': 266488.52816008433, 'hyears': 6, 'loan': 389.38292050716416} 1
-    {'salary': 148987.50270785828, 'commission': 0, 'age': 52, 'elevel': 3, 'car': 11, 'zipcode': 8, 'hvalue': 79122.91401980419, 'hyears': 27, 'loan': 199930.48585762773} 1
-    {'salary': 26066.536217770004, 'commission': 83031.66391310944, 'age': 34, 'elevel': 2, 'car': 11, 'zipcode': 6, 'hvalue': 444969.26574203646, 'hyears': 25, 'loan': 23225.20635999886} 0
-    {'salary': 98980.83074718699, 'commission': 0, 'age': 40, 'elevel': 0, 'car': 6, 'zipcode': 1, 'hvalue': 1159108.4298026664, 'hyears': 28, 'loan': 281644.10892276966} 1
+    {'salary': 103125.48379952488, 'commission': 0, 'age': 21, 'elevel': 2, 'car': 7, 'zipcode': 3, 'hvalue': 383722.75711508637, 'hyears': 4, 'loan': 338349.74371145567} 1
+    {'salary': 135983.3438016299, 'commission': 0, 'age': 25, 'elevel': 4, 'car': 13, 'zipcode': 0, 'hvalue': 476817.4974942633, 'hyears': 7, 'loan': 116330.4466953698} 1
+    {'salary': 98262.43477649744, 'commission': 0, 'age': 55, 'elevel': 1, 'car': 17, 'zipcode': 6, 'hvalue': 216132.186612209, 'hyears': 19, 'loan': 139095.35411533137} 0
+    {'salary': 133009.0417030814, 'commission': 0, 'age': 68, 'elevel': 1, 'car': 13, 'zipcode': 5, 'hvalue': 311148.53666865674, 'hyears': 7, 'loan': 478606.5361033906} 1
+    {'salary': 63757.29086464148, 'commission': 16955.938253511093, 'age': 26, 'elevel': 2, 'car': 11, 'zipcode': 4, 'hvalue': 653564.13663719, 'hyears': 24, 'loan': 229712.43983592128} 1
 
     References
     ----------
-    [^1]: Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami. "Database
-          Mining: A Performance Perspective", IEEE Transactions on Knowledge and
+    [^1]: Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami. "Database Mining:
+          A Performance Perspective", IEEE Transactions on Knowledge and
           Data Engineering, 5(6), December 1993.
 
     """
     def __init__(self, classification_function=0,
-                 random_state=None,
+                 seed: int = None,
                  balance_classes=False,
                  perturbation=0.0):
         super().__init__(n_features=9, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
@@ -99,8 +92,8 @@ class AGRAWALGenerator(base.SyntheticDataset):
             raise ValueError(f"noise percentage should be in [0.0..1.0] "
                              f"and {perturbation} was passed")
         self.perturbation = perturbation
-        self.random_state = random_state
-        self._random_state = None  # This is the actual random_state object used internally
+        self.seed = seed
+        self._rng = None  # This is the actual random number generator object used internally
         self.n_num_features = 6
         self.n_cat_features = 3
         self._next_class_should_be_zero = False
@@ -116,7 +109,7 @@ class AGRAWALGenerator(base.SyntheticDataset):
         self._prepare_for_use()
 
     def _prepare_for_use(self):
-        self._random_state = check_random_state(self.random_state)
+        self._rng = random.Random(self.seed)
         self._next_class_should_be_zero = False
 
     def restart(self):
@@ -144,16 +137,15 @@ class AGRAWALGenerator(base.SyntheticDataset):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                salary = 20000 + 130000 * self._random_state.rand()
-                commission = 0 if (salary >= 75000) else (
-                    10000 + 75000 * self._random_state.rand())
-                age = 20 + self._random_state.randint(61)
-                elevel = self._random_state.randint(5)
-                car = self._random_state.randint(20)
-                zipcode = self._random_state.randint(9)
-                hvalue = (9 - zipcode) * 100000 * (0.5 + self._random_state.rand())
-                hyears = 1 + self._random_state.randint(30)
-                loan = self._random_state.rand() * 500000
+                salary = 20000 + 130000 * self._rng.random()
+                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.random())
+                age = 20 + self._rng.randint(0, 60)
+                elevel = self._rng.randint(0, 4)
+                car = self._rng.randint(0, 19)
+                zipcode = self._rng.randint(0, 8)
+                hvalue = (9 - zipcode) * 100000 * (0.5 + self._rng.random())
+                hyears = 1 + self._rng.randint(0, 29)
+                loan = self._rng.random() * 500000
                 group = self._classification_functions[self.classification_function](salary,
                                                                                      commission,
                                                                                      age, elevel,
@@ -191,7 +183,7 @@ class AGRAWALGenerator(base.SyntheticDataset):
     def _perturb_value(self, val, val_min, val_max, val_range=None):
         if val_range is None:
             val_range = val_max - val_min
-        val += val_range * (2 * (self._random_state.rand() - 0.5)) * self.perturbation
+        val += val_range * (2 * (self._rng.rand() - 0.5)) * self.perturbation
         if val < val_min:
             val = val_min
         elif val > val_max:
@@ -203,73 +195,73 @@ class AGRAWALGenerator(base.SyntheticDataset):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self._random_state.randint(10)
+        new_function = self._rng.randint(0, 9)
         while new_function == self.classification_function:
-            new_function = self._random_state.randint(10)
+            new_function = self._rng.randint(0, 9)
         self.classification_function = new_function
 
     @staticmethod
     def _classification_function_0(salary, commission, age, elevel, car, zipcode, hvalue,
                                    hyears, loan):
-        return 0 if ((age < 40) or (60 <= age)) else 1
+        return int((age < 40) or (60 <= age))
 
     @staticmethod
     def _classification_function_1(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
                                    loan):
         if age < 40:
-            return 0 if ((50000 <= salary) and (salary <= 100000)) else 1
+            return int((50000 <= salary) and (salary <= 100000))
         elif age < 60:
-            return 0 if ((75000 <= salary) and (salary <= 125000)) else 1
+            return int((75000 <= salary) and (salary <= 125000))
         else:
-            return 0 if ((25000 <= salary) and (salary <= 75000)) else 1
+            return int((25000 <= salary) and (salary <= 75000))
 
     @staticmethod
     def _classification_function_2(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
                                    loan):
         if age < 40:
-            return 0 if ((elevel == 0) or (elevel == 1)) else 1
+            return int((elevel == 0) or (elevel == 1))
         elif age < 60:
-            return 0 if ((elevel == 1) or (elevel == 2) or (elevel == 3)) else 1
+            return int((elevel == 1) or (elevel == 2) or (elevel == 3))
         else:
-            return 0 if ((elevel == 2) or (elevel == 3)) or (elevel == 4) else 1
+            return int((elevel == 2) or (elevel == 3)) or (elevel == 4)
 
     @staticmethod
     def _classification_function_3(salary, commission, age, elevel, car, zipcode, hvalue,
                                    hyears, loan):
         if age < 40:
             if (elevel == 0) or (elevel == 1):
-                return 0 if ((25000 <= salary) and (salary <= 75000)) else 1
+                return int((25000 <= salary) and (salary <= 75000))
             else:
-                return 0 if ((50000 <= salary) and (salary <= 100000)) else 1
+                return int((50000 <= salary) and (salary <= 100000))
         elif age < 60:
             if (elevel == 1) or (elevel == 2) or (elevel == 3):
-                return 0 if ((50000 <= salary) and (salary <= 100000)) else 1
+                return int((50000 <= salary) and (salary <= 100000))
             else:
-                return 0 if ((75000 <= salary) and (salary <= 125000)) else 1
+                return int((75000 <= salary) and (salary <= 125000))
         else:
             if (elevel == 2) or (elevel == 3) or (elevel == 4):
-                return 0 if ((50000 <= salary) and (salary <= 100000)) else 1
+                return int((50000 <= salary) and (salary <= 100000))
             else:
-                return 0 if ((25000 <= salary) and (salary <= 75000)) else 1
+                return int((25000 <= salary) and (salary <= 75000))
 
     @staticmethod
     def _classification_function_4(salary, commission, age, elevel, car, zipcode, hvalue,
                                    hyears, loan):
         if age < 40:
             if (50000 <= salary) and (salary <= 100000):
-                return 0 if ((100000 <= loan) and (loan <= 300000)) else 1
+                return int((100000 <= loan) and (loan <= 300000))
             else:
-                return 0 if ((200000 <= salary) and (salary <= 400000)) else 1
+                return int((200000 <= salary) and (salary <= 400000))
         elif age < 60:
             if (75000 <= salary) and (salary <= 125000):
-                return 0 if ((200000 <= salary) and (loan <= 400000)) else 1
+                return int((200000 <= salary) and (loan <= 400000))
             else:
-                return 0 if ((300000 <= salary) and (salary <= 500000)) else 1
+                return int((300000 <= salary) and (salary <= 500000))
         else:
             if (25000 <= salary) and (salary <= 75000):
-                return 0 if ((300000 <= loan) and (loan <= 500000)) else 1
+                return int((300000 <= loan) and (loan <= 500000))
             else:
-                return 0 if ((75000 <= loan) and (loan <= 300000)) else 1
+                return int((75000 <= loan) and (loan <= 300000))
 
     @staticmethod
     def _classification_function_5(salary, commission, age, elevel, car, zipcode, hvalue,
@@ -277,11 +269,11 @@ class AGRAWALGenerator(base.SyntheticDataset):
         totalsalary = salary + commission
 
         if age < 40:
-            return 0 if ((50000 <= totalsalary) and (totalsalary <= 100000)) else 1
+            return int((50000 <= totalsalary) and (totalsalary <= 100000))
         elif age < 60:
-            return 0 if ((75000 <= totalsalary) and (totalsalary <= 125000)) else 1
+            return int((75000 <= totalsalary) and (totalsalary <= 125000))
         else:
-            return 0 if ((25000 <= totalsalary) and (totalsalary <= 75000)) else 1
+            return int((25000 <= totalsalary) and (totalsalary <= 75000))
 
     @staticmethod
     def _classification_function_6(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
