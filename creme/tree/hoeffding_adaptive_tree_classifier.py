@@ -1,11 +1,12 @@
-import math
-
 from creme.tree import HoeffdingTreeClassifier
 from creme.utils.skmultiflow_utils import add_dict_values
 from creme.utils.math import softmax
 
 from ._nodes import InactiveLeaf
 from ._nodes import InactiveLearningNodeMC
+from ._nodes import FoundNode
+from ._nodes import SplitNode
+from ._nodes import LearningNode
 from ._nodes import AdaLearningNode
 from ._nodes import AdaSplitNode
 
@@ -40,6 +41,11 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         be treated as continuous.
     bootstrap_sampling
         If True, perform bootstrap sampling in the leaf nodes.
+    drift_window_threshold
+        Minimum number of examples an alternate tree must observe before being considered as a
+        potential replacement to the current one.
+    adwin_confidence
+        The delta parameter used in the nodes' ADWIN drift detectors.
     random_state
        If int, random_state is the seed used by the random number generator;
        If RandomState instance, random_state is the random number generator;
@@ -83,19 +89,21 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     # =============================================
     # == Hoeffding Adaptive Tree implementation ===
     # =============================================
-    _ERROR_WIDTH_THRESHOLD = 300
 
     def __init__(self,
                  grace_period=200,
                  split_criterion='info_gain',
-                 split_confidence=0.0000001,
+                 split_confidence=1e-7,
                  tie_threshold=0.05,
                  binary_split=False,
                  leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None,
                  bootstrap_sampling=True,
-                 random_state=None):
+                 adwin_confidence=0.002,
+                 drift_window_threshold=300,
+                 random_state=None,
+                 **kwargs):
 
         super().__init__(grace_period=grace_period,
                          split_criterion=split_criterion,
@@ -104,13 +112,16 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                          binary_split=binary_split,
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
-                         nominal_attributes=nominal_attributes)
+                         nominal_attributes=nominal_attributes,
+                         **kwargs)
 
         self._n_alternate_trees = 0
         self._n_pruned_alternate_trees = 0
         self._n_switch_alternate_trees = 0
 
         self.bootstrap_sampling = bootstrap_sampling
+        self.drift_window_threshold = drift_window_threshold
+        self.adwin_confidence = adwin_confidence
         self.random_state = random_state
 
     def reset(self):
@@ -128,11 +139,9 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         else:
             self._tree_root.learn_one(x, y, sample_weight, self, None, -1)
 
-    def _filter_instance_to_leaves(self, X, y, weight, split_parent, parent_branch,
-                                   update_splitter_counts):
+    def _filter_instance_to_leaves(self, x, split_parent, parent_branch):
         nodes = []
-        self._tree_root.filter_instance_to_leaves(X, y, weight, split_parent, parent_branch,
-                                                  update_splitter_counts, nodes)
+        self._tree_root.filter_instance_to_leaves(x, split_parent, parent_branch, nodes)
         return nodes
 
     # Override HoeffdingTreeClassifier
@@ -142,18 +151,18 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             if isinstance(self._tree_root, InactiveLeaf):
                 found_nodes = [self._tree_root.filter_instance_to_leaf(x, None, -1)]
             else:
-                found_nodes = self._filter_instance_to_leaves(
-                    x, -math.inf, -math.inf, None, -1, False)
+                found_nodes = self._filter_instance_to_leaves(x, None, -1)
             for fn in found_nodes:
-                # parent_branch == -999 means that the node is the root of an alternate tree
-                # in other words, the alternate tree is a single leaf. It is probably not accurate
+                # parent_branch == -999 means that the node is the root of an alternate tree.
+                # In other words, the alternate tree is a single leaf. It is probably not accurate
                 # enough to be used to predict, so skip it
                 if fn.parent_branch != -999:
                     leaf_node = fn.node
                     if leaf_node is None:
                         leaf_node = fn.parent
                     dist = leaf_node.predict_one(x, tree=self)
-                    # Combine the predictions of all leaves reached by the instance
+                    # Option Tree prediction (of sorts): combine the response of all leaves reached
+                    # by the instance
                     proba = add_dict_values(proba, dist, inplace=True)
         return softmax(proba)
 
@@ -164,11 +173,56 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         else:
             depth = 0
         if is_active:
-            return AdaLearningNode(initial_stats, depth=depth,
-                                   random_state=self.random_state)
+            return AdaLearningNode(
+                initial_stats=initial_stats, depth=depth, adwin_delta=self.adwin_confidence,
+                random_state=self.random_state)
         else:
             return InactiveLearningNodeMC(initial_stats, depth=depth)
 
     # Override HoeffdingTreeClassifier
     def _new_split_node(self, split_test, target_stats, depth):
-        return AdaSplitNode(split_test, target_stats, depth, self.random_state)
+        return AdaSplitNode(
+            split_test=split_test, stats=target_stats, depth=depth,
+            adwin_delta=self.adwin_confidence, random_state=self.random_state)
+
+    # Override river.tree.DecisionTree to include alternate trees
+    def __find_learning_nodes(self, node, parent, parent_branch, found):
+        if node is not None:
+            if isinstance(node, LearningNode):
+                found.append(FoundNode(node, parent, parent_branch))
+            if isinstance(node, SplitNode):
+                split_node = node
+                for i in range(split_node.n_children):
+                    self.__find_learning_nodes(
+                        split_node.get_child(i), split_node, i, found)
+                if split_node._alternate_tree is not None:
+                    self.__find_learning_nodes(
+                        split_node._alternate_tree, split_node, -999, found)
+
+    def _deactivate_leaf(self, to_deactivate, parent, parent_branch):
+        new_leaf = self._new_learning_node(to_deactivate.stats, parent=parent, is_active=False)
+        if parent is None:
+            self._tree_root = new_leaf
+        else:
+            # Corner case where a leaf is the alternate tree
+            if parent_branch == -999:
+                new_leaf.depth -= 1  # To ensure we do not skip a tree level
+                parent._alternate_tree = new_leaf
+
+            else:
+                parent.set_child(parent_branch, new_leaf)
+        self._n_active_leaves -= 1
+        self._n_inactive_leaves += 1
+
+    def _activate_leaf(self, to_activate, parent, parent_branch):
+        new_leaf = self._new_learning_node(to_activate.stats, parent=parent)
+        if parent is None:
+            self._tree_root = new_leaf
+        else:
+            if parent_branch == -999:
+                new_leaf.depth -= 1  # To ensure we do not skip a tree level
+                parent._alternate_tree = new_leaf
+            else:
+                parent.set_child(parent_branch, new_leaf)
+        self._n_active_leaves += 1
+        self._n_inactive_leaves -= 1
