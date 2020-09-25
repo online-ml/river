@@ -1,6 +1,6 @@
 """Decision trees."""
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
-from .hoeffding_adaptive_tree import HoeffdingAdaptiveTreeClassifier
+from .hoeffding_adaptive_tree_classifier import HoeffdingAdaptiveTreeClassifier
 from .extremely_fast_decision_tree import ExtremelyFastDecisionTreeClassifier
 from .label_combination_hoeffding_tree import LabelCombinationHoeffdingTreeClassifier
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
