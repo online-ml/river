@@ -38,7 +38,7 @@ class LearningNodeMC(LearningNode):
             Total weight seen.
 
         """
-        return sum(self.stats.values())
+        return sum(self.stats.values()) if self.stats else 0
 
     def observed_class_distribution_is_pure(self):
         """ Check if observed class distribution is pure, i.e. if all samples
@@ -68,7 +68,7 @@ class LearningNodeNB(LearningNodeMC):
 
 
 class LearningNodeNBA(LearningNodeMC):
-    def __init__(self, initial_stats=None, depth=0):
+    def __init__(self, initial_stats, depth):
         super().__init__(initial_stats, depth)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
@@ -131,7 +131,7 @@ class ActiveLearningNodeMC(LearningNodeMC, ActiveLeafClass):
         The depth of the node.
     """
 
-    def __init__(self, initial_stats=None, depth=0):
+    def __init__(self, initial_stats, depth):
         super().__init__(initial_stats, depth)
 
 
@@ -146,7 +146,7 @@ class InactiveLearningNodeMC(LearningNodeMC, InactiveLeaf):
         The depth of the node.
     """
 
-    def __init__(self, initial_stats=None, depth=0):
+    def __init__(self, initial_stats, depth):
         super().__init__(initial_stats, depth)
 
 
@@ -161,7 +161,7 @@ class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
         The depth of the node.
     """
 
-    def __init__(self, initial_stats=None, depth=0):
+    def __init__(self, initial_stats, depth):
         super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
@@ -189,7 +189,7 @@ class ActiveLearningNodeNBA(LearningNodeNBA, ActiveLeafClass):
         The depth of the node.
     """
 
-    def __init__(self, initial_stats=None, depth=0):
+    def __init__(self, initial_stats, depth):
         super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
