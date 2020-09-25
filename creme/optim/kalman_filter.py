@@ -1,4 +1,3 @@
-import collections
 from . import base
 from .. import utils
 
@@ -29,46 +28,31 @@ class KalmanFilter(base.Optimizer):
             >>> metric = metrics.MAE()
 
             >>> model_selection.progressive_val_score(X_y, model, metric)
-            MAE: 0.519588
+            MAE: 0.513453
 
             >>> model['LinearRegression'].intercept
-            41.663289
+            41.625274
 
     References:
         1. `Bottou, L., 2003. Stochastic Learning. Advanced Lectures on Machine Learning: ML Summer Schools 2003, pp.146-168. <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.418.7228&rep=rep1&type=pdf>`_
 
     """
 
-    def __init__(self, lr=1.0):
+    def __init__(self, lr=1.0, eps=1e-5):
         super().__init__(lr)
-        self.K = collections.defaultdict(float)
+        self.K = {}
+        self.eps = eps
 
 
-    def _update_after_pred(self, w, g, x):
-        """ Kalman update
+    def _update_after_pred(self, w, g, H):
+
+        for i in g:
+            if (i, i) not in self.K:
+                self.K[i, i] = self.eps
         
-        For now updates only with least squares loss
+        # Update Kalman matrix
+        self.K = utils.math.woodbury_identity(A_inv=self.K, U=utils.math.eye_like(H), V=H)
         
-        Comments:
-        -For general losses we probably need to calculate the inverse explicitly
-        -Other possibility: Woodbury matrix identity with WMI(H_inv,Eye)
-        -Maybe: Decompose the hessian matrix into two vectors and use shermann-morrison ?
-       
-        """
-        # Explicit inverse calculation for general losses
-        # import numpy as np
-        # increment = np.array((len(x),len(x))
-        # for (i, xi), (j, xj) in x.items(), x.items():
-        #     Increment[i, j] = xi * xj * self.loss.hessian(y_true=y, y_pred=self._raw_dot(x))
-        # H = np.array([[self.K[i,j] for i in range(len(w))] for j in range((len(w)))])
-        # H_inv = np.linalg.inv(np.linalg.inv(H_inv) + Increment)
-        # for i in range(len(w)):
-        #     for j in range(len(w)):
-        #         self.H[i,j] = H_inv[i,j]
-            
-        # Update the Kalman matrix
-        self.K = utils.math.sherman_morrison(A_inv=self.K, u=x, v=x)
-
         # Calculate the update step
         step = utils.math.dotvecmat(x=g, A=self.K)
         
