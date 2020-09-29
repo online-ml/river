@@ -11,7 +11,7 @@ from .base import ActiveLeaf, InactiveLeaf
 from .htc_nodes import ActiveLearningNodeNBA
 
 # TODO: check whether or not children can be None, after get_child. Perhaps checks such as
-# 'if child is not None' can be safely removed
+# 'if child is not None' can be safely removed. Also, check if the ADWIN object can become None.
 
 
 class AdaNode(metaclass=ABCMeta):
@@ -217,7 +217,7 @@ class AdaSplitNode(SplitNode, AdaNode):
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
         if leaf.node is not None:
             aux = leaf.node.predict_one(x, tree=tree)
-            class_prediction = max(aux, key=aux.get)
+            class_prediction = max(aux, key=aux.get) if aux else None
 
         is_correct = (true_class == class_prediction)
 
@@ -240,10 +240,10 @@ class AdaSplitNode(SplitNode, AdaNode):
         if self._error_change and old_error > self.error_estimation:
             self._error_change = False
 
-        # Check condition to build a new alternate tree
+        # Condition to build a new alternate tree
         if self._error_change:
             self._alternate_tree = tree._new_learning_node(parent=self)
-            self._alternate_tree.depth -= 1  # To ensure we not skip a tree level
+            self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
 
         # Condition to replace alternate tree
@@ -283,7 +283,7 @@ class AdaSplitNode(SplitNode, AdaNode):
             try:
                 child.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
                                 parent_branch=child_branch)
-            except TypeError:  # inactive node
+            except TypeError:  # Inactive node
                 child.learn_one(x, y, sample_weight=sample_weight, tree=tree)
         # Instance contains a categorical value previously unseen by the split node
         elif self.split_test.branch_for_instance(x) < 0:
@@ -310,6 +310,7 @@ class AdaSplitNode(SplitNode, AdaNode):
                     if child._alternate_tree is not None:
                         child._alternate_tree.kill_tree_children(tree)
                         tree._n_pruned_alternate_trees += 1
+                        child._alternate_tree = None
 
                     # Recursive delete of SplitNodes
                     child.kill_tree_children(tree)
