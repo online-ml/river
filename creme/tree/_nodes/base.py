@@ -98,6 +98,11 @@ class Node(metaclass=ABCMeta):
     def depth(self) -> int:
         return self._depth
 
+    @depth.setter
+    def depth(self, depth):
+        if depth >= 0:
+            self._depth = depth
+
     def subtree_depth(self) -> int:
         """ Calculate the depth of the subtree from this node.
 

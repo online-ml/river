@@ -166,7 +166,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                     proba = add_dict_values(proba, dist, inplace=True)
         return softmax(proba)
 
-    # Override HoeffdingTreeClassifier
     def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
         if parent is not None:
             depth = parent.depth + 1
@@ -179,7 +178,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         else:
             return InactiveLearningNodeMC(initial_stats, depth=depth)
 
-    # Override HoeffdingTreeClassifier
     def _new_split_node(self, split_test, target_stats, depth):
         return AdaSplitNode(
             split_test=split_test, stats=target_stats, depth=depth,
@@ -199,6 +197,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                     self.__find_learning_nodes(
                         split_node._alternate_tree, split_node, -999, found)
 
+    # Override river.tree.DecisionTree to include alternate trees
     def _deactivate_leaf(self, to_deactivate, parent, parent_branch):
         new_leaf = self._new_learning_node(to_deactivate.stats, parent=parent, is_active=False)
         if parent is None:
@@ -214,11 +213,13 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self._n_active_leaves -= 1
         self._n_inactive_leaves += 1
 
+    # Override river.tree.DecisionTree to include alternate trees
     def _activate_leaf(self, to_activate, parent, parent_branch):
         new_leaf = self._new_learning_node(to_activate.stats, parent=parent)
         if parent is None:
             self._tree_root = new_leaf
         else:
+            # Corner case where a leaf is the alternate tree
             if parent_branch == -999:
                 new_leaf.depth -= 1  # To ensure we do not skip a tree level
                 parent._alternate_tree = new_leaf
