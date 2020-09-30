@@ -91,17 +91,17 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     # =============================================
 
     def __init__(self,
-                 grace_period=200,
-                 split_criterion='info_gain',
-                 split_confidence=1e-7,
-                 tie_threshold=0.05,
-                 binary_split=False,
-                 leaf_prediction='nba',
-                 nb_threshold=0,
-                 nominal_attributes=None,
-                 bootstrap_sampling=True,
-                 adwin_confidence=0.002,
-                 drift_window_threshold=300,
+                 grace_period: int = 200,
+                 split_criterion: str = 'info_gain',
+                 split_confidence: float = 1e-7,
+                 tie_threshold: float = 0.05,
+                 binary_split: bool = False,
+                 leaf_prediction: str = 'nba',
+                 nb_threshold: int = 0,
+                 nominal_attributes: list = None,
+                 bootstrap_sampling: bool = True,
+                 adwin_confidence: float = 0.002,
+                 drift_window_threshold: int = 300,
                  random_state=None,
                  **kwargs):
 
