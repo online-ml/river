@@ -6,7 +6,7 @@ from .base import ActiveLeaf
 from .base import InactiveLeaf
 from .hatc_nodes import AdaNode
 from .hatc_nodes import AdaSplitNode
-from .htr_nodes import ActiveLearningNodePerceptron
+from .htr_nodes import ActiveLearningNodeModel
 
 
 class AdaSplitNodeRegressor(AdaSplitNode):
@@ -141,7 +141,7 @@ class AdaSplitNodeRegressor(AdaSplitNode):
                                                            update_splitter_counts, found_nodes)
 
 
-class AdaActiveLearningNodeRegressor(ActiveLearningNodePerceptron, AdaNode):
+class AdaActiveLearningNodeRegressor(ActiveLearningNodeModel, AdaNode):
     """ Learning Node of the Hoeffding Adaptive Tree regressor.
 
     Always uses a linear perceptron model to provide predictions.

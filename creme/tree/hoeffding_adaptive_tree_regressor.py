@@ -6,7 +6,7 @@ from skmultiflow.utils import add_dict_values
 from ._nodes import InactiveLeaf
 from ._nodes import AdaSplitNodeRegressor
 from ._nodes import AdaActiveLearningNodeRegressor
-from ._nodes import InactiveLearningNodeMean, InactiveLearningNodePerceptron
+from ._nodes import InactiveLearningNodeMean, InactiveLearningNodeModel
 
 
 class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
@@ -146,9 +146,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         else:
             prediction_option = self.leaf_prediction
             if prediction_option == self._TARGET_MEAN:
-                return InactiveLearningNodeMean
+                return InactiveLearningNodeMean()
             else:
-                return InactiveLearningNodePerceptron
+                return InactiveLearningNodeModel()
 
     def _partial_fit(self, X, y, weight):
         """Trains the model on samples X and corresponding targets y.

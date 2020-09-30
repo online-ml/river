@@ -4,10 +4,10 @@ from skmultiflow.utils import get_dimensions
 
 from .base import InactiveLeaf
 from .htr_nodes import ActiveLeafRegressor
-from .htr_nodes import LearningNodePerceptron
+from .htr_nodes import LearningNodeModel
 
 
-class LearningNodePerceptronMultiTarget(LearningNodePerceptron):
+class LearningNodeModelMultiTarget(LearningNodeModel):
     def __init__(self, initial_stats=None, parent_node=None, random_state=None):
         super().__init__(initial_stats, parent_node, random_state)
 
@@ -90,7 +90,7 @@ class LearningNodePerceptronMultiTarget(LearningNodePerceptron):
             self.perceptron_weights[i, :] /= sum_w
 
 
-class LearningNodeAdaptiveMultiTarget(LearningNodePerceptronMultiTarget):
+class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
     def __init__(self, initial_stats=None, parent_node=None, random_state=None):
         super().__init__(initial_stats, parent_node, random_state)
         # Faded errors for the perceptron and mean predictors
@@ -156,8 +156,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodePerceptronMultiTarget):
             Y_norm - tree.normalize_target_value(pred_mean))
 
 
-class ActiveLearningNodePerceptronMultiTarget(LearningNodePerceptronMultiTarget,
-                                              ActiveLeafRegressor):
+class ActiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, ActiveLeafRegressor):
     """ Learning Node for Multi-target Regression tasks that always use linear
     perceptron predictors for each target.
 
@@ -168,7 +167,7 @@ class ActiveLearningNodePerceptronMultiTarget(LearningNodePerceptronMultiTarget,
         online variance calculation. They refer to the number of observations
         (key '0'), the sum of the targets values (key '1'), and the sum of the
         squared targets values (key '2').
-    parent_node: ActiveLearningNodePerceptronMultiTarget (default=None)
+    parent_node: ActiveLearningNodeModelMultiTarget (default=None)
         A node containing statistics about observed data.
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
@@ -177,11 +176,11 @@ class ActiveLearningNodePerceptronMultiTarget(LearningNodePerceptronMultiTarget,
         by `np.random`.
     """
     def __init__(self, initial_stats=None, parent_node=None, random_state=None):
-        """ActiveLearningNodePerceptronMultiTarget class constructor."""
+        """ActiveLearningNodeModelMultiTarget class constructor."""
         super().__init__(initial_stats, parent_node, random_state)
 
 
-class InactiveLearningNodePerceptronMultiTarget(LearningNodePerceptronMultiTarget, InactiveLeaf):
+class InactiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, InactiveLeaf):
     """ Inactive Learning Node for Multi-target Regression tasks that always use
     linear perceptron predictors for each target.
 
@@ -192,7 +191,7 @@ class InactiveLearningNodePerceptronMultiTarget(LearningNodePerceptronMultiTarge
         online variance calculation. They refer to the number of observations
         (key '0'), the sum of the targets values (key '1'), and the sum of the
         squared targets values (key '2').
-    parent_node: ActiveLearningNodePerceptronMultiTarget (default=None)
+    parent_node: ActiveLearningNodeModelMultiTarget (default=None)
         A node containing statistics about observed data.
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;

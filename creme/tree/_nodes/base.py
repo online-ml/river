@@ -338,23 +338,23 @@ class LearningNode(Node, metaclass=ABCMeta):
     def update_stats(self, y, sample_weight):
         pass
 
-    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         """Update the node with the provided sample.
 
         Parameters
         ----------
-        X: numpy.ndarray of length equal to the number of features.
+        x
             Sample attributes for updating the node.
-        y: int or float
+        y
             Target value.
-        sample_weight: float
+        sample_weight
             Sample weight.
-        tree:
+        tree
             Tree to update.
 
         """
         self.update_stats(y, sample_weight)
-        self.update_attribute_observers(X, y, sample_weight, tree)
+        self.update_attribute_observers(x, y, sample_weight, tree)
 
     @abstractmethod
     def predict_one(self, X, *, tree=None) -> dict:
