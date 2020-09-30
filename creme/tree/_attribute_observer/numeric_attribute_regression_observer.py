@@ -1,5 +1,3 @@
-import numpy as np
-
 from creme.utils import VectorDict
 
 from creme.tree._attribute_test import NumericAttributeBinaryTest
@@ -30,7 +28,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
             self.sum_weight = sample_weight
             self.sum_target = sample_weight * target
-            self.sum_sq_target = sample_weight * target * target
+            self.sum_sq_target = self.sum_target * target
 
             self._left = None
             self._right = None
@@ -45,13 +43,15 @@ class NumericAttributeRegressionObserver(AttributeObserver):
                 antecedent = current
                 if att_val == current.att_val:
                     current.sum_weight += sample_weight
-                    current.sum_target += sample_weight * target
-                    current.sum_sq_target += sample_weight * target * target
+                    aux_mul = sample_weight * target
+                    current.sum_target += aux_mul
+                    current.sum_sq_target += aux_mul * target
                     return
                 elif att_val < current.att_val:
                     current.sum_weight += sample_weight
-                    current.sum_target += sample_weight * target
-                    current.sum_sq_target += sample_weight * target * target
+                    aux_mul = sample_weight * target
+                    current.sum_target += aux_mul
+                    current.sum_sq_target += aux_mul * target
 
                     current = current._left
                     is_right = False

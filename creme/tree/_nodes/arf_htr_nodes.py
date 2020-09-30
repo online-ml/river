@@ -3,7 +3,7 @@ import numpy as np
 from skmultiflow.utils import check_random_state
 from skmultiflow.trees._attribute_observer import NominalAttributeRegressionObserver
 from skmultiflow.trees._attribute_observer import NumericAttributeRegressionObserver
-from .htr_nodes import LearningNodeMean, LearningNodePerceptron
+from .htr_nodes import LearningNodeMean, LearningNodeModel
 from .arf_htc_nodes import RandomActiveLeafClass
 
 
@@ -69,7 +69,7 @@ class RandomActiveLearningNodeMean(LearningNodeMean, RandomActiveLeafRegressor):
         self._random_state = check_random_state(self.random_state)
 
 
-class RandomActiveLearningNodePerceptron(LearningNodePerceptron, RandomActiveLeafRegressor):
+class RandomActiveLearningNodeModel(LearningNodeModel, RandomActiveLeafRegressor):
     """ Learning Node for regression tasks that always use a linear perceptron
     model to provide responses.
 
@@ -82,7 +82,7 @@ class RandomActiveLearningNodePerceptron(LearningNodePerceptron, RandomActiveLea
         the sum of the squared target values (key '2').
     max_features: int
         Number of attributes per subset for each node split.
-    parent_node: RandomLearningNodePerceptron (default=None)
+    parent_node: RandomLearningNodeModel (default=None)
         A node containing statistics about observed data.
     random_state: int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;

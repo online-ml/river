@@ -12,10 +12,10 @@ from ._nodes import SplitNode
 from ._nodes import LearningNode
 from ._nodes import ActiveLeaf
 from ._nodes import ActiveLearningNodeMean
-from ._nodes import ActiveLearningNodePerceptronMultiTarget
+from ._nodes import ActiveLearningNodeModelMultiTarget
 from ._nodes import ActiveLearningNodeAdaptiveMultiTarget
 from ._nodes import InactiveLearningNodeMean
-from ._nodes import InactiveLearningNodePerceptronMultiTarget
+from ._nodes import InactiveLearningNodeModelMultiTarget
 from ._nodes import InactiveLearningNodeAdaptiveMultiTarget
 
 import warnings
@@ -269,7 +269,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
             if self.leaf_prediction == self._TARGET_MEAN:
                 return ActiveLearningNodeMean(initial_stats)
             elif self.leaf_prediction == self._PERCEPTRON:
-                return ActiveLearningNodePerceptronMultiTarget(
+                return ActiveLearningNodeModelMultiTarget(
                     initial_stats, parent_node, random_state=self.random_state)
             elif self.leaf_prediction == self._ADAPTIVE:
                 new_node = ActiveLearningNodeAdaptiveMultiTarget(
@@ -282,7 +282,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, MultiOutputMixin):
             if self.leaf_prediction == self._TARGET_MEAN:
                 return InactiveLearningNodeMean(initial_stats)
             elif self.leaf_prediction == self._PERCEPTRON:
-                return InactiveLearningNodePerceptronMultiTarget(
+                return InactiveLearningNodeModelMultiTarget(
                     initial_stats, parent_node, random_state=parent_node.random_state)
             elif self.leaf_prediction == self._ADAPTIVE:
                 new_node = InactiveLearningNodeAdaptiveMultiTarget(

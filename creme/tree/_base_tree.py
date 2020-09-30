@@ -55,17 +55,6 @@ class DecisionTree(ABC):
 
         self.reset()
 
-    def __sizeof__(self):
-        """ Calculate the size of the tree.
-
-        Returns
-        -------
-        int
-            Size of the tree in bytes.
-
-        """
-        return calculate_object_size(self)
-
     def reset(self):
         """ Reset the Hoeffding Tree to default values."""
         self._tree_root = None
@@ -134,7 +123,7 @@ class DecisionTree(ABC):
                         'Tree size (leaves)': self._n_active_leaves
                         + self._n_inactive_leaves,
                         'Active learning nodes': self._n_active_leaves,
-                        'Tree depth': self._measure_tree_depth(),
+                        'Tree depth': self.depth,
                         'Active leaf byte size estimate': self._active_leaf_size_estimate,
                         'Inactive leaf byte size estimate': self._inactive_leaf_size_estimate,
                         'Byte size estimate overhead': self._size_estimate_overhead_fraction
