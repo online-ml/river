@@ -113,14 +113,14 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     # == Hoeffding Tree implementation ===
     # ====================================
     def __init__(self,
-                 grace_period=200,
-                 split_criterion='info_gain',
-                 split_confidence=0.0000001,
-                 tie_threshold=0.05,
-                 binary_split=False,
-                 leaf_prediction='nba',
-                 nb_threshold=0,
-                 nominal_attributes=None,
+                 grace_period: int = 200,
+                 split_criterion: str = 'info_gain',
+                 split_confidence: float = 1e-7,
+                 tie_threshold: float = 0.05,
+                 binary_split: bool = False,
+                 leaf_prediction: str = 'nba',
+                 nb_threshold: int = 0,
+                 nominal_attributes: list = None,
                  **kwargs):
 
         super().__init__(**kwargs)
@@ -134,7 +134,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
 
-        self.classes = set()
+        self.classes: set = set()
 
     @DecisionTree.split_criterion.setter
     def split_criterion(self, split_criterion):
@@ -209,11 +209,11 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                         self._attempt_to_split(leaf_node, found_node.parent,
                                                found_node.parent_branch)
                         leaf_node.last_split_attempt_at = weight_seen
-        # Split node encountered a previously unseen categorical value
-        # (in a multi-way test)
+        # Split node encountered a previously unseen categorical value (in a multi-way test),
+        # so there is no branch to sort the instance to
         elif isinstance(leaf_node, SplitNode):
             # Creates a new branch to the new categorical value
-            current = found_node.node
+            current = leaf_node
             leaf_node = self._new_learning_node(parent=current)
             branch_id = current.split_test.add_new_branch(
                 x[current.split_test.get_atts_test_depends_on()[0]])
@@ -281,7 +281,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
 
         Parameters
         ----------
-        node:
+        node
             The node to evaluate.
         parent
             The node's parent.
@@ -320,7 +320,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                             if len(split_atts) == 1:
                                 if (best_suggestion.merit - best_split_suggestions[i].merit
                                         > hoeffding_bound):
-                                    poor_atts.add(int(split_atts[0]))
+                                    poor_atts.add(split_atts[0])
                     for poor_att in poor_atts:
                         node.disable_attribute(poor_att)
             if should_split:
@@ -343,5 +343,6 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                         self._tree_root = new_split
                     else:
                         parent.set_child(parent_idx, new_split)
+
                 # Manage memory
                 self._enforce_size_limit()
