@@ -1,5 +1,7 @@
 import numpy as np
 
+from creme.utils import VectorDict
+
 from creme.tree._attribute_test import NumericAttributeBinaryTest
 from creme.tree._attribute_test import AttributeSplitSuggestion
 from .attribute_observer import AttributeObserver
@@ -60,26 +62,24 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             # Value was not yet added to the tree
             if is_right:
                 antecedent._right = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight
-                )
+                    att_val, target, sample_weight)
             else:
                 antecedent._left = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight
-                )
+                    att_val, target, sample_weight)
 
     def __init__(self):
         super().__init__()
         self._root = None
 
-    def update(self, att_val, class_val, sample_weight):
+    def update(self, att_val, target_val, sample_weight):
         if att_val is None:
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeRegressionObserver.Node(att_val, class_val,
+                self._root = NumericAttributeRegressionObserver.Node(att_val, target_val,
                                                                      sample_weight)
             else:
-                self._root.insert_value(att_val, class_val, sample_weight)
+                self._root.insert_value(att_val, target_val, sample_weight)
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         raise NotImplementedError
@@ -93,12 +93,13 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         self._aux_sum_weight = 0
 
         # Handles both single-target and multi-target tasks
-        if np.ndim(pre_split_dist[1]) == 0:
-            self._aux_sum = 0.0
-            self._aux_sum_sq = 0.0
+        if isinstance(pre_split_dist[1], VectorDict):
+            # TODO Check whether or not this works
+            self._aux_sum = VectorDict(default_value=0.)
+            self._aux_sum_sq = VectorDict(default_value=0.)
         else:
-            self._aux_sum = np.zeros_like(pre_split_dist[1])
-            self._aux_sum_sq = np.zeros_like(pre_split_dist[2])
+            self._aux_sum = 0.
+            self._aux_sum_sq = 0.
 
         candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
 
@@ -158,11 +159,11 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         return candidate
 
-    def remove_bad_splits(self, criterion, last_check_ratio, last_check_sdr, last_check_e,
+    def remove_bad_splits(self, criterion, last_check_ratio, last_check_vr, last_check_e,
                           pre_split_dist):
         """ Remove bad splits.
 
-        Based on FIMT-DD's_[1] procedure to remove bad split candidates from the E-BST. This
+        Based on FIMT-DD's [^1] procedure to remove bad split candidates from the E-BST. This
         mechanism is triggered every time a split attempt fails. The rationale is to remove
         points whose split merit is much worse than the best candidate overall (for which the
         growth decision already failed).
@@ -177,20 +178,20 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         To avoid excessive and costly manipulations of the E-BST to update the stored statistics,
         only the nodes whose children are all bad split points are pruned, as defined in
-        FIMT-DD_[1].
+        FIMT-DD [^1].
 
         Parameters
         ----------
-        criterion: SplitCriterion
+        criterion
             The split criterion used by the regression tree.
-        last_check_ratio: float
+        last_check_ratio
             The ratio between the merit of the second best split candidate and the merit of the
             best split candidate observed in the last failed split attempt.
-        last_check_sdr: float
+        last_check_vr
             The merit of the best split candidate observed in the last failed split attempt.
-        last_check_e: float
+        last_check_e
             The Hoeffding bound value calculated in the last failed split attempt.
-        pre_split_dist: dict
+        pre_split_dist
             The complete statistics of the target observed in the leaf node.
 
         References
@@ -203,18 +204,19 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
         self._last_check_ratio = last_check_ratio
-        self._last_check_sdr = last_check_sdr
+        self._last_check_vr = last_check_vr
         self._last_check_e = last_check_e
 
         self._aux_sum_weight = 0
 
         # Encompass both the single-target and multi-target cases
-        if np.ndim(pre_split_dist[1]) == 0:
-            self._aux_sum = 0.0
-            self._aux_sum_sq = 0.0
+        if isinstance(pre_split_dist[1], VectorDict):
+            # TODO Check whether or not this works
+            self._aux_sum = VectorDict(default_value=0.)
+            self._aux_sum_sq = VectorDict(default_value=0.)
         else:
-            self._aux_sum = np.zeros_like(pre_split_dist[1])
-            self._aux_sum_sq = np.zeros_like(pre_split_dist[2])
+            self._aux_sum = 0.
+            self._aux_sum_sq = 0.
 
         self._remove_bad_split_nodes(self._root)
 
@@ -222,7 +224,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         self._criterion = None
         self._pre_split_dist = None
         self._last_check_ratio = None
-        self._last_check_sdr = None
+        self._last_check_vr = None
         self._last_check_e = None
         self._aux_sum_weight = None
         self._aux_sum = None
@@ -266,7 +268,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
             post_split_dists = [left_dist, right_dist]
             merit = self._criterion.get_merit_of_split(self._pre_split_dist, post_split_dists)
-            if (merit / self._last_check_sdr) < (self._last_check_ratio - 2 * self._last_check_e):
+            if (merit / self._last_check_vr) < (self._last_check_ratio - 2 * self._last_check_e):
                 # Remove children nodes
                 current_node._left = None
                 current_node._right = None
