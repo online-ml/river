@@ -15,6 +15,7 @@ from ._nodes import ActiveLeaf
 from ._nodes import InactiveLeaf
 from ._nodes import SplitNode
 from ._nodes import FoundNode
+from ._split_test import InstanceConditionalTest
 
 
 class DecisionTree(ABC):
@@ -147,7 +148,8 @@ class DecisionTree(ABC):
                 description += buffer[line]
             return description
 
-    def _new_split_node(self, split_test, target_stats, depth) -> SplitNode:
+    def _new_split_node(self, split_test: InstanceConditionalTest, target_stats: dict = None,
+                        depth: int = 0) -> SplitNode:
         """ Create a new split node."""
         return SplitNode(split_test, target_stats, depth)
 

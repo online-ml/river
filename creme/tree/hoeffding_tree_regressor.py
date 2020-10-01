@@ -135,8 +135,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         else:
             self._split_criterion = split_criterion
 
-    def _new_learning_node(self, initial_stats: dict = None, parent: SplitNode = None,
-                           is_active: bool = True):
+    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.

@@ -109,9 +109,6 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     _NAIVE_BAYES = 'nb'
     _NAIVE_BAYES_ADAPTIVE = 'nba'
 
-    # ====================================
-    # == Hoeffding Tree implementation ===
-    # ====================================
     def __init__(self,
                  grace_period: int = 200,
                  split_criterion: str = 'info_gain',
@@ -246,8 +243,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
             proba = softmax(proba)
         return proba
 
-    def _new_learning_node(self, initial_stats: dict = None, parent: LearningNode = None,
-                           is_active: bool = True):
+    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
         if initial_stats is None:
             initial_stats = {}
         if parent is None:
