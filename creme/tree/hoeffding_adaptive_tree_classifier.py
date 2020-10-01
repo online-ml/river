@@ -7,7 +7,7 @@ from ._nodes import InactiveLearningNodeMC
 from ._nodes import FoundNode
 from ._nodes import SplitNode
 from ._nodes import LearningNode
-from ._nodes import AdaLearningNode
+from ._nodes import AdaLearningNodeClassifier
 from ._nodes import AdaSplitNode
 
 
@@ -51,6 +51,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
        If RandomState instance, random_state is the random number generator;
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when ``bootstrap_sampling=True`` to direct the bootstrap sampling.
+    **kwargs
+        Other parameters passed to river.tree.DecisionTree.
 
     Notes
     -----
@@ -100,8 +102,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
                  bootstrap_sampling: bool = True,
-                 adwin_confidence: float = 0.002,
                  drift_window_threshold: int = 300,
+                 adwin_confidence: float = 0.002,
                  random_state=None,
                  **kwargs):
 
@@ -172,7 +174,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         else:
             depth = 0
         if is_active:
-            return AdaLearningNode(
+            return AdaLearningNodeClassifier(
                 initial_stats=initial_stats, depth=depth, adwin_delta=self.adwin_confidence,
                 random_state=self.random_state)
         else:

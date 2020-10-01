@@ -49,7 +49,7 @@ class AdaNode(metaclass=ABCMeta):
         pass
 
 
-class AdaLearningNode(ActiveLearningNodeNBA, AdaNode):
+class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
     """ Learning node for Hoeffding Adaptive Tree.
 
     Uses Adaptive Naive Bayes models.
@@ -161,7 +161,7 @@ class AdaLearningNode(ActiveLearningNodeNBA, AdaNode):
         found_nodes.append(FoundNode(self, parent, parent_branch))
 
 
-class AdaSplitNode(SplitNode, AdaNode):
+class AdaSplitNodeClassifier(SplitNode, AdaNode):
     """ Node that splits the data in a Hoeffding Adaptive Tree.
 
     Parameters
