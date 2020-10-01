@@ -29,14 +29,14 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         Threshold below which a split will be forced to break ties.
     binary_split
         If True, only allow binary splits.
-    leaf_prediction: string (default='nba')
+    leaf_prediction
         | Prediction mechanism used at leafs.
         | 'mc' - Majority Class
         | 'nb' - Naive Bayes
         | 'nba' - Naive Bayes Adaptive
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
-    nominal_attributes: list, optional
+    nominal_attributes
         List of Nominal attributes. If empty, then assume that all numeric attributes should
         be treated as continuous.
     bootstrap_sampling
