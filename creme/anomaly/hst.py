@@ -110,9 +110,9 @@ class HalfSpaceTrees(base.AnomalyDetector):
     and ensures that the values of each feature are comprised between 0 and 1.
 
     >>> from creme import compose
+    >>> from creme import datasets
     >>> from creme import metrics
     >>> from creme import preprocessing
-    >>> from creme import stream
 
     >>> model = compose.Pipeline(
     ...     preprocessing.MinMaxScaler(),
@@ -121,7 +121,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     >>> auc = metrics.ROCAUC()
 
-    >>> for x, y in stream.iter_dataset('CreditCard').take(8000):
+    >>> for x, y in datasets.CreditCard().take(8000):
     ...     score = model.score_one(x)
     ...     model = model.learn_one(x, y)
     ...     auc = auc.update(y, score)

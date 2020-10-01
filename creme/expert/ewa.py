@@ -25,6 +25,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import expert
     >>> from creme import linear_model
@@ -41,7 +42,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
 
     >>> for optimizer in optimizers:
     ...
-    ...     dataset = stream.iter_dataset('TrumpApproval')
+    ...     dataset = datasets.TrumpApproval()
     ...     metric = metrics.MAE()
     ...     model = (
     ...         preprocessing.StandardScaler() |
@@ -56,7 +57,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
     RMSProp MAE: 0.528284
     AdaGrad MAE: 0.481461
 
-    >>> dataset = stream.iter_dataset('TrumpApproval')
+    >>> dataset = datasets.TrumpApproval()
     >>> metric = metrics.MAE()
     >>> hedge = (
     ...     preprocessing.StandardScaler() |

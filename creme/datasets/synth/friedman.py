@@ -1,7 +1,7 @@
 import math
 import random
 
-from . import base
+from .. import base
 
 
 class Friedman(base.SyntheticDataset):
@@ -22,9 +22,9 @@ class Friedman(base.SyntheticDataset):
     Examples
     --------
 
-    >>> from creme import stream
+    >>> from creme import synth
 
-    >>> dataset = stream.iter_dataset('Friedman', seed=42)
+    >>> dataset = synth.Friedman(seed=42)
 
     >>> for x, y in dataset.take(5):
     ...     print(list(x.values()), y)

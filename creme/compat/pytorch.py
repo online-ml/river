@@ -57,17 +57,17 @@ class PyTorch2CremeRegressor(PyTorch2CremeBase, base.Regressor):
     --------
 
     >>> from creme import compat
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
     >>> from creme import preprocessing
-    >>> from creme import stream
     >>> import torch
     >>> from torch import nn
     >>> from torch import optim
 
     >>> _ = torch.manual_seed(0)
 
-    >>> dataset = stream.iter_dataset('TrumpApproval')
+    >>> dataset = datasets.TrumpApproval()
 
     >>> n_features = 6
     >>> net = nn.Sequential(

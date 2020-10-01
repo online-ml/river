@@ -38,7 +38,7 @@ else
 fi
 
 echo "Downloading the datasets that are used for testing"
-python -c "from creme import stream; stream.iter_dataset('CreditCard').download()"
+python -c "from creme import datasets; datasets.CreditCard().download()"
 
 echo "Running flake8"
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude scikit-multiflow
