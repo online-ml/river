@@ -141,11 +141,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         else:
             self._tree_root.learn_one(x, y, sample_weight, self, None, -1)
 
-    def _filter_instance_to_leaves(self, x, split_parent, parent_branch):
-        nodes = []
-        self._tree_root.filter_instance_to_leaves(x, split_parent, parent_branch, nodes)
-        return nodes
-
     # Override HoeffdingTreeClassifier
     def predict_proba_one(self, x):
         proba = {}
@@ -168,6 +163,11 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                     proba = add_dict_values(proba, dist, inplace=True)
         return softmax(proba)
 
+    def _filter_instance_to_leaves(self, x, split_parent, parent_branch):
+        nodes = []
+        self._tree_root.filter_instance_to_leaves(x, split_parent, parent_branch, nodes)
+        return nodes
+
     def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
         if parent is not None:
             depth = parent.depth + 1
@@ -180,7 +180,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         else:
             return InactiveLearningNodeMC(initial_stats, depth=depth)
 
-    def _new_split_node(self, split_test, target_stats, depth):
+    def _new_split_node(self, split_test, target_stats=None, depth=0):
         return AdaSplitNode(
             split_test=split_test, stats=target_stats, depth=depth,
             adwin_delta=self.adwin_confidence, random_state=self.random_state)
