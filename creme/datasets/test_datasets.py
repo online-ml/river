@@ -4,17 +4,17 @@ from urllib import request
 
 import pytest
 
-from creme import stream
+from creme import datasets
 
 from . import base
 
 
 def _iter_datasets():
 
-    for variant in stream.iter_dataset('Insects').variant_sizes:
-        yield stream.iter_dataset('Insects', variant=variant)
+    for variant in datasets.Insects.variants:
+        yield datasets.Insects(variant=variant)
 
-    for _, dataset in inspect.getmembers(importlib.import_module('creme.stream.datasets'), inspect.isclass):
+    for _, dataset in inspect.getmembers(importlib.import_module('creme.datasets'), inspect.isclass):
         if dataset.__class__.__name__ != 'Insects':
             yield dataset()
 

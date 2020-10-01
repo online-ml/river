@@ -1,6 +1,6 @@
 import random
 
-from . import base
+from .. import base
 
 
 class SEA(base.SyntheticDataset):
@@ -23,9 +23,9 @@ class SEA(base.SyntheticDataset):
     Examples
     --------
 
-    >>> from creme import stream
+    >>> from creme import synth
 
-    >>> dataset = stream.iter_dataset('SEA', variant=0, seed=42)
+    >>> dataset = synth.SEA(variant=0, seed=42)
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)

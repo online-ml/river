@@ -77,7 +77,7 @@ class BaseDecisionTree(abc.ABC):
         Examples
         --------
 
-        >>> from creme import stream
+        >>> from creme import datasets
         >>> from creme import tree
 
         >>> model = tree.DecisionTreeClassifier(
@@ -89,7 +89,7 @@ class BaseDecisionTree(abc.ABC):
         ...    min_child_samples=0,
         ... )
 
-        >>> for x, y in stream.iter_dataset('Phishing'):
+        >>> for x, y in datasets.Phishing():
         ...    model = model.learn_one(x, y)
 
         >>> dot = model.draw()
@@ -221,12 +221,12 @@ class DecisionTreeClassifier(BaseDecisionTree, base.Classifier):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
-    >>> from creme import stream
     >>> from creme import tree
 
-    >>> dataset = stream.iter_dataset('Phishing')
+    >>> dataset = datasets.Phishing()
 
     >>> model = tree.DecisionTreeClassifier(
     ...     patience=100,
