@@ -43,9 +43,9 @@ As a quick example, we'll train a logistic regression to classify the [website p
 
 ```python
 >>> from pprint import pprint
->>> from creme import stream
+>>> from creme import datasets
 
->>> dataset = stream.iter_dataset('Phishing')
+>>> dataset = datasets.Phishing()
 
 >>> for x, y in dataset:
 ...     pprint(x)
