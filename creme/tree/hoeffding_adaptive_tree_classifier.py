@@ -8,7 +8,7 @@ from ._nodes import FoundNode
 from ._nodes import SplitNode
 from ._nodes import LearningNode
 from ._nodes import AdaLearningNodeClassifier
-from ._nodes import AdaSplitNode
+from ._nodes import AdaSplitNodeClassifier
 
 
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
@@ -181,7 +181,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             return InactiveLearningNodeMC(initial_stats, depth=depth)
 
     def _new_split_node(self, split_test, target_stats=None, depth=0):
-        return AdaSplitNode(
+        return AdaSplitNodeClassifier(
             split_test=split_test, stats=target_stats, depth=depth,
             adwin_delta=self.adwin_confidence, random_state=self.random_state)
 
