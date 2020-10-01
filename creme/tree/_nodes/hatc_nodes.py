@@ -52,8 +52,6 @@ class AdaNode(metaclass=ABCMeta):
 class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
     """ Learning node for Hoeffding Adaptive Tree.
 
-    Uses Adaptive Naive Bayes models.
-
     Parameters
     ----------
     initial_stats
@@ -212,7 +210,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
     def learn_one(self, x, y, sample_weight, tree, parent, parent_branch):
         true_class = y
-        class_prediction = 0
+        class_prediction = None
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
         if leaf.node is not None:
@@ -264,6 +262,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
                     if parent is not None:
                         parent.set_child(parent_branch, self._alternate_tree)
+                        self._alternate_tree = None
                     else:
                         # Switch tree root
                         tree._tree_root = tree._tree_root._alternate_tree

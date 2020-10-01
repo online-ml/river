@@ -15,7 +15,7 @@ from ._nodes import ActiveLeaf
 from ._nodes import InactiveLeaf
 from ._nodes import SplitNode
 from ._nodes import FoundNode
-from ._split_test import InstanceConditionalTest
+from ._attribute_test import InstanceConditionalTest
 
 
 class DecisionTree(ABC):
