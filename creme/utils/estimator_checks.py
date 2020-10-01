@@ -12,41 +12,42 @@ __all__ = ['check_estimator']
 def yield_datasets(model):
 
     from creme import compose
+    from creme import datasets
     from creme import preprocessing
     from creme import stream
     from creme import utils
-    from sklearn import datasets
-
-    # Classification
-    if utils.inspect.isclassifier(model):
-        yield stream.iter_dataset('Phishing')
-
-        # Multi-class classification
-        if model._multiclass:
-            yield stream.iter_dataset('ImageSegments').take(500)
-
-    # Regression
-    if utils.inspect.isregressor(model):
-        yield stream.iter_dataset('TrumpApproval')
+    from sklearn import datasets as sk_datasets
 
     # Multi-output regression
     if utils.inspect.ismoregressor(model):
 
         # 1
-        yield stream.iter_sklearn_dataset(datasets.load_linnerud())
+        yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
 
         # 2
         class SolarFlare:
-            """One-hot encoded version of `stream.iter_dataset('SolarFlare')"""
+            """One-hot encoded version of `datasets.SolarFlare"""
             def __iter__(self):
                 oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(int)
-                for x, y in stream.iter_dataset('SolarFlare'):
+                for x, y in datasets.SolarFlare():
                     yield oh.transform_one(x), y
         yield SolarFlare()
 
+    # Regression
+    elif utils.inspect.isregressor(model):
+        yield datasets.TrumpApproval()
+
     # Multi-output classification
     if utils.inspect.ismoclassifier(model):
-        yield stream.iter_dataset('Music')
+        yield datasets.Music()
+
+    # Classification
+    elif utils.inspect.isclassifier(model):
+        yield datasets.Phishing()
+
+        # Multi-class classification
+        if model._multiclass:
+            yield datasets.ImageSegments().take(500)
 
 
 def check_learn_one(model, dataset):
@@ -100,8 +101,6 @@ def check_shuffle_features_no_impact(model, dataset):
     from creme import utils
 
     shuffled = copy.deepcopy(model)
-    is_reg = utils.inspect.isregressor(model)
-    is_moreg = utils.inspect.ismoregressor(model)
 
     for x, y in dataset:
 
@@ -115,11 +114,11 @@ def check_shuffle_features_no_impact(model, dataset):
         y_pred = model.predict_one(x)
         y_pred_shuffled = shuffled.predict_one(x_shuffled)
 
-        if is_reg:
-            assert math.isclose(y_pred, y_pred_shuffled)
-        elif is_moreg:
+        if utils.inspect.ismoregressor(model):
             for o in y_pred:
-                assert math.isclose(y_pred[o], y_pred[o])
+                assert math.isclose(y_pred[o], y_pred_shuffled[o])
+        elif utils.inspect.isregressor(model):
+            assert math.isclose(y_pred, y_pred_shuffled)
         else:
             assert y_pred == y_pred_shuffled
 
@@ -226,7 +225,7 @@ def yield_checks(model):
         yield wrapped_partial(check_shuffle_features_no_impact, dataset=dataset)
 
         # Classifier checks
-        if utils.inspect.isclassifier(model):
+        if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
 
             # Some classifiers do not implement predict_proba_one
             yield with_ignore_exception(

@@ -219,11 +219,11 @@ class SNARIMAX(base.Forecaster):
     >>> import calendar
     >>> import datetime as dt
     >>> from creme import compose
+    >>> from creme import datasets
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
-    >>> from creme import stream
     >>> from creme import time_series
 
     >>> def get_month_distances(x):
@@ -262,7 +262,7 @@ class SNARIMAX(base.Forecaster):
 
     >>> metric = metrics.Rolling(metrics.MAE(), 12)
 
-    >>> for x, y in stream.iter_dataset('AirlinePassengers'):
+    >>> for x, y in datasets.AirlinePassengers():
     ...     y_pred = model.forecast(horizon=1, xs=[x])
     ...     model = model.learn_one(x, y)
     ...     metric = metric.update(y, y_pred[0])
