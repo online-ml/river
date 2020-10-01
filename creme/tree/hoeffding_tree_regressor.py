@@ -139,7 +139,8 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
                            is_active: bool = True):
         """Create a new learning node.
 
-        The type of learning node depends on the tree configuration."""
+        The type of learning node depends on the tree configuration.
+        """
         if initial_stats is None:
             initial_stats = {}
 

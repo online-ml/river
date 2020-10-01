@@ -17,8 +17,8 @@ from .htc_nodes import ActiveLearningNodeNB
 from .htc_nodes import ActiveLearningNodeNBA
 # Hoeffding Adaptive Tree classifier nodes
 from .hatc_nodes import AdaNode
-from .hatc_nodes import AdaSplitNode
-from .hatc_nodes import AdaLearningNode
+from .hatc_nodes import AdaSplitNodeClassifier
+from .hatc_nodes import AdaLearningNodeClassifier
 # Adaptive Random Forest classifier nodes
 from .arf_htc_nodes import RandomActiveLearningNodeMC
 from .arf_htc_nodes import RandomActiveLearningNodeNB
@@ -57,12 +57,12 @@ from .isouptr_nodes import InactiveLearningNodeAdaptiveMultiTarget
 __all__ = ["FoundNode", "Node", "SplitNode", "LearningNode", "ActiveLeaf", "InactiveLeaf",
            "AdaNode", "ActiveLearningNodeMC", "InactiveLearningNodeMC", "ActiveLearningNodeNB",
            "ActiveLearningNodeNBA", "RandomActiveLearningNodeMC", "RandomActiveLearningNodeNB",
-           "RandomActiveLearningNodeNBA", "AdaSplitNode", "AdaLearningNode", "EFDTSplitNode",
-           "EFDTActiveLearningNodeMC", "EFDTInactiveLearningNodeMC", "EFDTActiveLearningNodeNB",
-           "EFDTActiveLearningNodeNBA", "LCActiveLearningNodeMC", "LCInactiveLearningNodeMC",
-           "LCActiveLearningNodeNB", "LCActiveLearningNodeNBA", "ActiveLearningNodeMean",
-           "ActiveLearningNodeModel", "ActiveLearningNodeAdaptive", "InactiveLearningNodeMean",
-           "InactiveLearningNodeModel", "InactiveLearningNodeAdaptive",
+           "RandomActiveLearningNodeNBA", "AdaSplitNodeClassifier", "AdaLearningNodeClassifier",
+           "EFDTSplitNode", "EFDTActiveLearningNodeMC", "EFDTInactiveLearningNodeMC",
+           "EFDTActiveLearningNodeNB", "EFDTActiveLearningNodeNBA", "LCActiveLearningNodeMC",
+           "LCInactiveLearningNodeMC", "LCActiveLearningNodeNB", "LCActiveLearningNodeNBA",
+           "ActiveLearningNodeMean", "ActiveLearningNodeModel", "ActiveLearningNodeAdaptive",
+           "InactiveLearningNodeMean", "InactiveLearningNodeModel", "InactiveLearningNodeAdaptive",
            "RandomActiveLearningNodeMean", "RandomActiveLearningNodeModel",
            "AdaSplitNodeRegressor", "AdaActiveLearningNodeRegressor",
            "ActiveLearningNodeModelMultiTarget", "ActiveLearningNodeAdaptiveMultiTarget",
