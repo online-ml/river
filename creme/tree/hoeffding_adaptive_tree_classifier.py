@@ -141,6 +141,9 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         else:
             self._tree_root.learn_one(x, y, sample_weight, self, None, -1)
 
+        if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
+            self._estimate_model_size()
+
     # Override HoeffdingTreeClassifier
     def predict_proba_one(self, x):
         proba = {}

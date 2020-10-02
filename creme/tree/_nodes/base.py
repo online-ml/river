@@ -66,16 +66,15 @@ class Node(metaclass=ABCMeta):
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
+        x
            Data instances.
-        parent: skmultiflow.trees.nodes.Node or None
+        parent
             Parent node.
-        parent_branch: Int
-            Parent branch index
+        parent_branch
+            Parent branch index.
 
         Returns
         -------
-        FoundNode
             The corresponding leaf.
 
         """
@@ -357,7 +356,7 @@ class LearningNode(Node, metaclass=ABCMeta):
         self.update_attribute_observers(x, y, sample_weight, tree)
 
     @abstractmethod
-    def predict_one(self, X, *, tree=None) -> dict:
+    def predict_one(self, x, *, tree=None) -> dict:
         pass
 
     @property

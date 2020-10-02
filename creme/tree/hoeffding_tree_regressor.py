@@ -180,6 +180,8 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
             The weight of the sample.
         """
 
+        self._train_weight_seen_by_model += sample_weight
+
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
@@ -233,13 +235,18 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
 
         """
         if self._tree_root is not None:
-            node = self._tree_root.filter_instance_to_leaf(x, None, -1).node
-            if node.is_leaf():
-                return node.predict_one(x, tree=self)
+            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+            node = found_node.node
+            if node is not None:
+                if node.is_leaf():
+                    return node.predict_one(x, tree=self)
+                else:
+                    # The instance sorting ended up in a Split Node, since no branch was found
+                    # for some of the instance's features. Use the mean prediction in this case
+                    return node.stats[1] / node.stats[0]
             else:
-                # The instance sorting ended up in a Split Node, since no branch was found
-                # for some of the instance's features. Use the mean prediction in this case
-                return node.stats[1] / node.stats[0]
+                parent = found_node.parent
+                return parent.stats[1] / parent.stats[0]
         else:
             # Model is empty
             return 0.
