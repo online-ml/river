@@ -1,5 +1,5 @@
 title: User guide
-arrange:
+nav:
     - reading-data.md
     - model-evaluation.md
     - pipelines.md
