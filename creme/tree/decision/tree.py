@@ -24,7 +24,7 @@ CRITERIA_CLF = {'gini': criteria.gini_impurity, 'entropy': criteria.entropy}
 
 
 def pairwise(iterable):
-    """s -> (s0,s1), (s1,s2), (s2, s3), ..., (s3, None)
+    """s -> (s0,s1), (s1,s2), (s2,s3), ..., (s3,None)
 
     We use this to iterate over successive pairs of nodes in a path for curtailment purposes.
 
