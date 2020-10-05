@@ -176,6 +176,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
 
+        return self
+
     def predict_one(self, x):
         if self._tree_root is not None:
             if isinstance(self._tree_root, InactiveLeaf):
