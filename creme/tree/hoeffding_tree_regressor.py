@@ -136,6 +136,9 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         else:
             self._split_criterion = split_criterion
 
+    def _new_split_criterion(self):
+        return VarianceReductionSplitCriterion()
+
     def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
         """Create a new learning node.
 
@@ -235,6 +238,8 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
 
+        return self
+
     def predict_one(self, x):
         """Predict the target value using one of the leaf prediction strategies.
 
@@ -291,7 +296,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
             Parent node's branch index.
 
         """
-        split_criterion = VarianceReductionSplitCriterion()
+        split_criterion = self._new_split_criterion()
         best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
         best_split_suggestions.sort(key=attrgetter('merit'))
         should_split = False
