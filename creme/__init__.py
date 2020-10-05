@@ -13,6 +13,7 @@ from . import base
 from . import cluster
 from . import compat
 from . import compose
+from . import datasets
 from . import dummy
 from . import drift
 from . import ensemble
@@ -21,6 +22,7 @@ from . import expert
 from . import facto
 from . import feature_extraction
 from . import feature_selection
+from . import imblearn
 from . import linear_model
 from . import meta
 from . import metrics
@@ -32,12 +34,12 @@ from . import optim
 from . import preprocessing
 from . import proba
 from . import reco
-from . import sampling
 from . import stats
 from . import stream
 from . import time_series
 from . import tree
 from . import utils
+from .datasets import synth
 
 __all__ = [
     'anomaly',
@@ -45,6 +47,7 @@ __all__ = [
     'cluster',
     'compat',
     'compose',
+    'datasets',
     'dummy',
     'drift',
     'ensemble',
@@ -53,6 +56,7 @@ __all__ = [
     'facto',
     'feature_extraction',
     'feature_selection',
+    'imblearn',
     'linear_model',
     'meta',
     'metrics',
@@ -64,9 +68,9 @@ __all__ = [
     'preprocessing',
     'proba',
     'reco',
-    'sampling',
     'stats',
     'stream',
+    'synth',
     'time_series',
     'tree',
     'utils'

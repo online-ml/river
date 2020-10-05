@@ -21,14 +21,14 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
     --------
 
     >>> from creme import compose
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import expert
     >>> from creme import linear_model as lm
     >>> from creme import metrics
     >>> from creme import preprocessing as pp
-    >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('Phishing')
+    >>> dataset = datasets.Phishing()
 
     >>> model = compose.Pipeline(
     ...     ('scale', pp.StandardScaler()),

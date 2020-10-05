@@ -99,19 +99,17 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
+    >>> from creme import imblearn
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
-    >>> from creme import sampling
-    >>> from creme import stream
-
-    >>> model = preprocessing.StandardScaler()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     sampling.HardSamplingRegressor(
+    ...     imblearn.HardSamplingRegressor(
     ...         regressor=linear_model.LinearRegression(),
     ...         p=.2,
     ...         size=30,
@@ -120,7 +118,7 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     ... )
 
     >>> evaluate.progressive_val_score(
-    ...     stream.iter_dataset('TrumpApproval'),
+    ...     datasets.TrumpApproval(),
     ...     model,
     ...     metrics.MAE(),
     ...     print_every=500
@@ -167,19 +165,17 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
+    >>> from creme import imblearn
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
-    >>> from creme import sampling
-    >>> from creme import stream
-
-    >>> model = preprocessing.StandardScaler()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     sampling.HardSamplingClassifier(
+    ...     imblearn.HardSamplingClassifier(
     ...         classifier=linear_model.LogisticRegression(),
     ...         p=0.1,
     ...         size=40,
@@ -188,7 +184,7 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     ... )
 
     >>> evaluate.progressive_val_score(
-    ...     dataset=stream.iter_dataset('Phishing'),
+    ...     dataset=datasets.Phishing(),
     ...     model=model,
     ...     metric=metrics.ROCAUC(),
     ...     print_every=500,

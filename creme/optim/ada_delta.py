@@ -22,14 +22,14 @@ class AdaDelta(base.Optimizer):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
-    >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('Phishing')
+    >>> dataset = datasets.Phishing()
     >>> optimizer = optim.AdaDelta()
     >>> model = (
     ...     preprocessing.StandardScaler() |

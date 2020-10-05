@@ -1,5 +1,8 @@
-arrange:
+nav:
     - index.md
+    - installation.md
+    - getting-started.md
+    - faq.md
     - user-guide
     - api
     - examples

@@ -49,6 +49,8 @@ class Insects(base.RemoteDataset):
         'out-of-control': (905145, 277777854)
     }
 
+    variants = list(variant_sizes.keys())
+
     def __init__(self, variant='abrupt_balanced'):
 
         try:
@@ -68,10 +70,6 @@ class Insects(base.RemoteDataset):
             unpack=False
         )
         self.variant = variant
-
-    @property
-    def variants(self):
-        return list(self.variant_sizes)
 
     def _iter(self):
         return stream.iter_arff(self.path, target='class')
