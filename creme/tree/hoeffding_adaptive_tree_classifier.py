@@ -133,6 +133,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self._n_switch_alternate_trees = 0
 
     def learn_one(self, x, y, *, sample_weight=1.):
+        self._train_weight_seen_by_model += sample_weight
+
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
