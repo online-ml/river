@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from creme.tree import HoeffdingTreeRegressor
 from creme import base
 from creme import linear_model
@@ -161,6 +163,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self._n_switch_alternate_trees = 0
 
     def learn_one(self, x, y, *, sample_weight=1.):
+        self._train_weight_seen_by_model += sample_weight
+
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
@@ -211,23 +215,34 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
         if parent is not None:
             depth = parent.depth + 1
+            leaf_model = deepcopy(parent._leaf_model)
         else:
             depth = 0
-
-        # TODO: change to appropriate 'clone' method
-        leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
+            # TODO: change to appropriate 'clone' method
+            leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
 
         if is_active:
-            return AdaActiveLearningNodeRegressor(
+            new_ada_leaf = AdaActiveLearningNodeRegressor(
                 initial_stats=initial_stats, depth=depth, leaf_model=leaf_model,
                 adwin_delta=self.adwin_confidence, random_state=self.random_state)
+
+            if parent is not None:
+                new_ada_leaf._fmse_mean = parent._fmse_mean
+                new_ada_leaf._fmse_model = parent._fmse_model
+
+            return new_ada_leaf
         else:
             if self.leaf_prediction == self._TARGET_MEAN:
                 return InactiveLearningNodeMean(initial_stats, depth)
             elif self.leaf_prediction == self._MODEL:
                 return InactiveLearningNodeModel(initial_stats, depth, leaf_model)
             else:  # adaptive learning node
-                return InactiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
+                new_adaptive = InactiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
+                if parent is not None:
+                    self._fmse_mean = parent._fmse_mean
+                    self._fmse_model = parent._fmse_model
+
+                return new_adaptive
 
     def _new_split_node(self, split_test, target_stats=None, depth=0):
         return AdaSplitNodeRegressor(

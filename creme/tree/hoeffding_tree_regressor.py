@@ -1,4 +1,5 @@
 from operator import attrgetter
+from copy import deepcopy
 
 from creme import base
 from creme import linear_model
@@ -149,8 +150,11 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
             depth = 0
 
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
-            # TODO: change to appropriate 'clone' method
-            leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
+            if parent is None:
+                # TODO: change to appropriate 'clone' method
+                leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
+            else:
+                leaf_model = deepcopy(parent._leaf_model)
 
         if is_active:
             if self.leaf_prediction == self._TARGET_MEAN:
@@ -158,14 +162,24 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
             elif self.leaf_prediction == self._MODEL:
                 return ActiveLearningNodeModel(initial_stats, depth, leaf_model)
             else:  # adaptive learning node
-                return ActiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
+                new_adaptive = ActiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
+                if parent is not None:
+                    new_adaptive._fmse_mean = parent._fmse_mean
+                    new_adaptive._fmse_model = parent._fmse_model
+
+                return new_adaptive
         else:
             if self.leaf_prediction == self._TARGET_MEAN:
                 return InactiveLearningNodeMean(initial_stats, depth)
             elif self.leaf_prediction == self._MODEL:
                 return InactiveLearningNodeModel(initial_stats, depth, leaf_model)
             else:  # adaptive learning node
-                return InactiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
+                new_adaptive = InactiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
+                if parent is not None:
+                    new_adaptive._fmse_mean = parent._fmse_mean
+                    new_adaptive._fmse_mean = parent._fmse_model
+
+                return new_adaptive
 
     def learn_one(self, x, y, *, sample_weight=1.):
         """Train the tree model on sample x and corresponding target y.
