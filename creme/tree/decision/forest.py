@@ -23,12 +23,12 @@ class RandomForestClassifier(ensemble.BaggingClassifier):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
-    >>> from creme import stream
     >>> from creme import tree
 
-    >>> dataset = stream.iter_dataset('Phishing')
+    >>> dataset = datasets.Phishing()
 
     >>> model = tree.RandomForestClassifier(
     ...     n_trees=10,

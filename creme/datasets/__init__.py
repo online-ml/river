@@ -5,7 +5,6 @@ from .bikes import Bikes
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
 from .elec2 import Elec2
-from .friedman import Friedman
 from .higgs import Higgs
 from .http import HTTP
 from .insects import Insects
@@ -14,7 +13,6 @@ from .music import Music
 from .movielens100k import MovieLens100K
 from .phishing import Phishing
 from .restaurants import Restaurants
-from .sea import SEA
 from .segment import ImageSegments
 from .sms_spam import SMSSpam
 from .smtp import SMTP
@@ -31,7 +29,6 @@ __all__ = [
     'ChickWeights',
     'CreditCard',
     'Elec2',
-    'Friedman',
     'Higgs',
     'HTTP',
     'ImageSegments',
@@ -41,7 +38,6 @@ __all__ = [
     'Music',
     'Phishing',
     'Restaurants',
-    'SEA',
     'SMSSpam',
     'SMTP',
     'SolarFlare',

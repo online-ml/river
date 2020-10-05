@@ -42,7 +42,7 @@ def isclassifier(model):
 
 
 def ismoclassifier(model):
-    return isinstance(extract_relevant(model), base.MultiOutputClassifier)
+    return isclassifier(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
 
 
 def isregressor(model):
@@ -54,7 +54,7 @@ def istransformer(model):
 
 
 def ismoregressor(model):
-    return isinstance(extract_relevant(model), base.MultiOutputRegressor)
+    return isregressor(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
 
 
 def isdriftdetector(model):
