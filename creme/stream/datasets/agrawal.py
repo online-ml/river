@@ -1,4 +1,4 @@
-import random
+import numpy as np
 
 from . import base
 from creme.utils.skmultiflow_utils import check_random_state
@@ -33,7 +33,10 @@ class Agrawal(base.SyntheticDataset):
         Which of the four classification functions to use for the generation.
         The value can vary from 0 to 9.
     seed
-        Random seed number used for reproducibility.
+        If int, `seed` is used to seed the random number generator;
+        If RandomState instance, `seed` is the random number generator;
+        If None, the random number generator is the `RandomState` instance used
+        by `np.random`.
     balance_classes
         Whether to balance classes or not. If balanced, the class
         distribution will converge to a uniform distribution.
@@ -53,11 +56,11 @@ class Agrawal(base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'salary': 103125.48379952488, 'commission': 0, 'age': 21, 'elevel': 2, 'car': 7, 'zipcode': 3, 'hvalue': 383722.75711508637, 'hyears': 4, 'loan': 338349.74371145567} 1
-    {'salary': 135983.3438016299, 'commission': 0, 'age': 25, 'elevel': 4, 'car': 13, 'zipcode': 0, 'hvalue': 476817.4974942633, 'hyears': 7, 'loan': 116330.4466953698} 1
-    {'salary': 98262.43477649744, 'commission': 0, 'age': 55, 'elevel': 1, 'car': 17, 'zipcode': 6, 'hvalue': 216132.186612209, 'hyears': 19, 'loan': 139095.35411533137} 0
-    {'salary': 133009.0417030814, 'commission': 0, 'age': 68, 'elevel': 1, 'car': 13, 'zipcode': 5, 'hvalue': 311148.53666865674, 'hyears': 7, 'loan': 478606.5361033906} 1
-    {'salary': 63757.29086464148, 'commission': 16955.938253511093, 'age': 26, 'elevel': 2, 'car': 11, 'zipcode': 4, 'hvalue': 653564.13663719, 'hyears': 24, 'loan': 229712.43983592128} 1
+    {'salary': 68690.21545015712, 'commission': 81303.57298074372, 'age': 62, 'elevel': 4, 'car': 6, 'zipcode': 2, 'hvalue': 419982.441072602, 'hyears': 11, 'loan': 433088.07288746757} 1
+    {'salary': 98144.95152661715, 'commission': 0, 'age': 43, 'elevel': 2, 'car': 1, 'zipcode': 7, 'hvalue': 266488.52816008433, 'hyears': 6, 'loan': 389.38292050716416} 0
+    {'salary': 148987.50270785828, 'commission': 0, 'age': 52, 'elevel': 3, 'car': 11, 'zipcode': 8, 'hvalue': 79122.91401980419, 'hyears': 27, 'loan': 199930.48585762773} 0
+    {'salary': 26066.536217770004, 'commission': 83031.66391310944, 'age': 34, 'elevel': 2, 'car': 11, 'zipcode': 6, 'hvalue': 444969.26574203646, 'hyears': 25, 'loan': 23225.20635999886} 1
+    {'salary': 98980.83074718699, 'commission': 0, 'age': 40, 'elevel': 0, 'car': 6, 'zipcode': 1, 'hvalue': 1159108.4298026664, 'hyears': 28, 'loan': 281644.10892276966} 0
 
     References
     ----------
@@ -66,10 +69,10 @@ class Agrawal(base.SyntheticDataset):
           Data Engineering, 5(6), December 1993.
 
     """
-    def __init__(self, classification_function=0,
-                 seed: int = None,
-                 balance_classes=False,
-                 perturbation=0.0):
+    def __init__(self, classification_function: int = 0,
+                 seed: int or np.random.RandomState = None,
+                 balance_classes: bool = False,
+                 perturbation: float = 0.0):
         super().__init__(n_features=9, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
 
         # Classification functions to use
@@ -93,11 +96,9 @@ class Agrawal(base.SyntheticDataset):
                              f"and {perturbation} was passed")
         self.perturbation = perturbation
         self.seed = seed
-        self._rng = None  # This is the actual random number generator object used internally
         self.n_num_features = 6
         self.n_cat_features = 3
         self._next_class_should_be_zero = False
-        self.target_names = ["target"]
         self.feature_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue",
                               "hyears", "loan"]
         self.target_values = [i for i in range(self.n_classes)]
@@ -106,18 +107,8 @@ class Agrawal(base.SyntheticDataset):
         self.current_sample_y = None
         self.sample_idx = 0
 
-        self._prepare_for_use()
-
-    def _prepare_for_use(self):
-        self._rng = random.Random(self.seed)
+        self._rng = check_random_state(seed)
         self._next_class_should_be_zero = False
-
-    def restart(self):
-        """Restart the stream. """
-        self.current_sample_x = None
-        self.current_sample_y = None
-        self.sample_idx = 0
-        self._prepare_for_use()
 
     def __iter__(self):
         """Generate next sample.
@@ -137,15 +128,15 @@ class Agrawal(base.SyntheticDataset):
             group = 0
             desired_class_found = False
             while not desired_class_found:
-                salary = 20000 + 130000 * self._rng.random()
-                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.random())
-                age = 20 + self._rng.randint(0, 60)
-                elevel = self._rng.randint(0, 4)
-                car = self._rng.randint(0, 19)
-                zipcode = self._rng.randint(0, 8)
-                hvalue = (9 - zipcode) * 100000 * (0.5 + self._rng.random())
-                hyears = 1 + self._rng.randint(0, 29)
-                loan = self._rng.random() * 500000
+                salary = 20000 + 130000 * self._rng.rand()
+                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.rand())
+                age = 20 + self._rng.randint(61)
+                elevel = self._rng.randint(5)
+                car = self._rng.randint(20)
+                zipcode = self._rng.randint(9)
+                hvalue = (9 - zipcode) * 100000 * (0.5 + self._rng.rand())
+                hyears = 1 + self._rng.randint(30)
+                loan = self._rng.rand() * 500000
                 group = self._classification_functions[self.classification_function](salary,
                                                                                      commission,
                                                                                      age, elevel,
@@ -195,9 +186,9 @@ class Agrawal(base.SyntheticDataset):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self._rng.randint(0, 9)
+        new_function = self._rng.randint(10)
         while new_function == self.classification_function:
-            new_function = self._rng.randint(0, 9)
+            new_function = self._rng.randint(10)
         self.classification_function = new_function
 
     @staticmethod
