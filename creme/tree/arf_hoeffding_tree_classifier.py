@@ -1,5 +1,5 @@
-from skmultiflow.trees.hoeffding_tree import HoeffdingTreeClassifier
-from skmultiflow.utils import check_random_state
+from creme.tree import HoeffdingTreeClassifier
+from creme.utils.skmultiflow_utils import check_random_state
 
 from ._nodes import RandomActiveLearningNodeMC
 from ._nodes import RandomActiveLearningNodeNB
