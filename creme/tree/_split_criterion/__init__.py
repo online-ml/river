@@ -6,6 +6,11 @@ from .variance_reduction_split_criterion import VarianceReductionSplitCriterion
 from .intra_cluster_variance_reduction_split_criterion import \
     IntraClusterVarianceReductionSplitCriterion
 
-__all__ = ["SplitCriterion", "GiniSplitCriterion", "HellingerDistanceCriterion",
-           "InfoGainSplitCriterion", "IntraClusterVarianceReductionSplitCriterion",
-           "VarianceReductionSplitCriterion"]
+__all__ = [
+    'SplitCriterion',
+    'GiniSplitCriterion',
+    'HellingerDistanceCriterion',
+    'InfoGainSplitCriterion',
+    'IntraClusterVarianceReductionSplitCriterion',
+    'VarianceReductionSplitCriterion'
+]

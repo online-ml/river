@@ -47,6 +47,7 @@ from .hatr_nodes import AdaActiveLearningNodeRegressor
 # Adaptive Random Forest regressor nodes
 from .arf_htr_nodes import RandomActiveLearningNodeMean
 from .arf_htr_nodes import RandomActiveLearningNodeModel
+from .arf_htr_nodes import RandomActiveLearningNodeAdaptive
 # iSOUP-Tree regressor nodes
 from .isouptr_nodes import ActiveLearningNodeModelMultiTarget
 from .isouptr_nodes import ActiveLearningNodeAdaptiveMultiTarget
@@ -54,16 +55,45 @@ from .isouptr_nodes import InactiveLearningNodeModelMultiTarget
 from .isouptr_nodes import InactiveLearningNodeAdaptiveMultiTarget
 
 
-__all__ = ["FoundNode", "Node", "SplitNode", "LearningNode", "ActiveLeaf", "InactiveLeaf",
-           "AdaNode", "ActiveLearningNodeMC", "InactiveLearningNodeMC", "ActiveLearningNodeNB",
-           "ActiveLearningNodeNBA", "RandomActiveLearningNodeMC", "RandomActiveLearningNodeNB",
-           "RandomActiveLearningNodeNBA", "AdaSplitNodeClassifier", "AdaLearningNodeClassifier",
-           "EFDTSplitNode", "EFDTActiveLearningNodeMC", "EFDTInactiveLearningNodeMC",
-           "EFDTActiveLearningNodeNB", "EFDTActiveLearningNodeNBA", "LCActiveLearningNodeMC",
-           "LCInactiveLearningNodeMC", "LCActiveLearningNodeNB", "LCActiveLearningNodeNBA",
-           "ActiveLearningNodeMean", "ActiveLearningNodeModel", "ActiveLearningNodeAdaptive",
-           "InactiveLearningNodeMean", "InactiveLearningNodeModel", "InactiveLearningNodeAdaptive",
-           "RandomActiveLearningNodeMean", "RandomActiveLearningNodeModel",
-           "AdaSplitNodeRegressor", "AdaActiveLearningNodeRegressor",
-           "ActiveLearningNodeModelMultiTarget", "ActiveLearningNodeAdaptiveMultiTarget",
-           "InactiveLearningNodeModelMultiTarget", "InactiveLearningNodeAdaptiveMultiTarget"]
+__all__ = [
+    'FoundNode',
+    'Node',
+    'SplitNode',
+    'LearningNode',
+    'ActiveLeaf',
+    'InactiveLeaf',
+    'AdaNode',
+    'ActiveLearningNodeMC',
+    'InactiveLearningNodeMC',
+    'ActiveLearningNodeNB',
+    'ActiveLearningNodeNBA',
+    'RandomActiveLearningNodeMC',
+    'RandomActiveLearningNodeNB',
+    'RandomActiveLearningNodeNBA',
+    'AdaSplitNodeClassifier',
+    'AdaLearningNodeClassifier',
+    'EFDTSplitNode',
+    'EFDTActiveLearningNodeMC',
+    'EFDTInactiveLearningNodeMC',
+    'EFDTActiveLearningNodeNB',
+    'EFDTActiveLearningNodeNBA',
+    'LCActiveLearningNodeMC',
+    'LCInactiveLearningNodeMC',
+    'LCActiveLearningNodeNB',
+    'LCActiveLearningNodeNBA',
+    'ActiveLearningNodeMean',
+    'ActiveLearningNodeModel',
+    'ActiveLearningNodeAdaptive',
+    'InactiveLearningNodeMean',
+    'InactiveLearningNodeModel',
+    'InactiveLearningNodeAdaptive',
+    'RandomActiveLearningNodeMean',
+    'RandomActiveLearningNodeModel',
+    'RandomActiveLearningNodeAdaptive',
+    'AdaSplitNodeRegressor',
+    'AdaActiveLearningNodeRegressor',
+    'ActiveLearningNodeModelMultiTarget',
+    'ActiveLearningNodeAdaptiveMultiTarget',
+    'InactiveLearningNodeModelMultiTarget',
+    'InactiveLearningNodeAdaptiveMultiTarget'
+]

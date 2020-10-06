@@ -6,6 +6,12 @@ from .numeric_attribute_class_observer_binary_tree import NumericAttributeClassO
 from .numeric_attribute_class_observer_gaussian import NumericAttributeClassObserverGaussian
 from .numeric_attribute_regression_observer import NumericAttributeRegressionObserver
 
-__all__ = ["AttributeObserver", "AttributeObserverNull", "NominalAttributeClassObserver",
-           "NominalAttributeRegressionObserver", "NumericAttributeClassObserverBinaryTree",
-           "NumericAttributeClassObserverGaussian", "NumericAttributeRegressionObserver"]
+__all__ = [
+    'AttributeObserver',
+    'AttributeObserverNull',
+    'NominalAttributeClassObserver',
+    'NominalAttributeRegressionObserver',
+    'NumericAttributeClassObserverBinaryTree',
+    'NumericAttributeClassObserverGaussian',
+    'NumericAttributeRegressionObserver'
+]

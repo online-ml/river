@@ -1,9 +1,10 @@
-import numpy as np
+from creme.tree._attribute_observer import NominalAttributeRegressionObserver
+from creme.tree._attribute_observer import NumericAttributeRegressionObserver
+from creme.utils.skmultiflow_utils import check_random_state
 
-from skmultiflow.utils import check_random_state
-from skmultiflow.trees._attribute_observer import NominalAttributeRegressionObserver
-from skmultiflow.trees._attribute_observer import NumericAttributeRegressionObserver
-from .htr_nodes import LearningNodeMean, LearningNodeModel
+from .htr_nodes import LearningNodeMean
+from .htr_nodes import LearningNodeModel
+from .htr_nodes import LearningNodeAdaptive
 from .arf_htc_nodes import RandomActiveLeafClass
 
 
@@ -36,7 +37,7 @@ class RandomActiveLeafRegressor(RandomActiveLeafClass):
         for obs in self.attribute_observers.values():
             if isinstance(obs, NumericAttributeRegressionObserver):
                 obs.remove_bad_splits(criterion=criterion, last_check_ratio=last_check_ratio,
-                                      last_check_sdr=last_check_sdr, last_check_e=last_check_e,
+                                      last_check_vr=last_check_sdr, last_check_e=last_check_e,
                                       pre_split_dist=self._stats)
 
 
@@ -46,53 +47,89 @@ class RandomActiveLearningNodeMean(LearningNodeMean, RandomActiveLeafRegressor):
 
     Parameters
     ----------
-    initial_stats: dict
+    initial_stats
         In regression tasks this dictionary carries the sufficient to perform
         online variance calculation. They refer to the number of observations
         (key '0'), the sum of the target values (key '1'), and the sum of the
         squared target values (key '2').
-    max_features: int
+    depth
+        The depth of the node.
+    max_features
         Number of attributes per subset for each node split.
-    random_state: int, RandomState instance or None, optional (default=None)
+    random_state
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_stats=None, max_features=2, random_state=None):
-        """ ActiveLearningNodeForRegression class constructor. """
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats, depth, max_features, random_state):
+        super().__init__(initial_stats, depth)
 
         self.max_features = max_features
-        self.feature_indices = np.array([])
+        self.feature_indices = []
         self.random_state = random_state
         self._random_state = check_random_state(self.random_state)
 
 
 class RandomActiveLearningNodeModel(LearningNodeModel, RandomActiveLeafRegressor):
-    """ Learning Node for regression tasks that always use a linear perceptron
-    model to provide responses.
+    """ Learning Node for regression tasks that always use a learning model to provide
+    responses.
 
     Parameters
     ----------
-    initial_stats: dict
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
-    max_features: int
+    initial_stats
+        In regression tasks this dictionary carries the sufficient to perform
+        online variance calculation. They refer to the number of observations
+        (key '0'), the sum of the target values (key '1'), and the sum of the
+        squared target values (key '2').
+    depth
+        The depth of the node.
+    leaf_model
+        A river.base.Regressor instance used to learn from instances and provide
+        responses.
+    max_features
         Number of attributes per subset for each node split.
-    parent_node: RandomLearningNodeModel (default=None)
-        A node containing statistics about observed data.
-    random_state: int, RandomState instance or None, optional (default=None)
+    random_state
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-
-    def __init__(self, initial_stats=None, max_features=2, parent_node=None,
-                 random_state=None):
-        super().__init__(initial_stats, parent_node, random_state)
+    def __init__(self, initial_stats, depth, leaf_model, max_features, random_state):
+        super().__init__(initial_stats, depth, leaf_model)
         self.max_features = max_features
-        self.feature_indices = np.array([])
+        self.random_state = random_state
+        self._random_state = check_random_state(self.random_state)
+        self.feature_indices = []
+
+
+class RandomActiveLearningNodeAdaptive(LearningNodeAdaptive, RandomActiveLeafRegressor):
+    """ Learning Node for regression tasks that dynamically selects between the target mean
+    and the output of a learning model to provide responses.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks this dictionary carries the sufficient to perform
+        online variance calculation. They refer to the number of observations
+        (key '0'), the sum of the target values (key '1'), and the sum of the
+        squared target values (key '2').
+    depth
+        The depth of the node.
+    leaf_model
+        A river.base.Regressor instance used to learn from instances and provide
+        responses.
+    max_features
+        Number of attributes per subset for each node split.
+    random_state
+        If int, random_state is the seed used by the random number generator;
+        If RandomState instance, random_state is the random number generator;
+        If None, the random number generator is the RandomState instance used
+        by `np.random`.
+    """
+    def __init__(self, initial_stats, depth, leaf_model, max_features, random_state):
+        super().__init__(initial_stats, depth, leaf_model)
+        self.max_features = max_features
+        self.random_state = random_state
+        self._random_state = check_random_state(self.random_state)
+        self.feature_indices = []
