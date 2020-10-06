@@ -163,7 +163,10 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch).node
         if leaf is not None:
             y_pred = leaf.predict_one(x, tree=tree)
-            normalized_error = get_normalized_error(y, y_pred, self)
+        else:
+            y_pred = parent.predict_one(x, tree=tree)
+
+        normalized_error = get_normalized_error(y, y_pred, self)
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
@@ -204,8 +207,12 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                 fDelta = .05
                 fN = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
 
-                bound = math.sqrt(2.0 * old_error_rate * (1.0 - old_error_rate) *
-                                  math.log(2.0 / fDelta) * fN)
+                try:
+                    bound = math.sqrt(
+                        2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / fDelta) * fN
+                    )
+                except ValueError:  # error rate exceeds 1, so we clip it
+                    bound = 0.
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves
                     tree._n_active_leaves += self._alternate_tree.n_leaves
@@ -264,7 +271,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
 
                     # Recursive delete of SplitNodes
                     child.kill_tree_children(tree)
-                    self._n_decision_nodes -= 1
+                    tree._n_decision_nodes -= 1
 
                 if isinstance(child, ActiveLeaf):
                     tree._n_active_leaves -= 1
@@ -290,31 +297,25 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
 
 
 def get_normalized_error(y_true, y_pred, node):
-    drift_input = (y_true - y_pred) ** 2
+    drift_input = y_true - y_pred
 
     node._n += 1
     # Welford's algorithm update step
     if node._n == 1:
         node._pM = node._M = drift_input
-        node._pS = 0
+        node._pS = node._S = 0.
 
-        return 0.0
-    else:
-        node._M = node._pM + (drift_input - node._pM) / node._n
-        node._S = node._pS + (drift_input - node._pM) * (drift_input - node._M)
+        return 0.5  # The expected error is the normalized mean error
 
-        # Save previously calculated values for the next iteration
-        node._pM = node._M
-        node._pS = node._S
+    sd = math.sqrt(node._S / (node._n - 1))
 
-        sd = math.sqrt(node._S / (node._n - 1))
+    node._M = node._pM + (drift_input - node._pM) / node._n
+    node._S = node._pS + (drift_input - node._pM) * (drift_input - node._M)
+    # Save previously calculated values for the next iteration
+    node._pM = node._M
+    node._pS = node._S
 
-        # Apply z-score normalization to drift input
-        norm_input = (drift_input - node._M) / sd if sd > 0 else 0.0
-
-        # Data with zero mean and unit variance -> (empirical rule) 99.73% of the values lie
-        # between [mean - 3*sd, mean + 3*sd] (in a normal distribution). We assume this range
-        # for the normalized data.
-        # Hence, the values are assumed to be between [-3, 3] (as std=1) and we can apply the
-        # min-max norm to cope with ADWIN's requirements
-        return (norm_input + 3) / 6
+    # We assume the error follows a normal distribution -> (empirical rule) 99.73% of the values
+    # lie  between [mean - 3*sd, mean + 3*sd]. We assume this range for the normalized data.
+    # Hence, we can apply the  min-max norm to cope with  ADWIN's requirements
+    return (drift_input + 3 * sd) / (6 * sd) if sd > 0 else 0.5

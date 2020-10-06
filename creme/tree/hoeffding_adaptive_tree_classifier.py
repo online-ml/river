@@ -208,7 +208,9 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     # Override river.tree.DecisionTree to include alternate trees
     def _deactivate_leaf(self, to_deactivate, parent, parent_branch):
-        new_leaf = self._new_learning_node(to_deactivate.stats, parent=parent, is_active=False)
+        new_leaf = self._new_learning_node(to_deactivate.stats, parent=to_deactivate,
+                                           is_active=False)
+        new_leaf.depth -= 1  # To ensure we do not skip a tree level
         if parent is None:
             self._tree_root = new_leaf
         else:
@@ -224,7 +226,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     # Override river.tree.DecisionTree to include alternate trees
     def _activate_leaf(self, to_activate, parent, parent_branch):
-        new_leaf = self._new_learning_node(to_activate.stats, parent=parent)
+        new_leaf = self._new_learning_node(to_activate.stats, parent=to_activate)
+        new_leaf.depth -= 1  # To ensure we do not skip a tree level
         if parent is None:
             self._tree_root = new_leaf
         else:
