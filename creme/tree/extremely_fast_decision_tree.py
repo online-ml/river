@@ -350,7 +350,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     stop_flag = True
 
                     # Manage memory
-                    self._enforce_tracker_limit()
+                    self._enforce_size_limit()
 
                 elif (x_best.merit - x_current.merit > hoeffding_bound or hoeffding_bound
                         < self.tie_threshold) and (id_current != id_best):
@@ -381,7 +381,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     stop_flag = True
 
                     # Manage memory
-                    self._enforce_tracker_limit()
+                    self._enforce_size_limit()
 
                 elif (x_best.merit - x_current.merit > hoeffding_bound or hoeffding_bound
                         < self.tie_threshold) and (id_current == id_best):
@@ -459,7 +459,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                         parent.set_child(branch_index, new_split)
 
                     # Manage memory
-                    self._enforce_tracker_limit()
+                    self._enforce_size_limit()
 
     def _kill_subtree(self, node: EFDTSplitNode):
         """ Kill subtree that starts from node.
