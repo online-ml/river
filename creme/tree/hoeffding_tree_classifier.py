@@ -175,8 +175,6 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
           observed between split attempts exceed the grace period then attempt
           to split.
         """
-        if sample_weight == 0:
-            return
 
         # Updates the set of observed classes
         self.classes.add(y)

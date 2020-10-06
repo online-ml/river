@@ -1,6 +1,7 @@
-import numpy as np
+import math
+from collections import Counter
 
-from skmultiflow.trees._attribute_test import AttributeSplitSuggestion
+from creme.tree._attribute_test import AttributeSplitSuggestion
 
 from .base import SplitNode
 from .htc_nodes import ActiveLeafClass
@@ -14,44 +15,37 @@ class EFDTActiveLeaf(ActiveLeafClass):
 
         Parameters
         ----------
-        criterion: SplitCriterion
             The splitting criterion to be used.
 
         Returns
         -------
-        list
-            Split candidates.
-
+            The null split candidate.
         """
-
         pre_split_dist = self.stats
         null_split = AttributeSplitSuggestion(
             None, [{}], criterion.get_merit_of_split(pre_split_dist, [pre_split_dist])
         )
         # Force null slot merit to be 0 instead of -infinity
-        if null_split.merit == -np.inf:
+        if math.isinf(null_split.merit):
             null_split.merit = 0.0
 
         return null_split
 
     def get_best_split_suggestions(self, criterion, tree):
-        """ Find possible split candidates without taking into account the the
+        """ Find possible split candidates without taking into account the
         null split.
 
         Parameters
         ----------
-        criterion: SplitCriterion
+        criterion
             The splitting criterion to be used.
-        ht: HoeffdingTreeClassifier
-            Hoeffding Tree.
+        tree
+            The EFDT which the node belongs to.
 
         Returns
         -------
-        list
-            Split candidates.
-
+            The list of split candidates.
         """
-
         best_suggestions = []
         pre_split_dist = self.stats
 
@@ -64,63 +58,59 @@ class EFDTActiveLeaf(ActiveLeafClass):
 
         return best_suggestions
 
-    def count_nodes(self):
+    @staticmethod
+    def count_nodes():
         """ Calculate the number of split node and leaf starting from this node
         as a root.
 
         Returns
         -------
-        list[int int]
-            [number of split node, number of leaf node].
-
+            A Counter with the number of `leaf_nodes` and `decision_nodes`.
         """
-        return np.array([0, 1])
+        return Counter(leaf_nodes=1, decision_nodes=0)
 
 
 class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
-    """ Node that splits the data in a Hoeffding Anytime Tree.
+    """ Node that splits the data in a EFDT.
 
     Parameters
     ----------
-    split_test: InstanceConditionalTest
+    split_test
         Split test.
-    stats: dict (class_value, sample_weight) or None
+    stats
         Class observations
-    attribute_observers : dict (attribute id, AttributeObserver)
+    depth
+        The depth of the node in the tree.
+    attribute_observers
         Attribute Observers
     """
-
-    def __init__(self, split_test, stats, attribute_observers):
-        """ AnyTimeSplitNode class constructor."""
-        super().__init__(split_test, stats)  # Calls split node constructor
+    def __init__(self, split_test, stats, depth, attribute_observers):
+        super().__init__(split_test, stats, depth)  # Calls split node constructor
         self.attribute_observers = attribute_observers
-        self._weight_seen_at_last_split_reevaluation = 0
+        self._last_split_reevaluation_at = 0
 
     def update_stats(self, y, sample_weight):
         try:
             self.stats[y] += sample_weight
         except KeyError:
             self.stats[y] = sample_weight
-            self.stats = dict(sorted(self.stats.items()))
 
-    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
-        """Update the node with the provided sample.
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+        """Learn from the provided sample.
 
         Parameters
         ----------
-        X: numpy.ndarray of length equal to the number of features.
+        x
             Sample attributes for updating the node.
-        y: int or float
+        y
             Target value.
-        sample_weight: float
+        sample_weight
             Sample weight.
-        tree:
+        tree
             Tree to update.
-
         """
-        y = int(y)
         self.update_stats(y, sample_weight)
-        self.update_attribute_observers(X, y, sample_weight, tree)
+        self.update_attribute_observers(x, y, sample_weight, tree)
 
     @staticmethod
     def find_attribute(id_att, split_suggestions):
@@ -128,39 +118,38 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
 
         Parameters
         ----------
-        id_att: int.
+        id_att
             Id of attribute to find.
-        split_suggestions: list
+        split_suggestions
             Possible split candidates.
         Returns
         -------
-        AttributeSplitSuggestion
             Found attribute.
         """
-
-        # return current attribute as AttributeSplitSuggestion
+        # TODO verify the possibility of using dictionaries to go from O(m) to O(1)
         x_current = None
-        for attSplit in split_suggestions:
-            selected_id = attSplit.split_test.get_atts_test_depends_on()[0]
+        for att_split in split_suggestions:
+            selected_id = att_split.split_test.get_atts_test_depends_on()[0]
             if selected_id == id_att:
-                x_current = attSplit
+                x_current = att_split
+                break
 
         return x_current
 
-    def get_weight_seen_at_last_split_reevaluation(self):
+    @property
+    def last_split_reevaluation_at(self) -> float:
         """ Get the weight seen at the last split reevaluation.
 
         Returns
         -------
-        float
             Total weight seen at last split reevaluation.
-
         """
-        return self._weight_seen_at_last_split_reevaluation
+        return self._last_split_reevaluation_at
 
-    def update_weight_seen_at_last_split_reevaluation(self):
+    @last_split_reevaluation_at.setter
+    def last_split_reevaluation_at(self, value: float):
         """ Update weight seen at the last split in the reevaluation. """
-        self._weight_seen_at_last_split_reevaluation = self.total_weight
+        self._last_split_reevaluation_at = value
 
     def count_nodes(self):
         """ Calculate the number of split node and leaf starting from this node
@@ -168,12 +157,10 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
 
         Returns
         -------
-        list[int int]
-            [number of split node, number of leaf node].
-
+            A Counter with the number of `leaf_nodes` and `decision_nodes`.
         """
 
-        count = np.array([1, 0])
+        count = Counter(leaf_nodes=0, decision_nodes=1)
         # get children
         for branch_idx in range(self.n_children):
             child = self.get_child(branch_idx)
@@ -201,7 +188,7 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
         Returns
         -------
         boolean
-            True if observed number of classes is less than 2, False otherwise.
+            True if observed number of classes is smaller than 2, False otherwise.
 
         """
         count = 0
@@ -218,14 +205,13 @@ class EFDTActiveLearningNodeMC(LearningNodeMC, EFDTActiveLeaf):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
-        Initial class observations
-
+    initial_stats
+        Initial class observations.
+    depth
+        The depth of the node.
     """
-
-    def __init__(self, initial_stats=None):
-        """ AnyTimeActiveLearningNode class constructor. """
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats, depth):
+        super().__init__(initial_stats, depth)
 
 
 class EFDTInactiveLearningNodeMC(InactiveLearningNodeMC):
@@ -233,14 +219,13 @@ class EFDTInactiveLearningNodeMC(InactiveLearningNodeMC):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
-        Initial class observations
-
+    initial_stats
+        Initial class observations.
+    depth
+        The depth of the node.
     """
-
-    def __init__(self, initial_stats=None):
-        """ InactiveLearningNode class constructor. """
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats, depth):
+        super().__init__(initial_stats, depth)
 
     @staticmethod
     def count_nodes():
@@ -249,11 +234,9 @@ class EFDTInactiveLearningNodeMC(InactiveLearningNodeMC):
 
         Returns
         -------
-        list[int int]
-            [number of split node, number of leaf node].
-
+            A Counter with the number of `leaf_nodes` and `decision_nodes`.
         """
-        return np.array([0, 1])
+        return Counter(leaf_nodes=1, decision_nodes=0)
 
 
 class EFDTActiveLearningNodeNB(LearningNodeNB, EFDTActiveLeaf):
@@ -264,23 +247,20 @@ class EFDTActiveLearningNodeNB(LearningNodeNB, EFDTActiveLeaf):
     ----------
     initial_stats: dict (class_value, weight) or None
         Initial class observations
-
     """
-    def __init__(self, initial_stats=None):
-        """ EFDTActiveLearningNodeNB class constructor. """
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats, depth):
+        super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
         """ Disable an attribute observer.
 
-        Disabled in Nodes using Naive Bayes, since poor attributes are used in
+        Disabled in Nodes using Naive Bayes, since poor attributes are also used in
         Naive Bayes calculation.
 
         Parameters
         ----------
-        att_index: int
+        att_index
             Attribute index.
-
         """
         pass
 
@@ -291,13 +271,13 @@ class EFDTActiveLearningNodeNBA(LearningNodeNBA, EFDTActiveLeaf):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
-        Initial class observations
-
+    initial_stats
+        Initial class observations.
+    depth
+        The depth of the node.
     """
-    def __init__(self, initial_stats=None):
-        """ AnyTimeLearningNodeNBAdaptive class constructor. """
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats, depth):
+        super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
         """ Disable an attribute observer.
@@ -307,8 +287,7 @@ class EFDTActiveLearningNodeNBA(LearningNodeNBA, EFDTActiveLeaf):
 
         Parameters
         ----------
-        att_index: int
+        att_index
             Attribute index.
-
         """
         pass
