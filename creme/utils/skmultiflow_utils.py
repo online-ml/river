@@ -199,7 +199,8 @@ def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
 
     Returns
     -------
-    A dictionary containing the result of the operation. Either a pointer to `dict_a` or a new dictionary depending on parameter `inplace`.
+    A dictionary containing the result of the operation. Either a pointer to
+    `dict_a` or a new dictionary depending on parameter `inplace`.
 
     """
     if inplace:
@@ -252,7 +253,8 @@ def check_random_state(seed):
 
     Notes
     -----
-    Code from sklearn
+    Code from sklearn.
+    This method is exclusive for cases where np.random is used.
 
     """
     if seed is None or seed is np.random:
@@ -261,4 +263,4 @@ def check_random_state(seed):
         return np.random.RandomState(seed)
     if isinstance(seed, np.random.RandomState):
         return seed
-    raise ValueError('{} cannot be used to seed a numpy.random.RandomState instance'.format(seed))
+    raise ValueError(f'{seed} cannot be used to seed a numpy.random.RandomState instance')
