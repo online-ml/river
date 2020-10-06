@@ -8,152 +8,104 @@ from ._nodes import InactiveLearningNodeMC
 
 
 class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
-    """ Adaptive Random Forest Hoeffding Tree.
+    """ Adaptive Random Forest Hoeffding Tree Classifier.
 
     Parameters
     ----------
-    max_byte_size: int, optional (default=33554432)
-        Maximum memory consumed by the tree.
-
-    memory_estimate_period: int, optional (default=2000000)
-        Number of instances between memory consumption checks.
-
-    grace_period: int, optional (default=50)
+    grace_period
         Number of instances a leaf should observe between split attempts.
-
-    split_criterion: string, optional (default='info_gain')
-        Split criterion to use.
-
-        - 'gini' - Gini
-        - 'info_gain' - Information Gain
-
-    split_confidence: float, optional (default=0.01)
-        Allowed error in split decision, a value closer to 0 takes longer to
-        decide.
-
-    tie_threshold: float, optional (default=0.05)
+    split_criterion
+        | Split criterion to use.
+        | 'gini' - Gini
+        | 'info_gain' - Information Gain
+        | 'hellinger' - Helinger Distance
+    split_confidence
+        Allowed error in split decision, a value closer to 0 takes longer to decide.
+    tie_threshold
         Threshold below which a split will be forced to break ties.
-
-    binary_split: bool, optional (default=False)
+    binary_split
         If True, only allow binary splits.
-
-    stop_mem_management: bool, optional (default=False)
-        If True, stop growing as soon as memory limit is hit.
-
-    remove_poor_atts: bool, optional (default=False)
-        If True, disable poor attributes.
-
-    no_preprune: bool, optional (default=False)
-        If True, disable pre-pruning.
-
-    leaf_prediction: string, optional (default='nba')
-        Prediction mechanism used at leafs.
-
-        - 'mc' - Majority Class
-        - 'nb' - Naive Bayes
-        - 'nba' - Naive Bayes Adaptive
-
-    nb_threshold: int, optional (default=0)
+    leaf_prediction
+        | Prediction mechanism used at leafs.
+        | 'mc' - Majority Class
+        | 'nb' - Naive Bayes
+        | 'nba' - Naive Bayes Adaptive
+    nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
-
-    nominal_attributes: list, optional
-        List of Nominal attributes. If empty, then assume that all attributes
-        are numerical.
-
+    nominal_attributes
+        List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
+        should be treated as continuous.
+    max_features
+        Number of randomly selected features to act as split candidates at each attempt.
     random_state: int, RandomState instance or None, optional (default=None)
             If int, random_state is the seed used by the random number generator;
             If RandomState instance, random_state is the random number generator;
             If None, the random number generator is the RandomState instance
             used by `np.random`.
+    **kwargs
+        Other parameters passed to river.tree.DecisionTree.
 
     Notes
     -----
     This is the base-estimator of the Adaptive Random Forest ensemble learner
-    (see skmultiflow.classification.meta.adaptive_random_forests).
-    This Hoeffding Tree includes a max_features parameter, which defines the
-    number of randomly selected features to be considered at each split.
-
+    (see river.ensemble.AdaptiveRandomForestClassifier). This Hoeffding Tree includes a
+    `max_features` parameter, which defines the number of randomly selected features to be
+    considered at each split.
     """
     def __init__(self,
-                 max_byte_size=33554432,
-                 memory_estimate_period=2000000,
-                 grace_period=50,
-                 split_criterion='info_gain',
-                 split_confidence=0.01,
-                 tie_threshold=0.05,
-                 binary_split=False,
-                 stop_mem_management=False,
-                 remove_poor_atts=False,
-                 no_preprune=False,
-                 leaf_prediction='nba',
-                 nb_threshold=0,
-                 nominal_attributes=None,
-                 max_features=2,
-                 random_state=None):
-        """ARFHoeffdingTreeClassifier class constructor."""
-        super().__init__(max_byte_size=max_byte_size,
-                         memory_estimate_period=memory_estimate_period,
-                         grace_period=grace_period,
+                 grace_period: int = 200,
+                 split_criterion: str = 'info_gain',
+                 split_confidence: float = 1e-7,
+                 tie_threshold: float = 0.05,
+                 binary_split: bool = False,
+                 leaf_prediction: str = 'nba',
+                 nb_threshold: int = 0,
+                 nominal_attributes: list = None,
+                 max_features: int = 2,
+                 random_state=None,
+                 **kwargs):
+        super().__init__(grace_period=grace_period,
                          split_criterion=split_criterion,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,
                          binary_split=binary_split,
-                         stop_mem_management=stop_mem_management,
-                         remove_poor_atts=remove_poor_atts,
-                         no_preprune=no_preprune,
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
-                         nominal_attributes=nominal_attributes)
+                         nominal_attributes=nominal_attributes,
+                         **kwargs)
+
         self.max_features = max_features
-        self.remove_poor_attributes = False
         self.random_state = random_state
         self._random_state = check_random_state(self.random_state)
 
-    def _new_learning_node(self, initial_class_observations=None, is_active=True):
-        """Create a new learning node. The type of learning node depends on the
-        tree configuration."""
-        if initial_class_observations is None:
-            initial_class_observations = {}
+    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+        if initial_stats is None:
+            initial_stats = {}
+
+        if parent is None:
+            depth = 0
+        else:
+            depth = parent.depth + 1
+
+        # Generate a random seed for the new learning node
+        random_state = self._random_state.randint(0, 4294967295, dtype='u8')
 
         if is_active:
-            # MAJORITY CLASS
             if self._leaf_prediction == self._MAJORITY_CLASS:
                 return RandomActiveLearningNodeMC(
-                    initial_class_observations, self.max_features,
-                    random_state=self._random_state
-                )
-            # NAIVE BAYES
+                    initial_stats, depth, self.max_features, random_state)
             elif self._leaf_prediction == self._NAIVE_BAYES:
                 return RandomActiveLearningNodeNB(
-                    initial_class_observations, self.max_features,
-                    random_state=self._random_state
-                )
-            # NAIVE BAYES ADAPTIVE
-            else:
+                    initial_stats, depth, self.max_features, random_state)
+            else:  # NAIVE BAYES ADAPTIVE (default)
                 return RandomActiveLearningNodeNBA(
-                    initial_class_observations, self.max_features,
-                    random_state=self._random_state
-                )
+                    initial_stats, depth, self.max_features, random_state)
         else:
-            return InactiveLearningNodeMC(initial_class_observations)
+            return InactiveLearningNodeMC(initial_stats, depth)
 
     def reset(self):
         super().reset()
         self._random_state = check_random_state(self.random_state)
 
     def new_instance(self):
-        return ARFHoeffdingTreeClassifier(max_byte_size=self.max_byte_size,
-                                          memory_estimate_period=self.memory_estimate_period,
-                                          grace_period=self.grace_period,
-                                          split_criterion=self.split_criterion,
-                                          split_confidence=self.split_confidence,
-                                          tie_threshold=self.tie_threshold,
-                                          binary_split=self.binary_split,
-                                          stop_mem_management=self.stop_mem_management,
-                                          remove_poor_atts=self.remove_poor_atts,
-                                          no_preprune=self.no_preprune,
-                                          leaf_prediction=self.leaf_prediction,
-                                          nb_threshold=self.nb_threshold,
-                                          nominal_attributes=self.nominal_attributes,
-                                          max_features=self.max_features,
-                                          random_state=self._random_state)
+        return self.__class__(self._get_params())

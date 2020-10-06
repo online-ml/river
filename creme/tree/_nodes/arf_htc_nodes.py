@@ -1,6 +1,4 @@
-import numpy as np
-
-from skmultiflow.utils import get_dimensions, check_random_state
+from creme.utils.skmultiflow_utils import check_random_state
 
 from .htc_nodes import ActiveLeafClass
 from .htc_nodes import LearningNodeMC
@@ -14,9 +12,9 @@ class RandomActiveLeafClass(ActiveLeafClass):
     A Random Active Leaf (used in ARF implementations) just changes the way how the nodes update
     the attribute observers (by using subsets of features).
     """
-    def update_attribute_observers(self, X, y, sample_weight, tree):
-        if self.feature_indices.size == 0:
-            self.feature_indices = self._sample_features(get_dimensions(X)[1])
+    def update_attribute_observers(self, x, y, sample_weight, tree):
+        if len(self.feature_indices) == 0:
+            self.feature_indices = self._sample_features(x)
 
         for idx in self.feature_indices:
             try:
@@ -27,38 +25,38 @@ class RandomActiveLeafClass(ActiveLeafClass):
                 else:
                     obs = self.new_numeric_attribute_observer()
                 self.attribute_observers[idx] = obs
-            obs.update(X[idx], y, sample_weight)
+            obs.update(x[idx], y, sample_weight)
 
-    def _sample_features(self, n_features):
-        return self._random_state.choice(
-            n_features, size=self.max_features, replace=False
-        )
+    def _sample_features(self, x):
+        selected = self._random_state.choice(len(x), size=self.max_features, replace=False)
+        features = list(x.keys())
+
+        return [features[s] for s in selected]
 
 
 class RandomActiveLearningNodeMC(LearningNodeMC, RandomActiveLeafClass):
-    """ARF learning node class.
+    """ARF learning node that uses the majority class to provide responses.
 
     Parameters
     ----------
-    initial_stats: dict (class_value, sample_weight) or None
+    initial_stats
         Initial class observations.
-
-    max_features: int
+    depth
+        The depth of the node.
+    max_features
         Number of attributes per subset for each node split.
-
-    random_state: int, RandomState instance or None, optional (default=None)
+    random_state
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_stats=None, max_features=2, random_state=None):
-        """ RandomLearningNodeClassification class constructor. """
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats, depth, max_features, random_state):
+        super().__init__(initial_stats, depth)
         self.max_features = max_features
-        self.feature_indices = np.array([])
         self.random_state = random_state
         self._random_state = check_random_state(self.random_state)
+        self.feature_indices = []
 
 
 class RandomActiveLearningNodeNB(LearningNodeNB, RandomActiveLeafClass):
@@ -66,49 +64,47 @@ class RandomActiveLearningNodeNB(LearningNodeNB, RandomActiveLeafClass):
 
     Parameters
     ----------
-    initial_stats: dict (class_value, sample_weight) or None
+    initial_stats
         Initial class observations.
-
-    max_features: int
+    depth
+        The depth of the node.
+    max_features
         Number of attributes per subset for each node split.
-
-    random_state: int, RandomState instance or None, optional (default=None)
+    random_state
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
 
-    def __init__(self, initial_stats=None, max_features=2, random_state=None):
-        """ LearningNodeNB class constructor. """
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats, depth, max_features, random_state):
+        super().__init__(initial_stats, depth)
         self.max_features = max_features
-        self.feature_indices = np.array([])
         self.random_state = random_state
         self._random_state = check_random_state(self.random_state)
+        self.feature_indices = []
 
 
 class RandomActiveLearningNodeNBA(LearningNodeNBA, RandomActiveLeafClass):
-    """Naive Bayes Adaptive learning node class.
+    """ ARF Naive Bayes Adaptive learning node class.
 
     Parameters
     ----------
-    initial_stats: dict (class_value, sample_weight) or None
+    initial_stats
         Initial class observations.
-
-    max_features: int
+    depth
+        The depth of the node.
+    max_features
         Number of attributes per subset for each node split.
-
-    random_state: int, RandomState instance or None, optional (default=None)
+    random_state
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_stats=None, max_features=2, random_state=None):
-        """LearningNodeNBAdaptive class constructor. """
-        super().__init__(initial_stats)
+    def __init__(self, initial_stats, depth, max_features, random_state):
+        super().__init__(initial_stats, depth)
         self.max_features = max_features
-        self.feature_indices = np.array([])
         self.random_state = random_state
         self._random_state = check_random_state(self.random_state)
+        self.feature_indices = []
