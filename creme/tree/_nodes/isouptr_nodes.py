@@ -1,252 +1,209 @@
-import numpy as np
-
-from skmultiflow.utils import get_dimensions
+from copy import deepcopy
+from collections import defaultdict
 
 from .base import InactiveLeaf
 from .htr_nodes import ActiveLeafRegressor
-from .htr_nodes import LearningNodeModel
+from .htr_nodes import LearningNodeMean
 
 
-class LearningNodeModelMultiTarget(LearningNodeModel):
-    def __init__(self, initial_stats=None, parent_node=None, random_state=None):
-        super().__init__(initial_stats, parent_node, random_state)
-
-    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
-        """Update the node with the provided instance.
-
-        Parameters
-        ----------
-        X: numpy.ndarray of length equal to the number of features.
-            Instance attributes for updating the node.
-        y: numpy.ndarray of length equal to the number of targets.
-            Instance targets.
-        sample_weight: float
-            Instance weight.
-        tree: HoeffdingTreeRegressor
-            Regression Hoeffding Tree to update.
-        """
-        self.update_stats(y, sample_weight)
-        self.update_attribute_observers(X, y, sample_weight, tree)
-
-        if self.perceptron_weights is None:
-            # Creates matrix of perceptron random weights
-            _, rows = get_dimensions(y)
-            _, cols = get_dimensions(X)
-
-            self.perceptron_weights = self._random_state.uniform(-1.0, 1.0, (rows, cols + 1))
-            self._normalize_perceptron_weights()
-
-        if tree.learning_ratio_const:
-            learning_ratio = tree.learning_ratio_perceptron
-        else:
-            learning_ratio = tree.learning_ratio_perceptron / (
-                1 + self.stats[0] * tree.learning_ratio_decay)
-
-        for i in range(int(sample_weight)):
-            self._update_weights(X, y, learning_ratio, tree)
+class LearningNodeMeanMultiTarget(LearningNodeMean):
+    def __init__(self, initial_stats, depth):
+        super().__init__(initial_stats, depth)
 
     def predict_one(self, X, *, tree=None):
-        if self.perceptron_weights is None or tree.examples_seen <= 1:
-            return self.stats[1] / self.stats[0] if len(self.stats) > 0 else 0.0
+        return (self.stats[1] / self.stats[0]).to_dict if self.stats else {
+            t: 0. for t in tree._targets}
 
-        X_norm = tree.normalize_sample(X)
-        Y_pred = np.matmul(self.perceptron_weights, X_norm)
-        mean = tree.sum_of_values / tree.examples_seen
-        variance = ((tree.sum_of_squares - (tree.sum_of_values * tree.sum_of_values)
-                    / tree.examples_seen) / (tree.examples_seen - 1))
-        sd = np.sqrt(variance, out=np.zeros_like(variance), where=variance >= 0.0)
-        # Samples are normalized using just one sd, as proposed in the iSoup-Tree method
-        return Y_pred * sd + mean
 
-    def _update_weights(self, X, y, learning_ratio, tree):
-        """ Update the perceptron weights
+class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
+    def __init__(self, initial_stats, depth, leaf_models):
+        super().__init__(initial_stats, depth)
+        self._leaf_models = leaf_models
 
-        Parameters
-        ----------
-        X: numpy.ndarray of length equal to the number of features.
-            Instance attributes for updating the node.
-        y: numpy.ndarray of length equal to the number of targets.
-            Targets values.
-        learning_ratio: float
-            perceptron learning ratio
-        tree: HoeffdingTreeRegressor
-            Regression Hoeffding Tree to update.
-        """
-        X_norm = tree.normalize_sample(X)
-        Y_pred = np.matmul(self.perceptron_weights, X_norm)
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-        Y_norm = tree.normalize_target_value(y)
+        for target_id, y_ in y.items():
+            try:
+                model = self._leaf_models[target_id]
+            except KeyError:
+                if isinstance(tree.leaf_model, dict):
+                    if target_id in tree.leaf_model:
+                        # TODO: change to appropriate 'clone' method
+                        self._leaf_models[target_id] = tree.leaf_model[target_id].__class__(
+                            **tree.leaf_model[target_id]._get_params())
+                    else:
+                        # Pick the first available model in case not all the targets' models
+                        # are defined
+                        self._leaf_models[target_id] = deepcopy(
+                            next(iter(self.leaf_models.values()))
+                        )
+                    model = self._leaf_models[target_id]
+                else:
+                    # TODO: change to appropriate 'clone' method
+                    self._leaf_models[target_id] = tree.leaf_model.__class__(
+                        **tree.leaf_model._get_params())
+                    model = self._leaf_models[target_id]
 
-        self.perceptron_weights += learning_ratio * np.matmul(
-            (Y_norm - Y_pred)[:, None], X_norm[None, :])
+            # Now the proper training
+            try:
+                model.learn_one(x, y_, sample_weight)
+            except TypeError:  # Learning model does not support weights
+                for _ in range(int(sample_weight)):
+                    model.learn_one(x, y_)
 
-        self._normalize_perceptron_weights()
-
-    def _normalize_perceptron_weights(self):
-        # Normalize perceptron weights
-        n_targets = self.perceptron_weights.shape[0]
-        for i in range(n_targets):
-            sum_w = np.sum(np.abs(self.perceptron_weights[i, :]))
-            self.perceptron_weights[i, :] /= sum_w
+    def predict_one(self, x, *, tree=None):
+        return {
+            t: self._leaf_models[t].predict_one(x) if t in self._leaf_models else 0.
+            for t in tree._targets
+        }
 
 
 class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
-    def __init__(self, initial_stats=None, parent_node=None, random_state=None):
-        super().__init__(initial_stats, parent_node, random_state)
-        # Faded errors for the perceptron and mean predictors
-        self.fMAE_M = 0.0
-        self.fMAE_P = 0.0
+    def __init__(self, initial_stats, depth, leaf_models):
+        super().__init__(initial_stats, depth, leaf_models)
+        self._fmse_mean = defaultdict(lambda: 0.)
+        self._fmse_model = defaultdict(lambda: 0.)
 
-    def predict_one(self, X, *, tree=None):
-        # Mean predictor
-        pred_M = self.stats[1] / self.stats[0] if len(self.stats) > 0 else 0.0
-        if self.perceptron_weights is None or tree.examples_seen <= 1:
-            return pred_M
-        else:
-            predictions = np.zeros(self.perceptron_weights.shape[0])
-            # Perceptron
-            X_norm = tree.normalize_sample(X)
-            normalized_prediction = np.matmul(self.perceptron_weights, X_norm)
-            mean = tree.sum_of_values / tree.examples_seen
-            variance = ((tree.sum_of_squares - (tree.sum_of_values * tree.sum_of_values)
-                        / tree.examples_seen) / (tree.examples_seen - 1))
-            sd = np.sqrt(variance, out=np.zeros_like(variance), where=variance >= 0.0)
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+        pred_mean = (self.stats[1] / self.stats[0]).to_dict() if self.stats else {
+            t: 0. for t in tree._targets}
+        pred_model = super().predict_one(x, tree=tree)
 
-            pred_P = normalized_prediction * sd + mean
+        for t in tree._targets:  # Update the faded errors
+            self._fmse_mean[t] = tree.model_selector_decay * self._fmse_mean[t] \
+                + (y[t] - pred_mean[t]) ** 2
+            self._fmse_model[t] = tree.model_selector_decay * self._fmse_model[t] \
+                + (y[t] - pred_model[t]) ** 2
 
-            for j in range(self.perceptron_weights.shape[0]):
-                if self.fMAE_P[j] <= self.fMAE_M[j]:
-                    predictions[j] = pred_P[j]
-                else:
-                    predictions[j] = pred_M[j]
+        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-            return predictions
-
-    def _update_weights(self, X, y, learning_ratio, tree):
-        """Update the perceptron weights
-
-        Parameters
-        ----------
-        X: numpy.ndarray of length equal to the number of features.
-            Instance attributes for updating the node.
-        y: numpy.ndarray of length equal to the number of targets.
-            Targets values.
-        learning_ratio: float
-            perceptron learning ratio
-        tree: HoeffdingTreeRegressor
-            Regression Hoeffding Tree to update.
-        """
-        X_norm = tree.normalize_sample(X)
-        Y_pred = np.matmul(self.perceptron_weights, X_norm)
-
-        Y_norm = tree.normalize_target_value(y)
-
-        self.perceptron_weights += learning_ratio * np.matmul(
-            (Y_norm - Y_pred)[:, None], X_norm[None, :])
-
-        self._normalize_perceptron_weights()
-
-        # Update faded errors for the predictors
-        # The considered errors are normalized, since they are based on
-        # mean centered and std scaled values
-        self.fMAE_P = 0.95 * self.fMAE_P + np.abs(Y_norm - Y_pred)
-
-        pred_mean = self.stats[1] / self.stats[0] if len(self.stats) > 0 else np.zeros_like(y)
-        self.fMAE_M = 0.95 * self.fMAE_M + np.abs(
-            Y_norm - tree.normalize_target_value(pred_mean))
+    def predict_one(self, x, *, tree=None):
+        pred = {}
+        for t in tree._targets:
+            if self._fmse_mean[t] < self._fmse_model[t]:  # Act as a regression tree
+                pred[t] = self.stats[1][t] / self.stats[0] if self.stats else 0.
+            else:  # Act as a model tree
+                try:
+                    pred[t] = self._leaf_models[t].predict_one(x)
+                except KeyError:
+                    pred[t] = 0.
+        return pred
 
 
-class ActiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, ActiveLeafRegressor):
-    """ Learning Node for Multi-target Regression tasks that always use linear
-    perceptron predictors for each target.
+class ActiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, ActiveLeafRegressor):
+    """ Learning Node for Multi-target Regression tasks that always uses the mean value
+    of the targets as responses.
 
     Parameters
     ----------
-    initial_stats: dict
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the targets values (key '1'), and the sum of the
-        squared targets values (key '2').
-    parent_node: ActiveLearningNodeModelMultiTarget (default=None)
-        A node containing statistics about observed data.
-    random_state: int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
-    """
-    def __init__(self, initial_stats=None, parent_node=None, random_state=None):
-        """ActiveLearningNodeModelMultiTarget class constructor."""
-        super().__init__(initial_stats, parent_node, random_state)
-
-
-class InactiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, InactiveLeaf):
-    """ Inactive Learning Node for Multi-target Regression tasks that always use
-    linear perceptron predictors for each target.
-
-    Parameters
-    ----------
-    initial_stats: dict
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the targets values (key '1'), and the sum of the
-        squared targets values (key '2').
-    parent_node: ActiveLearningNodeModelMultiTarget (default=None)
-        A node containing statistics about observed data.
-    random_state: int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
-    """
-    def __init__(self, initial_stats=None, parent_node=None, random_state=None):
-        """ InactiveLearningNodeForRegression class constructor."""
-        super().__init__(initial_stats, parent_node, random_state)
-
-
-class ActiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, ActiveLeafRegressor):
-    """ Learning Node for Multi-target Regression tasks that keeps track of both
-    a linear perceptron and an average predictor for each target.
-
-    Parameters
-    ----------
-    initial_stats: dict
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the targets values (key '1'), and the sum of the
-        squared targets values (key '2').
-    parent_node: ActiveLearningNodeAdaptiveMultiTarget (default=None)
-        A node containing statistics about observed data.
-    random_state: int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
-    """
-    def __init__(self, initial_stats=None, parent_node=None, random_state=None):
-        """ActiveLearningNodeAdaptiveMultiTarget class constructor."""
-        super().__init__(initial_stats, parent_node, random_state)
-
-
-class InactiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, InactiveLeaf):
-    """ Inactive Learning Node for Multi-target Regression tasks that keeps
-    track of both a linear perceptron and an average predictor for each target.
-
-    Parameters
-    ----------
-    initial_stats: dict
+    initial_stats
         In regression tasks this dictionary carries the sufficient to perform
         online variance calculation. They refer to the number of observations
         (key '0'), the sum of the target values (key '1'), and the sum of the
         squared target values (key '2').
-    parent_node: ActiveLearningNodeAdaptiveMultiTarget (default=None)
-        A node containing statistics about observed data.
-    random_state: int, RandomState instance or None, optional (default=None)
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+    depth
+        The depth of the node.
     """
-    def __init__(self, initial_stats=None, parent_node=None, random_state=None):
-        """InactiveLearningNodeAdaptiveMultiTarget class constructor."""
-        super().__init__(initial_stats, parent_node, random_state)
+    def __init__(self, initial_stats, depth):
+        super().__init__(initial_stats, depth)
+
+
+class InactiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, InactiveLeaf):
+    """ Inactive Learning Node for Multi-target Regression tasks that always uses
+    the mean value of the targets as responses.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks this dictionary carries the sufficient to perform
+        online variance calculation. They refer to the number of observations
+        (key '0'), the sum of the target values (key '1'), and the sum of the
+        squared target values (key '2').
+    depth
+        The depth of the node.
+    """
+    def __init__(self, initial_stats, depth):
+        super().__init__(initial_stats, depth)
+
+
+class ActiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, ActiveLeafRegressor):
+    """ Learning Node for Multi-target Regression tasks that always uses learning models
+    for each target.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks this dictionary carries the sufficient statistics
+        to perform online variance calculation. They refer to the number of
+        observations (key '0'), the sum of the target values (key '1'), and
+        the sum of the squared target values (key '2').
+    depth
+        The depth of the node.
+    leaf_models
+        A dictionary composed of target identifiers and their respective predictive models.
+    """
+    def __init__(self, initial_stats, depth, leaf_models):
+        super().__init__(initial_stats, depth, leaf_models)
+
+
+class InactiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, InactiveLeaf):
+    """ Inactive Learning Node for Multi-target Regression tasks that always uses
+    learning models for each target.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks this dictionary carries the sufficient statistics
+        to perform online variance calculation. They refer to the number of
+        observations (key '0'), the sum of the target values (key '1'), and
+        the sum of the squared target values (key '2').
+    depth
+        The depth of the node.
+    leaf_models
+        A dictionary composed of target identifiers and their respective predictive models.
+    """
+    def __init__(self, initial_stats, depth, leaf_models):
+        super().__init__(initial_stats, depth, leaf_models)
+
+
+class ActiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, ActiveLeafRegressor):
+    """ Learning Node for multi-target regression tasks that dynamically selects between
+    predictors and might behave as a regression tree node or a model tree node, depending
+    on which predictor is the best one.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks this dictionary carries the sufficient statistics
+        to perform online variance calculation. They refer to the number of
+        observations (key '0'), the sum of the target values (key '1'), and
+        the sum of the squared target values (key '2').
+    depth
+        The depth of the node.
+    leaf_models
+        A dictionary composed of target identifiers and their respective predictive models.
+    """
+    def __init__(self, initial_stats, depth, leaf_models):
+        super().__init__(initial_stats, depth, leaf_models)
+
+
+class InactiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, InactiveLeaf):
+    """ Inactive Learning Node for multi-target regression tasks that dynamically selects
+    between predictors and might behave as a regression tree node or a model tree node,
+    depending on which predictor is the best one.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks this dictionary carries the sufficient statistics
+        to perform online variance calculation. They refer to the number of
+        observations (key '0'), the sum of the target values (key '1'), and
+        the sum of the squared target values (key '2').
+    depth
+        The depth of the node.
+    leaf_models
+        A dictionary composed of target identifiers and their respective predictive models.
+    """
+    def __init__(self, initial_stats, depth, leaf_models):
+        super().__init__(initial_stats, depth, leaf_models)

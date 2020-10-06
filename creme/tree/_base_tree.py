@@ -284,7 +284,12 @@ class DecisionTree(ABC):
         parent_branch
             Parent node's branch index.
         """
-        new_leaf = self._new_learning_node(to_deactivate.stats, parent=parent, is_active=False)
+
+        # We pass the active learning node as parent to ensure its properties are accessible
+        # to perform possible transferences or copies (as it happens in the regression case)
+        new_leaf = self._new_learning_node(to_deactivate.stats, parent=to_deactivate,
+                                           is_active=False)
+        new_leaf.depth -= 1  # To ensure we do not skip a tree level
         if parent is None:
             self._tree_root = new_leaf
         else:
@@ -304,7 +309,8 @@ class DecisionTree(ABC):
         parent_branch
             Parent node's branch index.
         """
-        new_leaf = self._new_learning_node(to_activate.stats, parent=parent)
+        new_leaf = self._new_learning_node(to_activate.stats, parent=to_activate)
+        new_leaf.depth -= 1
         if parent is None:
             self._tree_root = new_leaf
         else:

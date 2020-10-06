@@ -95,8 +95,8 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         # Handles both single-target and multi-target tasks
         if isinstance(pre_split_dist[1], VectorDict):
             # TODO Check whether or not this works
-            self._aux_sum = VectorDict(default_value=0.)
-            self._aux_sum_sq = VectorDict(default_value=0.)
+            self._aux_sum = VectorDict(default_factory=lambda: 0.)
+            self._aux_sum_sq = VectorDict(default_factory=lambda: 0.)
         else:
             self._aux_sum = 0.
             self._aux_sum_sq = 0.
@@ -212,8 +212,8 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         # Encompass both the single-target and multi-target cases
         if isinstance(pre_split_dist[1], VectorDict):
             # TODO Check whether or not this works
-            self._aux_sum = VectorDict(default_value=0.)
-            self._aux_sum_sq = VectorDict(default_value=0.)
+            self._aux_sum = VectorDict(default_factory=lambda: 0.)
+            self._aux_sum_sq = VectorDict(default_factory=lambda: 0.)
         else:
             self._aux_sum = 0.
             self._aux_sum_sq = 0.

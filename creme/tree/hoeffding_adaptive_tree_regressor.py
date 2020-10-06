@@ -73,11 +73,11 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     algorithm. It is enabled by default since, in general, it results in better performance.
 
     To cope with ADWIN's requirements of bounded input data, HATR uses a novel error normalization
-    strategy based on the empiral rule of Gaussian distributions. The monitored error is firstly
-    normalized using the z-score strategy and then it is subjected to a min-max normalization
-    assuming that most of the data lies in the $\\left[-3\\sigma, 3\\sigma\\right]$ range.
-    These twice normalized errors are passed to the ADWIN instances. This is the same strategy
-    used by Adaptive Random Forest Regressor.
+    strategy based on the empiral rule of Gaussian distributions. We assume the deviations
+    of the predictions from the expected values follow a normal distribution. Hence, we subject
+    these errors to a min-max normalization assuming that most of the data lies in the
+    $\\left[-3\\sigma, 3\\sigma\\right]$ range. These normalized errors are passed to the ADWIN
+    instances. This is the same strategy used by Adaptive Random Forest Regressor.
 
     References
     ----------
@@ -217,7 +217,12 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
         if parent is not None:
             depth = parent.depth + 1
-            leaf_model = deepcopy(parent._leaf_model)
+            # Leverage ancestor's learning models
+            if not isinstance(parent, AdaSplitNodeRegressor):
+                leaf_model = deepcopy(parent._leaf_model)
+            else:  # Corner case where an alternate tree is created
+                # TODO: change to appropriate 'clone' method
+                leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
         else:
             depth = 0
             # TODO: change to appropriate 'clone' method
@@ -228,7 +233,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 initial_stats=initial_stats, depth=depth, leaf_model=leaf_model,
                 adwin_delta=self.adwin_confidence, random_state=self.random_state)
 
-            if parent is not None:
+            if parent is not None and not isinstance(parent, SplitNode):
                 new_ada_leaf._fmse_mean = parent._fmse_mean
                 new_ada_leaf._fmse_model = parent._fmse_model
 
@@ -240,7 +245,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 return InactiveLearningNodeModel(initial_stats, depth, leaf_model)
             else:  # adaptive learning node
                 new_adaptive = InactiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
-                if parent is not None:
+                if parent is not None and not isinstance(parent, SplitNode):
                     self._fmse_mean = parent._fmse_mean
                     self._fmse_model = parent._fmse_model
 
@@ -267,13 +272,14 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     # Override river.tree.DecisionTree to include alternate trees
     def _deactivate_leaf(self, to_deactivate, parent, parent_branch):
-        new_leaf = self._new_learning_node(to_deactivate.stats, parent=parent, is_active=False)
+        new_leaf = self._new_learning_node(to_deactivate.stats, parent=to_deactivate,
+                                           is_active=False)
+        new_leaf.depth -= 1  # To ensure we do not skip a tree level
         if parent is None:
             self._tree_root = new_leaf
         else:
             # Corner case where a leaf is the alternate tree
             if parent_branch == -999:
-                new_leaf.depth -= 1  # To ensure we do not skip a tree level
                 parent._alternate_tree = new_leaf
 
             else:
@@ -283,13 +289,13 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     # Override river.tree.DecisionTree to include alternate trees
     def _activate_leaf(self, to_activate, parent, parent_branch):
-        new_leaf = self._new_learning_node(to_activate.stats, parent=parent)
+        new_leaf = self._new_learning_node(to_activate.stats, parent=to_activate)
+        new_leaf.depth -= 1  # To ensure we do not skip a tree level
         if parent is None:
             self._tree_root = new_leaf
         else:
             # Corner case where a leaf is the alternate tree
             if parent_branch == -999:
-                new_leaf.depth -= 1  # To ensure we do not skip a tree level
                 parent._alternate_tree = new_leaf
             else:
                 parent.set_child(parent_branch, new_leaf)
