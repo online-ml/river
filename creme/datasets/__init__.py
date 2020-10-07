@@ -1,7 +1,5 @@
 """Datasets."""
-from .agrawal import Agrawal
 from .airline_passengers import AirlinePassengers
-from .anomaly_sine import AnomalySine
 from .bananas import Bananas
 from .bikes import Bikes
 from .chick_weights import ChickWeights
@@ -25,9 +23,7 @@ from .trump_approval import TrumpApproval
 
 
 __all__ = [
-    'Agrawal',
     'AirlinePassengers',
-    'AnomalySine',
     'Bananas',
     'Bikes',
     'ChickWeights',

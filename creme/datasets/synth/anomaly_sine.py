@@ -1,4 +1,4 @@
-from . import base
+from .. import base
 from creme.utils.skmultiflow_utils import check_random_state
 
 import numpy as np
@@ -34,14 +34,13 @@ class AnomalySine(base.SyntheticDataset):
     Examples
     --------
 
-    >>> from creme import stream
+    >>> from creme import synth
 
-    >>> dataset = stream.iter_dataset('AnomalySine',
-    ...                               seed=12345,
-    ...                               n_samples=100,
-    ...                               n_anomalies=25,
-    ...                               contextual=True,
-    ...                               n_contextual=10)
+    >>> dataset = synth.AnomalySine(seed=12345,
+    ...                             n_samples=100,
+    ...                             n_anomalies=25,
+    ...                             contextual=True,
+    ...                             n_contextual=10)
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
