@@ -5,10 +5,10 @@ import pandas as pd
 
 from creme import base
 
-from .predictor import Predictor
+from . import estimator
 
 
-class Classifier(Predictor):
+class Classifier(estimator.Estimator):
     """A classifier."""
 
     @abc.abstractmethod
@@ -73,9 +73,13 @@ class Classifier(Predictor):
     def _multiclass(self):
         return False
 
+    @property
+    def _supervised(self):
+        return True
 
-class MiniBatchClassifier:
-    """Used for classifiers which can operate on mini-batches.
+
+class MiniBatchClassifier(Classifier):
+    """A classifier that can can operate on mini-batches.
 
     """
 
@@ -126,7 +130,7 @@ class MiniBatchClassifier:
 
         Returns
         -------
-        The predicted outcome.
+        The predicted labels.
 
         """
 

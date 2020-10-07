@@ -29,7 +29,7 @@ class BaseChain(base.WrapperMixin, collections.UserDict):
             self[o] = copy.deepcopy(self.model)
 
 
-class ClassifierChain(BaseChain, base.MultiOutputClassifier):
+class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     """A multi-output model that arranges classifiers into a chain.
 
     This will create one model per output. The prediction of the first output will be used as a
@@ -143,8 +143,15 @@ class ClassifierChain(BaseChain, base.MultiOutputClassifier):
 
         return y_pred
 
+    def predict_one(self, x):
+        y_pred = self.predict_proba_one(x)
+        return {
+            c: max(y_pred[c], key=y_pred[c].get)
+            for c in y_pred
+        }
 
-class RegressorChain(BaseChain, base.MultiOutputRegressor):
+
+class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     """A multi-output model that arranges regressor into a chain.
 
     This will create one model per output. The prediction of the first output will be used as a

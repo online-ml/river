@@ -24,14 +24,14 @@ class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
     --------
 
     >>> import math
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import meta
     >>> from creme import metrics
     >>> from creme import preprocessing
-    >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('TrumpApproval')
+    >>> dataset = datasets.TrumpApproval()
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     meta.TransformedTargetRegressor(
@@ -86,14 +86,14 @@ class BoxCoxRegressor(TransformedTargetRegressor):
     --------
 
     >>> import math
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import meta
     >>> from creme import metrics
     >>> from creme import preprocessing
-    >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('TrumpApproval')
+    >>> dataset = datasets.TrumpApproval()
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     meta.BoxCoxRegressor(

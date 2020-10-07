@@ -13,6 +13,7 @@ from . import base
 from . import cluster
 from . import compat
 from . import compose
+from . import datasets
 from . import dummy
 from . import drift
 from . import ensemble
@@ -38,6 +39,7 @@ from . import stream
 from . import time_series
 from . import tree
 from . import utils
+from .datasets import synth
 
 __all__ = [
     'anomaly',
@@ -45,6 +47,7 @@ __all__ = [
     'cluster',
     'compat',
     'compose',
+    'datasets',
     'dummy',
     'drift',
     'ensemble',
@@ -67,6 +70,7 @@ __all__ = [
     'reco',
     'stats',
     'stream',
+    'synth',
     'time_series',
     'tree',
     'utils'

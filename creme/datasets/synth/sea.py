@@ -1,6 +1,6 @@
 import random
 
-from . import base
+from .. import base
 
 
 class SEA(base.SyntheticDataset):
@@ -23,9 +23,9 @@ class SEA(base.SyntheticDataset):
     Examples
     --------
 
-    >>> from creme import stream
+    >>> from creme import synth
 
-    >>> dataset = stream.iter_dataset('SEA', variant=0, seed=42)
+    >>> dataset = synth.SEA(variant=0, seed=42)
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
@@ -52,16 +52,17 @@ class SEA(base.SyntheticDataset):
         self.noise = noise
         self.seed = seed
         self._threshold = {0: 8, 1: 9, 2: 7, 3: 9.5}[variant]
-        self._rng = random.Random(seed)
 
     def __iter__(self):
 
+        rng = random.Random(self.seed)
+
         while True:
 
-            x = {i: self._rng.uniform(0, 10) for i in range(3)}
+            x = {i: rng.uniform(0, 10) for i in range(3)}
             y = x[0] + x[1] > self._threshold
 
-            if self.noise and self._rng.random() < self.noise:
+            if self.noise and rng.random() < self.noise:
                 y = not y
 
             yield x, y

@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn import linear_model as sklm
 import pytest
 
+from creme import datasets
 from creme import linear_model as lm
 from creme import optim
 from creme import preprocessing
@@ -40,8 +41,8 @@ def iter_perturbations(keys, n=10):
             id=f'{lm.__name__} - {optimizer} - {initializer}'
         )
         for lm, dataset in [
-            (lm.LinearRegression, stream.iter_dataset('TrumpApproval')),
-            (lm.LogisticRegression, stream.iter_dataset('Bananas'))
+            (lm.LinearRegression, datasets.TrumpApproval()),
+            (lm.LogisticRegression, datasets.Bananas())
         ]
         for optimizer, initializer in itertools.product(
             [
@@ -116,7 +117,7 @@ def test_finite_differences(lm, dataset):
 def test_one_many_consistent():
     """Checks that using learn_one or learn_many produces the same result."""
 
-    X = pd.read_csv(stream.iter_dataset('TrumpApproval').path)
+    X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
     one = lm.LinearRegression()
@@ -134,7 +135,7 @@ def test_one_many_consistent():
 def test_shuffle_columns():
     """Checks that learn_many works identically whether columns are shuffled or not."""
 
-    X = pd.read_csv(stream.iter_dataset('TrumpApproval').path)
+    X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
     normal = lm.LinearRegression()
@@ -153,7 +154,7 @@ def test_shuffle_columns():
 def test_add_remove_columns():
     """Checks that no exceptions are raised whenever columns are dropped and/or added."""
 
-    X = pd.read_csv(stream.iter_dataset('TrumpApproval').path)
+    X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop('five_thirty_eight')
 
     lin_reg = lm.LinearRegression()
@@ -176,7 +177,7 @@ def test_lin_reg_sklearn_coherence():
     cr = lm.LinearRegression(optimizer=optim.SGD(.01), loss=SquaredLoss())
     sk = sklm.SGDRegressor(learning_rate='constant', eta0=.01, alpha=.0)
 
-    for x, y in stream.iter_dataset('TrumpApproval'):
+    for x, y in datasets.TrumpApproval():
         x = ss.learn_one(x).transform_one(x)
         cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y])
@@ -194,7 +195,7 @@ def test_log_reg_sklearn_coherence():
     cr = lm.LogisticRegression(optimizer=optim.SGD(.01))
     sk = sklm.SGDClassifier(learning_rate='constant', eta0=.01, alpha=.0, loss='log')
 
-    for x, y in stream.iter_dataset('Bananas'):
+    for x, y in datasets.Bananas():
         x = ss.learn_one(x).transform_one(x)
         cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
@@ -212,7 +213,7 @@ def test_perceptron_sklearn_coherence():
     cr = lm.Perceptron()
     sk = sklm.Perceptron()
 
-    for x, y in stream.iter_dataset('Bananas'):
+    for x, y in datasets.Bananas():
         x = ss.learn_one(x).transform_one(x)
         cr.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])

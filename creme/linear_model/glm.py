@@ -118,7 +118,7 @@ class GLM:
             return self._fit(X, y, w, get_grad=self._eval_gradient_many)
 
 
-class LinearRegression(GLM, base.Regressor):
+class LinearRegression(GLM, base.MiniBatchRegressor):
     """Linear regression.
 
     This estimator supports learning with mini-batches. On top of the single instance methods, it
@@ -155,13 +155,13 @@ class LinearRegression(GLM, base.Regressor):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import preprocessing
-    >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('TrumpApproval')
+    >>> dataset = datasets.TrumpApproval()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
@@ -274,7 +274,7 @@ class LinearRegression(GLM, base.Regressor):
         return table
 
 
-class LogisticRegression(GLM, base.Classifier, base.MiniBatchClassifier):
+class LogisticRegression(GLM, base.MiniBatchClassifier):
     """Logistic regression.
 
     This estimator supports learning with mini-batches. On top of the single instance methods, it
@@ -311,14 +311,14 @@ class LogisticRegression(GLM, base.Classifier, base.MiniBatchClassifier):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model
     >>> from creme import metrics
     >>> from creme import optim
     >>> from creme import preprocessing
-    >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('Phishing')
+    >>> dataset = datasets.Phishing()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
@@ -381,13 +381,13 @@ class Perceptron(LogisticRegression):
     Examples
     --------
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model as lm
     >>> from creme import metrics
     >>> from creme import preprocessing as pp
-    >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('Phishing')
+    >>> dataset = datasets.Phishing()
 
     >>> model = pp.StandardScaler() | lm.Perceptron()
 
