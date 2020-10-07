@@ -111,17 +111,12 @@ class Agrawal(base.SyntheticDataset):
         self.feature_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue",
                               "hyears", "loan"]
         self.target_values = [i for i in range(self.n_classes)]
-        # Legacy variables
-        self.current_sample_x = None
-        self.current_sample_y = None
-        self.sample_idx = 0
-
-        self._rng = check_random_state(seed)
-        self._next_class_should_be_zero = False
 
     def __iter__(self):
+        self._rng = check_random_state(self.seed)
+        self._next_class_should_be_zero = False
+
         while True:
-            self.sample_idx += 1
             group = 0
             desired_class_found = False
             while not desired_class_found:
@@ -162,9 +157,6 @@ class Agrawal(base.SyntheticDataset):
             for key in self.feature_names:
                 x[key] = eval(key)
             y = group
-
-            self.current_sample_x = x
-            self.current_sample_y = y
 
             yield x, y
 
