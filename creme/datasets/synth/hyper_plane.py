@@ -101,12 +101,12 @@ class Hyperplane(base.SyntheticDataset):
         self.feature_names = [f"x_{i}" for i in range(self.n_features)]
         self.target_values = [0, 1]
 
+    def __iter__(self):
         self._rng = check_random_state(self.seed)
         self._weights = self._rng.rand(self.n_features)
         self._change_direction = np.zeros(self.n_features)
         self._change_direction[:self.n_drift_features] = 1
 
-    def __iter__(self):
         while True:
             x = dict()
 
@@ -122,9 +122,6 @@ class Hyperplane(base.SyntheticDataset):
                 y = 1 if (y == 0) else 0
 
             self._generate_drift()
-
-            self.current_sample_x = x
-            self.current_sample_y = y
 
             yield x, y
 

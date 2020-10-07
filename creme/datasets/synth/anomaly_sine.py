@@ -88,6 +88,7 @@ class AnomalySine(base.SyntheticDataset):
         # Stream attributes
         self.n_num_features = 2
 
+    def _generate_data(self):
         # Generate anomaly data arrays
         self._random_state = check_random_state(self.random_state)
         self.y = np.zeros(self.n_samples)
@@ -113,11 +114,13 @@ class AnomalySine(base.SyntheticDataset):
                                                   replace=self.replace)
         self.X[anomalies_idx, 1] = np.sin(self._random_state.choice(self.n_anomalies,
                                                                     replace=self.replace)) \
-            + self._random_state.randn(self.n_anomalies) * self.noise + 2.
+                                   + self._random_state.randn(self.n_anomalies) * self.noise + 2.
         # Mark sample as anomalous
         self.y[anomalies_idx] = 1
 
     def __iter__(self):
+
+        self._generate_data()
 
         for xi, yi in itertools.zip_longest(self.X, self.y if hasattr(self.y, '__iter__') else []):
             yield dict(zip(['sine', 'cosine'], xi)), yi
