@@ -32,8 +32,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
-    binary_split
-        If True, only allow binary splits.
     leaf_prediction
         | Prediction mechanism used at leafs.
         | 'mc' - Majority Class
@@ -98,7 +96,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                  split_criterion: str = 'info_gain',
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
-                 binary_split: bool = False,
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
@@ -108,7 +105,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                          split_criterion=split_criterion,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,
-                         binary_split=binary_split,
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
                          nominal_attributes=nominal_attributes,

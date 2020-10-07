@@ -32,6 +32,8 @@ class DecisionTree(ABC):
     ----------
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+    binary_split
+        If True, only allow binary splits.
     max_size
         The max size of the tree, in Megabytes (MB).
     memory_estimate_period
@@ -40,19 +42,20 @@ class DecisionTree(ABC):
         If True, stop growing as soon as memory limit is hit.
     remove_poor_atts
         If True, disable poor attributes to reduce memory usage.
-    no_preprune
-        If True, disable pre-pruning.
+    merit_preprune
+        If True, enable merit-based tree pre-pruning.
     """
-    def __init__(self, max_depth: int = None, max_size: int = 100,
+    def __init__(self, max_depth: int = None, binary_split: bool = False, max_size: int = 100,
                  memory_estimate_period: int = 1000000, stop_mem_management: bool = False,
-                 remove_poor_atts: bool = False, no_preprune: bool = False):
+                 remove_poor_atts: bool = False, merit_preprune: bool = True):
         self.max_depth = max_depth if max_depth is not None else math.inf
+        self.binary_split = binary_split
         self._max_size = max_size
         self._max_byte_size = self._max_size * (2 ** 20)  # convert to byte
         self.memory_estimate_period = memory_estimate_period
         self.stop_mem_management = stop_mem_management
         self.remove_poor_atts = remove_poor_atts
-        self.no_preprune = no_preprune
+        self.merit_preprune = merit_preprune
 
         self.reset()
 

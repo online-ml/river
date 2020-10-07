@@ -28,8 +28,6 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
-    binary_split:
-        If True, only allow binary splits.
     leaf_prediction
         | Prediction mechanism used at leafs.
         | 'mean' - Target mean
@@ -100,7 +98,6 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
                  grace_period: int = 200,
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
-                 binary_split: bool = False,
                  leaf_prediction: str = 'model',
                  leaf_model: base.Regressor = linear_model.LinearRegression(),
                  model_selector_decay: float = 0.95,
@@ -112,7 +109,6 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         self.grace_period = grace_period
         self.split_confidence = split_confidence
         self.tie_threshold = tie_threshold
-        self.binary_split = binary_split
         self.leaf_prediction = leaf_prediction
         self.leaf_model = leaf_model
         self.model_selector_decay = model_selector_decay

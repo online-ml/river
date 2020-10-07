@@ -45,7 +45,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
         If True, stop growing as soon as memory limit is hit.
     remove_poor_atts: boolean (default=False)
         If True, disable poor attributes.
-    no_preprune: boolean (default=False)
+    merit_preprune: boolean (default=False)
         If True, disable pre-pruning.
     leaf_prediction: string (default='nba')
         | Prediction mechanism used at leafs.
@@ -103,7 +103,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
                  binary_split=False,
                  stop_mem_management=False,
                  remove_poor_atts=False,
-                 no_preprune=False,
+                 merit_preprune=False,
                  leaf_prediction='nba',
                  nb_threshold=0,
                  nominal_attributes=None,
@@ -118,7 +118,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
                          binary_split=binary_split,
                          stop_mem_management=stop_mem_management,
                          remove_poor_atts=remove_poor_atts,
-                         no_preprune=no_preprune,
+                         merit_preprune=merit_preprune,
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
                          nominal_attributes=nominal_attributes)

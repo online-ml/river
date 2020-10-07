@@ -471,7 +471,7 @@ class ActiveLeaf(metaclass=ABCMeta):
         """
         best_suggestions = []
         pre_split_dist = self._stats
-        if not tree.no_preprune:
+        if tree.merit_preprune:
             # Add null split as an option
             null_split = AttributeSplitSuggestion(
                 None, [{}], criterion.get_merit_of_split(pre_split_dist, [pre_split_dist])
