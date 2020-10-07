@@ -61,6 +61,16 @@ class Agrawal(base.SyntheticDataset):
     {'salary': 26066.536217770004, 'commission': 83031.66391310944, 'age': 34, 'elevel': 2, 'car': 11, 'zipcode': 6, 'hvalue': 444969.26574203646, 'hyears': 25, 'loan': 23225.20635999886} 1
     {'salary': 98980.83074718699, 'commission': 0, 'age': 40, 'elevel': 0, 'car': 6, 'zipcode': 1, 'hvalue': 1159108.4298026664, 'hyears': 28, 'loan': 281644.10892276966} 0
 
+    Notes
+    -----
+    The sample generation works as follows: The 9 features are generated
+    with the random generator, initialized with the seed passed by the
+    user. Then, the classification function decides, as a function of all
+    the attributes, whether to classify the instance as class 0 or class
+    1. The next step is to verify if the classes should be balanced, and
+    if so, balance the classes. The last step is to add noise, if the noise
+    percentage is higher than 0.0.
+
     References
     ----------
     [^1]: Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami. "Database Mining:
@@ -110,18 +120,6 @@ class Agrawal(base.SyntheticDataset):
         self._next_class_should_be_zero = False
 
     def __iter__(self):
-        """Generate next sample.
-
-        The sample generation works as follows: The 9 features are generated
-        with the random generator, initialized with the seed passed by the
-        user. Then, the classification function decides, as a function of all
-        the attributes, whether to classify the instance as class 0 or class
-        1. The next step is to verify if the classes should be balanced, and
-        if so, balance the classes. The last step is to add noise, if the noise
-        percentage is higher than 0.0.
-
-        """
-
         while True:
             self.sample_idx += 1
             group = 0
