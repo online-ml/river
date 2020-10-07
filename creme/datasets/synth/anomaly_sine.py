@@ -11,25 +11,25 @@ class AnomalySine(base.SyntheticDataset):
 
     Parameters
     ----------
-    n_samples:
+    n_samples
         Number of samples
-    n_anomalies:
+    n_anomalies
         Number of anomalies. Can't be larger than n_samples.
-    contextual:
+    contextual
         If True, will add contextual anomalies
-    n_contextual:
+    n_contextual
         Number of contextual anomalies. Can't be larger than n_samples.
-    shift:
+    shift
         Shift applied when retrieving contextual anomalies
-    noise:
+    noise
         Amount of noise
-    replace:
+    replace
         If True, anomalies are randomly sampled with replacement
-    seed:
-    If int, seed is used to seed by the random number generator;
-    If RandomState instance, seed is the random number generator;
-    If None, the random number generator is the RandomState instance used
-    by `np.random`.
+    seed
+        If int, `seed` is used to seed the random number generator;
+        If RandomState instance, `seed` is the random number generator;
+        If None, the random number generator is the `RandomState` instance used
+        by `np.random`.
 
     Examples
     --------
