@@ -1,15 +1,11 @@
-import numpy as np
-from skmultiflow.core import MultiOutputMixin
-from skmultiflow.trees import HoeffdingTreeClassifier
-from skmultiflow.utils import get_dimensions
+from collections import defaultdict
 
-from ._nodes import LCActiveLearningNodeMC
-from ._nodes import LCInactiveLearningNodeMC
-from ._nodes import LCActiveLearningNodeNB
-from ._nodes import LCActiveLearningNodeNBA
+from creme import base
+from creme.tree import HoeffdingTreeClassifier
+from creme.utils.math import softmax
 
 
-class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutputMixin):
+class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.MultiOutputMixin):
     """ Label Combination Hoeffding Tree for multi-label classification.
 
     Label combination transforms the problem from multi-label to multi-class.
@@ -21,43 +17,31 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
     the prediction the int is converted back to a binary number which is the
     predicted label-set.
 
-    The number of labels need to be provided for the transformation to work.
-
     Parameters
     ----------
-    max_byte_size: int (default=33554432)
-        Maximum memory consumed by the tree.
-    memory_estimate_period: int (default=1000000)
-        Number of instances between memory consumption checks.
-    grace_period: int (default=200)
+    grace_period
         Number of instances a leaf should observe between split attempts.
-    split_criterion: string (default='info_gain')
+    split_criterion
         | Split criterion to use.
         | 'gini' - Gini
         | 'info_gain' - Information Gain
-    split_confidence: float (default=0.0000001)
+        | 'hellinger' - Helinger Distance
+    split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
-    tie_threshold: float (default=0.05)
+    tie_threshold
         Threshold below which a split will be forced to break ties.
-    binary_split: boolean (default=False)
-        If True, only allow binary splits.
-    stop_mem_management: boolean (default=False)
-        If True, stop growing as soon as memory limit is hit.
-    remove_poor_atts: boolean (default=False)
-        If True, disable poor attributes.
-    merit_preprune: boolean (default=False)
-        If True, disable pre-pruning.
-    leaf_prediction: string (default='nba')
+    leaf_prediction
         | Prediction mechanism used at leafs.
         | 'mc' - Majority Class
         | 'nb' - Naive Bayes
         | 'nba' - Naive Bayes Adaptive
-    nb_threshold: int (default=0)
+    nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
-    nominal_attributes: list, optional
-        List of Nominal attributes. If empty, then assume that all attributes are numerical.
-    n_labels: int (default=None)
-        the number of labels the problem has.
+    nominal_attributes
+        List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
+        should be treated as continuous.
+    **kwargs
+        Other parameters passed to river.tree.DecisionTree.
 
     Examples
     --------
@@ -94,108 +78,106 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, MultiOutp
     >>> print('Label Combination Hoeffding Tree Hamming score: ' + str(perf))
     """
     def __init__(self,
-                 max_byte_size=33554432,
-                 memory_estimate_period=1000000,
-                 grace_period=200,
-                 split_criterion='info_gain',
-                 split_confidence=0.0000001,
-                 tie_threshold=0.05,
-                 binary_split=False,
-                 stop_mem_management=False,
-                 remove_poor_atts=False,
-                 merit_preprune=False,
-                 leaf_prediction='nba',
-                 nb_threshold=0,
-                 nominal_attributes=None,
-                 n_labels=None):
+                 grace_period: int = 200,
+                 split_criterion: str = 'info_gain',
+                 split_confidence: float = 1e-7,
+                 tie_threshold: float = 0.05,
+                 leaf_prediction: str = 'nba',
+                 nb_threshold: int = 0,
+                 nominal_attributes: list = None,
+                 **kwargs):
 
-        super().__init__(max_byte_size=max_byte_size,
-                         memory_estimate_period=memory_estimate_period,
-                         grace_period=grace_period,
+        super().__init__(grace_period=grace_period,
                          split_criterion=split_criterion,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,
-                         binary_split=binary_split,
-                         stop_mem_management=stop_mem_management,
-                         remove_poor_atts=remove_poor_atts,
-                         merit_preprune=merit_preprune,
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
-                         nominal_attributes=nominal_attributes)
-        self.n_labels = n_labels
+                         nominal_attributes=nominal_attributes,
+                         **kwargs)
 
-    @property
-    def n_labels(self):
-        return self._n_labels
+        self._next_label_code = 0
+        self._label_map = {}
+        self._r_label_map = {}
 
-    @n_labels.setter
-    def n_labels(self, n_labels):
-        if n_labels is None:
-            raise ValueError('The number of labels must be specified')
-        self._n_labels = n_labels
+    def reset(self):
+        super().reset()
 
-    def partial_fit(self, X, y, classes=None, sample_weight=None):
-        """ Incrementally trains the model. Train samples (instances) are composed of X attributes
-        and their corresponding targets y.
+        self._next_label_code = 0
+        self._label_map = {}
+        self._r_label_map = {}
+
+        return self
+
+    def learn_one(self, x, y, *, sample_weight=1.):
+        """ Update the Multi-label Hoeffding Tree Classifier.
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
+        x
             Instance attributes.
-        y: array_like
-            Classes (targets) for all samples in X.
-        classes: Not used (default=None)
-        sample_weight: float or array-like, optional (default=None)
-            Samples weight. If not provided, uniform weights are assumed.
+        y
+            Labels of the instance.
+        sample_weight
+            The weight of the sample.
 
         Returns
         -------
             self
-            """
-        super().partial_fit(X, y, sample_weight=sample_weight)    # Override HT, infer the classes
+        """
+        aux_label = tuple(sorted(y.items()))
+        if aux_label not in self._label_map:
+            self._label_map[aux_label] = self._next_label_code
+            self._r_label_map[self._next_label_code] = aux_label
+            self._next_label_code += 1
+        y_encoded = self._label_map[aux_label]
 
-    def predict(self, X):
-        """Predicts the label of the X instance(s)
+        super().learn_one(x, y_encoded, sample_weight=sample_weight)
+
+        return self
+
+    def predict_proba_one(self, x):
+        if self._tree_root is None:
+            return None
+
+        class_probas = super().predict_proba_one(x)
+
+        labels_proba = defaultdict(lambda: {0: 0., 1: 0.})
+
+        # Assign class probas to each label
+        for code, proba in class_probas.items():
+            for label_id, label_val in self._r_label_map[code]:
+                aux = labels_proba[label_id]
+                aux[label_val] += proba
+                labels_proba[label_id] = aux
+
+        # Normalize the data
+        result = {}
+        for label_id in labels_proba:
+            result[label_id] = softmax(labels_proba[label_id])
+
+        return result
+
+    def predict_one(self, x):
+        """Predict the labels of an instance.
 
         Parameters
         ----------
-        X: numpy.ndarray of shape (n_samples, n_features)
-            Samples for which we want to predict the labels.
+        x
+            The instance for which we want to predict labels.
 
         Returns
         -------
-        numpy.array
-            Predicted labels for all instances in X.
+            Predicted labels.
 
         """
-        r, _ = get_dimensions(X)
-        predictions = []
-        y_proba = self.predict_proba(X)
-        for i in range(r):
-            index = np.argmax(y_proba[i])
-            pred = str("{0:0"+str(self.n_labels)+"b}").format(index)
-            pred = [int(e) for e in pred]
-            predictions.append(pred)
+        if self._tree_root is None:
+            return None
 
-        return np.array(predictions)
+        probas = self.predict_proba_one(x)
 
-    def _new_learning_node(self, initial_class_observations=None, is_active=True):
-        """Create a new learning node. The type of learning node depends on the tree
-        configuration."""
-        if initial_class_observations is None:
-            initial_class_observations = {}
+        preds = {}
+        for label_id, label_probas in probas.items():
+            preds[label_id] = max(label_probas, key=label_probas.get)
 
-        if is_active:
-            if self._leaf_prediction == self._MAJORITY_CLASS:
-                return LCActiveLearningNodeMC(initial_class_observations)
-            elif self._leaf_prediction == self._NAIVE_BAYES:
-                return LCActiveLearningNodeNB(initial_class_observations)
-            else:  # NAIVE BAYES ADAPTIVE (default)
-                return LCActiveLearningNodeNBA(initial_class_observations)
-        else:
-            return LCInactiveLearningNodeMC(initial_class_observations)
-
-    @staticmethod
-    def _more_tags():
-        return {'multioutput': True,
-                'multioutput_only': True}
+        return preds

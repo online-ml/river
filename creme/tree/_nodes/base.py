@@ -420,12 +420,12 @@ class LearningNode(Node, metaclass=ABCMeta):
 class ActiveLeaf(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
-    def new_nominal_attribute_observer():
+    def new_nominal_attribute_observer(**kwargs):
         pass
 
     @staticmethod
     @abstractmethod
-    def new_numeric_attribute_observer():
+    def new_numeric_attribute_observer(**kwargs):
         pass
 
     @property
