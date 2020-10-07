@@ -70,13 +70,13 @@ class PolynomialExtender(base.Transformer):
     Polynomial features are typically used for a linear model to capture interactions between
     features. This may done by setting up a pipeline, as so:
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import linear_model as lm
     >>> from creme import metrics
     >>> from creme import preprocessing as pp
-    >>> from creme import stream
 
-    >>> dataset = stream.iter_dataset('Phishing')
+    >>> dataset = datasets.Phishing()
 
     >>> model = (
     ...     fx.PolynomialExtender() |

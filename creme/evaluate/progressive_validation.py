@@ -11,8 +11,8 @@ from creme import stream
 __all__ = ['progressive_val_score']
 
 
-def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
-                          metric: metrics.Metric, moment: typing.Union[str, typing.Callable] = None,
+def progressive_val_score(dataset: base.typing.Stream, model, metric: metrics.Metric,
+                          moment: typing.Union[str, typing.Callable] = None,
                           delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
                           print_every=0, show_time=False, show_memory=False,
                           **print_kwargs) -> metrics.Metric:
@@ -83,13 +83,13 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
 
     We can evaluate it on the `Phishing` dataset as so:
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
-    >>> from creme import stream
 
     >>> evaluate.progressive_val_score(
     ...     model=model,
-    ...     dataset=stream.iter_dataset('Phishing'),
+    ...     dataset=datasets.Phishing(),
     ...     metric=metrics.ROCAUC(),
     ...     print_every=200
     ... )
@@ -111,7 +111,7 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
 
     >>> metric = metrics.ROCAUC()
 
-    >>> for x, y in stream.iter_dataset('Phishing'):
+    >>> for x, y in datasets.Phishing():
     ...     y_pred = model.predict_proba_one(x)
     ...     metric = metric.update(y, y_pred)
     ...     model = model.learn_one(x, y)
@@ -127,7 +127,7 @@ def progressive_val_score(dataset: base.typing.Stream, model: base.Predictor,
     >>> with open('progress.log', 'w') as f:
     ...     metric = evaluate.progressive_val_score(
     ...         model=model,
-    ...         dataset=stream.iter_dataset('Phishing'),
+    ...         dataset=datasets.Phishing(),
     ...         metric=metrics.ROCAUC(),
     ...         print_every=200,
     ...         file=f

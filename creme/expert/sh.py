@@ -12,8 +12,8 @@ __all__ = ['SuccessiveHalvingClassifier', 'SuccessiveHalvingRegressor']
 
 class SuccessiveHalving:
 
-    def __init__(self, models: typing.List[base.Predictor], metric: metrics.Metric, budget: int,
-                 eta=2, verbose=False, **print_kwargs):
+    def __init__(self, models, metric: metrics.Metric, budget: int, eta=2, verbose=False,
+                 **print_kwargs):
 
         # Check that the model and the metric are in accordance
         for model in models:
@@ -195,12 +195,12 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     method. We can therefore evaluate it like any other classifier with
     `evaluate.progressive_val_score`.
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
-    >>> from creme import stream
 
     >>> evaluate.progressive_val_score(
-    ...     dataset=stream.iter_dataset('TrumpApproval'),
+    ...     dataset=datasets.TrumpApproval(),
     ...     model=sh,
     ...     metric=metrics.MAE()
     ... )
@@ -341,12 +341,12 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     `predict_proba_one` method. We can therefore evaluate it like any other classifier with
     `evaluate.progressive_val_score`.
 
+    >>> from creme import datasets
     >>> from creme import evaluate
     >>> from creme import metrics
-    >>> from creme import stream
 
     >>> evaluate.progressive_val_score(
-    ...     dataset=stream.iter_dataset('Phishing'),
+    ...     dataset=datasets.Phishing(),
     ...     model=sh,
     ...     metric=metrics.ROCAUC()
     ... )

@@ -6,27 +6,8 @@ import numpy as np
 missing = object()
 
 
-cdef inline get_value(VectorDict vec, key):
-    if vec._use_mask and key not in vec._mask:
-        return 0
-    value = vec._data.get(key, missing)
-    if value is missing:
-        if vec._use_factory:
-            value = vec._default_factory()
-            vec._data[key] = value
-            return value
-        return 0
-    return value
-
-
-cdef inline get_keys(VectorDict vec):
-    if vec._lazy_mask:
-        return (key for key in vec._data if key in vec._mask)
-    return vec._data.keys()
-
-
 cdef inline get_union_keys(VectorDict left, VectorDict right):
-    left_keys = get_keys(left)
+    left_keys = left._keys()
     if left._lazy_mask:
         if right._lazy_mask:
             right_only_keys = (
@@ -86,22 +67,25 @@ cdef class VectorDict:
         A scalar is any object that supports the four arithmetic operations
         with the dictionary's values.
 
-        If mask is not None, any key which is contained in mask is said to be
-        masked while other keys are said to be unmasked.
-        If mask is None, any keys is said to be unmasked.
-        If mask is not None and copy is True, only the key-values for keys in
-        both data and mask will be used to initialized the dictionary.
-        If mask is not None and copy is False, the mask will be applied lazily,
-        which enables a faster initialization but potentially slower operations.
+        If mask is not None, any key which is not contained in mask is said to
+        be masked while other keys are said to be unmasked.
+        If mask is None, any key is said to be unmasked.
 
         If default_factory is not None, it is called whenever an unmasked
         missing key is accessed, either externally with __getitem__ or
         internally as part of an element-wise numeric operation such as
         addition, and the result is inserted as the value for that key.
-        If a masked key, or an umasked missing key when default_factory is None,
-        is accessed externally through __getitem___ a KeyError
-        exception is raised, and if it is accessed internally as part of an
-        operation, its value is taken as 0, but is not inserted for that key.
+        If a masked key, or an umasked missing key when default_factory is
+        None, is accessed externally through __getitem___ a KeyError exception
+        is raised, and if it is accessed internally as part of an operation,
+        its value is taken as 0, but is not inserted for that key.
+
+        If copy is True, a copy of data and mask will be made if not None and
+        these arguments will not be modified.
+        If copy is False, references to data and mask will be used if not None.
+        This means that the argument data may be modified, although only on
+        unmasked keys, and that external modifications of data and mask will
+        affect the internal operations.
 
         Parameters
         ----------
@@ -124,20 +108,24 @@ cdef class VectorDict:
             data = dict()
         elif isinstance(data, VectorDict):
             data_ = <VectorDict> data
-            data = data_._data
+            if copy:  # copy from VectorDict
+                data = data_.to_dict()
+                if mask is not None:
+                    mask = set(mask)
+            else:  # wrap a VectorDict
+                if data_._lazy_mask and mask is not data_._mask:
+                    raise ValueError(
+                        "Cannot mask a masked VectorDict without copy")
+                data = data_._data
         elif not isinstance(data, dict):
             raise ValueError(f"Unsupported type for data: {type(data)}")
-        if mask is None:
-            if copy:
+        elif copy:  # copy from dict
+            if mask is None:
                 data = dict(data)
-        else:
-            if isinstance(mask, VectorDict):
-                mask = <VectorDict>(mask)._data
-            if copy:
+            else:
                 mask = set(mask)
                 data = {key: value
                         for key, value in data.items() if key in mask}
-            # TODO check if mask is "set-like"
         self._data = data
         self._mask = mask
         self._use_mask = mask is not None
@@ -145,7 +133,24 @@ cdef class VectorDict:
         self._use_factory = default_factory is not None
         self._default_factory = default_factory
 
-    cdef dict _apply_mask(self, force_copy=False):
+    cdef inline _get(self, key):
+        if self._use_mask and key not in self._mask:
+            return 0
+        value = self._data.get(key, missing)
+        if value is missing:
+            if self._use_factory:
+                value = self._default_factory()
+                self._data[key] = value
+                return value
+            return 0
+        return value
+
+    cdef inline _keys(self):
+        if self._lazy_mask:
+            return (key for key in self._data if key in self._mask)
+        return self._data.keys()
+
+    cdef dict _to_dict(self, force_copy=False):
         # NOTE this is potentially slow (makes a copy if lazy_mask is True),
         #      use with caution
         if not self._lazy_mask:
@@ -159,10 +164,10 @@ cdef class VectorDict:
         return VectorDict(self._data, self._default_factory, mask, copy)
 
     def to_dict(self):
-        return self._apply_mask(force_copy=True)
+        return self._to_dict(force_copy=True)
 
     def to_numpy(self, fields):
-        return np.array([get_value(self, f) for f in fields])
+        return np.array([self._get(f) for f in fields])
 
     # pass-through methods to the underlying dict
 
@@ -178,7 +183,7 @@ cdef class VectorDict:
         self._data.__delitem__(key)
 
     def __format__(self, format_spec):
-        return self._apply_mask().__format__(format_spec)
+        return self._to_dict().__format__(format_spec)
 
     def __getitem__(self, key):
         if self._use_mask and key not in self._mask:
@@ -193,7 +198,7 @@ cdef class VectorDict:
             raise
 
     def __iter__(self):
-        return self._apply_mask().__iter__()
+        return self._to_dict().__iter__()
 
     def __len__(self):
         if self._lazy_mask:
@@ -201,7 +206,7 @@ cdef class VectorDict:
         return self._data.__len__()
 
     def __repr__(self):
-        return self._apply_mask().__repr__()
+        return self._to_dict().__repr__()
 
     def __setitem__(self, key, value):
         if self._use_mask and key not in self._mask:
@@ -209,7 +214,7 @@ cdef class VectorDict:
         self._data[key] = value
 
     def __str__(self):
-        return self._apply_mask().__str__()
+        return self._to_dict().__str__()
 
     def clear(self):
         if self._lazy_mask:
@@ -226,10 +231,10 @@ cdef class VectorDict:
         return self._data.get(key, *args, **kwargs)
 
     def items(self):
-        return self._apply_mask().items()
+        return self._to_dict().items()
 
     def keys(self):
-        return self._apply_mask().keys()
+        return self._to_dict().keys()
 
     def pop(self, *args, **kwargs):
         return self._data.pop(*args, **kwargs)
@@ -265,7 +270,7 @@ cdef class VectorDict:
         self._data.update(*args, **kwargs)
 
     def values(self):
-        return self._apply_mask().values()
+        return self._to_dict().values()
 
     # operator methods
 
@@ -275,9 +280,9 @@ cdef class VectorDict:
         left_ = <VectorDict> left
         if isinstance(right, VectorDict):
             right_ = <VectorDict> right
-            return left_._apply_mask().__eq__(right_._apply_mask())
+            return left_._to_dict().__eq__(right_._to_dict())
         elif isinstance(right, dict):
-            return left_._apply_mask().__eq__(right)
+            return left_._to_dict().__eq__(right)
         else:
             return NotImplemented
 
@@ -289,9 +294,9 @@ cdef class VectorDict:
             left_, right_ = <VectorDict> right, left_
             res = dict()
             for key in get_union_keys(left_, right_):
-                res[key] = get_value(left_, key) + get_value(right_, key)
+                res[key] = left_._get(key) + right_._get(key)
         else:  # vec + scalar
-            res = left_._apply_mask(force_copy=True)
+            res = left_._to_dict(force_copy=True)
             try:
                 for key, value in res.items():
                     res[key] = value + right
@@ -303,10 +308,10 @@ cdef class VectorDict:
         if isinstance(other, VectorDict):  # vec += vec
             other_ = <VectorDict> other
             for key in get_union_keys(self, other_):
-                self._data[key] = get_value(self, key) + get_value(other_, key)
+                self._data[key] = self._get(key) + other_._get(key)
         else:  # vec += scalar
             try:
-                for key in get_keys(self):
+                for key in self._keys():
                     self._data[key] += other
             except TypeError:
                 return NotImplemented
@@ -318,10 +323,10 @@ cdef class VectorDict:
             left_, right_ = <VectorDict> left, <VectorDict> right
             res = dict()
             for key in get_union_keys(left_, right_):
-                res[key] = get_value(left_, key) - get_value(right_, key)
+                res[key] = left_._get(key) - right_._get(key)
         elif isinstance(left, VectorDict):  # vec - scalar
             left_ = <VectorDict> left
-            res = left_._apply_mask(force_copy=True)
+            res = left_._to_dict(force_copy=True)
             try:
                 for key, value in res.items():
                     res[key] = value - right
@@ -329,7 +334,7 @@ cdef class VectorDict:
                 return NotImplemented
         else:  # scalar - vec
             right_ = <VectorDict> right
-            res = right_._apply_mask(force_copy=True)
+            res = right_._to_dict(force_copy=True)
             try:
                 for key, value in res.items():
                     res[key] = left - value
@@ -341,10 +346,10 @@ cdef class VectorDict:
         if isinstance(other, VectorDict):  # vec -= vec
             other_ = <VectorDict> other
             for key in get_union_keys(self, other_):
-                self._data[key] = get_value(self, key) - get_value(other_, key)
+                self._data[key] = self._get(key) - other_._get(key)
         else:  # vec -= scalar
             try:
-                for key in get_keys(self):
+                for key in self._keys():
                     self._data[key] -= other
             except TypeError:
                 return NotImplemented
@@ -358,9 +363,9 @@ cdef class VectorDict:
             left_, right_ = <VectorDict> right, left_
             res = dict()
             for key in get_union_keys(left_, right_):
-                res[key] = get_value(left_, key) * get_value(right_, key)
+                res[key] = left_._get(key) * right_._get(key)
         else:  # vec * scalar
-            res = left_._apply_mask(force_copy=True)
+            res = left_._to_dict(force_copy=True)
             try:
                 for key, value in res.items():
                     res[key] = value * right
@@ -372,10 +377,10 @@ cdef class VectorDict:
         if isinstance(other, VectorDict):  # vec *= vec
             other_ = <VectorDict> other
             for key in get_union_keys(self, other_):
-                self._data[key] = get_value(self, key) * get_value(other_, key)
+                self._data[key] = self._get(key) * other_._get(key)
         else:  # vec *= scalar
             try:
-                for key in get_keys(self):
+                for key in self._keys():
                     self._data[key] *= other
             except TypeError:
                 return NotImplemented
@@ -387,10 +392,10 @@ cdef class VectorDict:
             left_, right_ = <VectorDict> left, <VectorDict> right
             res = dict()
             for key in get_union_keys(left_, right_):
-                res[key] = get_value(left_, key) / get_value(right_, key)
+                res[key] = left_._get(key) / right_._get(key)
         elif isinstance(left, VectorDict):  # vec / scalar
             left_ = <VectorDict> left
-            res = left_._apply_mask(force_copy=True)
+            res = left_._to_dict(force_copy=True)
             try:
                 for key, value in res.items():
                     res[key] = value / right
@@ -398,7 +403,7 @@ cdef class VectorDict:
                 return NotImplemented
         else:  # scalar / vec
             right_ = <VectorDict> right
-            res = right_._apply_mask(force_copy=True)
+            res = right_._to_dict(force_copy=True)
             try:
                 for key, value in res.items():
                     res[key] = left / value
@@ -410,10 +415,10 @@ cdef class VectorDict:
         if isinstance(other, VectorDict):  # vec /= vec
             other_ = <VectorDict> other
             for key in get_union_keys(self, other_):
-                self._data[key] = get_value(self, key) / get_value(other_, key)
+                self._data[key] = self._get(key) / other_._get(key)
         else:  # vec /= scalar
             try:
-                for key in get_keys(self):
+                for key in self._keys():
                     self._data[key] /= other
             except TypeError:
                 return NotImplemented
@@ -423,13 +428,13 @@ cdef class VectorDict:
         if not isinstance(left, VectorDict) or modulo is not None:
             return NotImplemented
         left_ = <VectorDict> left
-        res = left_._apply_mask(force_copy=True)
+        res = left_._to_dict(force_copy=True)
         for key, value in res.items():
             res[key] = value ** right
         return VectorDict(res)
 
     def __ipow__(VectorDict self, other):
-        for key in get_keys(self):
+        for key in self._keys():
             self._data[key] **= other
         return self
 
@@ -440,26 +445,31 @@ cdef class VectorDict:
         res = 0
         if left_._use_factory or right_._use_factory:
             for key in get_union_keys(left_, right_):
-                res += get_value(left_, key) * get_value(right_, key)
-        else:
+                res += left_._get(key) * right_._get(key)
+        elif left_._use_mask or right_._use_mask:
             for key in get_intersection_keys(left_, right_):
                 res += left_._data[key] * right_._data[key]
+        else:
+            if len(right_._data) < len(left_._data):
+                left_, right_ = right_, left_
+            for key, left_value in left_._data.items():
+                res += left_value * right_._data.get(key, 0)
         return res
 
     def __neg__(self):
         # -vec
-        res = self._apply_mask(force_copy=True)
+        res = self._to_dict(force_copy=True)
         for key, value in res.items():
             res[key] = -value
         return VectorDict(res)
 
     def __pos__(self):
         # +vec
-        return VectorDict(self._apply_mask(force_copy=True))
+        return VectorDict(self._to_dict(force_copy=True))
 
     def __abs__(self):
         # abs(vec)
-        res = self._apply_mask(force_copy=True)
+        res = self._to_dict(force_copy=True)
         for key, value in res.items():
             res[key] = abs(value)
         return VectorDict(res)
@@ -486,9 +496,9 @@ cdef class VectorDict:
             other_ = <VectorDict> other
             res = dict()
             for key in get_union_keys(self, other_):
-                res[key] = min(get_value(self, key), get_value(other_, key))
+                res[key] = min(self._get(key), other_._get(key))
         else:  # minimum(vec, scalar)
-            res = self._apply_mask(force_copy=True)
+            res = self._to_dict(force_copy=True)
             try:
                 for key, value in res.items():
                     res[key] = min(value, other)
@@ -501,9 +511,9 @@ cdef class VectorDict:
             other_ = <VectorDict> other
             res = dict()
             for key in get_union_keys(self, other_):
-                res[key] = max(get_value(self, key), get_value(other_, key))
+                res[key] = max(self._get(key), other_._get(key))
         else:  # maximum(vec, scalar)
-            res = self._apply_mask(force_copy=True)
+            res = self._to_dict(force_copy=True)
             try:
                 for key, value in res.items():
                     res[key] = max(value, other)

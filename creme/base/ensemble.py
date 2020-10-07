@@ -1,7 +1,5 @@
 import typing
 
-from .predictor import Predictor
-
 
 class EnsembleMixin:
     """An ensemble model.
@@ -12,7 +10,7 @@ class EnsembleMixin:
 
     """
 
-    def __init__(self, models: typing.List[Predictor]):
+    def __init__(self, models):
         self.models = list(models)
 
     def __len__(self):

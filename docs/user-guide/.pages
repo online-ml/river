@@ -1,7 +1,6 @@
 title: User guide
-arrange:
+nav:
     - reading-data.md
-    - available-datasets.md
     - model-evaluation.md
     - pipelines.md
     - feature-extraction.md
