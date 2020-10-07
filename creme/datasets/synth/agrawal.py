@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import base
+from .. import base
 from creme.utils.skmultiflow_utils import check_random_state
 
 
@@ -48,11 +48,10 @@ class Agrawal(base.SyntheticDataset):
     Examples
     --------
 
-    >>> from creme import stream
+    >>> from creme import synth
 
-    >>> dataset = stream.iter_dataset('Agrawal',
-    ...                               classification_function=0,
-    ...                               seed=42)
+    >>> dataset = synth.Agrawal(classification_function=0,
+    ...                         seed=42)
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
