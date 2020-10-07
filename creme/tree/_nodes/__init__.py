@@ -29,11 +29,6 @@ from .efdtc_nodes import EFDTActiveLearningNodeMC
 from .efdtc_nodes import EFDTInactiveLearningNodeMC
 from .efdtc_nodes import EFDTActiveLearningNodeNB
 from .efdtc_nodes import EFDTActiveLearningNodeNBA
-# Label combination classifier nodes
-from .lc_htc_nodes import LCActiveLearningNodeMC
-from .lc_htc_nodes import LCInactiveLearningNodeMC
-from .lc_htc_nodes import LCActiveLearningNodeNB
-from .lc_htc_nodes import LCActiveLearningNodeNBA
 # Hoeffding Tree regressor nodes
 from .htr_nodes import ActiveLearningNodeMean
 from .htr_nodes import ActiveLearningNodeModel
@@ -77,10 +72,6 @@ __all__ = [
     'EFDTInactiveLearningNodeMC',
     'EFDTActiveLearningNodeNB',
     'EFDTActiveLearningNodeNBA',
-    'LCActiveLearningNodeMC',
-    'LCInactiveLearningNodeMC',
-    'LCActiveLearningNodeNB',
-    'LCActiveLearningNodeNBA',
     'ActiveLearningNodeMean',
     'ActiveLearningNodeModel',
     'ActiveLearningNodeAdaptive',
