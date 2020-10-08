@@ -9,6 +9,7 @@ from .friedman import Friedman
 from .hyper_plane import Hyperplane
 from .led import LED
 from .led import LEDDrift
+from .mixed import Mixed
 from .sea import SEA
 
 
@@ -19,5 +20,6 @@ __all__ = [
     'Hyperplane',
     'LED',
     'LEDDrift',
+    "Mixed",
     'SEA'
 ]
