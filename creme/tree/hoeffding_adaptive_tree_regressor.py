@@ -55,11 +55,12 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         potential replacement to the current one.
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
-    random_state
-       If int, random_state is the seed used by the random number generator;
-       If RandomState instance, random_state is the random number generator;
+    seed
+       If int, `seed` is the seed used by the random number generator;
+       If RandomState instance, `seed` is the random number generator;
        If None, the random number generator is the RandomState instance used
-       by `np.random`. Only used when ``bootstrap_sampling=True`` to direct the bootstrap sampling.
+       by `np.random`. Only used when `bootstrap_sampling=True` to direct the
+       bootstrap sampling.
 
     Notes
     -----
@@ -94,7 +95,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>> import numpy as np
     >>>
     >>> # Setup a data stream
-    >>> stream = RegressionGenerator(random_state=1, n_samples=200)
+    >>> stream = RegressionGenerator(seed=1, n_samples=200)
     >>> # Prepare stream for use
     >>>
     >>> # Setup the Hoeffding Adaptive Tree Regressor
@@ -131,7 +132,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  bootstrap_sampling: bool = False,
                  drift_window_threshold: int = 300,
                  adwin_confidence: float = 0.002,
-                 random_state=None,
+                 seed=None,
                  **kwargs):
 
         super().__init__(grace_period=grace_period,
@@ -150,7 +151,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self.bootstrap_sampling = bootstrap_sampling
         self.drift_window_threshold = drift_window_threshold
         self.adwin_confidence = adwin_confidence
-        self.random_state = random_state
+        self.seed = seed
 
     def reset(self):
         super().reset()
@@ -227,7 +228,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         if is_active:
             new_ada_leaf = AdaActiveLearningNodeRegressor(
                 initial_stats=initial_stats, depth=depth, leaf_model=leaf_model,
-                adwin_delta=self.adwin_confidence, random_state=self.random_state)
+                adwin_delta=self.adwin_confidence, seed=self.seed)
 
             if parent is not None and not isinstance(parent, SplitNode):
                 new_ada_leaf._fmse_mean = parent._fmse_mean
@@ -250,7 +251,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     def _new_split_node(self, split_test, target_stats=None, depth=0):
         return AdaSplitNodeRegressor(
             split_test=split_test, stats=target_stats, depth=depth,
-            adwin_delta=self.adwin_confidence, random_state=self.random_state)
+            adwin_delta=self.adwin_confidence, seed=self.seed)
 
     # Override river.tree.DecisionTree to include alternate trees
     def __find_learning_nodes(self, node, parent, parent_branch, found):

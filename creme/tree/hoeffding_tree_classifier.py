@@ -76,7 +76,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     >>> from skmultiflow.trees import HoeffdingTreeClassifier
     >>>
     >>> # Setting up a data stream
-    >>> stream = SEAGenerator(random_state=1)
+    >>> stream = SEAGenerator(seed=1)
     >>>
     >>> # Setup Hoeffding Tree estimator
     >>> ht = HoeffdingTreeClassifier()

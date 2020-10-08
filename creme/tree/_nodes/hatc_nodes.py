@@ -60,16 +60,16 @@ class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
         The depth of the learning node in the tree.
     adwin_delta
         The delta parameter of ADWIN.
-    random_state
+    seed
         Seed to control the generation of random numbers and support reproducibility.
 
     """
-    def __init__(self, initial_stats, depth, adwin_delta, random_state):
+    def __init__(self, initial_stats, depth, adwin_delta, seed):
         super().__init__(initial_stats, depth)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self.error_change = False
-        self._random_state = check_random_state(random_state)
+        self._rng = check_random_state(seed)
 
     @property
     def n_leaves(self):
@@ -94,7 +94,7 @@ class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
 
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
-            k = self._random_state.poisson(1.0)
+            k = self._rng.poisson(1.0)
             if k > 0:
                 sample_weight = sample_weight * k
 
@@ -172,17 +172,17 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
         The depth of the node.
     adwin_delta
         The delta parameter of ADWIN.
-    random_state
+    seed
         Internal random state used to sample from poisson distributions.
     """
-    def __init__(self, split_test, stats, depth, adwin_delta, random_state):
+    def __init__(self, split_test, stats, depth, adwin_delta, seed):
         super().__init__(split_test, stats, depth)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self._alternate_tree = None
         self._error_change = False
 
-        self._random_state = check_random_state(random_state)
+        self._rng = check_random_state(seed)
 
     @property
     def n_leaves(self):

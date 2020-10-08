@@ -67,7 +67,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     >>> from skmultiflow.trees import ExtremelyFastDecisionTreeClassifier
     >>>
     >>> # Setting up a data stream
-    >>> stream = SEAGenerator(random_state=1)
+    >>> stream = SEAGenerator(seed=1)
     >>>
     >>> # Setup Extremely Fast Decision Tree classifier
     >>> efdt = ExtremelyFastDecisionTreeClassifier()
