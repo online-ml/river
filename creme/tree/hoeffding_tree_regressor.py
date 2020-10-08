@@ -65,7 +65,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
     >>> import numpy as np
     >>>
     >>> # Setup a data stream
-    >>> stream = RegressionGenerator(random_state=1, n_samples=200)
+    >>> stream = RegressionGenerator(seed=1, n_samples=200)
     >>>
     >>> # Setup the Hoeffding Tree Regressor
     >>> ht_reg = HoeffdingTreeRegressor()

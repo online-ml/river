@@ -56,19 +56,19 @@ class RandomActiveLearningNodeMean(LearningNodeMean, RandomActiveLeafRegressor):
         The depth of the node.
     max_features
         Number of attributes per subset for each node split.
-    random_state
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
+    seed
+        If int, seed is the seed used by the random number generator;
+        If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_stats, depth, max_features, random_state):
+    def __init__(self, initial_stats, depth, max_features, seed):
         super().__init__(initial_stats, depth)
 
         self.max_features = max_features
         self.feature_indices = []
-        self.random_state = random_state
-        self._random_state = check_random_state(self.random_state)
+        self.seed = seed
+        self._rng = check_random_state(self.seed)
 
 
 class RandomActiveLearningNodeModel(LearningNodeModel, RandomActiveLeafRegressor):
@@ -89,17 +89,17 @@ class RandomActiveLearningNodeModel(LearningNodeModel, RandomActiveLeafRegressor
         responses.
     max_features
         Number of attributes per subset for each node split.
-    random_state
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
+    seed
+        If int, seed is the seed used by the random number generator;
+        If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_stats, depth, leaf_model, max_features, random_state):
+    def __init__(self, initial_stats, depth, leaf_model, max_features, seed):
         super().__init__(initial_stats, depth, leaf_model)
         self.max_features = max_features
-        self.random_state = random_state
-        self._random_state = check_random_state(self.random_state)
+        self.seed = seed
+        self._rng = check_random_state(self.seed)
         self.feature_indices = []
 
 
@@ -121,15 +121,15 @@ class RandomActiveLearningNodeAdaptive(LearningNodeAdaptive, RandomActiveLeafReg
         responses.
     max_features
         Number of attributes per subset for each node split.
-    random_state
-        If int, random_state is the seed used by the random number generator;
-        If RandomState instance, random_state is the random number generator;
+    seed
+        If int, seed is the seed used by the random number generator;
+        If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, initial_stats, depth, leaf_model, max_features, random_state):
+    def __init__(self, initial_stats, depth, leaf_model, max_features, seed):
         super().__init__(initial_stats, depth, leaf_model)
         self.max_features = max_features
-        self.random_state = random_state
-        self._random_state = check_random_state(self.random_state)
+        self.seed = seed
+        self._rng = check_random_state(self.seed)
         self.feature_indices = []

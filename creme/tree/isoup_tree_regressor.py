@@ -63,7 +63,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     >>>
     >>> # Setup a data stream
     >>> n_targets = 3
-    >>> stream = RegressionGenerator(n_targets=n_targets, random_state=1, n_samples=200)
+    >>> stream = RegressionGenerator(n_targets=n_targets, seed=1, n_samples=200)
     >>>
     >>> # Setup iSOUP Tree Regressor
     >>> isoup_tree = iSOUPTreeRegressor()

@@ -51,7 +51,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
     >>> from skmultiflow.metrics import hamming_score
     >>>
     >>> # Setting up a data stream
-    >>> stream = MultilabelGenerator(random_state=1, n_samples=200,
+    >>> stream = MultilabelGenerator(seed=1, n_samples=200,
     >>>                              n_targets=5, n_features=10)
     >>>
     >>> # Setup Label Combination Hoeffding Tree classifier

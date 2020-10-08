@@ -35,9 +35,9 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
         should be treated as continuous.
     max_features
         Number of randomly selected features to act as split candidates at each attempt.
-    random_state: int, RandomState instance or None, optional (default=None)
-            If int, random_state is the seed used by the random number generator;
-            If RandomState instance, random_state is the random number generator;
+    seed: int, RandomState instance or None, optional (default=None)
+            If int, seed is the seed used by the random number generator;
+            If RandomState instance, seed is the random number generator;
             If None, the random number generator is the RandomState instance
             used by `np.random`.
     **kwargs
@@ -59,7 +59,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
                  max_features: int = 2,
-                 random_state=None,
+                 seed=None,
                  **kwargs):
         super().__init__(grace_period=grace_period,
                          split_criterion=split_criterion,
@@ -71,8 +71,8 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
                          **kwargs)
 
         self.max_features = max_features
-        self.random_state = random_state
-        self._random_state = check_random_state(self.random_state)
+        self.seed = seed
+        self._rng = check_random_state(self.seed)
 
     def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
         if initial_stats is None:
@@ -84,24 +84,24 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
             depth = parent.depth + 1
 
         # Generate a random seed for the new learning node
-        random_state = self._random_state.randint(0, 4294967295, dtype='u8')
+        seed = self._rng.randint(0, 4294967295, dtype='u8')
 
         if is_active:
             if self._leaf_prediction == self._MAJORITY_CLASS:
                 return RandomActiveLearningNodeMC(
-                    initial_stats, depth, self.max_features, random_state)
+                    initial_stats, depth, self.max_features, seed)
             elif self._leaf_prediction == self._NAIVE_BAYES:
                 return RandomActiveLearningNodeNB(
-                    initial_stats, depth, self.max_features, random_state)
+                    initial_stats, depth, self.max_features, seed)
             else:  # NAIVE BAYES ADAPTIVE (default)
                 return RandomActiveLearningNodeNBA(
-                    initial_stats, depth, self.max_features, random_state)
+                    initial_stats, depth, self.max_features, seed)
         else:
             return InactiveLearningNodeMC(initial_stats, depth)
 
     def reset(self):
         super().reset()
-        self._random_state = check_random_state(self.random_state)
+        self._rng = check_random_state(self.seed)
 
     def new_instance(self):
         return self.__class__(self._get_params())

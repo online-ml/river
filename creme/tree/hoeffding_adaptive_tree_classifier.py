@@ -44,11 +44,12 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         potential replacement to the current one.
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
-    random_state
-       If int, random_state is the seed used by the random number generator;
-       If RandomState instance, random_state is the random number generator;
+    seed
+       If int, `seed` is the seed used by the random number generator;
+       If RandomState instance, `seed` is the random number generator;
        If None, the random number generator is the RandomState instance used
-       by `np.random`. Only used when ``bootstrap_sampling=True`` to direct the bootstrap sampling.
+       by `np.random`. Only used when `bootstrap_sampling=True` to direct the
+       bootstrap sampling.
     **kwargs
         Other parameters passed to river.tree.DecisionTree.
 
@@ -76,7 +77,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     >>> from skmultiflow.data import ConceptDriftStream
     >>> from skmultiflow.evaluation import EvaluatePrequential
     >>> # Setup the File Stream
-    >>> stream = ConceptDriftStream(random_state=123456, position=25000)
+    >>> stream = ConceptDriftStream(seed=123456, position=25000)
     >>>
     >>> classifier = HoeffdingAdaptiveTreeClassifier()
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=50000, batch_size=1,
@@ -101,7 +102,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                  bootstrap_sampling: bool = True,
                  drift_window_threshold: int = 300,
                  adwin_confidence: float = 0.002,
-                 random_state=None,
+                 seed=None,
                  **kwargs):
 
         super().__init__(grace_period=grace_period,
@@ -120,7 +121,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.bootstrap_sampling = bootstrap_sampling
         self.drift_window_threshold = drift_window_threshold
         self.adwin_confidence = adwin_confidence
-        self.random_state = random_state
+        self.seed = seed
 
     def reset(self):
         super().reset()
@@ -179,14 +180,14 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         if is_active:
             return AdaLearningNodeClassifier(
                 initial_stats=initial_stats, depth=depth, adwin_delta=self.adwin_confidence,
-                random_state=self.random_state)
+                seed=self.seed)
         else:
             return InactiveLearningNodeMC(initial_stats, depth=depth)
 
     def _new_split_node(self, split_test, target_stats=None, depth=0):
         return AdaSplitNodeClassifier(
             split_test=split_test, stats=target_stats, depth=depth,
-            adwin_delta=self.adwin_confidence, random_state=self.random_state)
+            adwin_delta=self.adwin_confidence, seed=self.seed)
 
     # Override river.tree.DecisionTree to include alternate trees
     def __find_learning_nodes(self, node, parent, parent_branch, found):
