@@ -8,6 +8,7 @@ from .anomaly_sine import AnomalySine
 from .friedman import Friedman
 from .hyper_plane import Hyperplane
 from .led import LED
+from .led import LEDDrift
 from .sea import SEA
 
 
@@ -17,5 +18,6 @@ __all__ = [
     'Friedman',
     'Hyperplane',
     'LED',
+    'LEDDrift',
     'SEA'
 ]
