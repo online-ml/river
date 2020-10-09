@@ -31,19 +31,14 @@ class Hyperplane(base.SyntheticDataset):
         If RandomState instance, `seed` is the random number generator;
         If None, the random number generator is the `RandomState` instance used
         by `np.random`.
-
     n_features
         The number of attributes to generate. Higher than 2.
-
     n_drift_features
         The number of attributes with drift. Higher than 2.
-
     mag_change
         Magnitude of the change for every example. From 0.0 to 1.0.
-
     noise_percentage
         Percentage of noise to add to the data. From 0.0 to 1.0.
-
     sigma
         Probability that the direction of change is reversed. From 0.0 to 1.0.
 

@@ -22,12 +22,10 @@ class LED(base.SyntheticDataset):
         If RandomState instance, `seed` is the random number generator;
         If None, the random number generator is the `RandomState` instance used
         by `np.random`.
-
     noise_percentage
         The probability that noise will happen in the generation. At each
         new sample generated, a random number is generated, and if it is equal
         or less than the noise_percentage, the led value  will be switched
-
     irrelevant_features
         Adds 17 non-relevant attributes to the stream.
 
@@ -127,15 +125,12 @@ class LEDDrift(LED):
         If RandomState instance, `seed` is the random number generator;
         If None, the random number generator is the `RandomState` instance used
         by `np.random`.
-
     noise_percentage
         The probability that noise will happen in the generation. At each
         new sample generated, a random number is generated, and if it is equal
         or less than the noise_percentage, the led value  will be switched
-
     irrelevant_features
         Adds 17 non-relevant attributes to the stream.
-
     n_drift_features
         The number of attributes that have drift.
 
