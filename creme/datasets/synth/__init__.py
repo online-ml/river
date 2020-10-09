@@ -10,6 +10,7 @@ from .hyper_plane import Hyperplane
 from .led import LED
 from .led import LEDDrift
 from .mixed import Mixed
+from .random_rbf import RandomRBF
 from .sea import SEA
 
 
@@ -21,5 +22,6 @@ __all__ = [
     'LED',
     'LEDDrift',
     "Mixed",
+    "RandomRBF",
     'SEA'
 ]
