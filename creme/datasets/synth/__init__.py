@@ -12,6 +12,7 @@ from .led import LEDDrift
 from .mixed import Mixed
 from .random_rbf import RandomRBF
 from .random_rbf import RandomRBFDrift
+from .random_tree import RandomTree
 from .sea import SEA
 
 
@@ -25,5 +26,6 @@ __all__ = [
     "Mixed",
     "RandomRBF",
     "RandomRBFDrift",
+    "RandomTree",
     'SEA'
 ]
