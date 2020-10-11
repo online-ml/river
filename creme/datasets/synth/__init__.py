@@ -14,6 +14,7 @@ from .random_rbf import RandomRBF
 from .random_rbf import RandomRBFDrift
 from .random_tree import RandomTree
 from .sea import SEA
+from .sine import Sine
 
 
 __all__ = [
@@ -27,5 +28,6 @@ __all__ = [
     "RandomRBF",
     "RandomRBFDrift",
     "RandomTree",
-    'SEA'
+    'SEA',
+    'Sine'
 ]
