@@ -61,8 +61,8 @@ class LED(base.SyntheticDataset):
     {'x_0': 0, 'x_1': 1, 'x_2': 1, 'x_3': 0, 'x_4': 0, 'x_5': 1, 'x_6': 1} 0
     {'x_0': 1, 'x_1': 1, 'x_2': 1, 'x_3': 1, 'x_4': 0, 'x_5': 1, 'x_6': 0} 4
     """
-    _N_RELEVANT_ATTRIBUTES = 7
-    _N_ATTRIBUTES_INCLUDING_NOISE = 24
+    _N_RELEVANT_FEATURES = 7
+    _N_FEATURES_INCLUDING_NOISE = 24
     _ORIGINAL_INSTANCES = np.array([[1, 1, 1, 0, 1, 1, 1],
                                     [0, 0, 1, 0, 0, 1, 0],
                                     [1, 0, 1, 1, 1, 0, 1],
@@ -76,8 +76,8 @@ class LED(base.SyntheticDataset):
 
     def __init__(self, seed: int or np.random.RandomState = None,
                  noise_percentage: float = 0.0, irrelevant_features: bool = False):
-        super().__init__(n_features=self._N_ATTRIBUTES_INCLUDING_NOISE if irrelevant_features else
-                         self._N_RELEVANT_ATTRIBUTES, n_classes=10, n_outputs=1,
+        super().__init__(n_features=self._N_FEATURES_INCLUDING_NOISE if irrelevant_features else
+                         self._N_RELEVANT_FEATURES, n_classes=10, n_outputs=1,
                          task=base.MULTI_CLF)
         self.seed = seed
         self._rng = None  # This is the actual random_state object used internally
@@ -99,14 +99,14 @@ class LED(base.SyntheticDataset):
             x = dict()
             y = self._rng.randint(self.n_classes)
 
-            for i, key in enumerate(self.feature_names[:self._N_RELEVANT_ATTRIBUTES]):
+            for i, key in enumerate(self.feature_names[:self._N_RELEVANT_FEATURES]):
                 if (0.01 + self._rng.rand()) <= self.noise_percentage:
                     x[key] = 1 if (self._ORIGINAL_INSTANCES[y, i] == 0) else 0
                 else:
                     x[key] = self._ORIGINAL_INSTANCES[y, i]
 
             if self.irrelevant_features:
-                for key in self.feature_names[self._N_RELEVANT_ATTRIBUTES:]:
+                for key in self.feature_names[self._N_RELEVANT_FEATURES:]:
                     x[key] = self._rng.randint(2)
 
             yield x, y
@@ -169,7 +169,7 @@ class LEDDrift(LED):
     def __iter__(self):
         self._rng = check_random_state(self.seed)
 
-        self._attr_idx = np.array([i for i in range(self._N_ATTRIBUTES_INCLUDING_NOISE)],
+        self._attr_idx = np.array([i for i in range(self._N_FEATURES_INCLUDING_NOISE)],
                                   dtype=int)
 
         # Change attributes
@@ -186,14 +186,14 @@ class LEDDrift(LED):
             x = dict()
             y = self._rng.randint(self.n_classes)
 
-            for i in range(self._N_RELEVANT_ATTRIBUTES):
+            for i in range(self._N_RELEVANT_FEATURES):
                 key = self.feature_names[self._attr_idx[i]]
                 if (0.01 + self._rng.rand()) <= self.noise_percentage:
                     x[key] = 1 if self._ORIGINAL_INSTANCES[y, i] == 0 else 0
                 else:
                     x[key] = self._ORIGINAL_INSTANCES[y, i]
             if self.irrelevant_features:
-                for i in range(self._N_RELEVANT_ATTRIBUTES, self._N_ATTRIBUTES_INCLUDING_NOISE):
+                for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
                     key = self.feature_names[self._attr_idx[i]]
                     x[key] = self._rng.randint(2)
 
