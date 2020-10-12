@@ -5,6 +5,7 @@ Each synthetic dataset is an infinite generator.
 """
 from .agrawal import Agrawal
 from .anomaly_sine import AnomalySine
+from .concept_drift_stream import ConceptDriftStream
 from .friedman import Friedman
 from .hyper_plane import Hyperplane
 from .led import LED
@@ -23,6 +24,7 @@ from .waveform import Waveform
 __all__ = [
     'Agrawal',
     'AnomalySine',
+    'ConceptDriftStream',
     'Friedman',
     'Hyperplane',
     'LED',
