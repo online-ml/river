@@ -78,13 +78,13 @@ class Sine(base.SyntheticDataset):
     {'x_0': 0.7367068302672689, 'x_1': 0.9558068694855607, 'x_2': 0.8206093713145775, 'x_3': 0.34498299608621885} 0
 
     """
-    _N_FEATURES = 2
+    _N_BASE_FEATURES = 2
     _N_FEATURES_INCLUDING_NOISE = 4
 
     def __init__(self, classification_function: int = 0,
                  seed: int or np.random.RandomState = None,
                  balance_classes: bool = False, has_noise: bool = False):
-        super().__init__(n_features=self._N_FEATURES if not has_noise else
+        super().__init__(n_features=self._N_BASE_FEATURES if not has_noise else
                          self._N_FEATURES_INCLUDING_NOISE, n_classes=2, n_outputs=1,
                          task=base.BINARY_CLF)
 
