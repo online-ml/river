@@ -17,6 +17,7 @@ from .random_tree import RandomTree
 from .sea import SEA
 from .sine import Sine
 from .stagger import STAGGER
+from .waveform import Waveform
 
 
 __all__ = [
@@ -33,5 +34,6 @@ __all__ = [
     "RandomTree",
     'SEA',
     'Sine',
-    'STAGGER'
+    'STAGGER',
+    'Waveform'
 ]
