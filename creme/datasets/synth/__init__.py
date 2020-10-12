@@ -9,6 +9,7 @@ from .friedman import Friedman
 from .hyper_plane import Hyperplane
 from .led import LED
 from .led import LEDDrift
+from .logical import Logical
 from .mixed import Mixed
 from .random_rbf import RandomRBF
 from .random_rbf import RandomRBFDrift
@@ -25,6 +26,7 @@ __all__ = [
     'Hyperplane',
     'LED',
     'LEDDrift',
+    'Logical',
     "Mixed",
     "RandomRBF",
     "RandomRBFDrift",
