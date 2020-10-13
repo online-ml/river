@@ -48,11 +48,11 @@ class RandomRBF(base.SyntheticDataset):
     >>>
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'x_0': 0.9518843224515854, 'x_1': 0.5263111393537324, 'x_2': 0.2509592736814733, 'x_3': 0.41771569778128864} 0
-    {'x_0': 0.33834301976555137, 'x_1': 0.8072293546884879, 'x_2': 0.8051013792705997, 'x_3': 0.41400330978417743} 3
-    {'x_0': -0.26405100652914065, 'x_1': 0.22750349200782943, 'x_2': 0.62867589091057, 'x_3': -0.053231303638964556} 2
-    {'x_0': 0.9050356803242892, 'x_1': 0.644345327931014, 'x_2': 0.12703344059062183, 'x_3': 0.45204029133645585} 2
-    {'x_0': 0.1874470388140732, 'x_1': 0.43485447399797306, 'x_2': 0.981993295921403, 'x_3': -0.045925785342077155} 2
+    {0: 0.9518, 1: 0.5263, 2: 0.2509, 3: 0.4177} 0
+    {0: 0.3383, 1: 0.8072, 2: 0.8051, 3: 0.4140} 3
+    {0: -0.2640, 1: 0.2275, 2: 0.6286, 3: -0.0532} 2
+    {0: 0.9050, 1: 0.6443, 2: 0.1270, 3: 0.4520} 2
+    {0: 0.1874, 1: 0.4348, 2: 0.9819, 3: -0.0459} 2
 
     """
 
@@ -67,8 +67,6 @@ class RandomRBF(base.SyntheticDataset):
         self.n_centroids = n_centroids
         self.centroids = None
         self.centroid_weights = None
-
-        self.feature_names = [f"x_{i}" for i in range(self.n_features)]
         self.target_values = [i for i in range(self.n_classes)]
 
     def __iter__(self):
@@ -80,19 +78,17 @@ class RandomRBF(base.SyntheticDataset):
             yield x, y
 
     def _generate_sample(self, rng_sample: np.random.RandomState):
-        x = dict()
         idx = random_index_based_on_weights(self.centroid_weights, rng_sample)
         current_centroid = self.centroids[idx]
         att_vals = dict()
         magnitude = 0.0
-        for key in self.feature_names:
-            att_vals[key] = (rng_sample.rand() * 2.0) - 1.0
-            magnitude += att_vals[key] * att_vals[key]
+        for i in range(self.n_features):
+            att_vals[i] = (rng_sample.rand() * 2.0) - 1.0
+            magnitude += att_vals[i] * att_vals[i]
         magnitude = np.sqrt(magnitude)
         desired_mag = rng_sample.normal() * current_centroid.std_dev
         scale = desired_mag / magnitude
-        for idx, key in enumerate(self.feature_names):
-            x[key] = current_centroid.centre[idx] + att_vals[key] * scale
+        x = {i: current_centroid.centre[i] + att_vals[i] * scale for i in range(self.n_features)}
         y = current_centroid.class_label
         return x, y
 
@@ -162,11 +158,11 @@ class RandomRBFDrift(RandomRBF):
     >>>
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'x_0': 1.196522912133933, 'x_1': 0.5729342869687664, 'x_2': 0.8607633992917512, 'x_3': 0.5888739485921395} 0
-    {'x_0': 0.33834301976555137, 'x_1': 0.8072293546884879, 'x_2': 0.8051013792705997, 'x_3': 0.41400330978417743} 3
-    {'x_0': 0.5362752113124996, 'x_1': -0.28673094640578217, 'x_2': 0.09628403108434666, 'x_3': 0.8974062767425162} 2
-    {'x_0': 1.1875780405113046, 'x_1': 1.0385542779679864, 'x_2': 0.8323812138717979, 'x_3': -0.055321659374305054} 2
-    {'x_0': 0.3256964019833385, 'x_1': 0.9206200355843615, 'x_2': 0.859567372541451, 'x_3': 0.5907446084774316} 2
+    {0: 1.1965, 1: 0.5729, 2: 0.8607, 3: 0.5888} 0
+    {0: 0.3383, 1: 0.8072, 2: 0.8051, 3: 0.4140} 3
+    {0: 0.5362, 1: -0.2867, 2: 0.0962, 3: 0.8974} 2
+    {0: 1.1875, 1: 1.0385, 2: 0.8323, 3: -0.0553} 2
+    {0: 0.3256, 1: 0.9206, 2: 0.8595, 3: 0.5907} 2
 
 
     """

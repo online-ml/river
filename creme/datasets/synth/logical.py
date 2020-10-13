@@ -35,11 +35,11 @@ class Logical(base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'x_1': 0, 'x_2': 1} {'OR': 1, 'XOR': 1, 'AND': 0}
-    {'x_1': 0, 'x_2': 1} {'OR': 1, 'XOR': 1, 'AND': 0}
-    {'x_1': 0, 'x_2': 0} {'OR': 0, 'XOR': 0, 'AND': 0}
-    {'x_1': 1, 'x_2': 1} {'OR': 1, 'XOR': 0, 'AND': 1}
-    {'x_1': 1, 'x_2': 0} {'OR': 1, 'XOR': 1, 'AND': 0}
+    {'A': 0, 'B': 1} {'OR': 1, 'XOR': 1, 'AND': 0}
+    {'A': 0, 'B': 1} {'OR': 1, 'XOR': 1, 'AND': 0}
+    {'A': 0, 'B': 0} {'OR': 0, 'XOR': 0, 'AND': 0}
+    {'A': 1, 'B': 1} {'OR': 1, 'XOR': 0, 'AND': 1}
+    {'A': 1, 'B': 0} {'OR': 1, 'XOR': 1, 'AND': 0}
 
     """
 
@@ -49,7 +49,7 @@ class Logical(base.SyntheticDataset):
         self.n_tiles = n_tiles
         self.shuffle = shuffle
         self.seed = seed
-        self.feature_names = ["x_1", "x_2"]
+        self.feature_names = ["A", "B"]
         self.target_names = ["OR", "XOR", "AND"]
 
     def __iter__(self):
@@ -65,7 +65,7 @@ class Logical(base.SyntheticDataset):
         """Make toy dataset
         """
         base_pattern = np.array([
-            # X  X  Y  Y  Y
+            # A  B  OR  XOR  AND
             [0, 0, 0, 0, 0],
             [0, 1, 1, 1, 0],
             [1, 0, 1, 1, 0],

@@ -64,11 +64,11 @@ class Mixed(base.SyntheticDataset):
     >>>
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'x_0': False, 'x_1': True, 'x_2': 0.7319939418114051, 'x_3': 0.5986584841970366} 1
-    {'x_0': False, 'x_1': False, 'x_2': 0.05808361216819946, 'x_3': 0.8661761457749352} 0
-    {'x_0': True, 'x_1': True, 'x_2': 0.020584494295802447, 'x_3': 0.9699098521619943} 1
-    {'x_0': False, 'x_1': True, 'x_2': 0.43194501864211576, 'x_3': 0.2912291401980419} 0
-    {'x_0': True, 'x_1': False, 'x_2': 0.29214464853521815, 'x_3': 0.3663618432936917} 1
+    {0: False, 1: True, 2: 0.7319, 3: 0.5986} 1
+    {0: False, 1: False, 2: 0.0580, 3: 0.8661} 0
+    {0: True, 1: True, 2: 0.0205, 3: 0.9699} 1
+    {0: False, 1: True, 2: 0.4319, 3: 0.2912} 0
+    {0: True, 1: False, 2: 0.2921, 3: 0.3663} 1
 
 
    """
@@ -93,14 +93,11 @@ class Mixed(base.SyntheticDataset):
         self.cat_features_idx = [0, 1]
         self.next_class_should_be_zero = False
 
-        self.feature_names = ["x_0", "x_1", "x_2", "x_3"]
-
     def __iter__(self):
         self._rng = check_random_state(self.seed)
         self.next_class_should_be_zero = False
 
         while True:
-            x = dict()
             att_0 = False
             att_1 = False
             att_2 = 0.
@@ -123,10 +120,7 @@ class Mixed(base.SyntheticDataset):
                         desired_class_found = True
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
-            x["x_0"] = att_0
-            x["x_1"] = att_1
-            x["x_2"] = att_2
-            x["x_3"] = att_3
+            x = {0: att_0, 1: att_1, 2: att_2, 3: att_3}
 
             yield x, y
 

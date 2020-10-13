@@ -51,11 +51,11 @@ class Hyperplane(base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'x_0': 0.7319939418114051, 'x_1': 0.5986584841970366} 1
-    {'x_0': 0.8661761457749352, 'x_1': 0.6011150117432088} 1
-    {'x_0': 0.8324426408004217, 'x_1': 0.21233911067827616} 0
-    {'x_0': 0.5247564316322378, 'x_1': 0.43194501864211576} 0
-    {'x_0': 0.29214464853521815, 'x_1': 0.3663618432936917} 0
+    {0: 0.7319, 1: 0.5986} 1
+    {0: 0.8661, 1: 0.6011} 1
+    {0: 0.8324, 1: 0.2123} 0
+    {0: 0.5247, 1: 0.4319} 0
+    {0: 0.2921, 1: 0.3663} 0
 
     Notes
     -----
@@ -92,8 +92,6 @@ class Hyperplane(base.SyntheticDataset):
             raise ValueError(f"Invalid noise_percentage ({noise_percentage}). "
                              "Valid range is [0.0, 1.0]")
         self.noise_percentage = noise_percentage
-
-        self.feature_names = [f"x_{i}" for i in range(self.n_features)]
         self.target_values = [0, 1]
 
     def __iter__(self):
@@ -107,9 +105,9 @@ class Hyperplane(base.SyntheticDataset):
 
             sum_weights = np.sum(self._weights)
             sum_value = 0
-            for i, key in enumerate(self.feature_names):
-                x[key] = self._rng.rand()
-                sum_value += self._weights[i] * x[key]
+            for i in range(self.n_features):
+                x[i] = self._rng.rand()
+                sum_value += self._weights[i] * x[i]
 
             y = 1 if sum_value >= sum_weights * 0.5 else 0
 

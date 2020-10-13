@@ -55,11 +55,11 @@ class LED(base.SyntheticDataset):
     >>>
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'x_0': 0, 'x_1': 1, 'x_2': 1, 'x_3': 1, 'x_4': 0, 'x_5': 0, 'x_6': 0} 4
-    {'x_0': 0, 'x_1': 1, 'x_2': 0, 'x_3': 1, 'x_4': 0, 'x_5': 0, 'x_6': 0} 4
-    {'x_0': 1, 'x_1': 0, 'x_2': 1, 'x_3': 1, 'x_4': 0, 'x_5': 0, 'x_6': 1} 3
-    {'x_0': 0, 'x_1': 1, 'x_2': 1, 'x_3': 0, 'x_4': 0, 'x_5': 1, 'x_6': 1} 0
-    {'x_0': 1, 'x_1': 1, 'x_2': 1, 'x_3': 1, 'x_4': 0, 'x_5': 1, 'x_6': 0} 4
+    {0: 0, 1: 1, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0} 4
+    {0: 0, 1: 1, 2: 0, 3: 1, 4: 0, 5: 0, 6: 0} 4
+    {0: 1, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 1} 3
+    {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 1, 6: 1} 0
+    {0: 1, 1: 1, 2: 1, 3: 1, 4: 0, 5: 1, 6: 0} 4
     """
     _N_RELEVANT_FEATURES = 7
     _N_FEATURES_INCLUDING_NOISE = 24
@@ -86,10 +86,7 @@ class LED(base.SyntheticDataset):
                              "Valid range is [0.0, 1.0]")
         self.noise_percentage = noise_percentage
         self.irrelevant_features = irrelevant_features
-
         self.n_cat_features = self.n_features
-
-        self.feature_names = [f"x_{i}" for i in range(self.n_features)]
         self.target_values = [i for i in range(self.n_classes)]
 
     def __iter__(self):
@@ -99,15 +96,15 @@ class LED(base.SyntheticDataset):
             x = dict()
             y = self._rng.randint(self.n_classes)
 
-            for i, key in enumerate(self.feature_names[:self._N_RELEVANT_FEATURES]):
+            for i in range(self._N_RELEVANT_FEATURES):
                 if (0.01 + self._rng.rand()) <= self.noise_percentage:
-                    x[key] = 1 if (self._ORIGINAL_INSTANCES[y, i] == 0) else 0
+                    x[i] = int(self._ORIGINAL_INSTANCES[y, i] == 0)
                 else:
-                    x[key] = self._ORIGINAL_INSTANCES[y, i]
+                    x[i] = self._ORIGINAL_INSTANCES[y, i]
 
             if self.irrelevant_features:
-                for key in self.feature_names[self._N_RELEVANT_FEATURES:]:
-                    x[key] = self._rng.randint(2)
+                for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
+                    x[i] = self._rng.randint(2)
 
             yield x, y
 
@@ -148,13 +145,12 @@ class LEDDrift(LED):
     ...                          irrelevant_features= True, n_drift_features=4)
     >>>
     >>> for x, y in dataset.take(5):
-    ...     print(x, y)
-    {'x_21': 1, 'x_1': 1, 'x_2': 1, 'x_3': 1, 'x_18': 0, 'x_19': 1, 'x_20': 1, 'x_7': 0, 'x_8': 0, 'x_9': 0, 'x_10': 1, 'x_11': 0, 'x_12': 1, 'x_13': 1, 'x_14': 1, 'x_15': 0, 'x_16': 0, 'x_17': 1, 'x_4': 1, 'x_5': 0, 'x_6': 1, 'x_0': 1, 'x_22': 0, 'x_23': 1} 8
-    {'x_21': 1, 'x_1': 1, 'x_2': 1, 'x_3': 1, 'x_18': 0, 'x_19': 0, 'x_20': 1, 'x_7': 1, 'x_8': 1, 'x_9': 0, 'x_10': 0, 'x_11': 0, 'x_12': 0, 'x_13': 1, 'x_14': 1, 'x_15': 1, 'x_16': 0, 'x_17': 0, 'x_4': 0, 'x_5': 1, 'x_6': 1, 'x_0': 0, 'x_22': 1, 'x_23': 1} 5
-    {'x_21': 1, 'x_1': 1, 'x_2': 1, 'x_3': 1, 'x_18': 0, 'x_19': 0, 'x_20': 1, 'x_7': 1, 'x_8': 0, 'x_9': 0, 'x_10': 0, 'x_11': 1, 'x_12': 1, 'x_13': 1, 'x_14': 1, 'x_15': 0, 'x_16': 0, 'x_17': 1, 'x_4': 0, 'x_5': 1, 'x_6': 0, 'x_0': 1, 'x_22': 0, 'x_23': 1} 8
-    {'x_21': 1, 'x_1': 0, 'x_2': 1, 'x_3': 1, 'x_18': 0, 'x_19': 1, 'x_20': 0, 'x_7': 0, 'x_8': 0, 'x_9': 1, 'x_10': 0, 'x_11': 0, 'x_12': 0, 'x_13': 0, 'x_14': 1, 'x_15': 0, 'x_16': 1, 'x_17': 1, 'x_4': 1, 'x_5': 1, 'x_6': 1, 'x_0': 0, 'x_22': 1, 'x_23': 0} 3
-    {'x_21': 1, 'x_1': 0, 'x_2': 1, 'x_3': 1, 'x_18': 0, 'x_19': 1, 'x_20': 1, 'x_7': 1, 'x_8': 1, 'x_9': 0, 'x_10': 1, 'x_11': 1, 'x_12': 0, 'x_13': 0, 'x_14': 1, 'x_15': 1, 'x_16': 1, 'x_17': 0, 'x_4': 0, 'x_5': 0, 'x_6': 1, 'x_0': 0, 'x_22': 1, 'x_23': 0} 5
-
+    ...     print(list(x.values()), y)
+    [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1] 8
+    [0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1] 5
+    [1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1] 8
+    [0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0] 3
+    [0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0] 5
     """
 
     _N_IRRELEVANT_ATTRIBUTES = 17
@@ -168,9 +164,7 @@ class LEDDrift(LED):
 
     def __iter__(self):
         self._rng = check_random_state(self.seed)
-
-        self._attr_idx = np.array([i for i in range(self._N_FEATURES_INCLUDING_NOISE)],
-                                  dtype=int)
+        self._attr_idx = np.arange(self._N_FEATURES_INCLUDING_NOISE)
 
         # Change attributes
         if self.irrelevant_features and self.n_drift_features > 0:
@@ -183,18 +177,16 @@ class LEDDrift(LED):
                 self._attr_idx[value_2] = value_1
 
         while True:
-            x = dict()
+            x = {i: -1 for i in range(self.n_features)}   # Initialize to keep order in dictionary
             y = self._rng.randint(self.n_classes)
 
             for i in range(self._N_RELEVANT_FEATURES):
-                key = self.feature_names[self._attr_idx[i]]
                 if (0.01 + self._rng.rand()) <= self.noise_percentage:
-                    x[key] = 1 if self._ORIGINAL_INSTANCES[y, i] == 0 else 0
+                    x[self._attr_idx[i]] = int(self._ORIGINAL_INSTANCES[y, i] == 0)
                 else:
-                    x[key] = self._ORIGINAL_INSTANCES[y, i]
+                    x[self._attr_idx[i]] = self._ORIGINAL_INSTANCES[y, i]
             if self.irrelevant_features:
                 for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
-                    key = self.feature_names[self._attr_idx[i]]
-                    x[key] = self._rng.randint(2)
+                    x[self._attr_idx[i]] = self._rng.randint(2)
 
             yield x, y

@@ -71,11 +71,11 @@ class Sine(base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'x_0': 0.37505712887328513, 'x_1': 0.6403046199226442, 'x_2': 0.950016579405167, 'x_3': 0.07567720470206152} 1
-    {'x_0': 0.7769296587181205, 'x_1': 0.8327457625618593, 'x_2': 0.054805740282408255, 'x_3': 0.8176773821752682} 1
-    {'x_0': 0.8853514580727667, 'x_1': 0.7223465108072455, 'x_2': 0.0025560317233443985, 'x_3': 0.9811992777207516} 0
-    {'x_0': 0.34341985076716164, 'x_1': 0.09475988817620429, 'x_2': 0.39464258869483526, 'x_3': 0.004944924811720708} 1
-    {'x_0': 0.7367068302672689, 'x_1': 0.9558068694855607, 'x_2': 0.8206093713145775, 'x_3': 0.34498299608621885} 0
+    {0: 0.3750, 1: 0.6403, 2: 0.9500, 3: 0.0756} 1
+    {0: 0.7769, 1: 0.8327, 2: 0.0548, 3: 0.8176} 1
+    {0: 0.8853, 1: 0.7223, 2: 0.0025, 3: 0.9811} 0
+    {0: 0.3434, 1: 0.0947, 2: 0.3946, 3: 0.0049} 1
+    {0: 0.7367, 1: 0.9558, 2: 0.8206, 3: 0.3449} 0
 
     """
     _N_BASE_FEATURES = 2
@@ -102,8 +102,6 @@ class Sine(base.SyntheticDataset):
         self.balance_classes = balance_classes
         self._rng = None  # This is the actual random_state object used internally
         self.next_class_should_be_zero = False
-
-        self.feature_names = [f"x_{i}" for i in range(self.n_features)]
         self.target_values = [i for i in range(self.n_classes)]
 
     def __iter__(self):
@@ -117,9 +115,9 @@ class Sine(base.SyntheticDataset):
             y = 0
             desired_class_found = False
             while not desired_class_found:
-                x['x_0'] = self._rng.rand()
-                x['x_1'] = self._rng.rand()
-                y = self._functions[self.classification_function](x['x_0'], x['x_1'])
+                x[0] = self._rng.rand()
+                x[1] = self._rng.rand()
+                y = self._functions[self.classification_function](x[0], x[1])
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -130,8 +128,8 @@ class Sine(base.SyntheticDataset):
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
             if self.has_noise:
-                x['x_2'] = self._rng.rand()
-                x['x_3'] = self._rng.rand()
+                x[2] = self._rng.rand()
+                x[3] = self._rng.rand()
 
             yield x, y
 
