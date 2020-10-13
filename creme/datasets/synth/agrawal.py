@@ -54,12 +54,12 @@ class Agrawal(base.SyntheticDataset):
     ...                         seed=42)
 
     >>> for x, y in dataset.take(5):
-    ...     print(x, y)
-    {'salary': 68690.21545015712, 'commission': 81303.57298074372, 'age': 62, 'elevel': 4, 'car': 6, 'zipcode': 2, 'hvalue': 419982.441072602, 'hyears': 11, 'loan': 433088.07288746757} 1
-    {'salary': 98144.95152661715, 'commission': 0, 'age': 43, 'elevel': 2, 'car': 1, 'zipcode': 7, 'hvalue': 266488.52816008433, 'hyears': 6, 'loan': 389.38292050716416} 0
-    {'salary': 148987.50270785828, 'commission': 0, 'age': 52, 'elevel': 3, 'car': 11, 'zipcode': 8, 'hvalue': 79122.91401980419, 'hyears': 27, 'loan': 199930.48585762773} 0
-    {'salary': 26066.536217770004, 'commission': 83031.66391310944, 'age': 34, 'elevel': 2, 'car': 11, 'zipcode': 6, 'hvalue': 444969.26574203646, 'hyears': 25, 'loan': 23225.20635999886} 1
-    {'salary': 98980.83074718699, 'commission': 0, 'age': 40, 'elevel': 0, 'car': 6, 'zipcode': 1, 'hvalue': 1159108.4298026664, 'hyears': 28, 'loan': 281644.10892276966} 0
+    ...     print(list(x.values()), y)
+    [68690.2154, 81303.5729, 62, 4, 6, 2, 419982.4410, 11, 433088.0728] 1
+    [98144.9515, 0, 43, 2, 1, 7, 266488.5281, 6, 389.3829] 0
+    [148987.502, 0, 52, 3, 11, 8, 79122.9140, 27, 199930.4858] 0
+    [26066.5362, 83031.6639, 34, 2, 11, 6, 444969.2657, 25, 23225.2063] 1
+    [98980.8307, 0, 40, 0, 6, 1, 1159108.4298, 28, 281644.1089] 0
 
     Notes
     -----
@@ -117,7 +117,7 @@ class Agrawal(base.SyntheticDataset):
         self._next_class_should_be_zero = False
 
         while True:
-            group = 0
+            y = 0
             desired_class_found = False
             while not desired_class_found:
                 salary = 20000 + 130000 * self._rng.rand()
@@ -129,18 +129,17 @@ class Agrawal(base.SyntheticDataset):
                 hvalue = (9 - zipcode) * 100000 * (0.5 + self._rng.rand())
                 hyears = 1 + self._rng.randint(30)
                 loan = self._rng.rand() * 500000
-                group = self._classification_functions[self.classification_function](salary,
-                                                                                     commission,
-                                                                                     age, elevel,
-                                                                                     car,
-                                                                                     zipcode,
-                                                                                     hvalue,
-                                                                                     hyears, loan)
+                y = self._classification_functions[self.classification_function](salary,
+                                                                                 commission,
+                                                                                 age, elevel,
+                                                                                 car, zipcode,
+                                                                                 hvalue, hyears,
+                                                                                 loan)
                 if not self.balance_classes:
                     desired_class_found = True
                 else:
-                    if (self._next_class_should_be_zero and (group == 0)) or \
-                            ((not self._next_class_should_be_zero) and (group == 1)):
+                    if (self._next_class_should_be_zero and (y == 0)) or \
+                            ((not self._next_class_should_be_zero) and (y == 1)):
                         desired_class_found = True
                         self._next_class_should_be_zero = not self._next_class_should_be_zero
 
@@ -154,9 +153,8 @@ class Agrawal(base.SyntheticDataset):
                 loan = self._perturb_value(loan, 0, 500000)
 
             x = dict()
-            for key in self.feature_names:
-                x[key] = eval(key)
-            y = group
+            for feature in self.feature_names:
+                x[feature] = eval(feature)
 
             yield x, y
 
@@ -203,7 +201,7 @@ class Agrawal(base.SyntheticDataset):
         elif age < 60:
             return int((elevel == 1) or (elevel == 2) or (elevel == 3))
         else:
-            return int((elevel == 2) or (elevel == 3)) or (elevel == 4)
+            return int((elevel == 2) or (elevel == 3) or (elevel == 4))
 
     @staticmethod
     def _classification_function_3(salary, commission, age, elevel, car, zipcode, hvalue,

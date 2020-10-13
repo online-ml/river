@@ -103,7 +103,6 @@ class STAGGER(base.SyntheticDataset):
         self.next_class_should_be_zero = False
 
         while True:
-            x = dict()
             size = 0
             color = 0
             shape = 0
@@ -124,9 +123,7 @@ class STAGGER(base.SyntheticDataset):
                         desired_class_found = True
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
-            x["size"] = size
-            x["color"] = color
-            x["shape"] = shape
+            x = {"size": size, "color": color, "shape": shape}
 
             yield x, y
 
