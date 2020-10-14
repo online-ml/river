@@ -37,6 +37,34 @@
   <code>creme</code> is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. All the tools in the library can be updated with a single observation at a time, and can therefore be used to <b>learn from streaming data</b>.
 </p>
 
+## 🤗 Merger announcement
+
+### TLDR
+
+[creme](https://creme-ml.github.io/) and [scikit-multiflow](https://scikit-multiflow.github.io/) are merging. A new package will result from this merge. Both development teams will work together on this new package.
+
+### Why?
+
+We feel that both projects share the same vision. We believe that pooling our resources instead of duplicating work will benefit both sides. We are also confident that this will benefit both communities. There will be more people working on the new project, which will allow us to distribute work more efficiently. We will thus be able to work on more features and improve the overall quality of the project.
+
+### How does this affect each project?
+
+Both projects will stop active development once the new package is released. The code for both projects will remain publicly available, although development will only focus on minor maintenance during a transition period. During this transition period, most of the functionality of both projects will be made available in the new package.
+
+The architecture of the new package is more Pythonic. It will focus on single-instance incremental models. The new API reflects these changes.
+
+Detailed information on the new architecture and API will be available with the release of the new package.
+
+### How does this affect users?
+
+We encourage users to move towards the new package when possible. We understand that this transition will require an extra effort in the short term from current users. However, we believe that the result will be better for everyone in the long run.
+
+You will still be able to install and use `creme` as well as `scikit-multiflow`. Both projects will remain on PyPI, conda-forge and GitHub.
+
+### When?
+
+The target date for the first release: **2nd half of October 2020**.
+
 ## ⚡️Quickstart
 
 As a quick example, we'll train a logistic regression to classify the [website phishing dataset](http://archive.ics.uci.edu/ml/datasets/Website+Phishing). Here's a look at the first observation in the dataset.

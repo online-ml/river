@@ -284,7 +284,7 @@ def print_docstring(obj, file, depth):
     printf('')
 
     # Methods
-    if inspect.isclass(obj):
+    if inspect.isclass(obj) and doc['Methods']:
         printf(h2('Methods'))
         printf_indent = lambda x, **kwargs: printf(f'    {x}', **kwargs)
 
