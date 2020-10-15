@@ -1,4 +1,4 @@
-import warnings
+import textwrap
 
 import numpy as np
 
@@ -45,15 +45,6 @@ class ConceptDriftStream(base.SyntheticDataset):
     width
         Width of concept drift change.
 
-    Notes
-    -----
-    An optional way to estimate the width of the transition $w$ is based on
-    the angle $\alpha$, $w = 1/ tan(\alpha)$. Since width corresponds to
-    the number of samples for the transition, the width is rounded to the
-    nearest smaller integer. Notice that larger values of $\alpha$ result in
-    smaller widths. For $\alpha > 45.0$, the width is smaller than 1 so values
-    are rounded to 1 to avoid division by zero errors.
-
     Examples
     --------
     >>> from creme import synth
@@ -74,6 +65,16 @@ class ConceptDriftStream(base.SyntheticDataset):
     {0: 0.2653, 1: 1.9883, 2: 6.4988} False
     {0: 5.4494, 1: 2.2044, 2: 5.8926} False
     {0: 8.0943, 1: 0.0649, 2: 8.0581} False
+
+    Notes
+    -----
+    An optional way to estimate the width of the transition $w$ is based on
+    the angle $\alpha$, $w = 1/ tan(\alpha)$. Since width corresponds to
+    the number of samples for the transition, the width is rounded to the
+    nearest smaller integer. Notice that larger values of $\alpha$ result in
+    smaller widths. For $\alpha > 45.0$, the width is smaller than 1 so values
+    are rounded to 1 to avoid division by zero errors.
+
     """
 
     def __init__(self, stream: base.SyntheticDataset = Agrawal(seed=112),
@@ -126,3 +127,30 @@ class ConceptDriftStream(base.SyntheticDataset):
             except StopIteration:
                 break
             yield x, y
+
+    def __repr__(self):
+        params = self._get_params()
+        l_len_config = max(map(len, params.keys()))
+        r_len_config = max(map(len, map(str, params.values())))
+
+        config = '\n\nConfiguration:\n'
+        for k, v in params.items():
+            if not isinstance(v, base.SyntheticDataset):
+                indent = 0
+            else:
+                indent = l_len_config + 2
+            config += ''.join(k.rjust(l_len_config) + '  ' +
+                              textwrap.indent(str(v).ljust(r_len_config), ' ' * indent)) + '\n'
+
+        l_len_prop = max(map(len, self._repr_content.keys()))
+        r_len_prop = max(map(len, self._repr_content.values()))
+
+        out = (
+                f'Synthetic data generator\n\n' +
+                '\n'.join(
+                    k.rjust(l_len_prop) + '  ' + v.ljust(r_len_prop)
+                    for k, v in self._repr_content.items()
+                ) + config
+        )
+
+        return out

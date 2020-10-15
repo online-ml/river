@@ -37,6 +37,20 @@ class Mixed(base.SyntheticDataset):
         Whether to balance classes or not. If balanced, the class distribution
         will converge to a uniform distribution.
 
+    Examples
+    --------
+    >>> from creme import synth
+    >>>
+    >>> dataset = synth.Mixed(seed = 42, classification_function=1, balance_classes = True)
+    >>>
+    >>> for x, y in dataset.take(5):
+    ...     print(x, y)
+    {0: False, 1: True, 2: 0.7319, 3: 0.5986} 1
+    {0: False, 1: False, 2: 0.0580, 3: 0.8661} 0
+    {0: True, 1: True, 2: 0.0205, 3: 0.9699} 1
+    {0: False, 1: True, 2: 0.4319, 3: 0.2912} 0
+    {0: True, 1: False, 2: 0.2921, 3: 0.3663} 1
+
     Notes
     -----
     The sample generation works as follows: The two numeric attributes are
@@ -55,21 +69,6 @@ class Mixed(base.SyntheticDataset):
     [^1]: Gama, Joao, et al. "Learning with drift detection." Advances in
           artificial intelligence–SBIA 2004. Springer Berlin Heidelberg,
           2004. 286-295"
-
-    Examples
-    --------
-    >>> from creme import synth
-    >>>
-    >>> dataset = synth.Mixed(seed = 42, classification_function=1, balance_classes = True)
-    >>>
-    >>> for x, y in dataset.take(5):
-    ...     print(x, y)
-    {0: False, 1: True, 2: 0.7319, 3: 0.5986} 1
-    {0: False, 1: False, 2: 0.0580, 3: 0.8661} 0
-    {0: True, 1: True, 2: 0.0205, 3: 0.9699} 1
-    {0: False, 1: True, 2: 0.4319, 3: 0.2912} 0
-    {0: True, 1: False, 2: 0.2921, 3: 0.3663} 1
-
 
    """
 

@@ -38,24 +38,6 @@ class STAGGER(base.SyntheticDataset):
         Whether to balance classes or not. If balanced, the class
         distribution will converge to an uniform distribution.
 
-    References
-    ----------
-    [^1]: Gama, Joao, et al.'s 'Learning with drift detection.
-          'Advances in artificial intelligence–SBIA 2004.
-          Springer Berlin Heidelberg, 2004. 286-295."
-
-    Notes
-    -----
-    The sample generation works as follows: The 3 attributes are
-    generated with the random number generator. The classification function
-    defines whether to classify the instance as class 0 or class 1. Finally,
-    data is balanced, if this option is set by the user.
-
-    References
-    ----------
-    [^1]: Schlimmer, J. C., & Granger, R. H. (1986). Incremental learning
-          from noisy data. Machine learning, 1(3), 317-354.
-
     Examples
     --------
     >>> from creme import synth
@@ -70,6 +52,18 @@ class STAGGER(base.SyntheticDataset):
     {'size': 0, 'color': 0, 'shape': 0} 0
     {'size': 1, 'color': 2, 'shape': 0} 1
     {'size': 1, 'color': 0, 'shape': 2} 1
+
+    Notes
+    -----
+    The sample generation works as follows: The 3 attributes are
+    generated with the random number generator. The classification function
+    defines whether to classify the instance as class 0 or class 1. Finally,
+    data is balanced, if this option is set by the user.
+
+    References
+    ----------
+    [^1]: Schlimmer, J. C., & Granger, R. H. (1986). Incremental learning
+          from noisy data. Machine learning, 1(3), 317-354.
 
     """
 

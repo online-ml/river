@@ -56,12 +56,6 @@ class Sine(base.SyntheticDataset):
     The generated sample will have 2 relevant features, and an additional
     two noise features if `has_noise` is set.
 
-    References
-    ----------
-    [^1]: Gama, Joao, et al.'s 'Learning with drift detection.'
-          Advances in artificial intelligence–SBIA 2004.
-          Springer Berlin Heidelberg, 2004. 286-295."
-
     Examples
     --------
     >>> from creme import synth
@@ -76,6 +70,12 @@ class Sine(base.SyntheticDataset):
     {0: 0.8853, 1: 0.7223, 2: 0.0025, 3: 0.9811} 0
     {0: 0.3434, 1: 0.0947, 2: 0.3946, 3: 0.0049} 1
     {0: 0.7367, 1: 0.9558, 2: 0.8206, 3: 0.3449} 0
+
+    References
+    ----------
+    [^1]: Gama, Joao, et al.'s 'Learning with drift detection.'
+          Advances in artificial intelligence–SBIA 2004.
+          Springer Berlin Heidelberg, 2004. 286-295."
 
     """
     _N_BASE_FEATURES = 2
