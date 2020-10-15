@@ -2,7 +2,7 @@ from .base_split_criterion import SplitCriterion
 
 
 class VarianceReductionSplitCriterion(SplitCriterion):
-    """ Variance Reduction split criterion.
+    """Variance Reduction split criterion.
 
     Often employed in cases where the target variable is continuous (regression tree),
     meaning that use of many other metrics would first require discretization before being applied.

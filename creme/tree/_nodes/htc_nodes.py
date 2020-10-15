@@ -30,7 +30,7 @@ class LearningNodeMC(LearningNode):
 
     @property
     def total_weight(self):
-        """ Calculate the total weight seen by the node.
+        """Calculate the total weight seen by the node.
 
         Returns
         -------
@@ -41,7 +41,7 @@ class LearningNodeMC(LearningNode):
         return sum(self.stats.values()) if self.stats else 0
 
     def observed_class_distribution_is_pure(self):
-        """ Check if observed class distribution is pure, i.e. if all samples
+        """Check if observed class distribution is pure, i.e. if all samples
         belong to the same class.
 
         Returns
@@ -74,7 +74,7 @@ class LearningNodeNBA(LearningNodeMC):
         self._nb_correct_weight = 0.0
 
     def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
-        """ Update the node with the provided instance.
+        """Update the node with the provided instance.
 
         Parameters
         ----------
@@ -100,7 +100,7 @@ class LearningNodeNBA(LearningNodeMC):
         super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
 
     def predict_one(self, X, *, tree=None):
-        """ Get the votes per class for a given instance.
+        """Get the votes per class for a given instance.
 
         Parameters
         ----------
@@ -121,7 +121,7 @@ class LearningNodeNBA(LearningNodeMC):
 
 
 class ActiveLearningNodeMC(LearningNodeMC, ActiveLeafClass):
-    """ Learning node that supports growth.
+    """Learning node that supports growth.
 
     Parameters
     ----------
@@ -136,7 +136,7 @@ class ActiveLearningNodeMC(LearningNodeMC, ActiveLeafClass):
 
 
 class InactiveLearningNodeMC(LearningNodeMC, InactiveLeaf):
-    """ Inactive learning node that does not grow.
+    """Inactive learning node that does not grow.
 
     Parameters
     ----------
@@ -151,7 +151,7 @@ class InactiveLearningNodeMC(LearningNodeMC, InactiveLeaf):
 
 
 class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
-    """ Learning node that uses Naive Bayes models.
+    """Learning node that uses Naive Bayes models.
 
     Parameters
     ----------
@@ -165,7 +165,7 @@ class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
         super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
-        """ Disable an attribute observer.
+        """Disable an attribute observer.
 
         Disabled in Nodes using Naive Bayes, since poor attributes are used in
         Naive Bayes calculation.
@@ -179,7 +179,7 @@ class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
 
 
 class ActiveLearningNodeNBA(LearningNodeNBA, ActiveLeafClass):
-    """ Learning node that uses Adaptive Naive Bayes models.
+    """Learning node that uses Adaptive Naive Bayes models.
 
     Parameters
     ----------
@@ -193,7 +193,7 @@ class ActiveLearningNodeNBA(LearningNodeNBA, ActiveLeafClass):
         super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
-        """ Disable an attribute observer.
+        """Disable an attribute observer.
 
         Disabled in Nodes using Naive Bayes, since poor attributes are used in
         Naive Bayes calculation.
