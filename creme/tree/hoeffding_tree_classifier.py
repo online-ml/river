@@ -17,7 +17,7 @@ from ._nodes import InactiveLearningNodeMC
 
 
 class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
-    """ Hoeffding Tree or Very Fast Decision Tree classifier.
+    """Hoeffding Tree or Very Fast Decision Tree classifier.
 
     Parameters
     ----------
@@ -74,18 +74,18 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     >>> # Imports
     >>> from skmultiflow.data import SEAGenerator
     >>> from skmultiflow.trees import HoeffdingTreeClassifier
-    >>>
+
     >>> # Setting up a data stream
     >>> stream = SEAGenerator(seed=1)
-    >>>
+
     >>> # Setup Hoeffding Tree estimator
     >>> ht = HoeffdingTreeClassifier()
-    >>>
+
     >>> # Setup variables to control loop and track performance
     >>> n_samples = 0
     >>> correct_cnt = 0
     >>> max_samples = 200
-    >>>
+
     >>> # Train the estimator with the samples provided by the data stream
     >>> while n_samples < max_samples and stream.has_more_samples():
     >>>     X, y = stream.next_sample()
@@ -94,7 +94,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     >>>         correct_cnt += 1
     >>>     ht = ht.partial_fit(X, y)
     >>>     n_samples += 1
-    >>>
+
     >>> # Display results
     >>> print('{} samples analyzed.'.format(n_samples))
     >>> print('Hoeffding Tree accuracy: {}'.format(correct_cnt / n_samples))
@@ -149,14 +149,14 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
             self._leaf_prediction = leaf_prediction
 
     def learn_one(self, x, y, *, sample_weight=1.):
-        """ Trains the model on instance x and corresponding target y.
+        """Train the model on instance x and corresponding target y.
 
         Parameters
         ----------
         x
             Instance attributes.
         y
-            Class label for sample X.
+            Class label for sample x.
         sample_weight
             Sample weight.
 
@@ -218,7 +218,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
         return self
 
     def predict_proba_one(self, x):
-        """ Predict probabilities of all label of the x instance.
+        """Predict probabilities of all label of the x instance.
 
         Parameters
         ----------
@@ -258,7 +258,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
             return InactiveLearningNodeMC(initial_stats, depth)
 
     def _attempt_to_split(self, node: ActiveLeaf, parent: SplitNode, parent_idx: int):
-        """ Attempt to split a node.
+        """Attempt to split a node.
 
         If the samples seen so far are not from the same class then:
 

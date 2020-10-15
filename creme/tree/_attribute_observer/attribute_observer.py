@@ -6,34 +6,25 @@ class AttributeObserver(metaclass=ABCMeta):
     This observer monitors the class distribution of a given attribute.
 
     This class should not be instantiated, as none of its methods are implemented.
-
-    Raises
-    ------
-    NotImplementedError: This is an abstract class.
-
     """
 
     def __init__(self):
         super().__init__()
 
     @abstractmethod
-    def update(self, att_val, class_val, sample_weight):
-        """Update statistics of this observer given an attribute value, a class
+    def update(self, att_val, target_val, sample_weight):
+        """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
 
         Parameters
         ----------
-        att_val : float
+        att_val
             The value of the attribute.
-
-        class_val: int
-            The class value.
-
-        sample_weight: float
+        target_val
+            The target value.
+        sample_weight
             The weight of the instance.
-
         """
-        raise NotImplementedError
 
     @abstractmethod
     def probability_of_attribute_value_given_class(self, att_val, class_val):
@@ -41,10 +32,9 @@ class AttributeObserver(metaclass=ABCMeta):
 
         Parameters
         ----------
-        att_val: float
+        att_val
             The value of the attribute.
-
-        class_val: int
+        class_val
             The class value.
 
         Returns
@@ -53,24 +43,23 @@ class AttributeObserver(metaclass=ABCMeta):
             Probability for an attribute value given a class.
 
         """
-        raise NotImplementedError
 
     @abstractmethod
     def get_best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
-        """ get_best_evaluated_split_suggestion
-
-        Gets the best split suggestion given a criterion and a class distribution
+        """Get the best split suggestion given a criterion and the target's statistics.
 
         Parameters
         ----------
-        criterion: The split criterion to use
-        pre_split_dist: The class distribution before the split
-        att_idx: The attribute index
-        binary_only: True to use binary splits
+        criterion
+            The split criterion to use.
+        pre_split_dist
+            The target statistics before the split.
+        att_idx
+            The attribute index.
+        binary_only
+            True if only binary splits are allowed.
 
         Returns
         -------
-        Suggestion of best attribute split
-
+            Suggestion of the best attribute split.
         """
-        raise NotImplementedError

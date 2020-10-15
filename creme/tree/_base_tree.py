@@ -1,11 +1,10 @@
+import typing
 from abc import ABC, abstractmethod
 
 import math
-import copy
-from operator import itemgetter
 
-# TODO review later
-from skmultiflow.rules.base_rule import Rule
+# # TODO review later
+# from skmultiflow.rules.base_rule import Rule
 
 from creme.utils.skmultiflow_utils import calculate_object_size
 
@@ -19,14 +18,27 @@ from ._attribute_test import InstanceConditionalTest
 
 
 class DecisionTree(ABC):
-    """ Base class for Decision Trees.
+    """Base class for Decision Trees.
 
     It defines base operations and properties that all the decision trees must inherit or
     implement according to their own particularities.
 
-    Particularly, the base Decision Tree defines the following standards:
+    Particularly, all the Decision Trees by inheriting from this class are able to:
 
-    * TODO
+    * Setting up a maximum allowed tree depth to reach (by using `max_depth`).
+    * Handling *Active* and *Inactive* nodes: Active learning nodes besides updating their own
+    statistics to improve predictions, also monitor input features to perform split attempts.
+    Inactive learning nodes only keep the predictors; they are used to save memory in the tree
+    (`max_size` parameter).
+    *  Define strategies to sort leaves according to how likely they are going to be split.
+    This enables deactivating non-promising leaves to save memory.
+    * Enabling and disabling memory management.
+    * Disabling 'poor' attributes to save memory and speed up tree construction. A poor attribute is
+    an input feature whose split merit is much smaller than the current best candidate. Once a feature
+    is disabled, the tree stops saving statistics necessary to split such a feature.
+    * Define common properties to access leaf prediction strategies, split criteria, and other tree
+    characteristics.
+
 
     Parameters
     ----------
@@ -75,21 +87,21 @@ class DecisionTree(ABC):
 
     @staticmethod
     def _hoeffding_bound(range_val, confidence, n):
-        r""" Compute the Hoeffding bound, used to decide how many samples are necessary at each
+        r"""Compute the Hoeffding bound, used to decide how many samples are necessary at each
         node.
 
         Notes
         -----
         The Hoeffding bound is defined as:
 
-        $\epsilon = \sqrt{\frac{R^2\ln(1/\delta))}{2n}}$
+        $\\epsilon = \\sqrt{\\frac{R^2\\ln(1/\\delta))}{2n}}$
 
         where:
 
-        $\epsilon$: Hoeffding bound.
+        $\\epsilon$: Hoeffding bound.
         $R$: Range of a random variable. For a probability the range is 1, and for an
         information gain the range is log *c*, where *c* is the number of classes.
-        $\delta: Confidence. 1 minus the desired probability of choosing the correct
+        $\\delta$: Confidence. 1 minus the desired probability of choosing the correct
         attribute at any given node.
         $n$: Number of samples.
 
@@ -115,7 +127,7 @@ class DecisionTree(ABC):
 
     @property
     def model_measurements(self):
-        """ Collect metrics corresponding to the current status of the tree.
+        """Collect metrics corresponding to the current status of the tree.
 
         Returns
         -------
@@ -135,7 +147,7 @@ class DecisionTree(ABC):
         return measurements
 
     def get_model_description(self):
-        """ Walk the tree and return its structure in a buffer.
+        """Walk the tree and return its structure in a buffer.
 
         Returns
         -------
@@ -153,13 +165,13 @@ class DecisionTree(ABC):
 
     def _new_split_node(self, split_test: InstanceConditionalTest, target_stats: dict = None,
                         depth: int = 0) -> SplitNode:
-        """ Create a new split node."""
+        """Create a new split node."""
         return SplitNode(split_test, target_stats, depth)
 
     @abstractmethod
     def _new_learning_node(self, initial_stats: dict = None, parent: LearningNode = None,
                            is_active: bool = True) -> LearningNode:
-        """ Create a new learning node.
+        """Create a new learning node.
 
         The characteristics of tje learning node depends on the tree algorithm.
 
@@ -180,7 +192,7 @@ class DecisionTree(ABC):
 
     @property
     def depth(self) -> int:
-        """ Calculate the depth of the tree.
+        """Calculate the depth of the tree.
 
         Returns
         -------
@@ -193,26 +205,26 @@ class DecisionTree(ABC):
 
     @property
     def split_criterion(self) -> str:
-        """ Return a string with the name of the split criterion being used by the tree. """
+        """Return a string with the name of the split criterion being used by the tree. """
         return self._split_criterion
 
     @split_criterion.setter
     @abstractmethod
     def split_criterion(self, split_criterion):
-        """ Define the split criterion to be used by the tree. """
+        """Define the split criterion to be used by the tree. """
 
     @property
     def leaf_prediction(self) -> str:
-        """ Return the prediction strategy used by the tree at its leaves. """
+        """Return the prediction strategy used by the tree at its leaves. """
         return self._leaf_prediction
 
     @leaf_prediction.setter
     @abstractmethod
     def leaf_prediction(self, leaf_prediction):
-        """ Define the prediction strategy used by the tree in its leaves."""
+        """Define the prediction strategy used by the tree in its leaves."""
 
     def _enforce_size_limit(self):
-        """ Track the size of the tree and disable/enable nodes if required."""
+        """Track the size of the tree and disable/enable nodes if required."""
         tree_size = (self._active_leaf_size_estimate
                      + self._n_inactive_leaves * self._inactive_leaf_size_estimate) \
             * self._size_estimate_overhead_fraction
@@ -243,7 +255,7 @@ class DecisionTree(ABC):
                                     learning_nodes[i].parent_branch)
 
     def _estimate_model_size(self):
-        """ Calculate the size of the model and trigger tracker function
+        """Calculate the size of the model and trigger tracker function
         if the actual model size exceeds the max size in the configuration."""
         learning_nodes = self._find_learning_nodes()
         total_active_size = 0
@@ -269,14 +281,14 @@ class DecisionTree(ABC):
             self._enforce_size_limit()
 
     def _deactivate_all_leaves(self):
-        """ Deactivate all leaves. """
+        """Deactivate all leaves. """
         learning_nodes = self._find_learning_nodes()
         for cur_node in learning_nodes:
             if isinstance(cur_node, ActiveLeaf):
                 self._deactivate_leaf(cur_node.node, cur_node.parent, cur_node.parent_branch)
 
     def _deactivate_leaf(self, to_deactivate: ActiveLeaf, parent: SplitNode, parent_branch: int):
-        """ Deactivate a learning node.
+        """Deactivate a learning node.
 
         Parameters
         ----------
@@ -289,7 +301,7 @@ class DecisionTree(ABC):
         """
 
         # We pass the active learning node as parent to ensure its properties are accessible
-        # to perform possible transferences or copies (as it happens in the regression case)
+        # to perform possible transfers or copies (as it happens in the regression case)
         new_leaf = self._new_learning_node(to_deactivate.stats, parent=to_deactivate,
                                            is_active=False)
         new_leaf.depth -= 1  # To ensure we do not skip a tree level
@@ -301,7 +313,7 @@ class DecisionTree(ABC):
         self._n_inactive_leaves += 1
 
     def _activate_leaf(self, to_activate: InactiveLeaf, parent: SplitNode, parent_branch: int):
-        """ Activate a learning node.
+        """Activate a learning node.
 
         Parameters
         ----------
@@ -321,8 +333,8 @@ class DecisionTree(ABC):
         self._n_active_leaves += 1
         self._n_inactive_leaves -= 1
 
-    def _find_learning_nodes(self):
-        """ Find learning nodes in the tree.
+    def _find_learning_nodes(self) -> typing.List[FoundNode]:
+        """Find learning nodes in the tree.
 
         Returns
         -------
@@ -334,7 +346,7 @@ class DecisionTree(ABC):
         return found_list
 
     def __find_learning_nodes(self, node, parent, parent_branch, found):
-        """ Find learning nodes in the tree from a given node.
+        """Find learning nodes in the tree from a given node.
 
         Parameters
         ----------
@@ -344,8 +356,8 @@ class DecisionTree(ABC):
             The node's parent.
         parent_branch
             Parent node's branch.
-        depth
-            The node's depth.
+        found
+            A list of found nodes.
 
         Returns
         -------
@@ -361,38 +373,39 @@ class DecisionTree(ABC):
                     self.__find_learning_nodes(
                         split_node.get_child(i), split_node, i, found)
 
-    # TODO review
-    def get_model_rules(self):
-        """ Returns list of rules describing the tree.
-
-        Returns
-        -------
-        list (Rule)
-            list of the rules describing the tree
-        """
-        root = self._tree_root
-        rules = []
-
-        def recurse(node, cur_rule, ht):
-            if isinstance(node, SplitNode):
-                for i, child in node._children.items():
-                    predicate = node.get_predicate(i)
-                    r = copy.deepcopy(cur_rule)
-                    r.predicate_set.append(predicate)
-                    recurse(child, r, ht)
-            else:
-                cur_rule.observed_class_distribution = node.stats.copy()
-                cur_rule.class_idx = max(node.stats.items(), key=itemgetter(1))[0]
-                rules.append(cur_rule)
-
-        rule = Rule()
-        recurse(root, rule, self)
-        return rules
-
-    def get_rules_description(self):
-        """ Prints the description of tree using rules."""
-        description = ''
-        for rule in self.get_model_rules():
-            description += str(rule) + '\n'
-
-        return description
+    # # TODO review -> compat with rule-based algorithms
+    # def get_model_rules(self):
+    #     """Returns list of rules describing the tree.
+    #
+    #     Returns
+    #     -------
+    #     list (Rule)
+    #         list of the rules describing the tree
+    #     """
+    #     root = self._tree_root
+    #     rules = []
+    #
+    #     def recurse(node, cur_rule, ht):
+    #         if isinstance(node, SplitNode):
+    #             for i, child in node._children.items():
+    #                 predicate = node.get_predicate(i)
+    #                 r = copy.deepcopy(cur_rule)
+    #                 r.predicate_set.append(predicate)
+    #                 recurse(child, r, ht)
+    #         else:
+    #             cur_rule.observed_class_distribution = node.stats.copy()
+    #             cur_rule.class_idx = max(node.stats.items(), key=itemgetter(1))[0]
+    #             rules.append(cur_rule)
+    #
+    #     rule = Rule()
+    #     recurse(root, rule, self)
+    #     return rules
+    #
+    # # TODO review -> compat with rule-based algorithms
+    # def get_rules_description(self):
+    #     """Print the description of tree using rules."""
+    #     description = ''
+    #     for rule in self.get_model_rules():
+    #         description += str(rule) + '\n'
+    #
+    #     return description

@@ -5,7 +5,7 @@ from .attribute_observer import AttributeObserver
 
 
 class NominalAttributeClassObserver(AttributeObserver):
-    """ Class for observing the class data distribution for a nominal attribute.
+    """Class for observing the class data distribution for a nominal attribute.
     This observer monitors the class distribution of a given attribute.
     Used in naive Bayes and decision trees to monitor data statistics on leaves.
 

@@ -12,7 +12,7 @@ from ._nodes import AdaSplitNodeClassifier
 
 
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
-    """ Hoeffding Adaptive Tree classifier.
+    """Hoeffding Adaptive Tree classifier.
 
     Parameters
     ----------
@@ -78,12 +78,12 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     >>> from skmultiflow.evaluation import EvaluatePrequential
     >>> # Setup the File Stream
     >>> stream = ConceptDriftStream(seed=123456, position=25000)
-    >>>
+
     >>> classifier = HoeffdingAdaptiveTreeClassifier()
     >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=50000, batch_size=1,
     >>>                                 n_wait=200, max_time=1000, output_file=None,
     >>>                                 show_plot=True, metrics=['kappa', 'kappa_t', 'accuracy'])
-    >>>
+
     >>> evaluator.evaluate(stream=stream, model=classifier)
 
     """

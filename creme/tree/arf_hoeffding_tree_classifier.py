@@ -18,13 +18,13 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
         | Split criterion to use.
         | 'gini' - Gini
         | 'info_gain' - Information Gain
-        | 'hellinger' - Helinger Distance
+        | 'hellinger' - Hellinger Distance
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
+        | Prediction mechanism used at leaves.
         | 'mc' - Majority Class
         | 'nb' - Naive Bayes
         | 'nba' - Naive Bayes Adaptive

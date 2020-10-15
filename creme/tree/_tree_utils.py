@@ -2,8 +2,7 @@ import math
 
 
 def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_observers: dict):
-    """
-    Perform Naive Bayes prediction
+    """Perform Naive Bayes prediction
 
     Parameters
     ----------

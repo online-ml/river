@@ -2,10 +2,10 @@ from .attribute_observer import AttributeObserver
 
 
 class AttributeObserverNull(AttributeObserver):
-    """ Class for observing the class data distribution for a null attribute.
+    """Class for observing the target statistics for a null attribute.
+
     This method is used to disable the observation for an attribute.
     Used in decision trees to monitor data statistics on leaves.
-
     """
     def __init__(self):
         super().__init__()

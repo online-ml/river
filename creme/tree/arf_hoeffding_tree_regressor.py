@@ -15,7 +15,7 @@ from ._nodes import InactiveLearningNodeAdaptive
 
 
 class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
-    """ ARF Hoeffding Tree regressor.
+    """ARF Hoeffding Tree regressor.
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
+        | Prediction mechanism used at leaves.
         | 'mean' - Target mean
         | 'model' - Uses the model defined in `leaf_model`
         | 'adaptive' - Chooses between 'mean' and 'model' dynamically
