@@ -6,10 +6,10 @@ from .attribute_observer import AttributeObserver
 
 
 class NumericAttributeRegressionObserver(AttributeObserver):
-    """iSoup-Tree's Extended Binary Search Tree (E-BST)
+    """iSOUP-Tree's Extended Binary Search Tree (E-BST).
 
     This class implements the Extended Binary Search Tree (E-BST)
-    structure, using the variant employed by Osojnik et al. [1]_ in the
+    structure, using the variant employed by Osojnik et al. [^1] in the
     iSOUP-Tree algorithm. This structure is employed to observe the target
     space distribution.
 
@@ -161,7 +161,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
     def remove_bad_splits(self, criterion, last_check_ratio, last_check_vr, last_check_e,
                           pre_split_dist):
-        """ Remove bad splits.
+        """Remove bad splits.
 
         Based on FIMT-DD's [^1] procedure to remove bad split candidates from the E-BST. This
         mechanism is triggered every time a split attempt fails. The rationale is to remove

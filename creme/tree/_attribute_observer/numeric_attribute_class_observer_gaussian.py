@@ -8,8 +8,8 @@ from .attribute_observer import AttributeObserver
 
 
 class NumericAttributeClassObserverGaussian(AttributeObserver):
-    """ Class for observing the class data distribution for a numeric attribute
-    using gaussian estimators.
+    """Numeric attribute observer for classification tasks that is based on
+    Gaussian estimators.
     """
 
     def __init__(self, n_bins: int = 10):

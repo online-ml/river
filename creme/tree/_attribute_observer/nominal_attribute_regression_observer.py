@@ -5,8 +5,7 @@ from .attribute_observer import AttributeObserver
 
 
 class NominalAttributeRegressionObserver(AttributeObserver):
-    """ Class for observing the data distribution for a nominal attribute for
-    regression.
+    """Nominal attribute observer for regression tasks.
     """
 
     def __init__(self):

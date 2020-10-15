@@ -3,18 +3,18 @@ from .instance_conditional_test import InstanceConditionalTest
 
 
 class NominalAttributeMultiwayTest(InstanceConditionalTest):
-    """ Implements multi-way split tests for categorical features.
+    """Implement multi-way split tests for categorical features.
 
         The resulting test considers one branch for each possible feature
         value.
 
         Parameters
         ----------
-            att_idx: int
-                The column id for the attribute.
-            branch_mapping: dict(float: int)
-                A dictionary that maps the feature values to their respective.
-                branch ids
+        att_idx
+            The id of the attribute.
+        branch_mapping
+            A dictionary that maps the feature values to their respective
+            branch ids.
     """
     def __init__(self, att_idx, branch_mapping):
         super().__init__()
@@ -47,18 +47,19 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
         return [self._att_idx]
 
     def add_new_branch(self, att_val):
-        """ Adds a previously unseen categorical attribute value to the test
+        """Add a previously unseen categorical attribute value to the test
         options.
 
         Used to create new branches for unseen categories.
 
         Parameters
         ----------
-            att_val: the value of the new category.
+        att_val
+            The value of the new category.
 
         Returns
         -------
-            new_branch_id: the branch id corresponding for the new value.
+            The branch id corresponding for the new value.
         """
         new_branch_id = max(self._branch_mapping.values()) + 1
         self._branch_mapping[att_val] = new_branch_id

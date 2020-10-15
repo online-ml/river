@@ -6,9 +6,11 @@ from .attribute_observer import AttributeObserver
 
 
 class NumericAttributeClassObserverBinaryTree(AttributeObserver):
-    """ Class for observing the class data distribution for a numeric attribute
-    using a binary tree. Used in Naive Bayes and decision trees to monitor data
-    statistics on leaves.
+    """Numeric attribute observer for classification tasks that is based on a Binary Search Tree.
+
+    This algorithm is also referred to as exhaustive attribute observer,
+    since it ends up storing all the observations between split attempts.
+    Used in Naive Bayes and decision trees to monitor data statistics on leaves.
     """
 
     class Node:
@@ -42,7 +44,6 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
 
     """
     end of class Node
-
     """
 
     def __init__(self):
@@ -118,8 +119,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             )
 
             if left_child:
-
-                """get the exact statistics of the parent value"""
+                # get the exact statistics of the parent value
                 exact_parent_dist = {}
                 exact_parent_dist.update(
                     dict(
@@ -142,7 +142,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
                     )
                 )
 
-                """move the subtrees"""
+                # move the subtrees
                 left_dist.update(
                     dict(
                         Counter(left_dist) -
@@ -157,7 +157,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
                     )
                 )
 
-                """move the exact value from the parent"""
+                # move the exact value from the parent
                 right_dist.update(
                     dict(
                         Counter(right_dist) +

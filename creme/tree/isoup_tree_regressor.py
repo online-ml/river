@@ -16,7 +16,7 @@ from ._nodes import InactiveLearningNodeAdaptiveMultiTarget
 
 
 class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
-    """ Incremental Structured Output Prediction Tree (iSOUP-Tree) for multi-target regression.
+    """Incremental Structured Output Prediction Tree (iSOUP-Tree) for multi-target regression.
 
     This is an implementation of the iSOUP-Tree proposed by A. Osojnik, P. Panov, and
     S. Džeroski [^1].
@@ -60,20 +60,20 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     >>> from skmultiflow.data import RegressionGenerator
     >>> from skmultiflow.trees import iSOUPTreeRegressor
     >>> import numpy as np
-    >>>
+
     >>> # Setup a data stream
     >>> n_targets = 3
     >>> stream = RegressionGenerator(n_targets=n_targets, seed=1, n_samples=200)
-    >>>
+
     >>> # Setup iSOUP Tree Regressor
     >>> isoup_tree = iSOUPTreeRegressor()
-    >>>
+
     >>> # Auxiliary variables to control loop and track performance
     >>> n_samples = 0
     >>> max_samples = 200
     >>> y_pred = np.zeros((max_samples, n_targets))
     >>> y_true = np.zeros((max_samples, n_targets))
-    >>>
+
     >>> # Run test-then-train loop for max_samples and while there is data
     >>> while n_samples < max_samples and stream.has_more_samples():
     >>>     X, y = stream.next_sample()
@@ -81,7 +81,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     >>>     y_pred[n_samples] = isoup_tree.predict(X)[0]
     >>>     isoup_tree.partial_fit(X, y)
     >>>     n_samples += 1
-    >>>
+
     >>> # Display results
     >>> print('iSOUP Tree regressor example')
     >>> print('{} samples analyzed.'.format(n_samples))
@@ -208,7 +208,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
         return self
 
-    def predict_one(self, x: dict) -> typing.Dict[typing.Union[str, int], base.typing.RegTarget]:
+    def predict_one(self, x: dict) -> typing.Union[typing.Dict[typing.Union[str, int], base.typing.RegTarget], None]:
         """Predict the target values for a given instance.
 
         Parameters

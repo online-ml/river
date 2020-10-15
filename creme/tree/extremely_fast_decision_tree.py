@@ -15,7 +15,7 @@ from ._nodes import EFDTActiveLearningNodeNBA
 
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
-    """ Extremely Fast Decision Tree classifier.
+    """Extremely Fast Decision Tree classifier.
 
     Parameters
     ----------
@@ -65,18 +65,18 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     >>> # Imports
     >>> from skmultiflow.data import SEAGenerator
     >>> from skmultiflow.trees import ExtremelyFastDecisionTreeClassifier
-    >>>
+
     >>> # Setting up a data stream
     >>> stream = SEAGenerator(seed=1)
-    >>>
+
     >>> # Setup Extremely Fast Decision Tree classifier
     >>> efdt = ExtremelyFastDecisionTreeClassifier()
-    >>>
+
     >>> # Setup variables to control loop and track performance
     >>> n_samples = 0
     >>> correct_cnt = 0
     >>> max_samples = 200
-    >>>
+
     >>> # Train the estimator with the samples provided by the data stream
     >>> while n_samples < max_samples and stream.has_more_samples():
     >>>     X, y = stream.next_sample()
@@ -85,7 +85,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     >>>         correct_cnt += 1
     >>>     efdt.partial_fit(X, y)
     >>>     n_samples += 1
-    >>>
+
     >>> # Display results
     >>> print('{} samples analyzed.'.format(n_samples))
     >>> print('Extremely Fast Decision Tree accuracy: {}'.format(correct_cnt / n_samples))
@@ -131,11 +131,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             return EFDTInactiveLearningNodeMC(initial_stats, depth)
 
     def _new_split_node(self, split_test, target_stats, depth, attribute_observers):
-        """ Create a new split node."""
+        """Create a new split node."""
         return EFDTSplitNode(split_test, target_stats, depth, attribute_observers)
 
     def learn_one(self, x, y, *, sample_weight=1.):
-        """ Incrementally train the model
+        """Incrementally train the model
 
         Parameters
         ----------
@@ -174,7 +174,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         return self
 
     def _process_nodes(self, x, y, sample_weight, node, parent, branch_index):
-        """ Process nodes from the root to the leaf where the instance belongs.
+        """Process nodes from the root to the leaf where the instance belongs.
 
         1. If the node is internal:
             1.1 Internal node learn from instance
@@ -230,7 +230,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     node.last_split_attempt_at = weight_seen
 
     def _sort_instance_into_leaf(self, x, y, sample_weight):
-        """ Sort an instance into a leaf.
+        """Sort an instance into a leaf.
 
         Private function where leaf learn from instance
 
@@ -264,7 +264,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             self._estimate_model_size()
 
     def _reevaluate_best_split(self, node, parent, branch_index):
-        """ Reevaluate the best split for a node.
+        """Reevaluate the best split for a node.
 
         If the samples seen so far are not from the same class then:
         1. Find split candidates and select the best one.
@@ -386,7 +386,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         return stop_flag
 
     def _attempt_to_split(self, node, parent, branch_index):
-        """ Attempt to split a node.
+        """Attempt to split a node.
 
         If the samples seen so far are not from the same class then:
 
@@ -458,7 +458,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     self._enforce_size_limit()
 
     def _kill_subtree(self, node: EFDTSplitNode):
-        """ Kill subtree that starts from node.
+        """Kill subtree that starts from node.
 
         Parameters
         ----------

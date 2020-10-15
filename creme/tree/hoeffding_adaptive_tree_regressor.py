@@ -16,7 +16,7 @@ from ._nodes import InactiveLearningNodeAdaptive
 
 
 class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
-    """ Hoeffding Adaptive Tree regressor (HATR).
+    """Hoeffding Adaptive Tree regressor (HATR).
 
     This class implements a regression version of the Hoeffding Adaptive Tree Classifier. Hence,
     it also uses an ADWIN concept-drift detector instance at each decision node to monitor
@@ -93,20 +93,20 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>> from skmultiflow.data import RegressionGenerator
     >>> from skmultiflow.trees import HoeffdingAdaptiveTreeRegressor
     >>> import numpy as np
-    >>>
+
     >>> # Setup a data stream
     >>> stream = RegressionGenerator(seed=1, n_samples=200)
     >>> # Prepare stream for use
-    >>>
+
     >>> # Setup the Hoeffding Adaptive Tree Regressor
     >>> hat_reg = HoeffdingAdaptiveTreeRegressor()
-    >>>
+
     >>> # Auxiliary variables to control loop and track performance
     >>> n_samples = 0
     >>> max_samples = 200
     >>> y_pred = np.zeros(max_samples)
     >>> y_true = np.zeros(max_samples)
-    >>>
+
     >>> # Run test-then-train loop for max_samples and while there is data
     >>> while n_samples < max_samples and stream.has_more_samples():
     >>>     X, y = stream.next_sample()
@@ -114,7 +114,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>>     y_pred[n_samples] = hat_reg.predict(X)[0]
     >>>     hat_reg.partial_fit(X, y)
     >>>     n_samples += 1
-    >>>
+
     >>> # Display results
     >>> print('{} samples analyzed.'.format(n_samples))
     >>> print('Hoeffding Adaptive Tree regressor mean absolute error: {}'.

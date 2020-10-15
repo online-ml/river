@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class SplitCriterion(metaclass=ABCMeta):
-    """ SplitCriterion
+    """SplitCriterion
 
     Abstract class for computing splitting criteria with respect to distributions of class values.
     The split criterion is used as a parameter on decision trees and decision stumps.

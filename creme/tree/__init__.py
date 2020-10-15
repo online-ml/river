@@ -12,10 +12,19 @@ from .decision.forest import RandomForestClassifier
 from .decision.tree import DecisionTreeClassifier
 
 
-__all__ = ['HoeffdingTreeClassifier', 'HoeffdingAdaptiveTreeClassifier',
-           'ExtremelyFastDecisionTreeClassifier', 'LabelCombinationHoeffdingTreeClassifier',
-           'HoeffdingTreeRegressor', 'HoeffdingAdaptiveTreeRegressor', 'iSOUPTreeRegressor',
-           'DecisionTreeClassifier', 'RandomForestClassifier']
+__all__ = [
+    'HoeffdingTreeClassifier',
+    'HoeffdingAdaptiveTreeClassifier',
+    'ExtremelyFastDecisionTreeClassifier',
+    'LabelCombinationHoeffdingTreeClassifier',
+    'HoeffdingTreeRegressor',
+    'HoeffdingAdaptiveTreeRegressor',
+    'iSOUPTreeRegressor',
+
+    # TODO: remove before merging
+    'DecisionTreeClassifier',
+    'RandomForestClassifier'
+]
 
 
 __pdoc__ = {'decision': False}
