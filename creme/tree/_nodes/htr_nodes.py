@@ -15,21 +15,21 @@ class ActiveLeafRegressor(ActiveLeaf):
         return NumericAttributeRegressionObserver()
 
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
-        """ Trigger Attribute Observers' memory management routines.
+        """Trigger Attribute Observers' memory management routines.
 
         Currently, only `NumericAttributeRegressionObserver` has support to this feature.
 
         Parameters
         ----------
-            criterion
-                Split criterion
-            last_check_ratio
-                The ratio between the second best candidate's merit and the merit of the best
-                split candidate.
-            last_check_vr
-                The best candidate's split merit.
-            last_check_e
-                Hoeffding bound value calculated in the last split attempt.
+        criterion
+            Split criterion
+        last_check_ratio
+            The ratio between the second best candidate's merit and the merit of the best
+            split candidate.
+        last_check_vr
+            The best candidate's split merit.
+        last_check_e
+            Hoeffding bound value calculated in the last split attempt.
         """
         for obs in self.attribute_observers.values():
             if isinstance(obs, NumericAttributeRegressionObserver):
@@ -52,12 +52,12 @@ class LearningNodeMean(LearningNode):
             self.stats[1] = y * sample_weight
             self.stats[2] = y * y * sample_weight
 
-    def predict_one(self, X, *, tree=None):
+    def predict_one(self, x, *, tree=None):
         return self.stats[1] / self.stats[0] if self.stats else 0.
 
     @property
     def total_weight(self):
-        """ Calculate the total weight seen by the node.
+        """Calculate the total weight seen by the node.
 
         Returns
         -------
@@ -68,7 +68,7 @@ class LearningNodeMean(LearningNode):
         return self.stats[0] if self.stats else 0.
 
     def calculate_promise(self) -> int:
-        """ Estimate how likely a leaf node is going to be split.
+        """Estimate how likely a leaf node is going to be split.
 
         Uses the node's depth as a heuristic to estimate how likely the leaf is going to become
         a decision node. The deeper the node is in the tree, the more unlikely it is going to be
@@ -128,7 +128,7 @@ class LearningNodeAdaptive(LearningNodeModel):
 
 
 class ActiveLearningNodeMean(LearningNodeMean, ActiveLeafRegressor):
-    """ Learning Node for regression tasks that always use the average target
+    """Learning Node for regression tasks that always use the average target
     value as response.
 
     Parameters
@@ -146,7 +146,7 @@ class ActiveLearningNodeMean(LearningNodeMean, ActiveLeafRegressor):
 
 
 class InactiveLearningNodeMean(LearningNodeMean, InactiveLeaf):
-    """ Inactive Learning Node for regression tasks that always use
+    """Inactive Learning Node for regression tasks that always use
     the average target value as response.
 
     Parameters
@@ -164,7 +164,7 @@ class InactiveLearningNodeMean(LearningNodeMean, InactiveLeaf):
 
 
 class ActiveLearningNodeModel(LearningNodeModel, ActiveLeafRegressor):
-    """ Learning Node for regression tasks that always use a learning model to provide
+    """Learning Node for regression tasks that always use a learning model to provide
     responses.
 
     Parameters
@@ -185,7 +185,7 @@ class ActiveLearningNodeModel(LearningNodeModel, ActiveLeafRegressor):
 
 
 class InactiveLearningNodeModel(LearningNodeModel, InactiveLeaf):
-    """ Inactive Learning Node for regression tasks that always use a learning model to
+    """Inactive Learning Node for regression tasks that always use a learning model to
     provide responses.
 
     Parameters
@@ -206,7 +206,7 @@ class InactiveLearningNodeModel(LearningNodeModel, InactiveLeaf):
 
 
 class ActiveLearningNodeAdaptive(LearningNodeAdaptive, ActiveLeafRegressor):
-    """ Learning Node for regression tasks that dynamically selects between predictors and
+    """Learning Node for regression tasks that dynamically selects between predictors and
     might behave as a regression tree node or a model tree node, depending on which predictor
     is the best one.
 
@@ -228,7 +228,7 @@ class ActiveLearningNodeAdaptive(LearningNodeAdaptive, ActiveLeafRegressor):
 
 
 class InactiveLearningNodeAdaptive(LearningNodeAdaptive, InactiveLeaf):
-    """ Inactive Learning Node for regression tasks that dynamically selects between predictors
+    """Inactive Learning Node for regression tasks that dynamically selects between predictors
      might behave as a regression tree node or a model tree node, depending on which predictor
     is the best one.
 

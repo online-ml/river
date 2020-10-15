@@ -92,7 +92,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
 
 
 class ActiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, ActiveLeafRegressor):
-    """ Learning Node for Multi-target Regression tasks that always uses the mean value
+    """Learning Node for Multi-target Regression tasks that always uses the mean value
     of the targets as responses.
 
     Parameters
@@ -110,7 +110,7 @@ class ActiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, ActiveLeafR
 
 
 class InactiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, InactiveLeaf):
-    """ Inactive Learning Node for Multi-target Regression tasks that always uses
+    """Inactive Learning Node for Multi-target Regression tasks that always uses
     the mean value of the targets as responses.
 
     Parameters
@@ -128,7 +128,7 @@ class InactiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, InactiveL
 
 
 class ActiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, ActiveLeafRegressor):
-    """ Learning Node for Multi-target Regression tasks that always uses learning models
+    """Learning Node for Multi-target Regression tasks that always uses learning models
     for each target.
 
     Parameters
@@ -148,7 +148,7 @@ class ActiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, ActiveLea
 
 
 class InactiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, InactiveLeaf):
-    """ Inactive Learning Node for Multi-target Regression tasks that always uses
+    """Inactive Learning Node for Multi-target Regression tasks that always uses
     learning models for each target.
 
     Parameters
@@ -168,7 +168,7 @@ class InactiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, Inactiv
 
 
 class ActiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, ActiveLeafRegressor):
-    """ Learning Node for multi-target regression tasks that dynamically selects between
+    """Learning Node for multi-target regression tasks that dynamically selects between
     predictors and might behave as a regression tree node or a model tree node, depending
     on which predictor is the best one.
 
@@ -189,7 +189,7 @@ class ActiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, Act
 
 
 class InactiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, InactiveLeaf):
-    """ Inactive Learning Node for multi-target regression tasks that dynamically selects
+    """Inactive Learning Node for multi-target regression tasks that dynamically selects
     between predictors and might behave as a regression tree node or a model tree node,
     depending on which predictor is the best one.
 

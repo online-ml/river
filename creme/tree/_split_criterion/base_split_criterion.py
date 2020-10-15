@@ -9,10 +9,6 @@ class SplitCriterion(metaclass=ABCMeta):
 
     This class should not me instantiated, as none of its methods are implemented.
 
-    Raises
-    ------
-    NotImplementedError: This is an abstract class.
-
     """
 
     def __init__(self):
@@ -24,15 +20,15 @@ class SplitCriterion(metaclass=ABCMeta):
 
         Parameters
         ----------
-        pre_split_dist: The class distribution before the split
-        post_split_dist: the class distribution after the split
+        pre_split_dist
+            The target statistics before the split.
+        post_split_dist
+            the target statistics after the split.
 
         Returns
         -------
         Value of the merit of splitting
-
         """
-        raise NotImplementedError
 
     @staticmethod
     @abstractmethod
@@ -41,11 +37,10 @@ class SplitCriterion(metaclass=ABCMeta):
 
         Parameters
         ----------
-        pre_split_dist: The class distribution before the split
+        pre_split_dist
+            The target statistics before the split.
 
         Returns
         -------
         Value of the range of splitting merit
-
         """
-        raise NotImplementedError

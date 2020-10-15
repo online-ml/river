@@ -11,10 +11,11 @@ from .htc_nodes import InactiveLearningNodeMC
 
 class EFDTActiveLeaf(ActiveLeafClass):
     def get_null_split(self, criterion):
-        """ Compute the null split (don't split).
+        """Compute the null split (don't split).
 
         Parameters
         ----------
+        criterion
             The splitting criterion to be used.
 
         Returns
@@ -32,7 +33,7 @@ class EFDTActiveLeaf(ActiveLeafClass):
         return null_split
 
     def get_best_split_suggestions(self, criterion, tree):
-        """ Find possible split candidates without taking into account the
+        """Find possible split candidates without taking into account the
         null split.
 
         Parameters
@@ -60,7 +61,7 @@ class EFDTActiveLeaf(ActiveLeafClass):
 
     @staticmethod
     def count_nodes():
-        """ Calculate the number of split node and leaf starting from this node
+        """Calculate the number of split node and leaf starting from this node
         as a root.
 
         Returns
@@ -71,7 +72,7 @@ class EFDTActiveLeaf(ActiveLeafClass):
 
 
 class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
-    """ Node that splits the data in a EFDT.
+    """Node that splits the data in a EFDT.
 
     Parameters
     ----------
@@ -114,7 +115,7 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
 
     @staticmethod
     def find_attribute(id_att, split_suggestions):
-        """ Find the attribute given the id.
+        """Find the attribute given the id.
 
         Parameters
         ----------
@@ -138,7 +139,7 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
 
     @property
     def last_split_reevaluation_at(self) -> float:
-        """ Get the weight seen at the last split reevaluation.
+        """Get the weight seen at the last split reevaluation.
 
         Returns
         -------
@@ -148,11 +149,11 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
 
     @last_split_reevaluation_at.setter
     def last_split_reevaluation_at(self, value: float):
-        """ Update weight seen at the last split in the reevaluation. """
+        """Update weight seen at the last split in the reevaluation. """
         self._last_split_reevaluation_at = value
 
     def count_nodes(self):
-        """ Calculate the number of split node and leaf starting from this node
+        """Calculate the number of split node and leaf starting from this node
         as a root.
 
         Returns
@@ -171,25 +172,23 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
 
     @property
     def total_weight(self):
-        """ Calculate the total weight seen by the node.
+        """Calculate the total weight seen by the node.
 
         Returns
         -------
         float
             Total weight seen.
-
         """
         return sum(self.stats.values())
 
     def observed_class_distribution_is_pure(self):
-        """ Check if observed class distribution is pure, i.e. if all samples
+        """Check if observed class distribution is pure, i.e. if all samples
         belong to the same class.
 
         Returns
         -------
         boolean
             True if observed number of classes is smaller than 2, False otherwise.
-
         """
         count = 0
         for _, weight in self._stats.items():
@@ -201,7 +200,7 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
 
 
 class EFDTActiveLearningNodeMC(LearningNodeMC, EFDTActiveLeaf):
-    """ Active Learning node for the Hoeffding Anytime Tree.
+    """Active Learning node for the Hoeffding Anytime Tree.
 
     Parameters
     ----------
@@ -215,7 +214,7 @@ class EFDTActiveLearningNodeMC(LearningNodeMC, EFDTActiveLeaf):
 
 
 class EFDTInactiveLearningNodeMC(InactiveLearningNodeMC):
-    """ Inactive Learning node for the Hoeffding Anytime Tree.
+    """Inactive Learning node for the Hoeffding Anytime Tree.
 
     Parameters
     ----------
@@ -229,7 +228,7 @@ class EFDTInactiveLearningNodeMC(InactiveLearningNodeMC):
 
     @staticmethod
     def count_nodes():
-        """ Calculate the number of split node and leaf starting from this node
+        """Calculate the number of split node and leaf starting from this node
         as a root.
 
         Returns
@@ -240,19 +239,19 @@ class EFDTInactiveLearningNodeMC(InactiveLearningNodeMC):
 
 
 class EFDTActiveLearningNodeNB(LearningNodeNB, EFDTActiveLeaf):
-    """ Learning node  for the Hoeffding Anytime Tree that uses Naive Bayes
+    """Learning node  for the Hoeffding Anytime Tree that uses Naive Bayes
     models.
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats
         Initial class observations
     """
     def __init__(self, initial_stats, depth):
         super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
-        """ Disable an attribute observer.
+        """Disable an attribute observer.
 
         Disabled in Nodes using Naive Bayes, since poor attributes are also used in
         Naive Bayes calculation.
@@ -266,7 +265,7 @@ class EFDTActiveLearningNodeNB(LearningNodeNB, EFDTActiveLeaf):
 
 
 class EFDTActiveLearningNodeNBA(LearningNodeNBA, EFDTActiveLeaf):
-    """ Learning node for the Hoeffding Anytime Tree that uses Adaptive Naive
+    """Learning node for the Hoeffding Anytime Tree that uses Adaptive Naive
     Bayes models.
 
     Parameters
@@ -280,7 +279,7 @@ class EFDTActiveLearningNodeNBA(LearningNodeNBA, EFDTActiveLeaf):
         super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
-        """ Disable an attribute observer.
+        """Disable an attribute observer.
 
         Disabled in Nodes using Naive Bayes, since poor attributes are used in
         Naive Bayes calculation.

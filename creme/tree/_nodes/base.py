@@ -14,7 +14,7 @@ NT = TypeVar('NT', bound='Node')
 
 
 class FoundNode:
-    """ Helper class to manage nodes.
+    """Helper class to manage nodes.
 
     Parameters
     ----------
@@ -34,7 +34,7 @@ class FoundNode:
 
 
 class Node(metaclass=ABCMeta):
-    """ Base class for nodes in a tree.
+    """Base class for nodes in a tree.
 
     Parameters
     ----------
@@ -42,7 +42,6 @@ class Node(metaclass=ABCMeta):
         Statistics kept by the node.
     depth
         The depth of the node.
-
     """
 
     def __init__(self, stats: dict = None, depth: int = 0):
@@ -51,7 +50,7 @@ class Node(metaclass=ABCMeta):
 
     @staticmethod
     def is_leaf() -> bool:
-        """ Determine if the node is a leaf.
+        """Determine if the node is a leaf.
 
         Returns
         -------
@@ -62,7 +61,7 @@ class Node(metaclass=ABCMeta):
         return True
 
     def filter_instance_to_leaf(self, x: dict, parent: Type[NT], parent_branch: int) -> FoundNode:
-        """ Traverse down the tree to locate the corresponding leaf for an instance.
+        """Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
         ----------
@@ -82,15 +81,12 @@ class Node(metaclass=ABCMeta):
 
     @property
     def stats(self) -> dict:
-        """ Statistics observed by the node.
-        """
+        """Statistics observed by the node. """
         return self._stats
 
     @stats.setter
     def stats(self, stats):
-        """ Set the statistics at the node.
-
-        """
+        """Set the statistics at the node. """
         self._stats = stats if stats is not None else {}
 
     @property
@@ -103,18 +99,17 @@ class Node(metaclass=ABCMeta):
             self._depth = depth
 
     def subtree_depth(self) -> int:
-        """ Calculate the depth of the subtree from this node.
+        """Calculate the depth of the subtree from this node.
 
         Returns
         -------
         int
             Subtree depth, 0 if the node is a leaf.
-
         """
         return 0
 
     def describe_subtree(self, tree, buffer: str, indent: int = 0):
-        """ Walk the tree and write its structure to a buffer string.
+        """Walk the tree and write its structure to a buffer string.
 
         Parameters
         ----------
@@ -124,7 +119,6 @@ class Node(metaclass=ABCMeta):
             The string buffer where the tree's structure will be stored
         indent
             Indentation level (number of white spaces for current node.)
-
         """
         buffer[0] += textwrap.indent('Leaf = ', ' ' * indent)
 
@@ -147,7 +141,7 @@ class Node(metaclass=ABCMeta):
 
 
 class SplitNode(Node):
-    """ Node that splits the data in a tree.
+    """Node that splits the data in a tree.
 
     Parameters
     ----------
@@ -157,7 +151,6 @@ class SplitNode(Node):
         Class observations.
     depth
         The depth of the node.
-
     """
 
     def __init__(self, split_test: InstanceConditionalTest, stats: dict, depth: int = 0):
@@ -168,24 +161,23 @@ class SplitNode(Node):
 
     @property
     def n_children(self) -> int:
-        """ Count the number of children for a node."""
+        """Count the number of children for a node."""
         return len(self._children)
 
     @property
     def split_test(self) -> InstanceConditionalTest:
-        """ The split test of this node.
+        """The split test of this node.
 
         Returns
         -------
         InstanceConditionalTest
             Split test.
-
         """
 
         return self._split_test
 
     def set_child(self, index: int, node: Node):
-        """ Set node as child.
+        """Set node as child.
 
         Parameters
         ----------
@@ -193,14 +185,13 @@ class SplitNode(Node):
             Branch index where the node will be inserted.
         node
             The node to insert.
-
         """
         if (self._split_test.max_branches() >= 0) and (index >= self._split_test.max_branches()):
             raise IndexError
         self._children[index] = node
 
     def get_child(self, index: int) -> Node:
-        """ Retrieve a node's child given its branch index.
+        """Retrieve a node's child given its branch index.
 
         Parameters
         ----------
@@ -210,7 +201,6 @@ class SplitNode(Node):
         Returns
         -------
             Child node or None if the corresponding branch index does not exists.
-
         """
         if index in self._children:
             return self._children[index]
@@ -218,30 +208,28 @@ class SplitNode(Node):
             return None
 
     def instance_child_index(self, x: dict) -> int:
-        """ Get the branch index for a given instance at the current node.
+        """Get the branch index for a given instance at the current node.
 
         Returns
         -------
         int
             Branch index, -1 if unknown.
-
         """
         return self._split_test.branch_for_instance(x)
 
     @staticmethod
     def is_leaf():
-        """ Determine if the node is a leaf.
+        """Determine if the node is a leaf.
 
         Returns
         -------
         boolean
             True if node is a leaf, False otherwise
-
         """
         return False
 
     def filter_instance_to_leaf(self, x: dict, parent: Node, parent_branch: int):
-        """ Traverse down the tree to locate the corresponding leaf for an instance.
+        """Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
         ----------
@@ -254,7 +242,6 @@ class SplitNode(Node):
 
         Returns
         -------
-        FoundNode
             Leaf node for the instance.
 
         """
@@ -269,7 +256,7 @@ class SplitNode(Node):
             return FoundNode(self, parent, parent_branch)
 
     def subtree_depth(self) -> int:
-        """ Calculate the depth of the subtree from this node.
+        """Calculate the depth of the subtree from this node.
 
         Returns
         -------
@@ -285,7 +272,7 @@ class SplitNode(Node):
         return max_child_depth + 1
 
     def describe_subtree(self, tree, buffer: str, indent: int = 0):
-        """ Walk the tree and write its structure to a buffer string.
+        """Walk the tree and write its structure to a buffer string.
 
         Parameters
         ----------
@@ -295,7 +282,6 @@ class SplitNode(Node):
             The buffer where the tree's structure will be stored.
         indent
             Indentation level (number of white spaces for current node).
-
         """
         for branch_idx in range(self.n_children):
             child = self.get_child(branch_idx)
@@ -305,16 +291,16 @@ class SplitNode(Node):
                 buffer[0] += ':\n'
                 child.describe_subtree(tree, buffer, indent + 2)
 
-    def get_predicate(self, branch):
-        return self._split_test.branch_rule(branch)
+    # def get_predicate(self, branch):
+    #     return self._split_test.branch_rule(branch)
 
 
 class LearningNode(Node, metaclass=ABCMeta):
-    """ Base Learning Node to be used in Hoeffding Trees.
+    """Base Learning Node to be used in Hoeffding Trees.
 
     Parameters
     ----------
-    initial_stats: dict (class_value, weight) or None
+    initial_stats
         Initial stats (they differ in classification and regression tasks).
     """
     def __init__(self, initial_stats: dict, depth: int = 0):
@@ -323,7 +309,7 @@ class LearningNode(Node, metaclass=ABCMeta):
 
     @staticmethod
     def is_leaf():
-        """ Determine if the node is a leaf.
+        """Determine if the node is a leaf.
 
         Returns
         -------
@@ -350,7 +336,6 @@ class LearningNode(Node, metaclass=ABCMeta):
             Sample weight.
         tree
             Tree to update.
-
         """
         self.update_stats(y, sample_weight)
         self.update_attribute_observers(x, y, sample_weight, tree)
@@ -362,25 +347,23 @@ class LearningNode(Node, metaclass=ABCMeta):
     @property
     @abstractmethod
     def total_weight(self):
-        """ Calculate the total weight seen by the node.
+        """Calculate the total weight seen by the node.
 
         Returns
         -------
         float
             Total weight seen.
-
         """
         pass
 
     @property
     def last_split_attempt_at(self):
-        """ The weight seen at last split evaluation.
+        """The weight seen at last split evaluation.
 
         Returns
         -------
         float
             Weight seen at last split evaluation.
-
         """
         try:
             return self._last_split_attempt_at
@@ -390,18 +373,17 @@ class LearningNode(Node, metaclass=ABCMeta):
 
     @last_split_attempt_at.setter
     def last_split_attempt_at(self, weight):
-        """ Set the weight seen at last split evaluation.
+        """Set the weight seen at last split evaluation.
 
         Parameters
         ----------
-        weight: float
+        weight
             Weight seen at last split evaluation.
-
         """
         self._last_split_attempt_at = weight
 
     def calculate_promise(self) -> int:
-        """ Calculate node's promise.
+        """Calculate node's promise.
 
         Returns
         -------
@@ -454,13 +436,13 @@ class ActiveLeaf(metaclass=ABCMeta):
             obs.update(x, y, sample_weight)
 
     def get_best_split_suggestions(self, criterion, tree):
-        """ Find possible split candidates.
+        """Find possible split candidates.
 
         Parameters
         ----------
-        criterion: SplitCriterion
+        criterion
             The splitting criterion to be used.
-        tree:
+        tree
             Hoeffding Tree.
 
         Returns
@@ -470,7 +452,7 @@ class ActiveLeaf(metaclass=ABCMeta):
 
         """
         best_suggestions = []
-        pre_split_dist = self._stats
+        pre_split_dist = self.stats
         if tree.merit_preprune:
             # Add null split as an option
             null_split = AttributeSplitSuggestion(
@@ -486,11 +468,11 @@ class ActiveLeaf(metaclass=ABCMeta):
         return best_suggestions
 
     def disable_attribute(self, att_idx):
-        """ Disable an attribute observer.
+        """Disable an attribute observer.
 
         Parameters
         ----------
-        att_idx: int
+        att_idx
             Attribute index.
 
         """

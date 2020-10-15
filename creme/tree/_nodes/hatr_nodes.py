@@ -12,7 +12,7 @@ from .htr_nodes import ActiveLearningNodeAdaptive
 
 
 class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
-    """ Learning Node of the Hoeffding Adaptive Tree regressor.
+    """Learning Node of the Hoeffding Adaptive Tree regressor.
 
     Parameters
     ----------
@@ -105,7 +105,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
 
 
 class AdaSplitNodeRegressor(SplitNode, AdaNode):
-    """ Node that splits the data in a Hoeffding Adaptive Tree Regression.
+    """Node that splits the data in a Hoeffding Adaptive Tree Regression.
 
     Parameters
     ----------

@@ -7,7 +7,7 @@ from .htc_nodes import LearningNodeNBA
 
 
 class RandomActiveLeafClass(ActiveLeafClass):
-    """ Random Active Leaf
+    """Random Active Leaf
 
     A Random Active Leaf (used in ARF implementations) just changes the way how the nodes update
     the attribute observers (by using subsets of features).
@@ -86,7 +86,7 @@ class RandomActiveLearningNodeNB(LearningNodeNB, RandomActiveLeafClass):
 
 
 class RandomActiveLearningNodeNBA(LearningNodeNBA, RandomActiveLeafClass):
-    """ ARF Naive Bayes Adaptive learning node class.
+    """ARF Naive Bayes Adaptive learning node class.
 
     Parameters
     ----------

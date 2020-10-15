@@ -10,12 +10,9 @@ from .base import SplitNode
 from .base import ActiveLeaf, InactiveLeaf
 from .htc_nodes import ActiveLearningNodeNBA
 
-# TODO: check whether or not children can be None, after get_child. Perhaps checks such as
-# 'if child is not None' can be safely removed. Also, check if the ADWIN object can become None.
-
 
 class AdaNode(metaclass=ABCMeta):
-    """ Abstract Class to create a New Node for the Hoeffding Adaptive Tree classifier """
+    """Abstract Class to create a New Node for the Hoeffding Adaptive Tree classifier """
 
     @property
     @abstractmethod
@@ -50,7 +47,7 @@ class AdaNode(metaclass=ABCMeta):
 
 
 class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
-    """ Learning node for Hoeffding Adaptive Tree.
+    """Learning node for Hoeffding Adaptive Tree.
 
     Parameters
     ----------
@@ -160,7 +157,7 @@ class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
 
 
 class AdaSplitNodeClassifier(SplitNode, AdaNode):
-    """ Node that splits the data in a Hoeffding Adaptive Tree.
+    """Node that splits the data in a Hoeffding Adaptive Tree.
 
     Parameters
     ----------
