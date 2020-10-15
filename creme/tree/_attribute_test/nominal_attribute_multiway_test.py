@@ -1,4 +1,4 @@
-from skmultiflow.rules.base_predicate import Predicate
+# from skmultiflow.rules.base_predicate import Predicate
 from .instance_conditional_test import InstanceConditionalTest
 
 
@@ -38,10 +38,10 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
             self._att_idx, self._reverse_branch_mapping[branch]
         )
 
-    def branch_rule(self, branch):
-        return Predicate(
-            self._att_idx, '==', self._reverse_branch_mapping[branch]
-        )
+    # def branch_rule(self, branch):
+    #     return Predicate(
+    #         self._att_idx, '==', self._reverse_branch_mapping[branch]
+    #     )
 
     def get_atts_test_depends_on(self):
         return [self._att_idx]

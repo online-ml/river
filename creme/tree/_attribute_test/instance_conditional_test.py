@@ -5,11 +5,6 @@ class InstanceConditionalTest(metaclass=ABCMeta):
     """Abstract class for instance conditional test to split nodes in Hoeffding Trees.
 
     This class should not me instantiated, as none of its methods are implemented.
-
-    Raises
-    ------
-    NotImplementedError: This is an abstract class.
-
     """
 
     def __init__(self):
@@ -21,7 +16,7 @@ class InstanceConditionalTest(metaclass=ABCMeta):
 
         Parameters
         ----------
-        X
+        x
             The instance to be used.
 
         Returns
@@ -30,7 +25,6 @@ class InstanceConditionalTest(metaclass=ABCMeta):
             The index of the branch for the instance, -1 if unknown.
 
         """
-        raise NotImplementedError
 
     @staticmethod
     @abstractmethod
@@ -42,7 +36,6 @@ class InstanceConditionalTest(metaclass=ABCMeta):
         The max number of branches, -1 if unknown.
 
         """
-        raise NotImplementedError
 
     @abstractmethod
     def describe_condition_for_branch(self, branch: int):
@@ -59,7 +52,6 @@ class InstanceConditionalTest(metaclass=ABCMeta):
             The description of the condition for the branch
 
         """
-        raise NotImplementedError
 
     @abstractmethod
     def get_atts_test_depends_on(self):
@@ -71,4 +63,3 @@ class InstanceConditionalTest(metaclass=ABCMeta):
             The attributes that the test depends on.
 
         """
-        raise NotImplementedError
