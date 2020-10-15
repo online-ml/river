@@ -38,12 +38,6 @@ class RandomTree(base.SyntheticDataset):
     fraction_leaves_per_level
         The fraction of leaves per level from `first_leaf_level` onwards.
 
-    References
-    ----------
-    [^1]: Domingos, Pedro, and Geoff Hulten. "Mining high-speed data streams."
-          In Proceedings of the sixth ACM SIGKDD international conference on
-          Knowledge discovery and data mining, pp. 71-80. 2000.
-
     Examples
     --------
 
@@ -61,6 +55,12 @@ class RandomTree(base.SyntheticDataset):
     {'x_num_0': 0.0580, 'x_num_1': 0.8661, 'x_cat_0': 1, 'x_cat_1': 1} 0
     {'x_num_0': 0.7080, 'x_num_1': 0.0205, 'x_cat_0': 1, 'x_cat_1': 1} 0
     {'x_num_0': 0.8324, 'x_num_1': 0.2123, 'x_cat_0': 1, 'x_cat_1': 1} 0
+
+    References
+    ----------
+    [^1]: Domingos, Pedro, and Geoff Hulten. "Mining high-speed data streams."
+          In Proceedings of the sixth ACM SIGKDD international conference on
+          Knowledge discovery and data mining, pp. 71-80. 2000.
 
     """
 
@@ -82,7 +82,7 @@ class RandomTree(base.SyntheticDataset):
         self.n_cat_features = n_cat_features
         self.n_categories_per_feature = n_categories_per_feature
         self.max_tree_depth = max_tree_depth
-        self.min_leaf_depth = first_leaf_level
+        self.first_leaf_level = first_leaf_level
         self.fraction_leaves_per_level = fraction_leaves_per_level
         self.tree_root = None
 
@@ -151,7 +151,7 @@ class RandomTree(base.SyntheticDataset):
         """
         # Stop recursive call
         if ((current_depth >= self.max_tree_depth) or
-                ((current_depth >= self.min_leaf_depth)
+                ((current_depth >= self.first_leaf_level)
                  and (self.fraction_leaves_per_level >= (1.0 - rng.rand())))):
             leaf_node = TreeNode()
             leaf_node.class_label = rng.randint(self.n_classes)

@@ -29,6 +29,20 @@ class LED(base.SyntheticDataset):
     irrelevant_features
         Adds 17 non-relevant attributes to the stream.
 
+    Examples
+    --------
+    >>> from creme import synth
+
+    >>> dataset = synth.LED(seed = 112, noise_percentage = 0.28, irrelevant_features= False)
+
+    >>> for x, y in dataset.take(5):
+    ...     print(x, y)
+    {0: 0, 1: 1, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0} 4
+    {0: 0, 1: 1, 2: 0, 3: 1, 4: 0, 5: 0, 6: 0} 4
+    {0: 1, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 1} 3
+    {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 1, 6: 1} 0
+    {0: 1, 1: 1, 2: 1, 3: 1, 4: 0, 5: 1, 6: 0} 4
+
     Notes
     -----
     An instance is generated based on the parameters passed. If `has_noise`
@@ -47,19 +61,6 @@ class LED(base.SyntheticDataset):
           University of California, Irvine, School of Information and
           Computer Sciences,2007.
 
-    Examples
-    --------
-    >>> from creme import synth
-    >>>
-    >>> dataset = synth.LED(seed = 112, noise_percentage = 0.28, irrelevant_features= False)
-    >>>
-    >>> for x, y in dataset.take(5):
-    ...     print(x, y)
-    {0: 0, 1: 1, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0} 4
-    {0: 0, 1: 1, 2: 0, 3: 1, 4: 0, 5: 0, 6: 0} 4
-    {0: 1, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 1} 3
-    {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 1, 6: 1} 0
-    {0: 1, 1: 1, 2: 1, 3: 1, 4: 0, 5: 1, 6: 0} 4
     """
     _N_RELEVANT_FEATURES = 7
     _N_FEATURES_INCLUDING_NOISE = 24
@@ -131,19 +132,13 @@ class LEDDrift(LED):
     n_drift_features
         The number of attributes that have drift.
 
-    Notes
-    -----
-    An instance is generated based on the parameters passed. If `has_noise`
-    is set then the total number of attributes will be 24, otherwise there will
-    be 7 attributes.
-
     Examples
     --------
     >>> from creme import synth
-    >>>
+
     >>> dataset = synth.LEDDrift(seed = 112, noise_percentage = 0.28,
     ...                          irrelevant_features= True, n_drift_features=4)
-    >>>
+
     >>> for x, y in dataset.take(5):
     ...     print(list(x.values()), y)
     [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1] 8
@@ -151,6 +146,13 @@ class LEDDrift(LED):
     [1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1] 8
     [0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0] 3
     [0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0] 5
+
+    Notes
+    -----
+    An instance is generated based on the parameters passed. If `has_noise`
+    is set then the total number of attributes will be 24, otherwise there will
+    be 7 attributes.
+
     """
 
     _N_IRRELEVANT_ATTRIBUTES = 17

@@ -11,7 +11,7 @@ class Agrawal(base.SyntheticDataset):
     source of data for early work on scaling up decision tree learners.
     The generator produces a stream containing nine features, six numeric and
     three categorical.
-    There are ten functions defined for generating binary class labels from the
+    There are 10 functions defined for generating binary class labels from the
     features. Presumably these determine whether the loan should be approved.
     The features and functions are listed in the original paper [^1].
 
@@ -30,20 +30,19 @@ class Agrawal(base.SyntheticDataset):
     Parameters
     ----------
     classification_function
-        Which of the four classification functions to use for the generation.
-        The value can vary from 0 to 9.
+        The classification function to use for the generation.
+        Valid values are from 0 to 9.
     seed
         If int, `seed` is used to seed the random number generator;
         If RandomState instance, `seed` is the random number generator;
         If None, the random number generator is the `RandomState` instance used
         by `np.random`.
     balance_classes
-        Whether to balance classes or not. If balanced, the class
-        distribution will converge to a uniform distribution.
+        If True, the class distribution will converge to a uniform distribution.
     perturbation
-        The probability that noise will happen in the generation. At each
-        new sample generated, the sample with will perturbed by the amount of
-        perturbation. Vavlid values are in the range from 0.0 to 1.0.
+        The probability that noise will happen in the generation. Each new
+        sample will be perturbed by the magnitude of `perturbation`.
+        Valid values are in the range [0.0 to 1.0].
 
     Examples
     --------
@@ -68,8 +67,7 @@ class Agrawal(base.SyntheticDataset):
     user. Then, the classification function decides, as a function of all
     the attributes, whether to classify the instance as class 0 or class
     1. The next step is to verify if the classes should be balanced, and
-    if so, balance the classes. The last step is to add noise, if the noise
-    percentage is higher than 0.0.
+    if so, balance the classes. Finally, add noise if `perturbation` > 0.0.
 
     References
     ----------
@@ -280,7 +278,3 @@ class Agrawal(base.SyntheticDataset):
         disposable = (2 * (salary + commission) / 3 - 5000 * elevel + equity / 5 - 10000)
         return 0 if disposable > 1 else 1
 
-    @property
-    def _repr_content(self):
-        return {**super()._repr_content,
-                'Function': str(self.classification_function)}

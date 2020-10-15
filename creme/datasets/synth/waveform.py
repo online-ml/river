@@ -21,17 +21,6 @@ class Waveform(base.SyntheticDataset):
     has_noise
         Adds 19 unrelated features to the stream.
 
-    Notes
-    -----
-    An instance is generated based on the parameters passed.
-    The generator will randomly choose one of the hard coded waveforms, as
-    well as random multipliers. For each feature, the actual value generated
-    will be a a combination of the hard coded functions, with the multipliers
-    and a random value.
-
-    If noise is added then the features 21 to 40 will be replaced with a
-    random normal value.
-
     Examples
     --------
     >>> from creme import synth
@@ -61,6 +50,16 @@ class Waveform(base.SyntheticDataset):
     0.6257, -0.8572, -1.0709, 0.4825, -0.2235, 0.7140, 0.4732, -0.0728, -0.8468, -1.5148, \
     -0.4465, 0.8564, 0.2141, -1.2457, 0.1732, 0.3853, -0.8839, 0.1537, 0.0582, -1.1430] 0
 
+    Notes
+    -----
+    An instance is generated based on the parameters passed.
+    The generator will randomly choose one of the hard coded waveforms, as
+    well as random multipliers. For each feature, the actual value generated
+    will be a a combination of the hard coded functions, with the multipliers
+    and a random value.
+
+    If noise is added then the features 21 to 40 will be replaced with a
+    random normal value.
 
     """
 

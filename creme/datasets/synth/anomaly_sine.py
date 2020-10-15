@@ -14,13 +14,13 @@ class AnomalySine(base.SyntheticDataset):
     n_samples
         Number of samples
     n_anomalies
-        Number of anomalies. Can't be larger than n_samples.
+        Number of anomalies. Can't be larger than `n_samples`.
     contextual
         If True, will add contextual anomalies
     n_contextual
-        Number of contextual anomalies. Can't be larger than n_samples.
+        Number of contextual anomalies. Can't be larger than `n_samples`.
     shift
-        Shift applied when retrieving contextual anomalies
+        Shift in number of samples applied when retrieving contextual anomalies
     noise
         Amount of noise
     replace
@@ -83,14 +83,14 @@ class AnomalySine(base.SyntheticDataset):
         self.shift = abs(shift)
         self.noise = noise
         self.replace = replace
-        self.random_state = seed
+        self.seed = seed
 
         # Stream attributes
         self.n_num_features = 2
 
     def _generate_data(self):
         # Generate anomaly data arrays
-        self._random_state = check_random_state(self.random_state)
+        self._random_state = check_random_state(self.seed)
         self.y = np.zeros(self.n_samples)
         self.X = np.column_stack(
             [np.sin(np.arange(self.n_samples) / 4.)
