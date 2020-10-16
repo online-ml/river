@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import tarfile
+import typing
 from urllib import request
 import zipfile
 
@@ -72,7 +73,7 @@ class Dataset(abc.ABC):
         content = {}
         content['Name'] = self.__class__.__name__
         content['Task'] = self.task
-        if isinstance(self, SyntheticDataset):
+        if isinstance(self, SyntheticDataset) and self.n_samples is None:
             content['Samples'] = '∞'
         elif self.n_samples:
             content['Samples'] = f'{self.n_samples:,}'
@@ -111,6 +112,36 @@ class Dataset(abc.ABC):
 
 class SyntheticDataset(Dataset):
     """A synthetic dataset."""
+
+    def __repr__(self):
+        l_len_prop = max(map(len, self._repr_content.keys()))
+        r_len_prop = max(map(len, self._repr_content.values()))
+        params = self._get_params()
+        l_len_config = max(map(len, params.keys()))
+        r_len_config = max(map(len, map(str, params.values())))
+
+        out = (
+                f'Synthetic data generator\n\n' +
+                '\n'.join(
+                    k.rjust(l_len_prop) + '  ' + v.ljust(r_len_prop)
+                    for k, v in self._repr_content.items()
+                ) +
+                '\n\nConfiguration\n-------------\n' +
+                '\n'.join(
+                    k.rjust(l_len_config) + '  ' + str(v).ljust(r_len_config)
+                    for k, v in params.items()
+                )
+        )
+
+        return out
+
+    def _get_params(self) -> typing.Dict[str, typing.Any]:
+        """Return the parameters that were used during initialization."""
+        return {
+            name: getattr(self, name)
+            for name, param in inspect.signature(self.__init__).parameters.items()  # type: ignore
+            if param.kind != param.VAR_KEYWORD
+        }
 
 
 class FileDataset(Dataset):
