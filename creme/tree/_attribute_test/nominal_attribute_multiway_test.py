@@ -34,9 +34,7 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
         return -1
 
     def describe_condition_for_branch(self, branch):
-        return '{} = {}'.format(
-            self._att_idx, self._reverse_branch_mapping[branch]
-        )
+        return f"{self._att_idx} = {self._reverse_branch_mapping[branch]}"
 
     # def branch_rule(self, branch):
     #     return Predicate(

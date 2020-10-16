@@ -10,7 +10,9 @@ class InfoGainSplitCriterion(SplitCriterion):
     incorrectly labeled if it was randomly labeled according to the
     distribution of labels in the subset.
 
-    `Wikipedia entry <https://en.wikipedia.org/wiki/Decision_tree_learning#Information_gain>`_
+    References
+    ----------
+    [Wikipedia entry](https://en.wikipedia.org/wiki/Decision_tree_learning#Information_gain)
 
     """
     def __init__(self, min_branch_frac_option=0.01):

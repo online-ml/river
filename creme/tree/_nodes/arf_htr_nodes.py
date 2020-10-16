@@ -9,6 +9,13 @@ from .arf_htc_nodes import RandomActiveLeafClass
 
 
 class RandomActiveLeafRegressor(RandomActiveLeafClass):
+    """Random Active Leaf Regressor
+
+    The Random Active Leaf (used in ARF) changes the way in which the nodes update
+    the attribute observers (by using subsets of features). The regression version
+    extends the classification one and adds support to memory management in the
+    numeric attribute observer.
+    """
     @staticmethod
     def new_nominal_attribute_observer():
         return NominalAttributeRegressionObserver()
@@ -30,7 +37,7 @@ class RandomActiveLeafRegressor(RandomActiveLeafClass):
             The ratio between the second best candidate's merit and the merit of the best
             split candidate.
         last_check_vr
-            The best candidate's split merit.
+            The best candidate's split merit (variance reduction).
         last_check_e
             Hoeffding bound value calculated in the last split attempt.
         """

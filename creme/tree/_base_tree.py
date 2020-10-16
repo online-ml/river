@@ -21,24 +21,24 @@ class DecisionTree(ABC):
     """Base class for Decision Trees.
 
     It defines base operations and properties that all the decision trees must inherit or
-    implement according to their own particularities.
+    implement according to their own design.
 
-    Particularly, all the Decision Trees by inheriting from this class are able to:
+    All the extended classes inherit the following functionality:
 
-    * Setting up a maximum allowed tree depth to reach (by using `max_depth`).
-    * Handling *Active* and *Inactive* nodes: Active learning nodes besides updating their own
-    statistics to improve predictions, also monitor input features to perform split attempts.
-    Inactive learning nodes only keep the predictors; they are used to save memory in the tree
-    (`max_size` parameter).
-    *  Define strategies to sort leaves according to how likely they are going to be split.
+    * Set the maximum tree depth allowed (`max_depth`).
+    * Handle *Active* and *Inactive* nodes: Active learning nodes update their own
+    internal state to improve predictions and monitor input features to perform split
+    attempts. Inactive learning nodes do not update their internal state and only keep the
+    predictors; they are used to save memory in the tree (`max_size`).
+    *  Enable/disable memory management.
+    * Define strategies to sort leaves according to how likely they are going to be split.
     This enables deactivating non-promising leaves to save memory.
-    * Enabling and disabling memory management.
-    * Disabling 'poor' attributes to save memory and speed up tree construction. A poor attribute is
-    an input feature whose split merit is much smaller than the current best candidate. Once a feature
-    is disabled, the tree stops saving statistics necessary to split such a feature.
-    * Define common properties to access leaf prediction strategies, split criteria, and other tree
-    characteristics.
-
+    * Disabling ‘poor’ attributes to save memory and speed up tree construction.
+    A poor attribute is an input feature whose split merit is much smaller than the current
+    best candidate. Once a feature is disabled, the tree stops saving statistics necessary
+    to split such a feature.
+    * Define properties to access leaf prediction strategies, split criteria, and other
+    relevant characteristics.
 
     Parameters
     ----------
@@ -173,12 +173,12 @@ class DecisionTree(ABC):
                            is_active: bool = True) -> LearningNode:
         """Create a new learning node.
 
-        The characteristics of tje learning node depends on the tree algorithm.
+        The characteristics of the learning node depends on the tree algorithm.
 
         Parameters
         ----------
         initial_stats
-            Target statistics inherited from the parent node.
+            Target statistics set from the parent node.
         parent
             Parent node to inherit from.
         is_active
@@ -186,7 +186,6 @@ class DecisionTree(ABC):
 
         Returns
         -------
-        node
             A new learning node.
         """
 

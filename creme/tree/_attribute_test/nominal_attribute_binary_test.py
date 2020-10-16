@@ -21,10 +21,10 @@ class NominalAttributeBinaryTest(InstanceConditionalTest):
         self._att_value = att_value
 
     def branch_for_instance(self, x):
-        if self._att_idx not in x:
-            return -1
-        else:
+        try:
             return 0 if x[self._att_idx] == self._att_value else 1
+        except KeyError:
+            return -1
 
     @staticmethod
     def max_branches():
@@ -32,9 +32,7 @@ class NominalAttributeBinaryTest(InstanceConditionalTest):
 
     def describe_condition_for_branch(self, branch):
         condition = ' = ' if branch == 0 else ' != '
-        return '{}{}{}'.format(
-            self._att_idx, condition, self._att_value
-        )
+        return f"{self._att_idx}{condition}{self._att_value}"
 
     # def branch_rule(self, branch):
     #     condition = '==' if branch == 0 else '!='

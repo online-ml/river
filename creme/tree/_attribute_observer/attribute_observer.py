@@ -27,15 +27,15 @@ class AttributeObserver(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
+    def probability_of_attribute_value_given_class(self, att_val, target_val):
         """Get the probability for an attribute value given a class.
 
         Parameters
         ----------
         att_val
             The value of the attribute.
-        class_val
-            The class value.
+        target_val
+            The target value.
 
         Returns
         -------

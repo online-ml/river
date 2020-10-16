@@ -188,7 +188,8 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             The ratio between the merit of the second best split candidate and the merit of the
             best split candidate observed in the last failed split attempt.
         last_check_vr
-            The merit of the best split candidate observed in the last failed split attempt.
+            The merit (variance reduction) of the best split candidate observed in the last
+            failed split attempt.
         last_check_e
             The Hoeffding bound value calculated in the last failed split attempt.
         pre_split_dist

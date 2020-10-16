@@ -10,7 +10,7 @@ from creme.tree._attribute_test import AttributeSplitSuggestion
 from creme.tree._attribute_observer import AttributeObserverNull
 
 
-NT = TypeVar('NT', bound='Node')
+NodeType = TypeVar('NodeType', bound='Node')
 
 
 class FoundNode:
@@ -27,7 +27,7 @@ class FoundNode:
 
     """
 
-    def __init__(self, node: Type[NT] = None, parent: Type[NT] = None, parent_branch: int = None):
+    def __init__(self, node: Type[NodeType] = None, parent: Type[NodeType] = None, parent_branch: int = None):
         self.node = node
         self.parent = parent
         self.parent_branch = parent_branch
@@ -60,7 +60,7 @@ class Node(metaclass=ABCMeta):
         """
         return True
 
-    def filter_instance_to_leaf(self, x: dict, parent: Type[NT], parent_branch: int) -> FoundNode:
+    def filter_instance_to_leaf(self, x: dict, parent: Type[NodeType], parent_branch: int) -> FoundNode:
         """Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
@@ -443,7 +443,7 @@ class ActiveLeaf(metaclass=ABCMeta):
         criterion
             The splitting criterion to be used.
         tree
-            Hoeffding Tree.
+            Decision tree.
 
         Returns
         -------

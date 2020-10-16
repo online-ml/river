@@ -7,7 +7,9 @@ class VarianceReductionSplitCriterion(SplitCriterion):
     Often employed in cases where the target variable is continuous (regression tree),
     meaning that use of many other metrics would first require discretization before being applied.
 
-    `Wikipedia entry <https://en.wikipedia.org/wiki/Decision_tree_learning#Variance_reduction>`_
+    References
+    ----------
+    [Wikipedia entry](https://en.wikipedia.org/wiki/Decision_tree_learning#Variance_reduction)
 
     """
 
