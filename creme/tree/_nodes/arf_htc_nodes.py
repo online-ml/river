@@ -9,8 +9,8 @@ from .htc_nodes import LearningNodeNBA
 class RandomActiveLeafClass(ActiveLeafClass):
     """Random Active Leaf
 
-    A Random Active Leaf (used in ARF implementations) just changes the way how the nodes update
-    the attribute observers (by using subsets of features).
+    The Random Active Leaf (used in ARF) changes the way in which the nodes
+    update the attribute observers (by using subsets of features).
     """
     def update_attribute_observers(self, x, y, sample_weight, tree):
         if len(self.feature_indices) == 0:
