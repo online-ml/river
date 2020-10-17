@@ -130,5 +130,12 @@ setuptools.setup(
             'binding': True,
             'embedsignature': True
         }
-    )
+    ) + [setuptools.Extension(
+        'creme.neighbors.libNearestNeighbor',
+        sources=[os.path.join('creme', 'neighbors', 'src',
+                              'libNearestNeighbor', 'nearestNeighbor.cpp')],
+        include_dirs=[get_include()],
+        libraries=[] if platform.system() == 'Windows' else ['m'],
+        language='c++'
+    )]
 )
