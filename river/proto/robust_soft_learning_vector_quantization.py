@@ -6,9 +6,9 @@ from sklearn.utils import validation
 from sklearn.metrics import euclidean_distances
 from sklearn.utils.multiclass import unique_labels
 
-from creme.base import Classifier
-from creme.utils.skmultiflow_utils import check_random_state
-from creme.utils import dict2numpy
+from river.base import Classifier
+from river.utils.skmultiflow_utils import check_random_state
+from river.utils import dict2numpy
 
 
 class RobustSoftLearningVectorQuantization(Classifier):
@@ -70,10 +70,10 @@ class RobustSoftLearningVectorQuantization(Classifier):
 
     Examples
     --------
-    >>> from creme import datasets
-    >>> from creme import evaluate
-    >>> from creme import metrics
-    >>> from creme import proto
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import proto
 
     >>> dataset = datasets.Phishing()
 
