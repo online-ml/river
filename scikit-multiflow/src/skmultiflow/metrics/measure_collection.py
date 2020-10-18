@@ -1543,12 +1543,12 @@ class RunningTimeMeasurements(object):
         """
         self._testing_time += timer() - self._testing_start
 
-    def update_time_measurements(self, increment=1):
+    def update_time_measurements(self, inrivernt=1):
         """ Updates the current total running time. Updates the number of seen
-        samples by `increment`.
+        samples by `inrivernt`.
         """
-        if increment > 0:
-            self._sample_count += increment
+        if inrivernt > 0:
+            self._sample_count += inrivernt
         else:
             self._sample_count += 1
 

@@ -30,7 +30,7 @@ robust to concept drift changes in dynamic environments.
 
 ### Resource-wise efficient
 Streaming techniques efficiently handle resources such as memory and processing time given the
-unbounded nature of data streams. 
+unbounded nature of data streams.
 
 ### Easy to use
 scikit-multiflow is designed for users with any experience level. Experiments are easy to design,
@@ -41,8 +41,8 @@ In its current state, scikit-multiflow contains data generators, multi-output/mu
 learning methods, change detection methods, evaluation methods, and more.
 
 ### Open source
-Distributed under the 
-[BSD 3-Clause](https://github.com/scikit-multiflow/scikit-multiflow/blob/master/LICENSE), 
+Distributed under the
+[BSD 3-Clause](https://github.com/scikit-multiflow/scikit-multiflow/blob/master/LICENSE),
 `scikit-multiflow` is developed and maintained by an active, diverse and growing [community](/community).
 
 # Use cases
@@ -79,7 +79,7 @@ beginning of the Notebook:
 
 [JupyterLab](http://jupyterlab.readthedocs.io/en/stable/) is the next-generation user interface
 for Jupyter, currently in beta, it can display interactive plots with some caveats. If you use
-JupyterLab then the current solution is to use the 
+JupyterLab then the current solution is to use the
 [jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) extension:
 
 ```python

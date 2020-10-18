@@ -4,10 +4,10 @@
     "version": 1,
 
     // The name of the project being benchmarked
-    "project": "creme",
+    "project": "river",
 
     // The project's homepage
-    "project_url": "https://creme-ml.github.io/",
+    "project_url": "https://river-ml.github.io/",
 
     // The URL or local path of the source code repository for the
     // project being benchmarked
