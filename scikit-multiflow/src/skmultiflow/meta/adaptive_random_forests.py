@@ -5,10 +5,10 @@ import itertools
 import numpy as np
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
-from creme.base import DriftDetector
-from creme.drift import ADWIN
+from river.base import DriftDetector
+from river.drift import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree import ARFHoeffdingTreeClassifier
-from creme.metrics import _ClassificationReport
+from river.metrics import _ClassificationReport
 from skmultiflow.utils import get_dimensions, normalize_values_in_dict, check_random_state,\
     check_weights
 

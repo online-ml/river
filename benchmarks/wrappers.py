@@ -1,4 +1,4 @@
-from creme import base
+from river import base
 from sklearn import exceptions
 import torch
 from vowpalwabbit import pyvw

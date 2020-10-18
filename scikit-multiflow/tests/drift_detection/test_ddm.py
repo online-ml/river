@@ -1,6 +1,6 @@
 import numpy as np
 
-from creme.drift import DDM
+from river.drift import DDM
 
 
 def test_ddm():

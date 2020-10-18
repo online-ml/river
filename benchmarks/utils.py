@@ -1,7 +1,7 @@
 import collections
 import time
 
-from creme import base
+from river import base
 import pandas as pd
 import tqdm
 
