@@ -1,5 +1,5 @@
 from skmultiflow.lazy import KNNClassifier
-from creme.drift import ADWIN
+from river.drift import ADWIN
 from skmultiflow.utils.utils import get_dimensions
 
 import numpy as np
@@ -18,32 +18,32 @@ def KNNAdwin(n_neighbors=5, max_window_size=1000,
 
 class KNNADWINClassifier(KNNClassifier):
     """ K-Nearest Neighbors classifier with ADWIN change detector.
-    
+
     This Classifier is an improvement from the regular KNNClassifier,
-    as it is resistant to concept drift. It utilises the ADWIN change 
-    detector to decide which samples to keep and which ones to forget, 
+    as it is resistant to concept drift. It utilises the ADWIN change
+    detector to decide which samples to keep and which ones to forget,
     and by doing so it regulates the sample window size.
-     
+
     To know more about the ADWIN change detector, please see
     :class:`skmultiflow.drift.ADWIN`
 
     It uses the regular KNNClassifier as a base class, with the
-    major difference that this class keeps a variable size window, 
-    instead of a fixed size one and also it updates the adwin algorithm 
+    major difference that this class keeps a variable size window,
+    instead of a fixed size one and also it updates the adwin algorithm
     at each partial_fit call.
-    
+
     Parameters
     ----------
     n_neighbors: int (default=5)
         The number of nearest neighbors to search for.
-        
+
     max_window_size: int (default=1000)
         The maximum size of the window storing the last viewed samples.
-        
+
     leaf_size: int (default=30)
-        The maximum number of samples that can be stored in one leaf node, 
-        which determines from which point the algorithm will switch for a 
-        brute-force approach. The bigger this number the faster the tree 
+        The maximum number of samples that can be stored in one leaf node,
+        which determines from which point the algorithm will switch for a
+        brute-force approach. The bigger this number the faster the tree
         construction time, but the slower the query time will be.
 
     metric: string or sklearn.DistanceMetric object
@@ -56,7 +56,7 @@ class KNNADWINClassifier(KNNClassifier):
     This estimator is not optimal for a mixture of categorical and numerical
     features. This implementation treats all features from a given stream as
     numerical.
-    
+
     Examples
     --------
     >>> # Imports
@@ -99,35 +99,35 @@ class KNNADWINClassifier(KNNClassifier):
 
     def reset(self):
         """ Reset the estimator.
-        
+
         Resets the ADWIN Drift detector as well as the KNN model.
-        
+
         Returns
         -------
         KNNADWINClassifier
             self
-        
+
         """
         self.adwin = ADWIN()
         return super().reset()
 
     def partial_fit(self, X, y, classes=None, sample_weight=None):
         """ Partially (incrementally) fit the model.
-        
+
         Parameters
         ----------
         X: Numpy.ndarray of shape (n_samples, n_features)
             The data upon which the algorithm will create its model.
-            
+
         y: Array-like
-            An array-like containing the classification targets for all 
+            An array-like containing the classification targets for all
             samples in X.
-            
+
         classes: numpy.ndarray, optional (default=None)
             Array with all possible/known classes.
 
         sample_weight: Not used.
-        
+
         Returns
         -------
         KNNADWINClassifier
@@ -139,7 +139,7 @@ class KNNADWINClassifier(KNNClassifier):
         while also updating the ADWIN algorithm. IF ADWIN detects a change,
         the window is split in such a wat that samples from the previous
         concept are dropped.
-        
+
         """
         r, c = get_dimensions(X)
         if classes is not None:

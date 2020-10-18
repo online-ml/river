@@ -1,4 +1,4 @@
-from creme.drift import KSWIN
+from river.drift import KSWIN
 import numpy as np
 import pytest
 import os

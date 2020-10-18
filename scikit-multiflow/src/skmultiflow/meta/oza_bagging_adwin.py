@@ -2,7 +2,7 @@ import copy as cp
 
 from skmultiflow.meta import OzaBaggingClassifier
 from skmultiflow.lazy import KNNADWINClassifier
-from creme.drift import ADWIN
+from river.drift import ADWIN
 from skmultiflow.utils.utils import *
 
 import warnings
@@ -31,7 +31,7 @@ class OzaBaggingADWINClassifier(OzaBaggingClassifier):
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
-    
+
     Raises
     ------
     ValueError: A ValueError is raised if the 'classes' parameter is
@@ -52,7 +52,7 @@ class OzaBaggingADWINClassifier(OzaBaggingClassifier):
     .. [1] N. C. Oza, “Online Bagging and Boosting,” in 2005 IEEE International Conference on Systems,
        Man and Cybernetics, 2005, vol. 3, no. 3, pp. 2340–2345.
 
-    
+
     Examples
     --------
     >>> # Imports
@@ -78,13 +78,13 @@ class OzaBaggingADWINClassifier(OzaBaggingClassifier):
     ...         if y[0] == pred[0]:
     ...             corrects += 1
     ...     sample_count += 1
-    >>> 
+    >>>
     >>> # Displaying the results
     >>> print(str(sample_count) + ' samples analyzed.')
     2000 samples analyzed.
     >>> print('OzaBaggingADWINClassifier performance: ' + str(corrects / sample_count))
     OzaBaggingADWINClassifier performance: 0.9645
-    
+
     """
 
     def __init__(self, base_estimator=KNNADWINClassifier(), n_estimators=10, random_state=None):

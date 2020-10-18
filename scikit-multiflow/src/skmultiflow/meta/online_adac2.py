@@ -1,7 +1,7 @@
 import copy as cp
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
-from creme.drift import ADWIN
+from river.drift import ADWIN
 from skmultiflow.lazy import KNNADWINClassifier
 from skmultiflow.utils import check_random_state
 from skmultiflow.utils.utils import *

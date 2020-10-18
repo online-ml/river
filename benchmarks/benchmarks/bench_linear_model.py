@@ -1,4 +1,4 @@
-from creme import linear_model
+from river import linear_model
 
 
 class LinearRegression:
