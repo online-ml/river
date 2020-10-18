@@ -1,4 +1,4 @@
-git+https://github.com/creme-ml/creme
+git+https://github.com/river-ml/river
 Keras==2.2.4
 git+https://github.com/scikit-garden/scikit-garden
 scikit-learn==0.21.2

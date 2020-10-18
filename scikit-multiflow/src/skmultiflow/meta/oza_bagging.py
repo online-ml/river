@@ -31,7 +31,7 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used by `np.random`.
-    
+
     Raises
     ------
     ValueError: A ValueError is raised if the 'classes' parameter is
@@ -61,7 +61,7 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     ----------
     .. [1] N. C. Oza, “Online Bagging and Boosting,” in 2005 IEEE International Conference on Systems,
        Man and Cybernetics, 2005, vol. 3, no. 3, pp. 2340–2345.
-    
+
     Examples
     --------
     >>> # Imports
@@ -86,7 +86,7 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     ...         if y[0] == pred[0]:
     ...             corrects += 1
     ...     sample_count += 1
-    >>> 
+    >>>
     >>> # Displaying the results
     >>> print(str(sample_count) + ' samples analyzed.')
     2000 samples analyzed.
@@ -144,7 +144,7 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
             A ValueError is raised if the 'classes' parameter is not passed in the first
             partial_fit call, or if they are passed in further calls but differ from
             the initial classes list passed.
-        
+
         Returns
         -------
         OzaBaggingClassifier
@@ -218,7 +218,7 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
 
     def predict_proba(self, X):
         """ Estimates the probability of each sample in X belonging to each of the class-labels.
-        
+
         Parameters
         ----------
         X : numpy.ndarray of shape (n_samples, n_features)
@@ -229,7 +229,7 @@ class OzaBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
         A numpy.ndarray of shape (n_samples, n_labels), in which each outer entry is associated with the X entry of the
         same index. And where the list in index [i] contains len(self.target_values) elements, each of which represents
         the probability that the i-th sample of X belongs to a certain class-label.
-        
+
         Raises
         ------
         ValueError: A ValueError is raised if the number of classes in the base_estimator

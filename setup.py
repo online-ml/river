@@ -29,10 +29,10 @@ except ImportError:
 
 
 # Package meta-data.
-NAME = 'creme'
+NAME = 'river'
 DESCRIPTION = 'Online machine learning in Python'
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
-URL = 'https://github.com/creme-ml/creme'
+URL = 'https://github.com/river-ml/river'
 EMAIL = 'maxhalford25@gmail.com'
 AUTHOR = 'Max Halford'
 REQUIRES_PYTHON = '>=3.6.0'

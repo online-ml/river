@@ -1,5 +1,5 @@
 import numpy as np
-from creme.drift import HDDM_A
+from river.drift import HDDM_A
 
 
 def test_hddm_a():
