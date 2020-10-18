@@ -1,6 +1,6 @@
 import numpy as np
 
-from creme.drift.eddm import EDDM
+from river.drift.eddm import EDDM
 
 
 def test_eddm():

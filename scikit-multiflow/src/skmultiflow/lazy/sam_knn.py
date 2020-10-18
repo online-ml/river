@@ -33,34 +33,34 @@ class SAMKNNClassifier(BaseSKMObject, ClassifierMixin):
     ----------
     n_neighbors : int, optional (default=5)
         number of evaluated nearest neighbors.
-        
+
     weighting: string, optional (default='distance')
-        Type of weighting of the nearest neighbors. It must be either 'distance' 
+        Type of weighting of the nearest neighbors. It must be either 'distance'
         or 'uniform' (majority voting).
-         
+
     max_window_size : int, optional (default=5000)
          Maximum number of overall stored data points.
-         
+
     ltm_size: float, optional (default=0.4)
-        Proportion of the overall instances that may be used for the LTM. This is 
+        Proportion of the overall instances that may be used for the LTM. This is
         only relevant when the maximum number(maxSize) of stored instances is reached.
-        
+
     stm_size_option : string, optional (default='maxACCApprox')
         Type of STM size adaption.
-        'maxACC' calculates the Interleaved test-train error exactly for each of the 
-        evaluated window sizes, which means it has often to be recalculated from the 
+        'maxACC' calculates the Interleaved test-train error exactly for each of the
+        evaluated window sizes, which means it has often to be recalculated from the
         scratch.
-        'maxACCApprox' approximates the Interleaved test-train error and is 
-        significantly faster than the exact version. If set to None, the STM is not 
+        'maxACCApprox' approximates the Interleaved test-train error and is
+        significantly faster than the exact version. If set to None, the STM is not
         adapted at all. When additionally use_ltm=false, this algorithm is simply a kNN
         with fixed sliding window size.
-        
+
     min_stm_size : int, optional (default=50)
         Minimum STM size which is evaluated during the STM size adaption.
-        
+
     use_ltm : boolean, optional (default=True)
         Specifies whether the LTM should be used at all.
-    
+
     Examples
     --------
     >>> from skmultiflow.lazy import SAMKNNClassifier
@@ -87,10 +87,10 @@ class SAMKNNClassifier(BaseSKMObject, ClassifierMixin):
     controlling the size of the STM while keeping the information in the LTM consistent
     with the STM.
 
-    This modules uses the libNearestNeighbor, a C++ library used to speed up some of 
-    the algorithm's computations. When invoking the library's functions it's important 
+    This modules uses the libNearestNeighbor, a C++ library used to speed up some of
+    the algorithm's computations. When invoking the library's functions it's important
     to pass the right argument type. Although most of this framework's functionality
-    will work with python standard types, the C++ library will work with 8-bit labels, 
+    will work with python standard types, the C++ library will work with 8-bit labels,
     which is already done by the SAMKNN class, but may be absent in custom classes that
     use SAMKNN static methods, or other custom functions that use the C++ library.
 

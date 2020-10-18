@@ -18,7 +18,7 @@ def BatchIncremental(nominal_attributes=None):     # pragma: no cover
 class BatchIncrementalClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):
     """ Batch Incremental ensemble classifier.
 
-    This is a wrapper that allows the application of any batch model to a 
+    This is a wrapper that allows the application of any batch model to a
     stream by incrementally building an ensemble of instances of the batch model.
     A window of examples is collected, then used to train a new model, which is
     added to the ensemble. A maximum number of models ensures memory use is finite
@@ -74,7 +74,7 @@ class BatchIncrementalClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMi
         self.window_size = window_size
         self.n_estimators = n_estimators
         self.base_estimator = base_estimator
-        # The ensemble 
+        # The ensemble
         self.ensemble = []
         self.i = -1
         self.X_batch = None

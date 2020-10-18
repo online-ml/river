@@ -120,7 +120,7 @@ class Linkifier:
         path_index = {}
         name_index = {}
 
-        modules = dict(inspect.getmembers(importlib.import_module('creme'), inspect.ismodule))
+        modules = dict(inspect.getmembers(importlib.import_module('river'), inspect.ismodule))
         modules = {
             'base': modules['base'],
             'linear_model': modules['linear_model'],
@@ -162,11 +162,11 @@ class Linkifier:
         for mod_name, mod in modules.items():
             index_module(mod_name, mod, path='')
 
-        # Prepend creme to each index entry
+        # Prepend river to each index entry
         for k in list(path_index.keys()):
-            path_index[f'creme.{k}'] = path_index[k]
+            path_index[f'river.{k}'] = path_index[k]
         for k in list(name_index.keys()):
-            name_index[f'creme.{k}'] = name_index[k]
+            name_index[f'river.{k}'] = name_index[k]
 
         self.path_index = path_index
         self.name_index = name_index
@@ -432,7 +432,7 @@ if __name__ == '__main__':
 
     linkifier = Linkifier()
 
-    for mod_name, mod in inspect.getmembers(importlib.import_module('creme'), inspect.ismodule):
+    for mod_name, mod in inspect.getmembers(importlib.import_module('river'), inspect.ismodule):
         if mod_name.startswith('_'):
             continue
         print(mod_name)
