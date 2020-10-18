@@ -1,6 +1,6 @@
 from .knn_classifier import KNNClassifier
-from creme.drift import ADWIN
-from creme.utils import dict2numpy
+from river.drift import ADWIN
+from river.utils import dict2numpy
 
 
 class KNNADWINClassifier(KNNClassifier):
@@ -38,10 +38,10 @@ class KNNADWINClassifier(KNNClassifier):
 
     Examples
     --------
-    >>> from creme import synth
-    >>> from creme import evaluate
-    >>> from creme import metrics
-    >>> from creme import neighbors
+    >>> from river import synth
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import neighbors
 
     >>> dataset = synth.ConceptDriftStream(position=500, width=20, seed=1).take(1000)
 

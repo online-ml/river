@@ -6,8 +6,8 @@ import numpy as np
 
 from sklearn.cluster import KMeans
 
-from creme.base import Classifier
-from creme.utils import dict2numpy
+from river.base import Classifier
+from river.utils import dict2numpy
 from . import libNearestNeighbor
 
 
@@ -48,10 +48,10 @@ class SAMKNNClassifier(Classifier):
     
     Examples
     --------
-    >>> from creme import synth
-    >>> from creme import evaluate
-    >>> from creme import metrics
-    >>> from creme import neighbors
+    >>> from river import synth
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import neighbors
 
     >>> dataset = synth.ConceptDriftStream(position=500, width=20, seed=1).take(1000)
 
