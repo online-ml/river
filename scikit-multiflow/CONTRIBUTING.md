@@ -11,13 +11,13 @@ direction:
 
 ## Code style and documentation
 
-* Python Code shall comply with 
+* Python Code shall comply with
 [PEP 8](https://www.python.org/dev/peps/pep-0008/)
 
 * Documentation shall be in docstring format and shall follow the
   [NumPy/SciPy guidelines](https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard)
 
-  - An example from the sphinx documentation:  
+  - An example from the sphinx documentation:
     https://www.sphinx-doc.org/en/master/usage/extensions/example_numpy.html
 
 ## Development
@@ -60,7 +60,7 @@ pip install --editable .
 ### Random number generators
 Random number generators are handled as in `scikit-learn`. Meaning that, random number
 generators/seeds are referred as `random_state`. Before using a `random_state` object, we must
-ensure that it is valid, this is done via the utility function 
+ensure that it is valid, this is done via the utility function
 `skmultiflow.core.utils.validation.check_random_state`.
 
 ## Testing
@@ -84,7 +84,7 @@ than you). The development team can provide support during the code review.
 * Evidence of **correctness** of the results must be provided, this includes (but it is not limited
 to) plots, benchmarks, etc.
 * Functional test(s) must be included as part of the Pull Request. These tests shall focus on
-  providing coverage and ensuring the integrity of the project. They are intended to catch 
+  providing coverage and ensuring the integrity of the project. They are intended to catch
   **unintentional** changes that could be introduced by unrelated development efforts.
   * We use [codecov](https://codecov.io/gh/scikit-multiflow/scikit-multiflow) to check for
    coverage and the corresponding report is automatically generated (updated) as part of the
@@ -100,16 +100,16 @@ If you are modifying existing code:
 * Same rules apply regarding correctness ad testing of code. However, tests might only require to be updated.
 
 ## Sphinx documentation
-* We generate our documentation using `sphinx` with the following dependencies: 
+* We generate our documentation using `sphinx` with the following dependencies:
   `pydata_sphinx_theme`, `numpydoc`, `sphinx-copybutton`.
 * To update the documentation, perform in a terminal the steps below:
-    * Go to scikit-multiflow/docs and type in:  
+    * Go to scikit-multiflow/docs and type in:
       ``` bash
       $ make html
       ```
       This will generate the documentation page in `docs/_build/html`
 
-* When adding/modifying documentation, it is recommended to generate the html page locally to 
+* When adding/modifying documentation, it is recommended to generate the html page locally to
   ensure that it is correctly generated and the content is rendered as expected.
 
 ## Naming convention for new methods
@@ -153,7 +153,7 @@ The goal is for the user to be able to run the example code without requiring an
 The following code snippet is intended as a template and should be modified accordingly:
 
 ```python
-   
+
 # Import required packages such as estimators, generators, etc
 from skmultiflow.data import SEAGenerator
 from skmultiflow.bayes import NaiveBayes
@@ -178,6 +178,6 @@ while n_samples < max_samples and stream.has_more_samples():
    estimator.partial_fit(X, y)
    n_samples += 1
 
-print('{} samples analyzed.'.format(n_samples))   
+print('{} samples analyzed.'.format(n_samples))
 print('Estimator accuracy: {}'.format(correct_cnt / n_samples))
 ```

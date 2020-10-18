@@ -7,7 +7,7 @@ from skmultiflow.core import BaseSKMObject
 from skmultiflow.data.base_stream import Stream
 from .evaluation_data_buffer import EvaluationDataBuffer
 from skmultiflow.visualization.evaluation_visualizer import EvaluationVisualizer
-from creme.metrics import _ClassificationReport,\
+from river.metrics import _ClassificationReport,\
     _RollingClassificationReport, _MLClassificationReport,\
     _RollingMLClassificationReport
 from skmultiflow.metrics import RegressionMeasurements, WindowRegressionMeasurements,\

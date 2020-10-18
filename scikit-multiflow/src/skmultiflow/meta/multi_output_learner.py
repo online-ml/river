@@ -48,7 +48,7 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
     >>> # Pre training the classifier with 150 samples
     >>> X, y = stream.next_sample(150)
     >>> classifier.partial_fit(X, y, classes=stream.target_values)
-    >>> # Keeping track of sample count, true labels and predictions to later 
+    >>> # Keeping track of sample count, true labels and predictions to later
     >>> # compute the classifier's hamming score
     >>> count = 0
     >>> true_labels = []
@@ -64,7 +64,7 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
     >>> perf = hamming_score(true_labels, predicts)
     >>> print('Total samples analyzed: ' + str(count))
     >>> print("The classifier's static Hamming score    : " + str(perf))
-    
+
     """
 
     def __init__(self, base_estimator=SGDClassifier(max_iter=100)):
@@ -180,12 +180,12 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
 
         Iterates over all the estimators, predicting with each one, to obtain
         the multi output prediction.
-        
+
         Parameters
         ----------
         X : numpy.ndarray of shape (n_samples, n_features)
             The set of data samples to predict the target values for.
-            
+
         Returns
         -------
         numpy.ndarray
@@ -202,8 +202,8 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
     def predict_proba(self, X):
         """ Estimates the probability of each sample in X belonging to each of
         the existing labels for each of the classification tasks.
-        
-        It's a simple call to all of the classifier's predict_proba function, 
+
+        It's a simple call to all of the classifier's predict_proba function,
         return the probabilities for all the classification problems.
 
         Not applicable for regression tasks.
@@ -216,10 +216,10 @@ class MultiOutputLearner(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, Mul
         Returns
         -------
         numpy.ndarray
-            An array of shape (n_samples, n_classification_tasks, n_labels), in which 
-            we store the probability that each sample in X belongs to each of the labels, 
+            An array of shape (n_samples, n_classification_tasks, n_labels), in which
+            we store the probability that each sample in X belongs to each of the labels,
             in each of the classification tasks.
-        
+
         """
         N, D = X.shape
         proba = np.zeros((N,self.n_targets))

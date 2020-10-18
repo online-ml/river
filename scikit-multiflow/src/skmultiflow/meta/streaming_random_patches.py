@@ -7,11 +7,11 @@ import numpy as np
 from sklearn.preprocessing import normalize
 
 from skmultiflow.core import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin, clone
-from creme.base import DriftDetector
+from river.base import DriftDetector
 from skmultiflow.trees import HoeffdingTreeClassifier
-from creme.drift import ADWIN
+from river.drift import ADWIN
 from skmultiflow.utils import check_random_state, get_dimensions
-from creme.metrics import _ClassificationReport
+from river.metrics import _ClassificationReport
 
 
 class StreamingRandomPatchesClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorMixin):

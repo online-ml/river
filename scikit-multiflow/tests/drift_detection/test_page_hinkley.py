@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from creme.drift import PageHinkley
+from river.drift import PageHinkley
 
 
 def test_page_hinkley(test_path):
