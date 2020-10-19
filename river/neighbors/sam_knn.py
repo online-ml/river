@@ -24,23 +24,22 @@ class SAMKNNClassifier(Classifier):
     ----------
     n_neighbors
         number of evaluated nearest neighbors.
-    weighting
-        Type of weighting of the nearest neighbors. It must be either 'distance' 
-        or 'uniform' (majority voting).
+    distance_weighting
+        Type of weighting of the nearest neighbors. It `True`  will use 'distance'.
+        Otherwise, will use 'uniform' (majority voting).
     window_size
          Maximum number of overall stored data points.
     ltm_size
         Proportion of the overall instances that may be used for the LTM. This is 
         only relevant when the maximum number(maxSize) of stored instances is reached.
-    stm_size_option
-        Type of STM size adaption.
-        'maxACC' calculates the Interleaved test-train error exactly for each of the 
-        evaluated window sizes, which means it has often to be recalculated from the 
-        scratch.
-        'maxACCApprox' approximates the Interleaved test-train error and is 
-        significantly faster than the exact version. If set to None, the STM is not 
-        adapted at all. When additionally use_ltm=false, this algorithm is simply a kNN
-        with fixed sliding window size.
+    stm_aprox_adaption
+        Type of STM size adaption.<br/>
+            - If `True` approximates the interleaved test-train error and is
+               significantly faster than the exact version.<br/>
+            - If `False` calculates the interleaved test-train error exactly for each of the
+              evaluated window sizes, which often has to be recalculated from the scratch.<br/>
+            - If `None`, the STM is not  adapted at all. If additionally `use_ltm=False`, then
+              this algorithm is simply a kNN with fixed sliding window size.
     min_stm_size
         Minimum STM size which is evaluated during the STM size adaption.
     use_ltm
@@ -81,20 +80,19 @@ class SAMKNNClassifier(Classifier):
     """
 
     def __init__(self, n_neighbors: int = 5,
-                 weighting: str = 'distance',
+                 distance_weighting=True,
                  window_size: int = 5000,
                  ltm_size: float = 0.4,
                  min_stm_size: int = 50,
-                 stm_size_option: str = 'maxACCApprox',
+                 stm_aprox_adaption=True,
                  use_ltm=True):
         super().__init__()
         self.n_neighbors = n_neighbors
-        self.weighting = weighting
+        self.distance_weighting = distance_weighting
         self.window_size = window_size
         self.ltm_size = ltm_size
         self.min_stm_size = min_stm_size
         self.use_ltm = use_ltm
-        self.stm_size_option = stm_size_option
 
         self._stm_samples = None
         self._stm_labels = np.empty(shape=0, dtype=np.int32)
@@ -103,14 +101,13 @@ class SAMKNNClassifier(Classifier):
         self.max_ltm_size = self.ltm_size * self.window_size
         self.max_stm_size = self.window_size - self.max_ltm_size
         self.min_stm_size = self.min_stm_size
+        self.stm_aprox_adaption = stm_aprox_adaption
 
-        if self.stm_size_option is not None:
-            self.stm_distances = np.zeros(shape=(window_size + 1, window_size + 1))
-        if self.weighting == 'distance':
+        self.stm_distances = np.zeros(shape=(window_size + 1, window_size + 1))
+        if self.distance_weighting:
             self.get_labels_fct = SAMKNNClassifier._get_distance_weighted_label
-        elif self.weighting == 'uniform':
+        else:
             self.get_labels_fct = SAMKNNClassifier._get_maj_label
-        self.stm_size_adaption = self.stm_size_option
         if self.use_ltm:
             self.predict_fct = self._predict_by_all_memories
             self.size_check_fct = self._size_check_stmltm
@@ -170,7 +167,7 @@ class SAMKNNClassifier(Classifier):
             self.stm_distances[:len(self._stm_labels), :len(self._stm_labels)] = \
                 self.stm_distances[1:len(self._stm_labels) + 1, 1:len(self._stm_labels) + 1]
 
-            if self.stm_size_adaption == 'maxACCApprox':
+            if self.stm_aprox_adaption:
                 key_set = list(self.interleaved_pred_histories.keys())
                 # if self.interleaved_pred_histories.has_key(0):
                 if 0 in key_set:
@@ -272,7 +269,7 @@ class SAMKNNClassifier(Classifier):
                                                                   self._ltm_labels,
                                                                   only_last=True)
 
-        if self.stm_size_adaption is not None:
+        if self.stm_aprox_adaption is not None:
             if stm_shortened:
                 distances_stm = SAMKNNClassifier._get_distances(x, self._stm_samples[:-1, :])
 
@@ -280,7 +277,7 @@ class SAMKNNClassifier(Classifier):
                 distances_stm
             old_window_size = len(self._stm_labels)
             new_window_size, self.interleaved_pred_histories = \
-                STMSizer.get_new_stm_size(self.stm_size_adaption, self._stm_labels,
+                STMSizer.get_new_stm_size(self.stm_aprox_adaption, self._stm_labels,
                                           self.n_neighbors, self.get_labels_fct,
                                           self.interleaved_pred_histories, self.stm_distances,
                                           self.min_stm_size)
@@ -474,39 +471,46 @@ class SAMKNNClassifier(Classifier):
 
     @property
     def STMSamples(self):    # noqa
+        """Samples in the STM."""
         return self._stm_samples
 
     @property
     def STMLabels(self):    # noqa
+        """Class labels in the STM."""
         return self._stm_labels
 
     @property
     def LTMSamples(self):    # noqa
+        """Samples in the LTM."""
         return self._ltm_samples
 
     @property
     def LTMLabels(self):    # noqa
+        """Class labels in the LTM."""
         return self._ltm_labels
 
 
 class STMSizer:
     """Utility class to adapt the size of the sliding window of the STM."""
     @staticmethod
-    def get_new_stm_size(adaption_strategy, labels, n_neighbours, get_labels_fct,
+    def get_new_stm_size(aprox_adaption_strategy, labels, n_neighbours, get_labels_fct,
                          prediction_histories, distances_stm, min_stm_size):
         """Returns the new STM size."""
-        if adaption_strategy is None:
-            return len(labels), prediction_histories
-        elif adaption_strategy == 'maxACC':
-            return STMSizer._get_max_acc_window_size(labels, n_neighbours, get_labels_fct,
-                                                     prediction_histories, distances_stm,
-                                                     min_size=min_stm_size)
-        elif adaption_strategy == 'maxACCApprox':
+        if aprox_adaption_strategy:
+            "Use approximate interleaved test-train error"
             return STMSizer._get_max_acc_approx_window_size(labels, n_neighbours, get_labels_fct,
                                                             prediction_histories, distances_stm,
                                                             min_size=min_stm_size)
+        elif aprox_adaption_strategy is not None and not aprox_adaption_strategy:
+            "Use exact interleaved test-train error"
+            return STMSizer._get_max_acc_window_size(labels, n_neighbours, get_labels_fct,
+                                                     prediction_histories, distances_stm,
+                                                     min_size=min_stm_size)
+        elif aprox_adaption_strategy is None:
+            "No stm adaption"
+            return len(labels), prediction_histories
         else:
-            raise Exception('unknown driftStrategy')
+            raise Exception(f'Invalid adaption_strategy: {aprox_adaption_strategy}')
 
     @staticmethod
     def _acc_score(y_pred, y_true):
