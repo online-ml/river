@@ -33,6 +33,7 @@ from . import neighbors
 from . import optim
 from . import preprocessing
 from . import proba
+from . import proto
 from . import reco
 from . import stats
 from . import stream
@@ -67,6 +68,7 @@ __all__ = [
     'optim',
     'preprocessing',
     'proba',
+    'proto',
     'reco',
     'stats',
     'stream',
