@@ -1,9 +1,9 @@
 import numpy as np
 
-from creme.metrics import _ClassificationReport
-from creme.metrics import _RollingClassificationReport
-from creme.metrics import _MLClassificationReport
-from creme.metrics import _RollingMLClassificationReport
+from river.metrics import _ClassificationReport
+from river.metrics import _RollingClassificationReport
+from river.metrics import _MLClassificationReport
+from river.metrics import _RollingMLClassificationReport
 
 
 def test_binary_classification():

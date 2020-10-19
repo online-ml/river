@@ -1,6 +1,6 @@
 global-include *.pyx
 global-include *.pxd
-include creme/datasets/*.csv
-include creme/datasets/*.gz
-include creme/datasets/*.zip
-include creme/stream/*.zip
+include river/datasets/*.csv
+include river/datasets/*.gz
+include river/datasets/*.zip
+include river/stream/*.zip

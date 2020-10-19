@@ -5,8 +5,8 @@ import numpy as np
 
 from skmultiflow.core import BaseSKMObject, RegressorMixin
 from skmultiflow.meta import AdaptiveRandomForestClassifier
-from creme.base import DriftDetector
-from creme.drift import ADWIN
+from river.base import DriftDetector
+from river.drift import ADWIN
 from skmultiflow.trees.arf_hoeffding_tree_regressor import ARFHoeffdingTreeRegressor
 from skmultiflow.metrics.measure_collection import RegressionMeasurements
 from skmultiflow.utils import get_dimensions, check_random_state

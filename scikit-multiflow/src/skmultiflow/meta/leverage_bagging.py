@@ -2,7 +2,7 @@ import copy as cp
 
 from skmultiflow.core.base import BaseSKMObject, ClassifierMixin, MetaEstimatorMixin
 from skmultiflow.lazy import KNNClassifier
-from creme.drift import ADWIN
+from river.drift import ADWIN
 from skmultiflow.utils.utils import *
 from skmultiflow.utils import check_random_state
 
@@ -31,20 +31,20 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
     base_estimator: skmultiflow.core.BaseSKMObject or sklearn.BaseEstimator \
     (default=KNN)
         Each member of the ensemble is an instance of the base estimator.
-        
+
     n_estimators: int (default=10)
         The size of the ensemble, in other words, how many classifiers to train.
 
     w: int (default=6)
         The poisson distribution's parameter, which is used to simulate
         re-sampling.
-        
+
     delta: float (default=0.002)
         The delta parameter for the ADWIN change detector.
-    
+
     enable_code_matrix: bool (default=False)
         If set, enables Leveraging Bagging MC using Random Output Codes.
-    
+
     leverage_algorithm: string (default='leveraging_bag')
         | The bagging algorithm to use. Can be one of the following:
         | 'leveraging_bag' - Leveraging Bagging using ADWIN
@@ -60,7 +60,7 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
-    
+
     Raises
     ------
     ValueError: A ValueError is raised if the ``classes`` parameter is not \
@@ -95,7 +95,7 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
        Evolving Data Streams,” in Joint European Conference on Machine Learning
        and Knowledge Discovery in Databases, 2010, no. 1, pp. 135–150.
 
-    
+
     Examples
     --------
     >>> # Imports
@@ -126,7 +126,7 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
     2000 samples analyzed.
     >>> print('LeveragingBaggingClassifier performance: ' + str(corrects / sample_count))
     LeveragingBagging classifier performance: 0.843
-    
+
     """
 
     _LEVERAGE_ALGORITHMS = ['leveraging_bag',
@@ -196,14 +196,14 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
         Raises
         ------
         ValueError: A ValueError is raised if the 'classes' parameter is not
-        passed in the first partial_fit call, or if they are passed in further 
+        passed in the first partial_fit call, or if they are passed in further
         calls but differ from the initial classes list passed.
-        
+
         Returns
         -------
         LeveragingBaggingClassifier
             self
-        
+
         """
         if classes is None and self.classes is None:
             raise ValueError("The first partial_fit call should pass all the classes.")
@@ -335,7 +335,7 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
         Returns
         -------
         A numpy.ndarray with all the predictions for the samples in X.
-        
+
         """
         r, c = get_dimensions(X)
         proba = self.predict_proba(X)
@@ -370,9 +370,9 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
 
         Notes
         -----
-        Calculates the probability of each sample in X belonging to each 
+        Calculates the probability of each sample in X belonging to each
         of the labels, based on the base estimator. This is done by predicting
-        the class probability for each one of the ensemble's classifier, and 
+        the class probability for each one of the ensemble's classifier, and
         then taking the absolute probability from the ensemble itself.
 
         """
@@ -418,10 +418,10 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
         Returns
         -------
         list
-            A list of lists, in which each outer entry is associated with 
-            the X entry of the same index. And where the list in index [i] 
+            A list of lists, in which each outer entry is associated with
+            the X entry of the same index. And where the list in index [i]
             contains len(self.target_values) elements, each of which represents
-            the probability that the i-th sample of X belongs to a certain 
+            the probability that the i-th sample of X belongs to a certain
             label.
 
         """
@@ -459,7 +459,7 @@ class LeveragingBaggingClassifier(BaseSKMObject, ClassifierMixin, MetaEstimatorM
 
     def reset(self):
         """ Resets all the estimators, as well as all the ADWIN change detectors.
-        
+
         Returns
         -------
         LeveragingBaggingClassifier

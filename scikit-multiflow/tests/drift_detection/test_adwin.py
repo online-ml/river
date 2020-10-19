@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from creme.drift.adwin import ADWIN
+from river.drift.adwin import ADWIN
 
 
 def test_adwin(test_path):
