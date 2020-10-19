@@ -11,7 +11,7 @@ from river.utils.skmultiflow_utils import check_random_state
 from river.utils import dict2numpy
 
 
-class RobustSoftLearningVectorQuantization(Classifier):
+class RSLVQClassifier(Classifier):
     """Robust Soft Learning Vector Quantization for Streaming and Non-Streaming Data.
 
     By choosing another gradient descent method the Robust Soft Learning Vector Quantization
@@ -19,9 +19,11 @@ class RobustSoftLearningVectorQuantization(Classifier):
 
     Parameters
     ----------
+    classes
+        Set of class labels to learn. Must be specified.
     prototypes_per_class
         Number of prototypes per class.
-    initial_prototypes: array-like, shape =  , optional
+    initial_prototypes
         Prototypes to start with (shape = [n_prototypes, n_features + 1]).
         If not given then the initialization is near the class mean.
         Class label must be placed as last entry of each prototype.
@@ -43,14 +45,30 @@ class RobustSoftLearningVectorQuantization(Classifier):
     prototypes
         Prototypes array with shape = (n_prototypes, n_features).
     prototypes_classes
-        Prototypes classes array with shape = (n_prototypes)
+        Prototypes classes array with shape = (n_prototypes).
     class_labels
-        Class labels array with shape = (n_classes)
+        Class labels array with shape = (n_classes).
+
+    Examples
+    --------
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import proto
+
+    >>> dataset = datasets.Phishing()
+
+    >>> model = proto.RSLVQClassifier(classes={0, 1}, seed=42)
+
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 74.08%
 
     Notes
     -----
     * The RSLVQ [^2] can be used with vanilla SGD as gradient descent method or
-    with a momentum-based gradient descent technique called Adadelta as proposed in [^1].
+      with a momentum-based gradient descent technique called Adadelta as proposed in [^1].
     * Example for one prototype per class on a binary classification problem:
       ```
       initial_prototypes = [[2.59922826, 2.57368134, 4.92501, 0],
@@ -67,22 +85,6 @@ class RobustSoftLearningVectorQuantization(Classifier):
           Publishing, Cham (2020)
     [^2]: Sambu Seo and Klaus Obermayer. 2003. Soft learning vector
           quantization. Neural Comput. 15, 7 (July 2003), 1589-1604
-
-    Examples
-    --------
-    >>> from river import datasets
-    >>> from river import evaluate
-    >>> from river import metrics
-    >>> from river import proto
-
-    >>> dataset = datasets.Phishing()
-
-    >>> model = proto.RobustSoftLearningVectorQuantization(classes={0, 1}, seed=42)
-
-    >>> metric = metrics.Accuracy()
-
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 74.08%
 
     """
 
