@@ -9,7 +9,8 @@ from river import linear_model
 from river.drift import ADWIN
 
 
-__all__ = ['BaggingClassifier', 'BaggingRegressor', 'ADWIN', 'LeveragingBaggingClassifier']
+__all__ = ['BaggingClassifier', 'BaggingRegressor',
+           'ADWINBaggingClassifier', 'LeveragingBaggingClassifier']
 
 
 class BaseBagging(base.WrapperMixin, base.EnsembleMixin):
