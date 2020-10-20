@@ -1,5 +1,7 @@
 import math
 
+from river.utils.math import softmax
+
 
 def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_observers: dict):
     """Perform Naive Bayes prediction
@@ -25,7 +27,7 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
     This method is not intended to be used as a stand-alone method.
     """
     total_weight_sum = sum(observed_class_distribution.values())
-    if observed_class_distribution == {} or total_weight_sum == 0.0:
+    if not observed_class_distribution or total_weight_sum == 0:
         # No observed class distributions, all classes equal
         return None
     votes = {}
@@ -38,6 +40,4 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
                 # Prior plus the log likelihood
                 tmp = obs.probability_of_attribute_value_given_class(x[att_idx], class_index)
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.
-        # Back to the original scale
-        votes[class_index] = math.exp(votes[class_index])
-    return votes
+    return softmax(votes)

@@ -71,22 +71,24 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
 
     Examples
     --------
-    >>> from river.stream import synth
+    >>> from river import synth
     >>> from river import evaluate
     >>> from river import metrics
     >>> from river import tree
 
-    >>> dataset = datasets.Phishing()
+    >>> gen = synth.Agrawal(classification_function=0, seed=42)
+    >>> dataset = iter(gen.take(1000))
 
     >>> model = tree.HoeffdingTreeClassifier(
     ...     grace_period=100,
     ...     split_confidence=1e-5,
-    ...     split_criterion='gini'
+    ...     nominal_attributes=['elevel', 'car', 'zipcode'],
     ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 86.09%
     """
 
     _GINI_SPLIT = 'gini'
@@ -221,7 +223,6 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
             leaf = found_node.node
             if leaf is None:
                 leaf = found_node.parent
-
             pred = leaf.predict_one(x, tree=self) if not isinstance(leaf, SplitNode) \
                 else leaf.stats
             proba.update(pred)
