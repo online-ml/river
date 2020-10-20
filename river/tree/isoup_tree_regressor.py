@@ -36,7 +36,13 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         | 'model' - Uses the model defined in `leaf_model`
         | 'adaptive' - Chooses between 'mean' and 'model' dynamically
     leaf_model
-        The regression model used to provide responses if `leaf_prediction='model'`.
+        The regression model(s) used to provide responses if `leaf_prediction='model'`. It can
+        be either a regressor (in which case it is going to be replicated to all the targets)
+        or a dictionary whose keys are target identifiers, and the values are instances of
+        `river.base.Regressor.` If not provided instances of `river.linear_model.LinearRegression`
+        with the default hyperparameters are used for all the targets. If a dictionary is passed
+        and not all target models are specified, copies from the first model match in the
+        dictionary will be used to the remaining targets.
     model_selector_decay
         The exponential decaying factor applied to the learning models' squared errors, that
         are monitored if `leaf_prediction='adaptive'`. Must be between `0` and `1`. The closer
@@ -93,7 +99,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
-                 leaf_model: typing.Union[base.Regressor, dict] = linear_model.LinearRegression(),
+                 leaf_model: typing.Union[base.Regressor, dict] = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
                  **kwargs):
