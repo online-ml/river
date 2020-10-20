@@ -77,6 +77,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     >>> from river import tree
 
     >>> gen = synth.Agrawal(classification_function=0, seed=42)
+    >>> # Take 1000 instances from the infinite data generator
     >>> dataset = iter(gen.take(1000))
 
     >>> model = tree.HoeffdingTreeClassifier(
