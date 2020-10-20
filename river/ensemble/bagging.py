@@ -179,10 +179,9 @@ class ADWINBaggingClassifier(BaggingClassifier):
     """ADWIN Bagging classifier.
 
     ADWIN Bagging [^1] is the online bagging method of Oza and Russell [^2]
-    with the addition of the `ADWIN` algorithm as a change detector. When a
-    change is detected, the worst classifier of the ensemble of classifier
-    (based on the error estimation by ADWIN) is removed and a new classifier
-    is added to the ensemble.
+    with the addition of the `ADWIN` algorithm as a change detector. If concept
+    drift is detected, the worst member of the ensemble (based on the error
+    estimation by ADWIN) is replaced by a new (empty) classifier.
 
     Parameters
     ----------
@@ -195,10 +194,6 @@ class ADWINBaggingClassifier(BaggingClassifier):
 
     Examples
     --------
-
-    In the following example three logistic regressions are bagged together. The performance is
-    slightly better than when using a single logistic regression.
-
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate
@@ -273,8 +268,9 @@ class LeveragingBaggingClassifier(BaggingClassifier):
     The bagging performance is leveraged by increasing the re-sampling.
     It uses a poisson distribution to simulate the re-sampling process.
     To increase re-sampling it uses a higher `w` value of the Poisson
-    distribution, 6 by default, increasing the input space diversity, by
-    attributing a different range of weights to the data samples.
+    distribution (agerage number of events), 6 by default, increasing the
+    input space diversity, by attributing a different range of weights to the
+    data samples.
 
     To deal with concept drift, Leveraging Bagging uses the ADWIN algorithm to
     monitor the performance of each member of the enemble If concept drift is
@@ -288,7 +284,8 @@ class LeveragingBaggingClassifier(BaggingClassifier):
     n_models
         The number of models in the ensemble.
     w
-        The poisson distribution's parameter to compute the weight of re-samples
+        Indicates the average number of events. This is the lambda parameter
+        of the Poisson distribution used to compute the re-sampling weight.
     adwin_delta
         The delta parameter for the ADWIN change detector.
     bagging_method
