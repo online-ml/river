@@ -2,6 +2,7 @@
 from .bagging import ADWINBaggingClassifier
 from .bagging import BaggingClassifier
 from .bagging import BaggingRegressor
+from .bagging import LeveragingBaggingClassifier
 from .boosting import AdaBoostClassifier
 
 
@@ -10,4 +11,5 @@ __all__ = [
     'ADWINBaggingClassifier',
     'BaggingClassifier',
     'BaggingRegressor',
+    'LeveragingBaggingClassifier'
 ]

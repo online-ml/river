@@ -9,7 +9,7 @@ from river import linear_model
 from river.drift import ADWIN
 
 
-__all__ = ['BaggingClassifier', 'BaggingRegressor']
+__all__ = ['BaggingClassifier', 'BaggingRegressor', 'ADWIN', 'LeveragingBaggingClassifier']
 
 
 class BaseBagging(base.WrapperMixin, base.EnsembleMixin):
@@ -264,3 +264,170 @@ class ADWINBaggingClassifier(BaggingClassifier):
             self._drift_detectors[max_error_idx] = ADWIN()
 
         return self
+
+
+class LeveragingBaggingClassifier(BaggingClassifier):
+    """Leveraging Bagging ensemble classifier.
+
+    Leveraging Bagging [^1] is an improvement over the Oza Bagging algorithm.
+    The bagging performance is leveraged by increasing the re-sampling.
+    It uses a poisson distribution to simulate the re-sampling process.
+    To increase re-sampling it uses a higher `w` value of the Poisson
+    distribution, 6 by default, increasing the input space diversity, by
+    attributing a different range of weights to the data samples.
+
+    To deal with concept drift, Leveraging Bagging uses the ADWIN algorithm to
+    monitor the performance of each member of the enemble If concept drift is
+    detected, the worst member of the ensemble (based on the error estimation
+    by ADWIN) is replaced by a new (empty) classifier.
+
+    Parameters
+    ----------
+    model
+        The classifier to bag.
+    n_models
+        The number of models in the ensemble.
+    w
+        The poisson distribution's parameter to compute the weight of re-samples
+    adwin_delta
+        The delta parameter for the ADWIN change detector.
+    bagging_method
+        The bagging method to use. Can be one of the following:<br/>
+        * 'bag' - Leveraging Bagging using ADWIN.<br/>
+        * 'me' - Assigns $weight=1$ if sample is misclassified,
+          otherwise $weight=error/(1-error)$.<br/>
+        * 'half' - Use resampling without replacement for half of the instances.<br/>
+        * 'wt' - Resample without taking out all instances.<br/>
+        * 'subag' - Resampling without replacement.<br/>
+    seed
+        Random number generator seed for reproducibility.
+
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import ensemble
+    >>> from river import evaluate
+    >>> from river import linear_model
+    >>> from river import metrics
+    >>> from river import optim
+    >>> from river import preprocessing
+
+    >>> dataset = datasets.Phishing()
+
+    >>> model = ensemble.LeveragingBaggingClassifier(
+    ...     model=(
+    ...         preprocessing.StandardScaler() |
+    ...         linear_model.LogisticRegression()
+    ...     ),
+    ...     n_models=3,
+    ...     seed=42
+    ... )
+
+    >>> metric = metrics.F1()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.886282
+
+    """
+    _BAGGING_METHODS = ('bag',
+                        'me',
+                        'half',
+                        'wt',
+                        'subag')
+
+    def __init__(self,
+                 model: base.Classifier,
+                 n_models: int = 10,
+                 w: float = 6,
+                 adwin_delta: float = 0.002,
+                 bagging_method: str = 'bag',
+                 seed: int = None):
+        super().__init__(model=model, n_models=n_models, seed=seed)
+        self._drift_detectors = [copy.deepcopy(ADWIN()) for _ in range(self.n_models)]
+        self.n_detected_changes = 0
+        # self.classes = None
+        # self.matrix_codes = None
+        # self.init_matrix_codes = None
+        # self.enable_code_matrix = enable_code_matrix
+        self.w = w
+        self.delta = adwin_delta
+        self.bagging_method = bagging_method
+
+        # Set bagging function
+        if bagging_method == 'bag':
+            self._bagging_fct = self._leveraging_bag
+        elif bagging_method == 'me':
+            self._bagging_fct = self._leveraging_bag_me
+        elif bagging_method == 'half':
+            self._bagging_fct = self._leveraging_bag_half
+        elif bagging_method == 'wt':
+            self._bagging_fct = self._leveraging_bag_wt
+        elif bagging_method == 'subag':
+            self._bagging_fct = self._leveraging_subag
+        else:
+            raise ValueError(f"Invalid bagging_method: {bagging_method}\n"
+                             f"Valid options: {self._BAGGING_METHODS}")
+
+    def _leveraging_bag(self, **kwargs):
+        # Leveraging bagging
+        return self._rng.poisson(self.w)
+
+    def _leveraging_bag_me(self, **kwargs):
+        # Miss-classification error using weight=1 if misclassified.
+        # Otherwise using weight=error/(1-error)
+        x = kwargs['x']
+        y = kwargs['y']
+        i = kwargs['model_idx']
+        error = self._drift_detectors[i].estimation
+        y_pred = self.models[i].predict_one(x)
+        if y_pred != y:
+            k = 1
+        elif error != 1.0 and self._rng.rand() < (error / (1.0 - error)):
+            k = 1
+        else:
+            k = 0
+        return k
+
+    def _leveraging_bag_half(self, **kwargs):
+        # Resampling without replacement for half of the instances
+        return int(not self._rng.randint(2))
+
+    def _leveraging_bag_wt(self, **kwargs):
+        # Resampling without taking out all instances
+        return 1 + self._rng.poisson(1.0)
+
+    def _leveraging_subag(self, **kwargs):
+        # Subagging using resampling without replacement
+        return int(self._rng.poisson(1) > 0)
+
+    def learn_one(self, x, y):
+        change_detected = False
+        for i, model in enumerate(self):
+            k = self._bagging_fct(x=x, y=y, model_idx=i)
+
+            for _ in range(k):
+                model.learn_one(x, y)
+
+            y_pred = self.models[i].predict_one(x)
+            if y_pred is not None:
+                incorrectly_classifies = int(y_pred != y)
+                error = self._drift_detectors[i].estimation
+                self._drift_detectors[i].update(incorrectly_classifies)
+                if self._drift_detectors[i].change_detected:
+                    if self._drift_detectors[i].estimation > error:
+                        change_detected = True
+
+        if change_detected:
+            self.n_detected_changes += 1
+            max_error_idx = max(range(len(self._drift_detectors)),
+                                key=lambda j: self._drift_detectors[j].estimation)
+            self.models[max_error_idx] = copy.deepcopy(self.model)
+            self._drift_detectors[max_error_idx] = ADWIN()
+
+        return self
+
+    @property
+    def bagging_methods(self):
+        """Valid bagging_method options."""
+        return self._BAGGING_METHODS
