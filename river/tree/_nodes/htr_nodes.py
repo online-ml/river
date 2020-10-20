@@ -39,9 +39,6 @@ class ActiveLeafRegressor(ActiveLeaf):
 
 
 class LearningNodeMean(LearningNode):
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
     def update_stats(self, y, sample_weight):
         try:
             self.stats[0] += sample_weight
