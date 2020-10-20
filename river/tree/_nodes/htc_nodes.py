@@ -22,10 +22,7 @@ class LearningNodeMC(LearningNode):
         except KeyError:
             self.stats[y] = sample_weight
 
-    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
-        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
-
-    def predict_one(self, X, *, tree=None):
+    def predict_one(self, x, *, tree=None):
         return self.stats
 
     @property
@@ -60,9 +57,9 @@ class LearningNodeMC(LearningNode):
 
 
 class LearningNodeNB(LearningNodeMC):
-    def predict_one(self, X, *, tree=None):
+    def predict_one(self, x, *, tree=None):
         if self.total_weight >= tree.nb_threshold:
-            return do_naive_bayes_prediction(X, self.stats, self.attribute_observers)
+            return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
         else:
             return self.stats
 
@@ -73,12 +70,12 @@ class LearningNodeNBA(LearningNodeMC):
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
-    def learn_one(self, X, y, *, sample_weight=1.0, tree=None):
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         """Update the node with the provided instance.
 
         Parameters
         ----------
-        X
+        x
             Instance attributes for updating the node.
         y
             Instance class.
@@ -93,18 +90,18 @@ class LearningNodeNBA(LearningNodeMC):
             self._mc_correct_weight += sample_weight
         elif max(self.stats, key=self.stats.get) == y:
             self._mc_correct_weight += sample_weight
-        nb_prediction = do_naive_bayes_prediction(X, self.stats, self.attribute_observers)
+        nb_prediction = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
         if nb_prediction is not None and max(nb_prediction, key=nb_prediction.get) == y:
             self._nb_correct_weight += sample_weight
 
-        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
+        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-    def predict_one(self, X, *, tree=None):
+    def predict_one(self, x, *, tree=None):
         """Get the votes per class for a given instance.
 
         Parameters
         ----------
-        X
+        x
             Instance attributes.
         tree
             Hoeffding Tree.
@@ -117,7 +114,7 @@ class LearningNodeNBA(LearningNodeMC):
         """
         if self._mc_correct_weight > self._nb_correct_weight:
             return self.stats
-        return do_naive_bayes_prediction(X, self.stats, self.attribute_observers)
+        return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
 
 
 class ActiveLearningNodeMC(LearningNodeMC, ActiveLeafClass):
