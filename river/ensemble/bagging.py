@@ -6,6 +6,7 @@ import numpy as np
 
 from river import base
 from river import linear_model
+from river.drift import ADWIN
 
 
 __all__ = ['BaggingClassifier', 'BaggingRegressor']
@@ -172,3 +173,94 @@ class BaggingRegressor(BaseBagging, base.Regressor):
     def predict_one(self, x):
         """Averages the predictions of each regressor."""
         return statistics.mean((regressor.predict_one(x) for regressor in self))
+
+
+class ADWINBaggingClassifier(BaggingClassifier):
+    """ADWIN Bagging classifier.
+
+    ADWIN Bagging [^1] is the online bagging method of Oza and Russell [^2]
+    with the addition of the `ADWIN` algorithm as a change detector. When a
+    change is detected, the worst classifier of the ensemble of classifier
+    (based on the error estimation by ADWIN) is removed and a new classifier
+    is added to the ensemble.
+
+    Parameters
+    ----------
+    model
+        The classifier to bag.
+    n_models
+        The number of models in the ensemble.
+    seed
+        Random number generator seed for reproducibility.
+
+    Examples
+    --------
+
+    In the following example three logistic regressions are bagged together. The performance is
+    slightly better than when using a single logistic regression.
+
+    >>> from river import datasets
+    >>> from river import ensemble
+    >>> from river import evaluate
+    >>> from river import linear_model
+    >>> from river import metrics
+    >>> from river import optim
+    >>> from river import preprocessing
+
+    >>> dataset = datasets.Phishing()
+
+    >>> model = ensemble.ADWINBaggingClassifier(
+    ...     model=(
+    ...         preprocessing.StandardScaler() |
+    ...         linear_model.LogisticRegression()
+    ...     ),
+    ...     n_models=3,
+    ...     seed=42
+    ... )
+
+    >>> metric = metrics.F1()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 0.878788
+
+    References
+    ----------
+    [^1]: Albert Bifet, Geoff Holmes, Bernhard Pfahringer, Richard Kirkby,
+    and Ricard Gavaldà. "New ensemble methods for evolving data streams."
+    In 15th ACM SIGKDD International Conference on Knowledge Discovery and
+    Data Mining, 2009.
+
+    [^2]: Oza, N., Russell, S. "Online bagging and boosting."
+    In: Artificial Intelligence and Statistics 2001, pp. 105–112.
+    Morgan Kaufmann, 2001.
+
+    """
+
+    def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
+        super().__init__(model=model, n_models=n_models, seed=seed)
+        self._drift_detectors = [copy.deepcopy(ADWIN()) for _ in range(self.n_models)]
+
+    def learn_one(self, x, y):
+
+        change_detected = False
+        for i, model in enumerate(self):
+            for _ in range(self._rng.poisson(1)):
+                model.learn_one(x, y)
+
+            try:
+                y_pred = model.predict_one(x)
+                error_estimation = self._drift_detectors[i].estimation
+                self._drift_detectors[i].update(int(y_pred == y))
+                if self._drift_detectors[i].change_detected:
+                    if self._drift_detectors[i].estimation > error_estimation:
+                        change_detected = True
+            except ValueError:
+                change_detected = False
+
+        if change_detected:
+            max_error_idx = max(range(len(self._drift_detectors)),
+                                key=lambda j: self._drift_detectors[j].estimation)
+            self.models[max_error_idx] = copy.deepcopy(self.model)
+            self._drift_detectors[max_error_idx] = ADWIN()
+
+        return self
