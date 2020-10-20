@@ -55,40 +55,33 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
     References
     ----------
-    .. [1]  C. Manapragada, G. Webb, and M. Salehi. Extremely Fast Decision Tree.
-       In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data
-       Mining (KDD '18). ACM, New York, NY, USA, 1953-1962.
-       DOI: https://doi.org/10.1145/3219819.3220005
+    [^1]:  C. Manapragada, G. Webb, and M. Salehi. Extremely Fast Decision Tree.
+    In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data
+    Mining (KDD '18). ACM, New York, NY, USA, 1953-1962.
+    DOI: https://doi.org/10.1145/3219819.3220005
 
     Examples
     --------
-    >>> # Imports
-    >>> from skmultiflow.data import SEAGenerator
-    >>> from skmultiflow.trees import ExtremelyFastDecisionTreeClassifier
+    >>> from river import synth
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import tree
 
-    >>> # Setting up a data stream
-    >>> stream = SEAGenerator(seed=1)
+    >>> gen = synth.Agrawal(classification_function=0, seed=42)
+    >>> # Take 1000 instances from the infinite data generator
+    >>> dataset = iter(gen.take(1000))
 
-    >>> # Setup Extremely Fast Decision Tree classifier
-    >>> efdt = ExtremelyFastDecisionTreeClassifier()
+    >>> model = tree.ExtremelyFastDecisionTreeClassifier(
+    ...     grace_period=100,
+    ...     split_confidence=1e-5,
+    ...     nominal_attributes=['elevel', 'car', 'zipcode'],
+    ...     min_samples_reevaluate=100
+    ... )
 
-    >>> # Setup variables to control loop and track performance
-    >>> n_samples = 0
-    >>> correct_cnt = 0
-    >>> max_samples = 200
+    >>> metric = metrics.Accuracy()
 
-    >>> # Train the estimator with the samples provided by the data stream
-    >>> while n_samples < max_samples and stream.has_more_samples():
-    >>>     X, y = stream.next_sample()
-    >>>     y_pred = efdt.predict(X)
-    >>>     if y[0] == y_pred[0]:
-    >>>         correct_cnt += 1
-    >>>     efdt.partial_fit(X, y)
-    >>>     n_samples += 1
-
-    >>> # Display results
-    >>> print('{} samples analyzed.'.format(n_samples))
-    >>> print('Extremely Fast Decision Tree accuracy: {}'.format(correct_cnt / n_samples))
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 89.09%
     """
     def __init__(self,
                  grace_period: int = 200,

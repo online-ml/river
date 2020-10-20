@@ -83,7 +83,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
     >>> model = tree.HoeffdingTreeClassifier(
     ...     grace_period=100,
     ...     split_confidence=1e-5,
-    ...     nominal_attributes=['elevel', 'car', 'zipcode'],
+    ...     nominal_attributes=['elevel', 'car', 'zipcode']
     ... )
 
     >>> metric = metrics.Accuracy()
