@@ -17,9 +17,8 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
     References
     ----------
-    .. [1] Osojnik, Aljaž. 2017. Structured output prediction on Data
-       Streams (Doctoral Dissertation). Retrieved from:
-       http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf
+    [^1]: Osojnik, Aljaž. 2017. Structured output prediction on Data Streams
+    (Doctoral Dissertation). Retrieved from: http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf
     """
 
     class Node:
@@ -94,7 +93,6 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         # Handles both single-target and multi-target tasks
         if isinstance(pre_split_dist[1], VectorDict):
-            # TODO Check whether or not this works
             self._aux_sum = VectorDict(default_factory=lambda: 0.)
             self._aux_sum_sq = VectorDict(default_factory=lambda: 0.)
         else:
@@ -197,7 +195,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         References
         ----------
-        .. [1] Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving
+        [^1]: Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving
         data streams. Data mining and knowledge discovery, 23(1), 128-168.
         """
 
@@ -212,7 +210,6 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         # Encompass both the single-target and multi-target cases
         if isinstance(pre_split_dist[1], VectorDict):
-            # TODO Check whether or not this works
             self._aux_sum = VectorDict(default_factory=lambda: 0.)
             self._aux_sum_sq = VectorDict(default_factory=lambda: 0.)
         else:

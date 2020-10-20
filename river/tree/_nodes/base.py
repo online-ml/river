@@ -46,7 +46,7 @@ class Node(metaclass=ABCMeta):
     """
 
     def __init__(self, stats: dict = None, depth: int = 0):
-        self.stats = stats
+        self._stats = stats
         self._depth = depth
 
     @staticmethod

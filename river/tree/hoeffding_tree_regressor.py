@@ -34,7 +34,9 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         | 'model' - Uses the model defined in `leaf_model`
         | 'adaptive' - Chooses between 'mean' and 'model' dynamically
     leaf_model
-        The regression model used to provide responses if `leaf_prediction='model'`.
+        The regression model used to provide responses if `leaf_prediction='model'`. If not
+        provided an instance of `river.linear_model.LinearRegression` with the default
+        hyperparameters is used.
     model_selector_decay
         The exponential decaying factor applied to the learning models' squared errors, that
         are monitored if `leaf_prediction='adaptive'`. Must be between `0` and `1`. The closer
@@ -59,35 +61,27 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
 
     Examples
     --------
-    >>> # Imports
-    >>> from skmultiflow.data import RegressionGenerator
-    >>> from skmultiflow.trees import HoeffdingTreeRegressor
-    >>> import numpy as np
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import tree
+    >>> from river import preprocessing
 
-    >>> # Setup a data stream
-    >>> stream = RegressionGenerator(seed=1, n_samples=200)
+    >>> dataset = datasets.TrumpApproval()
 
-    >>> # Setup the Hoeffding Tree Regressor
-    >>> ht_reg = HoeffdingTreeRegressor()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     tree.HoeffdingTreeRegressor(
+    ...         grace_period=100,
+    ...         leaf_prediction='adaptive',
+    ...         model_selector_decay=0.3
+    ...     )
+    ... )
 
-    >>> # Auxiliary variables to control loop and track performance
-    >>> n_samples = 0
-    >>> max_samples = 200
-    >>> y_pred = np.zeros(max_samples)
-    >>> y_true = np.zeros(max_samples)
+    >>> metric = metrics.MAE()
 
-    >>> # Run test-then-train loop for max_samples and while there is data
-    >>> while n_samples < max_samples and stream.has_more_samples():
-    >>>     X, y = stream.next_sample()
-    >>>     y_true[n_samples] = y[0]
-    >>>     y_pred[n_samples] = ht_reg.predict(X)[0]
-    >>>     ht_reg.partial_fit(X, y)
-    >>>     n_samples += 1
-
-    >>> # Display results
-    >>> print('{} samples analyzed.'.format(n_samples))
-    >>> print('Hoeffding Tree regressor mean absolute error: {}'.
-    >>>       format(np.mean(np.abs(y_true - y_pred))))
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 0.727928
     """
 
     _TARGET_MEAN = 'mean'
@@ -99,7 +93,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
-                 leaf_model: base.Regressor = linear_model.LinearRegression(),
+                 leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
                  **kwargs):
@@ -110,7 +104,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         self.split_confidence = split_confidence
         self.tie_threshold = tie_threshold
         self.leaf_prediction = leaf_prediction
-        self.leaf_model = leaf_model
+        self.leaf_model = leaf_model if leaf_model is not None else linear_model.LinearRegression()
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
 
