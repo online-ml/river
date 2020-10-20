@@ -38,7 +38,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         | 'model' - Uses the model defined in `leaf_model`
         | 'adaptive' - Chooses between 'mean' and 'model' dynamically
     leaf_model
-        The regression model used to provide responses if `leaf_prediction='model'`.
+        The regression model used to provide responses if `leaf_prediction='model'`. If not
+        provided an instance of `river.linear_model.LinearRegression` with the default
+        hyperparameters is used.
     model_selector_decay
         The exponential decaying factor applied to the learning models' squared errors, that
         are monitored if `leaf_prediction='adaptive'`. Must be between `0` and `1`. The closer
@@ -80,45 +82,36 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     References
     ----------
-    .. [1] Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
-       In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
-       Heidelberg, 2009.
-    .. [2] Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
-       windowing." In Proceedings of the 2007 SIAM international conference on data mining,
-       pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
+    [^1]: Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
+    In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
+    Heidelberg, 2009.
+    [^2]: Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
+    windowing." In Proceedings of the 2007 SIAM international conference on data mining,
+    pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     Examples
     --------
-    >>> # Imports
-    >>> from skmultiflow.data import RegressionGenerator
-    >>> from skmultiflow.trees import HoeffdingAdaptiveTreeRegressor
-    >>> import numpy as np
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import tree
+    >>> from river import preprocessing
 
-    >>> # Setup a data stream
-    >>> stream = RegressionGenerator(seed=1, n_samples=200)
-    >>> # Prepare stream for use
+    >>> dataset = datasets.TrumpApproval()
 
-    >>> # Setup the Hoeffding Adaptive Tree Regressor
-    >>> hat_reg = HoeffdingAdaptiveTreeRegressor()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     tree.HoeffdingAdaptiveTreeRegressor(
+    ...         grace_period=50,
+    ...         leaf_prediction='adaptive',
+    ...         model_selector_decay=0.3
+    ...     )
+    ... )
 
-    >>> # Auxiliary variables to control loop and track performance
-    >>> n_samples = 0
-    >>> max_samples = 200
-    >>> y_pred = np.zeros(max_samples)
-    >>> y_true = np.zeros(max_samples)
+    >>> metric = metrics.MAE()
 
-    >>> # Run test-then-train loop for max_samples and while there is data
-    >>> while n_samples < max_samples and stream.has_more_samples():
-    >>>     X, y = stream.next_sample()
-    >>>     y_true[n_samples] = y[0]
-    >>>     y_pred[n_samples] = hat_reg.predict(X)[0]
-    >>>     hat_reg.partial_fit(X, y)
-    >>>     n_samples += 1
-
-    >>> # Display results
-    >>> print('{} samples analyzed.'.format(n_samples))
-    >>> print('Hoeffding Adaptive Tree regressor mean absolute error: {}'.
-    >>>       format(np.mean(np.abs(y_true - y_pred))))
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 0.726687
     """
 
     def __init__(self,
@@ -126,7 +119,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
-                 leaf_model: base.Regressor = linear_model.LinearRegression(),
+                 leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
                  bootstrap_sampling: bool = False,

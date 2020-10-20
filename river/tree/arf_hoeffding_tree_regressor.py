@@ -31,7 +31,9 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
         | 'model' - Uses the model defined in `leaf_model`
         | 'adaptive' - Chooses between 'mean' and 'model' dynamically
     leaf_model
-        The regression model used to provide responses if `leaf_prediction='model'`.
+        The regression model used to provide responses if `leaf_prediction='model'`. If not
+        provided an instance of `river.linear_model.LinearRegression` with the default
+        hyperparameters is used.
     model_selector_decay
         The exponential decaying factor applied to the learning models' squared errors, that
         are monitored if `leaf_prediction='adaptive'`. Must be between `0` and `1`. The closer
@@ -62,7 +64,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
-                 leaf_model: base.Regressor = linear_model.LinearRegression(),
+                 leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
                  max_features: int = 2,
