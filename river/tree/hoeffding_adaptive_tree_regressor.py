@@ -104,14 +104,15 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     ...     tree.HoeffdingAdaptiveTreeRegressor(
     ...         grace_period=50,
     ...         leaf_prediction='adaptive',
-    ...         model_selector_decay=0.3
+    ...         model_selector_decay=0.3,
+    ...         seed=0
     ...     )
     ... )
 
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.726687
+    MAE: 0.719929
     """
 
     def __init__(self,
@@ -122,7 +123,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
-                 bootstrap_sampling: bool = False,
+                 bootstrap_sampling: bool = True,
                  drift_window_threshold: int = 300,
                  adwin_confidence: float = 0.002,
                  seed=None,

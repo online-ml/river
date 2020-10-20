@@ -73,18 +73,29 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     Examples
     --------
-    >>> from skmultiflow.trees import HoeffdingAdaptiveTreeClassifier
-    >>> from skmultiflow.data import ConceptDriftStream
-    >>> from skmultiflow.evaluation import EvaluatePrequential
-    >>> # Setup the File Stream
-    >>> stream = ConceptDriftStream(seed=123456, position=25000)
+    >>> from river import synth
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import tree
 
-    >>> classifier = HoeffdingAdaptiveTreeClassifier()
-    >>> evaluator = EvaluatePrequential(pretrain_size=200, max_samples=50000, batch_size=1,
-    >>>                                 n_wait=200, max_time=1000, output_file=None,
-    >>>                                 show_plot=True, metrics=['kappa', 'kappa_t', 'accuracy'])
+    >>> gen = synth.ConceptDriftStream(stream=synth.SEA(seed=42, variant=0),
+    ...                                drift_stream=synth.SEA(seed=42, variant=1),
+    ...                                seed=1, position=500, width=50)
+    >>> # Take 1000 instances from the infinite data generator
+    >>> dataset = iter(gen.take(1000))
 
-    >>> evaluator.evaluate(stream=stream, model=classifier)
+    >>> model = tree.HoeffdingAdaptiveTreeClassifier(
+    ...     grace_period=100,
+    ...     split_confidence=1e-5,
+    ...     leaf_prediction='nb',
+    ...     nb_threshold=10,
+    ...     seed=0
+    ... )
+
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 91.09%
 
     """
     # =============================================
