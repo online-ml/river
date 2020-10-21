@@ -10,7 +10,7 @@ class Transformer(base.Estimator):
     def _supervised(self):
         return False
 
-    def learn_one(self, x: dict) -> 'Transformer':
+    def learn_one(self, x: dict, **kwargs) -> 'Transformer':
         """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `learn_one` step
@@ -22,6 +22,8 @@ class Transformer(base.Estimator):
         ----------
         x
             A dictionary of features.
+        kwargs
+            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------
@@ -77,13 +79,15 @@ class SupervisedTransformer(Transformer):
     def _supervised(self):
         return True
 
-    def learn_one(self, x: dict, y: base.typing.Target) -> 'SupervisedTransformer':
+    def learn_one(self, x: dict, y: base.typing.Target, **kwargs) -> 'SupervisedTransformer':
         """Update with a set of features `x` and a target `y`.
 
         Parameters
         ----------
         x
             A dictionary of features.
+        kwargs
+            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------
