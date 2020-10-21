@@ -342,15 +342,12 @@ class LeveragingBaggingClassifier(BaggingClassifier):
                  bagging_method: str = 'bag',
                  seed: int = None):
         super().__init__(model=model, n_models=n_models, seed=seed)
-        self._drift_detectors = [copy.deepcopy(ADWIN()) for _ in range(self.n_models)]
         self.n_detected_changes = 0
-        # self.classes = None
-        # self.matrix_codes = None
-        # self.init_matrix_codes = None
-        # self.enable_code_matrix = enable_code_matrix
         self.w = w
-        self.delta = adwin_delta
+        self.adwin_delta = adwin_delta
         self.bagging_method = bagging_method
+        self._drift_detectors = [copy.deepcopy(ADWIN(delta=self.adwin_delta))
+                                 for _ in range(self.n_models)]
 
         # Set bagging function
         if bagging_method == 'bag':
@@ -421,7 +418,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
             max_error_idx = max(range(len(self._drift_detectors)),
                                 key=lambda j: self._drift_detectors[j].estimation)
             self.models[max_error_idx] = copy.deepcopy(self.model)
-            self._drift_detectors[max_error_idx] = ADWIN()
+            self._drift_detectors[max_error_idx] = ADWIN(delta=self.adwin_delta)
 
         return self
 
