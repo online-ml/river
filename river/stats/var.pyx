@@ -21,6 +21,11 @@ cdef class Var(river.stats.base.Univariate):
     sos : float
         The running sum of squares.
 
+    Notes
+    -----
+    The outcomes of the incremental and parallel updates are consistent with numpy's
+    batch processing when $\\text{ddof} \le 1$.
+
     Examples
     --------
 
@@ -41,6 +46,7 @@ cdef class Var(river.stats.base.Univariate):
     References
     ----------
     [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+    [^2]: [Chan, T.F., Golub, G.H. and LeVeque, R.J., 1983. Algorithms for computing the sample variance: Analysis and recommendations. The American Statistician, 37(3), pp.242-247.](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.1983.10483115)
 
     """
 
@@ -62,6 +68,68 @@ cdef class Var(river.stats.base.Univariate):
     cpdef double get(self):
         return self.sigma
 
+    def __add__(self, Var other):
+        cdef double delta = 0.
+        result = Var(ddof=self.ddof)
+        result.mean = self.mean + other.mean
+        delta = other.mean.get() - self.mean.get()
+
+        # scale and merge both sigma
+        result.sigma = (self.mean.n - self.ddof) * self.sigma + (other.mean.n - other.ddof) * other.sigma
+        # apply correction
+        result.sigma = (result.sigma + (delta * delta) * (self.mean.n * other.mean.n)
+                        / result.mean.n) / (result.mean.n - result.ddof)
+
+        return result
+
+    def __iadd__(self, Var other):
+        cdef double old_n = self.mean.n
+        cdef double delta = other.mean.get() - self.mean.get()
+
+        self.mean += other.mean
+        # scale and merge sigma
+        self.sigma = (old_n - self.ddof) * self.sigma + (other.mean.n - other.ddof) * other.sigma
+        # apply correction
+        self.sigma = (self.sigma + (delta * delta) * (old_n * other.mean.n)
+                      / self.mean.n) / (self.mean.n - self.ddof)
+
+        return self
+
+    def __sub__(self, Var other):
+        cdef double delta = 0.
+        result = Var(ddof=self.ddof)
+        result.mean = self.mean - other.mean
+
+        if result.mean.n > 0:
+            delta = other.mean.get() - result.mean.get()
+            # scale both sigma and take the difference
+            result.sigma = (self.mean.n - self.ddof) * self.sigma - (other.mean.n - other.ddof) * other.sigma
+            # apply the correction
+            result.sigma = (result.sigma - (delta * delta) * (result.mean.n * other.mean.n)
+                            / self.mean.n) / (result.mean.n - result.ddof)
+        else:
+            result.sigma = 0.
+
+        return result
+
+    def __isub__(self, Var other):
+        cdef double old_n = self.mean.n
+        cdef double delta = 0.
+
+        self.mean -= other.mean
+
+        if self.mean.n > 0:
+            delta = other.mean.get() - self.mean.get()
+            # scale both sigma and take the difference
+            self.sigma = (old_n - self.ddof) * self.sigma - (other.mean.n - other.ddof) * other.sigma
+            # apply the correction
+            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n)
+                            / old_n) / (self.mean.n - self.ddof)
+
+        else:
+            self.sigma = 0.
+
+        return self
 
 class RollingVar(base.RollingUnivariate):
     """Running variance over a window.
