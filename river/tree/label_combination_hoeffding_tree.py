@@ -45,37 +45,21 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
 
     Examples
     --------
-    >>> # Imports
-    >>> from skmultiflow.data import MultilabelGenerator
-    >>> from skmultiflow.trees import LabelCombinationHoeffdingTreeClassifier
-    >>> from skmultiflow.metrics import hamming_score
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import tree
 
-    >>> # Setting up a data stream
-    >>> stream = MultilabelGenerator(seed=1, n_samples=200,
-    >>>                              n_targets=5, n_features=10)
+    >>> dataset = iter(datasets.Music().take(200))
+    >>> model = tree.LabelCombinationHoeffdingTreeClassifier(
+    ...     split_confidence=1e-5,
+    ...     grace_period=50
+    ... )
 
-    >>> # Setup Label Combination Hoeffding Tree classifier
-    >>> lc_ht = LabelCombinationHoeffdingTreeClassifier(n_labels=stream.n_targets)
+    >>> metric = metrics.Hamming()
 
-    >>> # Setup variables to control loop and track performance
-    >>> n_samples = 0
-    >>> max_samples = 200
-    >>> true_labels = []
-    >>> predicts = []
-
-    >>> # Train the estimator with the samples provided by the data stream
-    >>> while n_samples < max_samples and stream.has_more_samples():
-    >>>     X, y = stream.next_sample()
-    >>>     y_pred = lc_ht.predict(X)
-    >>>     lc_ht.partial_fit(X, y)
-    >>>     predicts.extend(y_pred)
-    >>>     true_labels.extend(y)
-    >>>     n_samples += 1
-
-    >>> # Display results
-    >>> perf = hamming_score(true_labels, predicts)
-    >>> print('{} samples analyzed.'.format(n_samples))
-    >>> print('Label Combination Hoeffding Tree Hamming score: ' + str(perf))
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Hamming: 0.154104
     """
     def __init__(self,
                  grace_period: int = 200,
@@ -99,6 +83,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
         self._next_label_code = 0
         self._label_map = {}
         self._r_label_map = {}
+        self._labels = set()
 
     def reset(self):
         super().reset()
@@ -125,6 +110,8 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
         -------
             self
         """
+        self._labels.update(y.keys())
+
         aux_label = tuple(sorted(y.items()))
         if aux_label not in self._label_map:
             self._label_map[aux_label] = self._next_label_code
@@ -140,21 +127,16 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
         if self._tree_root is None:
             return None
 
-        class_probas = super().predict_proba_one(x)
+        enc_probas = super().predict_proba_one(x)
+        enc_class = max(enc_probas, key=enc_probas.get)
 
-        labels_proba = defaultdict(lambda: {0: 0., 1: 0.})
-
-        # Assign class probas to each label
-        for code, proba in class_probas.items():
-            for label_id, label_val in self._r_label_map[code]:
-                aux = labels_proba[label_id]
-                aux[label_val] += proba
-                labels_proba[label_id] = aux
-
-        # Normalize the data
         result = {}
-        for label_id in labels_proba:
-            result[label_id] = softmax(labels_proba[label_id])
+        for lbl in self._labels:
+            result[lbl] = {False: 0., True: 0.}
+
+        for label_id, label_val in self._r_label_map[enc_class]:
+            result[label_id][label_val] = enc_probas[enc_class]
+            result[label_id] = softmax(result[label_id])
 
         return result
 
