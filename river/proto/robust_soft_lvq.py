@@ -1,10 +1,6 @@
-import math
-
 import numpy as np
 
-from sklearn.utils import validation
 from sklearn.metrics import euclidean_distances
-from sklearn.utils.multiclass import unique_labels
 
 from river.base import Classifier
 from river.utils.skmultiflow_utils import check_random_state
@@ -19,9 +15,7 @@ class RSLVQClassifier(Classifier):
 
     Parameters
     ----------
-    classes
-        Set of class labels to learn. Must be specified.
-    prototypes_per_class
+    n_prototypes_per_class
         Number of prototypes per class.
     initial_prototypes
         Prototypes to start with (shape = [n_prototypes, n_features + 1]).
@@ -30,6 +24,7 @@ class RSLVQClassifier(Classifier):
     sigma
         Variance of the distribution.
     seed
+        Only used if `prototypes_per_class > 1`.
         If int, `seed` is used to seed the random number generator;
         If RandomState instance, `seed` is the random number generator;
         If None, the random number generator is the `RandomState` instance used
@@ -58,12 +53,12 @@ class RSLVQClassifier(Classifier):
 
     >>> dataset = datasets.Phishing()
 
-    >>> model = proto.RSLVQClassifier(classes={0, 1}, seed=42)
+    >>> model = proto.RSLVQClassifier(seed=42)
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 74.08%
+    Accuracy: 74.16%
 
     Notes
     -----
@@ -89,8 +84,7 @@ class RSLVQClassifier(Classifier):
     """
 
     def __init__(self,
-                 classes: set,
-                 prototypes_per_class: int = 1,
+                 n_prototypes_per_class: int = 1,
                  initial_prototypes: np.ndarray = None,
                  sigma: float = 1.0,
                  seed: int or np.random.RandomState = None,
@@ -99,24 +93,18 @@ class RSLVQClassifier(Classifier):
         self.sigma = sigma
         self.seed = seed
         self.epsilon = 1e-8
-        self.initial_prototypes = initial_prototypes
-        self.prototypes_per_class = prototypes_per_class
-        self.initial_fit = True
-        if not isinstance(classes, set) or len(classes) == 0:
-            raise AttributeError(f"Invalid classes. Possible classes must be specified.")
-        self.classes = np.array([i for i in sorted(classes)])
-        # Validate that labels have correct format
-        if self.classes.size != max(self.classes) + 1:
-            raise ValueError(f'Labels must be zero-based int, got {classes}')
+        if n_prototypes_per_class < 0:
+            raise ValueError(f'prototypes_per_class must be a positive int, '
+                             f'got {n_prototypes_per_class}')
+        self.n_prototypes_per_class = n_prototypes_per_class
+        self._initial_fit = True
+        self._class_labels = []
         self.learning_rate = 1 / sigma
         self.gamma = gamma
         self.gradient_descent = gradient_descent
-        self._class_map = dict()
 
         if sigma <= 0:
             raise ValueError('Sigma must be greater than 0')
-        if prototypes_per_class <= 0:
-            raise ValueError('Prototypes per class must be more than 0')
         if gamma >= 1 or gamma < 0:
             raise ValueError('Decay rate gamma has to be between 0 and\
                              less than 1')
@@ -133,180 +121,121 @@ class RSLVQClassifier(Classifier):
         else:
             self._update_prototype = self._update_prototype_vanilla
 
-    def _update_prototype_vanilla(self, j, xi, c_xi, prototypes):
-        """Vanilla SGD"""
-        d = xi - prototypes[j]
+        self.initial_prototypes = initial_prototypes
+        self._prototype = None
+        self._prototype_classes = None
+        if self.initial_prototypes:
+            self._initialize_prototypes()
 
-        if self.c_w_[j] == c_xi:
+        self._rng = check_random_state(self.seed)
+
+    def _update_prototype_vanilla(self, j, x, y, prototypes):
+        """Vanilla SGD"""
+        d = x - prototypes[j]
+
+        if self._prototype_classes[j] == y:
             # Attract prototype to data point
-            self.w_[j] += self.learning_rate * \
-                (self._p(j, xi, prototypes=self.w_, y=c_xi) -
-                 self._p(j, xi, prototypes=self.w_)) * d
+            self._prototype[j] += self.learning_rate * \
+                                  (self._p(j, x, prototypes=self._prototype, y=y) -
+                                   self._p(j, x, prototypes=self._prototype)) * d
         else:
             # Distance prototype from data point
-            self.w_[j] -= self.learning_rate * self._p(
-                j, xi, prototypes=self.w_) * d
+            self._prototype[j] -= self.learning_rate * self._p(
+                j, x, prototypes=self._prototype) * d
 
-    def _update_prototype_adadelta(self, j, c_xi, xi, prototypes):
+    def _update_prototype_adadelta(self, j, x, y, prototypes):
         """Implementation of Adadelta"""
-        d = xi - prototypes[j]
+        d = x - prototypes[j]
 
-        if self.c_w_[j] == c_xi:
-            gradient = (self._p(j, xi, prototypes=self.w_, y=c_xi) -
-                        self._p(j, xi, prototypes=self.w_)) * d
+        if self._prototype_classes[j] == y:
+            gradient = (self._p(j, x, prototypes=self._prototype, y=y) -
+                        self._p(j, x, prototypes=self._prototype)) * d
         else:
-            gradient = - self._p(j, xi, prototypes=self.w_) * d
+            gradient = - self._p(j, x, prototypes=self._prototype) * d
 
         # Accumulate gradient
-        self.squared_mean_gradient[j] = (self.gamma * self.squared_mean_gradient[j]
-                                         + (1 - self.gamma) * gradient * gradient)
+        self._squared_mean_gradient[j] = (self.gamma * self._squared_mean_gradient[j]
+                                          + (1 - self.gamma) * gradient * gradient)
 
         # Compute update/step
-        step = (np.sqrt((self.squared_mean_step[j] + self.epsilon)
-                        / (self.squared_mean_gradient[j] + self.epsilon))
+        step = (np.sqrt((self._squared_mean_step[j] + self.epsilon)
+                        / (self._squared_mean_gradient[j] + self.epsilon))
                 * gradient)
 
         # Accumulate updates
-        self.squared_mean_step[j] = (self.gamma * self.squared_mean_step[j]
-                                     + (1 - self.gamma) * step * step)
+        self._squared_mean_step[j] = (self.gamma * self._squared_mean_step[j]
+                                      + (1 - self.gamma) * step * step)
 
         # Attract/Distract prototype to/from data point
-        self.w_[j] += step
+        self._prototype[j] += step
 
-    def _validate_train_parms(self, train_set, train_lab):
-        rng = check_random_state(self.seed)
-
-        if self.initial_fit:
-            self.protos_initialized = np.zeros(self.classes.size)
-
-        nb_classes = self.classes.size
-        nb_features = train_set.shape[1]
-
-        # set prototypes per class
-        if isinstance(self.prototypes_per_class, int):
-            # ppc is int so we can give same number ppc to for all classes
-            if self.prototypes_per_class < 0:
-                raise ValueError(f'prototypes_per_class must be a positive int, '
-                                 f'got {self.prototypes_per_class}')
-            # nb_ppc = number of protos per class
-            nb_ppc = np.ones([nb_classes],
-                             dtype='int') * self.prototypes_per_class
-        elif isinstance(self.prototypes_per_class, list):
-            # its an array containing individual number of protos per class
-            # - not fully supported yet
-            nb_ppc = validation.column_or_1d(
-                validation.check_array(self.prototypes_per_class,
-                                       ensure_2d=False, dtype='int'))
-            if nb_ppc.min() <= 0:    # noqa
-                raise ValueError(f'Values in prototypes_per_class must be positive, got {nb_ppc}')
-            if nb_ppc.size != nb_classes:    # noqa
-                raise ValueError(f'Length of prototypes_per_class ({nb_ppc.size}) '    # noqa
-                                 f'does not match the number of classes ({nb_classes})')
-        else:
-            raise ValueError('Invalid data type for prototypes_per_class, '
-                             'must be int or list of int')
+    def _append_prototypes(self, x, y):
+        n_features = x.size
 
         # initialize prototypes
         if self.initial_prototypes is None:
-            if self.initial_fit:
-                self.w_ = np.empty([np.sum(nb_ppc), nb_features],
-                                   dtype=np.double)
-                self.c_w_ = np.empty([nb_ppc.sum()], dtype=self.classes.dtype)
-            pos = 0
-            for actClassIdx in range(len(self.classes)):
-                actClass = self.classes[actClassIdx]
-                nb_prot = nb_ppc[actClassIdx]  # nb_ppc: prototypes per class
-                if (self.protos_initialized[actClassIdx] == 0 and
-                        actClass in unique_labels(train_lab)):
-                    mean = np.mean(
-                        train_set[train_lab == actClass, :], 0)
+            prototype = np.zeros([self.n_prototypes_per_class, n_features],
+                                 dtype=np.double)
+            prototype_classes = np.empty([self.n_prototypes_per_class], dtype=int)
 
-                    if self.prototypes_per_class == 1:
-                        # If only one prototype we init it to mean
-                        self.w_[pos:pos + nb_prot] = mean
-                    else:
-                        # else we add some random noise to distribute them
-                        self.w_[pos:pos + nb_prot] = mean + (
-                            rng.rand(nb_prot, nb_features) * 2 - 1)
+            if self.n_prototypes_per_class == 1:
+                # If only one prototype we init it to x
+                prototype[0: self.n_prototypes_per_class] = x
+            else:
+                # else we add some random noise
+                prototype[0: self.n_prototypes_per_class] = x + (
+                    self._rng.rand(self.n_prototypes_per_class, n_features) * 2 - 1)
 
-                    if math.isnan(self.w_[pos, 0]):
-                        raise ValueError(f'Prototype on position {pos} for '
-                                         f'class {actClass} is NaN.')
-                    else:
-                        self.protos_initialized[actClassIdx] = 1
+            prototype_classes[0: self.n_prototypes_per_class] = y
 
-                    self.c_w_[pos:pos + nb_prot] = actClass
-                pos += nb_prot
-        else:
-            x = validation.check_array(self.initial_prototypes)
-            self.w_ = x[:, :-1]
-            self.c_w_ = x[:, -1]
-            if self.w_.shape != (np.sum(nb_ppc), nb_features):
-                raise ValueError("the initial prototypes have wrong shape\n"
-                                 "found=(%d,%d)\n"
-                                 "expected=(%d,%d)" % (
-                                     self.w_.shape[0], self.w_.shape[1],
-                                     nb_ppc.sum(), nb_features))
-            if set(self.c_w_) != set(self.classes):
-                raise ValueError(
-                    "prototype labels and test data classes do not match\n"
-                    "classes={}\n"
-                    "prototype labels={}\n".format(self.classes, self.c_w_))
-        if self.initial_fit:
-            if self.gradient_descent == 'adadelta':
-                self.squared_mean_gradient = np.zeros_like(self.w_)
-                self.squared_mean_step = np.zeros_like(self.w_)
-            self.initial_fit = False
+            # Initialize or append to existing prototypes
+            if self._prototype is None:
+                self._prototype = prototype
+                self._prototype_classes = prototype_classes
+                if self.gradient_descent == 'adadelta':
+                    self._squared_mean_gradient = np.zeros_like(self._prototype)
+                    self._squared_mean_step = np.zeros_like(self._prototype)
+            else:
+                self._prototype = np.vstack((self._prototype, prototype))
+                self._prototype_classes = np.hstack((self._prototype_classes, prototype_classes))
+                if self.gradient_descent == 'adadelta':
+                    self._squared_mean_gradient = np.vstack((self._squared_mean_gradient,
+                                                             np.zeros_like(self._prototype)))
+                    self._squared_mean_step = np.vstack((self._squared_mean_step,
+                                                         np.zeros_like(self._prototype)))
 
-        return train_set, train_lab
+    def _initialize_prototypes(self):
+        self._prototype = self.initial_prototypes[:, :-1]
+        self._prototype_classes = self.initial_prototypes[:, -1]
+
+        if self.gradient_descent == 'adadelta':
+            self._squared_mean_gradient = np.zeros_like(self._prototype)
+            self._squared_mean_step = np.zeros_like(self._prototype)
 
     def learn_one(self, x, y):
-        """Fit the LVQ model to the given training data and parameters using
-        gradient ascent.
+        x_array = dict2numpy(x)
+        try:
+            y_coded = self._class_labels.index(y)
+        except ValueError:
+            self._class_labels.append(y)
+            y_coded = self._class_labels.index(y)
+            self._append_prototypes(x_array, y_coded)
 
-        Parameters
-        ----------
-        x
-            Training vector, where n_samples in the number of samples and
-            n_features is the number of features.
-        y
-            An array-like with the class labels of all samples in X
-
-        """
-        x_array = np.reshape(dict2numpy(x), (1, -1))
-        if not isinstance(y, int):
-            if y in self._class_map:
-                y = self._class_map[y]
-            else:
-                key = len(self._class_map) + 1
-                self._class_map[key] = y
-                y = self._class_map[key]
-
-        y_array = np.asarray([y])
-        if y in self.classes or self.initial_fit is True:
-            x_array, y_array = self._validate_train_parms(x_array, y_array)
-        else:
-            raise ValueError(f'Unknown class {y} - please declare all possible labels using'
-                             f'the classes attribute.')
-
-        self._optimize(x_array, y_array)
+        self._optimize(x_array, y_coded)
         return self
 
     def _optimize(self, x, y):
-        nb_prototypes = self.c_w_.size
+        n_prototypes = self._prototype_classes.size
 
-        _, n_dim = x.shape
-        prototypes = self.w_.reshape(nb_prototypes, n_dim)
+        prototypes = self._prototype.reshape(n_prototypes, x.size)
 
-        x = x[0]
-        c_x = int(y[0])
         best_euclid_corr = np.inf
         best_euclid_incorr = np.inf
         correct_idx = -1
         incorrect_idx = -1
         # find nearest correct and nearest wrong prototype
         for j in range(prototypes.shape[0]):
-            if self.c_w_[j] == c_x:
+            if self._prototype_classes[j] == y:
                 eucl_dis = euclidean_distances(x.reshape(1, x.size),
                                                prototypes[j].reshape(1, prototypes[j].size))
                 if eucl_dis < best_euclid_corr:
@@ -321,8 +250,8 @@ class RSLVQClassifier(Classifier):
         # Update nearest wrong prototype and nearest correct prototype
         # if correct prototype isn't the nearest
         if best_euclid_incorr < best_euclid_corr:
-            self._update_prototype(j=correct_idx, c_xi=c_x, xi=x, prototypes=prototypes)
-            self._update_prototype(j=incorrect_idx, c_xi=c_x, xi=x, prototypes=prototypes)
+            self._update_prototype(j=correct_idx, y=y, x=x, prototypes=prototypes)
+            self._update_prototype(j=incorrect_idx, y=y, x=x, prototypes=prototypes)
 
     def predict_one(self, x: dict):
         """
@@ -341,11 +270,10 @@ class RSLVQClassifier(Classifier):
             Returns predicted values.
         """
         try:
-            y_pred = self.c_w_[np.array([self._costf(dict2numpy(x), p) for p in self.w_]).argmax()]
-            if self._class_map:
-                y_pred = self._class_map[y_pred]
-            return y_pred
-        except AttributeError:
+            y_pred = int(self._prototype_classes[np.array([self._costf(dict2numpy(x), p)
+                                                           for p in self._prototype]).argmax()])
+            return self._class_labels[y_pred]
+        except TypeError:
             # Model is empty, return class 0 as default
             return 0
 
@@ -360,7 +288,7 @@ class RSLVQClassifier(Classifier):
         else:
             fs = [self._costf(e, prototypes[i]) for i in
                   range(prototypes.shape[0]) if
-                  self.c_w_[i] == y]
+                  self._prototype_classes[i] == y]
 
         fs_max = np.amax(fs)
         s = sum([np.math.exp(f - fs_max) for f in fs])
@@ -377,14 +305,18 @@ class RSLVQClassifier(Classifier):
     @property
     def prototypes(self):
         """The prototypes"""
-        return self.w_
+        return self._prototype
 
     @property
     def prototypes_classes(self):
         """The prototypes classes"""
-        return self.c_w_
+        return self._prototype_classes
 
     @property
     def class_labels(self):
         """The class labels"""
-        return self.classes
+        return self._class_labels
+
+    @property
+    def _multiclass(self):
+        return True
