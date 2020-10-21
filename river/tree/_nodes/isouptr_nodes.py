@@ -1,6 +1,9 @@
 from copy import deepcopy
 from collections import defaultdict
 
+from river.stats import Var
+from river.utils import VectorDict
+
 from .base import InactiveLeaf
 from .htr_nodes import ActiveLeafRegressor
 from .htr_nodes import LearningNodeMean
@@ -8,11 +11,23 @@ from .htr_nodes import LearningNodeMean
 
 class LearningNodeMeanMultiTarget(LearningNodeMean):
     def __init__(self, initial_stats, depth):
+        initial_stats = initial_stats if initial_stats else VectorDict(
+            default_factory=lambda: Var())
         super().__init__(initial_stats, depth)
 
-    def predict_one(self, X, *, tree=None):
-        return (self.stats[1] / self.stats[0]).to_dict if self.stats else {
-            t: 0. for t in tree._targets}
+    def update_stats(self, y, sample_weight):
+        for t in y:
+            self.stats[t].update(y[t], sample_weight)
+
+    def predict_one(self, x, *, tree=None):
+        return {
+            t: self.stats[t].mean.get() if t in self.stats else 0.
+            for t in tree._targets
+        }
+
+    @property
+    def total_weight(self):
+        return list(self.stats.values())[0].mean.n if self.stats else 0
 
 
 class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
@@ -36,7 +51,7 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
                         # Pick the first available model in case not all the targets' models
                         # are defined
                         self._leaf_models[target_id] = deepcopy(
-                            next(iter(self.leaf_models.values()))
+                            next(iter(self._leaf_models.values()))
                         )
                     model = self._leaf_models[target_id]
                 else:
@@ -66,8 +81,9 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
         self._fmse_model = defaultdict(lambda: 0.)
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
-        pred_mean = (self.stats[1] / self.stats[0]).to_dict() if self.stats else {
-            t: 0. for t in tree._targets}
+        pred_mean = {
+            t: self.stats[t] if t in self.stats else 0. for t in tree._targets
+        }
         pred_model = super().predict_one(x, tree=tree)
 
         for t in tree._targets:  # Update the faded errors
@@ -82,7 +98,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
         pred = {}
         for t in tree._targets:
             if self._fmse_mean[t] < self._fmse_model[t]:  # Act as a regression tree
-                pred[t] = self.stats[1][t] / self.stats[0] if self.stats else 0.
+                pred[t] = self.stats[t].mean.get() if t in self.stats else 0.
             else:  # Act as a model tree
                 try:
                     pred[t] = self._leaf_models[t].predict_one(x)

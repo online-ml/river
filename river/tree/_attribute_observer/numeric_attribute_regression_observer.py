@@ -1,3 +1,4 @@
+from river.stats import Var
 from river.utils import VectorDict
 
 from river.tree._attribute_test import NumericAttributeBinaryTest
@@ -25,12 +26,26 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         def __init__(self, att_val, target, sample_weight):
             self.att_val = att_val
 
-            self.sum_weight = sample_weight
-            self.sum_target = sample_weight * target
-            self.sum_sq_target = self.sum_target * target
+            if isinstance(target, dict):
+                self.estimator = VectorDict(default_factory=lambda: Var())
+                self._update_estimator = self._update_estimator_multivariate
+            else:
+                self.estimator = Var()
+                self._update_estimator = self._update_estimator_univariate
+
+            self._update_estimator(self, target, sample_weight)
 
             self._left = None
             self._right = None
+
+        @staticmethod
+        def _update_estimator_univariate(node, target, sample_weight):
+            node.estimator.update(target, sample_weight)
+
+        @staticmethod
+        def _update_estimator_multivariate(node, target, sample_weight):
+            for t in target:
+                node.estimator[t].update(target[t], sample_weight)
 
         # Incremental implementation of the insert method. Avoiding unnecessary
         # stack tracing must decrease memory costs
@@ -41,16 +56,10 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             while current is not None:
                 antecedent = current
                 if att_val == current.att_val:
-                    current.sum_weight += sample_weight
-                    aux_mul = sample_weight * target
-                    current.sum_target += aux_mul
-                    current.sum_sq_target += aux_mul * target
+                    self._update_estimator(current, target, sample_weight)
                     return
                 elif att_val < current.att_val:
-                    current.sum_weight += sample_weight
-                    aux_mul = sample_weight * target
-                    current.sum_target += aux_mul
-                    current.sum_sq_target += aux_mul * target
+                    self._update_estimator(current, target, sample_weight)
 
                     current = current._left
                     is_right = False
@@ -89,27 +98,21 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
 
-        self._aux_sum_weight = 0
-
         # Handles both single-target and multi-target tasks
-        if isinstance(pre_split_dist[1], VectorDict):
-            self._aux_sum = VectorDict(default_factory=lambda: 0.)
-            self._aux_sum_sq = VectorDict(default_factory=lambda: 0.)
+        if isinstance(pre_split_dist, VectorDict):
+            self._aux_estimator = VectorDict(default_factory=lambda: Var())
         else:
-            self._aux_sum = 0.
-            self._aux_sum_sq = 0.
+            self._aux_estimator = Var()
 
         candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
 
         best_split = self._find_best_split(self._root, candidate)
 
-        # Reset auxiliary variables
-        self._criterion = None
-        self._pre_split_dist = None
-        self._att_idx = None
-        self._aux_sum_weight = None
-        self._aux_sum = None
-        self._aux_sum_sq = None
+        # Delete auxiliary variables
+        del self._criterion
+        del self._pre_split_dist
+        del self._att_idx
+        del self._aux_estimator
 
         return best_split
 
@@ -117,43 +120,28 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         if node._left is not None:
             candidate = self._find_best_split(node._left, candidate)
         # Left post split distribution
-        left_dist = {}
-        left_dist[0] = node.sum_weight + self._aux_sum_weight
-        left_dist[1] = node.sum_target + self._aux_sum
-        left_dist[2] = node.sum_sq_target + self._aux_sum_sq
+        left_dist = node.estimator + self._aux_estimator
 
-        # The right split distribution is calculated as the difference
-        # between the total distribution (pre split distribution) and
-        # the left distribution
-        right_dist = {}
-        right_dist[0] = self._pre_split_dist[0] - left_dist[0]
-        right_dist[1] = self._pre_split_dist[1] - left_dist[1]
-        right_dist[2] = self._pre_split_dist[2] - left_dist[2]
+        # The right split distribution is calculated as the difference between the total
+        # distribution (pre split distribution) and the left distribution
+        right_dist = self._pre_split_dist - left_dist
 
         post_split_dists = [left_dist, right_dist]
 
-        merit = self._criterion.get_merit_of_split(self._pre_split_dist,
-                                                   post_split_dists)
+        merit = self._criterion.get_merit_of_split(self._pre_split_dist, post_split_dists)
         if merit > candidate.merit:
-            num_att_binary_test = NumericAttributeBinaryTest(self._att_idx,
-                                                             node.att_val,
-                                                             True)
-            candidate = AttributeSplitSuggestion(num_att_binary_test,
-                                                 post_split_dists, merit)
+            num_att_binary_test = NumericAttributeBinaryTest(self._att_idx, node.att_val, True)
+            candidate = AttributeSplitSuggestion(num_att_binary_test, post_split_dists, merit)
 
         if node._right is not None:
-            self._aux_sum_weight += node.sum_weight
-            self._aux_sum += node.sum_target
-            self._aux_sum_sq += node.sum_sq_target
+            self._aux_estimator += node.estimator
 
             right_candidate = self._find_best_split(node._right, candidate)
 
             if right_candidate.merit > candidate.merit:
                 candidate = right_candidate
 
-            self._aux_sum_weight -= node.sum_weight
-            self._aux_sum -= node.sum_target
-            self._aux_sum_sq -= node.sum_sq_target
+            self._aux_estimator -= node.estimator
 
         return candidate
 
@@ -166,12 +154,12 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         points whose split merit is much worse than the best candidate overall (for which the
         growth decision already failed).
 
-        Let :math:`m_1` be the merit of the best split point and :math:`m_2` be the merit of the
-        second best split candidate. The ratio :math:`r = m_2/m_1` along with the Hoeffding bound
-        (:math:`\\epsilon`) are used to decide upon creating a split. A split occurs when
-        :math:`r < 1 - \\epsilon`. A split candidate, with merit :math:`m_i`, is considered bad
-        if :math:`m_i / m_1 < r - 2\\epsilon`. The rationale is the following: if the merit ratio
-        for this point is smaller than the lower bound of :math:`r`, then the true merit of that
+        Let $m_1$ be the merit of the best split point and $m_2$ be the merit of the
+        second best split candidate. The ratio $r = m_2/m_1$ along with the Hoeffding bound
+        ($\\epsilon$) are used to decide upon creating a split. A split occurs when
+        $r < 1 - \\epsilon$. A split candidate, with merit $m_i$, is considered badr
+        if $m_i / m_1 < r - 2\\epsilon$. The rationale is the following: if the merit ratio
+        for this point is smaller than the lower bound of $r$, then the true merit of that
         split relative to the best one is small. Hence, this candidate can be safely removed.
 
         To avoid excessive and costly manipulations of the E-BST to update the stored statistics,
@@ -206,27 +194,21 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         self._last_check_vr = last_check_vr
         self._last_check_e = last_check_e
 
-        self._aux_sum_weight = 0
-
-        # Encompass both the single-target and multi-target cases
-        if isinstance(pre_split_dist[1], VectorDict):
-            self._aux_sum = VectorDict(default_factory=lambda: 0.)
-            self._aux_sum_sq = VectorDict(default_factory=lambda: 0.)
+        # Handles both single-target and multi-target tasks
+        if isinstance(pre_split_dist, VectorDict):
+            self._aux_estimator = VectorDict(default_factory=lambda: Var())
         else:
-            self._aux_sum = 0.
-            self._aux_sum_sq = 0.
+            self._aux_estimator = Var()
 
         self._remove_bad_split_nodes(self._root)
 
-        # Reset auxiliary variables
-        self._criterion = None
-        self._pre_split_dist = None
-        self._last_check_ratio = None
-        self._last_check_vr = None
-        self._last_check_e = None
-        self._aux_sum_weight = None
-        self._aux_sum = None
-        self._aux_sum_sq = None
+        # Delete auxiliary variables
+        del self._criterion
+        del self._pre_split_dist
+        del self._last_check_ratio
+        del self._last_check_vr
+        del self._last_check_e
+        del self._aux_estimator
 
     def _remove_bad_split_nodes(self, current_node, parent=None, is_left_child=True):
         is_bad = False
@@ -238,31 +220,21 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         if is_bad:
             if current_node._right is not None:
-                self._aux_sum_weight += current_node.sum_weight
-                self._aux_sum += current_node.sum_target
-                self._aux_sum_sq += current_node.sum_sq_target
+                self._aux_estimator += current_node.estimator
 
                 is_bad = self._remove_bad_split_nodes(current_node._right, current_node, False)
 
-                self._aux_sum_weight -= current_node.sum_weight
-                self._aux_sum -= current_node.sum_target
-                self._aux_sum_sq -= current_node.sum_sq_target
+                self._aux_estimator -= current_node.estimator
             else:  # Every leaf node is potentially a bad candidate
                 is_bad = True
 
         if is_bad:
             # Left post split distribution
-            left_dist = {}
-            left_dist[0] = current_node.sum_weight + self._aux_sum_weight
-            left_dist[1] = current_node.sum_target + self._aux_sum
-            left_dist[2] = current_node.sum_sq_target + self._aux_sum_sq
+            left_dist = current_node.estimator + self._aux_estimator
 
             # The right split distribution is calculated as the difference between the total
             # distribution (pre split distribution) and the left distribution
-            right_dist = {}
-            right_dist[0] = self._pre_split_dist[0] - left_dist[0]
-            right_dist[1] = self._pre_split_dist[1] - left_dist[1]
-            right_dist[2] = self._pre_split_dist[2] - left_dist[2]
+            right_dist = self._pre_split_dist - left_dist
 
             post_split_dists = [left_dist, right_dist]
             merit = self._criterion.get_merit_of_split(self._pre_split_dist, post_split_dists)

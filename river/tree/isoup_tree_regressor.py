@@ -4,7 +4,6 @@ from copy import deepcopy
 from river import base
 from river import linear_model
 from river.tree import HoeffdingTreeRegressor
-from river.utils import VectorDict
 
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
 from ._nodes import ActiveLearningNodeMean
@@ -62,36 +61,35 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
     Examples
     --------
-    >>> # Imports
-    >>> from skmultiflow.data import RegressionGenerator
-    >>> from skmultiflow.trees import iSOUPTreeRegressor
-    >>> import numpy as np
+    >>> import numbers
+    >>> from river import compose
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import linear_model
+    >>> from river import metrics
+    >>> from river import preprocessing
+    >>> from river import tree
 
-    >>> # Setup a data stream
-    >>> n_targets = 3
-    >>> stream = RegressionGenerator(n_targets=n_targets, seed=1, n_samples=200)
+    >>> dataset = datasets.SolarFlare()
 
-    >>> # Setup iSOUP Tree Regressor
-    >>> isoup_tree = iSOUPTreeRegressor()
+    >>> num = compose.SelectType(numbers.Number) | preprocessing.MinMaxScaler()
+    >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder(sparse=False)
 
-    >>> # Auxiliary variables to control loop and track performance
-    >>> n_samples = 0
-    >>> max_samples = 200
-    >>> y_pred = np.zeros((max_samples, n_targets))
-    >>> y_true = np.zeros((max_samples, n_targets))
+    >>> model = tree.iSOUPTreeRegressor(
+    ...     grace_period=100,
+    ...     leaf_prediction='model',
+    ...     leaf_model={
+    ...         'c-class-flares': linear_model.LinearRegression(l2=0.02),
+    ...         'm-class-flares': linear_model.PARegressor(),
+    ...         'x-class-flares': linear_model.LinearRegression(l2=0.1)
+    ...     }
+    ... )
 
-    >>> # Run test-then-train loop for max_samples and while there is data
-    >>> while n_samples < max_samples and stream.has_more_samples():
-    >>>     X, y = stream.next_sample()
-    >>>     y_true[n_samples] = y[0]
-    >>>     y_pred[n_samples] = isoup_tree.predict(X)[0]
-    >>>     isoup_tree.partial_fit(X, y)
-    >>>     n_samples += 1
+    >>> pipeline = (num + cat) | model
+    >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
-    >>> # Display results
-    >>> print('iSOUP Tree regressor example')
-    >>> print('{} samples analyzed.'.format(n_samples))
-    >>> print('Mean absolute error: {}'.format(np.mean(np.abs(y_true - y_pred))))
+    >>> evaluate.progressive_val_score(dataset, pipeline, metric)
+    MAE: 0.425929
     """
 
     def __init__(self,
@@ -143,9 +141,6 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         """Create a new learning node. The type of learning node depends on
         the tree configuration.
         """
-        if initial_stats is None:
-            initial_stats = {}
-
         if parent is not None:
             depth = parent.depth + 1
         else:
@@ -209,7 +204,6 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         # Update target set
         self._targets.update(y.keys())
 
-        y = VectorDict(data=y)  # To enable arithmetic operations over the values
         super().learn_one(x, y, sample_weight=sample_weight)
 
         return self
@@ -237,10 +231,16 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                 else:
                     # The instance sorting ended up in a Split Node, since no branch was found
                     # for some of the instance's features. Use the mean prediction in this case
-                    return (node.stats[1] / node.stats[0]).to_dict()
+                    return {
+                        t: node.stats[t].mean.get() if t in node.stats else 0.
+                        for t in self._targets
+                    }
             else:
                 parent = found_node.parent
-                return (parent.stats[1] / parent.stats[0]).to_dict()
+                return {
+                    t: parent.stats[t].mean.get() if t in parent.stats else 0.
+                    for t in self._targets
+                }
         else:
             # Model is empty
             return None

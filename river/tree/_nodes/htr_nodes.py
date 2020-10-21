@@ -1,3 +1,4 @@
+from river.stats import Var
 from river.tree._attribute_observer import NominalAttributeRegressionObserver
 from river.tree._attribute_observer import NumericAttributeRegressionObserver
 from .base import ActiveLeaf
@@ -39,18 +40,17 @@ class ActiveLeafRegressor(ActiveLeaf):
 
 
 class LearningNodeMean(LearningNode):
+    def __init__(self, initial_stats, depth):
+        if initial_stats is None:
+            # Enforce the usage of Var to keep track of target statistics
+            initial_stats = Var()
+        super().__init__(initial_stats, depth)
+
     def update_stats(self, y, sample_weight):
-        try:
-            self.stats[0] += sample_weight
-            self.stats[1] += y * sample_weight
-            self.stats[2] += y * y * sample_weight
-        except KeyError:
-            self.stats[0] = sample_weight
-            self.stats[1] = y * sample_weight
-            self.stats[2] = y * y * sample_weight
+        self.stats.update(y, sample_weight)
 
     def predict_one(self, x, *, tree=None):
-        return self.stats[1] / self.stats[0] if self.stats else 0.
+        return self.stats.mean.get()
 
     @property
     def total_weight(self):
@@ -62,7 +62,7 @@ class LearningNodeMean(LearningNode):
             Total weight seen.
 
         """
-        return self.stats[0] if self.stats else 0.
+        return self.stats.mean.n
 
     def calculate_promise(self) -> int:
         """Estimate how likely a leaf node is going to be split.
@@ -109,7 +109,7 @@ class LearningNodeAdaptive(LearningNodeModel):
         self._fmse_model = 0.
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
-        pred_mean = self.stats[1] / self.stats[0] if self.stats else 0.
+        pred_mean = self.stats.mean.get()
         pred_model = self._leaf_model.predict_one(x)
 
         self._fmse_mean = tree.model_selector_decay * self._fmse_mean + (y - pred_mean) ** 2
@@ -119,7 +119,7 @@ class LearningNodeAdaptive(LearningNodeModel):
 
     def predict_one(self, x, *, tree=None):
         if self._fmse_mean < self._fmse_model:  # Act as a regression tree
-            return self.stats[1] / self.stats[0] if self.stats else 0.
+            return self.stats.mean.get()
         else:  # Act as a model tree
             return super().predict_one(x)
 

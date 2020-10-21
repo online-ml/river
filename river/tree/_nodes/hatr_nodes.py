@@ -1,5 +1,6 @@
 import math
 
+from river.stats import Var
 from river.drift.adwin import ADWIN
 from river.utils.skmultiflow_utils import check_random_state
 
@@ -93,7 +94,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
     def predict_one(self, x, *, tree=None):
         prediction_option = tree.leaf_prediction
         if prediction_option == tree._TARGET_MEAN:
-            return self.stats[1] / self.stats[0] if self.stats else 0.
+            return self.stats.mean.get()
         elif prediction_option == tree._MODEL:
             return self._leaf_model.predict_one(x)
         else:  # adaptive node
@@ -121,6 +122,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         Internal random state used to sample from poisson distributions.
     """
     def __init__(self, split_test, stats, depth, adwin_delta, seed):
+        stats = stats if stats else Var()
         super().__init__(split_test, stats, depth)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
@@ -170,16 +172,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
-        try:
-            self.stats[0] += sample_weight
-            aux_mul = sample_weight * y
-            self.stats[1] += aux_mul
-            self.stats[2] += aux_mul * y
-        except KeyError:
-            self.stats[0] = sample_weight
-            aux_mul = sample_weight * y
-            self.stats[1] = aux_mul
-            self.stats[2] = aux_mul * y
+        self.stats.update(y, sample_weight)
 
         if self._adwin is None:
             self._adwin = ADWIN(self.adwin_delta)
@@ -256,7 +249,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
     def predict_one(self, x, *, tree=None):
         # Called in case an emerging categorical feature has no path down the split node to be
         # sorted
-        return self.stats[1] / self.stats[0] if self.stats else 0.
+        return self.stats.mean.get()
 
     # Override AdaNode
     def kill_tree_children(self, tree):
