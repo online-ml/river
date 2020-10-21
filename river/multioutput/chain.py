@@ -1,5 +1,6 @@
 import collections
 import copy
+import random
 
 from river import base
 from river import linear_model
@@ -10,14 +11,15 @@ __all__ = ['ClassifierChain', 'RegressorChain']
 
 class BaseChain(base.WrapperMixin, collections.UserDict):
 
-    def __init__(self, model, order=None):
+    def __init__(self, model, order=None, seed=None):
         super().__init__()
         self.model = model
         self.order = order
+        self.seed = seed
 
         # If the order is specified, then we can instantiate a model for each label, if not we'll
         # do it in the first call to learn_one
-        if order is not None:
+        if isinstance(order, list):
             self._init_models()
 
     @property
@@ -27,6 +29,16 @@ class BaseChain(base.WrapperMixin, collections.UserDict):
     def _init_models(self):
         for o in self.order:
             self[o] = copy.deepcopy(self.model)
+
+    def _check_order(self, y):
+        if self.order is None:
+            self.order = list(y.keys())
+            self._init_models()
+        elif self.order == 'random':
+            random.seed(self.seed)
+            self.order = list(y.keys())
+            random.shuffle(self.order)
+            self._init_models()
 
 
 class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
@@ -41,8 +53,13 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     ----------
     model
     order
-        The order in which to construct the chain. If it not provided then it will be inferred from
-        the order of the keys in the first provided target dictionary.
+        A list with the targets order in which to construct the chain.
+        If `None` then the order will be inferred from the order of the keys in the first
+        provided target dictionary.
+        If `'random'` then the order is set at random.
+    seed
+        Random number generator seed for reproducibility. Only relevant in `order='random'`
+
 
     Examples
     --------
@@ -86,8 +103,8 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     """
 
-    def __init__(self, model: base.Classifier, order: list = None):
-        super().__init__(model, order)
+    def __init__(self, model: base.Classifier, order: list = None, seed: int = None):
+        super().__init__(model, order, seed)
 
     @classmethod
     def _default_params(cls):
@@ -98,9 +115,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     def learn_one(self, x, y):
 
-        if self.order is None:
-            self.order = list(y.keys())
-            self._init_models()
+        self._check_order(y)
 
         x = copy.copy(x)
 
@@ -126,7 +141,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
         x = copy.copy(x)
         y_pred = {}
 
-        if self.order is None:
+        if not isinstance(self.order, list):
             return y_pred
 
         for o in self.order:
@@ -163,8 +178,10 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     ----------
     model
     order
-        The order in which to construct the chain. If it not provided then it will be inferred from
-        the order of the keys in the first provided target dictionary.
+        A list with the targets order in which to construct the chain.
+        If `None` then the order will be inferred from the order of the keys in the first
+        provided target dictionary.
+        If `'random'` then the order is set at random.
 
     Examples
     --------
@@ -198,8 +215,8 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
 
     """
 
-    def __init__(self, model: base.Regressor, order: list = None):
-        super().__init__(model, order)
+    def __init__(self, model: base.Regressor, order: list = None, seed: int = None):
+        super().__init__(model, order, seed)
 
     @classmethod
     def _default_params(cls):
@@ -207,9 +224,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
 
     def learn_one(self, x, y):
 
-        if self.order is None:
-            self.order = list(y.keys())
-            self._init_models()
+        self._check_order(y)
 
         x = copy.copy(x)
 
@@ -230,6 +245,9 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
 
         x = copy.copy(x)
         y_pred = {}
+
+        if not isinstance(self.order, list):
+            return y_pred
 
         for o, clf in self.items():
             y_pred[o] = clf.predict_one(x)
