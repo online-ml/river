@@ -74,14 +74,14 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
     ...     tree.HoeffdingTreeRegressor(
     ...         grace_period=100,
     ...         leaf_prediction='adaptive',
-    ...         model_selector_decay=0.3
+    ...         model_selector_decay=0.9
     ...     )
     ... )
 
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.727928
+    MAE: 0.852902
     """
 
     _TARGET_MEAN = 'mean'
@@ -104,7 +104,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         self.split_confidence = split_confidence
         self.tie_threshold = tie_threshold
         self.leaf_prediction = leaf_prediction
-        self.leaf_model = leaf_model if leaf_model is not None else linear_model.LinearRegression()
+        self.leaf_model = leaf_model if leaf_model else linear_model.LinearRegression()
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
 
@@ -134,9 +134,6 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
 
         The type of learning node depends on the tree configuration.
         """
-        if initial_stats is None:
-            initial_stats = {}
-
         if parent is not None:
             depth = parent.depth + 1
         else:
@@ -252,10 +249,10 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
                 else:
                     # The instance sorting ended up in a Split Node, since no branch was found
                     # for some of the instance's features. Use the mean prediction in this case
-                    return node.stats[1] / node.stats[0]
+                    return node.stats.mean.get()
             else:
                 parent = found_node.parent
-                return parent.stats[1] / parent.stats[0]
+                return parent.stats.mean.get()
         else:
             # Model is empty
             return 0.

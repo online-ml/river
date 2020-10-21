@@ -18,31 +18,25 @@ class VarianceReductionSplitCriterion(SplitCriterion):
         self.min_samples_split = min_samples_split
 
     def get_merit_of_split(self, pre_split_dist, post_split_dist):
-        vr = 0.0
-        n = pre_split_dist[0]
+        vr = 0.
+        n = pre_split_dist.mean.n
 
         count = 0
         for i in range(len(post_split_dist)):
-            n_i = post_split_dist[i][0]
+            n_i = post_split_dist[i].mean.n
             if n_i >= self.min_samples_split:
                 count += 1
         if count == len(post_split_dist):
 
             vr = self.compute_var(pre_split_dist)
             for i in range(len(post_split_dist)):
-                n_i = post_split_dist[i][0]
+                n_i = post_split_dist[i].mean.n
                 vr -= n_i / n * self.compute_var(post_split_dist[i])
         return vr
 
     @staticmethod
     def compute_var(dist):
-
-        n = dist[0]
-        sum_ = dist[1]
-        sum_sq = dist[2]
-
-        var = (sum_sq - (sum_ * sum_) / n) / (n - 1) if n > 1 else 0
-        return var if var > 0.0 else 0.0
+        return dist.get()
 
     @staticmethod
     def get_range_of_merit(pre_split_dist):

@@ -112,7 +112,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.719929
+    MAE: 0.78838
     """
 
     def __init__(self,
@@ -203,9 +203,6 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
         The type of learning node depends on the tree configuration.
         """
-        if initial_stats is None:
-            initial_stats = {}
-
         if parent is not None:
             depth = parent.depth + 1
             # Leverage ancestor's learning models

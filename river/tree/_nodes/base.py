@@ -2,9 +2,10 @@ from abc import ABCMeta, abstractmethod
 import textwrap
 import numbers
 
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Union
 
 from river import base
+from river import stats
 from river.tree._attribute_test import InstanceConditionalTest
 from river.tree._attribute_test import AttributeSplitSuggestion
 from river.tree._attribute_observer import AttributeObserverNull
@@ -45,8 +46,8 @@ class Node(metaclass=ABCMeta):
         The depth of the node.
     """
 
-    def __init__(self, stats: dict = None, depth: int = 0):
-        self._stats = stats if stats is not None else {}
+    def __init__(self, initial_stats: Union[dict, stats.Var] = None, depth: int = 0):
+        self._stats = initial_stats if initial_stats is not None else {}
         self._depth = depth
 
     @staticmethod
@@ -155,7 +156,7 @@ class SplitNode(Node):
         The depth of the node.
     """
 
-    def __init__(self, split_test: InstanceConditionalTest, stats: dict, depth: int = 0):
+    def __init__(self, split_test: InstanceConditionalTest, stats, depth):
         super().__init__(stats, depth)
         self._split_test = split_test
         # Dict of tuples (branch, child)
@@ -305,7 +306,7 @@ class LearningNode(Node, metaclass=ABCMeta):
     initial_stats
         Initial stats (they differ in classification and regression tasks).
     """
-    def __init__(self, initial_stats: dict, depth: int = 0):
+    def __init__(self, initial_stats, depth):
         super().__init__(initial_stats, depth)
         self.last_split_attempt_at = self.total_weight
 

@@ -88,8 +88,6 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
 
         The type of learning node depends on the tree configuration.
         """
-        if initial_stats is None:
-            initial_stats = {}
 
         if parent is not None:
             depth = parent.depth + 1
