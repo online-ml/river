@@ -6,6 +6,10 @@ from . import estimator
 class AnomalyDetector(estimator.Estimator):
     """An anomaly detector."""
 
+    @property
+    def _supervised(self):
+        return False
+
     @abc.abstractmethod
     def learn_one(self, x: dict) -> 'AnomalyDetector':
         """Update the model.
