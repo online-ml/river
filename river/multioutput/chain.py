@@ -298,7 +298,6 @@ class ProbabilisticClassifierChain(ClassifierChain):
     >>> metric = metrics.Jaccard()
 
     >>> for x, y in dataset:
-    ...    # Convert y values to booleans
     ...    y_pred = model.predict_one(x)
     ...    metric = metric.update(y, y_pred)
     ...    model = model.learn_one(x, y)
@@ -332,7 +331,6 @@ class ProbabilisticClassifierChain(ClassifierChain):
             y_gen = {i: int(v) for i, v in zip(self.order, list(bin(label)[2:].zfill(n_labels)))}
             # ... and gauge a probability for it (given x)
             payoff = self._payoff(x=x, y=y_gen)
-            # print(label, y_gen, payoff)
             # if it performs well, keep it, and record the max
             if payoff > max_payoff:
                 y_pred = copy.copy(y_gen)
@@ -394,7 +392,6 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     >>> metric = metrics.Jaccard()
 
     >>> for x, y in dataset:
-    ...    # Convert y values to booleans
     ...    y_pred = model.predict_one(x)
     ...    metric = metric.update(y, y_pred)
     ...    model = model.learn_one(x, y)
