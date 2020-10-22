@@ -9,6 +9,7 @@ import typing
 class Estimator(abc.ABC):
     """An estimator."""
 
+    @property
     def _supervised(self):
         """Indicates whether or not the estimator is supervised or not.
 
@@ -175,10 +176,6 @@ class Estimator(abc.ABC):
                 pass
 
         return tags
-
-    @property
-    def _supervised(self):
-        return False
 
 
 def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> str:
