@@ -7,10 +7,6 @@ from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .hoeffding_adaptive_tree_regressor import HoeffdingAdaptiveTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
 
-# TODO remove
-from .decision.forest import RandomForestClassifier
-from .decision.tree import DecisionTreeClassifier
-
 
 __all__ = [
     'HoeffdingTreeClassifier',
@@ -19,12 +15,5 @@ __all__ = [
     'LabelCombinationHoeffdingTreeClassifier',
     'HoeffdingTreeRegressor',
     'HoeffdingAdaptiveTreeRegressor',
-    'iSOUPTreeRegressor',
-
-    # TODO: remove before merging
-    'DecisionTreeClassifier',
-    'RandomForestClassifier'
+    'iSOUPTreeRegressor'
 ]
-
-
-__pdoc__ = {'decision': False}
