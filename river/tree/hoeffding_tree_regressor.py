@@ -144,7 +144,11 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
                 # TODO: change to appropriate 'clone' method
                 leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
             else:
-                leaf_model = deepcopy(parent._leaf_model)
+                try:
+                    leaf_model = deepcopy(parent._leaf_model)
+                except AttributeError:
+                    # TODO: change to appropriate 'clone' method
+                    leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
 
         if is_active:
             if self.leaf_prediction == self._TARGET_MEAN:
@@ -212,7 +216,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
                         leaf_node.last_split_attempt_at = weight_seen
         # Split node encountered a previously unseen categorical value (in a multi-way test),
         # so there is no branch to sort the instance to
-        elif isinstance(leaf_node, SplitNode):
+        elif isinstance(leaf_node, SplitNode) and leaf_node.split_test.max_branches() == -1:
             current = leaf_node
             leaf_node = self._new_learning_node(parent=current)
             branch_id = current.split_test.add_new_branch(

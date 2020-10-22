@@ -69,8 +69,16 @@ cdef class Var(river.stats.base.Univariate):
         return self.sigma
 
     def __add__(self, Var other):
-        cdef double delta = 0.
         result = Var(ddof=self.ddof)
+
+        if other.mean.n <= self.ddof:
+            result.mean.n = self.mean.n
+            result.mean.mean = self.mean.mean
+            result.sigma = self.sigma
+
+            return result
+
+        cdef double delta = 0.
         result.mean = self.mean + other.mean
         delta = other.mean.get() - self.mean.get()
 
@@ -83,6 +91,9 @@ cdef class Var(river.stats.base.Univariate):
         return result
 
     def __iadd__(self, Var other):
+        if other.mean.n <= self.ddof:
+            return self
+
         cdef double old_n = self.mean.n
         cdef double delta = other.mean.get() - self.mean.get()
 
@@ -100,7 +111,7 @@ cdef class Var(river.stats.base.Univariate):
         result = Var(ddof=self.ddof)
         result.mean = self.mean - other.mean
 
-        if result.mean.n > 0:
+        if result.mean.n > 0 and result.mean.n > result.ddof:
             delta = other.mean.get() - result.mean.get()
             # scale both sigma and take the difference
             result.sigma = (self.mean.n - self.ddof) * self.sigma - (other.mean.n - other.ddof) * other.sigma
@@ -118,7 +129,7 @@ cdef class Var(river.stats.base.Univariate):
 
         self.mean -= other.mean
 
-        if self.mean.n > 0:
+        if self.mean.n > 0 and self.mean.n > self.ddof:
             delta = other.mean.get() - self.mean.get()
             # scale both sigma and take the difference
             self.sigma = (old_n - self.ddof) * self.sigma - (other.mean.n - other.ddof) * other.sigma

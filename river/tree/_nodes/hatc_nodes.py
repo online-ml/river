@@ -87,8 +87,6 @@ class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
         pass
 
     def learn_one(self, x, y, sample_weight, tree, parent, parent_branch):
-        true_class = y
-
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
             k = self._rng.poisson(1.0)
@@ -98,7 +96,7 @@ class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
         aux = self.predict_one(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
 
-        is_correct = (true_class == class_prediction)
+        is_correct = (y == class_prediction)
 
         if self._adwin is None:
             self._adwin = ADWIN(delta=self.adwin_delta)
@@ -152,7 +150,7 @@ class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
         return dist
 
     # Override AdaNode: enable option vote (query potentially more than one leaf for responses)
-    def filter_instance_to_leaves(self, X, parent, parent_branch, found_nodes):
+    def filter_instance_to_leaves(self, x, parent, parent_branch, found_nodes):
         found_nodes.append(FoundNode(self, parent, parent_branch))
 
 
@@ -206,7 +204,6 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
         return self._adwin is None
 
     def learn_one(self, x, y, sample_weight, tree, parent, parent_branch):
-        true_class = y
         class_prediction = None
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
@@ -214,7 +211,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             aux = leaf.node.predict_one(x, tree=tree)
             class_prediction = max(aux, key=aux.get) if aux else None
 
-        is_correct = (true_class == class_prediction)
+        is_correct = (y == class_prediction)
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)

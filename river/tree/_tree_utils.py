@@ -1,6 +1,7 @@
 import math
 
 from river.utils.math import softmax
+from river.stats import Var
 
 
 def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_observers: dict):
@@ -41,3 +42,7 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
                 tmp = obs.probability_of_attribute_value_given_class(x[att_idx], class_index)
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.
     return softmax(votes)
+
+
+def reg_stat_factory():
+    return Var()
