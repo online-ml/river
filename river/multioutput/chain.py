@@ -362,7 +362,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     Probabilistic Classifier Chains using Monte Carlo sampling, as
     described in [^1].
 
-    `m samples are taken from the posterior distribution. Therefore we
+    m samples are taken from the posterior distribution. Therefore we
     need a probabilistic interpretation of the output, and thus, this is a
     particular variety of ProbabilisticClassifierChain.
 
