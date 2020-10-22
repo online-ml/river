@@ -194,7 +194,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                         leaf_node.last_split_attempt_at = weight_seen
         # Split node encountered a previously unseen categorical value (in a multi-way test),
         # so there is no branch to sort the instance to
-        elif isinstance(leaf_node, SplitNode):
+        elif isinstance(leaf_node, SplitNode) and leaf_node.split_test.max_branches() == -1:
             # Creates a new branch to the new categorical value
             current = leaf_node
             leaf_node = self._new_learning_node(parent=current)
@@ -329,3 +329,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
 
                 # Manage memory
                 self._enforce_size_limit()
+
+    @property
+    def _multiclass(self):
+        return True

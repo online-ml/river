@@ -1,8 +1,8 @@
 from copy import deepcopy
 from collections import defaultdict
 
-from river.stats import Var
 from river.utils import VectorDict
+from river.tree._tree_utils import reg_stat_factory
 
 from .base import InactiveLeaf
 from .htr_nodes import ActiveLeafRegressor
@@ -12,7 +12,7 @@ from .htr_nodes import LearningNodeMean
 class LearningNodeMeanMultiTarget(LearningNodeMean):
     def __init__(self, initial_stats, depth):
         initial_stats = initial_stats if initial_stats else VectorDict(
-            default_factory=lambda: Var())
+            default_factory=reg_stat_factory)
         super().__init__(initial_stats, depth)
 
     def update_stats(self, y, sample_weight):
@@ -223,3 +223,4 @@ class InactiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, I
     """
     def __init__(self, initial_stats, depth, leaf_models):
         super().__init__(initial_stats, depth, leaf_models)
+

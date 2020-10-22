@@ -3,6 +3,7 @@ from river.utils import VectorDict
 
 from river.tree._attribute_test import NumericAttributeBinaryTest
 from river.tree._attribute_test import AttributeSplitSuggestion
+from river.tree._tree_utils import reg_stat_factory
 from .attribute_observer import AttributeObserver
 
 
@@ -27,7 +28,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             self.att_val = att_val
 
             if isinstance(target, dict):
-                self.estimator = VectorDict(default_factory=lambda: Var())
+                self.estimator = VectorDict(default_factory=reg_stat_factory)
                 self._update_estimator = self._update_estimator_multivariate
             else:
                 self.estimator = Var()
@@ -100,7 +101,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         # Handles both single-target and multi-target tasks
         if isinstance(pre_split_dist, VectorDict):
-            self._aux_estimator = VectorDict(default_factory=lambda: Var())
+            self._aux_estimator = VectorDict(default_factory=reg_stat_factory)
         else:
             self._aux_estimator = Var()
 
@@ -196,7 +197,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         # Handles both single-target and multi-target tasks
         if isinstance(pre_split_dist, VectorDict):
-            self._aux_estimator = VectorDict(default_factory=lambda: Var())
+            self._aux_estimator = VectorDict(default_factory=reg_stat_factory)
         else:
             self._aux_estimator = Var()
 

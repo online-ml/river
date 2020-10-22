@@ -247,3 +247,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                 parent.set_child(parent_branch, new_leaf)
         self._n_active_leaves += 1
         self._n_inactive_leaves -= 1
+
+    @classmethod
+    def _default_params(cls):
+        return {'seed': 1}

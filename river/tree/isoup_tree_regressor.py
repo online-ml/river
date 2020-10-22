@@ -150,7 +150,11 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             if parent is None:
                 leaf_models = {}
             else:
-                leaf_models = deepcopy(parent._leaf_models)
+                try:
+                    leaf_models = deepcopy(parent._leaf_models)
+                except AttributeError:
+                    # Due to an emerging category in a nominal feature, a split node was reached
+                    leaf_models = {}
 
         if is_active:
             if self.leaf_prediction == self._TARGET_MEAN:
@@ -243,4 +247,4 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                 }
         else:
             # Model is empty
-            return None
+            return {}
