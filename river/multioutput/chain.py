@@ -265,7 +265,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
 class ProbabilisticClassifierChain(ClassifierChain):
     r"""Probabilistic Classifier Chains.
 
-    The Probabilistic Classifier Chains (PCC) [1^] is a Bayes-optimal method
+    The Probabilistic Classifier Chains (PCC) [^1] is a Bayes-optimal method
     based on the Classifier Chains (CC).
 
     Consider the concept of chaining classifiers as searching a path in a
