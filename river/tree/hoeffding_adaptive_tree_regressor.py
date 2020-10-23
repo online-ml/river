@@ -28,6 +28,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     ----------
     grace_period
         Number of instances a leaf should observe between split attempts.
+    max_depth
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
@@ -117,6 +119,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     def __init__(self,
                  grace_period: int = 200,
+                 max_depth: int = None,
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
@@ -130,6 +133,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  **kwargs):
 
         super().__init__(grace_period=grace_period,
+                         max_depth=max_depth,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,
                          leaf_prediction=leaf_prediction,
@@ -236,7 +240,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             split_test=split_test, stats=target_stats, depth=depth,
             adwin_delta=self.adwin_confidence, seed=self.seed)
 
-    # Override river.tree.DecisionTree to include alternate trees
+    # Override river.tree.BaseDecisionTree to include alternate trees
     def __find_learning_nodes(self, node, parent, parent_branch, found):
         if node is not None:
             if isinstance(node, LearningNode):
@@ -250,7 +254,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                     self.__find_learning_nodes(
                         split_node._alternate_tree, split_node, -999, found)
 
-    # Override river.tree.DecisionTree to include alternate trees
+    # Override river.tree.BaseDecisionTree to include alternate trees
     def _deactivate_leaf(self, to_deactivate, parent, parent_branch):
         new_leaf = self._new_learning_node(to_deactivate.stats, parent=to_deactivate,
                                            is_active=False)
@@ -267,7 +271,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self._n_active_leaves -= 1
         self._n_inactive_leaves += 1
 
-    # Override river.tree.DecisionTree to include alternate trees
+    # Override river.tree.BaseDecisionTree to include alternate trees
     def _activate_leaf(self, to_activate, parent, parent_branch):
         new_leaf = self._new_learning_node(to_activate.stats, parent=to_activate)
         new_leaf.depth -= 1  # To ensure we do not skip a tree level

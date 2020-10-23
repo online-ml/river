@@ -24,6 +24,8 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     ----------
     grace_period
         Number of instances a leaf should observe between split attempts.
+    max_depth
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to
         decide.
@@ -52,7 +54,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     **kwargs
-        Other parameters passed to river.tree.DecisionTree.
+        Other parameters passed to `river.tree.BaseDecisionTree`.
 
     References
     ----------
@@ -94,6 +96,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
     def __init__(self,
                  grace_period: int = 200,
+                 max_depth: int = None,
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
@@ -102,6 +105,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                  nominal_attributes: list = None,
                  **kwargs):
         super().__init__(grace_period=grace_period,
+                         max_depth=max_depth,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,
                          leaf_prediction=leaf_prediction,

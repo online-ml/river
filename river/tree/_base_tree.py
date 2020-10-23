@@ -14,7 +14,7 @@ from ._nodes import FoundNode
 from ._attribute_test import InstanceConditionalTest
 
 
-class DecisionTree(ABC):
+class BaseDecisionTree(ABC):
     """Base class for Decision Trees.
 
     It defines base operations and properties that all the decision trees must inherit or

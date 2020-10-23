@@ -3,7 +3,7 @@ from operator import attrgetter
 from river import base
 from river.utils.math import softmax
 
-from ._base_tree import DecisionTree
+from ._base_tree import BaseDecisionTree
 from ._split_criterion import GiniSplitCriterion
 from ._split_criterion import InfoGainSplitCriterion
 from ._split_criterion import HellingerDistanceCriterion
@@ -16,13 +16,15 @@ from ._nodes import ActiveLearningNodeNBA
 from ._nodes import InactiveLearningNodeMC
 
 
-class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
+class HoeffdingTreeClassifier(BaseDecisionTree, base.Classifier):
     """Hoeffding Tree or Very Fast Decision Tree classifier.
 
     Parameters
     ----------
     grace_period
         Number of instances a leaf should observe between split attempts.
+    max_depth
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
         | Split criterion to use.
         | 'gini' - Gini
@@ -43,7 +45,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     **kwargs
-        Other parameters passed to river.tree.DecisionTree.
+        Other parameters passed to `river.tree.BaseDecisionTree`.
 
     Notes
     -----
@@ -101,6 +103,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
 
     def __init__(self,
                  grace_period: int = 200,
+                 max_depth: int = None,
                  split_criterion: str = 'info_gain',
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
@@ -109,7 +112,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
                  nominal_attributes: list = None,
                  **kwargs):
 
-        super().__init__(**kwargs)
+        super().__init__(max_depth=max_depth, **kwargs)
 
         self.grace_period = grace_period
         self.split_criterion = split_criterion
@@ -121,7 +124,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
 
         self.classes: set = set()
 
-    @DecisionTree.split_criterion.setter
+    @BaseDecisionTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion not in [self._GINI_SPLIT, self._INFO_GAIN_SPLIT, self._HELLINGER]:
             print("Invalid split_criterion option {}', will use default '{}'".
@@ -130,7 +133,7 @@ class HoeffdingTreeClassifier(DecisionTree, base.Classifier):
         else:
             self._split_criterion = split_criterion
 
-    @DecisionTree.leaf_prediction.setter
+    @BaseDecisionTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in [self._MAJORITY_CLASS, self._NAIVE_BAYES,
                                    self._NAIVE_BAYES_ADAPTIVE]:

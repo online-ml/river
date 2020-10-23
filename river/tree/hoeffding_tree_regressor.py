@@ -4,7 +4,7 @@ from copy import deepcopy
 from river import base
 from river import linear_model
 
-from ._base_tree import DecisionTree
+from ._base_tree import BaseDecisionTree
 from ._split_criterion import VarianceReductionSplitCriterion
 from ._nodes import ActiveLeaf
 from ._nodes import SplitNode
@@ -17,13 +17,15 @@ from ._nodes import ActiveLearningNodeAdaptive
 from ._nodes import InactiveLearningNodeAdaptive
 
 
-class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
+class HoeffdingTreeRegressor(BaseDecisionTree, base.Regressor):
     """Hoeffding Tree regressor.
 
     Parameters
     ----------
     grace_period
         Number of instances a leaf should observe between split attempts.
+    max_depth
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
@@ -47,7 +49,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     **kwargs
-        Other parameters passed to river.tree.DecisionTree.
+        Other parameters passed to `river.tree.BaseDecisionTree`.
 
     Notes
     -----
@@ -90,6 +92,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
 
     def __init__(self,
                  grace_period: int = 200,
+                 max_depth: int = None,
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
@@ -97,7 +100,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
                  **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(max_depth=max_depth, **kwargs)
 
         self._split_criterion = 'vr'
         self.grace_period = grace_period
@@ -108,7 +111,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
 
-    @DecisionTree.leaf_prediction.setter
+    @BaseDecisionTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
             print('Invalid leaf_prediction option "{}", will use default "{}"'.
@@ -117,7 +120,7 @@ class HoeffdingTreeRegressor(DecisionTree, base.Regressor):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @DecisionTree.split_criterion.setter
+    @BaseDecisionTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion != 'vr':   # variance reduction
             print("Invalid split_criterion option {}', will use default '{}'".
