@@ -3,9 +3,6 @@ from abc import ABC, abstractmethod
 
 import math
 
-# # TODO review later
-# from skmultiflow.rules.base_rule import Rule
-
 from river.utils.skmultiflow_utils import calculate_object_size
 
 from ._nodes import Node
@@ -365,40 +362,3 @@ class DecisionTree(ABC):
                 for i in range(split_node.n_children):
                     self.__find_learning_nodes(
                         split_node.get_child(i), split_node, i, found)
-
-    # # TODO review -> compat with rule-based algorithms
-    # def get_model_rules(self):
-    #     """Returns list of rules describing the tree.
-    #
-    #     Returns
-    #     -------
-    #     list (Rule)
-    #         list of the rules describing the tree
-    #     """
-    #     root = self._tree_root
-    #     rules = []
-    #
-    #     def recurse(node, cur_rule, ht):
-    #         if isinstance(node, SplitNode):
-    #             for i, child in node._children.items():
-    #                 predicate = node.get_predicate(i)
-    #                 r = copy.deepcopy(cur_rule)
-    #                 r.predicate_set.append(predicate)
-    #                 recurse(child, r, ht)
-    #         else:
-    #             cur_rule.observed_class_distribution = node.stats.copy()
-    #             cur_rule.class_idx = max(node.stats.items(), key=itemgetter(1))[0]
-    #             rules.append(cur_rule)
-    #
-    #     rule = Rule()
-    #     recurse(root, rule, self)
-    #     return rules
-    #
-    # # TODO review -> compat with rule-based algorithms
-    # def get_rules_description(self):
-    #     """Print the description of tree using rules."""
-    #     description = ''
-    #     for rule in self.get_model_rules():
-    #         description += str(rule) + '\n'
-    #
-    #     return description

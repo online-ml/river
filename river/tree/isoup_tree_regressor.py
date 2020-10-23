@@ -111,7 +111,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                          **kwargs)
 
         self.split_criterion: str = 'icvr'   # intra cluster variance reduction
-        self._targets: set = set()
+        self.targets: set = set()
 
     @HoeffdingTreeRegressor.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
@@ -206,7 +206,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             The weight of the passed sample.
         """
         # Update target set
-        self._targets.update(y.keys())
+        self.targets.update(y.keys())
 
         super().learn_one(x, y, sample_weight=sample_weight)
 
@@ -237,13 +237,13 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                     # for some of the instance's features. Use the mean prediction in this case
                     return {
                         t: node.stats[t].mean.get() if t in node.stats else 0.
-                        for t in self._targets
+                        for t in self.targets
                     }
             else:
                 parent = found_node.parent
                 return {
                     t: parent.stats[t].mean.get() if t in parent.stats else 0.
-                    for t in self._targets
+                    for t in self.targets
                 }
         else:
             # Model is empty

@@ -55,10 +55,8 @@ class RandomActiveLearningNodeMean(LearningNodeMean, RandomActiveLeafRegressor):
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the target values (key '1'), and the sum of the
-        squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     max_features
@@ -85,14 +83,12 @@ class RandomActiveLearningNodeModel(LearningNodeModel, RandomActiveLeafRegressor
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the target values (key '1'), and the sum of the
-        squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     leaf_model
-        A river.base.Regressor instance used to learn from instances and provide
+        A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     max_features
         Number of attributes per subset for each node split.
@@ -117,14 +113,12 @@ class RandomActiveLearningNodeAdaptive(LearningNodeAdaptive, RandomActiveLeafReg
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the target values (key '1'), and the sum of the
-        squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     leaf_model
-        A river.base.Regressor instance used to learn from instances and provide
+        A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     max_features
         Number of attributes per subset for each node split.
