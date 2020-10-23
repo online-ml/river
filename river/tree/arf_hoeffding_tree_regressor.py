@@ -52,7 +52,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
             If None, the random number generator is the RandomState instance
             used by `np.random`.
     **kwargs
-        Other parameters passed to `river.tree.BaseDecisionTree`.
+        Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     This is the base-estimator of the Adaptive Random Forest Regressor ensemble learner (see
     `river.ensemble.AdaptiveRandomForestRegressor`). This Hoeffding Tree Regressor includes a

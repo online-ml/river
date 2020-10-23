@@ -58,7 +58,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
 
     def learn_one(self, X, y, sample_weight, tree, parent, parent_branch):
         y_pred = self.predict_one(X, tree=tree)
-        normalized_error = get_normalized_error(y, y_pred, self)
+        normalized_error = normalize_error(y, y_pred, self)
 
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
@@ -168,7 +168,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         else:
             y_pred = parent.predict_one(x, tree=tree)
 
-        normalized_error = get_normalized_error(y, y_pred, self)
+        normalized_error = normalize_error(y, y_pred, self)
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
@@ -241,7 +241,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
             # value
             leaf_node = tree._new_learning_node(parent=self)
             branch_id = self.split_test.add_new_branch(
-                x[self.split_test.get_atts_test_depends_on()[0]])
+                x[self.split_test.attrs_test_depends_on()[0]])
             self.set_child(branch_id, leaf_node)
             tree._n_active_leaves += 1
             leaf_node.learn_one(x, y, sample_weight, tree, parent, parent_branch)
@@ -289,7 +289,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
             self._alternate_tree.filter_instance_to_leaves(x, self, -999, found_nodes)
 
 
-def get_normalized_error(y_true, y_pred, node):
+def normalize_error(y_true, y_pred, node):
     drift_input = y_true - y_pred
 
     node._n += 1

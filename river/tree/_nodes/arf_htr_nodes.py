@@ -27,8 +27,6 @@ class RandomActiveLeafRegressor(RandomActiveLeafClass):
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
         """Trigger Attribute Observers' memory management routines.
 
-        Currently, only `NumericAttributeRegressionObserver` has support to this feature.
-
         Parameters
         ----------
         criterion
@@ -40,6 +38,10 @@ class RandomActiveLeafRegressor(RandomActiveLeafClass):
             The best candidate's split merit (variance reduction).
         last_check_e
             Hoeffding bound value calculated in the last split attempt.
+
+        Notes
+        -----
+        Only supported by `river.tree._attribute_observer.NumericAttributeRegressionObserver`.
         """
         for obs in self.attribute_observers.values():
             if isinstance(obs, NumericAttributeRegressionObserver):

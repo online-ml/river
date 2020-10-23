@@ -3,7 +3,7 @@ from operator import attrgetter
 from river import base
 from river.utils.math import softmax
 
-from ._base_tree import BaseDecisionTree
+from ._base_tree import BaseHoeffdingTree
 from ._split_criterion import GiniSplitCriterion
 from ._split_criterion import InfoGainSplitCriterion
 from ._split_criterion import HellingerDistanceCriterion
@@ -16,7 +16,7 @@ from ._nodes import ActiveLearningNodeNBA
 from ._nodes import InactiveLearningNodeMC
 
 
-class HoeffdingTreeClassifier(BaseDecisionTree, base.Classifier):
+class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     """Hoeffding Tree or Very Fast Decision Tree classifier.
 
     Parameters
@@ -45,7 +45,7 @@ class HoeffdingTreeClassifier(BaseDecisionTree, base.Classifier):
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     **kwargs
-        Other parameters passed to `river.tree.BaseDecisionTree`.
+        Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     Notes
     -----
@@ -124,7 +124,7 @@ class HoeffdingTreeClassifier(BaseDecisionTree, base.Classifier):
 
         self.classes: set = set()
 
-    @BaseDecisionTree.split_criterion.setter
+    @BaseHoeffdingTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion not in [self._GINI_SPLIT, self._INFO_GAIN_SPLIT, self._HELLINGER]:
             print("Invalid split_criterion option {}', will use default '{}'".
@@ -133,7 +133,7 @@ class HoeffdingTreeClassifier(BaseDecisionTree, base.Classifier):
         else:
             self._split_criterion = split_criterion
 
-    @BaseDecisionTree.leaf_prediction.setter
+    @BaseHoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in [self._MAJORITY_CLASS, self._NAIVE_BAYES,
                                    self._NAIVE_BAYES_ADAPTIVE]:
@@ -202,7 +202,7 @@ class HoeffdingTreeClassifier(BaseDecisionTree, base.Classifier):
             current = leaf_node
             leaf_node = self._new_learning_node(parent=current)
             branch_id = current.split_test.add_new_branch(
-                x[current.split_test.get_atts_test_depends_on()[0]])
+                x[current.split_test.attrs_test_depends_on()[0]])
             current.set_child(branch_id, leaf_node)
             self._n_active_leaves += 1
             leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
@@ -283,13 +283,13 @@ class HoeffdingTreeClassifier(BaseDecisionTree, base.Classifier):
                 split_criterion = HellingerDistanceCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
-            best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
+            best_split_suggestions = node.best_split_suggestions(split_criterion, self)
             best_split_suggestions.sort(key=attrgetter('merit'))
             should_split = False
             if len(best_split_suggestions) < 2:
                 should_split = len(best_split_suggestions) > 0
             else:
-                hoeffding_bound = self._hoeffding_bound(split_criterion.get_range_of_merit(
+                hoeffding_bound = self._hoeffding_bound(split_criterion.range_of_merit(
                     node.stats), self.split_confidence, node.total_weight)
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
@@ -302,7 +302,7 @@ class HoeffdingTreeClassifier(BaseDecisionTree, base.Classifier):
                     for i in range(len(best_split_suggestions)):
                         if best_split_suggestions[i] is not None:
                             split_atts = best_split_suggestions[i].split_test.\
-                                get_atts_test_depends_on()
+                                attrs_test_depends_on()
                             if len(split_atts) == 1:
                                 if (best_suggestion.merit - best_split_suggestions[i].merit
                                         > hoeffding_bound):

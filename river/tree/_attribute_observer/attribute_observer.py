@@ -45,7 +45,7 @@ class AttributeObserver(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         """Get the best split suggestion given a criterion and the target's statistics.
 
         Parameters

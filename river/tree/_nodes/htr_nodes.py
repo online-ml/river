@@ -1,4 +1,5 @@
 import inspect
+
 from river.stats import Var
 from river.tree._attribute_observer import NominalAttributeRegressionObserver
 from river.tree._attribute_observer import NumericAttributeRegressionObserver

@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 import textwrap
 import numbers
 
-from typing import Type, TypeVar, Union
+from typing import Type, TypeVar, Union, List
 
 from river import base
 from river import stats
@@ -294,9 +294,6 @@ class SplitNode(Node):
                 buffer[0] += ':\n'
                 child.describe_subtree(tree, buffer, indent + 2)
 
-    # def get_predicate(self, branch):
-    #     return self._split_test.branch_rule(branch)
-
 
 class LearningNode(Node, metaclass=ABCMeta):
     """Base Learning Node to be used in Hoeffding Trees.
@@ -311,14 +308,12 @@ class LearningNode(Node, metaclass=ABCMeta):
         self.last_split_attempt_at = self.total_weight
 
     @staticmethod
-    def is_leaf():
-        """Determine if the node is a leaf.
+    def is_leaf() -> bool:
+        """Indicate if the node is a leaf.
 
         Returns
         -------
-        boolean
-            True if node is a leaf, False otherwise
-
+        True if node is a leaf, False otherwise
         """
         return True
 
@@ -349,24 +344,22 @@ class LearningNode(Node, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def total_weight(self):
+    def total_weight(self) -> float:
         """Calculate the total weight seen by the node.
 
         Returns
         -------
-        float
-            Total weight seen.
+        Total weight seen.
         """
         pass
 
     @property
-    def last_split_attempt_at(self):
+    def last_split_attempt_at(self) -> float:
         """The weight seen at last split evaluation.
 
         Returns
         -------
-        float
-            Weight seen at last split evaluation.
+        Weight seen at last split evaluation.
         """
         try:
             return self._last_split_attempt_at
@@ -425,20 +418,20 @@ class ActiveLeaf(metaclass=ABCMeta):
     def attribute_observers(self, attr_obs):
         self._attribute_observers = attr_obs       # noqa
 
-    def update_attribute_observers(self, X, y, sample_weight, tree):
-        for idx, x in X.items():
+    def update_attribute_observers(self, x, y, sample_weight, tree, **kwargs):
+        for attr_idx, attr_val in x.items():
             try:
-                obs = self.attribute_observers[idx]
+                obs = self.attribute_observers[attr_idx]
             except KeyError:
-                if ((tree.nominal_attributes is not None and idx in tree.nominal_attributes)
-                        or not isinstance(x, numbers.Number)):
-                    obs = self.new_nominal_attribute_observer()
+                if ((tree.nominal_attributes is not None and attr_idx in tree.nominal_attributes)
+                        or not isinstance(attr_val, numbers.Number)):
+                    obs = self.new_nominal_attribute_observer(**kwargs)
                 else:
-                    obs = self.new_numeric_attribute_observer()
-                self.attribute_observers[idx] = obs
-            obs.update(x, y, sample_weight)
+                    obs = self.new_numeric_attribute_observer(**kwargs)
+                self.attribute_observers[attr_idx] = obs
+            obs.update(attr_val, y, sample_weight)
 
-    def get_best_split_suggestions(self, criterion, tree):
+    def best_split_suggestions(self, criterion, tree) -> List[AttributeSplitSuggestion]:
         """Find possible split candidates.
 
         Parameters
@@ -450,20 +443,18 @@ class ActiveLeaf(metaclass=ABCMeta):
 
         Returns
         -------
-        list
-            Split candidates.
-
+        Split candidates.
         """
         best_suggestions = []
         pre_split_dist = self.stats
         if tree.merit_preprune:
             # Add null split as an option
             null_split = AttributeSplitSuggestion(
-                None, [{}], criterion.get_merit_of_split(pre_split_dist, [pre_split_dist])
+                None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
             )
             best_suggestions.append(null_split)
         for i, obs in self.attribute_observers.items():
-            best_suggestion = obs.get_best_evaluated_split_suggestion(
+            best_suggestion = obs.best_evaluated_split_suggestion(
                 criterion, pre_split_dist, i, tree.binary_split
             )
             if best_suggestion is not None:
@@ -492,7 +483,7 @@ class InactiveLeaf:
     def new_numeric_attribute_observer():
         return None
 
-    def update_attribute_observers(self, X, y, sample_weight, tree):
+    def update_attribute_observers(self, x, y, sample_weight, tree):
         # An inactive learning nodes does nothing here
         # We use it as a dummy class
         pass

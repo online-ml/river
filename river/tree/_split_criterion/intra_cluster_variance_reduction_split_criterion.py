@@ -8,7 +8,7 @@ class IntraClusterVarianceReductionSplitCriterion(VarianceReductionSplitCriterio
     def __init__(self, min_samples_split: int = 5):
         super().__init__(min_samples_split)
 
-    def get_merit_of_split(self, pre_split_dist, post_split_dist):
+    def merit_of_split(self, pre_split_dist, post_split_dist):
         icvr = 0.0
         n = list(pre_split_dist.values())[0].mean.n
 

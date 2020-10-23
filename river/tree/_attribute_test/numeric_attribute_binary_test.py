@@ -1,4 +1,3 @@
-# from skmultiflow.rules.base_predicate import Predicate
 from .instance_conditional_test import InstanceConditionalTest
 
 
@@ -30,14 +29,9 @@ class NumericAttributeBinaryTest(InstanceConditionalTest):
                 self._att_idx, compare_char, self._att_value
             )
 
-    # def branch_rule(self, branch):
-    #     condition = '<' if branch == 0 else '>'
-    #     equals_branch = 0 if self._equals_passes_test else 1
-    #     condition += '=' if branch == equals_branch else ''
-    #     return Predicate(self._att_idx, condition, self._att_value)
-
-    def get_atts_test_depends_on(self):
+    def attrs_test_depends_on(self):
         return [self._att_idx]
 
-    def get_split_value(self):
+    @property
+    def split_value(self):
         return self._att_value
