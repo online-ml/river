@@ -14,6 +14,8 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
     ----------
     grace_period
         Number of instances a leaf should observe between split attempts.
+    max_depth
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
         | Split criterion to use.
         | 'gini' - Gini
@@ -41,7 +43,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
             If None, the random number generator is the RandomState instance
             used by `np.random`.
     **kwargs
-        Other parameters passed to river.tree.DecisionTree.
+        Other parameters passed to `river.tree.BaseDecisionTree`.
 
     Notes
     -----
@@ -52,6 +54,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
     """
     def __init__(self,
                  grace_period: int = 200,
+                 max_depth: int = None,
                  split_criterion: str = 'info_gain',
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
@@ -62,6 +65,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
                  seed=None,
                  **kwargs):
         super().__init__(grace_period=grace_period,
+                         max_depth=max_depth,
                          split_criterion=split_criterion,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,

@@ -20,6 +20,8 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
     ----------
     grace_period
         Number of instances a leaf should observe between split attempts.
+    max_depth
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
@@ -50,7 +52,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
             If None, the random number generator is the RandomState instance
             used by `np.random`.
     **kwargs
-        Other parameters passed to river.tree.DecisionTree.
+        Other parameters passed to `river.tree.BaseDecisionTree`.
 
     This is the base-estimator of the Adaptive Random Forest Regressor ensemble learner (see
     `river.ensemble.AdaptiveRandomForestRegressor`). This Hoeffding Tree Regressor includes a
@@ -60,6 +62,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
 
     def __init__(self,
                  grace_period: int = 200,
+                 max_depth: int = None,
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
@@ -70,6 +73,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
                  seed=None,
                  **kwargs):
         super().__init__(grace_period=grace_period,
+                         max_depth=max_depth,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,
                          leaf_prediction=leaf_prediction,

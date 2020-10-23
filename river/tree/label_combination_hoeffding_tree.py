@@ -21,6 +21,8 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
     ----------
     grace_period
         Number of instances a leaf should observe between split attempts.
+    max_depth
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
         | Split criterion to use.
         | 'gini' - Gini
@@ -41,7 +43,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     **kwargs
-        Other parameters passed to river.tree.DecisionTree.
+        Other parameters passed to `river.tree.BaseDecisionTree`.
 
     Examples
     --------
@@ -63,6 +65,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
     """
     def __init__(self,
                  grace_period: int = 200,
+                 max_depth: int = None,
                  split_criterion: str = 'info_gain',
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
@@ -72,6 +75,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
                  **kwargs):
 
         super().__init__(grace_period=grace_period,
+                         max_depth=max_depth,
                          split_criterion=split_criterion,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,

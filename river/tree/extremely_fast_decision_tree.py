@@ -21,6 +21,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     ----------
     grace_period
         Number of instances a leaf should observe between split attempts.
+    max_depth
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     min_samples_reevaluate
         Number of instances a node should observe before reevaluating the best split.
     split_criterion
@@ -43,7 +45,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     **kwargs
-        Other parameters passed to river.tree.DecisionTree.
+        Other parameters passed to `river.tree.BaseDecisionTree`.
 
     Notes
     -----
@@ -85,6 +87,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     """
     def __init__(self,
                  grace_period: int = 200,
+                 max_depth: int = None,
                  min_samples_reevaluate: int = 20,
                  split_criterion: str = 'info_gain',
                  split_confidence: float = 1e-7,
@@ -95,6 +98,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                  **kwargs):
 
         super().__init__(grace_period=grace_period,
+                         max_depth=max_depth,
                          split_criterion=split_criterion,
                          split_confidence=split_confidence,
                          tie_threshold=tie_threshold,
