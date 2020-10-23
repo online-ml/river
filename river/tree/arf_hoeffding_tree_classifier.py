@@ -99,9 +99,5 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
         else:
             return InactiveLearningNodeMC(initial_stats, depth)
 
-    def reset(self):
-        super().reset()
-        self._rng = check_random_state(self.seed)
-
     def new_instance(self):
         return self.__class__(self._get_params())

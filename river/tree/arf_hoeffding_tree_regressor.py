@@ -4,7 +4,6 @@ from river.tree import HoeffdingTreeRegressor
 from river.utils.skmultiflow_utils import check_random_state
 
 from river import base
-from river import linear_model
 
 from ._nodes import RandomActiveLearningNodeMean
 from ._nodes import InactiveLearningNodeMean
@@ -131,10 +130,6 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
                     new_adaptive._fmse_mean = parent._fmse_model
 
                 return new_adaptive
-
-    def reset(self):
-        super().reset()
-        self._rng = check_random_state(self.seed)
 
     def new_instance(self):
         return self.__class__(**self._get_params())

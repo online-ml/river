@@ -134,12 +134,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.adwin_confidence = adwin_confidence
         self.seed = seed
 
-    def reset(self):
-        super().reset()
-        self._n_alternate_trees = 0
-        self._n_pruned_alternate_trees = 0
-        self._n_switch_alternate_trees = 0
-
     def learn_one(self, x, y, *, sample_weight=1.):
         self._train_weight_seen_by_model += sample_weight
 
