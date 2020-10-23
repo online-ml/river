@@ -14,7 +14,7 @@ from ._nodes import FoundNode
 from ._attribute_test import InstanceConditionalTest
 
 
-class BaseDecisionTree(ABC):
+class BaseHoeffdingTree(ABC):
     """Base class for Decision Trees.
 
     It defines base operations and properties that all the decision trees must inherit or
@@ -137,7 +137,7 @@ class BaseDecisionTree(ABC):
                         }
         return measurements
 
-    def get_model_description(self):
+    def model_description(self):
         """Walk the tree and return its structure in a buffer.
 
         Returns

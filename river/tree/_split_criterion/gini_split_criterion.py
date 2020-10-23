@@ -4,7 +4,7 @@ from .base_split_criterion import SplitCriterion
 class GiniSplitCriterion(SplitCriterion):
     """Gini Impurity split criterion.
     """
-    def get_merit_of_split(self, pre_split_dist, post_split_dist):
+    def merit_of_split(self, pre_split_dist, post_split_dist):
         total_weight = 0.0
         dist_weights = [0.0]*len(post_split_dist)
         for i in range(len(post_split_dist)):
@@ -26,5 +26,5 @@ class GiniSplitCriterion(SplitCriterion):
         return gini
 
     @staticmethod
-    def get_range_of_merit(pre_split_dist):
+    def range_of_merit(pre_split_dist):
         return 1.0

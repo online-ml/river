@@ -1,5 +1,5 @@
 """
-The :mod:`skmultiflow.trees.nodes` module includes learning and split node
+The `river.tree._nodes` module includes learning and split node
 implementations for the hoeffding trees.
 """
 

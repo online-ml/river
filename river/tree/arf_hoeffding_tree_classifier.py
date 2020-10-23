@@ -43,7 +43,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
             If None, the random number generator is the RandomState instance
             used by `np.random`.
     **kwargs
-        Other parameters passed to `river.tree.BaseDecisionTree`.
+        Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     Notes
     -----

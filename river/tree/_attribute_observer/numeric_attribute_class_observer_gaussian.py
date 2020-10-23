@@ -44,12 +44,12 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
         else:
             return 0.0
 
-    def get_best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         best_suggestion = None
-        suggested_split_values = self.get_split_point_suggestions()
+        suggested_split_values = self.split_point_suggestions()
         for split_value in suggested_split_values:
-            post_split_dist = self.get_class_dists_from_binary_split(split_value)
-            merit = criterion.get_merit_of_split(pre_split_dist, post_split_dist)
+            post_split_dist = self.class_dists_from_binary_split(split_value)
+            merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
                 num_att_binary_test = NumericAttributeBinaryTest(att_idx, split_value, True)
                 best_suggestion = AttributeSplitSuggestion(num_att_binary_test,
@@ -57,7 +57,7 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
                                                            merit)
         return best_suggestion
 
-    def get_split_point_suggestions(self):
+    def split_point_suggestions(self):
         suggested_split_values = SortedList()
         min_value = math.inf
         max_value = -math.inf
@@ -75,7 +75,7 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
                     suggested_split_values.add(split_value)
         return suggested_split_values
 
-    def get_class_dists_from_binary_split(self, split_value):
+    def class_dists_from_binary_split(self, split_value):
         lhs_dist = {}
         rhs_dist = {}
         for k, estimator in self._att_dist_per_class.items():

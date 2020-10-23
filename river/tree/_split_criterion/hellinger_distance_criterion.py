@@ -12,9 +12,9 @@ class HellingerDistanceCriterion(SplitCriterion):
 
     References
     ----------
-    .. [1] Cieslak, David A., T. Ryan Hoens, Nitesh V. Chawla, and W. Philip Kegelmeyer.
-       "Hellinger distance decision trees are robust and skew-insensitive."
-       Data Mining and Knowledge Discovery 24, no. 1 (2012): 136-158.
+    [^1]: Cieslak, David A., T. Ryan Hoens, Nitesh V. Chawla, and W. Philip Kegelmeyer.
+    "Hellinger distance decision trees are robust and skew-insensitive." Data Mining
+    and Knowledge Discovery 24, no. 1 (2012): 136-158.
     """
 
     def __init__(self, min_branch_frac_option=0.01):
@@ -23,7 +23,7 @@ class HellingerDistanceCriterion(SplitCriterion):
         self.lowest_entropy = None
         self.best_idx = 0
 
-    def get_merit_of_split(self, pre_split_dist, post_split_dist):
+    def merit_of_split(self, pre_split_dist, post_split_dist):
         if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_frac_option) < 2:
             return -np.inf
         return self.compute_hellinger(post_split_dist)
@@ -48,7 +48,7 @@ class HellingerDistanceCriterion(SplitCriterion):
         return np.sqrt(hellinger)
 
     @staticmethod
-    def get_range_of_merit(pre_split_dist):
+    def range_of_merit(pre_split_dist):
         num_classes = len(pre_split_dist)
         num_classes = num_classes if num_classes > 2 else 2
         return np.log2(num_classes)

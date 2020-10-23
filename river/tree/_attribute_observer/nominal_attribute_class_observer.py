@@ -43,15 +43,15 @@ class NominalAttributeClassObserver(AttributeObserver):
             return (value + 1.0) / (sum(obs.values()) + len(obs))
         return 0.0
 
-    def get_best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         best_suggestion = None
         att_values = sorted(set(
             [att_val for att_val_per_class in self._att_val_dist_per_class.values()
              for att_val in att_val_per_class]
         ))
         if not binary_only:
-            post_split_dist = self.get_class_dist_from_multiway_split()
-            merit = criterion.get_merit_of_split(pre_split_dist, post_split_dist)
+            post_split_dist = self.class_dist_from_multiway_split()
+            merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             branch_mapping = {attr_val: branch_id for branch_id, attr_val in
                               enumerate(att_values)}
             best_suggestion = AttributeSplitSuggestion(
@@ -59,8 +59,8 @@ class NominalAttributeClassObserver(AttributeObserver):
                 post_split_dist, merit
             )
         for att_val in att_values:
-            post_split_dist = self.get_class_dist_from_binary_split(att_val)
-            merit = criterion.get_merit_of_split(pre_split_dist, post_split_dist)
+            post_split_dist = self.class_dist_from_binary_split(att_val)
+            merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
                 best_suggestion = AttributeSplitSuggestion(
                     NominalAttributeBinaryTest(att_idx, att_val),
@@ -68,7 +68,7 @@ class NominalAttributeClassObserver(AttributeObserver):
                 )
         return best_suggestion
 
-    def get_class_dist_from_multiway_split(self):
+    def class_dist_from_multiway_split(self):
         resulting_dist = {}
         for i, att_val_dist in self._att_val_dist_per_class.items():
             for j, value in att_val_dist.items():
@@ -84,7 +84,7 @@ class NominalAttributeClassObserver(AttributeObserver):
         ]
         return distributions
 
-    def get_class_dist_from_binary_split(self, val_idx):
+    def class_dist_from_binary_split(self, val_idx):
         equal_dist = {}
         not_equal_dist = {}
         for i, att_val_dist in self._att_val_dist_per_class.items():

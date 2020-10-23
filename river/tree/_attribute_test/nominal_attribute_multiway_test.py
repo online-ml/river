@@ -1,20 +1,19 @@
-# from skmultiflow.rules.base_predicate import Predicate
 from .instance_conditional_test import InstanceConditionalTest
 
 
 class NominalAttributeMultiwayTest(InstanceConditionalTest):
-    """Implement multi-way split tests for categorical features.
+    """Multi-way split tests for categorical features.
 
-        The resulting test considers one branch for each possible feature
-        value.
+    The resulting test considers one branch for each possible feature
+    value.
 
-        Parameters
-        ----------
-        att_idx
-            The id of the attribute.
-        branch_mapping
-            A dictionary that maps the feature values to their respective
-            branch ids.
+    Parameters
+    ----------
+    att_idx
+        The id of the attribute.
+    branch_mapping
+        A dictionary that maps the feature values to their respective
+        branch ids.
     """
     def __init__(self, att_idx, branch_mapping):
         super().__init__()
@@ -36,12 +35,7 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
     def describe_condition_for_branch(self, branch):
         return f"{self._att_idx} = {self._reverse_branch_mapping[branch]}"
 
-    # def branch_rule(self, branch):
-    #     return Predicate(
-    #         self._att_idx, '==', self._reverse_branch_mapping[branch]
-    #     )
-
-    def get_atts_test_depends_on(self):
+    def attrs_test_depends_on(self):
         return [self._att_idx]
 
     def add_new_branch(self, att_val):

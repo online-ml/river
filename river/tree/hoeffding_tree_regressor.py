@@ -4,7 +4,7 @@ from copy import deepcopy
 from river import base
 from river import linear_model
 
-from ._base_tree import BaseDecisionTree
+from ._base_tree import BaseHoeffdingTree
 from ._split_criterion import VarianceReductionSplitCriterion
 from ._nodes import ActiveLeaf
 from ._nodes import SplitNode
@@ -17,7 +17,7 @@ from ._nodes import ActiveLearningNodeAdaptive
 from ._nodes import InactiveLearningNodeAdaptive
 
 
-class HoeffdingTreeRegressor(BaseDecisionTree, base.Regressor):
+class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     """Hoeffding Tree regressor.
 
     Parameters
@@ -49,7 +49,7 @@ class HoeffdingTreeRegressor(BaseDecisionTree, base.Regressor):
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     **kwargs
-        Other parameters passed to `river.tree.BaseDecisionTree`.
+        Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     Notes
     -----
@@ -111,7 +111,7 @@ class HoeffdingTreeRegressor(BaseDecisionTree, base.Regressor):
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
 
-    @BaseDecisionTree.leaf_prediction.setter
+    @BaseHoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
             print('Invalid leaf_prediction option "{}", will use default "{}"'.
@@ -120,7 +120,7 @@ class HoeffdingTreeRegressor(BaseDecisionTree, base.Regressor):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @BaseDecisionTree.split_criterion.setter
+    @BaseHoeffdingTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion != 'vr':   # variance reduction
             print("Invalid split_criterion option {}', will use default '{}'".
@@ -221,7 +221,7 @@ class HoeffdingTreeRegressor(BaseDecisionTree, base.Regressor):
             current = leaf_node
             leaf_node = self._new_learning_node(parent=current)
             branch_id = current.split_test.add_new_branch(
-                x[current.split_test.get_atts_test_depends_on()[0]]
+                x[current.split_test.attrs_test_depends_on()[0]]
             )
             current.set_child(branch_id, leaf_node)
             self._n_active_leaves += 1
@@ -289,14 +289,14 @@ class HoeffdingTreeRegressor(BaseDecisionTree, base.Regressor):
 
         """
         split_criterion = self._new_split_criterion()
-        best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
+        best_split_suggestions = node.best_split_suggestions(split_criterion, self)
         best_split_suggestions.sort(key=attrgetter('merit'))
         should_split = False
         if len(best_split_suggestions) < 2:
             should_split = len(best_split_suggestions) > 0
         else:
             hoeffding_bound = self._hoeffding_bound(
-                split_criterion.get_range_of_merit(node.stats), self.split_confidence,
+                split_criterion.range_of_merit(node.stats), self.split_confidence,
                 node.total_weight)
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
@@ -312,7 +312,7 @@ class HoeffdingTreeRegressor(BaseDecisionTree, base.Regressor):
                 for i in range(len(best_split_suggestions)):
                     if best_split_suggestions[i].split_test is not None:
                         split_atts = best_split_suggestions[i].split_test.\
-                            get_atts_test_depends_on()
+                            attrs_test_depends_on()
                         if len(split_atts) == 1:
                             if (best_split_suggestions[i].merit / best_suggestion.merit
                                     < best_ratio - 2 * hoeffding_bound):

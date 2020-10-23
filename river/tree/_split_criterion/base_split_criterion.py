@@ -15,7 +15,7 @@ class SplitCriterion(metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def get_merit_of_split(self, pre_split_dist, post_split_dist):
+    def merit_of_split(self, pre_split_dist, post_split_dist):
         """Compute the merit of splitting for a given distribution before the split and after it.
 
         Parameters
@@ -32,7 +32,7 @@ class SplitCriterion(metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def get_range_of_merit(pre_split_dist):
+    def range_of_merit(pre_split_dist):
         """Compute the range of splitting merit.
 
         Parameters

@@ -10,7 +10,7 @@ from .htc_nodes import InactiveLearningNodeMC
 
 
 class EFDTActiveLeaf(ActiveLeafClass):
-    def get_null_split(self, criterion):
+    def null_split(self, criterion):
         """Compute the null split (don't split).
 
         Parameters
@@ -24,7 +24,7 @@ class EFDTActiveLeaf(ActiveLeafClass):
         """
         pre_split_dist = self.stats
         null_split = AttributeSplitSuggestion(
-            None, [{}], criterion.get_merit_of_split(pre_split_dist, [pre_split_dist])
+            None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
         )
         # Force null slot merit to be 0 instead of -infinity
         if math.isinf(null_split.merit):
@@ -32,7 +32,7 @@ class EFDTActiveLeaf(ActiveLeafClass):
 
         return null_split
 
-    def get_best_split_suggestions(self, criterion, tree):
+    def best_split_suggestions(self, criterion, tree):
         """Find possible split candidates without taking into account the
         null split.
 
@@ -51,7 +51,7 @@ class EFDTActiveLeaf(ActiveLeafClass):
         pre_split_dist = self.stats
 
         for idx, obs in self.attribute_observers.items():
-            best_suggestion = obs.get_best_evaluated_split_suggestion(
+            best_suggestion = obs.best_evaluated_split_suggestion(
                 criterion, pre_split_dist, idx, tree.binary_split
             )
             if best_suggestion is not None:
@@ -130,7 +130,7 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
         # TODO verify the possibility of using dictionaries to go from O(m) to O(1)
         x_current = None
         for att_split in split_suggestions:
-            selected_id = att_split.split_test.get_atts_test_depends_on()[0]
+            selected_id = att_split.split_test.attrs_test_depends_on()[0]
             if selected_id == id_att:
                 x_current = att_split
                 break

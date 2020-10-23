@@ -17,7 +17,7 @@ class VarianceReductionSplitCriterion(SplitCriterion):
         super().__init__()
         self.min_samples_split = min_samples_split
 
-    def get_merit_of_split(self, pre_split_dist, post_split_dist):
+    def merit_of_split(self, pre_split_dist, post_split_dist):
         vr = 0.
         n = pre_split_dist.mean.n
 
@@ -39,7 +39,7 @@ class VarianceReductionSplitCriterion(SplitCriterion):
         return dist.get()
 
     @staticmethod
-    def get_range_of_merit(pre_split_dist):
+    def range_of_merit(pre_split_dist):
         # The VR values are unbounded, but as we compare the ratio between the attributes' VRs
         # the actual range is between 0 (the second best candidate has a merit of zero) and 1
         # (both compared split candidates have the same merit).

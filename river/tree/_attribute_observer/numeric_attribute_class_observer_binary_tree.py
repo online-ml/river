@@ -63,7 +63,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         return 0.0
 
-    def get_best_evaluated_split_suggestion(self, criterion, pre_split_dist,
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist,
                                             att_idx, binary_only):
 
         return self.search_for_best_split_option(
@@ -188,7 +188,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
                 )
 
         post_split_dists = [left_dist, right_dist]
-        merit = criterion.get_merit_of_split(pre_split_dist, post_split_dists)
+        merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
         if current_best_option is None or merit > current_best_option.merit:
             num_att_binary_test = \

@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+import typing
 
 
 class InstanceConditionalTest(metaclass=ABCMeta):
@@ -11,7 +12,7 @@ class InstanceConditionalTest(metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def branch_for_instance(self, x: dict):
+    def branch_for_instance(self, x: dict) -> int:
         """Return the number of the branch for an instance, -1 if unknown.
 
         Parameters
@@ -21,24 +22,22 @@ class InstanceConditionalTest(metaclass=ABCMeta):
 
         Returns
         -------
-        int
-            The index of the branch for the instance, -1 if unknown.
+        The index of the branch for the instance, -1 if unknown.
 
         """
 
     @staticmethod
     @abstractmethod
-    def max_branches():
+    def max_branches() -> int:
         """Get the max number branches, -1 if unknown.
 
         Returns
         -------
         The max number of branches, -1 if unknown.
-
         """
 
     @abstractmethod
-    def describe_condition_for_branch(self, branch: int):
+    def describe_condition_for_branch(self, branch: int) -> str:
         """Describe the condition of a branch. It is used to describe the branch.
 
         Parameters
@@ -48,18 +47,15 @@ class InstanceConditionalTest(metaclass=ABCMeta):
 
         Returns
         -------
-        string
-            The description of the condition for the branch
+        The description of the condition for the branch
 
         """
 
     @abstractmethod
-    def get_atts_test_depends_on(self):
+    def attrs_test_depends_on(self) -> typing.List:
         """Return an array with the attributes that the test depends on.
 
         Returns
         -------
-        array_like
-            The attributes that the test depends on.
-
+        The attributes that the test depends on.
         """

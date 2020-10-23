@@ -45,4 +45,6 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
 
 
 def reg_stat_factory():
+    """Default `river.utils.VectorDict`'s `default_factory` function used
+    in multi-target regression tasks."""
     return Var()

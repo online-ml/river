@@ -104,7 +104,7 @@ class AdaLearningNodeClassifier(ActiveLearningNodeNBA, AdaNode):
         old_error = self.error_estimation
 
         # Update ADWIN
-        self.error_change, _ = self._adwin.update(0.0 if is_correct else 1.0)
+        self.error_change, _ = self._adwin.update(int(not is_correct))
 
         # Error is decreasing
         if self.error_change and old_error > self.error_estimation:
@@ -226,7 +226,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
         old_error = self.error_estimation
 
         # Update ADWIN
-        self._error_change, _ = self._adwin.update(0.0 if is_correct else 1.0)
+        self._error_change, _ = self._adwin.update(int(not is_correct))
 
         # Classification error is decreasing: skip drift adaptation
         if self._error_change and old_error > self.error_estimation:
@@ -284,7 +284,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             # value
             leaf_node = tree._new_learning_node(parent=self)
             branch_id = self.split_test.add_new_branch(
-                x[self.split_test.get_atts_test_depends_on()[0]])
+                x[self.split_test.attrs_test_depends_on()[0]])
             self.set_child(branch_id, leaf_node)
             tree._n_active_leaves += 1
             leaf_node.learn_one(x, y, sample_weight, tree, parent, parent_branch)

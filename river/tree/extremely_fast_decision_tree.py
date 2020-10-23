@@ -45,7 +45,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     **kwargs
-        Other parameters passed to `river.tree.BaseDecisionTree`.
+        Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     Notes
     -----
@@ -302,7 +302,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             else:
                 split_criterion = InfoGainSplitCriterion()
 
-            best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
+            best_split_suggestions = node.best_split_suggestions(split_criterion, self)
             if len(best_split_suggestions) > 0:
                 # Sort the attribute accordingly to their split merit for each attribute
                 # (except the null one)
@@ -310,18 +310,18 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                 # x_best is the attribute with the highest merit
                 x_best = best_split_suggestions[-1]
-                id_best = x_best.split_test.get_atts_test_depends_on()[0]
+                id_best = x_best.split_test.attrs_test_depends_on()[0]
 
                 # x_current is the current attribute used in this SplitNode
-                id_current = node.split_test.get_atts_test_depends_on()[0]
+                id_current = node.split_test.attrs_test_depends_on()[0]
                 x_current = node.find_attribute(id_current, best_split_suggestions)
 
                 # Get x_null
-                x_null = node.get_null_split(split_criterion)
+                x_null = node.null_split(split_criterion)
 
                 #  Compute Hoeffding bound
                 hoeffding_bound = self._hoeffding_bound(
-                    split_criterion.get_range_of_merit(node.stats), self.split_confidence,
+                    split_criterion.range_of_merit(node.stats), self.split_confidence,
                     node.total_weight)
 
                 if x_null.merit - x_best.merit > hoeffding_bound:
@@ -415,7 +415,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             else:
                 split_criterion = InfoGainSplitCriterion()
 
-            best_split_suggestions = node.get_best_split_suggestions(split_criterion, self)
+            best_split_suggestions = node.best_split_suggestions(split_criterion, self)
 
             if len(best_split_suggestions) > 0:
                 # x_best is the attribute with the highest merit
@@ -423,10 +423,10 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 x_best = best_split_suggestions[-1]
 
                 # Get x_null
-                x_null = node.get_null_split(split_criterion)
+                x_null = node.null_split(split_criterion)
 
                 hoeffding_bound = self._hoeffding_bound(
-                    split_criterion.get_range_of_merit(node.stats), self.split_confidence,
+                    split_criterion.range_of_merit(node.stats), self.split_confidence,
                     node.total_weight)
 
                 if (x_best.merit - x_null.merit > hoeffding_bound or hoeffding_bound

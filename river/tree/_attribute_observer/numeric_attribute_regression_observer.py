@@ -19,8 +19,8 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
     References
     ----------
-    [^1]: Osojnik, Aljaž. 2017. Structured output prediction on Data Streams
-    (Doctoral Dissertation). Retrieved from: http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf
+    [^1]: [Osojnik, Aljaž. 2017. Structured output prediction on Data Streams
+    (Doctoral Dissertation)](http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf)
     """
 
     class Node:
@@ -93,7 +93,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         raise NotImplementedError
 
-    def get_best_evaluated_split_suggestion(self, criterion, pre_split_dist,
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist,
                                             att_idx, binary_only=True):
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
@@ -129,7 +129,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         post_split_dists = [left_dist, right_dist]
 
-        merit = self._criterion.get_merit_of_split(self._pre_split_dist, post_split_dists)
+        merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
         if merit > candidate.merit:
             num_att_binary_test = NumericAttributeBinaryTest(self._att_idx, node.att_val, True)
             candidate = AttributeSplitSuggestion(num_att_binary_test, post_split_dists, merit)
@@ -164,8 +164,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         split relative to the best one is small. Hence, this candidate can be safely removed.
 
         To avoid excessive and costly manipulations of the E-BST to update the stored statistics,
-        only the nodes whose children are all bad split points are pruned, as defined in
-        FIMT-DD [^1].
+        only the nodes whose children are all bad split points are pruned, as defined in [^1].
 
         Parameters
         ----------
@@ -238,7 +237,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             right_dist = self._pre_split_dist - left_dist
 
             post_split_dists = [left_dist, right_dist]
-            merit = self._criterion.get_merit_of_split(self._pre_split_dist, post_split_dists)
+            merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
             if (merit / self._last_check_vr) < (self._last_check_ratio - 2 * self._last_check_e):
                 # Remove children nodes
                 current_node._left = None
