@@ -69,10 +69,6 @@ class DecisionTree(ABC):
         self.remove_poor_atts = remove_poor_atts
         self.merit_preprune = merit_preprune
 
-        self.reset()
-
-    def reset(self):
-        """ Reset the Hoeffding Tree to default values."""
         self._tree_root = None
         self._n_decision_nodes = 0
         self._n_active_leaves = 0
@@ -82,8 +78,6 @@ class DecisionTree(ABC):
         self._size_estimate_overhead_fraction = 1.0
         self._growth_allowed = True
         self._train_weight_seen_by_model = 0.0
-
-        return self
 
     @staticmethod
     def _hoeffding_bound(range_val, confidence, n):

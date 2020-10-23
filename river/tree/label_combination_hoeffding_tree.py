@@ -85,15 +85,6 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
         self._r_label_map = {}
         self._labels = set()
 
-    def reset(self):
-        super().reset()
-
-        self._next_label_code = 0
-        self._label_map = {}
-        self._r_label_map = {}
-
-        return self
-
     def learn_one(self, x, y, *, sample_weight=1.):
         """ Update the Multi-label Hoeffding Tree Classifier.
 
