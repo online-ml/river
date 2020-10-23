@@ -203,12 +203,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             if not isinstance(parent, AdaSplitNodeRegressor):
                 leaf_model = deepcopy(parent._leaf_model)
             else:  # Corner case where an alternate tree is created
-                # TODO: change to appropriate 'clone' method
-                leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
+                leaf_model = deepcopy(self.leaf_model)
         else:
             depth = 0
-            # TODO: change to appropriate 'clone' method
-            leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
+            leaf_model = deepcopy(self.leaf_model)
 
         if is_active:
             new_ada_leaf = AdaActiveLearningNodeRegressor(

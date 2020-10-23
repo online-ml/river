@@ -1,3 +1,4 @@
+import inspect
 from river.stats import Var
 from river.tree._attribute_observer import NominalAttributeRegressionObserver
 from river.tree._attribute_observer import NumericAttributeRegressionObserver
@@ -88,13 +89,15 @@ class LearningNodeModel(LearningNodeMean):
     def __init__(self, initial_stats, depth, leaf_model):
         super().__init__(initial_stats, depth)
         self._leaf_model = leaf_model
+        sign = inspect.signature(leaf_model.learn_one).parameters
+        self._model_supports_weights = 'sample_weight' in sign or 'w' in sign
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-        try:
+        if self._model_supports_weights:
             self._leaf_model.learn_one(x, y, sample_weight)
-        except TypeError:  # Learning model does not support weights
+        else:
             for _ in range(int(sample_weight)):
                 self._leaf_model.learn_one(x, y)
 
@@ -131,10 +134,8 @@ class ActiveLearningNodeMean(LearningNodeMean, ActiveLeafRegressor):
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the target values (key '1'), and the sum of the
-        squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     """
@@ -149,10 +150,8 @@ class InactiveLearningNodeMean(LearningNodeMean, InactiveLeaf):
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the target values (key '1'), and the sum of the
-        squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     """
@@ -167,14 +166,12 @@ class ActiveLearningNodeModel(LearningNodeModel, ActiveLeafRegressor):
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     leaf_model
-        A river.base.Regressor instance used to learn from instances and provide
+        A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
     def __init__(self, initial_stats, depth, leaf_model):
@@ -188,14 +185,12 @@ class InactiveLearningNodeModel(LearningNodeModel, InactiveLeaf):
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     leaf_model
-        A river.base.Regressor instance used to learn from instances and provide
+        A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
     def __init__(self, initial_stats, depth, leaf_model):
@@ -210,14 +205,12 @@ class ActiveLearningNodeAdaptive(LearningNodeAdaptive, ActiveLeafRegressor):
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     leaf_model
-        A river.base.Regressor instance used to learn from instances and provide
+        A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
     def __init__(self, initial_stats, depth, leaf_model):
@@ -232,14 +225,12 @@ class InactiveLearningNodeAdaptive(LearningNodeAdaptive, InactiveLeaf):
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
     depth
         The depth of the node.
     leaf_model
-        A river.base.Regressor instance used to learn from instances and provide
+        A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
     def __init__(self, initial_stats, depth, leaf_model):

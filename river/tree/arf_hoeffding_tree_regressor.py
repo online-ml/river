@@ -98,8 +98,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
 
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
             if parent is None:
-                # TODO: change to appropriate 'clone' method
-                leaf_model = self.leaf_model.__class__(**self.leaf_model._get_params())
+                leaf_model = deepcopy(self.leaf_model)
             else:
                 leaf_model = deepcopy(parent._leaf_model)
 

@@ -1,3 +1,4 @@
+import inspect
 from copy import deepcopy
 from collections import defaultdict
 
@@ -22,7 +23,7 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
     def predict_one(self, x, *, tree=None):
         return {
             t: self.stats[t].mean.get() if t in self.stats else 0.
-            for t in tree._targets
+            for t in tree.targets
         }
 
     @property
@@ -34,6 +35,11 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
     def __init__(self, initial_stats, depth, leaf_models):
         super().__init__(initial_stats, depth)
         self._leaf_models = leaf_models
+        self._model_supports_weights = {}
+        if self._leaf_models:
+            for t in self._leaf_models:
+                sign = inspect.signature(self._leaf_models[t].learn_one).parameters
+                self._model_supports_weights[t] = 'sample_weight' in sign or 'w' in sign
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
@@ -44,9 +50,7 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
             except KeyError:
                 if isinstance(tree.leaf_model, dict):
                     if target_id in tree.leaf_model:
-                        # TODO: change to appropriate 'clone' method
-                        self._leaf_models[target_id] = tree.leaf_model[target_id].__class__(
-                            **tree.leaf_model[target_id]._get_params())
+                        self._leaf_models[target_id] = deepcopy(tree.leaf_model[target_id])
                     else:
                         # Pick the first available model in case not all the targets' models
                         # are defined
@@ -55,22 +59,22 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
                         )
                     model = self._leaf_models[target_id]
                 else:
-                    # TODO: change to appropriate 'clone' method
-                    self._leaf_models[target_id] = tree.leaf_model.__class__(
-                        **tree.leaf_model._get_params())
+                    self._leaf_models[target_id] = deepcopy(tree.leaf_model)
                     model = self._leaf_models[target_id]
+                sign = inspect.signature(model.learn_one).parameters
+                self._model_supports_weights[target_id] = 'sample_weight' in sign or 'w' in sign
 
             # Now the proper training
-            try:
+            if self._model_supports_weights[target_id]:
                 model.learn_one(x, y_, sample_weight)
-            except TypeError:  # Learning model does not support weights
+            else:
                 for _ in range(int(sample_weight)):
                     model.learn_one(x, y_)
 
     def predict_one(self, x, *, tree=None):
         return {
             t: self._leaf_models[t].predict_one(x) if t in self._leaf_models else 0.
-            for t in tree._targets
+            for t in tree.targets
         }
 
 
@@ -82,11 +86,11 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         pred_mean = {
-            t: self.stats[t] if t in self.stats else 0. for t in tree._targets
+            t: self.stats[t] if t in self.stats else 0. for t in tree.targets
         }
         pred_model = super().predict_one(x, tree=tree)
 
-        for t in tree._targets:  # Update the faded errors
+        for t in tree.targets:  # Update the faded errors
             self._fmse_mean[t] = tree.model_selector_decay * self._fmse_mean[t] \
                 + (y[t] - pred_mean[t]) ** 2
             self._fmse_model[t] = tree.model_selector_decay * self._fmse_model[t] \
@@ -96,7 +100,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
 
     def predict_one(self, x, *, tree=None):
         pred = {}
-        for t in tree._targets:
+        for t in tree.targets:
             if self._fmse_mean[t] < self._fmse_model[t]:  # Act as a regression tree
                 pred[t] = self.stats[t].mean.get() if t in self.stats else 0.
             else:  # Act as a model tree
@@ -114,10 +118,8 @@ class ActiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, ActiveLeafR
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the target values (key '1'), and the sum of the
-        squared target values (key '2').
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     """
@@ -132,10 +134,8 @@ class InactiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, InactiveL
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient to perform
-        online variance calculation. They refer to the number of observations
-        (key '0'), the sum of the target values (key '1'), and the sum of the
-        squared target values (key '2').
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     """
@@ -150,10 +150,8 @@ class ActiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, ActiveLea
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     leaf_models
@@ -170,10 +168,8 @@ class InactiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, Inactiv
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     leaf_models
@@ -191,10 +187,8 @@ class ActiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, Act
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     leaf_models
@@ -212,10 +206,8 @@ class InactiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, I
     Parameters
     ----------
     initial_stats
-        In regression tasks this dictionary carries the sufficient statistics
-        to perform online variance calculation. They refer to the number of
-        observations (key '0'), the sum of the target values (key '1'), and
-        the sum of the squared target values (key '2').
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     leaf_models
