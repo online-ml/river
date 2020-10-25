@@ -1,5 +1,4 @@
 import math
-from sortedcontainers.sortedlist import SortedList
 
 from river.proba import Gaussian
 from river.tree._attribute_test import NumericAttributeBinaryTest
@@ -58,7 +57,7 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
         return best_suggestion
 
     def split_point_suggestions(self):
-        suggested_split_values = SortedList()
+        suggested_split_values = []
         min_value = math.inf
         max_value = -math.inf
         for k, estimator in self._att_dist_per_class.items():
@@ -72,7 +71,7 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
             for i in range(self.n_bins):
                 split_value = min_value + (bin_size * (i + 1))
                 if min_value < split_value < max_value:
-                    suggested_split_values.add(split_value)
+                    suggested_split_values.append(split_value)
         return suggested_split_values
 
     def class_dists_from_binary_split(self, split_value):
