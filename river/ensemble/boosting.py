@@ -52,10 +52,10 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
 
     >>> model = ensemble.AdaBoostClassifier(
     ...     model=(
-    ...         tree.DecisionTreeClassifier(
-    ...             criterion='gini',
-    ...             confidence=1e-5,
-    ...             patience=2000
+    ...         tree.HoeffdingTreeClassifier(
+    ...             split_criterion='gini',
+    ...             split_confidence=1e-5,
+    ...             grace_period=2000
     ...         )
     ...     ),
     ...     n_models=5,
@@ -63,10 +63,10 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     ... )
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.741097
+    LogLoss: 0.559289
 
     >>> print(model)
-    AdaBoostClassifier(DecisionTreeClassifier)
+    AdaBoostClassifier(HoeffdingTreeClassifier)
 
     References
     ----------
