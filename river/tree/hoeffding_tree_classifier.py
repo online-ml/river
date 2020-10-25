@@ -44,7 +44,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
-    **kwargs
+    kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     Notes
