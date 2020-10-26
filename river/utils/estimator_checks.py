@@ -5,6 +5,8 @@ import math
 import pickle
 import random
 
+import numpy as np
+
 
 __all__ = ['check_estimator']
 
@@ -43,7 +45,9 @@ def yield_datasets(model):
 
     # Classification
     elif utils.inspect.isclassifier(model):
+
         yield datasets.Phishing()
+        yield ((x, np.bool_(y)) for x, y in datasets.Phishing())
 
         # Multi-class classification
         if model._multiclass:
