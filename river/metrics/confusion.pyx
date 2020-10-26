@@ -254,6 +254,9 @@ cdef class MultiLabelConfusionMatrix:
         cdef double val = 0.
         self.sample_correction = dict()
 
+        if not y_pred:
+            # Corner case where the predictions are empty, e.g. if the model is empty.
+            return
         # Increase sample count, negative sample_weight indicates that we are removing samples
         self.n_samples += 1
 
