@@ -65,6 +65,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
        bootstrap sampling.
+    kwargs
+        Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     Notes
     -----
