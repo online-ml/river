@@ -9,11 +9,9 @@ from ._split_criterion import InfoGainSplitCriterion
 from ._split_criterion import HellingerDistanceCriterion
 from ._nodes import SplitNode
 from ._nodes import LearningNode
-from ._nodes import ActiveLeaf
-from ._nodes import ActiveLearningNodeMC
-from ._nodes import ActiveLearningNodeNB
-from ._nodes import ActiveLearningNodeNBA
-from ._nodes import InactiveLearningNodeMC
+from ._nodes import LearningNodeMC
+from ._nodes import LearningNodeNB
+from ._nodes import LearningNodeNBA
 
 
 class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
@@ -113,7 +111,6 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                  **kwargs):
 
         super().__init__(max_depth=max_depth, **kwargs)
-
         self.grace_period = grace_period
         self.split_criterion = split_criterion
         self.split_confidence = split_confidence
@@ -143,97 +140,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         else:
             self._leaf_prediction = leaf_prediction
 
-    def learn_one(self, x, y, *, sample_weight=1.):
-        """Train the model on instance x and corresponding target y.
-
-        Parameters
-        ----------
-        x
-            Instance attributes.
-        y
-            Class label for sample x.
-        sample_weight
-            Sample weight.
-
-        Notes
-        -----
-        Training tasks:
-
-        * If the tree is empty, create a leaf node as the root.
-        * If the tree is already initialized, find the corresponding leaf for
-          the instance and update the leaf node statistics.
-        * If growth is allowed and the number of instances that the leaf has
-          observed between split attempts exceed the grace period then attempt
-          to split.
-        """
-
-        # Updates the set of observed classes
-        self.classes.add(y)
-
-        self._train_weight_seen_by_model += sample_weight
-
-        if self._tree_root is None:
-            self._tree_root = self._new_learning_node()
-            self._n_active_leaves = 1
-
-        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
-        leaf_node = found_node.node
-        if leaf_node is None:
-            leaf_node = self._new_learning_node(parent=found_node.parent)
-            found_node.parent.set_child(found_node.parent_branch, leaf_node)
-            self._n_active_leaves += 1
-
-        if isinstance(leaf_node, LearningNode):
-            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-            if self._growth_allowed and isinstance(leaf_node, ActiveLeaf):
-                if leaf_node.depth >= self.max_depth:  # Max depth reached
-                    self._deactivate_leaf(leaf_node, found_node.parent, found_node.parent_branch)
-                else:
-                    weight_seen = leaf_node.total_weight
-                    weight_diff = weight_seen - leaf_node.last_split_attempt_at
-                    if weight_diff >= self.grace_period:
-                        self._attempt_to_split(leaf_node, found_node.parent,
-                                               found_node.parent_branch)
-                        leaf_node.last_split_attempt_at = weight_seen
-        # Split node encountered a previously unseen categorical value (in a multi-way test),
-        # so there is no branch to sort the instance to
-        elif isinstance(leaf_node, SplitNode) and leaf_node.split_test.max_branches() == -1:
-            # Creates a new branch to the new categorical value
-            current = leaf_node
-            leaf_node = self._new_learning_node(parent=current)
-            branch_id = current.split_test.add_new_branch(
-                x[current.split_test.attrs_test_depends_on()[0]])
-            current.set_child(branch_id, leaf_node)
-            self._n_active_leaves += 1
-            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-
-        if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
-            self._estimate_model_size()
-
-        return self
-
-    def predict_proba_one(self, x):
-        """Predict probabilities of all label of the x instance.
-
-        Parameters
-        ----------
-        x
-            Instance for which we want to predict the label.
-        """
-
-        proba = {c: 0. for c in self.classes}
-        if self._tree_root is not None:
-            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
-            leaf = found_node.node
-            if leaf is None:
-                leaf = found_node.parent
-            pred = leaf.predict_one(x, tree=self) if not isinstance(leaf, SplitNode) \
-                else leaf.stats
-            proba.update(pred)
-            proba = softmax(proba)
-        return proba
-
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
         if parent is None:
@@ -241,17 +148,14 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         else:
             depth = parent.depth + 1
 
-        if is_active:
-            if self._leaf_prediction == self._MAJORITY_CLASS:
-                return ActiveLearningNodeMC(initial_stats, depth)
-            elif self._leaf_prediction == self._NAIVE_BAYES:
-                return ActiveLearningNodeNB(initial_stats, depth)
-            else:  # NAIVE BAYES ADAPTIVE (default)
-                return ActiveLearningNodeNBA(initial_stats, depth)
-        else:
-            return InactiveLearningNodeMC(initial_stats, depth)
+        if self._leaf_prediction == self._MAJORITY_CLASS:
+            return LearningNodeMC(initial_stats, depth)
+        elif self._leaf_prediction == self._NAIVE_BAYES:
+            return LearningNodeNB(initial_stats, depth)
+        else:  # NAIVE BAYES ADAPTIVE (default)
+            return LearningNodeNBA(initial_stats, depth)
 
-    def _attempt_to_split(self, node: ActiveLeaf, parent: SplitNode, parent_idx: int):
+    def _attempt_to_split(self, node: LearningNode, parent: SplitNode, parent_idx: int):
         """Attempt to split a node.
 
         If the samples seen so far are not from the same class then:
@@ -313,7 +217,9 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 split_decision = best_split_suggestions[-1]
                 if split_decision.split_test is None:
                     # Preprune - null wins
-                    self._deactivate_leaf(node, parent, parent_idx)
+                    node.deactivate()
+                    self._n_inactive_leaves += 1
+                    self._n_active_leaves -= 1
                 else:
                     new_split = self._new_split_node(split_decision.split_test, node.stats,
                                                      node.depth)
@@ -332,6 +238,98 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
 
                 # Manage memory
                 self._enforce_size_limit()
+
+    def learn_one(self, x, y, *, sample_weight=1.):
+        """Train the model on instance x and corresponding target y.
+
+        Parameters
+        ----------
+        x
+            Instance attributes.
+        y
+            Class label for sample x.
+        sample_weight
+            Sample weight.
+
+        Notes
+        -----
+        Training tasks:
+
+        * If the tree is empty, create a leaf node as the root.
+        * If the tree is already initialized, find the corresponding leaf for
+          the instance and update the leaf node statistics.
+        * If growth is allowed and the number of instances that the leaf has
+          observed between split attempts exceed the grace period then attempt
+          to split.
+        """
+
+        # Updates the set of observed classes
+        self.classes.add(y)
+
+        self._train_weight_seen_by_model += sample_weight
+
+        if self._tree_root is None:
+            self._tree_root = self._new_learning_node()
+            self._n_active_leaves = 1
+
+        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+        leaf_node = found_node.node
+        if leaf_node is None:
+            leaf_node = self._new_learning_node(parent=found_node.parent)
+            found_node.parent.set_child(found_node.parent_branch, leaf_node)
+            self._n_active_leaves += 1
+
+        if isinstance(leaf_node, LearningNode):
+            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            if self._growth_allowed and leaf_node.is_active():
+                if leaf_node.depth >= self.max_depth:  # Max depth reached
+                    leaf_node.deactivate()
+                    self._n_active_leaves -= 1
+                    self._n_inactive_leaves += 1
+                else:
+                    weight_seen = leaf_node.total_weight
+                    weight_diff = weight_seen - leaf_node.last_split_attempt_at
+                    if weight_diff >= self.grace_period:
+                        self._attempt_to_split(leaf_node, found_node.parent,
+                                               found_node.parent_branch)
+                        leaf_node.last_split_attempt_at = weight_seen
+        # Split node encountered a previously unseen categorical value (in a multi-way test),
+        # so there is no branch to sort the instance to
+        elif isinstance(leaf_node, SplitNode) and leaf_node.split_test.max_branches() == -1:
+            # Creates a new branch to the new categorical value
+            current = leaf_node
+            leaf_node = self._new_learning_node(parent=current)
+            branch_id = current.split_test.add_new_branch(
+                x[current.split_test.attrs_test_depends_on()[0]])
+            current.set_child(branch_id, leaf_node)
+            self._n_active_leaves += 1
+            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+
+        if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
+            self._estimate_model_size()
+
+        return self
+
+    def predict_proba_one(self, x):
+        """Predict probabilities of all label of the x instance.
+
+        Parameters
+        ----------
+        x
+            Instance for which we want to predict the label.
+        """
+
+        proba = {c: 0. for c in self.classes}
+        if self._tree_root is not None:
+            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+            leaf = found_node.node
+            if leaf is None:
+                leaf = found_node.parent
+            pred = leaf.predict_one(x, tree=self) if not isinstance(leaf, SplitNode) \
+                else leaf.stats
+            proba.update(pred)
+            proba = softmax(proba)
+        return proba
 
     @property
     def _multiclass(self):

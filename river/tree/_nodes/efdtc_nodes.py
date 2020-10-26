@@ -1,15 +1,17 @@
-import math
 from collections import Counter
+import math
+import numbers
 
 from river.tree._attribute_test import AttributeSplitSuggestion
+from river.tree._attribute_observer import NominalAttributeClassObserver
+from river.tree._attribute_observer import NumericAttributeClassObserverGaussian
 
 from .base import SplitNode
-from .htc_nodes import ActiveLeafClass
 from .htc_nodes import LearningNodeMC, LearningNodeNB, LearningNodeNBA
-from .htc_nodes import InactiveLearningNodeMC
 
 
-class EFDTActiveLeaf(ActiveLeafClass):
+class EFDTLearningNodeMC(LearningNodeMC):
+    """Learning node for the Hoeffding Anytime Tree that always use the majority class."""
     def null_split(self, criterion):
         """Compute the null split (don't split).
 
@@ -71,8 +73,138 @@ class EFDTActiveLeaf(ActiveLeafClass):
         return Counter(leaf_nodes=1, decision_nodes=0)
 
 
-class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
-    """Node that splits the data in a EFDT.
+class EFDTLearningNodeNB(LearningNodeNB):
+    """Learning node  for the Hoeffding Anytime Tree that uses Naive Bayes
+    models."""
+
+    def null_split(self, criterion):
+        """Compute the null split (don't split).
+
+        Parameters
+        ----------
+        criterion
+            The splitting criterion to be used.
+
+        Returns
+        -------
+            The null split candidate.
+        """
+        pre_split_dist = self.stats
+        null_split = AttributeSplitSuggestion(
+            None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
+        )
+        # Force null slot merit to be 0 instead of -infinity
+        if math.isinf(null_split.merit):
+            null_split.merit = 0.0
+
+        return null_split
+
+    def best_split_suggestions(self, criterion, tree):
+        """Find possible split candidates without taking into account the
+        null split.
+
+        Parameters
+        ----------
+        criterion
+            The splitting criterion to be used.
+        tree
+            The EFDT which the node belongs to.
+
+        Returns
+        -------
+            The list of split candidates.
+        """
+        best_suggestions = []
+        pre_split_dist = self.stats
+
+        for idx, obs in self.attribute_observers.items():
+            best_suggestion = obs.best_evaluated_split_suggestion(
+                criterion, pre_split_dist, idx, tree.binary_split
+            )
+            if best_suggestion is not None:
+                best_suggestions.append(best_suggestion)
+
+        return best_suggestions
+
+    @staticmethod
+    def count_nodes():
+        """Calculate the number of split node and leaf starting from this node
+        as a root.
+
+        Returns
+        -------
+            A Counter with the number of `leaf_nodes` and `decision_nodes`.
+        """
+        return Counter(leaf_nodes=1, decision_nodes=0)
+
+
+class EFDTLearningNodeNBA(LearningNodeNBA):
+    """Learning node for the Hoeffding Anytime Tree that uses Adaptive Naive
+    Bayes models."""
+
+    def null_split(self, criterion):
+        """Compute the null split (don't split).
+
+        Parameters
+        ----------
+        criterion
+            The splitting criterion to be used.
+
+        Returns
+        -------
+            The null split candidate.
+        """
+        pre_split_dist = self.stats
+        null_split = AttributeSplitSuggestion(
+            None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
+        )
+        # Force null slot merit to be 0 instead of -infinity
+        if math.isinf(null_split.merit):
+            null_split.merit = 0.0
+
+        return null_split
+
+    def best_split_suggestions(self, criterion, tree):
+        """Find possible split candidates without taking into account the
+        null split.
+
+        Parameters
+        ----------
+        criterion
+            The splitting criterion to be used.
+        tree
+            The EFDT which the node belongs to.
+
+        Returns
+        -------
+            The list of split candidates.
+        """
+        best_suggestions = []
+        pre_split_dist = self.stats
+
+        for idx, obs in self.attribute_observers.items():
+            best_suggestion = obs.best_evaluated_split_suggestion(
+                criterion, pre_split_dist, idx, tree.binary_split
+            )
+            if best_suggestion is not None:
+                best_suggestions.append(best_suggestion)
+
+        return best_suggestions
+
+    @staticmethod
+    def count_nodes():
+        """Calculate the number of split node and leaf starting from this node
+        as a root.
+
+        Returns
+        -------
+            A Counter with the number of `leaf_nodes` and `decision_nodes`.
+        """
+        return Counter(leaf_nodes=1, decision_nodes=0)
+
+
+class EFDTSplitNode(SplitNode):
+    """Node that splits the data in a EFDT and acts like a learning node (leaf).
 
     Parameters
     ----------
@@ -87,14 +219,43 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
     """
     def __init__(self, split_test, stats, depth, attribute_observers):
         super().__init__(split_test, stats, depth)  # Calls split node constructor
-        self.attribute_observers = attribute_observers
+        self._attribute_observers = attribute_observers
         self._last_split_reevaluation_at = 0
+
+    @staticmethod
+    def new_nominal_attribute_observer(**kwargs):
+        return NominalAttributeClassObserver(**kwargs)
+
+    @staticmethod
+    def new_numeric_attribute_observer(**kwargs):
+        return NumericAttributeClassObserverGaussian(**kwargs)
+
+    @property
+    def attribute_observers(self):
+        return self._attribute_observers
+
+    @attribute_observers.setter
+    def attribute_observers(self, attr_obs):
+        self._attribute_observers = attr_obs
 
     def update_stats(self, y, sample_weight):
         try:
             self.stats[y] += sample_weight
         except KeyError:
             self.stats[y] = sample_weight
+
+    def update_attribute_observers(self, x, y, sample_weight, tree, **kwargs):
+        for attr_idx, attr_val in x.items():
+            try:
+                obs = self.attribute_observers[attr_idx]
+            except KeyError:
+                if ((tree.nominal_attributes is not None and attr_idx in tree.nominal_attributes)
+                        or not isinstance(attr_val, numbers.Number)):
+                    obs = self.new_nominal_attribute_observer(**kwargs)
+                else:
+                    obs = self.new_numeric_attribute_observer(**kwargs)
+                self.attribute_observers[attr_idx] = obs
+            obs.update(attr_val, y, sample_weight)
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         """Learn from the provided sample.
@@ -198,95 +359,51 @@ class EFDTSplitNode(SplitNode, EFDTActiveLeaf):
                     break
         return count < 2
 
+    def null_split(self, criterion):
+        """Compute the null split (don't split).
 
-class EFDTActiveLearningNodeMC(LearningNodeMC, EFDTActiveLeaf):
-    """Active Learning node for the Hoeffding Anytime Tree.
-
-    Parameters
-    ----------
-    initial_stats
-        Initial class observations.
-    depth
-        The depth of the node.
-    """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-
-class EFDTInactiveLearningNodeMC(InactiveLearningNodeMC):
-    """Inactive Learning node for the Hoeffding Anytime Tree.
-
-    Parameters
-    ----------
-    initial_stats
-        Initial class observations.
-    depth
-        The depth of the node.
-    """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-    @staticmethod
-    def count_nodes():
-        """Calculate the number of split node and leaf starting from this node
-        as a root.
+        Parameters
+        ----------
+        criterion
+            The splitting criterion to be used.
 
         Returns
         -------
-            A Counter with the number of `leaf_nodes` and `decision_nodes`.
+            The null split candidate.
         """
-        return Counter(leaf_nodes=1, decision_nodes=0)
+        pre_split_dist = self.stats
+        null_split = AttributeSplitSuggestion(
+            None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
+        )
+        # Force null slot merit to be 0 instead of -infinity
+        if math.isinf(null_split.merit):
+            null_split.merit = 0.0
 
+        return null_split
 
-class EFDTActiveLearningNodeNB(LearningNodeNB, EFDTActiveLeaf):
-    """Learning node  for the Hoeffding Anytime Tree that uses Naive Bayes
-    models.
-
-    Parameters
-    ----------
-    initial_stats
-        Initial class observations
-    """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-    def disable_attribute(self, att_index):
-        """Disable an attribute observer.
-
-        Disabled in Nodes using Naive Bayes, since poor attributes are also used in
-        Naive Bayes calculation.
+    def best_split_suggestions(self, criterion, tree):
+        """Find possible split candidates without taking into account the
+        null split.
 
         Parameters
         ----------
-        att_index
-            Attribute index.
+        criterion
+            The splitting criterion to be used.
+        tree
+            The EFDT which the node belongs to.
+
+        Returns
+        -------
+            The list of split candidates.
         """
-        pass
+        best_suggestions = []
+        pre_split_dist = self.stats
 
+        for idx, obs in self.attribute_observers.items():
+            best_suggestion = obs.best_evaluated_split_suggestion(
+                criterion, pre_split_dist, idx, tree.binary_split
+            )
+            if best_suggestion is not None:
+                best_suggestions.append(best_suggestion)
 
-class EFDTActiveLearningNodeNBA(LearningNodeNBA, EFDTActiveLeaf):
-    """Learning node for the Hoeffding Anytime Tree that uses Adaptive Naive
-    Bayes models.
-
-    Parameters
-    ----------
-    initial_stats
-        Initial class observations.
-    depth
-        The depth of the node.
-    """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-    def disable_attribute(self, att_index):
-        """Disable an attribute observer.
-
-        Disabled in Nodes using Naive Bayes, since poor attributes are used in
-        Naive Bayes calculation.
-
-        Parameters
-        ----------
-        att_index
-            Attribute index.
-        """
-        pass
+        return best_suggestions

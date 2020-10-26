@@ -5,13 +5,11 @@ from river.tree import HoeffdingTreeClassifier
 from ._split_criterion import GiniSplitCriterion
 from ._split_criterion import InfoGainSplitCriterion
 from ._split_criterion import HellingerDistanceCriterion
-from ._nodes import ActiveLeaf
 from ._nodes import LearningNode
 from ._nodes import EFDTSplitNode
-from ._nodes import EFDTActiveLearningNodeMC
-from ._nodes import EFDTInactiveLearningNodeMC
-from ._nodes import EFDTActiveLearningNodeNB
-from ._nodes import EFDTActiveLearningNodeNBA
+from ._nodes import EFDTLearningNodeMC
+from ._nodes import EFDTLearningNodeNB
+from ._nodes import EFDTLearningNodeNBA
 
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
@@ -109,7 +107,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         self.min_samples_reevaluate = min_samples_reevaluate
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
         if parent is None:
@@ -117,17 +115,14 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         else:
             depth = parent.depth + 1
 
-        if is_active:
-            if self._leaf_prediction == self._MAJORITY_CLASS:
-                return EFDTActiveLearningNodeMC(initial_stats, depth)
-            elif self._leaf_prediction == self._NAIVE_BAYES:
-                return EFDTActiveLearningNodeNB(initial_stats, depth)
-            else:  # NAIVE BAYES ADAPTIVE (default)
-                return EFDTActiveLearningNodeNBA(initial_stats, depth)
-        else:
-            return EFDTInactiveLearningNodeMC(initial_stats, depth)
+        if self._leaf_prediction == self._MAJORITY_CLASS:
+            return EFDTLearningNodeMC(initial_stats, depth)
+        elif self._leaf_prediction == self._NAIVE_BAYES:
+            return EFDTLearningNodeNB(initial_stats, depth)
+        else:  # NAIVE BAYES ADAPTIVE (default)
+            return EFDTLearningNodeNBA(initial_stats, depth)
 
-    def _new_split_node(self, split_test, target_stats, depth, attribute_observers):
+    def _new_split_node(self, split_test, target_stats=None, depth=0, attribute_observers=None):
         """Create a new split node."""
         return EFDTSplitNode(split_test, target_stats, depth, attribute_observers)
 
@@ -215,9 +210,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     child = node.get_child(child_index)
                     if child is not None:
                         self._process_nodes(x, y, sample_weight, child, node, child_index)
-        elif self._growth_allowed and isinstance(node, ActiveLeaf):
+        elif self._growth_allowed and node.is_active():
             if node.depth >= self.max_depth:  # Max depth reached
-                self._deactivate_leaf(node, parent, branch_index)
+                node.deactivate()
+                self._n_inactive_leaves += 1
+                self._n_active_leaves -= 1
             else:
                 weight_seen = node.total_weight
                 weight_diff = weight_seen - node.last_split_attempt_at
@@ -254,8 +251,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             self._n_active_leaves += 1
 
         if isinstance(leaf_node, LearningNode):
-            learning_node = leaf_node
-            learning_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -319,7 +315,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 # Get x_null
                 x_null = node.null_split(split_criterion)
 
-                #  Compute Hoeffding bound
+                # Compute Hoeffding bound
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(node.stats), self.split_confidence,
                     node.total_weight)

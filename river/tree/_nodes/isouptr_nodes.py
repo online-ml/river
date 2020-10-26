@@ -5,12 +5,21 @@ from collections import defaultdict
 from river.utils import VectorDict
 from river.tree._tree_utils import reg_stat_factory
 
-from .base import InactiveLeaf
-from .htr_nodes import ActiveLeafRegressor
 from .htr_nodes import LearningNodeMean
 
 
 class LearningNodeMeanMultiTarget(LearningNodeMean):
+    """Learning Node for Multi-target Regression tasks that always uses the mean value
+    of the targets as responses.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
+    depth
+        The depth of the node.
+    """
     def __init__(self, initial_stats, depth):
         initial_stats = initial_stats if initial_stats else VectorDict(
             default_factory=reg_stat_factory)
@@ -32,6 +41,19 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
 
 
 class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
+    """Learning Node for Multi-target Regression tasks that always uses learning models
+    for each target.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
+    depth
+        The depth of the node.
+    leaf_models
+        A dictionary composed of target identifiers and their respective predictive models.
+    """
     def __init__(self, initial_stats, depth, leaf_models):
         super().__init__(initial_stats, depth)
         self._leaf_models = leaf_models
@@ -79,6 +101,20 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
 
 
 class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
+    """Learning Node for multi-target regression tasks that dynamically selects between
+    predictors and might behave as a regression tree node or a model tree node, depending
+    on which predictor is the best one.
+
+    Parameters
+    ----------
+    initial_stats
+        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
+        `river.stats.Var` to estimate the targets' statistics.
+    depth
+        The depth of the node.
+    leaf_models
+        A dictionary composed of target identifiers and their respective predictive models.
+    """
     def __init__(self, initial_stats, depth, leaf_models):
         super().__init__(initial_stats, depth, leaf_models)
         self._fmse_mean = defaultdict(lambda: 0.)
@@ -109,110 +145,4 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
                 except KeyError:
                     pred[t] = 0.
         return pred
-
-
-class ActiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, ActiveLeafRegressor):
-    """Learning Node for Multi-target Regression tasks that always uses the mean value
-    of the targets as responses.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
-    depth
-        The depth of the node.
-    """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-
-class InactiveLearningNodeMeanMultiTarget(LearningNodeMeanMultiTarget, InactiveLeaf):
-    """Inactive Learning Node for Multi-target Regression tasks that always uses
-    the mean value of the targets as responses.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
-    depth
-        The depth of the node.
-    """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-
-class ActiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, ActiveLeafRegressor):
-    """Learning Node for Multi-target Regression tasks that always uses learning models
-    for each target.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
-    depth
-        The depth of the node.
-    leaf_models
-        A dictionary composed of target identifiers and their respective predictive models.
-    """
-    def __init__(self, initial_stats, depth, leaf_models):
-        super().__init__(initial_stats, depth, leaf_models)
-
-
-class InactiveLearningNodeModelMultiTarget(LearningNodeModelMultiTarget, InactiveLeaf):
-    """Inactive Learning Node for Multi-target Regression tasks that always uses
-    learning models for each target.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
-    depth
-        The depth of the node.
-    leaf_models
-        A dictionary composed of target identifiers and their respective predictive models.
-    """
-    def __init__(self, initial_stats, depth, leaf_models):
-        super().__init__(initial_stats, depth, leaf_models)
-
-
-class ActiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, ActiveLeafRegressor):
-    """Learning Node for multi-target regression tasks that dynamically selects between
-    predictors and might behave as a regression tree node or a model tree node, depending
-    on which predictor is the best one.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
-    depth
-        The depth of the node.
-    leaf_models
-        A dictionary composed of target identifiers and their respective predictive models.
-    """
-    def __init__(self, initial_stats, depth, leaf_models):
-        super().__init__(initial_stats, depth, leaf_models)
-
-
-class InactiveLearningNodeAdaptiveMultiTarget(LearningNodeAdaptiveMultiTarget, InactiveLeaf):
-    """Inactive Learning Node for multi-target regression tasks that dynamically selects
-    between predictors and might behave as a regression tree node or a model tree node,
-    depending on which predictor is the best one.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
-    depth
-        The depth of the node.
-    leaf_models
-        A dictionary composed of target identifiers and their respective predictive models.
-    """
-    def __init__(self, initial_stats, depth, leaf_models):
-        super().__init__(initial_stats, depth, leaf_models)
 
