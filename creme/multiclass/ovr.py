@@ -83,7 +83,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
 
         # Train each label's associated classifier
         for label, model in self.classifiers.items():
-            model.fit_one(x, y == label)
+            model.fit_one(x, int(y == label))
 
         return self
 
