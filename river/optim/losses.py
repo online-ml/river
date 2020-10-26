@@ -391,6 +391,8 @@ class Log(BinaryLoss):
         if y_true == 0:
             y_true = -1
             weight = self.weight_neg
+        else:
+            y_true = int(y_true)
 
         z = y_pred * y_true
         if z > 18.:
@@ -411,6 +413,8 @@ class Log(BinaryLoss):
         if y_true == 0:
             y_true = -1
             weight = self.weight_neg
+        else:
+            y_true = int(y_true)
 
         z = y_pred * y_true
         if z > 18.:
