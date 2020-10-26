@@ -61,7 +61,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
     >>> metric = metrics.Hamming()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Hamming: 0.154104
+    Hamming: 0.151591
     """
     def __init__(self,
                  grace_period: int = 200,
