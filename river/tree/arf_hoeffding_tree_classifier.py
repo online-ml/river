@@ -1,10 +1,9 @@
 from river.tree import HoeffdingTreeClassifier
 from river.utils.skmultiflow_utils import check_random_state
 
-from ._nodes import RandomActiveLearningNodeMC
-from ._nodes import RandomActiveLearningNodeNB
-from ._nodes import RandomActiveLearningNodeNBA
-from ._nodes import InactiveLearningNodeMC
+from ._nodes import RandomLearningNodeMC
+from ._nodes import RandomLearningNodeNB
+from ._nodes import RandomLearningNodeNBA
 
 
 class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
@@ -78,7 +77,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
         self.seed = seed
         self._rng = check_random_state(self.seed)
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
 
@@ -90,18 +89,12 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
         # Generate a random seed for the new learning node
         seed = self._rng.randint(0, 4294967295, dtype='u8')
 
-        if is_active:
-            if self._leaf_prediction == self._MAJORITY_CLASS:
-                return RandomActiveLearningNodeMC(
-                    initial_stats, depth, self.max_features, seed)
-            elif self._leaf_prediction == self._NAIVE_BAYES:
-                return RandomActiveLearningNodeNB(
-                    initial_stats, depth, self.max_features, seed)
-            else:  # NAIVE BAYES ADAPTIVE (default)
-                return RandomActiveLearningNodeNBA(
-                    initial_stats, depth, self.max_features, seed)
-        else:
-            return InactiveLearningNodeMC(initial_stats, depth)
+        if self._leaf_prediction == self._MAJORITY_CLASS:
+            return RandomLearningNodeMC(initial_stats, depth, self.max_features, seed)
+        elif self._leaf_prediction == self._NAIVE_BAYES:
+            return RandomLearningNodeNB(initial_stats, depth, self.max_features, seed)
+        else:  # NAIVE BAYES ADAPTIVE (default)
+            return RandomLearningNodeNBA(initial_stats, depth, self.max_features, seed)
 
     def new_instance(self):
-        return self.__class__(self._get_params())
+        return self.__class__(**self._get_params())

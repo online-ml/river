@@ -8,7 +8,6 @@ from river import base
 from river import stats
 from river.tree._attribute_test import InstanceConditionalTest
 from river.tree._attribute_test import AttributeSplitSuggestion
-from river.tree._attribute_observer import AttributeObserverNull
 
 
 NodeType = TypeVar('NodeType', bound='Node')
@@ -28,8 +27,7 @@ class FoundNode:
 
     """
 
-    def __init__(self, node: Type[NodeType] = None, parent: Type[NodeType] = None,
-                 parent_branch: int = None):
+    def __init__(self, node=None, parent=None, parent_branch: int = None):
         self.node = node
         self.parent = parent
         self.parent_branch = parent_branch
@@ -40,7 +38,7 @@ class Node(metaclass=ABCMeta):
 
     Parameters
     ----------
-    stats
+    initial_stats
         Statistics kept by the node.
     depth
         The depth of the node.
@@ -49,18 +47,6 @@ class Node(metaclass=ABCMeta):
     def __init__(self, initial_stats: Union[dict, stats.Var] = None, depth: int = 0):
         self._stats = initial_stats if initial_stats is not None else {}
         self._depth = depth
-
-    @staticmethod
-    def is_leaf() -> bool:
-        """Determine if the node is a leaf.
-
-        Returns
-        -------
-        bool
-            True if leaf, False otherwise
-
-        """
-        return True
 
     def filter_instance_to_leaf(self, x: dict, parent: Type[NodeType],
                                 parent_branch: int) -> FoundNode:
@@ -88,9 +74,9 @@ class Node(metaclass=ABCMeta):
         return self._stats
 
     @stats.setter
-    def stats(self, stats):
+    def stats(self, new_stats):
         """Set the statistics at the node. """
-        self._stats = stats if stats is not None else {}
+        self._stats = new_stats if new_stats is not None else {}
 
     @property
     def depth(self) -> int:
@@ -111,6 +97,7 @@ class Node(metaclass=ABCMeta):
         """
         return 0
 
+    # TODO: fix that
     def describe_subtree(self, tree, buffer: str, indent: int = 0):
         """Walk the tree and write its structure to a buffer string.
 
@@ -156,10 +143,10 @@ class SplitNode(Node):
         The depth of the node.
     """
 
-    def __init__(self, split_test: InstanceConditionalTest, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, split_test: InstanceConditionalTest, initial_stats, depth):
+        super().__init__(initial_stats, depth)
         self._split_test = split_test
-        # Dict of tuples (branch, child)
+        # Dict -> branch_id: child_node
         self._children = {}
 
     @property
@@ -305,7 +292,10 @@ class LearningNode(Node, metaclass=ABCMeta):
     """
     def __init__(self, initial_stats, depth):
         super().__init__(initial_stats, depth)
-        self.last_split_attempt_at = self.total_weight
+
+        self._attribute_observers = {}
+        self._disabled_attrs = set()
+        self._last_split_attempt_at = self.total_weight
 
     @staticmethod
     def is_leaf() -> bool:
@@ -317,30 +307,15 @@ class LearningNode(Node, metaclass=ABCMeta):
         """
         return True
 
-    @abstractmethod
-    def update_stats(self, y, sample_weight):
-        pass
+    def is_active(self):
+        return self._attribute_observers is not None
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
-        """Update the node with the provided sample.
+    def activate(self):
+        if not self.is_active():
+            self._attribute_observers = {}
 
-        Parameters
-        ----------
-        x
-            Sample attributes for updating the node.
-        y
-            Target value.
-        sample_weight
-            Sample weight.
-        tree
-            Tree to update.
-        """
-        self.update_stats(y, sample_weight)
-        self.update_attribute_observers(x, y, sample_weight, tree)
-
-    @abstractmethod
-    def predict_one(self, x, *, tree=None) -> dict:
-        pass
+    def deactivate(self):
+        self._attribute_observers = None
 
     @property
     @abstractmethod
@@ -361,11 +336,7 @@ class LearningNode(Node, metaclass=ABCMeta):
         -------
         Weight seen at last split evaluation.
         """
-        try:
-            return self._last_split_attempt_at
-        except AttributeError:
-            self._last_split_attempt_at = None      # noqa
-            return self._last_split_attempt_at
+        return self._last_split_attempt_at
 
     @last_split_attempt_at.setter
     def last_split_attempt_at(self, weight):
@@ -378,24 +349,14 @@ class LearningNode(Node, metaclass=ABCMeta):
         """
         self._last_split_attempt_at = weight
 
-    def calculate_promise(self) -> int:
-        """Calculate node's promise.
+    @property
+    def attribute_observers(self):
+        return self._attribute_observers
 
-        Returns
-        -------
-        int
-            A small value indicates that the node has seen more samples of a
-            given class than the other classes.
+    @attribute_observers.setter
+    def attribute_observers(self, attr_obs):
+        self._attribute_observers = attr_obs
 
-        """
-        total_seen = sum(self._stats.values())
-        if total_seen > 0:
-            return total_seen - max(self._stats.values())
-        else:
-            return 0
-
-
-class ActiveLeaf(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
     def new_nominal_attribute_observer(**kwargs):
@@ -406,20 +367,15 @@ class ActiveLeaf(metaclass=ABCMeta):
     def new_numeric_attribute_observer(**kwargs):
         pass
 
-    @property
-    def attribute_observers(self):
-        try:
-            return self._attribute_observers
-        except AttributeError:
-            self._attribute_observers = {}         # noqa
-            return self._attribute_observers
-
-    @attribute_observers.setter
-    def attribute_observers(self, attr_obs):
-        self._attribute_observers = attr_obs       # noqa
+    @abstractmethod
+    def update_stats(self, y, sample_weight):
+        pass
 
     def update_attribute_observers(self, x, y, sample_weight, tree, **kwargs):
         for attr_idx, attr_val in x.items():
+            if attr_idx in self._disabled_attrs:
+                continue
+
             try:
                 obs = self.attribute_observers[attr_idx]
             except KeyError:
@@ -461,29 +417,55 @@ class ActiveLeaf(metaclass=ABCMeta):
                 best_suggestions.append(best_suggestion)
         return best_suggestions
 
-    def disable_attribute(self, att_idx):
+    def disable_attribute(self, attr_idx):
         """Disable an attribute observer.
 
         Parameters
         ----------
-        att_idx
+        attr_idx
             Attribute index.
 
         """
-        if att_idx in self.attribute_observers:
-            self.attribute_observers[att_idx] = AttributeObserverNull()
+        if attr_idx in self.attribute_observers:
+            del self.attribute_observers[attr_idx]
+            self._disabled_attrs.add(attr_idx)
 
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+        """Update the node with the provided sample.
 
-class InactiveLeaf:
-    @staticmethod
-    def new_nominal_attribute_observer():
-        return None
+        Parameters
+        ----------
+        x
+            Sample attributes for updating the node.
+        y
+            Target value.
+        sample_weight
+            Sample weight.
+        tree
+            Tree to update.
 
-    @staticmethod
-    def new_numeric_attribute_observer():
-        return None
+        Notes
+        -----
+        This base implementation defines the basic functioning of a learning node.
+        All classes overriding this method should include a call to `super().learn_one`
+        to guarantee the learning process happens consistently.
+        """
+        self.update_stats(y, sample_weight)
+        if self.is_active():
+            self.update_attribute_observers(x, y, sample_weight, tree)
 
-    def update_attribute_observers(self, x, y, sample_weight, tree):
-        # An inactive learning nodes does nothing here
-        # We use it as a dummy class
+    @abstractmethod
+    def predict_one(self, x, *, tree=None) -> dict:
         pass
+
+    @abstractmethod
+    def calculate_promise(self) -> int:
+        """Calculate node's promise.
+
+        Returns
+        -------
+        int
+            A small value indicates that the node has seen more samples of a
+            given class than the other classes.
+
+        """

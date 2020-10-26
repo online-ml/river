@@ -6,12 +6,9 @@ from river import linear_model
 from river.tree import HoeffdingTreeRegressor
 
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
-from ._nodes import ActiveLearningNodeMean
-from ._nodes import ActiveLearningNodeModelMultiTarget
-from ._nodes import ActiveLearningNodeAdaptiveMultiTarget
-from ._nodes import InactiveLearningNodeMean
-from ._nodes import InactiveLearningNodeModelMultiTarget
-from ._nodes import InactiveLearningNodeAdaptiveMultiTarget
+from ._nodes import LearningNodeMeanMultiTarget
+from ._nodes import LearningNodeModelMultiTarget
+from ._nodes import LearningNodeAdaptiveMultiTarget
 
 
 class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
@@ -141,7 +138,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     def _new_split_criterion(self):
         return IntraClusterVarianceReductionSplitCriterion()
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
         the tree configuration.
         """
@@ -160,32 +157,17 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                     # Due to an emerging category in a nominal feature, a split node was reached
                     leaf_models = {}
 
-        if is_active:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return ActiveLearningNodeMean(initial_stats, depth)
-            elif self.leaf_prediction == self._MODEL:
-                return ActiveLearningNodeModelMultiTarget(initial_stats, depth, leaf_models)
-            else:  # adaptive learning node
-                new_adaptive = ActiveLearningNodeAdaptiveMultiTarget(initial_stats, depth,
-                                                                     leaf_models)
-                if parent is not None:
-                    new_adaptive._fmse_mean = parent._fmse_mean.copy()
-                    new_adaptive._fmse_model = parent._fmse_model.copy()
+        if self.leaf_prediction == self._TARGET_MEAN:
+            return LearningNodeMeanMultiTarget(initial_stats, depth)
+        elif self.leaf_prediction == self._MODEL:
+            return LearningNodeModelMultiTarget(initial_stats, depth, leaf_models)
+        else:  # adaptive learning node
+            new_adaptive = LearningNodeAdaptiveMultiTarget(initial_stats, depth, leaf_models)
+            if parent is not None:
+                new_adaptive._fmse_mean = parent._fmse_mean.copy()
+                new_adaptive._fmse_model = parent._fmse_model.copy()
 
-                return new_adaptive
-        else:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return InactiveLearningNodeMean(initial_stats, depth)
-            elif self.leaf_prediction == self._MODEL:
-                return InactiveLearningNodeModelMultiTarget(initial_stats, depth, leaf_models)
-            else:  # adaptive learning node
-                new_adaptive = InactiveLearningNodeAdaptiveMultiTarget(initial_stats, depth,
-                                                                       leaf_models)
-                if parent is not None:
-                    new_adaptive._fmse_mean = parent._fmse_mean.copy()
-                    new_adaptive._fmse_mean = parent._fmse_model.copy()
-
-                return new_adaptive
+            return new_adaptive
 
     def learn_one(self, x: dict, y: typing.Dict[typing.Union[str, int], base.typing.RegTarget], *,
                   sample_weight: float = 1.) -> 'iSOUPTreeRegressor':
