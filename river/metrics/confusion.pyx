@@ -120,7 +120,7 @@ cdef class ConfusionMatrix:
 
     @property
     def classes(self):
-        return (
+        return list(
             set(c for c, n in self.sum_row.items() if n) |
             set(c for c, n in self.sum_col.items() if n)
         )
@@ -173,7 +173,10 @@ cdef class ConfusionMatrix:
         majority_class = 0
         cdef double max_value = 0.0
         cdef double max_proba_class = 0.0
-        for class_label in sorted(self.classes):
+        classes_str = list(map(str, self.classes))
+        sorted_labels_idx = np.argsort(classes_str)
+        for idx in sorted_labels_idx:
+            class_label = self.classes[idx]
             max_proba_class = self.sum_row[class_label] / self.n_samples
             if max_proba_class > max_value:
                 max_value = max_proba_class
