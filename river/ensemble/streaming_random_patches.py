@@ -33,10 +33,10 @@ class StreamingRandomPatchesClassifier(base.WrapperMixin, base.EnsembleMixin, ba
         total number of features.<br/>
         A negative value means `M - subspace_size`.<br/>
         Only applies when using random subspaces or random patches.<br/>
-        * If `int` indicates the number of features to use.<br/>
+        * If `int` indicates the number of features to use. Valid range [2, M]. <br/>
+        * If `float` indicates the percentage of features to use, Valid range (0., 1.]. <br/>
         * 'sqrt' - `sqrt(M)+1`<br/>
-        * 'residsqrt' - Residual from `M-(sqrt(M)+1)`<br/>
-        * 'percentage' - Percentage
+        * 'rmsqrt' - Residual from `M-(sqrt(M)+1)`<br/>
     training_method
         The training method to use.<br/>
         * 'subspaces' - Random subspaces.<br/>
@@ -69,20 +69,21 @@ class StreamingRandomPatchesClassifier(base.WrapperMixin, base.EnsembleMixin, ba
     Examples
     --------
     >>> from river import synth
-    >>> from river import ensemble
+    >>> from river.ensemble import StreamingRandomPatchesClassifier as SRPClassifier
     >>> from river import evaluate
     >>> from river import metrics
 
-    >>> dataset = synth.ConceptDriftStream(seed=42, position=500, width=20).take(1000)
-    >>> model = ensemble.StreamingRandomPatchesClassifier(
+    >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
+    ...                                    width=20).take(1000)
+    >>> model = SRPClassifier(
     ...     n_models=3,
     ...     seed=42
     ... )
 
-    >>> metric = metrics.F1()
+    >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.900418
+    Accuracy: 88.09%
 
     References
     ----------
@@ -295,7 +296,7 @@ class StreamingRandomPatchesClassifier(base.WrapperMixin, base.EnsembleMixin, ba
                 rng=self._rng))
 
     def reset(self):
-        self.models = None
+        self.models = []
         self._n_samples_seen = 0
         self._rng = check_random_state(self.seed)
 
