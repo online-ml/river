@@ -1,6 +1,4 @@
 import copy
-import importlib
-import inspect
 
 import pytest
 
@@ -8,9 +6,10 @@ from river import utils
 
 from river import ensemble
 
-estimator = ensemble.StreamingRandomPatchesClassifier(
+estimator = ensemble.SRPClassifier(
     n_models=3,   # Smaller ensemble than the default to avoid bottlenecks
     seed=42)
+
 
 @pytest.mark.parametrize('estimator, check', [
     pytest.param(

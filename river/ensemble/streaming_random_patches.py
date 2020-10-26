@@ -13,7 +13,7 @@ from river.tree import HoeffdingTreeClassifier
 from river.utils.skmultiflow_utils import check_random_state
 
 
-class StreamingRandomPatchesClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
+class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     """Streaming Random Patches ensemble classifier.
 
     The Streaming Random Patches (SRP) [^1] is an ensemble method that
@@ -36,7 +36,7 @@ class StreamingRandomPatchesClassifier(base.WrapperMixin, base.EnsembleMixin, ba
         * If `int` indicates the number of features to use. Valid range [2, M]. <br/>
         * If `float` indicates the percentage of features to use, Valid range (0., 1.]. <br/>
         * 'sqrt' - `sqrt(M)+1`<br/>
-        * 'rmsqrt' - Residual from `M-(sqrt(M)+1)`<br/>
+        * 'rmsqrt' - Residual from `M-(sqrt(M)+1)`
     training_method
         The training method to use.<br/>
         * 'subspaces' - Random subspaces.<br/>
@@ -69,13 +69,13 @@ class StreamingRandomPatchesClassifier(base.WrapperMixin, base.EnsembleMixin, ba
     Examples
     --------
     >>> from river import synth
-    >>> from river.ensemble import StreamingRandomPatchesClassifier as SRPClassifier
+    >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
 
     >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
-    ...                                    width=20).take(1000)
-    >>> model = SRPClassifier(
+    ...                                    width=40).take(1000)
+    >>> model = ensemble.SRPClassifier(
     ...     n_models=3,
     ...     seed=42
     ... )
@@ -83,7 +83,7 @@ class StreamingRandomPatchesClassifier(base.WrapperMixin, base.EnsembleMixin, ba
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 88.09%
+    Accuracy: 89.09%
 
     References
     ----------
