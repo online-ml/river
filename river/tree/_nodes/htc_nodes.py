@@ -144,7 +144,7 @@ class LearningNodeNBA(LearningNodeMC):
         Class votes for the given instance.
 
         """
-        if self.is_active() and self._nb_correct_weight > self._mc_correct_weight:
+        if self.is_active() and self._nb_correct_weight >= self._mc_correct_weight:
             return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
         else:
             return self.stats
