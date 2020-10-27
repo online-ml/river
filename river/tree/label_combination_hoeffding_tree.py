@@ -1,5 +1,4 @@
-from collections import defaultdict
-
+import typing
 from river import base
 from river.tree import HoeffdingTreeClassifier
 from river.utils.math import softmax
@@ -84,10 +83,10 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
                          nominal_attributes=nominal_attributes,
                          **kwargs)
 
-        self._next_label_code = 0
-        self._label_map = {}
-        self._r_label_map = {}
-        self._labels = set()
+        self._next_label_code: int = 0
+        self._label_map: typing.Dict[typing.Tuple, int] = {}
+        self._r_label_map: typing.Dict[int, typing.Tuple] = {}
+        self._labels: typing.Set[typing.Hashable] = set()
 
     def learn_one(self, x, y, *, sample_weight=1.):
         """ Update the Multi-label Hoeffding Tree Classifier.

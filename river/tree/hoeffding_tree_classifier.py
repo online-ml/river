@@ -200,7 +200,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 if (best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
                         or hoeffding_bound < self.tie_threshold):
                     should_split = True
-                if self.remove_poor_atts:
+                if self.remove_poor_attrs:
                     poor_atts = set()
                     # Add any poor attribute to set
                     for i in range(len(best_split_suggestions)):
