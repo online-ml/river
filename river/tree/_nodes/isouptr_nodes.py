@@ -122,7 +122,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         pred_mean = {
-            t: self.stats[t] if t in self.stats else 0. for t in tree.targets
+            t: self.stats[t].mean.get() if t in self.stats else 0. for t in tree.targets
         }
         pred_model = super().predict_one(x, tree=tree)
 

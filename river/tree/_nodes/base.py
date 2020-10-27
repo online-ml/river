@@ -94,7 +94,6 @@ class Node(metaclass=ABCMeta):
         """
         return 0
 
-    # TODO: fix that
     def describe_subtree(self, tree, buffer: List[str], indent: int = 0):
         """Walk the tree and write its structure to a buffer string.
 
@@ -111,20 +110,18 @@ class Node(metaclass=ABCMeta):
 
         if isinstance(tree, base.Classifier):
             class_val = max(self.stats, key=self.stats.get)
-            buffer[0] += 'Class {} | {}\n'.format(class_val, self.stats)
+            buffer[0] += f'Class {class_val} | {self.stats}\n'
         else:
             text = '{'
-            for i, (k, v) in enumerate(self._stats.items()):
-                # Multi-target regression case
-                if hasattr(v, 'shape') and len(v.shape) > 0:
-                    text += '{}: ['.format(k)
-                    text += ', '.join(['{:.4f}'.format(e) for e in v.tolist()])
-                    text += ']'
-                else:  # Single-target regression
-                    text += '{}: {:.4f}'.format(k, v)
-                text += ', ' if i < len(self._stats) - 1 else ''
+            # Multi-target regression case
+            if isinstance(tree, base.MultiOutputMixin):
+                for i, (target_id, var) in enumerate(self.stats.items()):
+                    text += f'{target_id}: {self.stats[target_id].mean} | {self.stats[target_id]}'
+                    text += ', ' if i < len(self.stats) - 1 else ''
+            else:  # Single-target regression
+                text += f'{self.stats.mean} | {self.stats}'
             text += '}'
-            buffer[0] += 'Statistics {}\n'.format(text)  # Regression problems
+            buffer[0] += f'Output {text}\n'  # Regression problems
 
 
 class SplitNode(Node):
