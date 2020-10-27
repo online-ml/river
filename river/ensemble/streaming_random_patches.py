@@ -1,6 +1,7 @@
 import itertools
 import collections
 import copy
+import math
 import typing
 
 import numpy as np
@@ -45,17 +46,17 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     lam
         Lambda value for resampling.
     drift_detector
-        Drift detector. If `None`, disables concept drift detection and the background learner.
+        Drift detector. If `None`, disables concept drift detection and the
+        background learner.
     warning_detector
-        Warning detector.
+        Warning detector. If `None`, disables the background learner and
+        ensemble members are reset if drift is detected.
     disable_weighted_vote
         If True, disables weighted voting.
-    disable_background_learner
-        If True, disables background learner and trees are reset
-        if drift is detected.
     nominal_attributes
         List of Nominal attributes. If empty, then assumes that all
-        attributes are numerical.
+        attributes are numerical. Note: Only applies if the base model
+        allows to define the nominal attributes.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;
@@ -81,7 +82,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 88.29%
+    Accuracy: 87.99%
 
     References
     ----------
@@ -103,13 +104,12 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     def __init__(self, model=HoeffdingTreeClassifier(grace_period=50,
                                                      split_confidence=0.01),
                  n_models: int = 100,
-                 subspace_size: int = .6,
+                 subspace_size: typing.Union[int, float, str] = .6,
                  training_method: str = "patches",
                  lam: float = 6.0,
                  drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=1e-5),
                  warning_detector: base.DriftDetector = ADWIN(delta=1e-4),
                  disable_weighted_vote: bool = False,
-                 disable_background_learner: bool = False,
                  nominal_attributes=None,
                  seed=None,
                  metric: MultiClassMetric = Accuracy()):
@@ -123,11 +123,9 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         self.drift_detector = drift_detector
         self.warning_detector = warning_detector
         self.disable_weighted_vote = disable_weighted_vote
-        self.disable_background_learner = disable_background_learner
         self.metric = metric
         self.nominal_attributes = nominal_attributes if nominal_attributes else []
         self.seed = seed
-        # self._random_state is the actual object used internally
         self._rng = check_random_state(self.seed)
 
         self._n_samples_seen = 0
@@ -151,8 +149,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             if y_pred:
                 y_pred = max(y_pred, key=y_pred.get)
             else:
-                # Model is empty, default to class 0
-                y_pred = None
+                y_pred = None   # Model is empty
 
             # Update performance evaluator
             model.metric.update(y_true=y, y_pred=y_pred)
@@ -206,18 +203,18 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             if isinstance(self.subspace_size, float) and 0.0 < self.subspace_size <= 1:
                 k = self.subspace_size
                 percent = (1. + k) / 1. if k < 0 else k
-                k = int(np.round(n_features * percent))
+                k = round(n_features * percent)
                 if k < 2:
-                    k = int(np.round(n_features * percent)) + 1
+                    k = round(n_features * percent) + 1
             elif isinstance(self.subspace_size, int) and self.subspace_size > 2:
                 # k is a fixed number of features
                 k = self.subspace_size
             elif self.subspace_size == self._FEATURES_SQRT:
                 # k is sqrt(M)+1
-                k = int(np.round(np.sqrt(n_features)) + 1)
+                k = round(math.sqrt(n_features)) + 1
             elif self.subspace_size == self._FEATURES_SQRT_INV:
                 # k is M-(sqrt(M)+1)
-                k = n_features - int(np.round(np.sqrt(n_features)) + 1)
+                k = n_features - round(math.sqrt(n_features)) + 1
             else:
                 raise ValueError(
                     f"Invalid subspace_size: {self.subspace_size}.\n"
@@ -228,8 +225,8 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                 # k is negative, calculate M - k
                 k = n_features + k
 
-            # Generate subspaces. The subspaces is a 2D matrix of shape
-            # (n_estimators, k) where each row contains the k feature indices
+            # Generate subspaces. The subspaces is a 2D array of shape
+            # (n_estimators, k) where each row contains the k-feature indices
             # to be used by each estimator.
             if k != 0 and k < n_features:
                 # For low dimensionality it is better to avoid more than
@@ -237,7 +234,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                 # possible combinations of subsets of features and select
                 # without replacement.
                 # n_features is the total number of features and k is the
-                # actual size of the subspaces.
+                # actual size of a subspace.
                 if n_features <= 20 or k < 2:
                     if k == 1 and n_features > 2:
                         k = 2
@@ -264,9 +261,6 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     def _init_ensemble(self, features: list):
         self._generate_subspaces(features=features)
 
-        # # Reset the base estimator for safety.
-        # self.model.reset()
-
         subspace_indexes = np.arange(self.n_models)  # For matching subspaces with ensemble members
         if self.training_method == self._TRAIN_RANDOM_PATCHES or \
                 self.training_method == self._TRAIN_RANDOM_SUBSPACES:
@@ -282,7 +276,6 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                 base_model=self.model,    # TODO replace with clone
                 metric=copy.deepcopy(self.metric),
                 created_on=self._n_samples_seen,
-                disable_background_learner=self.disable_background_learner,
                 base_drift_detector=self.drift_detector,
                 base_warning_detector=self.warning_detector,
                 is_background_learner=False,
@@ -305,7 +298,6 @@ class StreamingRandomPatchesBaseLearner:
                  base_model: base.Classifier,
                  metric: MultiClassMetric,
                  created_on: int,
-                 disable_background_learner: bool,
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
                  is_background_learner,
@@ -327,17 +319,21 @@ class StreamingRandomPatchesBaseLearner:
         self.base_drift_detector = base_drift_detector  # Drift detector prototype
         self.base_warning_detector = base_warning_detector  # Warning detector prototype
 
-        self.disable_background_learner = disable_background_learner
-
         if base_drift_detector is not None:
-            self.disable_drift_detector = True
+            self.disable_drift_detector = False
+            # TODO Replace with clone
             self.drift_detector = copy.deepcopy(base_drift_detector)  # Actual detector used
         else:
-            self.disable_drift_detector = False
+            self.disable_drift_detector = True
             self.drift_detector = None
 
-        # TODO Replace with clone
-        self.warning_detector = copy.deepcopy(self.base_warning_detector)   # Actual detector used
+        if base_warning_detector is not None:
+            self.disable_background_learner = False
+            # TODO Replace with clone
+            self.warning_detector = copy.deepcopy(base_warning_detector)  # Actual detector used
+        else:
+            self.disable_background_learner = True
+            self.warning_detector = None
 
         # Background learner
         self.is_background_learner = is_background_learner
@@ -424,7 +420,6 @@ class StreamingRandomPatchesBaseLearner:
             base_model=self.base_model,
             metric=copy.deepcopy(self.metric),
             created_on=n_samples_seen,
-            disable_background_learner=self.disable_background_learner,
             base_drift_detector=self.base_drift_detector,
             base_warning_detector=self.base_warning_detector,
             is_background_learner=True,
@@ -432,7 +427,8 @@ class StreamingRandomPatchesBaseLearner:
             nominal_attributes=self.nominal_attributes,
             rng=self._rng
         )
-        # TODO Hard-reset the warning method
+        # Hard-reset the warning method
+        self.warning_detector = copy.deepcopy(self.base_warning_detector)
 
     def reset(self, all_features: list, n_samples_seen: int, rng: np.random.RandomState):
         # Randomly generate a new subspace from all the original features
