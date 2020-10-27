@@ -11,7 +11,7 @@ from river.tree.arf_hoeffding_tree_classifier import ARFHoeffdingTreeClassifier
 from river.utils.skmultiflow_utils import check_random_state
 
 
-class AdaptiveRandomForestClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
+class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
     """Adaptive Random Forest classifier.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
@@ -115,7 +115,7 @@ class AdaptiveRandomForestClassifier(base.WrapperMixin, base.EnsembleMixin, base
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-
+    Accuracy: 64.86%
 
     References
     ----------
@@ -153,7 +153,6 @@ class AdaptiveRandomForestClassifier(base.WrapperMixin, base.EnsembleMixin, base
                  seed=None):
         super().__init__([None])  # List of models is properly initialized later
         self.models = []
-        self.model = None
         self.n_models = n_models
         self.max_features = max_features
         self.disable_weighted_vote = disable_weighted_vote
@@ -182,9 +181,8 @@ class AdaptiveRandomForestClassifier(base.WrapperMixin, base.EnsembleMixin, base
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
 
-    @property
-    def _wrapped_model(self):
-        return self.model
+    def _multiclass(self):
+        return True
 
     def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs):
         self._n_samples_seen += 1
@@ -239,7 +237,7 @@ class AdaptiveRandomForestClassifier(base.WrapperMixin, base.EnsembleMixin, base
         self.models = [
             BaseARFLearner(
                 index_original=i,
-                model=ARFHoeffdingTreeClassifier(
+                base_model=ARFHoeffdingTreeClassifier(
                     max_size=self.max_size,
                     memory_estimate_period=self.memory_estimate_period,
                     grace_period=self.grace_period,
@@ -256,7 +254,7 @@ class AdaptiveRandomForestClassifier(base.WrapperMixin, base.EnsembleMixin, base
                     max_features=self.max_features,
                     seed=self.seed
                 ),
-                n_samples_seen=self._n_samples_seen,
+                created_on=self._n_samples_seen,
                 base_drift_detector=self.drift_detector,
                 base_warning_detector=self.warning_detector,
                 is_background_learner=False,
@@ -296,16 +294,16 @@ class AdaptiveRandomForestClassifier(base.WrapperMixin, base.EnsembleMixin, base
             self.max_features = n
 
 
-class BaseARFLearner:
+class BaseARFLearner(base.Classifier):
     """ARF Base Learner class.
 
     Parameters
     ----------
     index_original: int
         Tree index within the ensemble.
-    model: ARFHoeffdingTreeClassifier
+    base_model: ARFHoeffdingTreeClassifier
         Tree classifier.
-    n_samples_seen: int
+    created_on: int
         Number of instances seen by the tree.
     base_drift_detector: DriftDetector
         Drift Detection method.
@@ -322,15 +320,16 @@ class BaseARFLearner:
     """
     def __init__(self,
                  index_original: int,
-                 model: ARFHoeffdingTreeClassifier,
-                 n_samples_seen: int,
+                 base_model: ARFHoeffdingTreeClassifier,
+                 created_on: int,
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
                  is_background_learner,
                  metric: MultiClassMetric):
         self.index_original = index_original
-        self.model = model
-        self.created_on = n_samples_seen
+        self.base_model = base_model
+        self.model = copy.deepcopy(base_model)
+        self.created_on = created_on
         self.is_background_learner = is_background_learner
         self.metric = metric
         # Make sure that the metric is not initialized, e.g. when creating background learners.
@@ -372,12 +371,12 @@ class BaseARFLearner:
             self.created_on = self.background_learner.created_on
             self.background_learner = None
         else:
-            self.model = self.model.new_instance()
+            self.model = copy.deepcopy(self.base_model)
             self.metric.cm.reset()
             self.created_on = n_samples_seen
             self.drift_detector = copy.deepcopy(self.base_drift_detector)
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, *, sample_weight: int,
+    def learn_one(self, x: dict, y: base.typing.ClfTarget, *, sample_weight: int,   # noqa
                   n_samples_seen: int):
 
         # TODO Confirm that natively supports sample_weight
@@ -399,8 +398,8 @@ class BaseARFLearner:
                     # Create a new background learner object
                     self.background_learner = BaseARFLearner(
                         index_original=self.index_original,
-                        model=self.model.new_instance(),
-                        n_samples_seen=n_samples_seen,
+                        base_model=copy.deepcopy(self.base_model),
+                        created_on=n_samples_seen,
                         base_drift_detector=self.base_drift_detector,
                         base_warning_detector=self.base_warning_detector,
                         is_background_learner=True,
