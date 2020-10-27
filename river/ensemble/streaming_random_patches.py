@@ -1,7 +1,7 @@
 import itertools
 import collections
 import copy
-from typing import Optional
+import typing
 
 import numpy as np
 
@@ -45,18 +45,16 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     lam
         Lambda value for resampling.
     drift_detector
-        Drift detector.
+        Drift detector. If `None`, disables concept drift detection and the background learner.
     warning_detector
         Warning detector.
     disable_weighted_vote
         If True, disables weighted voting.
-    disable_drift_detection
-        If True, disables concept drift detection and background learner.
     disable_background_learner
         If True, disables background learner and trees are reset
         if drift is detected.
     nominal_attributes
-        List of Nominal attributes. If empty, then assume that all
+        List of Nominal attributes. If empty, then assumes that all
         attributes are numerical.
     seed
         If `int`, `seed` is used to seed the random number generator;
@@ -64,7 +62,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
     metric
-        Metric to track performance of the ensemble members.
+        Metric to track members performance within the ensemble.
 
     Examples
     --------
@@ -83,7 +81,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 89.09%
+    Accuracy: 88.29%
 
     References
     ----------
@@ -108,10 +106,9 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                  subspace_size: int = .6,
                  training_method: str = "patches",
                  lam: float = 6.0,
-                 drift_detector: base.DriftDetector = ADWIN(delta=1e-5),
+                 drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=1e-5),
                  warning_detector: base.DriftDetector = ADWIN(delta=1e-4),
                  disable_weighted_vote: bool = False,
-                 disable_drift_detection: bool = False,
                  disable_background_learner: bool = False,
                  nominal_attributes=None,
                  seed=None,
@@ -126,7 +123,6 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         self.drift_detector = drift_detector
         self.warning_detector = warning_detector
         self.disable_weighted_vote = disable_weighted_vote
-        self.disable_drift_detection = disable_drift_detection
         self.disable_background_learner = disable_background_learner
         self.metric = metric
         self.nominal_attributes = nominal_attributes if nominal_attributes else []
@@ -149,9 +145,9 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         if not self.models:
             self._init_ensemble(list(x.keys()))
 
-        for i in range(self.n_models):
+        for model in self.models:
             # Get prediction for instance
-            y_pred = self.models[i].predict_proba_one(x)
+            y_pred = model.predict_proba_one(x)
             if y_pred:
                 y_pred = max(y_pred, key=y_pred.get)
             else:
@@ -159,19 +155,19 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                 y_pred = None
 
             # Update performance evaluator
-            self.models[i].metric.update(y_true=y, y_pred=y_pred)
+            model.metric.update(y_true=y, y_pred=y_pred)
 
             # Train using random subspaces without resampling,
             # i.e. all instances are used for training.
             if self.training_method == self._TRAIN_RANDOM_SUBSPACES:
-                self.models[i].learn_one(
+                model.learn_one(
                     X=x, y=y, sample_weight=1.,
                     n_samples_seen=self._n_samples_seen, rng=self._rng
                 )
             # Train using random patches or resampling,
             # thus we simulate online bagging with Poisson(lambda=...)
             else:
-                self.models[i].learn_one(
+                model.learn_one(
                     x=x, y=y, sample_weight=self._rng.poisson(lam=self.lam),
                     n_samples_seen=self._n_samples_seen, rng=self._rng
                 )
@@ -287,7 +283,6 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                 metric=copy.deepcopy(self.metric),
                 created_on=self._n_samples_seen,
                 disable_background_learner=self.disable_background_learner,
-                disable_drift_detector=self.disable_drift_detection,
                 base_drift_detector=self.drift_detector,
                 base_warning_detector=self.warning_detector,
                 is_background_learner=False,
@@ -311,7 +306,6 @@ class StreamingRandomPatchesBaseLearner:
                  metric: MultiClassMetric,
                  created_on: int,
                  disable_background_learner: bool,
-                 disable_drift_detector: bool,
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
                  is_background_learner,
@@ -329,14 +323,21 @@ class StreamingRandomPatchesBaseLearner:
         # Store current model subspace representation of the original instances
         self.features = features
 
-        # Drift detection
+        # Drift and warning detection
+        self.base_drift_detector = base_drift_detector  # Drift detector prototype
+        self.base_warning_detector = base_warning_detector  # Warning detector prototype
+
         self.disable_background_learner = disable_background_learner
-        self.disable_drift_detector = disable_drift_detector
-        self.base_drift_detector = base_drift_detector   # Drift detector prototype
-        self.base_warning_detector = base_warning_detector   # Warning detector prototype
+
+        if base_drift_detector is not None:
+            self.disable_drift_detector = True
+            self.drift_detector = copy.deepcopy(base_drift_detector)  # Actual detector used
+        else:
+            self.disable_drift_detector = False
+            self.drift_detector = None
+
         # TODO Replace with clone
-        self.drift_detector = copy.deepcopy(self.base_drift_detector)   # Actual detector used
-        self.warning_detector = copy.deepcopy(self.base_drift_detector)   # Actual detector used
+        self.warning_detector = copy.deepcopy(self.base_warning_detector)   # Actual detector used
 
         # Background learner
         self.is_background_learner = is_background_learner
@@ -348,7 +349,7 @@ class StreamingRandomPatchesBaseLearner:
         self.n_warnings_induced = 0
 
         # Background learner
-        self._background_learner = None   # type: Optional[StreamingRandomPatchesBaseLearner]
+        self._background_learner = None  # type: typing.Optional[StreamingRandomPatchesBaseLearner]
         self._background_learner_class = StreamingRandomPatchesBaseLearner
 
         # Nominal attributes
@@ -424,9 +425,8 @@ class StreamingRandomPatchesBaseLearner:
             metric=copy.deepcopy(self.metric),
             created_on=n_samples_seen,
             disable_background_learner=self.disable_background_learner,
-            disable_drift_detector=self.disable_drift_detector,
             base_drift_detector=self.base_drift_detector,
-            base_warning_detector=self.base_drift_detector,
+            base_warning_detector=self.base_warning_detector,
             is_background_learner=True,
             features=subspace,
             nominal_attributes=self.nominal_attributes,
