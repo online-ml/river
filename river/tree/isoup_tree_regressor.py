@@ -97,7 +97,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
-                 leaf_model: typing.Union[base.Regressor, dict] = None,
+                 leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
                  **kwargs):
@@ -169,7 +169,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
             return new_adaptive
 
-    def learn_one(self, x: dict, y: typing.Dict[typing.Union[str, int], base.typing.RegTarget], *,
+    def learn_one(self, x: dict, y: typing.Dict[typing.Hashable, base.typing.RegTarget], *,
                   sample_weight: float = 1.) -> 'iSOUPTreeRegressor':
         """Incrementally train the model with one sample.
 
@@ -198,7 +198,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
         return self
 
-    def predict_one(self, x: dict) -> typing.Union[typing.Dict[typing.Union[str, int], base.typing.RegTarget], None]:
+    def predict_one(self, x: dict) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
         """Predict the target values for a given instance.
 
         Parameters

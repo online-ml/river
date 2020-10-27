@@ -47,36 +47,36 @@ class BaseHoeffdingTree(ABC):
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management
         If True, stop growing as soon as memory limit is hit.
-    remove_poor_atts
+    remove_poor_attrs
         If True, disable poor attributes to reduce memory usage.
     merit_preprune
         If True, enable merit-based tree pre-pruning.
     """
     def __init__(self, max_depth: int = None, binary_split: bool = False, max_size: int = 100,
                  memory_estimate_period: int = 1000000, stop_mem_management: bool = False,
-                 remove_poor_atts: bool = False, merit_preprune: bool = True):
+                 remove_poor_attrs: bool = False, merit_preprune: bool = True):
         # Properties common to all the Hoeffding trees
-        self._split_criterion = None
-        self._leaf_prediction = None
+        self._split_criterion: str
+        self._leaf_prediction: str
 
-        self.max_depth = max_depth if max_depth is not None else math.inf
-        self.binary_split = binary_split
-        self._max_size = max_size
-        self._max_byte_size = self._max_size * (2 ** 20)  # convert to byte
-        self.memory_estimate_period = memory_estimate_period
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_atts = remove_poor_atts
-        self.merit_preprune = merit_preprune
+        self.max_depth: float = max_depth if max_depth is not None else math.inf
+        self.binary_split: bool = binary_split
+        self._max_size: float = max_size
+        self._max_byte_size: float = self._max_size * (2 ** 20)  # convert to byte
+        self.memory_estimate_period: int = memory_estimate_period
+        self.stop_mem_management: bool = stop_mem_management
+        self.remove_poor_attrs: bool = remove_poor_attrs
+        self.merit_preprune: bool = merit_preprune
 
-        self._tree_root = None
-        self._n_decision_nodes = 0
-        self._n_active_leaves = 0
-        self._n_inactive_leaves = 0
-        self._inactive_leaf_size_estimate = 0.0
-        self._active_leaf_size_estimate = 0.0
-        self._size_estimate_overhead_fraction = 1.0
+        self._tree_root: typing.Union[Node, None] = None
+        self._n_decision_nodes: int = 0
+        self._n_active_leaves: int = 0
+        self._n_inactive_leaves: int = 0
+        self._inactive_leaf_size_estimate: float = 0.0
+        self._active_leaf_size_estimate: float = 0.0
+        self._size_estimate_overhead_fraction: float = 1.0
         self._growth_allowed = True
-        self._train_weight_seen_by_model = 0.0
+        self._train_weight_seen_by_model: float = 0.0
 
     @staticmethod
     def _hoeffding_bound(range_val, confidence, n):
@@ -291,7 +291,7 @@ class BaseHoeffdingTree(ABC):
         -------
         List of learning nodes in the tree.
         """
-        found_list = []
+        found_list: typing.List[FoundNode] = []
         self.__find_learning_nodes(self._tree_root, None, -1, found_list)
         return found_list
 

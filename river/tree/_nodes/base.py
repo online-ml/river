@@ -2,15 +2,13 @@ from abc import ABCMeta, abstractmethod
 import textwrap
 import numbers
 
-from typing import Type, TypeVar, Union, List
+from typing import Dict, List, Type, TypeVar, Union
+
 
 from river import base
-from river import stats
+from river.stats import Var
 from river.tree._attribute_test import InstanceConditionalTest
 from river.tree._attribute_test import AttributeSplitSuggestion
-
-
-NodeType = TypeVar('NodeType', bound='Node')
 
 
 class FoundNode:
@@ -44,12 +42,11 @@ class Node(metaclass=ABCMeta):
         The depth of the node.
     """
 
-    def __init__(self, initial_stats: Union[dict, stats.Var] = None, depth: int = 0):
-        self._stats = initial_stats if initial_stats is not None else {}
+    def __init__(self, initial_stats: Union[dict, Var] = None, depth: int = 0):
+        self._stats: Union[dict, Var] = initial_stats if initial_stats is not None else {}
         self._depth = depth
 
-    def filter_instance_to_leaf(self, x: dict, parent: Type[NodeType],
-                                parent_branch: int) -> FoundNode:
+    def filter_instance_to_leaf(self, x: dict, parent: 'Node', parent_branch: int) -> FoundNode:
         """Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
@@ -74,7 +71,7 @@ class Node(metaclass=ABCMeta):
         return self._stats
 
     @stats.setter
-    def stats(self, new_stats):
+    def stats(self, new_stats: Union[dict, Var]):
         """Set the statistics at the node. """
         self._stats = new_stats if new_stats is not None else {}
 
@@ -98,7 +95,7 @@ class Node(metaclass=ABCMeta):
         return 0
 
     # TODO: fix that
-    def describe_subtree(self, tree, buffer: str, indent: int = 0):
+    def describe_subtree(self, tree, buffer: List[str], indent: int = 0):
         """Walk the tree and write its structure to a buffer string.
 
         Parameters
@@ -113,8 +110,8 @@ class Node(metaclass=ABCMeta):
         buffer[0] += textwrap.indent('Leaf = ', ' ' * indent)
 
         if isinstance(tree, base.Classifier):
-            class_val = max(self._stats, key=self._stats.get)
-            buffer[0] += 'Class {} | {}\n'.format(class_val, self._stats)
+            class_val = max(self.stats, key=self.stats.get)
+            buffer[0] += 'Class {} | {}\n'.format(class_val, self.stats)
         else:
             text = '{'
             for i, (k, v) in enumerate(self._stats.items()):
@@ -147,7 +144,7 @@ class SplitNode(Node):
         super().__init__(initial_stats, depth)
         self._split_test = split_test
         # Dict -> branch_id: child_node
-        self._children = {}
+        self._children: Dict[int, Node] = {}
 
     @property
     def n_children(self) -> int:
@@ -180,7 +177,7 @@ class SplitNode(Node):
             raise IndexError
         self._children[index] = node
 
-    def get_child(self, index: int) -> Node:
+    def get_child(self, index: int) -> Union[Node, None]:
         """Retrieve a node's child given its branch index.
 
         Parameters
@@ -261,7 +258,7 @@ class SplitNode(Node):
                     max_child_depth = depth
         return max_child_depth + 1
 
-    def describe_subtree(self, tree, buffer: str, indent: int = 0):
+    def describe_subtree(self, tree, buffer: List[str], indent: int = 0):
         """Walk the tree and write its structure to a buffer string.
 
         Parameters

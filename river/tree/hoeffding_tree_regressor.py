@@ -98,7 +98,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                  **kwargs):
         super().__init__(max_depth=max_depth, **kwargs)
 
-        self._split_criterion = 'vr'
+        self._split_criterion: str = 'vr'
         self.grace_period = grace_period
         self.split_confidence = split_confidence
         self.tie_threshold = tie_threshold
@@ -289,7 +289,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                     (second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
                         or hoeffding_bound < self.tie_threshold):
                 should_split = True
-            if self.remove_poor_atts:
+            if self.remove_poor_attrs:
                 poor_attrs = set()
                 best_ratio = second_best_suggestion.merit / best_suggestion.merit
 
