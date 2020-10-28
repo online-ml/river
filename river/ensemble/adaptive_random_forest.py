@@ -30,12 +30,12 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
     n_models
         Number of trees in the ensemble.
     max_features
-        Max number of attributes for each node split.
-        - If `int`, then consider `max_features` at each split.
+        Max number of attributes for each node split.<br/>
+        - If `int`, then consider `max_features` at each split.<br/>
         - If `float`, then `max_features` is a percentage and
-          `int(max_features * n_features)` features are considered per split.
-        - If "sqrt", then `max_features=sqrt(n_features)`.
-        - If "log2", then `max_features=log2(n_features)`.
+          `int(max_features * n_features)` features are considered per split.<br/>
+        - If "sqrt", then `max_features=sqrt(n_features)`.<br/>
+        - If "log2", then `max_features=log2(n_features)`.<br/>
         - If None, then ``max_features=n_features``.
     disable_weighted_vote
         If `True`, disables the weighted vote prediction.
@@ -47,7 +47,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
         Drift Detection method. Set to None to disable Drift detection.
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
-    max_byte_size
+    max_size
         (`ARFHoeffdingTreeClassifier` parameter)
         Maximum memory consumed by the tree.
     memory_estimate_period
@@ -113,14 +113,14 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
     >>> model = ensemble.AdaptiveRandomForestClassifier(
     ...     n_models=3,
     ...     seed=42,
-    ...     drift_detector=ADWIN(delta=0.1),
-    ...     warning_detector=ADWIN(delta=0.15)
+    ...     drift_detector=ADWIN(delta=0.15),
+    ...     warning_detector=ADWIN(delta=0.2)
     ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 64.96%
+    Accuracy: 64.06%
 
     References
     ----------
@@ -170,7 +170,6 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
         self.metric = metric
 
         self._n_samples_seen = 0
-        self._train_weight_seen_by_model = 0.0
 
         # Adaptive Random Forest Hoeffding Tree configuration
         self.max_size = max_size
@@ -235,7 +234,6 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
         """Reset ARF."""
         self.models = []
         self._n_samples_seen = 0
-        self._train_weight_seen_by_model = 0.0
         self._rng = check_random_state(self.seed)
 
     def _init_ensemble(self, features: list):
@@ -303,27 +301,31 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
 
 
 class BaseARFLearner(base.Classifier):
-    """ARF Base Learner class.
+    """Base learner class.
+
+    This wrapper class represents a tree member of the forest. It includes a
+    base tree model, the background learner, drift detectors and performance
+    tracking parameters.
+
+    The main purpose of this class is to train the foreground model.
+    Optionally, it monitors drift detection. Depending on the configuration,
+    if drift is detected then the foreground model is reset or replaced by a
+    background model.
 
     Parameters
     ----------
-    index_original: int
+    index_original
         Tree index within the ensemble.
     base_model: ARFHoeffdingTreeClassifier
         Tree classifier.
-    created_on: int
+    created_on
         Number of instances seen by the tree.
     base_drift_detector: DriftDetector
         Drift Detection method.
-    base_warning_detector: DriftDetector
+    base_warning_detector
         Warning Detection method.
-    is_background_learner: bool
+    is_background_learner
         True if the tree is a background learner.
-
-    Notes
-    -----
-    Inner class that represents a single tree member of the forest.
-    Contains analysis information, such as the numberOfDriftsDetected.
 
     """
     def __init__(self,
