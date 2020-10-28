@@ -29,15 +29,15 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mean' - Target mean
-        | 'model' - Uses the model defined in `leaf_model`
-        | 'adaptive' - Chooses between 'mean' and 'model' dynamically
+        Prediction mechanism used at leafs.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
         The regression model(s) used to provide responses if `leaf_prediction='model'`. It can
         be either a regressor (in which case it is going to be replicated to all the targets)
         or a dictionary whose keys are target identifiers, and the values are instances of
-        `river.base.Regressor.` If not provided instances of `river.linear_model.LinearRegression`
+        `river.base.Regressor.` If not provided, instances of `river.linear_model.LinearRegression`
         with the default hyperparameters are used for all the targets. If a dictionary is passed
         and not all target models are specified, copies from the first model match in the
         dictionary will be used to the remaining targets.
@@ -55,7 +55,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
     References
     ----------
-    .. [1] Aljaž Osojnik, Panče Panov, and Sašo Džeroski. "Tree-based methods for online
+    [^1]: Aljaž Osojnik, Panče Panov, and Sašo Džeroski. "Tree-based methods for online
         multi-target regression." Journal of Intelligent Information Systems 50.2 (2018): 315-339.
 
     Examples

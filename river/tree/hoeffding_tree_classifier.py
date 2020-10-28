@@ -24,19 +24,19 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
-        | 'hellinger' - Helinger Distance
+        Split criterion to use.</br>
+        - 'gini' - Gini</br>
+        - 'info_gain' - Information Gain</br>
+        - 'hellinger' - Helinger Distance</br>
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leafs.</br>
+        - 'mc' - Majority Class</br>
+        - 'nb' - Naive Bayes</br>
+        - 'nba' - Naive Bayes Adaptive</br>
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -62,11 +62,13 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
 
     Implementation based on MOA [^2].
 
-    References:
-    .. [1] G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
+    References
+    ----------
+
+    [^1]: G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
        In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
 
-    .. [2] Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
+    [^2]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
        MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
 
     Examples
@@ -251,6 +253,10 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         sample_weight
             Sample weight.
 
+        Returns
+        -------
+        self
+
         Notes
         -----
         Training tasks:
@@ -311,14 +317,6 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         return self
 
     def predict_proba_one(self, x):
-        """Predict probabilities of all label of the x instance.
-
-        Parameters
-        ----------
-        x
-            Instance for which we want to predict the label.
-        """
-
         proba = {c: 0. for c in self.classes}
         if self._tree_root is not None:
             found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)

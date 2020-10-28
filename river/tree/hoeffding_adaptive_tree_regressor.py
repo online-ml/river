@@ -28,10 +28,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mean' - Target mean
-        | 'model' - Uses the model defined in `leaf_model`
-        | 'adaptive' - Chooses between 'mean' and 'model' dynamically
+        Prediction mechanism used at leafs.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
         The regression model used to provide responses if `leaf_prediction='model'`. If not
         provided an instance of `river.linear_model.LinearRegression` with the default
@@ -53,11 +53,11 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
     seed
-       If int, `seed` is the seed used by the random number generator;
-       If RandomState instance, `seed` is the random number generator;
+       If int, `seed` is the seed used by the random number generator;</br>
+       If RandomState instance, `seed` is the random number generator;</br>
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
-       bootstrap sampling.
+       bootstrap sampling.</br>
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
