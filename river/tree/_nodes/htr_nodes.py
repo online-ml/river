@@ -12,25 +12,25 @@ class LearningNodeMean(LearningNode):
 
     Parameters
     ----------
-    initial_stats
+    stats
         In regression tasks the node keeps an instance of `river.stats.Var` to estimate
         the target's statistics.
     depth
         The depth of the node.
     """
-    def __init__(self, initial_stats, depth):
-        if initial_stats is None:
+    def __init__(self, stats, depth):
+        if stats is None:
             # Enforce the usage of Var to keep track of target statistics
-            initial_stats = Var()
-        super().__init__(initial_stats, depth)
+            stats = Var()
+        super().__init__(stats, depth)
 
     @staticmethod
     def new_nominal_attribute_observer(**kwargs):
-        return NominalAttributeRegressionObserver(**kwargs)
+        return NominalAttributeRegressionObserver()
 
     @staticmethod
     def new_numeric_attribute_observer(**kwargs):
-        return NumericAttributeRegressionObserver(**kwargs)
+        return NumericAttributeRegressionObserver()
 
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
         """Trigger Attribute Observers' memory management routines.
@@ -99,7 +99,7 @@ class LearningNodeModel(LearningNodeMean):
 
     Parameters
     ----------
-    initial_stats
+    stats
         In regression tasks the node keeps an instance of `river.stats.Var` to estimate
         the target's statistics.
     depth
@@ -108,8 +108,8 @@ class LearningNodeModel(LearningNodeMean):
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
-    def __init__(self, initial_stats, depth, leaf_model):
-        super().__init__(initial_stats, depth)
+    def __init__(self, stats, depth, leaf_model):
+        super().__init__(stats, depth)
 
         self._leaf_model = leaf_model
         sign = inspect.signature(leaf_model.learn_one).parameters
@@ -135,7 +135,7 @@ class LearningNodeAdaptive(LearningNodeModel):
 
     Parameters
     ----------
-    initial_stats
+    stats
         In regression tasks the node keeps an instance of `river.stats.Var` to estimate
         the target's statistics.
     depth
@@ -144,8 +144,8 @@ class LearningNodeAdaptive(LearningNodeModel):
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
-    def __init__(self, initial_stats, depth, leaf_model):
-        super().__init__(initial_stats, depth, leaf_model)
+    def __init__(self, stats, depth, leaf_model):
+        super().__init__(stats, depth, leaf_model)
         self._fmse_mean = 0.
         self._fmse_model = 0.
 

@@ -1,8 +1,9 @@
 from abc import ABCMeta, abstractmethod
-import textwrap
+import collections
 import numbers
+import textwrap
 
-from typing import Dict, List, Type, TypeVar, Union
+from typing import Dict, List, Union
 
 
 from river import base
@@ -11,24 +12,8 @@ from river.tree._attribute_test import InstanceConditionalTest
 from river.tree._attribute_test import AttributeSplitSuggestion
 
 
-class FoundNode:
-    """Helper class to manage nodes.
-
-    Parameters
-    ----------
-    node
-        The node object.
-    parent
-        The node's parent.
-    parent_branch
-        The parent node's branch.
-
-    """
-
-    def __init__(self, node=None, parent=None, parent_branch: int = None):
-        self.node = node
-        self.parent = parent
-        self.parent_branch = parent_branch
+# Helper structure to manage nodes
+FoundNode = collections.namedtuple('FoundNode', ['node', 'parent', 'parent_branch'])
 
 
 class Node(metaclass=ABCMeta):
@@ -36,14 +21,14 @@ class Node(metaclass=ABCMeta):
 
     Parameters
     ----------
-    initial_stats
+    stats
         Statistics kept by the node.
     depth
         The depth of the node.
     """
 
-    def __init__(self, initial_stats: Union[dict, Var] = None, depth: int = 0):
-        self._stats: Union[dict, Var] = initial_stats if initial_stats is not None else {}
+    def __init__(self, stats: Union[dict, Var] = None, depth: int = 0):
+        self._stats: Union[dict, Var] = stats if stats is not None else {}
         self._depth = depth
 
     def filter_instance_to_leaf(self, x: dict, parent: 'Node', parent_branch: int) -> FoundNode:
@@ -137,8 +122,8 @@ class SplitNode(Node):
         The depth of the node.
     """
 
-    def __init__(self, split_test: InstanceConditionalTest, initial_stats, depth):
-        super().__init__(initial_stats, depth)
+    def __init__(self, split_test: InstanceConditionalTest, stats, depth):
+        super().__init__(stats, depth)
         self._split_test = split_test
         # Dict -> branch_id: child_node
         self._children: Dict[int, Node] = {}
@@ -281,11 +266,11 @@ class LearningNode(Node, metaclass=ABCMeta):
 
     Parameters
     ----------
-    initial_stats
-        Initial stats (they differ in classification and regression tasks).
+    stats
+        Target statistics (they differ in classification and regression tasks).
     """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
+    def __init__(self, stats, depth):
+        super().__init__(stats, depth)
 
         self._attribute_observers = {}
         self._disabled_attrs = set()
@@ -365,7 +350,7 @@ class LearningNode(Node, metaclass=ABCMeta):
     def update_stats(self, y, sample_weight):
         pass
 
-    def update_attribute_observers(self, x, y, sample_weight, tree, **kwargs):
+    def update_attribute_observers(self, x, y, sample_weight, nominal_attributes, **kwargs):
         for attr_idx, attr_val in x.items():
             if attr_idx in self._disabled_attrs:
                 continue
@@ -373,7 +358,7 @@ class LearningNode(Node, metaclass=ABCMeta):
             try:
                 obs = self.attribute_observers[attr_idx]
             except KeyError:
-                if ((tree.nominal_attributes is not None and attr_idx in tree.nominal_attributes)
+                if ((nominal_attributes is not None and attr_idx in nominal_attributes)
                         or not isinstance(attr_val, numbers.Number)):
                     obs = self.new_nominal_attribute_observer(**kwargs)
                 else:
@@ -446,7 +431,7 @@ class LearningNode(Node, metaclass=ABCMeta):
         """
         self.update_stats(y, sample_weight)
         if self.is_active():
-            self.update_attribute_observers(x, y, sample_weight, tree)
+            self.update_attribute_observers(x, y, sample_weight, tree.nominal_attributes)
 
     @abstractmethod
     def predict_one(self, x, *, tree=None) -> dict:

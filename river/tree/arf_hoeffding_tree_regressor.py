@@ -107,10 +107,10 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
             return RandomLearningNodeMean(initial_stats, depth, self.max_features, seed)
         elif self.leaf_prediction == self._MODEL:
             return RandomLearningNodeModel(
-                initial_stats, depth, leaf_model, self.max_features, seed)
+                initial_stats, depth, self.max_features, seed, leaf_model=leaf_model)
         else:  # adaptive learning node
             new_adaptive = RandomLearningNodeAdaptive(
-                initial_stats, depth, leaf_model, self.max_features, seed)
+                initial_stats, depth, self.max_features, seed, leaf_model=leaf_model)
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean
                 new_adaptive._fmse_model = parent._fmse_model

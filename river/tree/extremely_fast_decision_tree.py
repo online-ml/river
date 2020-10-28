@@ -5,7 +5,6 @@ from river.tree import HoeffdingTreeClassifier
 from ._split_criterion import GiniSplitCriterion
 from ._split_criterion import InfoGainSplitCriterion
 from ._split_criterion import HellingerDistanceCriterion
-from ._nodes import LearningNode
 from ._nodes import EFDTSplitNode
 from ._nodes import EFDTLearningNodeMC
 from ._nodes import EFDTLearningNodeNB
@@ -169,8 +168,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         """Process nodes from the root to the leaf where the instance belongs.
 
         1. If the node is internal:
-            1.1 Internal node learn from instance
-            1.2 If the number of samples seen since the last reevaluation are greater than
+            1.1 If the number of samples seen since the last reevaluation are greater than
             `min_samples_reevaluate`, reevaluate the best split for the internal node.
         2. If the node is leaf, attempt to split leaf node.
 
@@ -189,12 +187,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         branch_index
             Parent node's branch index.
         """
-
-        # skip learning node and update SplitNode because the learning node already learnt from
-        # instance.
-        if isinstance(node, EFDTSplitNode):
-            node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-
+        if not node.is_leaf():
             old_weight = node.last_split_reevaluation_at
             new_weight = node.total_weight
             stop_flag = False
@@ -250,8 +243,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._n_active_leaves += 1
 
-        if isinstance(leaf_node, LearningNode):
-            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+        leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -321,7 +313,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     node.total_weight)
 
                 if x_null.merit - x_best.merit > hoeffding_bound:
-                    # Kill subtree & replace the EFDTSplitNode by an EFDTActiveLearningNode
+                    # Kill subtree & replace the EFDTSplitNode by an EFDTLearningNode
                     best_split = self._kill_subtree(node)
 
                     # update EFDT

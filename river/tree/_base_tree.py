@@ -268,14 +268,6 @@ class BaseHoeffdingTree(ABC):
         if actual_model_size > self._max_byte_size:
             self._enforce_size_limit()
 
-    def _activate_all_leaves(self):
-        """Deactivate all leaves. """
-        learning_nodes = self._find_learning_nodes()
-        for cur_node in learning_nodes:
-            cur_node.node.activate()
-            self._n_active_leaves += 1
-            self._n_inactive_leaves -= 1
-
     def _deactivate_all_leaves(self):
         """Deactivate all leaves. """
         learning_nodes = self._find_learning_nodes()
@@ -314,9 +306,9 @@ class BaseHoeffdingTree(ABC):
         List of learning nodes.
         """
         if node is not None:
-            if isinstance(node, LearningNode):
+            if node.is_leaf():
                 found.append(FoundNode(node, parent, parent_branch))
-            if isinstance(node, SplitNode):
+            else:
                 split_node = node
                 for i in range(split_node.n_children):
                     self.__find_learning_nodes(
