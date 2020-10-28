@@ -1,9 +1,11 @@
-import typing
 from abc import ABC, abstractmethod
-
+import collections
+import functools
 import math
+import typing
 
 from river.utils.skmultiflow_utils import calculate_object_size
+from river import base
 
 from ._nodes import Node
 from ._nodes import LearningNode
@@ -12,6 +14,12 @@ from ._nodes import InactiveLeaf
 from ._nodes import SplitNode
 from ._nodes import FoundNode
 from ._attribute_test import InstanceConditionalTest
+
+try:
+    import graphviz
+    GRAPHVIZ_INSTALLED = True
+except ImportError:
+    GRAPHVIZ_INSTALLED = False
 
 
 class BaseHoeffdingTree(ABC):
@@ -362,3 +370,171 @@ class BaseHoeffdingTree(ABC):
                 for i in range(split_node.n_children):
                     self.__find_learning_nodes(
                         split_node.get_child(i), split_node, i, found)
+
+    def debug_one(self, x: dict) -> str:
+        """Prints an explanation of how `x` is predicted.
+        Parameters:
+            x: A dictionary of features.
+        """
+
+        # We'll redirect all the print statement to a buffer, we'll return the content of the
+        # buffer at the end
+        buffer = io.StringIO()
+        _print = functools.partial(print, file=buffer)
+
+        node = self.root
+
+        for node in self.root.path(x):
+            if isinstance(node, leaf.Leaf):
+                _print(node.target_dist)
+                break
+            if node.split(x):
+                _print('not', node.split)
+            else:
+                _print(node.split)
+
+        return buffer.getvalue()
+
+    def draw(self, max_depth: int = None):
+        """Draw the tree using the `graphviz` library.
+
+        Since the tree is drawn without passing incoming samples, classification trees
+        will show the majority class in their leaves, whereas regression trees will
+        use the target mean.
+
+        Parameters
+        ----------
+        max_depth
+            Only the root will be drawn when set to `0`. Every node will be drawn when
+            set to `None`.
+
+        Example
+        -------
+        >>> from river import datasets
+        >>> from river import tree
+        >>> model = tree.DecisionTreeClassifier(
+        ...    patience=10,
+        ...    confidence=1e-5,
+        ...    criterion='gini',
+        ...    max_depth=10,
+        ...    tie_threshold=0.05,
+        ...    min_child_samples=0,
+        ... )
+        >>> for x, y in datasets.Phishing():
+        ...    model = model.fit_one(x, y)
+        >>> dot = model.draw()
+        .. image:: /img/dtree_draw.svg
+        :align: center
+        """
+        def node_prediction(node):
+            if isinstance(self, base.Classifier):
+                return str(max(node.stats, key=node.stats.get))
+            elif isinstance(self, base.Regressor):
+                # Multi-target regression
+                if isinstance(self, base.MultiOutputMixin):
+                    return ' | '.join([f'{t}={node.stats[t].mean.get()}' for t in node.stats])
+                else:  # vanilla single-target regression
+                    return f'{node.stats.mean.get():.4f}'
+
+
+        if max_depth is None:
+            max_depth = math.inf
+
+        dot = graphviz.Digraph(
+            graph_attr={'splines': 'ortho'},
+            node_attr={
+                'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
+                'fontsize': '11', 'margin': '0.1,0.0'
+            },
+            edge_attr={'penwidth': '0.6', 'center': 'true'}
+        )
+
+        if isinstance(self, base.Classifier):
+            n_colors = len(self.classes)
+        else:
+            n_colors = 1
+
+        # Pick a color palette which maps classes to colors
+        new_color = functools.partial(next, iter(_color_brew(n_colors)))
+        palette = collections.defaultdict(new_color)
+
+        for parent_no, child_no, _, child, child_depth in self.root.iter_edges():
+
+            if child_depth > max_depth:
+                continue
+
+            if isinstance(child, SplitNode):
+                text = f'{child.split_test}'
+            elif isinstance(child, LearningNode):
+                text = f'{node_prediction(child)}\nsamples: {child.total_weight}'
+
+            # Pick a color, the hue depends on the class and the transparency on the distribution
+            mode = child.target_dist.mode
+            if mode is not None:
+                p_mode = child.target_dist.pmf(mode)
+                alpha = (p_mode - 1 / n_colors) / (1 - 1 / n_colors)
+                fillcolor = str(transparency_hex(color=palette[mode], alpha=alpha))
+            else:
+                fillcolor = '#FFFFFF'
+
+            dot.node(f'{child_no}', text, fillcolor=fillcolor, style='filled')
+
+            if parent_no is not None:
+                dot.edge(f'{parent_no}', f'{child_no}')
+
+        return dot
+
+
+# Utility adapted from the original creme's implementation
+def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
+    """Generate n colors with equally spaced hues.
+
+    Parameters
+    ----------
+    n
+        The number of required colors.
+
+    Returns
+    -------
+        List of n tuples of form (R, G, B) being the components of each color.
+    References
+    ----------
+    https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py
+    """
+    colors = []
+
+    # Initialize saturation & value; calculate chroma & value shift
+    s, v = .75, .9
+    c = s * v
+    m = v - c
+
+    for h in [i for i in range(25, 385, int(360 / n))]:
+
+        # Calculate some intermediate values
+        h_bar = h / 60.
+        x = c * (1 - abs((h_bar % 2) - 1))
+
+        # Initialize RGB with same hue & chroma as our color
+        rgb = [(c, x, 0),
+               (x, c, 0),
+               (0, c, x),
+               (0, x, c),
+               (x, 0, c),
+               (c, 0, x),
+               (c, x, 0)]
+        r, g, b = rgb[int(h_bar)]
+
+        # Shift the initial RGB values to match value and store
+        colors.append((
+            (int(255 * (r + m))),
+            (int(255 * (g + m))),
+            (int(255 * (b + m)))
+        ))
+
+    return colors
+
+
+# Utility adapted from the original creme's implementation
+def transparency_hex(color: typing.Tuple[int, int, int], alpha: float) -> str:
+    """Apply alpha coefficient on hexadecimal color."""
+    return '#%02x%02x%02x' % tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color])
