@@ -3,8 +3,8 @@ import math
 from river.base.typing import ClfTarget
 
 from river.proba import Gaussian
-from river.tree._attribute_test import NumericAttributeBinaryTest
-from river.tree._attribute_test import AttributeSplitSuggestion
+from .._attribute_test import NumericAttributeBinaryTest
+from .._attribute_test import AttributeSplitSuggestion
 from .attribute_observer import AttributeObserver
 
 

@@ -1,6 +1,6 @@
-from river.tree._tree_utils import do_naive_bayes_prediction
-from river.tree._attribute_observer import NominalAttributeClassObserver
-from river.tree._attribute_observer import NumericAttributeClassObserverGaussian
+from .._tree_utils import do_naive_bayes_prediction
+from .._attribute_observer import NominalAttributeClassObserver
+from .._attribute_observer import NumericAttributeClassObserverGaussian
 
 from .base import LearningNode
 

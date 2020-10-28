@@ -1,14 +1,14 @@
 import math
 from collections import Counter
 
+from .._attribute_test import AttributeSplitSuggestion
+from .._attribute_observer import NominalAttributeClassObserver
+from .._attribute_observer import NumericAttributeClassObserverGaussian
 from .base import SplitNode
 from .htc_nodes import LearningNode
 from .htc_nodes import LearningNodeMC
 from .htc_nodes import LearningNodeNB
 from .htc_nodes import LearningNodeNBA
-from .._attribute_test import AttributeSplitSuggestion
-from .._attribute_observer import NominalAttributeClassObserver
-from .._attribute_observer import NumericAttributeClassObserverGaussian
 
 
 class BaseEFDTNode(LearningNode):
