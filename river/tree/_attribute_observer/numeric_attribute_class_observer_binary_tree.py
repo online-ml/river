@@ -1,7 +1,7 @@
 from collections import Counter
 
-from river.tree._attribute_test import NumericAttributeBinaryTest
-from river.tree._attribute_test import AttributeSplitSuggestion
+from .._attribute_test import NumericAttributeBinaryTest
+from .._attribute_test import AttributeSplitSuggestion
 from .attribute_observer import AttributeObserver
 
 
