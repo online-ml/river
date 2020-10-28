@@ -16,19 +16,19 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
-        | 'hellinger' - Hellinger Distance
+        Split criterion to use.</br>
+        - 'gini' - Gini</br>
+        - 'info_gain' - Information Gain</br>
+        - 'hellinger' - Hellinger Distance</br>
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leaves.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leaves.</br>
+        - 'mc' - Majority Class</br>
+        - 'nb' - Naive Bayes</br>
+        - 'nba' - Naive Bayes Adaptive</br>
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -36,11 +36,11 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
         should be treated as continuous.
     max_features
         Number of randomly selected features to act as split candidates at each attempt.
-    seed: int, RandomState instance or None, optional (default=None)
-            If int, seed is the seed used by the random number generator;
-            If RandomState instance, seed is the random number generator;
-            If None, the random number generator is the RandomState instance
-            used by `np.random`.
+    seed
+        If int, seed is the seed used by the random number generator;</br>
+        If RandomState instance, seed is the random number generator;</br>
+        If None, the random number generator is the RandomState instance
+        used by `np.random`.
     **kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 

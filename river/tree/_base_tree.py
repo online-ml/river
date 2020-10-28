@@ -13,25 +13,31 @@ from ._attribute_test import InstanceConditionalTest
 
 
 class BaseHoeffdingTree(ABC):
-    """Base class for Decision Trees.
+    """Base class for Hoeffding Decision Trees.
 
-    It defines base operations and properties that all the decision trees must inherit or
-    implement according to their own design.
+    This is an **abstract class**, so it cannot be used directly. It defines base operations
+    and properties that all the decision trees must inherit or implement according to
+    their own design.
 
     All the extended classes inherit the following functionality:
 
     * Set the maximum tree depth allowed (`max_depth`).
+
     * Handle *Active* and *Inactive* nodes: Active learning nodes update their own
     internal state to improve predictions and monitor input features to perform split
     attempts. Inactive learning nodes do not update their internal state and only keep the
     predictors; they are used to save memory in the tree (`max_size`).
+
     *  Enable/disable memory management.
+
     * Define strategies to sort leaves according to how likely they are going to be split.
     This enables deactivating non-promising leaves to save memory.
+
     * Disabling ‘poor’ attributes to save memory and speed up tree construction.
     A poor attribute is an input feature whose split merit is much smaller than the current
     best candidate. Once a feature is disabled, the tree stops saving statistics necessary
     to split such a feature.
+
     * Define properties to access leaf prediction strategies, split criteria, and other
     relevant characteristics.
 
@@ -111,6 +117,7 @@ class BaseHoeffdingTree(ABC):
 
     @property
     def max_size(self):
+        """Max allowed size tree can reach (in MB)."""
         return self._max_size
 
     @max_size.setter
@@ -120,12 +127,8 @@ class BaseHoeffdingTree(ABC):
 
     @property
     def model_measurements(self):
-        """Collect metrics corresponding to the current status of the tree.
-
-        Returns
-        -------
-        string
-            A string buffer containing the measurements of the tree.
+        """Collect metrics corresponding to the current status of the tree
+        in a string buffer.
         """
         measurements = {'Tree size (nodes)': self._n_decision_nodes
                         + self._n_active_leaves + self._n_inactive_leaves,
@@ -181,12 +184,7 @@ class BaseHoeffdingTree(ABC):
 
     @property
     def depth(self) -> int:
-        """Calculate the depth of the tree.
-
-        Returns
-        -------
-        Depth of the tree.
-        """
+        """The depth of the tree."""
         if isinstance(self._tree_root, Node):
             return self._tree_root.subtree_depth()
         return 0

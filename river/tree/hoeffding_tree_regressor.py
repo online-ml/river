@@ -27,10 +27,10 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mean' - Target mean
-        | 'model' - Uses the model defined in `leaf_model`
-        | 'adaptive' - Chooses between 'mean' and 'model' dynamically
+        Prediction mechanism used at leafs.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
         The regression model used to provide responses if `leaf_prediction='model'`. If not
         provided an instance of `river.linear_model.LinearRegression` with the default
@@ -170,6 +170,10 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             Target value for sample x.
         sample_weight
             The weight of the sample.
+
+        Returns
+        -------
+        self
         """
 
         self._train_weight_seen_by_model += sample_weight
@@ -227,7 +231,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
 
         Returns
         -------
-            Predicted target value.
+        Predicted target value.
 
         """
         if self._tree_root is not None:

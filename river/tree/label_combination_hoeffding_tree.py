@@ -23,19 +23,19 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
-        | 'hellinger' - Helinger Distance
+        Split criterion to use.</br>
+        - 'gini' - Gini</br>
+        - 'info_gain' - Information Gain</br>
+        - 'hellinger' - Helinger Distance</br>
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leafs.</br>
+        - 'mc' - Majority Class</br>
+        - 'nb' - Naive Bayes</br>
+        - 'nba' - Naive Bayes Adaptive</br>
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -102,7 +102,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
 
         Returns
         -------
-            self
+        self
         """
         self._labels.update(y.keys())
 
@@ -144,8 +144,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
 
         Returns
         -------
-            Predicted labels.
-
+        Predicted labels.
         """
         if self._tree_root is None:
             return None

@@ -19,19 +19,19 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
-        | 'hellinger' - Helinger Distance
+        Split criterion to use.</br>
+        - 'gini' - Gini</br>
+        - 'info_gain' - Information Gain</br>
+        - 'hellinger' - Helinger Distance</br>
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leafs.</br>
+        - 'mc' - Majority Class</br>
+        - 'nb' - Naive Bayes</br>
+        - 'nba' - Naive Bayes Adaptive</br>
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -45,11 +45,11 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
     seed
-       If int, `seed` is the seed used by the random number generator;
-       If RandomState instance, `seed` is the random number generator;
+       If int, `seed` is the seed used by the random number generator;</br>
+       If RandomState instance, `seed` is the random number generator;</br>
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
-       bootstrap sampling.
+       bootstrap sampling.</br>
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -64,10 +64,10 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     References
     ----------
-    .. [1] Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
+    [^1]: Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
        In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
        Heidelberg, 2009.
-    .. [2] Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
+    [^2]: Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
        windowing." In Proceedings of the 2007 SIAM international conference on data mining,
        pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 

@@ -24,10 +24,10 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leaves.
-        | 'mean' - Target mean
-        | 'model' - Uses the model defined in `leaf_model`
-        | 'adaptive' - Chooses between 'mean' and 'model' dynamically
+        Prediction mechanism used at leaves.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
         The regression model used to provide responses if `leaf_prediction='model'`. If not
         provided an instance of `river.linear_model.LinearRegression` with the default
@@ -44,13 +44,15 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
     max_features
         Number of randomly selected features to act as split candidates at each attempt.
     seed
-            If int, seed is the seed used by the random number generator;
-            If RandomState instance, seed is the random number generator;
-            If None, the random number generator is the RandomState instance
-            used by `np.random`.
+        If int, seed is the seed used by the random number generator;</br>
+        If RandomState instance, seed is the random number generator;</br>
+        If None, the random number generator is the RandomState instance
+        used by `np.random`.
     **kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
+    Notes
+    -----
     This is the base-estimator of the Adaptive Random Forest Regressor ensemble learner (see
     `river.ensemble.AdaptiveRandomForestRegressor`). This Hoeffding Tree Regressor includes a
     max_features parameter, which defines the number of randomly selected features to be
