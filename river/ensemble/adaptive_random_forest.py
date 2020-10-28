@@ -91,6 +91,9 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
     nominal_attributes
         (`ARFHoeffdingTreeClassifier` parameter)
         List of Nominal attributes. If empty, then assume that all attributes are numerical.
+    max_depth
+        (`ARFHoeffdingTreeClassifier` parameter)
+        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;
@@ -109,13 +112,15 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
 
     >>> model = ensemble.AdaptiveRandomForestClassifier(
     ...     n_models=3,
-    ...     seed=42
+    ...     seed=42,
+    ...     drift_detector=ADWIN(delta=0.1),
+    ...     warning_detector=ADWIN(delta=0.15)
     ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 64.86%
+    Accuracy: 64.96%
 
     References
     ----------
@@ -135,8 +140,8 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
                  disable_weighted_vote=False,
                  lambda_value: int = 6,
                  metric: MultiClassMetric = Accuracy(),
-                 drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(0.001),
-                 warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(0.01),
+                 drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
+                 warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
                  max_size: int = 32,
                  memory_estimate_period: int = 2000000,
                  grace_period: int = 50,
@@ -148,8 +153,9 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
                  remove_poor_atts=False,
                  merit_preprune=True,
                  leaf_prediction: str = 'nba',
-                 nb_threshold=0,
-                 nominal_attributes=None,
+                 nb_threshold: int = 0,
+                 nominal_attributes: list = None,
+                 max_depth: int = None,
                  seed=None):
         super().__init__([None])  # List of models is properly initialized later
         self.models = []
@@ -180,6 +186,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
+        self.max_depth = max_depth
 
     def _multiclass(self):
         return True
@@ -252,29 +259,30 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
                     nb_threshold=self.nb_threshold,
                     nominal_attributes=self.nominal_attributes,
                     max_features=self.max_features,
+                    max_depth=self.max_depth,
                     seed=self.seed
                 ),
                 created_on=self._n_samples_seen,
                 base_drift_detector=self.drift_detector,
                 base_warning_detector=self.warning_detector,
                 is_background_learner=False,
-                metric=self.metric)
+                metric=copy.deepcopy(self.metric))
             for i in range(self.n_models)
         ]
 
-    def _set_max_features(self, n):
+    def _set_max_features(self, n_features):
         if self.max_features == 'sqrt':
-            self.max_features = round(math.sqrt(n))
+            self.max_features = round(math.sqrt(n_features))
         elif self.max_features == 'log2':
-            self.max_features = round(math.log2(n))
+            self.max_features = round(math.log2(n_features))
         elif isinstance(self.max_features, int):
             # Consider 'max_features' features at each split.
             pass
         elif isinstance(self.max_features, float):
             # Consider 'max_features' as a percentage
-            self.max_features = int(self.max_features * n)
+            self.max_features = int(self.max_features * n_features)
         elif self.max_features is None:
-            self.max_features = n
+            self.max_features = n_features
         else:
             raise AttributeError(f"Invalid max_features: {self.max_features}.\n"
                                  f"Valid options are: int [2, M], float (0., 1.],"
@@ -283,15 +291,15 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
         # Sanity checks
         # max_features is negative, use max_features + n
         if self.max_features < 0:
-            self.max_features += n
+            self.max_features += n_features
         # max_features <= 0
         # (m can be negative if max_features is negative and abs(max_features) > n),
         # use max_features = 1
         if self.max_features <= 0:
             self.max_features = 1
         # max_features > n, then use n
-        if self.max_features > n:
-            self.max_features = n
+        if self.max_features > n_features:
+            self.max_features = n_features
 
 
 class BaseARFLearner(base.Classifier):
@@ -335,6 +343,8 @@ class BaseARFLearner(base.Classifier):
         # Make sure that the metric is not initialized, e.g. when creating background learners.
         self.metric.cm.reset()
 
+        self.background_learner = None
+
         # Drift and warning detection
         self.base_drift_detector = base_drift_detector  # Drift detector prototype
         self.base_warning_detector = base_warning_detector  # Warning detector prototype
@@ -344,21 +354,21 @@ class BaseARFLearner(base.Classifier):
         self.n_drifts_detected = 0
         self.n_warnings_detected = 0
 
-        self.drift_detector = None
-        self.warning_detector = None
-        self.background_learner = None
-        self._use_drift_detector = False
-        self._use_background_learner = False
-
         # Initialize drift and warning detectors
         # TODO Replace deepcopy with clone
         if base_drift_detector is not None:
             self._use_drift_detector = True
             self.drift_detector = copy.deepcopy(base_drift_detector)  # Actual detector used
+        else:
+            self._use_drift_detector = False
+            self.drift_detector = None
 
         if base_warning_detector is not None:
             self._use_background_learner = True
             self.warning_detector = copy.deepcopy(base_warning_detector)  # Actual detector used
+        else:
+            self._use_background_learner = False
+            self.warning_detector = None
 
     def reset(self, n_samples_seen):
         if self._use_background_learner and self.background_learner is not None:
@@ -371,6 +381,7 @@ class BaseARFLearner(base.Classifier):
             self.created_on = self.background_learner.created_on
             self.background_learner = None
         else:
+            # Reset model
             self.model = copy.deepcopy(self.base_model)
             self.metric.cm.reset()
             self.created_on = n_samples_seen
@@ -379,7 +390,6 @@ class BaseARFLearner(base.Classifier):
     def learn_one(self, x: dict, y: base.typing.ClfTarget, *, sample_weight: int,   # noqa
                   n_samples_seen: int):
 
-        # TODO Confirm that natively supports sample_weight
         self.model.learn_one(x, y, sample_weight=sample_weight)
 
         if self.background_learner:
@@ -398,7 +408,7 @@ class BaseARFLearner(base.Classifier):
                     # Create a new background learner object
                     self.background_learner = BaseARFLearner(
                         index_original=self.index_original,
-                        base_model=copy.deepcopy(self.base_model),
+                        base_model=self.model.new_instance(),
                         created_on=n_samples_seen,
                         base_drift_detector=self.base_drift_detector,
                         base_warning_detector=self.base_warning_detector,
