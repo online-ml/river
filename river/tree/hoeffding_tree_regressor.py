@@ -128,7 +128,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     def _new_split_criterion(self):
         return VarianceReductionSplitCriterion()
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
+    def _new_learning_node(self, initial_stats=None, parent=None, **kwargs):
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.
@@ -186,7 +186,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._n_active_leaves += 1
 
-        if isinstance(leaf_node, LearningNode):
+        if leaf_node.is_leaf():
             leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
             if self._growth_allowed and leaf_node.is_active():
                 if leaf_node.depth >= self.max_depth:  # Max depth reached
@@ -202,7 +202,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                         leaf_node.last_split_attempt_at = weight_seen
         # Split node encountered a previously unseen categorical value (in a multi-way test),
         # so there is no branch to sort the instance to
-        elif isinstance(leaf_node, SplitNode) and leaf_node.split_test.max_branches() == -1:
+        elif not leaf_node.is_leaf() and leaf_node.split_test.max_branches() == -1:
             current = leaf_node
             leaf_node = self._new_learning_node(parent=current)
             branch_id = current.split_test.add_new_branch(

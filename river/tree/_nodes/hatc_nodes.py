@@ -47,7 +47,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
 
     Parameters
     ----------
-    initial_stats
+    stats
         Initial class observations.
     depth
         The depth of the learning node in the tree.
@@ -56,8 +56,8 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
     seed
         Seed to control the generation of random numbers and support reproducibility.
     """
-    def __init__(self, initial_stats, depth, adwin_delta, seed):
-        super().__init__(initial_stats, depth)
+    def __init__(self, stats, depth, adwin_delta, seed):
+        super().__init__(stats, depth)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self.error_change = False
@@ -259,7 +259,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                         tree._tree_root = tree._tree_root._alternate_tree
                     tree._n_switch_alternate_trees += 1
                 elif bound < alt_error_rate - old_error_rate:
-                    if isinstance(self._alternate_tree, SplitNode):
+                    if not self._alternate_tree.is_leaf():
                         self._alternate_tree.kill_tree_children(tree)
                     self._alternate_tree = None
                     tree._n_pruned_alternate_trees += 1
@@ -295,7 +295,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
         for child_id, child in self._children.items():
             if child is not None:
                 # Delete alternate tree if it exists
-                if isinstance(child, SplitNode):
+                if not child.is_leaf():
                     if child._alternate_tree is not None:
                         child._alternate_tree.kill_tree_children(tree)
                         tree._n_pruned_alternate_trees += 1

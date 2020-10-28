@@ -15,7 +15,7 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
 
     Parameters
     ----------
-    initial_stats
+    stats
         Initial class observations.
     depth
         The depth of the learning node in the tree.
@@ -25,8 +25,8 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
         Seed to control the generation of random numbers and support reproducibility.
     """
 
-    def __init__(self, initial_stats, depth, leaf_model, adwin_delta, seed):
-        super().__init__(initial_stats, depth, leaf_model)
+    def __init__(self, stats, depth, leaf_model, adwin_delta, seed):
+        super().__init__(stats, depth, leaf_model)
 
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)

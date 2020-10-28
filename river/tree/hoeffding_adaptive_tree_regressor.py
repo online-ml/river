@@ -4,8 +4,6 @@ from river.tree import HoeffdingTreeRegressor
 from river import base
 
 from ._nodes import FoundNode
-from ._nodes import LearningNode
-from ._nodes import SplitNode
 from ._nodes import AdaSplitNodeRegressor
 from ._nodes import AdaLearningNodeRegressor
 
@@ -196,7 +194,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         if parent is not None:
             depth = parent.depth + 1
             # Leverage ancestor's learning models
-            if not isinstance(parent, AdaSplitNodeRegressor):
+            if parent.is_leaf():
                 leaf_model = deepcopy(parent._leaf_model)
             else:  # Corner case where an alternate tree is created
                 leaf_model = deepcopy(self.leaf_model)
@@ -205,16 +203,16 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             leaf_model = deepcopy(self.leaf_model)
 
         new_ada_leaf = AdaLearningNodeRegressor(
-            initial_stats=initial_stats, depth=depth, leaf_model=leaf_model,
+            stats=initial_stats, depth=depth, leaf_model=leaf_model,
             adwin_delta=self.adwin_confidence, seed=self.seed)
 
-        if parent is not None and not isinstance(parent, SplitNode):
+        if parent is not None and parent.is_leaf():
             new_ada_leaf._fmse_mean = parent._fmse_mean
             new_ada_leaf._fmse_model = parent._fmse_model
 
         return new_ada_leaf
 
-    def _new_split_node(self, split_test, target_stats=None, depth=0):
+    def _new_split_node(self, split_test, target_stats=None, depth=0, **kwargs):
         return AdaSplitNodeRegressor(
             split_test=split_test, stats=target_stats, depth=depth,
             adwin_delta=self.adwin_confidence, seed=self.seed)
@@ -222,9 +220,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     # Override river.tree.BaseHoeffdingTree to include alternate trees
     def __find_learning_nodes(self, node, parent, parent_branch, found):
         if node is not None:
-            if isinstance(node, LearningNode):
+            if node.is_leaf():
                 found.append(FoundNode(node, parent, parent_branch))
-            if isinstance(node, SplitNode):
+            else:
                 split_node = node
                 for i in range(split_node.n_children):
                     self.__find_learning_nodes(

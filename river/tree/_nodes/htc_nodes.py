@@ -6,7 +6,18 @@ from .base import LearningNode
 
 
 class LearningNodeMC(LearningNode):
-    """Learning node that always predicts the majority class."""
+    """Learning node that always predicts the majority class.
+
+    Parameters
+    ----------
+    stats
+        Initial class observations.
+    depth
+        The depth of the node.
+    """
+    def __init__(self, stats, depth):
+        super().__init__(stats, depth)
+
     @staticmethod
     def new_nominal_attribute_observer(**kwargs):
         return NominalAttributeClassObserver(**kwargs)
@@ -30,7 +41,6 @@ class LearningNodeMC(LearningNode):
 
         Returns
         -------
-        float
             Total weight seen.
 
         """
@@ -43,7 +53,6 @@ class LearningNodeMC(LearningNode):
 
         Returns
         -------
-        int
             A small value indicates that the node has seen more samples of a
             given class than the other classes.
 
@@ -60,7 +69,6 @@ class LearningNodeMC(LearningNode):
 
         Returns
         -------
-        boolean
             True if observed number of classes is less than 2, False otherwise.
         """
         count = 0
@@ -73,7 +81,18 @@ class LearningNodeMC(LearningNode):
 
 
 class LearningNodeNB(LearningNodeMC):
-    """Learning node that uses Naive Bayes models."""
+    """Learning node that uses Naive Bayes models.
+
+    Parameters
+    ----------
+    stats
+        Initial class observations.
+    depth
+        The depth of the node.
+    """
+    def __init__(self, stats, depth):
+        super().__init__(stats, depth)
+
     def predict_one(self, x, *, tree=None):
         if self.is_active() and self.total_weight >= tree.nb_threshold:
             return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
@@ -95,9 +114,17 @@ class LearningNodeNB(LearningNodeMC):
 
 
 class LearningNodeNBA(LearningNodeMC):
-    """Learning node that uses Adaptive Naive Bayes models."""
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
+    """Learning node that uses Adaptive Naive Bayes models.
+
+    Parameters
+    ----------
+    stats
+        Initial class observations.
+    depth
+        The depth of the node.
+    """
+    def __init__(self, stats, depth):
+        super().__init__(stats, depth)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 

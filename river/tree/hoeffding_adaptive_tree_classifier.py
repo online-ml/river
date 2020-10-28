@@ -180,7 +180,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         else:
             depth = 0
 
-        return AdaLearningNodeClassifier(initial_stats=initial_stats, depth=depth,
+        return AdaLearningNodeClassifier(stats=initial_stats, depth=depth,
                                          adwin_delta=self.adwin_confidence, seed=self.seed)
 
     def _new_split_node(self, split_test, target_stats=None, depth=0):

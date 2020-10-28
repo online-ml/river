@@ -14,16 +14,16 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
 
     Parameters
     ----------
-    initial_stats
+    stats
         In regression tasks the node keeps a `river.utils.VectorDict` with instances of
         `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     """
-    def __init__(self, initial_stats, depth):
-        initial_stats = initial_stats if initial_stats else VectorDict(
+    def __init__(self, stats, depth):
+        stats = stats if stats else VectorDict(
             default_factory=reg_stat_factory)
-        super().__init__(initial_stats, depth)
+        super().__init__(stats, depth)
 
     def update_stats(self, y, sample_weight):
         for t in y:
@@ -46,7 +46,7 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
 
     Parameters
     ----------
-    initial_stats
+    stats
         In regression tasks the node keeps a `river.utils.VectorDict` with instances of
         `river.stats.Var` to estimate the targets' statistics.
     depth
@@ -54,8 +54,8 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
     leaf_models
         A dictionary composed of target identifiers and their respective predictive models.
     """
-    def __init__(self, initial_stats, depth, leaf_models):
-        super().__init__(initial_stats, depth)
+    def __init__(self, stats, depth, leaf_models):
+        super().__init__(stats, depth)
         self._leaf_models = leaf_models
         self._model_supports_weights = {}
         if self._leaf_models:
@@ -107,7 +107,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
 
     Parameters
     ----------
-    initial_stats
+    stats
         In regression tasks the node keeps a `river.utils.VectorDict` with instances of
         `river.stats.Var` to estimate the targets' statistics.
     depth
@@ -115,8 +115,8 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
     leaf_models
         A dictionary composed of target identifiers and their respective predictive models.
     """
-    def __init__(self, initial_stats, depth, leaf_models):
-        super().__init__(initial_stats, depth, leaf_models)
+    def __init__(self, stats, depth, leaf_models):
+        super().__init__(stats, depth, leaf_models)
         self._fmse_mean = defaultdict(lambda: 0.)
         self._fmse_model = defaultdict(lambda: 0.)
 
