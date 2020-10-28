@@ -9,6 +9,7 @@ from river import base
 from river import compat
 from river import cluster
 from river import compose
+from river import ensemble
 from river import expert
 from river import facto
 from river import feature_extraction
@@ -35,6 +36,7 @@ def get_all_estimators():
         compose.FuncTransformer,
         compose.Pipeline,
         compose.Grouper,
+        ensemble.AdaptiveRandomForestClassifier,
         expert.StackingClassifier,
         expert.SuccessiveHalvingClassifier,
         expert.SuccessiveHalvingRegressor,
