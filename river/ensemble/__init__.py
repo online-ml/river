@@ -5,6 +5,7 @@ from .bagging import BaggingClassifier
 from .bagging import BaggingRegressor
 from .bagging import LeveragingBaggingClassifier
 from .boosting import AdaBoostClassifier
+from .streaming_random_patches import SRPClassifier
 
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     'ADWINBaggingClassifier',
     'BaggingClassifier',
     'BaggingRegressor',
-    'LeveragingBaggingClassifier'
+    'LeveragingBaggingClassifier',
+    'SRPClassifier'
 ]
