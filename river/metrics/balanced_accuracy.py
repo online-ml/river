@@ -3,11 +3,14 @@ from . import confusion
 
 __all__ = ['BalancedAccuracy']
 
-class BalancedAccuracy(base.BinaryMetric, base.MultiClassMetric):
-    """Balanced Accuracy, which is the average of recall obtained on each class, 
-    is used to deal with imbalanced datasets in binary and multiclass classification problems.
+class BalancedAccuracy(base.MultiClassMetric):
+    """Balanced accuracy.
     
-    Example:
+    Balanced accuracy is the average of recall obtained on each class. It is used to
+    deal with imbalanced datasets in binary and multi-class classification problems.
+
+    Examples:
+    ---------
     
         >>> from river import metrics
         >>> y_true = [True, False, True, True, False, True]
@@ -18,19 +21,20 @@ class BalancedAccuracy(base.BinaryMetric, base.MultiClassMetric):
         ...     metric = metric.update(yt, yp)
         
         >>> metric
-        BalancedAccuracy : 62.50%
+        BalancedAccuracy: 62.50%
+        
+        >>> y_true = [0, 1, 0, 0, 1]
+        >>> y_pred = [0, 1, 0, 0, 0]
+        >>> metric = metrics.BalancedAccuracy()
+        >>> for yt, yp in zip(y_true, y_pred):
+        ...     metric = metric.update(yt, yp)
+        
+        >>> metric
+        BalancedAccuracy: 75.00%
         
     """
     
     _fmt = '.2%' # will output a percentage, e.g. 0.625 will become "62,5%"
-    
-    @property
-    def bigger_is_better(self):
-        return True
-    
-    @property
-    def requires_labels(self):
-        return True
     
     def get(self):
         total = 0
@@ -42,15 +46,8 @@ class BalancedAccuracy(base.BinaryMetric, base.MultiClassMetric):
         try:
             n_classes = len(self.cm.classes)
             score = total / n_classes
-            """
-            if self.correction:
-                chance = 1 / n_classes
-                score -= chance
-                score /= 1 - chance
-            """
+            
             return score
          
         except ZeroDivisionError:
             return 0.
-        
-        
