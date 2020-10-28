@@ -61,11 +61,11 @@ class ClassificationMetric(Metric):
             cm = confusion.ConfusionMatrix()
         self.cm = cm
 
-    def update(self, y_true, y_pred, sample_weight=1):
+    def update(self, y_true, y_pred, sample_weight=1.):
         self.cm.update(y_true, y_pred, sample_weight)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1, correction=None):
+    def revert(self, y_true, y_pred, sample_weight=1., correction=None):
         self.cm.revert(y_true, y_pred, sample_weight, correction)
         return self
 
@@ -116,13 +116,13 @@ class BinaryMetric(ClassificationMetric):
         self.pos_val = pos_val
 
     def update(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-               sample_weight=1) -> 'BinaryMetric':
+               sample_weight=1.) -> 'BinaryMetric':
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
         return super().update(y_true == self.pos_val, y_pred, sample_weight)
 
     def revert(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-               sample_weight=1, correction=None) -> 'BinaryMetric':
+               sample_weight=1., correction=None) -> 'BinaryMetric':
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
         return super().revert(y_true == self.pos_val, y_pred, sample_weight, correction)
