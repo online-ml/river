@@ -8,6 +8,13 @@ class BalancedAccuracy(base.MultiClassMetric):
     
     Balanced accuracy is the average of recall obtained on each class. It is used to
     deal with imbalanced datasets in binary and multi-class classification problems.
+    
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
