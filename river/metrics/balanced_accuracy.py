@@ -10,7 +10,7 @@ class BalancedAccuracy(base.MultiClassMetric):
     deal with imbalanced datasets in binary and multi-class classification problems.
 
     Examples
-    ---------
+    --------
     
         >>> from river import metrics
         >>> y_true = [True, False, True, True, False, True]
