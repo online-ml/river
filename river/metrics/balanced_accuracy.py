@@ -9,7 +9,7 @@ class BalancedAccuracy(base.MultiClassMetric):
     Balanced accuracy is the average of recall obtained on each class. It is used to
     deal with imbalanced datasets in binary and multi-class classification problems.
 
-    Examples:
+    Examples
     ---------
     
         >>> from river import metrics
@@ -23,14 +23,14 @@ class BalancedAccuracy(base.MultiClassMetric):
         >>> metric
         BalancedAccuracy: 62.50%
         
-        >>> y_true = [0, 1, 0, 0, 1]
-        >>> y_pred = [0, 1, 0, 0, 0]
+        >>> y_true = [0, 1, 0, 0, 1, 0]
+        >>> y_pred = [0, 1, 0, 0, 0, 1]
         >>> metric = metrics.BalancedAccuracy()
         >>> for yt, yp in zip(y_true, y_pred):
         ...     metric = metric.update(yt, yp)
         
         >>> metric
-        BalancedAccuracy: 75.00%
+        BalancedAccuracy: 62.50%
         
     """
     
