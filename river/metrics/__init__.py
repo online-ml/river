@@ -8,6 +8,7 @@ the `update` method of each binary metric. You will obtain incorrect results if 
 """
 
 from .accuracy import Accuracy
+from .balanced_accuracy import BalancedAccuracy
 from .base import Metric
 from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
@@ -63,6 +64,7 @@ from ._performance_evaluator import _RollingMTRegressionReport
 
 __all__ = [
     'Accuracy',
+    'BalancedAccuracy',
     'ClassificationReport',
     'CohenKappa',
     'ConfusionMatrix',
