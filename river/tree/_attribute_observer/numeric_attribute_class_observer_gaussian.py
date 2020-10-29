@@ -1,8 +1,10 @@
+import typing
 import math
+from river.base.typing import ClfTarget
 
 from river.proba import Gaussian
-from river.tree._attribute_test import NumericAttributeBinaryTest
-from river.tree._attribute_test import AttributeSplitSuggestion
+from .._attribute_test import NumericAttributeBinaryTest
+from .._attribute_test import AttributeSplitSuggestion
 from .attribute_observer import AttributeObserver
 
 
@@ -13,9 +15,9 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
 
     def __init__(self, n_bins: int = 10):
         super().__init__()
-        self._min_per_class = {}
-        self._max_per_class = {}
-        self._att_dist_per_class = {}
+        self._min_per_class: typing.Dict[ClfTarget, float] = {}
+        self._max_per_class: typing.Dict[ClfTarget, float] = {}
+        self._att_dist_per_class: typing.Dict[ClfTarget, Gaussian] = {}
         self.n_bins = n_bins
 
     def update(self, att_val, class_val, sample_weight):

@@ -5,12 +5,9 @@ from river.utils.skmultiflow_utils import check_random_state
 
 from river import base
 
-from ._nodes import RandomActiveLearningNodeMean
-from ._nodes import InactiveLearningNodeMean
-from ._nodes import RandomActiveLearningNodeModel
-from ._nodes import InactiveLearningNodeModel
-from ._nodes import RandomActiveLearningNodeAdaptive
-from ._nodes import InactiveLearningNodeAdaptive
+from ._nodes import RandomLearningNodeMean
+from ._nodes import RandomLearningNodeModel
+from ._nodes import RandomLearningNodeAdaptive
 
 
 class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
@@ -27,10 +24,10 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leaves.
-        | 'mean' - Target mean
-        | 'model' - Uses the model defined in `leaf_model`
-        | 'adaptive' - Chooses between 'mean' and 'model' dynamically
+        Prediction mechanism used at leaves.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
         The regression model used to provide responses if `leaf_prediction='model'`. If not
         provided an instance of `river.linear_model.LinearRegression` with the default
@@ -47,13 +44,15 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
     max_features
         Number of randomly selected features to act as split candidates at each attempt.
     seed
-            If int, seed is the seed used by the random number generator;
-            If RandomState instance, seed is the random number generator;
-            If None, the random number generator is the RandomState instance
-            used by `np.random`.
+        If int, seed is the seed used by the random number generator;</br>
+        If RandomState instance, seed is the random number generator;</br>
+        If None, the random number generator is the RandomState instance
+        used by `np.random`.
     **kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
+    Notes
+    -----
     This is the base-estimator of the Adaptive Random Forest Regressor ensemble learner (see
     `river.ensemble.AdaptiveRandomForestRegressor`). This Hoeffding Tree Regressor includes a
     max_features parameter, which defines the number of randomly selected features to be
@@ -86,7 +85,7 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
         self.seed = seed
         self._rng = check_random_state(self.seed)
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.
@@ -106,33 +105,19 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
             else:
                 leaf_model = deepcopy(parent._leaf_model)
 
-        if is_active:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return RandomActiveLearningNodeMean(
-                    initial_stats, depth, self.max_features, seed)
-            elif self.leaf_prediction == self._MODEL:
-                return RandomActiveLearningNodeModel(
-                    initial_stats, depth, leaf_model, self.max_features, seed)
-            else:  # adaptive learning node
-                new_adaptive = RandomActiveLearningNodeAdaptive(
-                    initial_stats, depth, leaf_model, self.max_features, seed)
-                if parent is not None:
-                    new_adaptive._fmse_mean = parent._fmse_mean
-                    new_adaptive._fmse_model = parent._fmse_model
+        if self.leaf_prediction == self._TARGET_MEAN:
+            return RandomLearningNodeMean(initial_stats, depth, self.max_features, seed)
+        elif self.leaf_prediction == self._MODEL:
+            return RandomLearningNodeModel(
+                initial_stats, depth, self.max_features, seed, leaf_model=leaf_model)
+        else:  # adaptive learning node
+            new_adaptive = RandomLearningNodeAdaptive(
+                initial_stats, depth, self.max_features, seed, leaf_model=leaf_model)
+            if parent is not None:
+                new_adaptive._fmse_mean = parent._fmse_mean
+                new_adaptive._fmse_model = parent._fmse_model
 
-                return new_adaptive
-        else:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return InactiveLearningNodeMean(initial_stats, depth)
-            elif self.leaf_prediction == self._MODEL:
-                return InactiveLearningNodeModel(initial_stats, depth, leaf_model)
-            else:  # adaptive learning node
-                new_adaptive = InactiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
-                if parent is not None:
-                    new_adaptive._fmse_mean = parent._fmse_mean
-                    new_adaptive._fmse_mean = parent._fmse_model
-
-                return new_adaptive
+            return new_adaptive
 
     def new_instance(self):
         return self.__class__(**self._get_params())

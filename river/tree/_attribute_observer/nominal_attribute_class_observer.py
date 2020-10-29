@@ -1,6 +1,6 @@
-from river.tree._attribute_test import AttributeSplitSuggestion
-from river.tree._attribute_test import NominalAttributeBinaryTest
-from river.tree._attribute_test import NominalAttributeMultiwayTest
+from .._attribute_test import AttributeSplitSuggestion
+from .._attribute_test import NominalAttributeBinaryTest
+from .._attribute_test import NominalAttributeMultiwayTest
 from .attribute_observer import AttributeObserver
 
 

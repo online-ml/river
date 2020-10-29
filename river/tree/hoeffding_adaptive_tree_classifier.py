@@ -2,8 +2,6 @@ from river.tree import HoeffdingTreeClassifier
 from river.utils.skmultiflow_utils import add_dict_values
 from river.utils.math import softmax
 
-from ._nodes import InactiveLeaf
-from ._nodes import InactiveLearningNodeMC
 from ._nodes import FoundNode
 from ._nodes import SplitNode
 from ._nodes import LearningNode
@@ -21,19 +19,19 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
-        | 'hellinger' - Helinger Distance
+        Split criterion to use.</br>
+        - 'gini' - Gini</br>
+        - 'info_gain' - Information Gain</br>
+        - 'hellinger' - Helinger Distance</br>
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leafs.</br>
+        - 'mc' - Majority Class</br>
+        - 'nb' - Naive Bayes</br>
+        - 'nba' - Naive Bayes Adaptive</br>
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -47,11 +45,11 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
     seed
-       If int, `seed` is the seed used by the random number generator;
-       If RandomState instance, `seed` is the random number generator;
+       If int, `seed` is the seed used by the random number generator;</br>
+       If RandomState instance, `seed` is the random number generator;</br>
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
-       bootstrap sampling.
+       bootstrap sampling.</br>
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -66,10 +64,10 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     References
     ----------
-    .. [1] Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
+    [^1]: Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
        In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
        Heidelberg, 2009.
-    .. [2] Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
+    [^2]: Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
        windowing." In Proceedings of the 2007 SIAM international conference on data mining,
        pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
@@ -144,10 +142,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
-        if isinstance(self._tree_root, InactiveLeaf):
-            self._tree_root.learn_one(x, y, weight=sample_weight, tree=self)
-        else:
-            self._tree_root.learn_one(x, y, sample_weight, self, None, -1)
+        self._tree_root.learn_one(x, y, sample_weight=sample_weight, tree=self, parent=None,
+                                  parent_branch=-1)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -158,10 +154,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     def predict_proba_one(self, x):
         proba = {}
         if self._tree_root is not None:
-            if isinstance(self._tree_root, InactiveLeaf):
-                found_nodes = [self._tree_root.filter_instance_to_leaf(x, None, -1)]
-            else:
-                found_nodes = self._filter_instance_to_leaves(x, None, -1)
+            found_nodes = self._filter_instance_to_leaves(x, None, -1)
             for fn in found_nodes:
                 # parent_branch == -999 means that the node is the root of an alternate tree.
                 # In other words, the alternate tree is a single leaf. It is probably not accurate
@@ -181,22 +174,18 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self._tree_root.filter_instance_to_leaves(x, split_parent, parent_branch, nodes)
         return nodes
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         if parent is not None:
             depth = parent.depth + 1
         else:
             depth = 0
-        if is_active:
-            return AdaLearningNodeClassifier(
-                initial_stats=initial_stats, depth=depth, adwin_delta=self.adwin_confidence,
-                seed=self.seed)
-        else:
-            return InactiveLearningNodeMC(initial_stats, depth=depth)
+
+        return AdaLearningNodeClassifier(stats=initial_stats, depth=depth,
+                                         adwin_delta=self.adwin_confidence, seed=self.seed)
 
     def _new_split_node(self, split_test, target_stats=None, depth=0):
-        return AdaSplitNodeClassifier(
-            split_test=split_test, stats=target_stats, depth=depth,
-            adwin_delta=self.adwin_confidence, seed=self.seed)
+        return AdaSplitNodeClassifier(split_test=split_test, stats=target_stats, depth=depth,
+                                      adwin_delta=self.adwin_confidence, seed=self.seed)
 
     # Override river.tree.BaseHoeffdingTree to include alternate trees
     def __find_learning_nodes(self, node, parent, parent_branch, found):
@@ -211,40 +200,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                 if split_node._alternate_tree is not None:
                     self.__find_learning_nodes(
                         split_node._alternate_tree, split_node, -999, found)
-
-    # Override river.tree.BaseHoeffdingTree to include alternate trees
-    def _deactivate_leaf(self, to_deactivate, parent, parent_branch):
-        new_leaf = self._new_learning_node(to_deactivate.stats, parent=to_deactivate,
-                                           is_active=False)
-        new_leaf.depth -= 1  # To ensure we do not skip a tree level
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            # Corner case where a leaf is the alternate tree
-            if parent_branch == -999:
-                new_leaf.depth -= 1  # To ensure we do not skip a tree level
-                parent._alternate_tree = new_leaf
-
-            else:
-                parent.set_child(parent_branch, new_leaf)
-        self._n_active_leaves -= 1
-        self._n_inactive_leaves += 1
-
-    # Override river.tree.BaseHoeffdingTree to include alternate trees
-    def _activate_leaf(self, to_activate, parent, parent_branch):
-        new_leaf = self._new_learning_node(to_activate.stats, parent=to_activate)
-        new_leaf.depth -= 1  # To ensure we do not skip a tree level
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            # Corner case where a leaf is the alternate tree
-            if parent_branch == -999:
-                new_leaf.depth -= 1  # To ensure we do not skip a tree level
-                parent._alternate_tree = new_leaf
-            else:
-                parent.set_child(parent_branch, new_leaf)
-        self._n_active_leaves += 1
-        self._n_inactive_leaves -= 1
 
     @classmethod
     def _default_params(cls):

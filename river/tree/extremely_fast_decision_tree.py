@@ -5,17 +5,16 @@ from river.tree import HoeffdingTreeClassifier
 from ._split_criterion import GiniSplitCriterion
 from ._split_criterion import InfoGainSplitCriterion
 from ._split_criterion import HellingerDistanceCriterion
-from ._nodes import ActiveLeaf
-from ._nodes import LearningNode
 from ._nodes import EFDTSplitNode
-from ._nodes import EFDTActiveLearningNodeMC
-from ._nodes import EFDTInactiveLearningNodeMC
-from ._nodes import EFDTActiveLearningNodeNB
-from ._nodes import EFDTActiveLearningNodeNBA
+from ._nodes import EFDTLearningNodeMC
+from ._nodes import EFDTLearningNodeNB
+from ._nodes import EFDTLearningNodeNBA
 
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     """Extremely Fast Decision Tree classifier.
+
+    Also referred to as Hoeffding AnyTime Tree (HATT) classifier.
 
     Parameters
     ----------
@@ -26,19 +25,19 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     min_samples_reevaluate
         Number of instances a node should observe before reevaluating the best split.
     split_criterion
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
-        | 'hellinger' - Helinger Distance
+        Split criterion to use.</br>
+        - 'gini' - Gini</br>
+        - 'info_gain' - Information Gain</br>
+        - 'hellinger' - Helinger Distance</br>
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leafs.</br>
+        - 'mc' - Majority Class</br>
+        - 'nb' - Naive Bayes</br>
+        - 'nba' - Naive Bayes Adaptive</br>
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -109,7 +108,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         self.min_samples_reevaluate = min_samples_reevaluate
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
         if parent is None:
@@ -117,17 +116,14 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         else:
             depth = parent.depth + 1
 
-        if is_active:
-            if self._leaf_prediction == self._MAJORITY_CLASS:
-                return EFDTActiveLearningNodeMC(initial_stats, depth)
-            elif self._leaf_prediction == self._NAIVE_BAYES:
-                return EFDTActiveLearningNodeNB(initial_stats, depth)
-            else:  # NAIVE BAYES ADAPTIVE (default)
-                return EFDTActiveLearningNodeNBA(initial_stats, depth)
-        else:
-            return EFDTInactiveLearningNodeMC(initial_stats, depth)
+        if self._leaf_prediction == self._MAJORITY_CLASS:
+            return EFDTLearningNodeMC(initial_stats, depth)
+        elif self._leaf_prediction == self._NAIVE_BAYES:
+            return EFDTLearningNodeNB(initial_stats, depth)
+        else:  # NAIVE BAYES ADAPTIVE (default)
+            return EFDTLearningNodeNBA(initial_stats, depth)
 
-    def _new_split_node(self, split_test, target_stats, depth, attribute_observers):
+    def _new_split_node(self, split_test, target_stats=None, depth=0, attribute_observers=None):
         """Create a new split node."""
         return EFDTSplitNode(split_test, target_stats, depth, attribute_observers)
 
@@ -152,8 +148,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         the instance and sort the instance.
         * Reevaluate the best split for each internal node.
         * Attempt to split the leaf.
-        """
 
+        Returns
+        -------
+        self
+        """
         # Updates the set of observed classes
         self.classes.add(y)
 
@@ -174,8 +173,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         """Process nodes from the root to the leaf where the instance belongs.
 
         1. If the node is internal:
-            1.1 Internal node learn from instance
-            1.2 If the number of samples seen since the last reevaluation are greater than
+            1.1 If the number of samples seen since the last reevaluation are greater than
             `min_samples_reevaluate`, reevaluate the best split for the internal node.
         2. If the node is leaf, attempt to split leaf node.
 
@@ -194,12 +192,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         branch_index
             Parent node's branch index.
         """
-
-        # skip learning node and update SplitNode because the learning node already learnt from
-        # instance.
-        if isinstance(node, EFDTSplitNode):
-            node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-
+        if not node.is_leaf():
             old_weight = node.last_split_reevaluation_at
             new_weight = node.total_weight
             stop_flag = False
@@ -215,9 +208,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     child = node.get_child(child_index)
                     if child is not None:
                         self._process_nodes(x, y, sample_weight, child, node, child_index)
-        elif self._growth_allowed and isinstance(node, ActiveLeaf):
+        elif self._growth_allowed and node.is_active():
             if node.depth >= self.max_depth:  # Max depth reached
-                self._deactivate_leaf(node, parent, branch_index)
+                node.deactivate()
+                self._n_inactive_leaves += 1
+                self._n_active_leaves -= 1
             else:
                 weight_seen = node.total_weight
                 weight_diff = weight_seen - node.last_split_attempt_at
@@ -253,9 +248,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._n_active_leaves += 1
 
-        if isinstance(leaf_node, LearningNode):
-            learning_node = leaf_node
-            learning_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+        leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -319,13 +312,13 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 # Get x_null
                 x_null = node.null_split(split_criterion)
 
-                #  Compute Hoeffding bound
+                # Compute Hoeffding bound
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(node.stats), self.split_confidence,
                     node.total_weight)
 
                 if x_null.merit - x_best.merit > hoeffding_bound:
-                    # Kill subtree & replace the EFDTSplitNode by an EFDTActiveLearningNode
+                    # Kill subtree & replace the EFDTSplitNode by an EFDTLearningNode
                     best_split = self._kill_subtree(node)
 
                     # update EFDT
