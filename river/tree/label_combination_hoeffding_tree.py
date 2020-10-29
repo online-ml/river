@@ -1,5 +1,4 @@
-from collections import defaultdict
-
+import typing
 from river import base
 from river.tree import HoeffdingTreeClassifier
 from river.utils.math import softmax
@@ -24,19 +23,19 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
     split_criterion
-        | Split criterion to use.
-        | 'gini' - Gini
-        | 'info_gain' - Information Gain
-        | 'hellinger' - Helinger Distance
+        Split criterion to use.</br>
+        - 'gini' - Gini</br>
+        - 'info_gain' - Information Gain</br>
+        - 'hellinger' - Helinger Distance</br>
     split_confidence
         Allowed error in split decision, a value closer to 0 takes longer to decide.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mc' - Majority Class
-        | 'nb' - Naive Bayes
-        | 'nba' - Naive Bayes Adaptive
+        Prediction mechanism used at leafs.</br>
+        - 'mc' - Majority Class</br>
+        - 'nb' - Naive Bayes</br>
+        - 'nba' - Naive Bayes Adaptive</br>
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -84,10 +83,10 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
                          nominal_attributes=nominal_attributes,
                          **kwargs)
 
-        self._next_label_code = 0
-        self._label_map = {}
-        self._r_label_map = {}
-        self._labels = set()
+        self._next_label_code: int = 0
+        self._label_map: typing.Dict[typing.Tuple, int] = {}
+        self._r_label_map: typing.Dict[int, typing.Tuple] = {}
+        self._labels: typing.Set[typing.Hashable] = set()
 
     def learn_one(self, x, y, *, sample_weight=1.):
         """ Update the Multi-label Hoeffding Tree Classifier.
@@ -103,7 +102,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
 
         Returns
         -------
-            self
+        self
         """
         self._labels.update(y.keys())
 
@@ -145,8 +144,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
 
         Returns
         -------
-            Predicted labels.
-
+        Predicted labels.
         """
         if self._tree_root is None:
             return None

@@ -1,21 +1,31 @@
-from river.tree._tree_utils import do_naive_bayes_prediction
-from river.tree._attribute_observer import NominalAttributeClassObserver
-from river.tree._attribute_observer import NumericAttributeClassObserverGaussian
+from .._tree_utils import do_naive_bayes_prediction
+from .._attribute_observer import NominalAttributeClassObserver
+from .._attribute_observer import NumericAttributeClassObserverGaussian
 
-from .base import LearningNode, ActiveLeaf, InactiveLeaf
-
-
-class ActiveLeafClass(ActiveLeaf):
-    @staticmethod
-    def new_nominal_attribute_observer():
-        return NominalAttributeClassObserver()
-
-    @staticmethod
-    def new_numeric_attribute_observer():
-        return NumericAttributeClassObserverGaussian()
+from .base import LearningNode
 
 
 class LearningNodeMC(LearningNode):
+    """Learning node that always predicts the majority class.
+
+    Parameters
+    ----------
+    stats
+        Initial class observations.
+    depth
+        The depth of the node.
+    """
+    def __init__(self, stats, depth):
+        super().__init__(stats, depth)
+
+    @staticmethod
+    def new_nominal_attribute_observer(**kwargs):
+        return NominalAttributeClassObserver(**kwargs)
+
+    @staticmethod
+    def new_numeric_attribute_observer(**kwargs):
+        return NumericAttributeClassObserverGaussian(**kwargs)
+
     def update_stats(self, y, sample_weight):
         try:
             self.stats[y] += sample_weight
@@ -31,11 +41,27 @@ class LearningNodeMC(LearningNode):
 
         Returns
         -------
-        float
             Total weight seen.
 
         """
         return sum(self.stats.values()) if self.stats else 0
+
+    def calculate_promise(self):
+        """Calculate how likely a node is going to be split.
+
+        A node with a (close to) pure class distribution will less likely be split.
+
+        Returns
+        -------
+            A small value indicates that the node has seen more samples of a
+            given class than the other classes.
+
+        """
+        total_seen = sum(self._stats.values())
+        if total_seen > 0:
+            return total_seen - max(self._stats.values())
+        else:
+            return 0
 
     def observed_class_distribution_is_pure(self):
         """Check if observed class distribution is pure, i.e. if all samples
@@ -43,12 +69,10 @@ class LearningNodeMC(LearningNode):
 
         Returns
         -------
-        boolean
             True if observed number of classes is less than 2, False otherwise.
-
         """
         count = 0
-        for _, weight in self._stats.items():
+        for weight in self._stats.values():
             if weight != 0:
                 count += 1
                 if count == 2:  # No need to count beyond this point
@@ -57,16 +81,50 @@ class LearningNodeMC(LearningNode):
 
 
 class LearningNodeNB(LearningNodeMC):
+    """Learning node that uses Naive Bayes models.
+
+    Parameters
+    ----------
+    stats
+        Initial class observations.
+    depth
+        The depth of the node.
+    """
+    def __init__(self, stats, depth):
+        super().__init__(stats, depth)
+
     def predict_one(self, x, *, tree=None):
-        if self.total_weight >= tree.nb_threshold:
+        if self.is_active() and self.total_weight >= tree.nb_threshold:
             return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
         else:
             return self.stats
 
+    def disable_attribute(self, att_index):
+        """Disable an attribute observer.
+
+        Disabled in Nodes using Naive Bayes, since poor attributes are used in
+        Naive Bayes calculation.
+
+        Parameters
+        ----------
+        att_index
+            Attribute index.
+        """
+        pass
+
 
 class LearningNodeNBA(LearningNodeMC):
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
+    """Learning node that uses Adaptive Naive Bayes models.
+
+    Parameters
+    ----------
+    stats
+        Initial class observations.
+    depth
+        The depth of the node.
+    """
+    def __init__(self, stats, depth):
+        super().__init__(stats, depth)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
@@ -85,14 +143,16 @@ class LearningNodeNBA(LearningNodeMC):
             The Hoeffding Tree to update.
 
         """
-        if self.stats == {}:
-            # All classes equal, give preference to the one that appears the most
-            self._mc_correct_weight += sample_weight
-        elif max(self.stats, key=self.stats.get) == y:
-            self._mc_correct_weight += sample_weight
-        nb_prediction = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
-        if nb_prediction is not None and max(nb_prediction, key=nb_prediction.get) == y:
-            self._nb_correct_weight += sample_weight
+        if self.is_active():
+            if len(self.stats) == 0:
+                # Empty node, assume the majority class will be the best option
+                self._mc_correct_weight += sample_weight
+            elif max(self.stats, key=self.stats.get) == y:  # Majority class
+                self._mc_correct_weight += sample_weight
+
+            nb_prediction = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
+            if nb_prediction is not None and max(nb_prediction, key=nb_prediction.get) == y:
+                self._nb_correct_weight += sample_weight
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
@@ -108,86 +168,13 @@ class LearningNodeNBA(LearningNodeMC):
 
         Returns
         -------
-        dict
-            Class votes for the given instance.
+        Class votes for the given instance.
 
         """
-        if self._mc_correct_weight > self._nb_correct_weight:
+        if self.is_active() and self._nb_correct_weight >= self._mc_correct_weight:
+            return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
+        else:
             return self.stats
-        return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
-
-
-class ActiveLearningNodeMC(LearningNodeMC, ActiveLeafClass):
-    """Learning node that supports growth.
-
-    Parameters
-    ----------
-    initial_stats
-        Initial class observations
-    depth
-        The depth of the node.
-    """
-
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-
-class InactiveLearningNodeMC(LearningNodeMC, InactiveLeaf):
-    """Inactive learning node that does not grow.
-
-    Parameters
-    ----------
-    initial_stats
-        Initial class observations
-    depth
-        The depth of the node.
-    """
-
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-
-class ActiveLearningNodeNB(LearningNodeNB, ActiveLeafClass):
-    """Learning node that uses Naive Bayes models.
-
-    Parameters
-    ----------
-    initial_stats
-        Initial class observations
-    depth
-        The depth of the node.
-    """
-
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-    def disable_attribute(self, att_index):
-        """Disable an attribute observer.
-
-        Disabled in Nodes using Naive Bayes, since poor attributes are used in
-        Naive Bayes calculation.
-
-        Parameters
-        ----------
-        att_index
-            Attribute index.
-        """
-        pass
-
-
-class ActiveLearningNodeNBA(LearningNodeNBA, ActiveLeafClass):
-    """Learning node that uses Adaptive Naive Bayes models.
-
-    Parameters
-    ----------
-    initial_stats
-        Initial class observations
-    depth
-        The depth of the node.
-    """
-
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
 
     def disable_attribute(self, att_index):
         """Disable an attribute observer.
