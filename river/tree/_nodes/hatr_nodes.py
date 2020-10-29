@@ -6,18 +6,16 @@ from river.utils.skmultiflow_utils import check_random_state
 
 from .base import FoundNode
 from .base import SplitNode
-from .base import ActiveLeaf
-from .base import InactiveLeaf
 from .hatc_nodes import AdaNode
-from .htr_nodes import ActiveLearningNodeAdaptive
+from .htr_nodes import LearningNodeAdaptive
 
 
-class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
+class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
     """Learning Node of the Hoeffding Adaptive Tree regressor.
 
     Parameters
     ----------
-    initial_stats
+    stats
         Initial class observations.
     depth
         The depth of the learning node in the tree.
@@ -27,8 +25,8 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
         Seed to control the generation of random numbers and support reproducibility.
     """
 
-    def __init__(self, initial_stats, depth, leaf_model, adwin_delta, seed):
-        super().__init__(initial_stats, depth, leaf_model)
+    def __init__(self, stats, depth, leaf_model, adwin_delta, seed):
+        super().__init__(stats, depth, leaf_model)
 
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
@@ -36,7 +34,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
         self._rng = check_random_state(seed)
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
-        self._n = 0
+        self._error_normalizer = Var(ddof=1)
 
     @property
     def n_leaves(self):
@@ -56,8 +54,8 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
     def kill_tree_children(self, hatr):
         pass
 
-    def learn_one(self, X, y, sample_weight, tree, parent, parent_branch):
-        y_pred = self.predict_one(X, tree=tree)
+    def learn_one(self, x, y, *, sample_weight=1., tree=None, parent=None, parent_branch=-1):
+        y_pred = self.predict_one(x, tree=tree)
         normalized_error = normalize_error(y, y_pred, self)
 
         if tree.bootstrap_sampling:
@@ -79,14 +77,16 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
             self._error_change = False
 
         # Update learning model
-        super().learn_one(X, y, sample_weight=sample_weight, tree=tree)
+        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
         weight_seen = self.total_weight
 
         if weight_seen - self.last_split_attempt_at >= tree.grace_period:
             if self.depth >= tree.max_depth:
                 # Depth-based pre-pruning
-                tree._deactivate_leaf(self, parent, parent_branch)
+                self.deactivate()
+                tree._n_inactive_leaves += 1
+                tree._n_active_leaves -= 1
             else:
                 tree._attempt_to_split(self, parent, parent_branch)
                 self.last_split_attempt_at = weight_seen
@@ -101,7 +101,7 @@ class AdaActiveLearningNodeRegressor(ActiveLearningNodeAdaptive, AdaNode):
             return super().predict_one(x, tree=tree)
 
     # Override AdaNode: enable option vote (query potentially more than one leaf for responses)
-    def filter_instance_to_leaves(self, X, parent, parent_branch, found_nodes):
+    def filter_instance_to_leaves(self, x, parent, parent_branch, found_nodes):
         found_nodes.append(FoundNode(self, parent, parent_branch))
 
 
@@ -132,7 +132,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         self._rng = check_random_state(seed)
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
-        self._n = 0
+        self._error_normalizer = Var(ddof=1)
 
     @property
     def n_leaves(self):
@@ -197,12 +197,13 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                     and self._alternate_tree.error_width > tree.drift_window_threshold:
                 old_error_rate = self.error_estimation
                 alt_error_rate = self._alternate_tree.error_estimation
-                fDelta = .05
-                fN = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
+                f_delta = .05
+                f_n = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
 
                 try:
                     bound = math.sqrt(
-                        2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / fDelta) * fN
+                        2.0 * old_error_rate * (1.0 - old_error_rate)
+                        * math.log(2.0 / f_delta) * f_n
                     )
                 except ValueError:  # error rate exceeds 1, so we clip it
                     bound = 0.
@@ -226,15 +227,13 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
 
         # Learn one sample in alternate tree and child nodes
         if self._alternate_tree is not None:
-            self._alternate_tree.learn_one(x, y, sample_weight, tree, parent, parent_branch)
+            self._alternate_tree.learn_one(x, y, sample_weight=sample_weight, tree=tree,
+                                           parent=parent, parent_branch=parent_branch)
         child_branch = self.instance_child_index(x)
         child = self.get_child(child_branch)
         if child is not None:
-            try:
-                child.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                                parent_branch=child_branch)
-            except TypeError:  # Inactive node
-                child.learn_one(x, y, sample_weight=sample_weight, tree=tree)
+            child.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
+                            parent_branch=child_branch)
         # Instance contains a categorical value previously unseen by the split node
         elif self.split_test.branch_for_instance(x) < 0:
             # Creates a new learning node to encompass the new observed feature
@@ -244,7 +243,8 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                 x[self.split_test.attrs_test_depends_on()[0]])
             self.set_child(branch_id, leaf_node)
             tree._n_active_leaves += 1
-            leaf_node.learn_one(x, y, sample_weight, tree, parent, parent_branch)
+            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=parent,
+                                parent_branch=parent_branch)
 
     def predict_one(self, x, *, tree=None):
         # Called in case an emerging categorical feature has no path down the split node to be
@@ -265,11 +265,11 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                     # Recursive delete of SplitNodes
                     child.kill_tree_children(tree)
                     tree._n_decision_nodes -= 1
-
-                if isinstance(child, ActiveLeaf):
-                    tree._n_active_leaves -= 1
-                elif isinstance(child, InactiveLeaf):
-                    tree._n_inactive_leaves -= 1
+                else:
+                    if child.is_active():
+                        tree._n_active_leaves -= 1
+                    else:
+                        tree._n_inactive_leaves -= 1
 
                 self._children[child_id] = None
 
@@ -279,10 +279,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         if child_index >= 0:
             child = self.get_child(child_index)
             if child is not None:
-                try:
-                    child.filter_instance_to_leaves(x, parent, parent_branch, found_nodes)
-                except AttributeError:  # inactive leaf
-                    found_nodes.append(child.filter_instance_to_leaf(x, parent, parent_branch))
+                child.filter_instance_to_leaves(x, parent, parent_branch, found_nodes)
             else:
                 found_nodes.append(FoundNode(None, self, child_index))
         if self._alternate_tree is not None:
@@ -291,22 +288,12 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
 
 def normalize_error(y_true, y_pred, node):
     drift_input = y_true - y_pred
+    node._error_normalizer.update(drift_input)
 
-    node._n += 1
-    # Welford's algorithm update step
-    if node._n == 1:
-        node._pM = node._M = drift_input
-        node._pS = node._S = 0.
-
+    if node._error_normalizer.mean.n == 1:
         return 0.5  # The expected error is the normalized mean error
-
-    sd = math.sqrt(node._S / (node._n - 1))
-
-    node._M = node._pM + (drift_input - node._pM) / node._n
-    node._S = node._pS + (drift_input - node._pM) * (drift_input - node._M)
-    # Save previously calculated values for the next iteration
-    node._pM = node._M
-    node._pS = node._S
+    else:
+        sd = math.sqrt(node._error_normalizer.sigma)
 
     # We assume the error follows a normal distribution -> (empirical rule) 99.73% of the values
     # lie  between [mean - 3*sd, mean + 3*sd]. We assume this range for the normalized data.

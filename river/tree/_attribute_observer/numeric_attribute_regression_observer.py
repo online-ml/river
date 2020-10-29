@@ -1,9 +1,9 @@
 from river.stats import Var
 from river.utils import VectorDict
 
-from river.tree._attribute_test import NumericAttributeBinaryTest
-from river.tree._attribute_test import AttributeSplitSuggestion
-from river.tree._tree_utils import reg_stat_factory
+from .._attribute_test import NumericAttributeBinaryTest
+from .._attribute_test import AttributeSplitSuggestion
+from .._tree_utils import reg_stat_factory
 from .attribute_observer import AttributeObserver
 
 

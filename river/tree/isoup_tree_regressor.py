@@ -6,12 +6,9 @@ from river import linear_model
 from river.tree import HoeffdingTreeRegressor
 
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
-from ._nodes import ActiveLearningNodeMean
-from ._nodes import ActiveLearningNodeModelMultiTarget
-from ._nodes import ActiveLearningNodeAdaptiveMultiTarget
-from ._nodes import InactiveLearningNodeMean
-from ._nodes import InactiveLearningNodeModelMultiTarget
-from ._nodes import InactiveLearningNodeAdaptiveMultiTarget
+from ._nodes import LearningNodeMeanMultiTarget
+from ._nodes import LearningNodeModelMultiTarget
+from ._nodes import LearningNodeAdaptiveMultiTarget
 
 
 class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
@@ -32,15 +29,15 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mean' - Target mean
-        | 'model' - Uses the model defined in `leaf_model`
-        | 'adaptive' - Chooses between 'mean' and 'model' dynamically
+        Prediction mechanism used at leafs.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
         The regression model(s) used to provide responses if `leaf_prediction='model'`. It can
         be either a regressor (in which case it is going to be replicated to all the targets)
         or a dictionary whose keys are target identifiers, and the values are instances of
-        `river.base.Regressor.` If not provided instances of `river.linear_model.LinearRegression`
+        `river.base.Regressor.` If not provided, instances of `river.linear_model.LinearRegression`
         with the default hyperparameters are used for all the targets. If a dictionary is passed
         and not all target models are specified, copies from the first model match in the
         dictionary will be used to the remaining targets.
@@ -58,7 +55,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
     References
     ----------
-    .. [1] Aljaž Osojnik, Panče Panov, and Sašo Džeroski. "Tree-based methods for online
+    [^1]: Aljaž Osojnik, Panče Panov, and Sašo Džeroski. "Tree-based methods for online
         multi-target regression." Journal of Intelligent Information Systems 50.2 (2018): 315-339.
 
     Examples
@@ -100,7 +97,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                  split_confidence: float = 1e-7,
                  tie_threshold: float = 0.05,
                  leaf_prediction: str = 'model',
-                 leaf_model: typing.Union[base.Regressor, dict] = None,
+                 leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
                  **kwargs):
@@ -141,7 +138,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     def _new_split_criterion(self):
         return IntraClusterVarianceReductionSplitCriterion()
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
         the tree configuration.
         """
@@ -160,34 +157,19 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                     # Due to an emerging category in a nominal feature, a split node was reached
                     leaf_models = {}
 
-        if is_active:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return ActiveLearningNodeMean(initial_stats, depth)
-            elif self.leaf_prediction == self._MODEL:
-                return ActiveLearningNodeModelMultiTarget(initial_stats, depth, leaf_models)
-            else:  # adaptive learning node
-                new_adaptive = ActiveLearningNodeAdaptiveMultiTarget(initial_stats, depth,
-                                                                     leaf_models)
-                if parent is not None:
-                    new_adaptive._fmse_mean = parent._fmse_mean.copy()
-                    new_adaptive._fmse_model = parent._fmse_model.copy()
+        if self.leaf_prediction == self._TARGET_MEAN:
+            return LearningNodeMeanMultiTarget(initial_stats, depth)
+        elif self.leaf_prediction == self._MODEL:
+            return LearningNodeModelMultiTarget(initial_stats, depth, leaf_models)
+        else:  # adaptive learning node
+            new_adaptive = LearningNodeAdaptiveMultiTarget(initial_stats, depth, leaf_models)
+            if parent is not None:
+                new_adaptive._fmse_mean = parent._fmse_mean.copy()
+                new_adaptive._fmse_model = parent._fmse_model.copy()
 
-                return new_adaptive
-        else:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return InactiveLearningNodeMean(initial_stats, depth)
-            elif self.leaf_prediction == self._MODEL:
-                return InactiveLearningNodeModelMultiTarget(initial_stats, depth, leaf_models)
-            else:  # adaptive learning node
-                new_adaptive = InactiveLearningNodeAdaptiveMultiTarget(initial_stats, depth,
-                                                                       leaf_models)
-                if parent is not None:
-                    new_adaptive._fmse_mean = parent._fmse_mean.copy()
-                    new_adaptive._fmse_mean = parent._fmse_model.copy()
+            return new_adaptive
 
-                return new_adaptive
-
-    def learn_one(self, x: dict, y: typing.Dict[typing.Union[str, int], base.typing.RegTarget], *,
+    def learn_one(self, x: dict, y: typing.Dict[typing.Hashable, base.typing.RegTarget], *,
                   sample_weight: float = 1.) -> 'iSOUPTreeRegressor':
         """Incrementally train the model with one sample.
 
@@ -216,7 +198,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
         return self
 
-    def predict_one(self, x: dict) -> typing.Union[typing.Dict[typing.Union[str, int], base.typing.RegTarget], None]:
+    def predict_one(self, x: dict) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
         """Predict the target values for a given instance.
 
         Parameters
