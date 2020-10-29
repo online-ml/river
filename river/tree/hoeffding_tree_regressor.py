@@ -6,15 +6,11 @@ from river import linear_model
 
 from ._base_tree import BaseHoeffdingTree
 from ._split_criterion import VarianceReductionSplitCriterion
-from ._nodes import ActiveLeaf
 from ._nodes import SplitNode
 from ._nodes import LearningNode
-from ._nodes import ActiveLearningNodeMean
-from ._nodes import InactiveLearningNodeMean
-from ._nodes import ActiveLearningNodeModel
-from ._nodes import InactiveLearningNodeModel
-from ._nodes import ActiveLearningNodeAdaptive
-from ._nodes import InactiveLearningNodeAdaptive
+from ._nodes import LearningNodeMean
+from ._nodes import LearningNodeModel
+from ._nodes import LearningNodeAdaptive
 
 
 class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
@@ -31,10 +27,10 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mean' - Target mean
-        | 'model' - Uses the model defined in `leaf_model`
-        | 'adaptive' - Chooses between 'mean' and 'model' dynamically
+        Prediction mechanism used at leafs.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
         The regression model used to provide responses if `leaf_prediction='model'`. If not
         provided an instance of `river.linear_model.LinearRegression` with the default
@@ -102,7 +98,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                  **kwargs):
         super().__init__(max_depth=max_depth, **kwargs)
 
-        self._split_criterion = 'vr'
+        self._split_criterion: str = 'vr'
         self.grace_period = grace_period
         self.split_confidence = split_confidence
         self.tie_threshold = tie_threshold
@@ -132,7 +128,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     def _new_split_criterion(self):
         return VarianceReductionSplitCriterion()
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_learning_node(self, initial_stats=None, parent=None, **kwargs):
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.
@@ -151,30 +147,17 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 except AttributeError:
                     leaf_model = deepcopy(self.leaf_model)
 
-        if is_active:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return ActiveLearningNodeMean(initial_stats, depth)
-            elif self.leaf_prediction == self._MODEL:
-                return ActiveLearningNodeModel(initial_stats, depth, leaf_model)
-            else:  # adaptive learning node
-                new_adaptive = ActiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
-                if parent is not None:
-                    new_adaptive._fmse_mean = parent._fmse_mean
-                    new_adaptive._fmse_model = parent._fmse_model
+        if self.leaf_prediction == self._TARGET_MEAN:
+            return LearningNodeMean(initial_stats, depth)
+        elif self.leaf_prediction == self._MODEL:
+            return LearningNodeModel(initial_stats, depth, leaf_model)
+        else:  # adaptive learning node
+            new_adaptive = LearningNodeAdaptive(initial_stats, depth, leaf_model)
+            if parent is not None:
+                new_adaptive._fmse_mean = parent._fmse_mean
+                new_adaptive._fmse_model = parent._fmse_model
 
-                return new_adaptive
-        else:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return InactiveLearningNodeMean(initial_stats, depth)
-            elif self.leaf_prediction == self._MODEL:
-                return InactiveLearningNodeModel(initial_stats, depth, leaf_model)
-            else:  # adaptive learning node
-                new_adaptive = InactiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
-                if parent is not None:
-                    new_adaptive._fmse_mean = parent._fmse_mean
-                    new_adaptive._fmse_mean = parent._fmse_model
-
-                return new_adaptive
+            return new_adaptive
 
     def learn_one(self, x, y, *, sample_weight=1.):
         """Train the tree model on sample x and corresponding target y.
@@ -187,6 +170,10 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             Target value for sample x.
         sample_weight
             The weight of the sample.
+
+        Returns
+        -------
+        self
         """
 
         self._train_weight_seen_by_model += sample_weight
@@ -203,11 +190,13 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._n_active_leaves += 1
 
-        if isinstance(leaf_node, LearningNode):
+        if leaf_node.is_leaf():
             leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-            if self._growth_allowed and isinstance(leaf_node, ActiveLeaf):
+            if self._growth_allowed and leaf_node.is_active():
                 if leaf_node.depth >= self.max_depth:  # Max depth reached
-                    self._deactivate_leaf(leaf_node, found_node.parent, found_node.parent_branch)
+                    leaf_node.deactivate()
+                    self._n_active_leaves -= 1
+                    self._n_inactive_leaves += 1
                 else:
                     weight_seen = leaf_node.total_weight
                     weight_diff = weight_seen - leaf_node.last_split_attempt_at
@@ -217,7 +206,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                         leaf_node.last_split_attempt_at = weight_seen
         # Split node encountered a previously unseen categorical value (in a multi-way test),
         # so there is no branch to sort the instance to
-        elif isinstance(leaf_node, SplitNode) and leaf_node.split_test.max_branches() == -1:
+        elif not leaf_node.is_leaf() and leaf_node.split_test.max_branches() == -1:
             current = leaf_node
             leaf_node = self._new_learning_node(parent=current)
             branch_id = current.split_test.add_new_branch(
@@ -242,7 +231,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
 
         Returns
         -------
-            Predicted target value.
+        Predicted target value.
 
         """
         if self._tree_root is not None:
@@ -262,7 +251,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             # Model is empty
             return 0.
 
-    def _attempt_to_split(self, node: ActiveLeaf, parent: SplitNode, parent_idx: int):
+    def _attempt_to_split(self, node: LearningNode, parent: SplitNode, parent_idx: int):
         """Attempt to split a node.
 
         If the target's variance is high at the leaf node, then:
@@ -304,26 +293,28 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                     (second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
                         or hoeffding_bound < self.tie_threshold):
                 should_split = True
-            if self.remove_poor_atts:
-                poor_atts = set()
+            if self.remove_poor_attrs:
+                poor_attrs = set()
                 best_ratio = second_best_suggestion.merit / best_suggestion.merit
 
                 # Add any poor attribute to set
                 for i in range(len(best_split_suggestions)):
                     if best_split_suggestions[i].split_test is not None:
-                        split_atts = best_split_suggestions[i].split_test.\
+                        split_attrs = best_split_suggestions[i].split_test.\
                             attrs_test_depends_on()
-                        if len(split_atts) == 1:
+                        if len(split_attrs) == 1:
                             if (best_split_suggestions[i].merit / best_suggestion.merit
                                     < best_ratio - 2 * hoeffding_bound):
-                                poor_atts.add(split_atts[0])
-                for poor_att in poor_atts:
+                                poor_attrs.add(split_attrs[0])
+                for poor_att in poor_attrs:
                     node.disable_attribute(poor_att)
         if should_split:
             split_decision = best_split_suggestions[-1]
             if split_decision.split_test is None:
                 # Preprune - null wins
-                self._deactivate_leaf(node, parent, parent_idx)
+                node.deactivate()
+                self._n_inactive_leaves += 1
+                self._n_active_leaves -= 1
             else:
                 new_split = self._new_split_node(split_decision.split_test, node.stats, node.depth)
                 for i in range(split_decision.num_splits()):

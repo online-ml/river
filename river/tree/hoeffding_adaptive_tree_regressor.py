@@ -2,17 +2,10 @@ from copy import deepcopy
 
 from river.tree import HoeffdingTreeRegressor
 from river import base
-from river import linear_model
 
 from ._nodes import FoundNode
-from ._nodes import LearningNode
-from ._nodes import SplitNode
 from ._nodes import AdaSplitNodeRegressor
-from ._nodes import AdaActiveLearningNodeRegressor
-from ._nodes import InactiveLeaf
-from ._nodes import InactiveLearningNodeMean
-from ._nodes import InactiveLearningNodeModel
-from ._nodes import InactiveLearningNodeAdaptive
+from ._nodes import AdaLearningNodeRegressor
 
 
 class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
@@ -35,10 +28,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
-        | Prediction mechanism used at leafs.
-        | 'mean' - Target mean
-        | 'model' - Uses the model defined in `leaf_model`
-        | 'adaptive' - Chooses between 'mean' and 'model' dynamically
+        Prediction mechanism used at leafs.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
         The regression model used to provide responses if `leaf_prediction='model'`. If not
         provided an instance of `river.linear_model.LinearRegression` with the default
@@ -60,11 +53,11 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
     seed
-       If int, `seed` is the seed used by the random number generator;
-       If RandomState instance, `seed` is the random number generator;
+       If int, `seed` is the seed used by the random number generator;</br>
+       If RandomState instance, `seed` is the random number generator;</br>
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
-       bootstrap sampling.
+       bootstrap sampling.</br>
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -159,10 +152,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
-        if isinstance(self._tree_root, InactiveLeaf):
-            self._tree_root.learn_one(x, y, weight=sample_weight, tree=self)
-        else:
-            self._tree_root.learn_one(x, y, sample_weight, self, None, -1)
+        self._tree_root.learn_one(x, y, sample_weight=sample_weight, tree=self, parent=None,
+                                  parent_branch=-1)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -171,10 +162,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     def predict_one(self, x):
         if self._tree_root is not None:
-            if isinstance(self._tree_root, InactiveLeaf):
-                found_nodes = [self._tree_root.filter_instance_to_leaf(x, None, -1)]
-            else:
-                found_nodes = self._filter_instance_to_leaves(x, None, -1)
+            found_nodes = self._filter_instance_to_leaves(x, None, -1)
 
             pred = 0.
             for fn in found_nodes:
@@ -206,7 +194,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         if parent is not None:
             depth = parent.depth + 1
             # Leverage ancestor's learning models
-            if not isinstance(parent, AdaSplitNodeRegressor):
+            if parent.is_leaf():
                 leaf_model = deepcopy(parent._leaf_model)
             else:  # Corner case where an alternate tree is created
                 leaf_model = deepcopy(self.leaf_model)
@@ -214,30 +202,17 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             depth = 0
             leaf_model = deepcopy(self.leaf_model)
 
-        if is_active:
-            new_ada_leaf = AdaActiveLearningNodeRegressor(
-                initial_stats=initial_stats, depth=depth, leaf_model=leaf_model,
-                adwin_delta=self.adwin_confidence, seed=self.seed)
+        new_ada_leaf = AdaLearningNodeRegressor(
+            stats=initial_stats, depth=depth, leaf_model=leaf_model,
+            adwin_delta=self.adwin_confidence, seed=self.seed)
 
-            if parent is not None and not isinstance(parent, SplitNode):
-                new_ada_leaf._fmse_mean = parent._fmse_mean
-                new_ada_leaf._fmse_model = parent._fmse_model
+        if parent is not None and parent.is_leaf():
+            new_ada_leaf._fmse_mean = parent._fmse_mean
+            new_ada_leaf._fmse_model = parent._fmse_model
 
-            return new_ada_leaf
-        else:
-            if self.leaf_prediction == self._TARGET_MEAN:
-                return InactiveLearningNodeMean(initial_stats, depth)
-            elif self.leaf_prediction == self._MODEL:
-                return InactiveLearningNodeModel(initial_stats, depth, leaf_model)
-            else:  # adaptive learning node
-                new_adaptive = InactiveLearningNodeAdaptive(initial_stats, depth, leaf_model)
-                if parent is not None and not isinstance(parent, SplitNode):
-                    self._fmse_mean = parent._fmse_mean
-                    self._fmse_model = parent._fmse_model
+        return new_ada_leaf
 
-                return new_adaptive
-
-    def _new_split_node(self, split_test, target_stats=None, depth=0):
+    def _new_split_node(self, split_test, target_stats=None, depth=0, **kwargs):
         return AdaSplitNodeRegressor(
             split_test=split_test, stats=target_stats, depth=depth,
             adwin_delta=self.adwin_confidence, seed=self.seed)
@@ -245,9 +220,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     # Override river.tree.BaseHoeffdingTree to include alternate trees
     def __find_learning_nodes(self, node, parent, parent_branch, found):
         if node is not None:
-            if isinstance(node, LearningNode):
+            if node.is_leaf():
                 found.append(FoundNode(node, parent, parent_branch))
-            if isinstance(node, SplitNode):
+            else:
                 split_node = node
                 for i in range(split_node.n_children):
                     self.__find_learning_nodes(
@@ -255,38 +230,6 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 if split_node._alternate_tree is not None:
                     self.__find_learning_nodes(
                         split_node._alternate_tree, split_node, -999, found)
-
-    # Override river.tree.BaseHoeffdingTree to include alternate trees
-    def _deactivate_leaf(self, to_deactivate, parent, parent_branch):
-        new_leaf = self._new_learning_node(to_deactivate.stats, parent=to_deactivate,
-                                           is_active=False)
-        new_leaf.depth -= 1  # To ensure we do not skip a tree level
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            # Corner case where a leaf is the alternate tree
-            if parent_branch == -999:
-                parent._alternate_tree = new_leaf
-
-            else:
-                parent.set_child(parent_branch, new_leaf)
-        self._n_active_leaves -= 1
-        self._n_inactive_leaves += 1
-
-    # Override river.tree.BaseHoeffdingTree to include alternate trees
-    def _activate_leaf(self, to_activate, parent, parent_branch):
-        new_leaf = self._new_learning_node(to_activate.stats, parent=to_activate)
-        new_leaf.depth -= 1  # To ensure we do not skip a tree level
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            # Corner case where a leaf is the alternate tree
-            if parent_branch == -999:
-                parent._alternate_tree = new_leaf
-            else:
-                parent.set_child(parent_branch, new_leaf)
-        self._n_active_leaves += 1
-        self._n_inactive_leaves -= 1
 
     @classmethod
     def _default_params(cls):
