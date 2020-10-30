@@ -103,6 +103,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
     Examples
     --------
     >>> from river import synth
+    >>> from river import drift
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
@@ -113,8 +114,8 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
     >>> model = ensemble.AdaptiveRandomForestClassifier(
     ...     n_models=3,
     ...     seed=42,
-    ...     drift_detector=ADWIN(delta=0.15),
-    ...     warning_detector=ADWIN(delta=0.2)
+    ...     drift_detector=drift.ADWIN(delta=0.15),
+    ...     warning_detector=drift.ADWIN(delta=0.2)
     ... )
 
     >>> metric = metrics.Accuracy()
@@ -150,7 +151,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
                  tie_threshold: float = 0.05,
                  binary_split=False,
                  stop_mem_management=False,
-                 remove_poor_atts=False,
+                 remove_poor_attrs=False,
                  merit_preprune=True,
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
@@ -180,7 +181,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
         self.tie_threshold = tie_threshold
         self.binary_split = binary_split
         self.stop_mem_management = stop_mem_management
-        self.remove_poor_atts = remove_poor_atts
+        self.remove_poor_attrs = remove_poor_attrs
         self.merit_preprune = merit_preprune
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
@@ -251,7 +252,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
                     tie_threshold=self.tie_threshold,
                     binary_split=self.binary_split,
                     stop_mem_management=self.stop_mem_management,
-                    remove_poor_atts=self.remove_poor_atts,
+                    remove_poor_attrs=self.remove_poor_attrs,
                     merit_preprune=self.merit_preprune,
                     leaf_prediction=self.leaf_prediction,
                     nb_threshold=self.nb_threshold,

@@ -105,7 +105,7 @@ class ARFHoeffdingTreeClassifier(HoeffdingTreeClassifier):
                               tie_threshold=self.tie_threshold,
                               binary_split=self.binary_split,
                               stop_mem_management=self.stop_mem_management,
-                              remove_poor_atts=self.remove_poor_atts,
+                              remove_poor_attrs=self.remove_poor_attrs,
                               merit_preprune=self.merit_preprune,
                               leaf_prediction=self.leaf_prediction,
                               nb_threshold=self.nb_threshold,
