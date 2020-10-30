@@ -38,7 +38,7 @@ class BaseForest(base.EnsembleMixin):
         self.max_features = max_features
         self.lambda_value = lambda_value
         self.metric = metric
-        self.disable_weighted_vote=disable_weighted_vote
+        self.disable_weighted_vote = disable_weighted_vote
         self.drift_detector = drift_detector
         self.warning_detector = warning_detector
         self.seed = seed
@@ -59,7 +59,7 @@ class BaseForest(base.EnsembleMixin):
             y_pred = model.predict_one(x)
 
             # Update performance evaluator
-            model._metric.update(y_true=y, y_pred=y_pred)
+            model.metric.update(y_true=y, y_pred=y_pred)
 
             k = self._rng.poisson(lam=self.lambda_value)
             if k > 0:
@@ -305,7 +305,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
         for model in self.models:
             y_proba_temp = model.predict_proba_one(x)
-            metric_value = model._metric.get()
+            metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.:
                 y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
             y_pred.update(y_proba_temp)
@@ -337,7 +337,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
 
 class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
-    """Adaptive Random Forest regressor.
+    r"""Adaptive Random Forest regressor.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
     1. inducing diversity through re-sampling;
@@ -503,8 +503,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             n_models=n_models,
             max_features=max_features,
             lambda_value=lambda_value,
-            metric = metric,
-            disable_weighted_vote = disable_weighted_vote,
+            metric=metric,
+            disable_weighted_vote=disable_weighted_vote,
             drift_detector=drift_detector,
             warning_detector=warning_detector,
             seed=seed
@@ -547,7 +547,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             weights = np.zeros(self.n_models)
             for idx, model in enumerate(self.models):
                 y_pred[idx] = model.predict_one(x)
-                weights[idx] = model._metric.get()
+                weights[idx] = model.metric.get()
 
                 sum_weights = weights.sum()
                 if sum_weights != 0:
@@ -633,7 +633,7 @@ class BaseForestMember:
         # Make sure that the metric is not initialized, e.g. when creating background learners.
         if isinstance(self.base_metric, MultiClassMetric):
             self.base_metric.cm.reset()
-        self._metric = copy.deepcopy(base_metric)
+        self.metric = copy.deepcopy(base_metric)
 
         self.background_learner = None
 
@@ -668,14 +668,13 @@ class BaseForestMember:
             self.model = self.background_learner.model
             self.warning_detector = self.background_learner.warning_detector
             self.drift_detector = self.background_learner.drift_detector
-            self._metric = self.background_learner._metric
-            self._metric.cm.reset()
+            self.metric = copy.deepcopy(self.background_learner.base_metric)
             self.created_on = self.background_learner.created_on
             self.background_learner = None
         else:
             # Reset model
             self.model = copy.deepcopy(self.base_model)
-            self._metric = copy.deepcopy(self.base_metric)
+            self.metric = copy.deepcopy(self.base_metric)
             self.created_on = n_samples_seen
             self.drift_detector = copy.deepcopy(self.base_drift_detector)
 
@@ -724,8 +723,8 @@ class BaseForestMember:
 
     @abc.abstractmethod
     def _drift_detector_input(self,
-                             y_true: typing.Union[base.typing.ClfTarget, base.typing.RegTarget],
-                             y_pred: typing.Union[base.typing.ClfTarget, base.typing.RegTarget]):
+                              y_true: typing.Union[base.typing.ClfTarget, base.typing.RegTarget],
+                              y_pred: typing.Union[base.typing.ClfTarget, base.typing.RegTarget]):
         raise NotImplementedError
 
 
@@ -785,7 +784,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
 
     def _drift_detector_input(self, y_true: float, y_pred: float):
         # Select which kind of data is going to be monitored
-        if isinstance(self._metric, MSE):
+        if isinstance(self.metric, MSE):
             drift_input = (y_true - y_pred) * (y_true - y_pred)
         else:  # isinstance(self.metric, MAE):
             drift_input = abs(y_true - y_pred)
@@ -823,4 +822,3 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
 
     def predict_one(self, x):
         return self.model.predict_one(x)
-
