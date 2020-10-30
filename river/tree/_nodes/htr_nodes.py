@@ -1,20 +1,35 @@
 import inspect
 
 from river.stats import Var
-from river.tree._attribute_observer import NominalAttributeRegressionObserver
-from river.tree._attribute_observer import NumericAttributeRegressionObserver
-from .base import ActiveLeaf
-from .base import InactiveLeaf
+from .._attribute_observer import NominalAttributeRegressionObserver
+from .._attribute_observer import NumericAttributeRegressionObserver
 from .base import LearningNode
 
 
-class ActiveLeafRegressor(ActiveLeaf):
+class LearningNodeMean(LearningNode):
+    """Learning Node for regression tasks that always use the average target
+        value as response.
+
+    Parameters
+    ----------
+    stats
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
+    depth
+        The depth of the node.
+    """
+    def __init__(self, stats, depth):
+        if stats is None:
+            # Enforce the usage of Var to keep track of target statistics
+            stats = Var()
+        super().__init__(stats, depth)
+
     @staticmethod
-    def new_nominal_attribute_observer():
+    def new_nominal_attribute_observer(**kwargs):
         return NominalAttributeRegressionObserver()
 
     @staticmethod
-    def new_numeric_attribute_observer():
+    def new_numeric_attribute_observer(**kwargs):
         return NumericAttributeRegressionObserver()
 
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
@@ -39,14 +54,6 @@ class ActiveLeafRegressor(ActiveLeaf):
                 obs.remove_bad_splits(criterion=criterion, last_check_ratio=last_check_ratio,
                                       last_check_vr=last_check_vr, last_check_e=last_check_e,
                                       pre_split_dist=self.stats)
-
-
-class LearningNodeMean(LearningNode):
-    def __init__(self, initial_stats, depth):
-        if initial_stats is None:
-            # Enforce the usage of Var to keep track of target statistics
-            initial_stats = Var()
-        super().__init__(initial_stats, depth)
 
     def update_stats(self, y, sample_weight):
         self.stats.update(y, sample_weight)
@@ -87,8 +94,23 @@ class LearningNodeMean(LearningNode):
 
 
 class LearningNodeModel(LearningNodeMean):
-    def __init__(self, initial_stats, depth, leaf_model):
-        super().__init__(initial_stats, depth)
+    """Learning Node for regression tasks that always use a learning model to provide
+        responses.
+
+    Parameters
+    ----------
+    stats
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
+    depth
+        The depth of the node.
+    leaf_model
+        A `river.base.Regressor` instance used to learn from instances and provide
+        responses.
+    """
+    def __init__(self, stats, depth, leaf_model):
+        super().__init__(stats, depth)
+
         self._leaf_model = leaf_model
         sign = inspect.signature(leaf_model.learn_one).parameters
         self._model_supports_weights = 'sample_weight' in sign or 'w' in sign
@@ -107,8 +129,23 @@ class LearningNodeModel(LearningNodeMean):
 
 
 class LearningNodeAdaptive(LearningNodeModel):
-    def __init__(self, initial_stats, depth, leaf_model):
-        super().__init__(initial_stats, depth, leaf_model)
+    """Learning Node for regression tasks that dynamically selects between predictors and
+        might behave as a regression tree node or a model tree node, depending on which predictor
+        is the best one.
+
+    Parameters
+    ----------
+    stats
+        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
+    depth
+        The depth of the node.
+    leaf_model
+        A `river.base.Regressor` instance used to learn from instances and provide
+        responses.
+    """
+    def __init__(self, stats, depth, leaf_model):
+        super().__init__(stats, depth, leaf_model)
         self._fmse_mean = 0.
         self._fmse_model = 0.
 
@@ -126,113 +163,3 @@ class LearningNodeAdaptive(LearningNodeModel):
             return self.stats.mean.get()
         else:  # Act as a model tree
             return super().predict_one(x)
-
-
-class ActiveLearningNodeMean(LearningNodeMean, ActiveLeafRegressor):
-    """Learning Node for regression tasks that always use the average target
-    value as response.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
-        the target's statistics.
-    depth
-        The depth of the node.
-    """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-
-class InactiveLearningNodeMean(LearningNodeMean, InactiveLeaf):
-    """Inactive Learning Node for regression tasks that always use
-    the average target value as response.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
-        the target's statistics.
-    depth
-        The depth of the node.
-    """
-    def __init__(self, initial_stats, depth):
-        super().__init__(initial_stats, depth)
-
-
-class ActiveLearningNodeModel(LearningNodeModel, ActiveLeafRegressor):
-    """Learning Node for regression tasks that always use a learning model to provide
-    responses.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
-        the target's statistics.
-    depth
-        The depth of the node.
-    leaf_model
-        A `river.base.Regressor` instance used to learn from instances and provide
-        responses.
-    """
-    def __init__(self, initial_stats, depth, leaf_model):
-        super().__init__(initial_stats, depth, leaf_model)
-
-
-class InactiveLearningNodeModel(LearningNodeModel, InactiveLeaf):
-    """Inactive Learning Node for regression tasks that always use a learning model to
-    provide responses.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
-        the target's statistics.
-    depth
-        The depth of the node.
-    leaf_model
-        A `river.base.Regressor` instance used to learn from instances and provide
-        responses.
-    """
-    def __init__(self, initial_stats, depth, leaf_model):
-        super().__init__(initial_stats, depth, leaf_model)
-
-
-class ActiveLearningNodeAdaptive(LearningNodeAdaptive, ActiveLeafRegressor):
-    """Learning Node for regression tasks that dynamically selects between predictors and
-    might behave as a regression tree node or a model tree node, depending on which predictor
-    is the best one.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
-        the target's statistics.
-    depth
-        The depth of the node.
-    leaf_model
-        A `river.base.Regressor` instance used to learn from instances and provide
-        responses.
-    """
-    def __init__(self, initial_stats, depth, leaf_model):
-        super().__init__(initial_stats, depth, leaf_model)
-
-
-class InactiveLearningNodeAdaptive(LearningNodeAdaptive, InactiveLeaf):
-    """Inactive Learning Node for regression tasks that dynamically selects between predictors
-     might behave as a regression tree node or a model tree node, depending on which predictor
-    is the best one.
-
-    Parameters
-    ----------
-    initial_stats
-        In regression tasks the node keeps an instance of `river.stats.Var` to estimate
-        the target's statistics.
-    depth
-        The depth of the node.
-    leaf_model
-        A `river.base.Regressor` instance used to learn from instances and provide
-        responses.
-    """
-    def __init__(self, initial_stats, depth, leaf_model):
-        super().__init__(initial_stats, depth, leaf_model)

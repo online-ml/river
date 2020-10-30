@@ -7,33 +7,37 @@ from river.utils.skmultiflow_utils import calculate_object_size
 
 from ._nodes import Node
 from ._nodes import LearningNode
-from ._nodes import ActiveLeaf
-from ._nodes import InactiveLeaf
 from ._nodes import SplitNode
 from ._nodes import FoundNode
 from ._attribute_test import InstanceConditionalTest
 
 
 class BaseHoeffdingTree(ABC):
-    """Base class for Decision Trees.
+    """Base class for Hoeffding Decision Trees.
 
-    It defines base operations and properties that all the decision trees must inherit or
-    implement according to their own design.
+    This is an **abstract class**, so it cannot be used directly. It defines base operations
+    and properties that all the decision trees must inherit or implement according to
+    their own design.
 
     All the extended classes inherit the following functionality:
 
     * Set the maximum tree depth allowed (`max_depth`).
+
     * Handle *Active* and *Inactive* nodes: Active learning nodes update their own
     internal state to improve predictions and monitor input features to perform split
     attempts. Inactive learning nodes do not update their internal state and only keep the
     predictors; they are used to save memory in the tree (`max_size`).
+
     *  Enable/disable memory management.
+
     * Define strategies to sort leaves according to how likely they are going to be split.
     This enables deactivating non-promising leaves to save memory.
+
     * Disabling ‘poor’ attributes to save memory and speed up tree construction.
     A poor attribute is an input feature whose split merit is much smaller than the current
     best candidate. Once a feature is disabled, the tree stops saving statistics necessary
     to split such a feature.
+
     * Define properties to access leaf prediction strategies, split criteria, and other
     relevant characteristics.
 
@@ -49,32 +53,36 @@ class BaseHoeffdingTree(ABC):
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management
         If True, stop growing as soon as memory limit is hit.
-    remove_poor_atts
+    remove_poor_attrs
         If True, disable poor attributes to reduce memory usage.
     merit_preprune
         If True, enable merit-based tree pre-pruning.
     """
     def __init__(self, max_depth: int = None, binary_split: bool = False, max_size: int = 100,
                  memory_estimate_period: int = 1000000, stop_mem_management: bool = False,
-                 remove_poor_atts: bool = False, merit_preprune: bool = True):
-        self.max_depth = max_depth if max_depth is not None else math.inf
-        self.binary_split = binary_split
-        self._max_size = max_size
-        self._max_byte_size = self._max_size * (2 ** 20)  # convert to byte
-        self.memory_estimate_period = memory_estimate_period
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_atts = remove_poor_atts
-        self.merit_preprune = merit_preprune
+                 remove_poor_attrs: bool = False, merit_preprune: bool = True):
+        # Properties common to all the Hoeffding trees
+        self._split_criterion: str
+        self._leaf_prediction: str
 
-        self._tree_root = None
-        self._n_decision_nodes = 0
-        self._n_active_leaves = 0
-        self._n_inactive_leaves = 0
-        self._inactive_leaf_size_estimate = 0.0
-        self._active_leaf_size_estimate = 0.0
-        self._size_estimate_overhead_fraction = 1.0
+        self.max_depth: float = max_depth if max_depth is not None else math.inf
+        self.binary_split: bool = binary_split
+        self._max_size: float = max_size
+        self._max_byte_size: float = self._max_size * (2 ** 20)  # convert to byte
+        self.memory_estimate_period: int = memory_estimate_period
+        self.stop_mem_management: bool = stop_mem_management
+        self.remove_poor_attrs: bool = remove_poor_attrs
+        self.merit_preprune: bool = merit_preprune
+
+        self._tree_root: typing.Union[Node, None] = None
+        self._n_decision_nodes: int = 0
+        self._n_active_leaves: int = 0
+        self._n_inactive_leaves: int = 0
+        self._inactive_leaf_size_estimate: float = 0.0
+        self._active_leaf_size_estimate: float = 0.0
+        self._size_estimate_overhead_fraction: float = 1.0
         self._growth_allowed = True
-        self._train_weight_seen_by_model = 0.0
+        self._train_weight_seen_by_model: float = 0.0
 
     @staticmethod
     def _hoeffding_bound(range_val, confidence, n):
@@ -109,6 +117,7 @@ class BaseHoeffdingTree(ABC):
 
     @property
     def max_size(self):
+        """Max allowed size tree can reach (in MB)."""
         return self._max_size
 
     @max_size.setter
@@ -118,12 +127,8 @@ class BaseHoeffdingTree(ABC):
 
     @property
     def model_measurements(self):
-        """Collect metrics corresponding to the current status of the tree.
-
-        Returns
-        -------
-        string
-            A string buffer containing the measurements of the tree.
+        """Collect metrics corresponding to the current status of the tree
+        in a string buffer.
         """
         measurements = {'Tree size (nodes)': self._n_decision_nodes
                         + self._n_active_leaves + self._n_inactive_leaves,
@@ -142,8 +147,7 @@ class BaseHoeffdingTree(ABC):
 
         Returns
         -------
-        string
-            The description of the model.
+        The description of the model.
 
         """
         if self._tree_root is not None:
@@ -155,13 +159,13 @@ class BaseHoeffdingTree(ABC):
             return description
 
     def _new_split_node(self, split_test: InstanceConditionalTest, target_stats: dict = None,
-                        depth: int = 0) -> SplitNode:
+                        depth: int = 0, **kwargs) -> SplitNode:
         """Create a new split node."""
         return SplitNode(split_test, target_stats, depth)
 
     @abstractmethod
-    def _new_learning_node(self, initial_stats: dict = None, parent: LearningNode = None,
-                           is_active: bool = True) -> LearningNode:
+    def _new_learning_node(self, initial_stats: dict = None, parent: Node = None,
+                           **kwargs) -> LearningNode:
         """Create a new learning node.
 
         The characteristics of the learning node depends on the tree algorithm.
@@ -172,23 +176,15 @@ class BaseHoeffdingTree(ABC):
             Target statistics set from the parent node.
         parent
             Parent node to inherit from.
-        is_active
-            Define whether or not the new node to be created is an active learning node.
 
         Returns
         -------
-            A new learning node.
+        A new learning node.
         """
 
     @property
     def depth(self) -> int:
-        """Calculate the depth of the tree.
-
-        Returns
-        -------
-        int
-            Depth of the tree.
-        """
+        """The depth of the tree."""
         if isinstance(self._tree_root, Node):
             return self._tree_root.subtree_depth()
         return 0
@@ -234,15 +230,16 @@ class BaseHoeffdingTree(ABC):
                 break
         cutoff = len(learning_nodes) - max_active
         for i in range(cutoff):
-            if isinstance(learning_nodes[i].node, ActiveLeaf):
-                self._deactivate_leaf(learning_nodes[i].node,
-                                      learning_nodes[i].parent,
-                                      learning_nodes[i].parent_branch)
+            if learning_nodes[i].node.is_active():
+                learning_nodes[i].node.deactivate()
+                self._n_inactive_leaves += 1
+                self._n_active_leaves -= 1
         for i in range(cutoff, len(learning_nodes)):
-            if isinstance(learning_nodes[i].node, InactiveLeaf) and learning_nodes[i].node.depth \
+            if not learning_nodes[i].node.is_active() and learning_nodes[i].node.depth \
                     < self.max_depth:
-                self._activate_leaf(learning_nodes[i].node, learning_nodes[i].parent,
-                                    learning_nodes[i].parent_branch)
+                learning_nodes[i].node.activate()
+                self._n_active_leaves += 1
+                self._n_inactive_leaves -= 1
 
     def _estimate_model_size(self):
         """Calculate the size of the model and trigger tracker function
@@ -253,15 +250,14 @@ class BaseHoeffdingTree(ABC):
         for found_node in learning_nodes:
             if not found_node.node.is_leaf():  # Safety check for non-trivial tree structures
                 continue
-            if isinstance(found_node.node, ActiveLeaf):
+            if found_node.node.is_active():
                 total_active_size += calculate_object_size(found_node.node)
             else:
                 total_inactive_size += calculate_object_size(found_node.node)
         if total_active_size > 0:
             self._active_leaf_size_estimate = total_active_size / self._n_active_leaves
         if total_inactive_size > 0:
-            self._inactive_leaf_size_estimate = total_inactive_size \
-                / self._n_inactive_leaves
+            self._inactive_leaf_size_estimate = total_inactive_size / self._n_inactive_leaves
         actual_model_size = calculate_object_size(self)
         estimated_model_size = (self._n_active_leaves * self._active_leaf_size_estimate
                                 + self._n_inactive_leaves
@@ -274,64 +270,18 @@ class BaseHoeffdingTree(ABC):
         """Deactivate all leaves. """
         learning_nodes = self._find_learning_nodes()
         for cur_node in learning_nodes:
-            if isinstance(cur_node, ActiveLeaf):
-                self._deactivate_leaf(cur_node.node, cur_node.parent, cur_node.parent_branch)
-
-    def _deactivate_leaf(self, to_deactivate: ActiveLeaf, parent: SplitNode, parent_branch: int):
-        """Deactivate a learning node.
-
-        Parameters
-        ----------
-        to_deactivate
-            The node to deactivate.
-        parent
-            The node's parent.
-        parent_branch
-            Parent node's branch index.
-        """
-
-        # We pass the active learning node as parent to ensure its properties are accessible
-        # to perform possible transfers or copies (as it happens in the regression case)
-        new_leaf = self._new_learning_node(to_deactivate.stats, parent=to_deactivate,
-                                           is_active=False)
-        new_leaf.depth -= 1  # To ensure we do not skip a tree level
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            parent.set_child(parent_branch, new_leaf)
-        self._n_active_leaves -= 1
-        self._n_inactive_leaves += 1
-
-    def _activate_leaf(self, to_activate: InactiveLeaf, parent: SplitNode, parent_branch: int):
-        """Activate a learning node.
-
-        Parameters
-        ----------
-        to_activate
-            The node to activate.
-        parent
-            The node's parent.
-        parent_branch
-            Parent node's branch index.
-        """
-        new_leaf = self._new_learning_node(to_activate.stats, parent=to_activate)
-        new_leaf.depth -= 1
-        if parent is None:
-            self._tree_root = new_leaf
-        else:
-            parent.set_child(parent_branch, new_leaf)
-        self._n_active_leaves += 1
-        self._n_inactive_leaves -= 1
+            cur_node.node.deactivate()
+            self._n_inactive_leaves += 1
+            self._n_active_leaves -= 1
 
     def _find_learning_nodes(self) -> typing.List[FoundNode]:
         """Find learning nodes in the tree.
 
         Returns
         -------
-        list
-            List of learning nodes in the tree.
+        List of learning nodes in the tree.
         """
-        found_list = []
+        found_list: typing.List[FoundNode] = []
         self.__find_learning_nodes(self._tree_root, None, -1, found_list)
         return found_list
 
@@ -351,13 +301,12 @@ class BaseHoeffdingTree(ABC):
 
         Returns
         -------
-        list
-            List of learning nodes.
+        List of learning nodes.
         """
         if node is not None:
-            if isinstance(node, LearningNode):
+            if node.is_leaf():
                 found.append(FoundNode(node, parent, parent_branch))
-            if isinstance(node, SplitNode):
+            else:
                 split_node = node
                 for i in range(split_node.n_children):
                     self.__find_learning_nodes(
