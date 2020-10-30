@@ -221,11 +221,11 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                  learning_ratio_decay: float = 0.001,
                  learning_ratio_const: bool = True,
                  random_state=None):
-        super().__init__(n_estimators=n_estimators,
+        super().__init__(n_models=n_estimators,
                          max_features=max_features,
                          lambda_value=lambda_value,
-                         drift_detection_method=drift_detection_method,
-                         warning_detection_method=warning_detection_method,
+                         drift_detector=drift_detection_method,
+                         warning_detector=warning_detection_method,
                          # Tree parameters
                          max_byte_size=max_byte_size,
                          memory_estimate_period=memory_estimate_period,
@@ -313,7 +313,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         A numpy.ndarray with all the predictions for the samples in X.
 
         """
-        predictions = np.zeros((self.n_estimators, get_dimensions(X)[0]))
+        predictions = np.zeros((self.n_models, get_dimensions(X)[0]))
         if self.ensemble is None:
             self._init_ensemble(X)
 
@@ -350,12 +350,12 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
         self.ensemble = None
         self.max_features = 0
         self.instances_seen = 0
-        self._random_state = check_random_state(self.random_state)
+        self._random_state = check_random_state(self.seed)
 
     def _init_ensemble(self, X):
         self._set_max_features(get_dimensions(X)[1])
         # Generate a different random seed per tree
-        random_states = self._random_state.randint(0, 4294967295, size=self.n_estimators,
+        random_states = self._random_state.randint(0, 4294967295, size=self.n_models,
                                                    dtype='u8')
         self.ensemble = [
             ARFRegBaseLearner(
@@ -384,7 +384,7 @@ class AdaptiveRandomForestRegressor(RegressorMixin, AdaptiveRandomForestClassifi
                 performance_metric=self.weighted_vote_strategy,
                 drift_detection_criteria=self.drift_detection_criteria,
                 is_background_learner=False
-            ) for i in range(self.n_estimators)
+            ) for i in range(self.n_models)
         ]
 
     def _set_max_features(self, n):
