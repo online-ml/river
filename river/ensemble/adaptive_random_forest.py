@@ -1,3 +1,4 @@
+import abc
 import collections
 import math
 import typing
@@ -11,7 +12,102 @@ from river.tree.arf_hoeffding_tree_classifier import ARFHoeffdingTreeClassifier
 from river.utils.skmultiflow_utils import check_random_state
 
 
-class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
+class BaseForest(base.EnsembleMixin):
+
+    _FEATURES_SQRT = "sqrt"
+    _FEATURES_LOG2 = "log2"
+
+    def __init__(self):
+        super().__init__([None])  # List of models is properly initialized later
+        self.models = []
+        self.lambda_value = None
+        self.drift_detector = None
+        self.warning_detector = None
+        self.metric = None
+        self.n_models = None
+        self.seed = None
+        self._rng = None
+        self._n_samples_seen = 0
+        self._base_member_class = None
+
+    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs):
+        self._n_samples_seen += 1
+
+        if not self.models:
+            self._init_ensemble(list(x.keys()))
+
+        for model in self.models:
+            # Get prediction for instance
+            y_pred = model.predict_one(x)
+
+            # Update performance evaluator
+            model.metric.update(y_true=y, y_pred=y_pred)
+
+            k = self._rng.poisson(lam=self.lambda_value)
+            if k > 0:
+                # print(self._n_samples_seen)
+                model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
+
+        return self
+
+    def _init_ensemble(self, features: list):
+        self._set_max_features(len(features))
+
+        self.models = [
+            self._base_member_class(
+                index_original=i,
+                base_model=self._get_base_model(),
+                created_on=self._n_samples_seen,
+                base_drift_detector=self.drift_detector,
+                base_warning_detector=self.warning_detector,
+                is_background_learner=False,
+                metric=copy.deepcopy(self.metric))
+            for i in range(self.n_models)
+        ]
+
+    @abc.abstractmethod
+    def _get_base_model(self):
+        raise NotImplementedError
+
+    def _set_max_features(self, n_features):
+        if self.max_features == 'sqrt':
+            self.max_features = round(math.sqrt(n_features))
+        elif self.max_features == 'log2':
+            self.max_features = round(math.log2(n_features))
+        elif isinstance(self.max_features, int):
+            # Consider 'max_features' features at each split.
+            pass
+        elif isinstance(self.max_features, float):
+            # Consider 'max_features' as a percentage
+            self.max_features = int(self.max_features * n_features)
+        elif self.max_features is None:
+            self.max_features = n_features
+        else:
+            raise AttributeError(f"Invalid max_features: {self.max_features}.\n"
+                                 f"Valid options are: int [2, M], float (0., 1.],"
+                                 f" {self._FEATURES_SQRT}, {self._FEATURES_LOG2}"
+                                 )
+        # Sanity checks
+        # max_features is negative, use max_features + n
+        if self.max_features < 0:
+            self.max_features += n_features
+        # max_features <= 0
+        # (m can be negative if max_features is negative and abs(max_features) > n),
+        # use max_features = 1
+        if self.max_features <= 0:
+            self.max_features = 1
+        # max_features > n, then use n
+        if self.max_features > n_features:
+            self.max_features = n_features
+
+    def reset(self):
+        """Reset the forest."""
+        self.models = []
+        self._n_samples_seen = 0
+        self._rng = check_random_state(self.seed)
+
+
+class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     """Adaptive Random Forest classifier.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
@@ -73,7 +169,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
     stop_mem_management
         (`ARFHoeffdingTreeClassifier` parameter)
         If True, stop growing as soon as memory limit is hit.
-    remove_poor_atts
+    remove_poor_attrs
         (`ARFHoeffdingTreeClassifier` parameter)
         If True, disable poor attributes.
     merit_preprune
@@ -132,9 +228,6 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
 
     """
 
-    _FEATURES_SQRT = "sqrt"
-    _FEATURES_LOG2 = "log2"
-
     def __init__(self,
                  n_models: int = 10,
                  max_features: typing.Union[bool, str, int] = 'sqrt',
@@ -158,7 +251,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
                  nominal_attributes: list = None,
                  max_depth: int = None,
                  seed=None):
-        super().__init__([None])  # List of models is properly initialized later
+        super().__init__()
         self.models = []
         self.n_models = n_models
         self.max_features = max_features
@@ -171,6 +264,7 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
         self.metric = metric
 
         self._n_samples_seen = 0
+        self._base_member_class = ForestMemberClassifier
 
         # Adaptive Random Forest Hoeffding Tree configuration
         self.max_size = max_size
@@ -190,26 +284,6 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
 
     def _multiclass(self):
         return True
-
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs):
-        self._n_samples_seen += 1
-
-        if not self.models:
-            self._init_ensemble(list(x.keys()))
-
-        for model in self.models:
-            # Get prediction for instance
-            y_pred = model.predict_one(x)
-
-            # Update performance evaluator
-            model.metric.update(y_true=y, y_pred=y_pred)
-
-            k = self._rng.poisson(lam=self.lambda_value)
-            if k > 0:
-                # print(self._n_samples_seen)
-                model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
-
-        return self
 
     def predict_proba_one(self, x):
 
@@ -231,19 +305,8 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
             return {label: proba / total for label, proba in y_pred.items()}
         return y_pred
 
-    def reset(self):
-        """Reset ARF."""
-        self.models = []
-        self._n_samples_seen = 0
-        self._rng = check_random_state(self.seed)
-
-    def _init_ensemble(self, features: list):
-        self._set_max_features(len(features))
-
-        self.models = [
-            BaseARFLearner(
-                index_original=i,
-                base_model=ARFHoeffdingTreeClassifier(
+    def _get_base_model(self):
+        return ARFHoeffdingTreeClassifier(
                     max_size=self.max_size,
                     memory_estimate_period=self.memory_estimate_period,
                     grace_period=self.grace_period,
@@ -260,51 +323,13 @@ class AdaptiveRandomForestClassifier(base.EnsembleMixin, base.Classifier):
                     max_features=self.max_features,
                     max_depth=self.max_depth,
                     seed=self.seed
-                ),
-                created_on=self._n_samples_seen,
-                base_drift_detector=self.drift_detector,
-                base_warning_detector=self.warning_detector,
-                is_background_learner=False,
-                metric=copy.deepcopy(self.metric))
-            for i in range(self.n_models)
-        ]
-
-    def _set_max_features(self, n_features):
-        if self.max_features == 'sqrt':
-            self.max_features = round(math.sqrt(n_features))
-        elif self.max_features == 'log2':
-            self.max_features = round(math.log2(n_features))
-        elif isinstance(self.max_features, int):
-            # Consider 'max_features' features at each split.
-            pass
-        elif isinstance(self.max_features, float):
-            # Consider 'max_features' as a percentage
-            self.max_features = int(self.max_features * n_features)
-        elif self.max_features is None:
-            self.max_features = n_features
-        else:
-            raise AttributeError(f"Invalid max_features: {self.max_features}.\n"
-                                 f"Valid options are: int [2, M], float (0., 1.],"
-                                 f" {self._FEATURES_SQRT}, {self._FEATURES_LOG2}"
-                                 )
-        # Sanity checks
-        # max_features is negative, use max_features + n
-        if self.max_features < 0:
-            self.max_features += n_features
-        # max_features <= 0
-        # (m can be negative if max_features is negative and abs(max_features) > n),
-        # use max_features = 1
-        if self.max_features <= 0:
-            self.max_features = 1
-        # max_features > n, then use n
-        if self.max_features > n_features:
-            self.max_features = n_features
+                )
 
 
-class BaseARFLearner(base.Classifier):
-    """Base learner class.
+class BaseForestMember(base.Classifier):
+    """Base forest member class.
 
-    This wrapper class represents a tree member of the forest. It includes a
+    This class represents a tree member of the forest. It includes a
     base tree model, the background learner, drift detectors and performance
     tracking parameters.
 
@@ -400,16 +425,19 @@ class BaseARFLearner(base.Classifier):
             self.background_learner.model.learn_one(x=x, y=y, sample_weight=sample_weight)
 
         if self._use_drift_detector and not self.is_background_learner:
-            correctly_classifies = self.model.predict_one(x) == y
-            # Check for warning only if use_background_learner is active
+            drift_detector_input = self.drift_detector_input(
+                y_true=y, y_pred=self.model.predict_one(x)
+            )
+
+            # Check for warning only if use_background_learner is set
             if self._use_background_learner:
-                self.warning_detector.update(int(not correctly_classifies))
-                # Check if there was a change
+                self.warning_detector.update(drift_detector_input)
+                # Check if there was a (warning) change
                 if self.warning_detector.change_detected:
                     self.last_warning_on = n_samples_seen
                     self.n_warnings_detected += 1
                     # Create a new background learner object
-                    self.background_learner = BaseARFLearner(
+                    self.background_learner = self.__class__(
                         index_original=self.index_original,
                         base_model=self.model.new_instance(),
                         created_on=n_samples_seen,
@@ -418,17 +446,48 @@ class BaseARFLearner(base.Classifier):
                         is_background_learner=True,
                         metric=copy.deepcopy(self.metric)
                     )
-                    # Reset the warning detection object for the current object
+                    # Reset the warning detector for the current object
                     self.warning_detector = copy.deepcopy(self.base_warning_detector)
 
-            # Update the drift detection
-            self.drift_detector.update(int(not correctly_classifies))
+            # Update the drift detector
+            self.drift_detector.update(drift_detector_input)
 
             # Check if there was a change
             if self.drift_detector.change_detected:
                 self.last_drift_on = n_samples_seen
                 self.n_drifts_detected += 1
                 self.reset(n_samples_seen)
+
+    @staticmethod
+    @abc.abstractmethod
+    def drift_detector_input(y_true: typing.Union[int, float], y_pred: typing.Union[int, float]):
+        raise NotImplementedError
+
+
+class ForestMemberClassifier(BaseForestMember, base.Classifier):
+    """Forest member class for classification"""
+
+    def __init__(self,
+                 index_original: int,
+                 base_model: ARFHoeffdingTreeClassifier,
+                 created_on: int,
+                 base_drift_detector: base.DriftDetector,
+                 base_warning_detector: base.DriftDetector,
+                 is_background_learner,
+                 metric: MultiClassMetric):
+        super().__init__(
+            index_original=index_original,
+            base_model=base_model,
+            created_on=created_on,
+            base_drift_detector=base_drift_detector,
+            base_warning_detector=base_warning_detector,
+            is_background_learner=is_background_learner,
+            metric=metric
+        )
+
+    @staticmethod
+    def drift_detector_input(y_true: typing.Union[int, float], y_pred: typing.Union[int, float]):
+        return int(not y_true == y_pred)    # Not correctly_classifies
 
     def predict_one(self, x):
         return self.model.predict_one(x)
