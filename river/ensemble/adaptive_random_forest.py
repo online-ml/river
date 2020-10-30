@@ -4,11 +4,17 @@ import math
 import typing
 import copy
 
+import numpy as np
+
 from river import base
 from river.drift import ADWIN
 from river.metrics import Accuracy
+from river.metrics import MSE
+from river.metrics import MAE
 from river.metrics.base import MultiClassMetric
+from river.metrics.base import RegressionMetric
 from river.tree.arf_hoeffding_tree_classifier import ARFHoeffdingTreeClassifier
+from river.tree.arf_hoeffding_tree_regressor import ARFHoeffdingTreeRegressor
 from river.utils.skmultiflow_utils import check_random_state
 
 
@@ -17,16 +23,28 @@ class BaseForest(base.EnsembleMixin):
     _FEATURES_SQRT = "sqrt"
     _FEATURES_LOG2 = "log2"
 
-    def __init__(self):
+    def __init__(self,
+                 n_models: int,
+                 max_features: typing.Union[bool, str, int],
+                 lambda_value: int,
+                 drift_detector: typing.Union[base.DriftDetector, None],
+                 warning_detector: typing.Union[base.DriftDetector, None],
+                 metric: typing.Union[MultiClassMetric, RegressionMetric],
+                 disable_weighted_vote,
+                 seed):
         super().__init__([None])  # List of models is properly initialized later
         self.models = []
-        self.lambda_value = None
-        self.drift_detector = None
-        self.warning_detector = None
-        self.metric = None
-        self.n_models = None
-        self.seed = None
-        self._rng = None
+        self.n_models = n_models
+        self.max_features = max_features
+        self.lambda_value = lambda_value
+        self.metric = metric
+        self.disable_weighted_vote=disable_weighted_vote
+        self.drift_detector = drift_detector
+        self.warning_detector = warning_detector
+        self.seed = seed
+        self._rng = check_random_state(self.seed)   # Actual random number generator
+
+        # Internal parameters
         self._n_samples_seen = 0
         self._base_member_class = None
 
@@ -41,7 +59,7 @@ class BaseForest(base.EnsembleMixin):
             y_pred = model.predict_one(x)
 
             # Update performance evaluator
-            model.metric.update(y_true=y, y_pred=y_pred)
+            model._metric.update(y_true=y, y_pred=y_pred)
 
             k = self._rng.poisson(lam=self.lambda_value)
             if k > 0:
@@ -53,20 +71,23 @@ class BaseForest(base.EnsembleMixin):
     def _init_ensemble(self, features: list):
         self._set_max_features(len(features))
 
+        # Generate a different random seed per tree
+        seeds = self._rng.randint(0, 4294967295, size=self.n_models, dtype='u8')
+
         self.models = [
             self._base_member_class(
                 index_original=i,
-                base_model=self._get_base_model(),
+                base_model=self._get_base_model(seed=seeds[i]),
                 created_on=self._n_samples_seen,
                 base_drift_detector=self.drift_detector,
                 base_warning_detector=self.warning_detector,
                 is_background_learner=False,
-                metric=copy.deepcopy(self.metric))
+                base_metric=copy.deepcopy(self.metric))
             for i in range(self.n_models)
         ]
 
     @abc.abstractmethod
-    def _get_base_model(self):
+    def _get_base_model(self, seed: int):
         raise NotImplementedError
 
     def _set_max_features(self, n_features):
@@ -133,63 +154,55 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         - If "sqrt", then `max_features=sqrt(n_features)`.<br/>
         - If "log2", then `max_features=log2(n_features)`.<br/>
         - If None, then ``max_features=n_features``.
-    disable_weighted_vote
-        If `True`, disables the weighted vote prediction.
     lambda_value
         The lambda value for bagging (lambda=6 corresponds to Leveraging Bagging).
     metric
         Metric used to track trees performance within the ensemble.
+    disable_weighted_vote
+        If `True`, disables the weighted vote prediction.
     drift_detector
         Drift Detection method. Set to None to disable Drift detection.
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
     max_size
-        (`ARFHoeffdingTreeClassifier` parameter)
-        Maximum memory consumed by the tree.
+        [Tree parameter] Maximum memory consumed by the tree.
     memory_estimate_period
-        (`ARFHoeffdingTreeClassifier` parameter)
-        Number of instances between memory consumption checks.
+        [Tree parameter] Number of instances between memory consumption checks.
     grace_period
-        (`ARFHoeffdingTreeClassifier` parameter)
-        Number of instances a leaf should observe between split attempts.
+        [Tree parameter] Number of instances a leaf should observe between
+        split attempts.
     split_criterion
-        (`ARFHoeffdingTreeClassifier` parameter)
-        Split criterion to use.
-        - 'gini' - Gini
+        [Tree parameter] Split criterion to use.<br/>
+        - 'gini' - Gini<br/>
         - 'info_gain' - Information Gain
     split_confidence
-        (`ARFHoeffdingTreeClassifier` parameter)
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
+        [Tree parameter] Allowed error in split decision, a value closer to 0
+        takes longer to decide.
     tie_threshold
-        (`ARFHoeffdingTreeClassifier` parameter)
-        Threshold below which a split will be forced to break ties.
+        [Tree parameter] Threshold below which a split will be forced to break
+        ties.
     binary_split
-        (`ARFHoeffdingTreeClassifier` parameter)
-        If True, only allow binary splits.
+        [Tree parameter] If True, only allow binary splits.
     stop_mem_management
-        (`ARFHoeffdingTreeClassifier` parameter)
-        If True, stop growing as soon as memory limit is hit.
+        [Tree parameter] If True, stop growing as soon as memory limit is hit.
     remove_poor_attrs
-        (`ARFHoeffdingTreeClassifier` parameter)
-        If True, disable poor attributes.
+        [Tree parameter] If True, disable poor attributes.
     merit_preprune
-        (`ARFHoeffdingTreeClassifier` parameter)
-        If True, disable pre-pruning.
+        [Tree parameter] If True, disable pre-pruning.
     leaf_prediction
-        (`ARFHoeffdingTreeClassifier` parameter)
-        Prediction mechanism used at leafs.
-        - 'mc' - Majority Class
-        - 'nb' - Naive Bayes
+        [Tree parameter] Prediction mechanism used at leafs.<br/>
+        - 'mc' - Majority Class<br/>
+        - 'nb' - Naive Bayes<br/>
         - 'nba' - Naive Bayes Adaptive
     nb_threshold
-        (`ARFHoeffdingTreeClassifier` parameter)
-        Number of instances a leaf should observe before allowing Naive Bayes.
+        [Tree parameter] Number of instances a leaf should observe before
+        allowing Naive Bayes.
     nominal_attributes
-        (`ARFHoeffdingTreeClassifier` parameter)
-        List of Nominal attributes. If empty, then assume that all attributes are numerical.
+        [Tree parameter] List of Nominal attributes. If empty, then assume that
+        all attributes are numerical.
     max_depth
-        (`ARFHoeffdingTreeClassifier` parameter)
-        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+        [Tree parameter] The maximum depth a tree can reach. If `None`, the
+        tree will grow indefinitely.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;
@@ -199,7 +212,6 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     Examples
     --------
     >>> from river import synth
-    >>> from river import drift
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
@@ -209,15 +221,13 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     >>> model = ensemble.AdaptiveRandomForestClassifier(
     ...     n_models=3,
-    ...     seed=42,
-    ...     drift_detector=drift.ADWIN(delta=0.15),
-    ...     warning_detector=drift.ADWIN(delta=0.2)
+    ...     seed=42
     ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 64.06%
+    Accuracy: 68.17%
 
     References
     ----------
@@ -231,11 +241,12 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     def __init__(self,
                  n_models: int = 10,
                  max_features: typing.Union[bool, str, int] = 'sqrt',
-                 disable_weighted_vote=False,
                  lambda_value: int = 6,
                  metric: MultiClassMetric = Accuracy(),
+                 disable_weighted_vote=False,
                  drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
                  warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
+                 # Tree parameters
                  max_size: int = 32,
                  memory_estimate_period: int = 2000000,
                  grace_period: int = 50,
@@ -251,22 +262,21 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
                  nominal_attributes: list = None,
                  max_depth: int = None,
                  seed=None):
-        super().__init__()
-        self.models = []
-        self.n_models = n_models
-        self.max_features = max_features
-        self.disable_weighted_vote = disable_weighted_vote
-        self.lambda_value = lambda_value
-        self.drift_detector = drift_detector
-        self.warning_detector = warning_detector
-        self.seed = seed
-        self._rng = check_random_state(self.seed)   # Actual random number generator
-        self.metric = metric
+        super().__init__(
+            n_models=n_models,
+            max_features=max_features,
+            lambda_value=lambda_value,
+            metric=metric,
+            disable_weighted_vote=disable_weighted_vote,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
+            seed=seed
+        )
 
         self._n_samples_seen = 0
         self._base_member_class = ForestMemberClassifier
 
-        # Adaptive Random Forest Hoeffding Tree configuration
+        # Tree parameters
         self.max_size = max_size
         self. memory_estimate_period = memory_estimate_period
         self.grace_period = grace_period
@@ -285,7 +295,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     def _multiclass(self):
         return True
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
 
         y_pred = collections.Counter()
 
@@ -295,7 +305,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
         for model in self.models:
             y_proba_temp = model.predict_proba_one(x)
-            metric_value = model.metric.get()
+            metric_value = model._metric.get()
             if not self.disable_weighted_vote and metric_value > 0.:
                 y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
             y_pred.update(y_proba_temp)
@@ -305,7 +315,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             return {label: proba / total for label, proba in y_pred.items()}
         return y_pred
 
-    def _get_base_model(self):
+    def _get_base_model(self, seed: int):
         return ARFHoeffdingTreeClassifier(
                     max_size=self.max_size,
                     memory_estimate_period=self.memory_estimate_period,
@@ -322,11 +332,263 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
                     nominal_attributes=self.nominal_attributes,
                     max_features=self.max_features,
                     max_depth=self.max_depth,
-                    seed=self.seed
+                    seed=seed
                 )
 
 
-class BaseForestMember(base.Classifier):
+class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
+    """Adaptive Random Forest regressor.
+
+    The 3 most important aspects of Adaptive Random Forest [^1] are:
+    1. inducing diversity through re-sampling;
+    2. inducing diversity through randomly selecting subsets of features for
+       node splits
+    3. drift detectors per base tree, which cause selective resets in response
+       to drifts.
+
+    Notice that this implementation is slightly different from the original
+    algorithm proposed in [^2]. The `HoeffdingTreeRegressor` is used as base
+    learner, instead of `FIMT-DD`. It also adds a new strategy to monitor the
+    incoming data and check for concept drifts. The monitored data (either the
+    trees' errors or their predictions) are centered and scaled (z-score
+    normalization) to have zero mean and unit standard deviation. Transformed
+    values are then again normalized in the [0, 1] range to fulfil ADWIN's
+    requirements. We assume that the data subjected to the z-score
+    normalization lies within the interval of the mean $\pm3\sigma$, as it
+    occurs in normal distributions.
+
+    Parameters
+    ----------
+    n_models
+        Number of trees in the ensemble.
+    max_features
+        Max number of attributes for each node split.<br/>
+        - If `int`, then consider `max_features` at each split.<br/>
+        - If `float`, then `max_features` is a percentage and
+          `int(max_features * n_features)` features are considered per split.<br/>
+        - If "sqrt", then `max_features=sqrt(n_features)`.<br/>
+        - If "log2", then `max_features=log2(n_features)`.<br/>
+        - If None, then ``max_features=n_features``.
+    lambda_value
+        The lambda value for bagging (lambda=6 corresponds to Leveraging Bagging).
+    metric
+        Metric used to track trees performance within the ensemble. Depending,
+        on the configuration, this metric is also used to weight predictions
+        from the members of the ensemble.
+    aggregation_method
+        The method to use to aggregate predictions in the ensemble.<br/>
+        - 'mean'<br/>
+        - 'median' - If selected will disable the weighted vote.
+    disable_weighted_vote
+        If `True`, disables the weighted vote prediction, i.e. does not assign
+        weights to individual tree's predictions and uses the arithmetic mean
+        instead. Otherwise will use the `metric` value to weight predictions.
+    drift_detector
+        Drift Detection method. Set to None to disable Drift detection.
+    warning_detector
+        Warning Detection method. Set to None to disable warning detection.
+    max_size
+        [Tree parameter] Maximum memory consumed by the tree.
+    memory_estimate_period
+        [Tree parameter] Number of instances between memory consumption checks.
+    grace_period
+        [Tree parameter] Number of instances a leaf should observe between
+        split attempts.
+    split_confidence
+        [Tree parameter] Allowed error in split decision, a value closer to 0
+        takes longer to decide.
+    tie_threshold
+        [Tree parameter] Threshold below which a split will be forced to break
+        ties.
+    binary_split
+        [Tree parameter] If True, only allow binary splits.
+    stop_mem_management
+        [Tree parameter] If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        [Tree parameter] If True, disable poor attributes.
+    merit_preprune
+        [Tree parameter] If True, disable pre-pruning.
+    leaf_prediction
+        [Tree parameter] Prediction mechanism used at leaves.</br>
+        - 'mean' - Target mean</br>
+        - 'model' - Uses the model defined in `leaf_model`</br>
+        - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
+    leaf_model
+        [Tree parameter] The regression model used to provide responses if
+        `leaf_prediction='model'`. If not provided, an instance of
+        `river.linear_model.LinearRegression` with the default hyperparameters
+         is used.
+    model_selector_decay
+        The exponential decaying factor applied to the learning models' squared
+        errors, that are monitored if `leaf_prediction='adaptive'`. Must be
+        between `0` and `1`. The closer to `1`, the more importance is going to
+        be given to past observations. On the other hand, if its value
+        approaches `0`, the recent observed errors are going to have more
+        influence on the final decision.
+    nominal_attributes
+        [Tree parameter] List of Nominal attributes. If empty, then assume that
+        all attributes are numerical.
+    max_depth
+        [Tree parameter] The maximum depth a tree can reach. If `None`, the
+        tree will grow indefinitely.
+    seed
+        If `int`, `seed` is used to seed the random number generator;
+        If `RandomState`, `seed` is the random number generator;
+        If `None`, the random number generator is the `RandomState` instance
+        used by `np.random`.
+
+    References
+    ----------
+    [^1]: Gomes, H.M., Bifet, A., Read, J., Barddal, J.P., Enembreck, F.,
+          Pfharinger, B., Holmes, G. and Abdessalem, T., 2017. Adaptive random
+          forests for evolving data stream classification. Machine Learning,
+          106(9-10), pp.1469-1495.
+
+    [^2]: Gomes, H.M., Barddal, J.P., Boiko, L.E., Bifet, A., 2018.
+          Adaptive random forests for data stream regression. ESANN 2018.
+
+    Examples
+    --------
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import ensemble
+    >>> from river import preprocessing
+
+    >>> dataset = datasets.TrumpApproval()
+
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     ensemble.AdaptiveRandomForestRegressor(n_models=3, seed=42)
+    ... )
+
+    >>> metric = metrics.MAE()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 40.750719
+
+    """
+
+    _MEAN = 'mean'
+    _MEDIAN = 'median'
+    _VALID_AGGREGATION_METHOD = [_MEAN, _MEDIAN]
+
+    def __init__(self,
+                 # Forest parameters
+                 n_models: int = 10,
+                 max_features='sqrt',
+                 aggregation_method: str = 'median',
+                 lambda_value: int = 6,
+                 metric: typing.Union[MSE, MAE] = MSE(),
+                 disable_weighted_vote=False,
+                 drift_detector: base.DriftDetector = ADWIN(0.001),
+                 warning_detector: base.DriftDetector = ADWIN(0.01),
+                 # Tree parameters
+                 max_size: int = 100,
+                 memory_estimate_period: int = 2000000,
+                 grace_period: int = 50,
+                 split_confidence: float = 0.01,
+                 tie_threshold: float = 0.05,
+                 binary_split: bool = False,
+                 stop_mem_management: bool = False,
+                 remove_poor_attrs: bool = False,
+                 merit_preprune: bool = True,
+                 leaf_prediction: str = 'model',
+                 leaf_model: base.Regressor = None,
+                 model_selector_decay: float = 0.95,
+                 nominal_attributes: list = None,
+                 max_depth: int = None,
+                 seed=None):
+        super().__init__(
+            n_models=n_models,
+            max_features=max_features,
+            lambda_value=lambda_value,
+            metric = metric,
+            disable_weighted_vote = disable_weighted_vote,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
+            seed=seed
+        )
+
+        self._n_samples_seen = 0
+        self._base_member_class = ForestMemberRegressor
+
+        # Tree parameters
+        self.max_size = max_size
+        self.memory_estimate_period = memory_estimate_period
+        self.grace_period = grace_period
+        self.split_confidence = split_confidence
+        self.tie_threshold = tie_threshold
+        self.binary_split = binary_split
+        self.stop_mem_management = stop_mem_management
+        self.remove_poor_attrs = remove_poor_attrs
+        self.merit_preprune = merit_preprune
+        self.leaf_prediction = leaf_prediction
+        self.leaf_model = leaf_model
+        self.model_selector_decay = model_selector_decay
+        self.nominal_attributes = nominal_attributes
+        self.max_depth = max_depth
+
+        if aggregation_method in self._VALID_AGGREGATION_METHOD:
+            self.aggregation_method = aggregation_method
+        else:
+            raise ValueError(f'Invalid aggregation_method: {aggregation_method}.\n'
+                             f'Valid values are: {self._VALID_AGGREGATION_METHOD}')
+
+    def predict_one(self, x: dict) -> base.typing.RegTarget:
+
+        if not self.models:
+            self._init_ensemble(features=list(x.keys()))
+            return 0.
+
+        y_pred = np.zeros(self.n_models)
+
+        if not self.disable_weighted_vote:
+            weights = np.zeros(self.n_models)
+            for idx, model in enumerate(self.models):
+                y_pred[idx] = model.predict_one(x)
+                weights[idx] = model._metric.get()
+
+                sum_weights = weights.sum()
+                if sum_weights != 0:
+                    # The higher the error, the worse is the tree
+                    weights = sum_weights - weights
+                    # Normalize weights to sum up to 1
+                    weights = weights / weights.sum()
+                    y_pred *= weights
+        else:
+            for idx, model in enumerate(self.models):
+                y_pred[idx] = model.predict_one(x)
+
+        if self.aggregation_method == self._MEAN:
+            y_pred = y_pred.mean()
+        else:
+            y_pred = np.median(y_pred)
+
+        return y_pred
+
+    def _get_base_model(self, seed: int):
+        return ARFHoeffdingTreeRegressor(
+            max_size=self.max_size,
+            memory_estimate_period=self.memory_estimate_period,
+            grace_period=self.grace_period,
+            split_confidence=self.split_confidence,
+            tie_threshold=self.tie_threshold,
+            binary_split=self.binary_split,
+            stop_mem_management=self.stop_mem_management,
+            remove_poor_attrs=self.remove_poor_attrs,
+            merit_preprune=self.merit_preprune,
+            leaf_prediction=self.leaf_prediction,
+            leaf_model=self.leaf_model,
+            model_selector_decay=self.model_selector_decay,
+            max_features=self.max_features,
+            nominal_attributes=self.nominal_attributes,
+            max_depth=self.max_depth,
+            seed=seed
+        )
+
+
+class BaseForestMember:
     """Base forest member class.
 
     This class represents a tree member of the forest. It includes a
@@ -356,20 +618,22 @@ class BaseForestMember(base.Classifier):
     """
     def __init__(self,
                  index_original: int,
-                 base_model: ARFHoeffdingTreeClassifier,
+                 base_model: typing.Union[ARFHoeffdingTreeClassifier, ARFHoeffdingTreeRegressor],
                  created_on: int,
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
                  is_background_learner,
-                 metric: MultiClassMetric):
+                 base_metric: typing.Union[MultiClassMetric, RegressionMetric]):
         self.index_original = index_original
         self.base_model = base_model
         self.model = copy.deepcopy(base_model)
         self.created_on = created_on
         self.is_background_learner = is_background_learner
-        self.metric = metric
+        self.base_metric = base_metric
         # Make sure that the metric is not initialized, e.g. when creating background learners.
-        self.metric.cm.reset()
+        if isinstance(self.base_metric, MultiClassMetric):
+            self.base_metric.cm.reset()
+        self._metric = copy.deepcopy(base_metric)
 
         self.background_learner = None
 
@@ -404,14 +668,14 @@ class BaseForestMember(base.Classifier):
             self.model = self.background_learner.model
             self.warning_detector = self.background_learner.warning_detector
             self.drift_detector = self.background_learner.drift_detector
-            self.metric = self.background_learner.metric
-            self.metric.cm.reset()
+            self._metric = self.background_learner._metric
+            self._metric.cm.reset()
             self.created_on = self.background_learner.created_on
             self.background_learner = None
         else:
             # Reset model
             self.model = copy.deepcopy(self.base_model)
-            self.metric.cm.reset()
+            self._metric = copy.deepcopy(self.base_metric)
             self.created_on = n_samples_seen
             self.drift_detector = copy.deepcopy(self.base_drift_detector)
 
@@ -425,7 +689,7 @@ class BaseForestMember(base.Classifier):
             self.background_learner.model.learn_one(x=x, y=y, sample_weight=sample_weight)
 
         if self._use_drift_detector and not self.is_background_learner:
-            drift_detector_input = self.drift_detector_input(
+            drift_detector_input = self._drift_detector_input(
                 y_true=y, y_pred=self.model.predict_one(x)
             )
 
@@ -444,7 +708,7 @@ class BaseForestMember(base.Classifier):
                         base_drift_detector=self.base_drift_detector,
                         base_warning_detector=self.base_warning_detector,
                         is_background_learner=True,
-                        metric=copy.deepcopy(self.metric)
+                        base_metric=copy.deepcopy(self.base_metric)
                     )
                     # Reset the warning detector for the current object
                     self.warning_detector = copy.deepcopy(self.base_warning_detector)
@@ -458,9 +722,10 @@ class BaseForestMember(base.Classifier):
                 self.n_drifts_detected += 1
                 self.reset(n_samples_seen)
 
-    @staticmethod
     @abc.abstractmethod
-    def drift_detector_input(y_true: typing.Union[int, float], y_pred: typing.Union[int, float]):
+    def _drift_detector_input(self,
+                             y_true: typing.Union[base.typing.ClfTarget, base.typing.RegTarget],
+                             y_pred: typing.Union[base.typing.ClfTarget, base.typing.RegTarget]):
         raise NotImplementedError
 
 
@@ -474,7 +739,7 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
                  is_background_learner,
-                 metric: MultiClassMetric):
+                 base_metric: MultiClassMetric):
         super().__init__(
             index_original=index_original,
             base_model=base_model,
@@ -482,11 +747,10 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
             base_drift_detector=base_drift_detector,
             base_warning_detector=base_warning_detector,
             is_background_learner=is_background_learner,
-            metric=metric
+            base_metric=base_metric
         )
 
-    @staticmethod
-    def drift_detector_input(y_true: typing.Union[int, float], y_pred: typing.Union[int, float]):
+    def _drift_detector_input(self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget):
         return int(not y_true == y_pred)    # Not correctly_classifies
 
     def predict_one(self, x):
@@ -494,3 +758,69 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
 
     def predict_proba_one(self, x):
         return self.model.predict_proba_one(x)
+
+
+class ForestMemberRegressor(BaseForestMember, base.Regressor):
+    """Forest member class for regression"""
+
+    def __init__(self,
+                 index_original: int,
+                 base_model: ARFHoeffdingTreeRegressor,
+                 created_on: int,
+                 base_drift_detector: base.DriftDetector,
+                 base_warning_detector: base.DriftDetector,
+                 is_background_learner,
+                 base_metric: typing.Union[MAE, MSE]):
+        super().__init__(
+            index_original=index_original,
+            base_model=base_model,
+            created_on=created_on,
+            base_drift_detector=base_drift_detector,
+            base_warning_detector=base_warning_detector,
+            is_background_learner=is_background_learner,
+            base_metric=base_metric
+        )
+        # Normalization of info monitored by drift detectors (using Welford's algorithm)
+        self._k = 0
+
+    def _drift_detector_input(self, y_true: float, y_pred: float):
+        # Select which kind of data is going to be monitored
+        if isinstance(self._metric, MSE):
+            drift_input = (y_true - y_pred) * (y_true - y_pred)
+        else:  # isinstance(self.metric, MAE):
+            drift_input = abs(y_true - y_pred)
+
+        return self._normalize_drift_input(drift_input)
+
+    def _normalize_drift_input(self, drift_input):
+
+        self._k += 1
+        # Welford's algorithm update step
+        if self._k == 1:
+            self._pM = self._M = drift_input
+            self._pS = 0
+
+            return 0.0
+        else:
+            self._M = self._pM + (drift_input - self._pM) / self._k
+            self._S = self._pS + (drift_input - self._pM) * (drift_input - self._M)
+
+            # Save previously calculated values for the next iteration
+            self._pM = self._M
+            self._pS = self._S
+
+            sd = math.sqrt(self._S / (self._k - 1))
+
+            # Apply z-score normalization to drift input
+            norm_input = (drift_input - self._M) / sd if sd > 0 else 0.0
+
+            # Data with zero mean and unit variance -> (empirical rule) 99.73% of the values lie
+            # between [mean - 3*sd, mean + 3*sd] (in a normal distribution): we assume this range
+            # for the norm variable.
+            # Hence, the values are assumed to be between [-3, 3] and we can apply the min-max norm
+            # to cope with ADWIN's requirements
+            return (norm_input + 3) / 6
+
+    def predict_one(self, x):
+        return self.model.predict_one(x)
+
