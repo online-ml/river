@@ -120,4 +120,19 @@ class ARFHoeffdingTreeRegressor(HoeffdingTreeRegressor):
             return new_adaptive
 
     def new_instance(self):
-        return self.__class__(**self._get_params())
+        return self.__class__(max_size=self.max_size,
+                              memory_estimate_period=self.memory_estimate_period,
+                              grace_period=self.grace_period,
+                              split_confidence=self.split_confidence,
+                              tie_threshold=self.tie_threshold,
+                              binary_split=self.binary_split,
+                              stop_mem_management=self.stop_mem_management,
+                              remove_poor_attrs=self.remove_poor_attrs,
+                              merit_preprune=self.merit_preprune,
+                              leaf_prediction=self.leaf_prediction,
+                              leaf_model=self.leaf_model,
+                              model_selector_decay=self.model_selector_decay,
+                              max_features=self.max_features,
+                              nominal_attributes=self.nominal_attributes,
+                              max_depth=self.max_depth,
+                              seed=self._rng)
