@@ -518,10 +518,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     Notice that this implementation is slightly different from the original
     algorithm proposed in [^2]. The `HoeffdingTreeRegressor` is used as base
     learner, instead of `FIMT-DD`. It also adds a new strategy to monitor the
-    predictions and check for concept drifts. The monitored is are normalized
-    in the [0, 1] range to fulfil ADWIN's requirements. We assume that the data
-    subjected to the normalization follows a normal distribution, and thus,
-    lies within the interval of the mean $\pm3\sigma$.
+    predictions and check for concept drifts. The deviations of the predictions
+    to the target are monitored and normalized in the [0, 1] range to fulfill ADWIN's
+    requirements. We assume that the data subjected to the normalization follows
+    a normal distribution, and thus, lies within the interval of the mean $\pm3\sigma$.
 
     Parameters
     ----------
