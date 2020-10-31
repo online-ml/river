@@ -36,6 +36,8 @@ def get_all_estimators():
         compose.FuncTransformer,
         compose.Pipeline,
         compose.Grouper,
+        ensemble.AdaptiveRandomForestClassifier,
+        ensemble.AdaptiveRandomForestRegressor,
         ensemble.SRPClassifier,
         expert.StackingClassifier,
         expert.SuccessiveHalvingClassifier,
