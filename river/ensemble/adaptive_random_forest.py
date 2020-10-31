@@ -10,12 +10,17 @@ from river import base
 from river.drift import ADWIN
 from river.metrics import Accuracy
 from river.metrics import MSE
-from river.metrics import MAE
 from river.metrics.base import MultiClassMetric
 from river.metrics.base import RegressionMetric
-from river.tree.arf_hoeffding_tree_classifier import ARFHoeffdingTreeClassifier
-from river.tree.arf_hoeffding_tree_regressor import ARFHoeffdingTreeRegressor
-from river import stats
+from river.tree import HoeffdingTreeClassifier
+from river.tree import HoeffdingTreeRegressor
+from river.tree._nodes import RandomLearningNodeMC          # noqa
+from river.tree._nodes import RandomLearningNodeNB          # noqa
+from river.tree._nodes import RandomLearningNodeNBA         # noqa
+from river.tree._nodes import RandomLearningNodeMean        # noqa
+from river.tree._nodes import RandomLearningNodeModel       # noqa
+from river.tree._nodes import RandomLearningNodeAdaptive    # noqa
+from river.stats import Var
 from river.utils.skmultiflow_utils import check_random_state
 
 
@@ -129,6 +134,168 @@ class BaseForest(base.EnsembleMixin):
         self._rng = check_random_state(self.seed)
 
 
+class BaseTreeClassifier(HoeffdingTreeClassifier):
+    """Adaptive Random Forest Hoeffding Tree Classifier.
+
+    This is the base-estimator of the Adaptive Random Forest classifier.
+    This variant of the Hoeffding Tree classifier includes the `max_features`
+    parameter, which defines the number of randomly selected features to be
+    considered at each split.
+
+    """
+    def __init__(self,
+                 grace_period: int = 200,
+                 max_depth: int = None,
+                 split_criterion: str = 'info_gain',
+                 split_confidence: float = 1e-7,
+                 tie_threshold: float = 0.05,
+                 leaf_prediction: str = 'nba',
+                 nb_threshold: int = 0,
+                 nominal_attributes: list = None,
+                 max_features: int = 2,
+                 seed=None,
+                 **kwargs):
+        super().__init__(grace_period=grace_period,
+                         max_depth=max_depth,
+                         split_criterion=split_criterion,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         leaf_prediction=leaf_prediction,
+                         nb_threshold=nb_threshold,
+                         nominal_attributes=nominal_attributes,
+                         **kwargs)
+
+        self.max_features = max_features
+        self.seed = seed
+        self._rng = check_random_state(self.seed)
+
+    def _new_learning_node(self, initial_stats=None, parent=None):
+        if initial_stats is None:
+            initial_stats = {}
+
+        if parent is None:
+            depth = 0
+        else:
+            depth = parent.depth + 1
+
+        # Generate a random seed for the new learning node
+        seed = self._rng.randint(0, 4294967295, dtype='u8')
+
+        if self._leaf_prediction == self._MAJORITY_CLASS:
+            return RandomLearningNodeMC(initial_stats, depth, self.max_features, seed)
+        elif self._leaf_prediction == self._NAIVE_BAYES:
+            return RandomLearningNodeNB(initial_stats, depth, self.max_features, seed)
+        else:  # NAIVE BAYES ADAPTIVE (default)
+            return RandomLearningNodeNBA(initial_stats, depth, self.max_features, seed)
+
+    def new_instance(self):
+        return self.__class__(max_size=self.max_size,
+                              memory_estimate_period=self.memory_estimate_period,
+                              grace_period=self.grace_period,
+                              split_criterion=self.split_criterion,
+                              split_confidence=self.split_confidence,
+                              tie_threshold=self.tie_threshold,
+                              binary_split=self.binary_split,
+                              stop_mem_management=self.stop_mem_management,
+                              remove_poor_attrs=self.remove_poor_attrs,
+                              merit_preprune=self.merit_preprune,
+                              leaf_prediction=self.leaf_prediction,
+                              nb_threshold=self.nb_threshold,
+                              nominal_attributes=self.nominal_attributes,
+                              max_features=self.max_features,
+                              max_depth=self.max_depth,   # noqa
+                              seed=self._rng)
+
+
+class BaseTreeRegressor(HoeffdingTreeRegressor):
+    """ARF Hoeffding Tree regressor.
+
+    This is the base-estimator of the Adaptive Random Forest regressor.
+    This variant of the Hoeffding Tree regressor includes the `max_features`
+    parameter, which defines the number of randomly selected features to be
+    considered at each split.
+
+    """
+
+    def __init__(self,
+                 grace_period: int = 200,
+                 max_depth: int = None,
+                 split_confidence: float = 1e-7,
+                 tie_threshold: float = 0.05,
+                 leaf_prediction: str = 'model',
+                 leaf_model: base.Regressor = None,
+                 model_selector_decay: float = 0.95,
+                 nominal_attributes: list = None,
+                 max_features: int = 2,
+                 seed=None,
+                 **kwargs):
+        super().__init__(grace_period=grace_period,
+                         max_depth=max_depth,
+                         split_confidence=split_confidence,
+                         tie_threshold=tie_threshold,
+                         leaf_prediction=leaf_prediction,
+                         leaf_model=leaf_model,
+                         model_selector_decay=model_selector_decay,
+                         nominal_attributes=nominal_attributes,
+                         **kwargs)
+
+        self.max_features = max_features
+        self.seed = seed
+        self._rng = check_random_state(self.seed)
+
+    def _new_learning_node(self, initial_stats=None, parent=None):   # noqa
+        """Create a new learning node.
+
+        The type of learning node depends on the tree configuration.
+        """
+
+        if parent is not None:
+            depth = parent.depth + 1
+        else:
+            depth = 0
+
+        # Generate a random seed for the new learning node
+        seed = self._rng.randint(0, 4294967295, dtype='u8')
+
+        if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
+            if parent is None:
+                leaf_model = copy.deepcopy(self.leaf_model)
+            else:
+                leaf_model = copy.deepcopy(parent._leaf_model)    # noqa
+
+        if self.leaf_prediction == self._TARGET_MEAN:
+            return RandomLearningNodeMean(initial_stats, depth, self.max_features, seed)
+        elif self.leaf_prediction == self._MODEL:
+            return RandomLearningNodeModel(
+                initial_stats, depth, self.max_features, seed, leaf_model=leaf_model)    # noqa
+        else:  # adaptive learning node
+            new_adaptive = RandomLearningNodeAdaptive(
+                initial_stats, depth, self.max_features, seed, leaf_model=leaf_model)    # noqa
+            if parent is not None:
+                new_adaptive._fmse_mean = parent._fmse_mean    # noqa
+                new_adaptive._fmse_model = parent._fmse_model    # noqa
+
+            return new_adaptive
+
+    def new_instance(self):
+        return self.__class__(max_size=self.max_size,
+                              memory_estimate_period=self.memory_estimate_period,
+                              grace_period=self.grace_period,
+                              split_confidence=self.split_confidence,
+                              tie_threshold=self.tie_threshold,
+                              binary_split=self.binary_split,
+                              stop_mem_management=self.stop_mem_management,
+                              remove_poor_attrs=self.remove_poor_attrs,
+                              merit_preprune=self.merit_preprune,
+                              leaf_prediction=self.leaf_prediction,
+                              leaf_model=self.leaf_model,
+                              model_selector_decay=self.model_selector_decay,
+                              max_features=self.max_features,
+                              nominal_attributes=self.nominal_attributes,
+                              max_depth=self.max_depth,    # noqa
+                              seed=self._rng)
+
+
 class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     """Adaptive Random Forest classifier.
 
@@ -166,7 +333,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
     max_size
-        [Tree parameter] Maximum memory consumed by the tree.
+        [Tree parameter] Maximum memory (MB) consumed by the tree.
     memory_estimate_period
         [Tree parameter] Number of instances between memory consumption checks.
     grace_period
@@ -175,7 +342,8 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     split_criterion
         [Tree parameter] Split criterion to use.<br/>
         - 'gini' - Gini<br/>
-        - 'info_gain' - Information Gain
+        - 'info_gain' - Information Gain<br/>
+        - 'hellinger' - Hellinger Distance
     split_confidence
         [Tree parameter] Allowed error in split decision, a value closer to 0
         takes longer to decide.
@@ -317,7 +485,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         return y_pred
 
     def _get_base_model(self, seed: int):
-        return ARFHoeffdingTreeClassifier(
+        return BaseTreeClassifier(
                     max_size=self.max_size,
                     memory_estimate_period=self.memory_estimate_period,
                     grace_period=self.grace_period,
@@ -386,7 +554,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
     max_size
-        [Tree parameter] Maximum memory consumed by the tree.
+        [Tree parameter] Maximum memory (MB) consumed by the tree.
     memory_estimate_period
         [Tree parameter] Number of instances between memory consumption checks.
     grace_period
@@ -567,7 +735,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         return y_pred
 
     def _get_base_model(self, seed: int):
-        return ARFHoeffdingTreeRegressor(
+        return BaseTreeRegressor(
             max_size=self.max_size,
             memory_estimate_period=self.memory_estimate_period,
             grace_period=self.grace_period,
@@ -622,7 +790,7 @@ class BaseForestMember:
     """
     def __init__(self,
                  index_original: int,
-                 base_model: typing.Union[ARFHoeffdingTreeClassifier, ARFHoeffdingTreeRegressor],
+                 base_model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
                  created_on: int,
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
@@ -737,7 +905,7 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
 
     def __init__(self,
                  index_original: int,
-                 base_model: ARFHoeffdingTreeClassifier,
+                 base_model: BaseTreeClassifier,
                  created_on: int,
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
@@ -768,7 +936,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
 
     def __init__(self,
                  index_original: int,
-                 base_model: ARFHoeffdingTreeRegressor,
+                 base_model: BaseTreeRegressor,
                  created_on: int,
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
@@ -783,7 +951,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
             is_background_learner=is_background_learner,
             base_metric=base_metric
         )
-        self._var = stats.Var()   # Used to track drift
+        self._var = Var()   # Used to track drift
 
     def _drift_detector_input(self, y_true: float, y_pred: float):
         drift_input = y_true - y_pred
@@ -803,7 +971,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
     def reset(self, n_samples_seen):
         super().reset(n_samples_seen)
         # Reset the stats for the drift detector
-        self._var = stats.Var()
+        self._var = Var()
 
     def predict_one(self, x):
         return self.model.predict_one(x)
