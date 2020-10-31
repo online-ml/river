@@ -1,7 +1,7 @@
 from operator import attrgetter
 
 from river import base
-from river.utils.math import softmax
+from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from ._base_tree import BaseHoeffdingTree
 from ._split_criterion import GiniSplitCriterion
@@ -323,9 +323,14 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             node = found_node.node
             if node is None:
                 node = found_node.parent
-            pred = node.predict_one(x, tree=self) if node.is_leaf() else node.stats
-            proba.update(pred)
-            proba = softmax(proba)
+
+            if node.is_leaf():
+                proba.update(node.predict_one(x, tree=self))
+            else:  # Corner case where a decision node is reached
+                proba_sum = sum(node.stats.values())
+                if proba_sum > 0:
+                    pred = normalize_values_in_dict(node.stats, factor=proba_sum, inplace=False)
+                    proba.update(pred)
         return proba
 
     @property
