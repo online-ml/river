@@ -3,7 +3,6 @@ import copy
 import pytest
 
 from river import utils
-
 from river import ensemble
 
 estimator = ensemble.AdaptiveRandomForestClassifier(

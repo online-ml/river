@@ -15,6 +15,7 @@ from river.metrics.base import MultiClassMetric
 from river.metrics.base import RegressionMetric
 from river.tree.arf_hoeffding_tree_classifier import ARFHoeffdingTreeClassifier
 from river.tree.arf_hoeffding_tree_regressor import ARFHoeffdingTreeRegressor
+from river import stats
 from river.utils.skmultiflow_utils import check_random_state
 
 
@@ -48,7 +49,7 @@ class BaseForest(base.EnsembleMixin):
         self._n_samples_seen = 0
         self._base_member_class = None
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs):
+    def learn_one(self, x: dict, y: base.typing.Target, **kwargs):
         self._n_samples_seen += 1
 
         if not self.models:
@@ -350,12 +351,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     algorithm proposed in [^2]. The `HoeffdingTreeRegressor` is used as base
     learner, instead of `FIMT-DD`. It also adds a new strategy to monitor the
     incoming data and check for concept drifts. The monitored data (either the
-    trees' errors or their predictions) are centered and scaled (z-score
-    normalization) to have zero mean and unit standard deviation. Transformed
-    values are then again normalized in the [0, 1] range to fulfil ADWIN's
-    requirements. We assume that the data subjected to the z-score
-    normalization lies within the interval of the mean $\pm3\sigma$, as it
-    occurs in normal distributions.
+    trees' errors or their predictions) are normalized in the [0, 1] range to
+    fulfil ADWIN's requirements. We assume that the data subjected to the
+    normalization, e.g., the monitored error, follows a normal distribution,
+    and thus, lies within the interval of the mean $\pm3\sigma$.
 
     Parameters
     ----------
@@ -465,7 +464,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 40.750719
+    MAE: 23.320694
 
     """
 
@@ -479,7 +478,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                  max_features='sqrt',
                  aggregation_method: str = 'median',
                  lambda_value: int = 6,
-                 metric: typing.Union[MSE, MAE] = MSE(),
+                 metric: RegressionMetric = MSE(),
                  disable_weighted_vote=False,
                  drift_detector: base.DriftDetector = ADWIN(0.001),
                  warning_detector: base.DriftDetector = ADWIN(0.01),
@@ -545,17 +544,18 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
         if not self.disable_weighted_vote:
             weights = np.zeros(self.n_models)
+            sum_weights = 0.
             for idx, model in enumerate(self.models):
                 y_pred[idx] = model.predict_one(x)
                 weights[idx] = model.metric.get()
+                sum_weights += weights[idx]
 
-                sum_weights = weights.sum()
-                if sum_weights != 0:
-                    # The higher the error, the worse is the tree
-                    weights = sum_weights - weights
-                    # Normalize weights to sum up to 1
-                    weights = weights / weights.sum()
-                    y_pred *= weights
+            if sum_weights != 0:
+                # The higher the error, the worse is the tree
+                weights = sum_weights - weights
+                # Normalize weights to sum up to 1
+                weights = weights / weights.sum()
+                y_pred *= weights
         else:
             for idx, model in enumerate(self.models):
                 y_pred[idx] = model.predict_one(x)
@@ -587,6 +587,11 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             seed=seed
         )
 
+    @property
+    def valid_aggregation_method(self):
+        """Valid aggregation_methods values."""
+        return self._VALID_AGGREGATION_METHOD
+
 
 class BaseForestMember:
     """Base forest member class.
@@ -604,11 +609,11 @@ class BaseForestMember:
     ----------
     index_original
         Tree index within the ensemble.
-    base_model: ARFHoeffdingTreeClassifier
+    base_model
         Tree classifier.
     created_on
         Number of instances seen by the tree.
-    base_drift_detector: DriftDetector
+    base_drift_detector
         Drift Detection method.
     base_warning_detector
         Warning Detection method.
@@ -769,7 +774,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
                  base_drift_detector: base.DriftDetector,
                  base_warning_detector: base.DriftDetector,
                  is_background_learner,
-                 base_metric: typing.Union[MAE, MSE]):
+                 base_metric: RegressionMetric):
         super().__init__(
             index_original=index_original,
             base_model=base_model,
@@ -779,46 +784,27 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
             is_background_learner=is_background_learner,
             base_metric=base_metric
         )
-        # Normalization of info monitored by drift detectors (using Welford's algorithm)
-        self._k = 0
+        self._var = stats.Var()   # Used to track drift
 
     def _drift_detector_input(self, y_true: float, y_pred: float):
-        # Select which kind of data is going to be monitored
-        if isinstance(self.metric, MSE):
-            drift_input = (y_true - y_pred) * (y_true - y_pred)
-        else:  # isinstance(self.metric, MAE):
-            drift_input = abs(y_true - y_pred)
+        drift_input = y_true - y_pred
+        self._var.update(drift_input)
 
-        return self._normalize_drift_input(drift_input)
+        if self._var.mean.n == 1:
+            return 0.5  # The expected error is the normalized mean error
 
-    def _normalize_drift_input(self, drift_input):
+        sd = math.sqrt(self._var.sigma)
 
-        self._k += 1
-        # Welford's algorithm update step
-        if self._k == 1:
-            self._pM = self._M = drift_input
-            self._pS = 0
+        # We assume the error follows a normal distribution -> (empirical rule)
+        # 99.73% of the values lie  between [mean - 3*sd, mean + 3*sd]. We
+        # assume this range for the normalized data. Hence, we can apply the
+        # min-max norm to cope with  ADWIN's requirements
+        return (drift_input + 3 * sd) / (6 * sd) if sd > 0 else 0.5
 
-            return 0.0
-        else:
-            self._M = self._pM + (drift_input - self._pM) / self._k
-            self._S = self._pS + (drift_input - self._pM) * (drift_input - self._M)
-
-            # Save previously calculated values for the next iteration
-            self._pM = self._M
-            self._pS = self._S
-
-            sd = math.sqrt(self._S / (self._k - 1))
-
-            # Apply z-score normalization to drift input
-            norm_input = (drift_input - self._M) / sd if sd > 0 else 0.0
-
-            # Data with zero mean and unit variance -> (empirical rule) 99.73% of the values lie
-            # between [mean - 3*sd, mean + 3*sd] (in a normal distribution): we assume this range
-            # for the norm variable.
-            # Hence, the values are assumed to be between [-3, 3] and we can apply the min-max norm
-            # to cope with ADWIN's requirements
-            return (norm_input + 3) / 6
+    def reset(self, n_samples_seen):
+        super().reset(n_samples_seen)
+        # Reset the stats for the drift detector
+        self._var = stats.Var()
 
     def predict_one(self, x):
         return self.model.predict_one(x)
