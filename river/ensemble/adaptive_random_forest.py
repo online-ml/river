@@ -350,11 +350,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     Notice that this implementation is slightly different from the original
     algorithm proposed in [^2]. The `HoeffdingTreeRegressor` is used as base
     learner, instead of `FIMT-DD`. It also adds a new strategy to monitor the
-    incoming data and check for concept drifts. The monitored data (either the
-    trees' errors or their predictions) are normalized in the [0, 1] range to
-    fulfil ADWIN's requirements. We assume that the data subjected to the
-    normalization, e.g., the monitored error, follows a normal distribution,
-    and thus, lies within the interval of the mean $\pm3\sigma$.
+    predictions and check for concept drifts. The monitored is are normalized
+    in the [0, 1] range to fulfil ADWIN's requirements. We assume that the data
+    subjected to the normalization follows a normal distribution, and thus,
+    lies within the interval of the mean $\pm3\sigma$.
 
     Parameters
     ----------
@@ -683,7 +682,7 @@ class BaseForestMember:
             self.created_on = n_samples_seen
             self.drift_detector = copy.deepcopy(self.base_drift_detector)
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, *, sample_weight: int,   # noqa
+    def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int,
                   n_samples_seen: int):
 
         self.model.learn_one(x, y, sample_weight=sample_weight)
