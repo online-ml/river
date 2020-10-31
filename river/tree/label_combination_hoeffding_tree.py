@@ -1,7 +1,8 @@
 import typing
+
 from river import base
 from river.tree import HoeffdingTreeClassifier
-from river.utils.math import softmax
+from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 
 class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.MultiOutputMixin):
@@ -130,7 +131,9 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
 
         for label_id, label_val in self._r_label_map[enc_class]:
             result[label_id][label_val] = enc_probas[enc_class]
-            result[label_id] = softmax(result[label_id])
+            sum_values = sum(result[label_id].values())
+            if sum_values > 0:
+                result[label_id] = normalize_values_in_dict(result[label_id], factor=sum_values)
 
         return result
 

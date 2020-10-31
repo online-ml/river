@@ -1,6 +1,6 @@
 from river.tree import HoeffdingTreeClassifier
 from river.utils.skmultiflow_utils import add_dict_values
-from river.utils.math import softmax
+from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from ._nodes import FoundNode
 from ._nodes import SplitNode
@@ -152,7 +152,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     # Override HoeffdingTreeClassifier
     def predict_proba_one(self, x):
-        proba = {}
+        proba = {c: 0. for c in self.classes}
         if self._tree_root is not None:
             found_nodes = self._filter_instance_to_leaves(x, None, -1)
             for fn in found_nodes:
@@ -167,7 +167,11 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                     # Option Tree prediction (of sorts): combine the response of all leaves reached
                     # by the instance
                     proba = add_dict_values(proba, dist, inplace=True)
-        return softmax(proba)
+            sum_values = sum(proba.values())
+            if sum_values > 0:
+                proba = normalize_values_in_dict(proba, factor=sum_values)
+
+        return proba
 
     def _filter_instance_to_leaves(self, x, split_parent, parent_branch):
         nodes = []
@@ -183,7 +187,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         return AdaLearningNodeClassifier(stats=initial_stats, depth=depth,
                                          adwin_delta=self.adwin_confidence, seed=self.seed)
 
-    def _new_split_node(self, split_test, target_stats=None, depth=0):
+    def _new_split_node(self, split_test, target_stats=None, depth=0, **kwargs):
         return AdaSplitNodeClassifier(split_test=split_test, stats=target_stats, depth=depth,
                                       adwin_delta=self.adwin_confidence, seed=self.seed)
 

@@ -127,12 +127,18 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
 
         prediction_option = tree.leaf_prediction
         if not self.is_active() or prediction_option == tree._MAJORITY_CLASS:
-            dist = self.stats
+            dist = {c: 0. for c in self.stats}
+            votes_sum = sum(self.stats.values())
+            if votes_sum > 0:
+                dist = normalize_values_in_dict(dist, factor=votes_sum, inplace=False)
         elif prediction_option == tree._NAIVE_BAYES:
             if self.total_weight >= tree.nb_threshold:
                 dist = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
-            else:
-                dist = self.stats
+            else:  # Use majority class
+                dist = {c: 0. for c in self.stats}
+                votes_sum = sum(self.stats.values())
+                if votes_sum > 0:
+                    dist = normalize_values_in_dict(dist, factor=votes_sum, inplace=False)
         else:  # Naive Bayes Adaptive
             dist = super().predict_one(x, tree=tree)
 
@@ -287,8 +293,13 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
     def predict_one(self, x, *, tree=None):
         # In case split nodes end up being used (if emerging categorical feature appears,
-        # for instance)
-        return self.stats  # Use the MC (majority class) prediction strategy
+        # for instance) use the MC (majority class) prediction strategy
+        dist = {c: 0. for c in self.stats}
+        votes_sum = sum(self.stats.values())
+        if votes_sum > 0:
+            dist = normalize_values_in_dict(dist, factor=votes_sum, inplace=False)
+
+        return dist
 
     # Override AdaNode
     def kill_tree_children(self, tree):
