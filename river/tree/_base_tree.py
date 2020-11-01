@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 import collections
 import functools
+import io
 import math
 import typing
 
 from river.utils.skmultiflow_utils import calculate_object_size
 from river import base
+from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from ._nodes import Node
 from ._nodes import LearningNode
@@ -320,27 +322,67 @@ class BaseHoeffdingTree(ABC):
                     self.__find_learning_nodes(
                         split_node.get_child(i), split_node, i, found)
 
-    def debug_one(self, x: dict) -> str:
-        """Prints an explanation of how `x` is predicted.
-        Parameters:
-            x: A dictionary of features.
+    # Adapted from creme's original implementation
+    def debug_one(self, x: dict) -> typing.Union[str, None]:
+        """Print an explanation of how `x` is predicted.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+
+        Returns
+        -------
+            A representation of the path followed by the tree to predict `x`; `None` if
+            the tree is empty.
         """
+        if self._tree_root is None:
+            return
 
         # We'll redirect all the print statement to a buffer, we'll return the content of the
         # buffer at the end
         buffer = io.StringIO()
         _print = functools.partial(print, file=buffer)
 
-        node = self.root
-
-        for node in self.root.path(x):
-            if isinstance(node, leaf.Leaf):
-                _print(node.target_dist)
+        for node in self._tree_root.path(x):
+            if node.is_leaf():
+                pred = node.predict_one(x, tree=self)
+                if isinstance(self, base.Classifier):
+                    class_val = max(pred, key=pred.get)
+                    _print(f'Class {class_val} | {pred}')
+                else:
+                    # Multi-target regression case
+                    if isinstance(self, base.MultiOutputMixin):
+                        _print('Predictions:\n{')
+                        for i, (t, var) in enumerate(pred.items()):
+                            _print(f'\t{t}: {pred[t]} | {node.stats.mean[t]} | {node.stats[t]}')
+                        _print('}')
+                    else:  # Single-target regression
+                        _print(f'Prediction {pred} | {node.stats.mean} | {node.stats}')
                 break
-            if node.split(x):
-                _print('not', node.split)
             else:
-                _print(node.split)
+                child_index = node.split_test.branch_for_instance(x)
+
+                if child_index >= 0:
+                    _print(node.split_test.describe_condition_for_branch(child_index))
+                else:  # Corner case where an emerging nominal feature value arrives
+                    _print('Decision node reached as final destination')
+                    pred = node.stats
+                    if isinstance(self, base.Classifier):
+                        class_val = max(pred, key=pred.get)
+                        sum_values = sum(pred.values())
+                        if sum_values > 0:
+                            pred = normalize_values_in_dict(pred, factor=sum_values, inplace=False)
+                        _print(f'Class {class_val} | {pred}')
+                    else:
+                        # Multi-target regression case
+                        if isinstance(self, base.MultiOutputMixin):
+                            _print('Predictions:\n{')
+                            for i, (t, var) in enumerate(pred.items()):
+                                _print(f'\t{t}: {pred[t].mean.get()} | {pred[t]}')
+                            _print('}')
+                        else:  # Single-target regression
+                            _print(f'Prediction {pred} | {node.stats.mean} | {node.stats}')
 
         return buffer.getvalue()
 
@@ -361,45 +403,52 @@ class BaseHoeffdingTree(ABC):
         -------
         >>> from river import datasets
         >>> from river import tree
-        >>> model = tree.DecisionTreeClassifier(
-        ...    patience=10,
-        ...    confidence=1e-5,
-        ...    criterion='gini',
+        >>> model = tree.HoeffdingTreeClassifier(
+        ...    grace_period=10,
+        ...    split_confidence=1e-5,
+        ...    split_criterion='gini',
         ...    max_depth=10,
         ...    tie_threshold=0.05,
-        ...    min_child_samples=0,
         ... )
         >>> for x, y in datasets.Phishing():
-        ...    model = model.fit_one(x, y)
+        ...    model = model.learn_one(x, y)
         >>> dot = model.draw()
         .. image:: /img/dtree_draw.svg
         :align: center
         """
         def node_prediction(node):
             if isinstance(self, base.Classifier):
-                return str(max(node.stats, key=node.stats.get))
+                pred = node.stats
+                text = str(max(pred, key=pred.get))
+                sum_votes = sum(pred.values())
+                if sum_votes > 0:
+                    pred = normalize_values_in_dict(pred, factor=sum_votes, inplace=True)
+                    probas = '\n'.join([f'P({c}) = {proba:.4f}' for c, proba in pred.items()])
+                    text = f'{text}\n{probas}'
+                return text
             elif isinstance(self, base.Regressor):
                 # Multi-target regression
                 if isinstance(self, base.MultiOutputMixin):
-                    return ' | '.join([f'{t}={node.stats[t].mean.get()}' for t in node.stats])
+                    return ' | '.join([
+                            f'{t} = {node.stats[t].mean.get():.4f}' for t in node.stats
+                    ])
                 else:  # vanilla single-target regression
                     return f'{node.stats.mean.get():.4f}'
-
 
         if max_depth is None:
             max_depth = math.inf
 
         dot = graphviz.Digraph(
-            graph_attr={'splines': 'ortho'},
+            graph_attr={'splines': 'ortho', 'forcelabels': 'true', 'overlap': 'false'},
             node_attr={
                 'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
                 'fontsize': '11', 'margin': '0.1,0.0'
             },
-            edge_attr={'penwidth': '0.6', 'center': 'true'}
+            edge_attr={'penwidth': '0.6', 'center': 'true', 'fontsize': '7  '}
         )
 
         if isinstance(self, base.Classifier):
-            n_colors = len(self.classes)
+            n_colors = len(self.classes)   # noqa
         else:
             n_colors = 1
 
@@ -407,20 +456,29 @@ class BaseHoeffdingTree(ABC):
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
         palette = collections.defaultdict(new_color)
 
-        for parent_no, child_no, _, child, child_depth in self.root.iter_edges():
+        for parent_no, child_no, parent, child, branch_id in self._tree_root.iter_edges():
 
-            if child_depth > max_depth:
+            if child.depth > max_depth:
                 continue
 
-            if isinstance(child, SplitNode):
-                text = f'{child.split_test}'
-            elif isinstance(child, LearningNode):
-                text = f'{node_prediction(child)}\nsamples: {child.total_weight}'
+            if not child.is_leaf():
+                text = f'{child.split_test.attrs_test_depends_on()[0]}'
+
+                if child.depth == max_depth:
+                    text = f'{text}\n{node_prediction(child)}'
+            else:
+                text = f'{node_prediction(child)}\nsamples: {int(child.total_weight)}'
 
             # Pick a color, the hue depends on the class and the transparency on the distribution
-            mode = child.target_dist.mode
-            if mode is not None:
-                p_mode = child.target_dist.pmf(mode)
+            if isinstance(self, base.Classifier):
+                class_proba = {c: 0 for c in self.classes}   # noqa
+                sum_proba = sum(child.stats.values())
+                if sum_proba > 0:
+                    class_proba.update(
+                        normalize_values_in_dict(child.stats, factor=sum_proba, inplace=False)
+                    )
+                mode = max(class_proba, key=class_proba.get)
+                p_mode = class_proba[mode]
                 alpha = (p_mode - 1 / n_colors) / (1 - 1 / n_colors)
                 fillcolor = str(transparency_hex(color=palette[mode], alpha=alpha))
             else:
@@ -429,7 +487,12 @@ class BaseHoeffdingTree(ABC):
             dot.node(f'{child_no}', text, fillcolor=fillcolor, style='filled')
 
             if parent_no is not None:
-                dot.edge(f'{parent_no}', f'{child_no}')
+                dot.edge(
+                    f'{parent_no}', f'{child_no}',
+                    xlabel=parent.split_test.describe_condition_for_branch(
+                        branch_id, shorten=True
+                    )
+                )
 
         return dot
 
