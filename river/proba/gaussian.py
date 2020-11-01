@@ -55,7 +55,12 @@ class Gaussian(base.ContinuousDistribution):
     def pdf(self, x):
         var = self._var.get()
         if var:
-            return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
+            try:
+                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
+            except ValueError:
+                return 0.
+            except OverflowError:
+                return 0.
         return 0.
 
     def cdf(self, x):
