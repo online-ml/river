@@ -93,15 +93,13 @@ class ADWIN(DriftDetector):
         """
         self.__init__(delta=self.delta)
 
-    def set_clock(self, clock):
-        self.mint_clock = clock
-
     @property
     def _bucket_used_bucket(self):
         return self.bucket_num_max
 
     @property
     def width(self):
+        """Window size"""
         return self._width
 
     @property
@@ -109,26 +107,15 @@ class ADWIN(DriftDetector):
         return self._n_detections
 
     @property
-    def total(self):
-        return self._total
-
-    @property
     def variance(self):
         return self._variance / self._width
 
     @property
     def estimation(self):
+        """Error estimation"""
         if self._width == 0:
             return 0
         return self._total / self._width
-
-    @estimation.setter
-    def estimation(self, value):
-        pass
-
-    @property
-    def width_t(self):
-        return self.mdbl_width
 
     def __init_buckets(self):
         """ Initialize the bucket's List and statistics
@@ -186,10 +173,10 @@ class ADWIN(DriftDetector):
             self.bucket_num_max = self.bucket_number
 
     @staticmethod
-    def bucket_size(row):
+    def _bucket_size(row):
         return np.power(2, row)
 
-    def delete_element(self) -> int:
+    def _delete_element(self) -> int:
         """Delete an item from the bucket list.
 
         Deletes the last item and updates relevant statistics kept by ADWIN.
@@ -200,7 +187,7 @@ class ADWIN(DriftDetector):
 
         """
         node = self.list_row_bucket.last
-        n1 = self.bucket_size(self.last_bucket_row)
+        n1 = self._bucket_size(self.last_bucket_row)
         self._width -= n1
         self._total -= node.get_total(0)
         u1 = node.get_total(0) / n1
@@ -228,8 +215,8 @@ class ADWIN(DriftDetector):
                     self.list_row_bucket.add_to_tail()
                     next_node = cursor.get_next_item()
                     self.last_bucket_row += 1
-                n1 = self.bucket_size(i)
-                n2 = self.bucket_size(i)
+                n1 = self._bucket_size(i)
+                n2 = self._bucket_size(i)
                 u1 = cursor.get_total(0) / n1
                 u2 = cursor.get_total(1) / n2
                 incremental_variance = n1 * n2 * ((u1 - u2) * (u1 - u2)) / (n1 + n2)
@@ -281,7 +268,7 @@ class ADWIN(DriftDetector):
                 n0 = 0
                 n1 = self._width
                 u0 = 0
-                u1 = self.total
+                u1 = self._total
                 v0 = 0
                 v1 = self._variance
                 n2 = 0
@@ -291,7 +278,7 @@ class ADWIN(DriftDetector):
 
                 while (not bln_exit) and (cursor is not None):
                     for k in range(cursor.bucket_size_row - 1):
-                        n2 = self.bucket_size(i)
+                        n2 = self._bucket_size(i)
                         u2 = cursor.get_total(k)
 
                         if n0 > 0:
@@ -302,8 +289,8 @@ class ADWIN(DriftDetector):
                             v1 -= cursor.get_variance(k) + 1. * n1 * n2 * \
                                 (u1 / n1 - u2 / n2) * (u1 / n1 - u2 / n2) / (n1 + n2)
 
-                        n0 += self.bucket_size(i)
-                        n1 -= self.bucket_size(i)
+                        n0 += self._bucket_size(i)
+                        n1 -= self._bucket_size(i)
                         u0 += cursor.get_total(k)
                         u1 -= cursor.get_total(k)
 
@@ -327,7 +314,7 @@ class ADWIN(DriftDetector):
                             bln_reduce_width = True
                             bln_change = True
                             if self.width > 0:
-                                n0 -= self.delete_element()
+                                n0 -= self._delete_element()
                                 bln_exit = True
                                 break
 

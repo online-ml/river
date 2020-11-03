@@ -17,7 +17,7 @@ class DDM(DriftDetector):
     the warning zone.
 
     The detection threshold is calculated in function of two statistics,
-    obtained when $(pi + si)$ is minimum:
+    obtained when $(p_i + s_i)$ is minimum:
 
     * $p_{min}$: The minimum recorded error rate.
 
@@ -36,12 +36,13 @@ class DDM(DriftDetector):
 
     * if $p_i + s_i \geq p_{min} + 3 * s_{min}$ -> Change detected
 
-    **Input:** DDM expects `value` to be a binary value as input, indicating
-     whether the last sample analyzed was correctly classified.
+    **Input:** `value` must be a binary signal, where 0 indicates error.
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
+    true target label $y$:
 
-    - 0: Correclty classifies
+    - 0: Correct, $y=y'$
 
-    - 1: Error (miss-classification)
+    - 1: Error, $y \neq y'$
 
     Parameters
     ----------

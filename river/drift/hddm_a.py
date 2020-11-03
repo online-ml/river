@@ -4,19 +4,20 @@ from river.base import DriftDetector
 
 
 class HDDM_A(DriftDetector):
-    """Drift Detection Method based on Hoeffding’s bounds with moving average-test.
+    r"""Drift Detection Method based on Hoeffding’s bounds with moving average-test.
 
     HDDM_A is a drift detection method based on the Hoeffding’s inequality.
     HDDM_A uses the average as estimator. It receives as input a stream of real
     values and returns the estimated status of the stream: STABLE, WARNING or
     DRIFT.
 
-    **Input:** HDDM_A expects `value` to be a binary value as input, indicating
-     whether the last sample analyzed was correctly classified.
+    **Input:** `value` must be a binary signal, where 0 indicates error.
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
+    true target label $y$:
 
-    - 0: Correclty classifies
+    - 0: Correct, $y=y'$
 
-    - 1: Error (miss-classification)
+    - 1: Error, $y \neq y'$
 
     *Implementation based on MOA.*
 
@@ -28,7 +29,7 @@ class HDDM_A(DriftDetector):
         Confidence to the warning
     two_sided_test
         If `True`, will monitor error increments and decrements (two-sided). By default will only
-        monitor error increments (one-sided).
+        monitor increments (one-sided).
 
     Examples
     --------

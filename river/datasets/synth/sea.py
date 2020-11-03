@@ -6,10 +6,11 @@ from .. import base
 class SEA(base.SyntheticDataset):
     """SEA synthetic dataset.
 
-    Implementation of the data stream with abrupt drift described in [^1]. Each observation is composed of 3 features. Only the first two features are relevant. The
-    target is binary, and is positive if the sum of the features exceeds a certain threshold. There
-    are 4 thresholds to choose from. Concept drift can be introduced by switching the threshold
-    anytime during the stream.
+    Implementation of the data stream with abrupt drift described in [^1]. Each observation is
+    composed of 3 features. Only the first two features are relevant. The target is binary, and is
+    positive if the sum of the features exceeds a certain threshold. There are 4 thresholds to
+    choose from. Concept drift can be introduced by switching the threshold anytime during the
+    stream.
 
     * **Variant 0**: `True` if $att1 + att2 > 8$
 

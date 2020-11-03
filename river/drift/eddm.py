@@ -4,7 +4,7 @@ from river.base import DriftDetector
 
 
 class EDDM(DriftDetector):
-    """Early Drift Detection Method.
+    r"""Early Drift Detection Method.
 
     EDDM (Early Drift Detection Method) aims to improve the
     detection rate of gradual concept drift in DDM, while keeping
@@ -32,12 +32,13 @@ class EDDM(DriftDetector):
 
     $\alpha$ and $\beta$ are set to 0.95 and 0.9, respectively.
 
-    **Input:** EDDM expects `value` to be a binary value as input, indicating
-     whether the last sample analyzed was correctly classified.
+    **Input:** `value` must be a binary signal, where 0 indicates error.
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
+    true target label $y$:
 
-    - 0: Correclty classifies
+    - 0: Correct, $y=y'$
 
-    - 1: Error (miss-classification)
+    - 1: Error, $y \neq y'$
 
 
     Examples
