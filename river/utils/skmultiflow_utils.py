@@ -264,3 +264,20 @@ def check_random_state(seed):
     if isinstance(seed, np.random.RandomState):
         return seed
     raise ValueError(f'{seed} cannot be used to seed a numpy.random.RandomState instance')
+
+
+def round_sig_fig(x):
+    """Return the number of significant rounding figures of x.
+
+    The return value of this function is intended to be used along with `round'.
+    
+    Parameters
+    ----------
+    x
+        A floating point scalar.
+
+    Returns
+    -------
+        The number of rounding figures.
+    """
+    return -int(math.floor(math.log10(abs(x - int(x)))))

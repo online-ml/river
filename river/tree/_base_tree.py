@@ -5,9 +5,10 @@ import io
 import math
 import typing
 
-from river.utils.skmultiflow_utils import calculate_object_size
 from river import base
+from river.utils.skmultiflow_utils import calculate_object_size
 from river.utils.skmultiflow_utils import normalize_values_in_dict
+from river.utils.skmultiflow_utils import round_sig_fig
 
 from ._nodes import Node
 from ._nodes import LearningNode
@@ -423,17 +424,20 @@ class BaseHoeffdingTree(ABC):
                 sum_votes = sum(pred.values())
                 if sum_votes > 0:
                     pred = normalize_values_in_dict(pred, factor=sum_votes, inplace=False)
-                    probas = '\n'.join([f'P({c}) = {proba:.4f}' for c, proba in pred.items()])
+                    probas = '\n'.join([f'P({c}) = {round(proba, round_sig_fig(proba))}'
+                                        for c, proba in pred.items()])
                     text = f'{text}\n{probas}'
                 return text
             elif isinstance(self, base.Regressor):
                 # Multi-target regression
                 if isinstance(self, base.MultiOutputMixin):
                     return ' | '.join([
-                            f'{t} = {node.stats[t].mean.get():.4f}' for t in node.stats
+                            f'{t} = {round(s.mean.get(), round_sig_fig(s.mean.get()))}'
+                            for t, s in node.stats.items()
                     ])
                 else:  # vanilla single-target regression
-                    return f'{node.stats.mean.get():.4f}'
+                    pred = node.stats.mean.get()
+                    return f'{round(pred, round_sig_fig(pred))}'
 
         if max_depth is None:
             max_depth = math.inf
