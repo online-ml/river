@@ -266,18 +266,24 @@ def check_random_state(seed):
     raise ValueError(f'{seed} cannot be used to seed a numpy.random.RandomState instance')
 
 
-def round_sig_fig(x):
-    """Return the number of significant rounding figures of x.
+def round_sig_fig(x, significant_digits=2):
+    """Return the number of significant rounding figures of x, given the select
+    `significant_digits` prototype.
 
     The return value of this function is intended to be used along with `round'.
+    If`significant_digits` match the number of significant figures in `x`, its value
+    will be used for rounding; otherwise, decimal places will be added or removed
+    accordingly to the significant figures in `x`.
     
     Parameters
     ----------
     x
         A floating point scalar.
+    significant_digits
+        The number of intended rounding figures.
 
     Returns
     -------
         The number of rounding figures.
     """
-    return -int(math.floor(math.log10(abs(x - int(x)))))
+    return significant_digits - int(math.floor(math.log10(abs(x)))) - 1
