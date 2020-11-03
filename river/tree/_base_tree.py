@@ -422,7 +422,7 @@ class BaseHoeffdingTree(ABC):
                 text = str(max(pred, key=pred.get))
                 sum_votes = sum(pred.values())
                 if sum_votes > 0:
-                    pred = normalize_values_in_dict(pred, factor=sum_votes, inplace=True)
+                    pred = normalize_values_in_dict(pred, factor=sum_votes, inplace=False)
                     probas = '\n'.join([f'P({c}) = {proba:.4f}' for c, proba in pred.items()])
                     text = f'{text}\n{probas}'
                 return text
@@ -479,8 +479,11 @@ class BaseHoeffdingTree(ABC):
                     )
                 mode = max(class_proba, key=class_proba.get)
                 p_mode = class_proba[mode]
-                alpha = (p_mode - 1 / n_colors) / (1 - 1 / n_colors)
-                fillcolor = str(transparency_hex(color=palette[mode], alpha=alpha))
+                try:
+                    alpha = (p_mode - 1 / n_colors) / (1 - 1 / n_colors)
+                    fillcolor = str(transparency_hex(color=palette[mode], alpha=alpha))
+                except ZeroDivisionError:
+                    fillcolor = '#FFFFFF'
             else:
                 fillcolor = '#FFFFFF'
 
