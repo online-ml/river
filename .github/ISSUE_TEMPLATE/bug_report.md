@@ -20,14 +20,14 @@ Describe all the versions that can help us to correct the bug
 
 **Python version** : 
 
-**Operating System** :
+**Operating system** :
 
 ## Describe the bug
 <!--
 A clear and concise description of the bug.
 -->
 
-## Steps/Code to Reproduce
+## Steps/code to reproduce
 <!--
 Please add a minimal example that we can reproduce the error by running the
 code. Be as succinct as possible. In short, we
