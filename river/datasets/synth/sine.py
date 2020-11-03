@@ -15,14 +15,17 @@ class Sine(base.SyntheticDataset):
     2 are optionally added by as noise. A classification function is chosen
     among four options:
 
-    0. SINE1. Abrupt concept drift, noise-free examples. It has two relevant
+    0. `SINE1`. Abrupt concept drift, noise-free examples. It has two relevant
        attributes. Each attributes has values uniformly distributed in [0, 1].
        In the first context all points below the curve $y = sin(x)$ are
        classified as positive.
-    1. Reversed SINE1. The reversed classification of SINE1.
-    2. SINE2. The same two relevant attributes. The classification function
+
+    1. `Reversed SINE1`. The reversed classification of `SINE1`.
+
+    2. `SINE2`. The same two relevant attributes. The classification function
        is $y < 0.5 + 0.3 sin(3 \pi  x)$.
-    3. Reversed SINE2. The reversed classification of SINE2.
+
+    3. `Reversed SINE2`. The reversed classification of `SINE2`.
 
     Concept drift can be introduced by changing the classification function.
     This can be done manually or using `ConceptDriftStream`.

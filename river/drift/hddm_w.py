@@ -6,11 +6,19 @@ from river.base import DriftDetector
 class HDDM_W(DriftDetector):
     """Drift Detection Method based on Hoeffding’s bounds with moving weighted average-test.
 
-    HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses
-    the EWMA statistic as estimator. It receives as input a stream of real predictions
-    and returns the estimated status of the stream: STABLE, WARNING or DRIFT.
+    HDDM_W is an online drift detection method based on McDiarmid's bounds.
+    HDDM_W uses the Exponentially Weighted Moving Average (EWMA) statistic as
+    estimator. It receives as input a stream of real predictions and returns
+    the estimated status of the stream: STABLE, WARNING or DRIFT.
 
-    Implementation based on MOA.
+    **Input:** HDDM_W expects `value` to be a binary value as input, indicating
+     whether the last sample analyzed was correctly classified.
+
+    - 0: Correclty classifies
+
+    - 1: Error (miss-classification)
+
+    *Implementation based on MOA.*
 
     Parameters
     ----------

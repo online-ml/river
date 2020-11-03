@@ -4,7 +4,7 @@ from river.base import DriftDetector
 
 
 class DDM(DriftDetector):
-    """Drift Detection Method.
+    r"""Drift Detection Method.
 
     DDM (Drift Detection Method) is a concept change detection method
     based on the PAC learning model premise, that the learner's error rate
@@ -20,18 +20,28 @@ class DDM(DriftDetector):
     obtained when $(pi + si)$ is minimum:
 
     * $p_{min}$: The minimum recorded error rate.
+
     * $s_{min}$: The minimum recorded standard deviation.
 
     At instant $i$, the detection algorithm uses:
 
     * $p_i$: The error rate at instant $i$.
+
     * $s_i$: The standard deviation at instant $i$.
 
     The conditions for entering the warning zone and detecting change are
     as follows:
 
     * if $p_i + s_i \geq p_{min} + 2 * s_{min}$ -> Warning zone
+
     * if $p_i + s_i \geq p_{min} + 3 * s_{min}$ -> Change detected
+
+    **Input:** DDM expects `value` to be a binary value as input, indicating
+     whether the last sample analyzed was correctly classified.
+
+    - 0: Correclty classifies
+
+    - 1: Error (miss-classification)
 
     Parameters
     ----------
@@ -99,10 +109,6 @@ class DDM(DriftDetector):
 
     def update(self, value):
         """Update the change detector with a single data point.
-
-        After calling this method, to verify if change was detected or if the learner is in the
-        warning zone, one should call the super method detected_change, which returns `True` if
-        concept drift was detected and `False` otherwise.
 
         Parameters
         ----------
