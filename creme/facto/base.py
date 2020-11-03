@@ -1,5 +1,6 @@
 import abc
 import collections
+import contextlib
 import numbers
 
 from .. import optim
@@ -32,7 +33,7 @@ class BaseFM:
         if weight_initializer is None:
             weight_initializer = optim.initializers.Zeros()
         self.weight_initializer = weight_initializer
-        self.weights = collections.defaultdict(weight_initializer)
+        self._weights = utils.VectorDict(None, weight_initializer)
 
         if latent_initializer is None:
             latent_initializer = optim.initializers.Normal(sigma=.1, seed=seed)
@@ -42,18 +43,35 @@ class BaseFM:
         self.clip_gradient = clip_gradient
         self.seed = seed
 
+    @property
+    def weights(self):
+        return self._weights.to_dict()
+
     @abc.abstractmethod
     def _init_latents(self) -> collections.defaultdict:
         """Initializes latent weights dict."""
 
+    @contextlib.contextmanager
+    def _fit_mode(self, mask=None):
+        weights = self._weights
+        try:
+            # enable the initializer and set a mask
+            self._weights = utils.VectorDict(weights, self.weight_initializer, mask)
+            yield
+        finally:
+            self._weights = weights
+
     def fit_one(self, x, y, sample_weight=1.):
         x = self._ohe_cat_features(x)
 
-        if self.sample_normalization:
-            x_l2_norm = sum((xj ** 2 for xj in x.values())) ** 0.5
-            x = {j: xj / x_l2_norm for j, xj in x.items()}
+        with self._fit_mode(x):
+            x = utils.VectorDict(x)
 
-        return self._fit_one(x, y, sample_weight=sample_weight)
+            if self.sample_normalization:
+                x_l2_norm = (x ** 2).sum() ** 0.5
+                x = x / x_l2_norm
+
+            return self._fit_one(x, y, sample_weight=sample_weight)
 
     def _ohe_cat_features(self, x):
         """One hot encodes string features considering them as categorical."""
@@ -76,7 +94,7 @@ class BaseFM:
 
         # Update the weights
         weights_gradient = self._calculate_weights_gradients(x, g_loss)
-        self.weights = self.weight_optimizer.update_after_pred(w=self.weights, g=weights_gradient)
+        self._weights = self.weight_optimizer.update_after_pred(w=self._weights, g=weights_gradient)
 
         # Update the latent weights
         self._update_latents(x, g_loss)
@@ -89,7 +107,7 @@ class BaseFM:
         y_pred = self.intercept
 
         # Add the unary interactions
-        y_pred += utils.math.dot(x, self.weights)
+        y_pred += self._weights @ x
 
         # Add greater than unary interactions
         y_pred += self._calculate_interactions(x)

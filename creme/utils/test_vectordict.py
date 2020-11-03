@@ -115,8 +115,12 @@ def test_vectordict():
     assert vx.abs() == abs(vx) == {'a': 1, 'b': 5}
     assert vx.min() == -5
     assert vx.max() == 1
+    assert vx.sum() == -4
+    assert vx.sign() == {'a': 1, 'b': -1}
     assert vx.with_mask(['a']).min() == 1
     assert vx.with_mask(['b']).max() == -5
+    assert vx.with_mask(['a']).sum() == 1
+    assert vx.with_mask(['b']).sign() == {'b': -1}
     assert vx.minimum(-2) == {'a': -2, 'b': -5}
     assert vx.maximum(-2) == {'a': 1, 'b': -2}
     y = {'b': 0.5, 'c': 4}
