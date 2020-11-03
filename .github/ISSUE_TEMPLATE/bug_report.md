@@ -16,11 +16,11 @@ addressed by searching through the past issues.
 Describe all the versions that can help us to correct the bug
 -->
 
-**`creme` version** : 
+**`creme` version**: 
 
-**Python version** : 
+**Python version**: 
 
-**Operating system** :
+**Operating system**:
 
 ## Describe the bug
 <!--
