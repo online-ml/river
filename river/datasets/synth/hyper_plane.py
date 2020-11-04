@@ -11,10 +11,14 @@ class Hyperplane(base.SyntheticDataset):
     used as testbed for CVFDT and VFDT in [^1].
 
     A hyperplane in d-dimensional space is the set of points $x$ that satisfy
-    $\sum^{d}_{i=1} w_i x_i = w_0 = \sum^{d}_{i=1} w_i$, where
-    $x_i$ is the i-th coordinate of $x$. Examples for which
-    $\sum^{d}_{i=1} w_i x_i > w_0$, are labeled positive, and examples
-    for which $\sum^{d}_{i=1} w_i x_i \leq w_0$, are labeled negative.
+
+    $$\sum^{d}_{i=1} w_i x_i = w_0 = \sum^{d}_{i=1} w_i$$
+
+    where $x_i$ is the i-th coordinate of $x$.
+
+    - Examples for which $\sum^{d}_{i=1} w_i x_i > w_0$, are labeled positive.
+
+    - Examples for which $\sum^{d}_{i=1} w_i x_i \leq w_0$, are labeled negative.
 
     Hyperplanes are useful for simulating time-changing concepts because we
     can change the orientation and position of the hyperplane in a smooth

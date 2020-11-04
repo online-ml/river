@@ -9,7 +9,7 @@ class Logical(base.SyntheticDataset):
     """Logical functions stream generator.
 
     Make a toy dataset with three labels that represent the logical
-    functions: OR, XOR, AND (functions of the 2D input).
+    functions: `OR`, `XOR`, `AND` (functions of the 2D input).
 
     Data is generated in 'tiles' which contain the complete set of
     logical operations results. The tiles are repeated `n_tiles` times.

@@ -113,8 +113,8 @@ class LED(base.SyntheticDataset):
 class LEDDrift(LED):
     """ LED stream generator with concept drift.
 
-    This class is an extension from the LEDGenerator. The purpose of this
-    generator is to add concept drift to the stream.
+    This class is an extension of the `LED` generator whose purpose is to add
+    concept drift to the stream.
 
     Parameters
     ----------

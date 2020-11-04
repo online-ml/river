@@ -4,7 +4,7 @@ from river.base import DriftDetector
 
 
 class EDDM(DriftDetector):
-    """Early Drift Detection Method.
+    r"""Early Drift Detection Method.
 
     EDDM (Early Drift Detection Method) aims to improve the
     detection rate of gradual concept drift in DDM, while keeping
@@ -18,18 +18,28 @@ class EDDM(DriftDetector):
 
     The algorithm works similarly to the DDM algorithm, by keeping
     track of statistics only. It works with the running average
-    distance ($p_i^'$) and the running standard deviation ($s_i^'$), as
-    well as $p^'_{max}$ and $s^'_{max}$, which are the values of $p_i^'$
-    and $s_i^'$ when $(p_i^' + 2 * s_i^')$ reaches its maximum.
+    distance ($p_i'$) and the running standard deviation ($s_i'$), as
+    well as $p'_{max}$ and $s'_{max}$, which are the values of $p_i'$
+    and $s_i'$ when $(p_i' + 2 * s_i')$ reaches its maximum.
 
     Like DDM, there are two threshold values that define the
     borderline between no change, warning zone, and drift detected.
     These are as follows:
 
-    * if $(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \alpha$ -> Warning zone
-    * if $(p_i^' + 2 * s_i^')/(p^'_{max} + 2 * s^'_{max}) < \beta$ -> Change detected
+    * if $(p_i' + 2 * s_i')/(p'_{max} + 2 * s'_{max}) < \alpha$ -> Warning zone
+
+    * if $(p_i' + 2 * s_i')/(p'_{max} + 2 * s'_{max}) < \beta$ -> Change detected
 
     $\alpha$ and $\beta$ are set to 0.95 and 0.9, respectively.
+
+    **Input:** `value` must be a binary signal, where 0 indicates error.
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
+    true target label $y$:
+
+    - 0: Correct, $y=y'$
+
+    - 1: Error, $y \neq y'$
+
 
     Examples
     --------

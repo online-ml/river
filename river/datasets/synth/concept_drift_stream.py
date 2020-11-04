@@ -21,9 +21,12 @@ class ConceptDriftStream(base.SyntheticDataset):
     transition whose duration is controlled with two parameters:
 
     - $p$, the position of the change.
+
     - $w$, the width of the transition.
 
-    The sigmoid function at sample $t$ is $f(t) = 1/(1+e^{-4(t-p)/w})$.
+    The sigmoid function at sample $t$ is
+
+    $$f(t) = 1/(1+e^{-4(t-p)/w})$$
 
     Parameters
     ----------

@@ -116,8 +116,8 @@ class RandomRBF(base.SyntheticDataset):
 class RandomRBFDrift(RandomRBF):
     """Random Radial Basis Function generator with concept drift.
 
-    This class is an extension from the RandomRBF. It works as the parent
-    class, except that drift can be introduced in instances of this class.
+    This class is an extension from the `RandomRBF` generator. Concept drift
+    can be introduced in instances of this class.
 
     The drift is created by adding a "speed" to certain centroids. As the
     samples are generated each of the moving centroids' centers is
