@@ -41,6 +41,30 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
+    attribute_observer
+        The attribute observer (AO) algorithm used to monitor the class statistics of numeric
+        features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `ao_params`. Valid options are:</br>
+        - `'bst'`: Binary Search Tree. Uses an exhaustive algorithm to find split candidates,
+        similarly to batch decision tree algorithms. It ends up storing all observations
+        between split attempts. This AO is the most costly one in terms of memory and processing
+        time; however, it tends to yield the most accurate results. Since no approximation
+        is performed, this AO has no parameters.</br>
+        - `'gaussian'`: Gaussian observer. Approximates the numeric feature distribution by using
+        a Gaussian distribution per class. The cumulative probabibily function necessary to
+        calculate the entropy (and, consequently, the information gain) and the gini index,
+         is then calculated using the fit feature's distribution. The `n_bins` used to query
+         for split candidates can be adjusted (defaults to `10`).
+        - `'histogram'`: approximates the numeric feature distribution using an incrementally
+        maintained histogram per class. It represents a good compromise between the intensive
+        resource usage of `'bst'` and the strong assumptions about the feature's distribution
+        in `'gaussian'`. Besides that, this AO sits in the middle between `'bst'` and
+        `'gaussian'` in terms of memory usage and running time. The number of histogram
+        bins (`n_bins` -- defaults to `60`) and the number of split point candidates to
+        evaluate (`n_splits` -- defaults to `30`) can be adjusted.
+    ao_params
+        Parameters passed to the numeric attribute observers. See `attribute_observer`
+        for more information.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -71,6 +95,8 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
+                 attribute_observer: str = 'gaussian',
+                 ao_params: dict = None,
                  **kwargs):
 
         super().__init__(grace_period=grace_period,
@@ -81,6 +107,8 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
                          nominal_attributes=nominal_attributes,
+                         attribute_observer=attribute_observer,
+                         ao_params=ao_params,
                          **kwargs)
 
         self._next_label_code: int = 0

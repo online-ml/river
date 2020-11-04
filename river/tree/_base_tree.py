@@ -159,13 +159,12 @@ class BaseHoeffdingTree(ABC):
             return description
 
     def _new_split_node(self, split_test: InstanceConditionalTest, target_stats: dict = None,
-                        depth: int = 0, **kwargs) -> SplitNode:
+                        depth: int = 0) -> SplitNode:
         """Create a new split node."""
         return SplitNode(split_test, target_stats, depth)
 
     @abstractmethod
-    def _new_learning_node(self, initial_stats: dict = None, parent: Node = None,
-                           **kwargs) -> LearningNode:
+    def _new_learning_node(self, initial_stats: dict = None, parent: Node = None) -> LearningNode:
         """Create a new learning node.
 
         The characteristics of the learning node depends on the tree algorithm.

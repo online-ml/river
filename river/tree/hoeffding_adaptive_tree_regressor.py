@@ -45,6 +45,18 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     nominal_attributes
         List of Nominal attributes. If empty, then assume that all numeric attributes should
         be treated as continuous.
+    attribute_observer
+        The attribute observer (AO) algorithm used to monitor the target statistics of numeric
+        features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `ao_params`. Valid options are:</br>
+        - `'e-bst'`: Extended Binary Search Tree (E-BST). Uses an exhaustive algorithm to find
+        split candidates, similarly to batch decision tree algorithms. It ends up storing all
+        observations between split attempts. However, E-BST automatically removes
+        bad split points periodically from its structure and, thus, alleviates the memory and time
+        costs involved in its usage. This AO has no parameters.</br>
+    ao_params
+        Parameters passed to the numeric attribute observers. See `attribute_observer`
+        for more information.
     bootstrap_sampling
         If True, perform bootstrap sampling in the leaf nodes.
     drift_window_threshold
@@ -121,6 +133,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
+                 attribute_observer: str = 'e-bst',
+                 ao_params: dict = None,
                  bootstrap_sampling: bool = True,
                  drift_window_threshold: int = 300,
                  adwin_confidence: float = 0.002,
@@ -135,6 +149,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                          leaf_model=leaf_model,
                          model_selector_decay=model_selector_decay,
                          nominal_attributes=nominal_attributes,
+                         attribute_observer=attribute_observer,
+                         ao_params=ao_params,
                          **kwargs)
 
         self._n_alternate_trees = 0
@@ -203,8 +219,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             leaf_model = deepcopy(self.leaf_model)
 
         new_ada_leaf = AdaLearningNodeRegressor(
-            stats=initial_stats, depth=depth, leaf_model=leaf_model,
-            adwin_delta=self.adwin_confidence, seed=self.seed)
+            stats=initial_stats, depth=depth, ao=self.attribute_observer, ao_params=self.ao_params,
+            leaf_model=leaf_model, adwin_delta=self.adwin_confidence, seed=self.seed)
 
         if parent is not None and parent.is_leaf():
             new_ada_leaf._fmse_mean = parent._fmse_mean

@@ -1,9 +1,10 @@
+import functools
+
 from river.stats import Var
 from river.utils import VectorDict
 
 from .._attribute_test import NumericAttributeBinaryTest
 from .._attribute_test import AttributeSplitSuggestion
-from .._tree_utils import reg_stat_factory
 from .attribute_observer import AttributeObserver
 
 
@@ -28,7 +29,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             self.att_val = att_val
 
             if isinstance(target, dict):
-                self.estimator = VectorDict(default_factory=reg_stat_factory)
+                self.estimator = VectorDict(default_factory=functools.partial(Var))
                 self._update_estimator = self._update_estimator_multivariate
             else:
                 self.estimator = Var()
@@ -93,15 +94,15 @@ class NumericAttributeRegressionObserver(AttributeObserver):
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         raise NotImplementedError
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist,
-                                            att_idx, binary_only=True):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx,
+                                        binary_only=True):
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
 
         # Handles both single-target and multi-target tasks
         if isinstance(pre_split_dist, VectorDict):
-            self._aux_estimator = VectorDict(default_factory=reg_stat_factory)
+            self._aux_estimator = VectorDict(default_factory=functools.partial(Var))
         else:
             self._aux_estimator = Var()
 
@@ -196,7 +197,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         # Handles both single-target and multi-target tasks
         if isinstance(pre_split_dist, VectorDict):
-            self._aux_estimator = VectorDict(default_factory=reg_stat_factory)
+            self._aux_estimator = VectorDict(default_factory=functools.partial(Var))
         else:
             self._aux_estimator = Var()
 

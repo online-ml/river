@@ -44,6 +44,18 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
+    attribute_observer
+        The attribute observer (AO) algorithm used to monitor the target statistics of numeric
+        features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `ao_params`. Valid options are:</br>
+        - `'e-bst'`: Extended Binary Search Tree (E-BST). Uses an exhaustive algorithm to find
+        split candidates, similarly to batch decision tree algorithms. It ends up storing all
+        observations between split attempts. However, E-BST automatically removes
+        bad split points periodically from its structure and, thus, alleviates the memory and time
+        costs involved in its usage. This AO has no parameters.</br>
+    ao_params
+        Parameters passed to the numeric attribute observers. See `attribute_observer`
+        for more information.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -85,6 +97,8 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     _TARGET_MEAN = 'mean'
     _MODEL = 'model'
     _ADAPTIVE = 'adaptive'
+    _E_BST = 'e-bst'
+    _VALID_AO = [_E_BST]
 
     def __init__(self,
                  grace_period: int = 200,
@@ -95,6 +109,8 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
+                 attribute_observer: str = 'e-bst',
+                 ao_params: dict = None,
                  **kwargs):
         super().__init__(max_depth=max_depth, **kwargs)
 
@@ -106,6 +122,14 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.leaf_model = leaf_model if leaf_model else linear_model.LinearRegression()
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
+
+        if attribute_observer not in self._VALID_AO:
+            raise AttributeError(
+                f'Invalid "attribute_observer" option. Valid options are: {self._VALID_AO}'
+            )
+        else:
+            self.attribute_observer = attribute_observer
+        self.ao_params = ao_params if ao_params is not None else {}
 
     @BaseHoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
@@ -128,7 +152,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     def _new_split_criterion(self):
         return VarianceReductionSplitCriterion()
 
-    def _new_learning_node(self, initial_stats=None, parent=None, **kwargs):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.
@@ -148,11 +172,15 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                     leaf_model = deepcopy(self.leaf_model)
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMean(initial_stats, depth)
+            return LearningNodeMean(initial_stats, depth, self.attribute_observer, self.ao_params)
         elif self.leaf_prediction == self._MODEL:
-            return LearningNodeModel(initial_stats, depth, leaf_model)
+            return LearningNodeModel(
+                initial_stats, depth, self.attribute_observer, self.ao_params, leaf_model
+            )
         else:  # adaptive learning node
-            new_adaptive = LearningNodeAdaptive(initial_stats, depth, leaf_model)
+            new_adaptive = LearningNodeAdaptive(
+                initial_stats, depth, self.attribute_observer, self.ao_params, leaf_model
+            )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean
                 new_adaptive._fmse_model = parent._fmse_model

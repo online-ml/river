@@ -10,7 +10,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
 
     This algorithm is also referred to as exhaustive attribute observer,
     since it ends up storing all the observations between split attempts.
-    Used in Naive Bayes and decision trees to monitor data statistics on leaves.
+    Used in decision trees to monitor data statistics on leaves.
     """
 
     class Node:
@@ -63,10 +63,9 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         return 0.0
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist,
-                                            att_idx, binary_only):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
 
-        return self.search_for_best_split_option(
+        return self._search_for_best_split_option(
             current_node=self._root,
             current_best_option=None,
             actual_parent_left=None,
@@ -78,7 +77,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             att_idx=att_idx
         )
 
-    def search_for_best_split_option(self, current_node, current_best_option,
+    def _search_for_best_split_option(self, current_node, current_best_option,
                                      actual_parent_left, parent_left,
                                      parent_right, left_child, criterion,
                                      pre_split_dist, att_idx):
@@ -191,44 +190,40 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
         if current_best_option is None or merit > current_best_option.merit:
-            num_att_binary_test = \
-                NumericAttributeBinaryTest(
-                    att_idx=att_idx,
-                    att_value=current_node._cut_point,
-                    equal_passes_test=True
-                )
-
-            current_best_option = \
-                AttributeSplitSuggestion(
-                    split_test=num_att_binary_test,
-                    resulting_class_distributions=post_split_dists,
-                    merit=merit
-                )
-
-        current_best_option = \
-            self.search_for_best_split_option(
-                current_node=current_node._left,
-                current_best_option=current_best_option,
-                actual_parent_left=current_node._class_count_left,
-                parent_left=post_split_dists[0],
-                parent_right=post_split_dists[1],
-                left_child=True,
-                criterion=criterion,
-                pre_split_dist=pre_split_dist,
-                att_idx=att_idx
+            num_att_binary_test = NumericAttributeBinaryTest(
+                att_idx=att_idx,
+                att_value=current_node._cut_point,
+                equal_passes_test=True
             )
 
-        current_best_option = \
-            self.search_for_best_split_option(
-                current_node=current_node._right,
-                current_best_option=current_best_option,
-                actual_parent_left=current_node._class_count_left,
-                parent_left=post_split_dists[0],
-                parent_right=post_split_dists[1],
-                left_child=False,
-                criterion=criterion,
-                pre_split_dist=pre_split_dist,
-                att_idx=att_idx
+            current_best_option = AttributeSplitSuggestion(
+                split_test=num_att_binary_test,
+                resulting_class_distributions=post_split_dists,
+                merit=merit
             )
+
+        current_best_option = self._search_for_best_split_option(
+            current_node=current_node._left,
+            current_best_option=current_best_option,
+            actual_parent_left=current_node._class_count_left,
+            parent_left=post_split_dists[0],
+            parent_right=post_split_dists[1],
+            left_child=True,
+            criterion=criterion,
+            pre_split_dist=pre_split_dist,
+            att_idx=att_idx
+        )
+
+        current_best_option = self._search_for_best_split_option(
+            current_node=current_node._right,
+            current_best_option=current_best_option,
+            actual_parent_left=current_node._class_count_left,
+            parent_left=post_split_dists[0],
+            parent_right=post_split_dists[1],
+            left_child=False,
+            criterion=criterion,
+            pre_split_dist=pre_split_dist,
+            att_idx=att_idx
+        )
 
         return current_best_option

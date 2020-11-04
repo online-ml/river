@@ -15,6 +15,11 @@ class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
         the target's statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -23,8 +28,8 @@ class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
-    def __init__(self, stats, depth, max_features, seed):
-        super().__init__(stats, depth, max_features, seed)
+    def __init__(self, stats, depth, ao, ao_params, max_features, seed):
+        super().__init__(stats, depth, ao, ao_params, max_features, seed)
 
 
 class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
@@ -38,6 +43,11 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         the target's statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -49,8 +59,8 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
-    def __init__(self, stats, depth, max_features, seed, leaf_model):
-        super().__init__(stats, depth,  max_features, seed, leaf_model=leaf_model)
+    def __init__(self, stats, depth, ao, ao_params, max_features, seed, leaf_model):
+        super().__init__(stats, depth, ao, ao_params, max_features, seed, leaf_model=leaf_model)
 
 
 class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
@@ -64,6 +74,11 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
         the target's statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -75,5 +90,5 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
-    def __init__(self, stats, depth, max_features, seed, leaf_model):
-        super().__init__(stats, depth,  max_features, seed, leaf_model=leaf_model)
+    def __init__(self, stats, depth, ao, ao_params, max_features, seed, leaf_model):
+        super().__init__(stats, depth, ao, ao_params, max_features, seed, leaf_model=leaf_model)
