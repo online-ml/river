@@ -400,6 +400,11 @@ class BaseHoeffdingTree(ABC):
             Only the root will be drawn when set to `0`. Every node will be drawn when
             set to `None`.
 
+        Notes
+        -----
+        Currently, Label Combination Hoeffding Tree Classifier (for multi-label
+        classification) is not supported.
+
         Example
         -------
         >>> from river import datasets
