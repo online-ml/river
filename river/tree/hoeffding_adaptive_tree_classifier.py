@@ -49,7 +49,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         - `'gaussian'`: Gaussian observer. Approximates the numeric feature distribution by using
         a Gaussian distribution per class. The cumulative probabibily function necessary to
         calculate the entropy (and, consequently, the information gain) and the gini index,
-         is then calculated using the fit feature's distribution. The `n_bins` used to query
+         is then calculated using the fit feature's distribution. The `n_splits` used to query
          for split candidates can be adjusted (defaults to `10`).</br>
         - `'histogram'`: approximates the numeric feature distribution using an incrementally
         maintained histogram per class. It represents a compromise between the intensive
