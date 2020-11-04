@@ -356,7 +356,7 @@ class BaseHoeffdingTree(ABC):
                     if isinstance(self, base.MultiOutputMixin):
                         _print('Predictions:\n{')
                         for i, (t, var) in enumerate(pred.items()):
-                            _print(f'\t{t}: {pred[t]} | {node.stats.mean[t]} | {node.stats[t]}')
+                            _print(f'\t{t}: {pred[t]} | {node.stats[t].mean} | {node.stats[t]}')
                         _print('}')
                     else:  # Single-target regression
                         _print(f'Prediction {pred} | {node.stats.mean} | {node.stats}')
