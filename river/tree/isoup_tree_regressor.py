@@ -62,6 +62,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     ao_params
         Parameters passed to the numeric attribute observers. See `attribute_observer`
         for more information.
+    min_samples_split
+        The minimum number of samples every branch resulting from a split candidate must have
+        to be considered valid.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -114,6 +117,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                  nominal_attributes: list = None,
                  attribute_observer: str = 'e-bst',
                  ao_params: dict = None,
+                 min_samples_split: int = 5,
                  **kwargs):
         super().__init__(grace_period=grace_period,
                          max_depth=max_depth,
@@ -125,6 +129,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                          nominal_attributes=nominal_attributes,
                          attribute_observer=attribute_observer,
                          ao_params=ao_params,
+                         min_samples_split=min_samples_split,
                          **kwargs)
 
         self.split_criterion: str = 'icvr'   # intra cluster variance reduction
@@ -152,7 +157,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return IntraClusterVarianceReductionSplitCriterion()
+        return IntraClusterVarianceReductionSplitCriterion(
+            min_samples_split=self.min_samples_split
+        )
 
     def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on

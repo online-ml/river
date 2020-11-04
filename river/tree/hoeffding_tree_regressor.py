@@ -56,6 +56,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     ao_params
         Parameters passed to the numeric attribute observers. See `attribute_observer`
         for more information.
+    min_samples_split
+        The minimum number of samples every branch resulting from a split candidate must have
+        to be considered valid.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -111,6 +114,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                  nominal_attributes: list = None,
                  attribute_observer: str = 'e-bst',
                  ao_params: dict = None,
+                 min_samples_split: int = 5,
                  **kwargs):
         super().__init__(max_depth=max_depth, **kwargs)
 
@@ -122,6 +126,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.leaf_model = leaf_model if leaf_model else linear_model.LinearRegression()
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
+        self.min_samples_split = min_samples_split
 
         if attribute_observer not in self._VALID_AO:
             raise AttributeError(
@@ -150,7 +155,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return VarianceReductionSplitCriterion()
+        return VarianceReductionSplitCriterion(min_samples_split=self.min_samples_split)
 
     def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node.
