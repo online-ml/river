@@ -13,11 +13,14 @@ class STAGGER(base.SyntheticDataset):
     The STAGGER concepts are boolean functions `f` with three features
     describing objects: size (small, medium and large), shape (circle, square
     and triangle) and colour (red, blue and green).
-    A classification function is chosen among three possible ones:
 
-    0. Function that return 1 if the size is small and the color is red.
-    1. Function that return 1 if the color is green or the shape is a circle.
-    2. Function that return 1 if the size is medium or large
+    `f` options:
+
+    0. `True` if the size is small and the color is red.
+
+    1. `True` if the color is green or the shape is a circle.
+
+    2. `True` if the size is medium or large
 
     Concept drift can be introduced by changing the classification function.
     This can be done manually or using `ConceptDriftStream`.
@@ -73,9 +76,9 @@ class STAGGER(base.SyntheticDataset):
         super().__init__(n_features=3, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
 
         # Classification functions to use
-        self._functions = [self.classification_function_zero,
-                           self.classification_function_one,
-                           self.classification_function_two]
+        self._functions = [self._classification_function_zero,
+                           self._classification_function_one,
+                           self._classification_function_two]
         if classification_function not in range(3):
             raise ValueError(f"Invalid classification_function {classification_function}. "
                              "Valid values are: 0, 1, 2.")
@@ -130,16 +133,16 @@ class STAGGER(base.SyntheticDataset):
         self.classification_function = new_function
 
     @staticmethod
-    def classification_function_zero(size, color, shape):
+    def _classification_function_zero(size, color, shape):
         # Class label 1 if the color is red and size is small.
         return 1 if (size == 0 and color == 0) else 0
 
     @staticmethod
-    def classification_function_one(size, color, shape):
+    def _classification_function_one(size, color, shape):
         # Class label 1 if the color is green or shape is a circle.
         return 1 if (color == 2 or shape == 0) else 0
 
     @staticmethod
-    def classification_function_two(size, color, shape):
+    def _classification_function_two(size, color, shape):
         # Class label 1 if the size is medium or large.
         return 1 if (size == 1 or size == 2) else 0

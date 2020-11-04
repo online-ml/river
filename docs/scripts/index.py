@@ -340,6 +340,11 @@ def print_docstring(obj, file, depth):
                 printf_indent(return_val.type)
                 printf_indent('')
 
+    # Notes
+    if doc['Notes']:
+        printf(h2('Notes'))
+        printf(paragraph('\n'.join(doc['Notes'])))
+
     # References
     if doc['References']:
         printf(h2('References'))
