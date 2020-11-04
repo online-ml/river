@@ -47,7 +47,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         time; however, it tends to yield the most accurate results. Since no approximation
         is performed, this AO has no parameters.</br>
         - `'gaussian'`: Gaussian observer. Approximates the numeric feature distribution by using
-        a Gaussian distribution per class. The cumulative probabibily function necessary to
+        a Gaussian distribution per class. The cumulative probability function necessary to
         calculate the entropy (and, consequently, the information gain) and the gini index,
          is then calculated using the fit feature's distribution. The `n_splits` used to query
          for split candidates can be adjusted (defaults to `10`).</br>
