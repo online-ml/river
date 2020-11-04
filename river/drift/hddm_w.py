@@ -4,13 +4,22 @@ from river.base import DriftDetector
 
 
 class HDDM_W(DriftDetector):
-    """Drift Detection Method based on Hoeffding’s bounds with moving weighted average-test.
+    r"""Drift Detection Method based on Hoeffding’s bounds with moving weighted average-test.
 
-    HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses
-    the EWMA statistic as estimator. It receives as input a stream of real predictions
-    and returns the estimated status of the stream: STABLE, WARNING or DRIFT.
+    HDDM_W is an online drift detection method based on McDiarmid's bounds.
+    HDDM_W uses the Exponentially Weighted Moving Average (EWMA) statistic as
+    estimator. It receives as input a stream of real predictions and returns
+    the estimated status of the stream: STABLE, WARNING or DRIFT.
 
-    Implementation based on MOA.
+    **Input:** `value` must be a binary signal, where 0 indicates error.
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
+    true target label $y$:
+
+    - 0: Correct, $y=y'$
+
+    - 1: Error, $y \neq y'$
+
+    *Implementation based on MOA.*
 
     Parameters
     ----------
@@ -21,8 +30,8 @@ class HDDM_W(DriftDetector):
     lambda_option
         The weight given to recent data. Smaller values mean less weight given to recent data.
     two_sided_test
-        If True, will monitor error inrivernts and derivernts (two-sided). By default will only
-        monitor error inrivernts (one-sided).
+        If True, will monitor error increments and decrements (two-sided). By default will only
+        monitor increments (one-sided).
 
     Examples
     --------

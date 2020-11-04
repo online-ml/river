@@ -5,7 +5,7 @@ from river.utils.skmultiflow_utils import check_random_state
 
 
 class Agrawal(base.SyntheticDataset):
-    """Agrawal stream generator.
+    r"""Agrawal stream generator.
 
     The generator was introduced by Agrawal et al. [^1], and was a common
     source of data for early work on scaling up decision tree learners.
@@ -13,19 +13,28 @@ class Agrawal(base.SyntheticDataset):
     three categorical.
     There are 10 functions defined for generating binary class labels from the
     features. Presumably these determine whether the loan should be approved.
-    The features and functions are listed in the original paper [^1].
+    Classification functions are listed in the original paper [^1].
 
-    | feature name | feature description  | values                                                              |
-    |--------------|----------------------|---------------------------------------------------------------------|
-    | salary       | the salary           | uniformly distributed from 20k to 150k                              |
-    | commission   | the commission       | if (salary < 75k) then 0 else uniformly distributed from 10k to 75k |
-    | age          | the age              | uniformly distributed from 20 to 80                                 |
-    | elevel       | the education level  | uniformly chosen from 0 to 4                                        |
-    | car          | car maker            | uniformly chosen from 1 to 20                                       |
-    | zipcode      | zip code of the town | uniformly chosen from 0 to 8                                        |
-    | hvalue       | value of the house   | uniformly distributed from 50k x zipcode to 100k x zipcode          |
-    | hyears       | years house owned    | uniformly distributed from 1 to 30                                  |
-    | loan         | total loan amount    | uniformly distributed from 0 to 500k                                |
+    **Feature** | **Description** | **Values**
+
+    * `salary` | salary | uniformly distributed from 20k to 150k
+
+    * `commission` | commission | 0 if `salary` < 75k else uniformly distributed from 10k to 75k
+
+    * `age` | age | uniformly distributed from 20 to 80
+
+    * `elevel` | education level | uniformly chosen from 0 to 4
+
+    * `car` | car maker | uniformly chosen from 1 to 20
+
+    * `zipcode` | zip code of the town | uniformly chosen from 0 to 8
+
+    * `hvalue` | house value | uniformly distributed from 50k x zipcode to 100k x zipcode
+
+    * `hyears` | years house owned | uniformly distributed from 1 to 30
+
+    * `loan` | total loan amount | uniformly distributed from 0 to 500k
+
 
     Parameters
     ----------
