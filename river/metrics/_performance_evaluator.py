@@ -11,6 +11,7 @@ from . import Rolling
 from . import ConfusionMatrix
 from . import MSE
 from . import MAE
+from . import R2
 from .confusion import MultiLabelConfusionMatrix
 
 from collections import deque
@@ -422,6 +423,7 @@ class _RegressionReport(object):
     n_samples:		       100
     MAE:				0.050000
     MSE:				0.002500
+     R2:                0.995001
 
     """
 
@@ -432,12 +434,14 @@ class _RegressionReport(object):
         super().__init__()
         self.mae = MAE()
         self.mse = MSE()
+        self.r2 = R2()
         self.last_true_label = None
         self.last_prediction = None
 
     def reset(self):
         self.mae = MAE()
         self.mse = MSE()
+        self.r2 = R2()
         self.last_true_label = None
         self.last_prediction = None
 
@@ -447,12 +451,16 @@ class _RegressionReport(object):
 
         self.mae.update(y_true, y_pred)
         self.mse.update(y_true, y_pred)
+        self.r2.update(y_true, y_pred)
 
     def get_average_error(self):
         return self.mae.get()
 
     def get_mean_square_error(self):
         return self.mse.get()
+
+    def get_r2_score(self):
+        return self.r2.get()
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
@@ -473,6 +481,7 @@ class _RegressionReport(object):
         return ''.join([
             f'MAE:\t\t\t\t{self.mae.get():{self._fmt}}\n',
             f'MSE:\t\t\t\t{self.mse.get():{self._fmt}}\n',
+            f' R2:\t\t\t\t{self.r2.get():{self._fmt}}\n',
         ])
 
 
@@ -501,6 +510,7 @@ class _RollingRegressionReport(_RegressionReport):
     window_size:            20
     MAE:				0.050000
     MSE:				0.002500
+     R2:                0.995228
 
     """
 
@@ -509,6 +519,7 @@ class _RollingRegressionReport(_RegressionReport):
         self.window_size = window_size
         self.mae = Rolling(MAE(), window_size=self.window_size)
         self.mse = Rolling(MSE(), window_size=self.window_size)
+        self.r2 = Rolling(R2(), window_size=self.window_size)
         self.sample_count = 0
         self.last_true_label = None
         self.last_prediction = None
@@ -516,6 +527,7 @@ class _RollingRegressionReport(_RegressionReport):
     def reset(self):
         self.mae = Rolling(MAE(), window_size=self.window_size)
         self.mse = Rolling(MSE(), window_size=self.window_size)
+        self.r2 = Rolling(R2(), window_size=self.window_size)
         self.sample_count = 0
         self.last_true_label = None
         self.last_prediction = None
