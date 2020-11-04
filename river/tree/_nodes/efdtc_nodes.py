@@ -127,7 +127,7 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
     ao_params
         The parameters passed to the numeric attribute observer algorithm.
     attribute_observers
-        Existing attribute observers from previous nodes passed to provide a warm-start.s
+        Existing attribute observers from previous nodes passed to provide a warm-start.
     """
     def __init__(self, split_test, stats, depth, ao, ao_params, attribute_observers):
         super().__init__(
