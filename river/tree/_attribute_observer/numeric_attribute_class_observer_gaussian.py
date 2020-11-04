@@ -15,16 +15,16 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
 
     Parameters
     ----------
-    n_bins
+    n_splits
         The number of partitions to consider when querying for split candidates.
     """
 
-    def __init__(self, n_bins: int = 10):
+    def __init__(self, n_splits: int = 10):
         super().__init__()
         self._min_per_class: typing.Dict[ClfTarget, float] = {}
         self._max_per_class: typing.Dict[ClfTarget, float] = {}
         self._att_dist_per_class: typing.Dict[ClfTarget, Gaussian] = {}
-        self.n_bins = n_bins
+        self.n_splits = n_splits
 
     def update(self, att_val, class_val, sample_weight):
         if att_val is None:
@@ -77,8 +77,8 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
                 max_value = self._max_per_class[k]
         if min_value < math.inf:
             bin_size = max_value - min_value
-            bin_size /= (self.n_bins + 1.)
-            for i in range(self.n_bins):
+            bin_size /= (self.n_splits + 1.)
+            for i in range(self.n_splits):
                 split_value = min_value + (bin_size * (i + 1))
                 if min_value < split_value < max_value:
                     suggested_split_values.append(split_value)
