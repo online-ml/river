@@ -414,8 +414,9 @@ class BaseHoeffdingTree(ABC):
         >>> for x, y in datasets.Phishing():
         ...    model = model.learn_one(x, y)
         >>> dot = model.draw()
-        .. image:: /img/dtree_draw.svg
-        :align: center
+
+        .. image:: ../../docs/img/dtree_draw.svg
+            :align: center
         """
         def node_prediction(node):
             if isinstance(self, base.Classifier):
