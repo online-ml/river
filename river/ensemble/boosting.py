@@ -63,7 +63,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     ... )
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.559289
+    LogLoss: 0.37111
 
     >>> print(model)
     AdaBoostClassifier(HoeffdingTreeClassifier)
