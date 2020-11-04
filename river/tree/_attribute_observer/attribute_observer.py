@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
+from .._attribute_test import AttributeSplitSuggestion
+
 
 class AttributeObserver(metaclass=ABCMeta):
     """Abstract class for observing the class data distribution for an attribute.
@@ -12,7 +14,7 @@ class AttributeObserver(metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def update(self, att_val, target_val, sample_weight):
+    def update(self, att_val, target_val, sample_weight) -> 'AttributeObserver':
         """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
 
@@ -27,7 +29,7 @@ class AttributeObserver(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def probability_of_attribute_value_given_class(self, att_val, target_val):
+    def probability_of_attribute_value_given_class(self, att_val, target_val) -> float:
         """Get the probability for an attribute value given a class.
 
         Parameters
@@ -39,13 +41,12 @@ class AttributeObserver(metaclass=ABCMeta):
 
         Returns
         -------
-        float
             Probability for an attribute value given a class.
-
         """
 
     @abstractmethod
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx,
+                                        binary_only) -> AttributeSplitSuggestion:
         """Get the best split suggestion given a criterion and the target's statistics.
 
         Parameters

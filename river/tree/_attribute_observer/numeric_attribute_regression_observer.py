@@ -91,6 +91,8 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
+        return self
+
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         raise NotImplementedError
 

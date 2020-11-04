@@ -60,6 +60,8 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             else:
                 self._root.insert_value(att_val, class_val, sample_weight)
 
+        return self
+
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         return 0.0
 

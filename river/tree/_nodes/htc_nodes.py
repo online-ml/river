@@ -2,6 +2,7 @@ from .._tree_utils import do_naive_bayes_prediction
 from .._attribute_observer import NominalAttributeClassObserver
 from .._attribute_observer import NumericAttributeClassObserverBinaryTree
 from .._attribute_observer import NumericAttributeClassObserverGaussian
+from .._attribute_observer import NumericAttributeClassObserverHistogram
 
 from .base import LearningNode
 
@@ -35,7 +36,7 @@ class LearningNodeMC(LearningNode):
         elif ao == 'gaussian':
             return NumericAttributeClassObserverGaussian(**ao_params)
         elif ao == 'histogram':
-            pass  # TODO update that
+            return NumericAttributeClassObserverHistogram(**ao_params)
 
     def update_stats(self, y, sample_weight):
         try:

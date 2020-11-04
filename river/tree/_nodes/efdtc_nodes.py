@@ -5,6 +5,7 @@ from .._attribute_test import AttributeSplitSuggestion
 from .._attribute_observer import NominalAttributeClassObserver
 from .._attribute_observer import NumericAttributeClassObserverBinaryTree
 from .._attribute_observer import NumericAttributeClassObserverGaussian
+from .._attribute_observer import NumericAttributeClassObserverHistogram
 from .base import SplitNode
 from .htc_nodes import LearningNode
 from .htc_nodes import LearningNodeMC
@@ -150,7 +151,7 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
         elif ao == 'gaussian':
             return NumericAttributeClassObserverGaussian(**ao_params)
         elif ao == 'histogram':
-            pass  # TODO update that
+            return NumericAttributeClassObserverHistogram(**ao_params)
 
     def update_stats(self, y, sample_weight):
         try:

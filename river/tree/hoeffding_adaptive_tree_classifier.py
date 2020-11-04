@@ -50,14 +50,16 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         a Gaussian distribution per class. The cumulative probabibily function necessary to
         calculate the entropy (and, consequently, the information gain) and the gini index,
          is then calculated using the fit feature's distribution. The `n_bins` used to query
-         for split candidates can be adjusted (defaults to `10`).
+         for split candidates can be adjusted (defaults to `10`).</br>
         - `'histogram'`: approximates the numeric feature distribution using an incrementally
-        maintained histogram per class. It represents a good compromise between the intensive
+        maintained histogram per class. It represents a compromise between the intensive
         resource usage of `'bst'` and the strong assumptions about the feature's distribution
         in `'gaussian'`. Besides that, this AO sits in the middle between `'bst'` and
         `'gaussian'` in terms of memory usage and running time. The number of histogram
-        bins (`n_bins` -- defaults to `60`) and the number of split point candidates to
-        evaluate (`n_splits` -- defaults to `30`) can be adjusted.
+        bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
+        evaluate (`n_splits` -- defaults to `32`) can be adjusted. Note that the number of
+        bins affects the probability density estimation required to use leaves with (adaptive)
+        naive bayes models.
     ao_params
         Parameters passed to the numeric attribute observers. See `attribute_observer`
         for more information.

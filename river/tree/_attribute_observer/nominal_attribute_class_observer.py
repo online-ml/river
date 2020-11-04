@@ -36,6 +36,8 @@ class NominalAttributeClassObserver(AttributeObserver):
 
         self._total_weight_observed += sample_weight
 
+        return self
+
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         obs = self._att_val_dist_per_class.get(class_val, None)
         if obs is not None:
