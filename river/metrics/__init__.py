@@ -51,6 +51,7 @@ from .recall import ExampleRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
 from .rolling import Rolling
+from .r2 import R2
 from .smape import SMAPE
 from .time_rolling import TimeRolling
 from ._performance_evaluator import _ClassificationReport
@@ -103,6 +104,7 @@ __all__ = [
     'RMSLE',
     'ROCAUC',
     'Rolling',
+    'R2',
     'SMAPE',
     'TimeRolling',
     'WeightedF1',
