@@ -14,11 +14,12 @@ class Mixed(base.SyntheticDataset):
     numeric attributes $x, y$ uniformly distributed from 0 to 1. The examples
     are labeled depending on the classification function chosen from below.
 
-    * function 0:
-        if $v$ and $w$ are true or $v$ and $z$ are true or $w$ and $z$ are true
-        then 0 else 1, where $z$ is $y < 0.5 + 0.3 sin(3 \pi  x)$
-    * function 1:
-        The opposite of function 0.
+    * `function 0`:
+      if $v$ and $w$ are true or $v$ and $z$ are true or $w$ and $z$ are true
+      then 0 else 1, where $z$ is $y < 0.5 + 0.3 sin(3 \pi  x)$
+
+    * `function 1`:
+       The opposite of `function 0`.
 
     Concept drift can be introduced by changing the classification function.
     This can be done manually or using `ConceptDriftStream`.

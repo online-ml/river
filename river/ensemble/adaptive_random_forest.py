@@ -300,11 +300,14 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     """Adaptive Random Forest classifier.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
-    1. inducing diversity through re-sampling;
+
+    1. inducing diversity through re-sampling
+
     2. inducing diversity through randomly selecting subsets of features for
        node splits
+
     3. drift detectors per base tree, which cause selective resets in response
-       to drifts.
+       to drifts
 
     It also allows training background trees, which start training if a
     warning is detected and replace the active tree if the warning escalates
@@ -333,44 +336,44 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
     max_size
-        [Tree parameter] Maximum memory (MB) consumed by the tree.
+        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
     memory_estimate_period
-        [Tree parameter] Number of instances between memory consumption checks.
+        [*Tree parameter*] Number of instances between memory consumption checks.
     grace_period
-        [Tree parameter] Number of instances a leaf should observe between
+        [*Tree parameter*] Number of instances a leaf should observe between
         split attempts.
     split_criterion
-        [Tree parameter] Split criterion to use.<br/>
+        [*Tree parameter*] Split criterion to use.<br/>
         - 'gini' - Gini<br/>
         - 'info_gain' - Information Gain<br/>
         - 'hellinger' - Hellinger Distance
     split_confidence
-        [Tree parameter] Allowed error in split decision, a value closer to 0
+        [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
     tie_threshold
-        [Tree parameter] Threshold below which a split will be forced to break
+        [*Tree parameter*] Threshold below which a split will be forced to break
         ties.
     binary_split
-        [Tree parameter] If True, only allow binary splits.
+        [*Tree parameter*] If True, only allow binary splits.
     stop_mem_management
-        [Tree parameter] If True, stop growing as soon as memory limit is hit.
+        [*Tree parameter*] If True, stop growing as soon as memory limit is hit.
     remove_poor_attrs
-        [Tree parameter] If True, disable poor attributes.
+        [*Tree parameter*] If True, disable poor attributes.
     merit_preprune
-        [Tree parameter] If True, disable pre-pruning.
+        [*Tree parameter*] If True, disable pre-pruning.
     leaf_prediction
-        [Tree parameter] Prediction mechanism used at leafs.<br/>
+        [*Tree parameter*] Prediction mechanism used at leafs.<br/>
         - 'mc' - Majority Class<br/>
         - 'nb' - Naive Bayes<br/>
         - 'nba' - Naive Bayes Adaptive
     nb_threshold
-        [Tree parameter] Number of instances a leaf should observe before
+        [*Tree parameter*] Number of instances a leaf should observe before
         allowing Naive Bayes.
     nominal_attributes
-        [Tree parameter] List of Nominal attributes. If empty, then assume that
+        [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
     max_depth
-        [Tree parameter] The maximum depth a tree can reach. If `None`, the
+        [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
         tree will grow indefinitely.
     seed
         If `int`, `seed` is used to seed the random number generator;
@@ -400,7 +403,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     References
     ----------
-    [^1] Heitor Murilo Gomes, Albert Bifet, Jesse Read, Jean Paul Barddal,
+    [^1]: Heitor Murilo Gomes, Albert Bifet, Jesse Read, Jean Paul Barddal,
          Fabricio Enembreck, Bernhard Pfharinger, Geoff Holmes, Talel Abdessalem.
          Adaptive random forests for evolving data stream classification.
          In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.
@@ -509,11 +512,14 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     r"""Adaptive Random Forest regressor.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
-    1. inducing diversity through re-sampling;
+
+    1. inducing diversity through re-sampling
+
     2. inducing diversity through randomly selecting subsets of features for
        node splits
+
     3. drift detectors per base tree, which cause selective resets in response
-       to drifts.
+       to drifts
 
     Notice that this implementation is slightly different from the original
     algorithm proposed in [^2]. The `HoeffdingTreeRegressor` is used as base
@@ -554,33 +560,33 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
     max_size
-        [Tree parameter] Maximum memory (MB) consumed by the tree.
+        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
     memory_estimate_period
-        [Tree parameter] Number of instances between memory consumption checks.
+        [*Tree parameter*] Number of instances between memory consumption checks.
     grace_period
-        [Tree parameter] Number of instances a leaf should observe between
+        [*Tree parameter*] Number of instances a leaf should observe between
         split attempts.
     split_confidence
-        [Tree parameter] Allowed error in split decision, a value closer to 0
+        [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
     tie_threshold
-        [Tree parameter] Threshold below which a split will be forced to break
+        [*Tree parameter*] Threshold below which a split will be forced to break
         ties.
     binary_split
-        [Tree parameter] If True, only allow binary splits.
+        [*Tree parameter*] If True, only allow binary splits.
     stop_mem_management
-        [Tree parameter] If True, stop growing as soon as memory limit is hit.
+        [*Tree parameter*] If True, stop growing as soon as memory limit is hit.
     remove_poor_attrs
-        [Tree parameter] If True, disable poor attributes.
+        [*Tree parameter*] If True, disable poor attributes.
     merit_preprune
-        [Tree parameter] If True, disable pre-pruning.
+        [*Tree parameter*] If True, disable pre-pruning.
     leaf_prediction
-        [Tree parameter] Prediction mechanism used at leaves.</br>
+        [*Tree parameter*] Prediction mechanism used at leaves.</br>
         - 'mean' - Target mean</br>
         - 'model' - Uses the model defined in `leaf_model`</br>
         - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br>
     leaf_model
-        [Tree parameter] The regression model used to provide responses if
+        [*Tree parameter*] The regression model used to provide responses if
         `leaf_prediction='model'`. If not provided, an instance of
         `river.linear_model.LinearRegression` with the default hyperparameters
          is used.
@@ -592,10 +598,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         approaches `0`, the recent observed errors are going to have more
         influence on the final decision.
     nominal_attributes
-        [Tree parameter] List of Nominal attributes. If empty, then assume that
+        [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
     max_depth
-        [Tree parameter] The maximum depth a tree can reach. If `None`, the
+        [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
         tree will grow indefinitely.
     seed
         If `int`, `seed` is used to seed the random number generator;
@@ -756,7 +762,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
     @property
     def valid_aggregation_method(self):
-        """Valid aggregation_methods values."""
+        """Valid aggregation_method values."""
         return self._VALID_AGGREGATION_METHOD
 
 
