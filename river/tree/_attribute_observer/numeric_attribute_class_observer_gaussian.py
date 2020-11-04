@@ -44,6 +44,8 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
 
             val_dist.update(att_val, sample_weight)
 
+        return self
+
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         if class_val in self._att_dist_per_class:
             obs = self._att_dist_per_class[class_val]
