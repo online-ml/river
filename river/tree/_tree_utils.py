@@ -43,8 +43,3 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.
     return softmax(votes)
 
-
-def reg_stat_factory():
-    """Default `river.utils.VectorDict`'s `default_factory` function used
-    in multi-target regression tasks."""
-    return Var()

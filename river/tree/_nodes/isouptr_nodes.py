@@ -1,9 +1,11 @@
+import functools
 import inspect
+
 from copy import deepcopy
 from collections import defaultdict
 
+from river.stats import Var
 from river.utils import VectorDict
-from river.tree._tree_utils import reg_stat_factory
 
 from .htr_nodes import LearningNodeMean
 
@@ -19,11 +21,15 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
         `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        stats = stats if stats else VectorDict(
-            default_factory=reg_stat_factory)
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params):
+        stats = stats if stats else VectorDict(default_factory=functools.partial(Var))
+        super().__init__(stats, depth, ao, ao_params)
 
     def update_stats(self, y, sample_weight):
         for t in y:
@@ -51,11 +57,16 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
         `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     leaf_models
         A dictionary composed of target identifiers and their respective predictive models.
     """
-    def __init__(self, stats, depth, leaf_models):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params, leaf_models):
+        super().__init__(stats, depth, ao, ao_params)
         self._leaf_models = leaf_models
         self._model_supports_weights = {}
         if self._leaf_models:
@@ -112,11 +123,16 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
         `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     leaf_models
         A dictionary composed of target identifiers and their respective predictive models.
     """
-    def __init__(self, stats, depth, leaf_models):
-        super().__init__(stats, depth, leaf_models)
+    def __init__(self, stats, depth, ao, ao_params, leaf_models):
+        super().__init__(stats, depth, ao, ao_params, leaf_models)
         self._fmse_mean = defaultdict(lambda: 0.)
         self._fmse_model = defaultdict(lambda: 0.)
 

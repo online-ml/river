@@ -51,13 +51,18 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
         Initial class observations.
     depth
         The depth of the learning node in the tree.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     adwin_delta
         The delta parameter of ADWIN.
     seed
         Seed to control the generation of random numbers and support reproducibility.
     """
-    def __init__(self, stats, depth, adwin_delta, seed):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params, adwin_delta, seed):
+        super().__init__(stats, depth, ao, ao_params)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self.error_change = False

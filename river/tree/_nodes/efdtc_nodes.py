@@ -3,6 +3,7 @@ from collections import Counter
 
 from .._attribute_test import AttributeSplitSuggestion
 from .._attribute_observer import NominalAttributeClassObserver
+from .._attribute_observer import NumericAttributeClassObserverBinaryTree
 from .._attribute_observer import NumericAttributeClassObserverGaussian
 from .base import SplitNode
 from .htc_nodes import LearningNode
@@ -25,6 +26,11 @@ class BaseEFDTNode(LearningNode):
         Class observations.
     depth
         The depth of the node in the tree.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     **kwargs
         To ensure compatibility with split nodes.
 
@@ -33,8 +39,8 @@ class BaseEFDTNode(LearningNode):
     The constructor method receives additional kwargs params to ensure it plays nice with
     the multiple inheritance used in the split node of EFDT.
     """
-    def __init__(self, stats, depth, **kwargs):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params, **kwargs):
+        super().__init__(stats=stats, depth=depth, ao=ao, ao_params=ao_params)
 
     def null_split(self, criterion):
         """Compute the null split (don't split).
@@ -114,11 +120,18 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
         Class observations
     depth
         The depth of the node in the tree.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     attribute_observers
-        Attribute Observers
+        Existing attribute observers from previous nodes passed to provide a warm-start.s
     """
-    def __init__(self, split_test, stats, depth, attribute_observers):
-        super().__init__(stats=stats, depth=depth, split_test=split_test)
+    def __init__(self, split_test, stats, depth, ao, ao_params, attribute_observers):
+        super().__init__(
+            stats=stats, depth=depth, ao=ao, ao_params=ao_params, split_test=split_test
+        )
         self._attribute_observers = attribute_observers
         self._last_split_reevaluation_at = 0
 
@@ -127,12 +140,17 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
         return sum(self.stats.values()) if self.stats else 0
 
     @staticmethod
-    def new_nominal_attribute_observer(**kwargs):
-        return NominalAttributeClassObserver(**kwargs)
+    def new_nominal_attribute_observer():
+        return NominalAttributeClassObserver()
 
     @staticmethod
-    def new_numeric_attribute_observer(**kwargs):
-        return NumericAttributeClassObserverGaussian(**kwargs)
+    def new_numeric_attribute_observer(ao, ao_params):
+        if ao == 'bst':
+            return NumericAttributeClassObserverBinaryTree()
+        elif ao == 'gaussian':
+            return NumericAttributeClassObserverGaussian(**ao_params)
+        elif ao == 'histogram':
+            pass  # TODO update that
 
     def update_stats(self, y, sample_weight):
         try:
@@ -235,9 +253,14 @@ class EFDTLearningNodeMC(BaseEFDTNode, LearningNodeMC):
         Initial class observations.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params):
+        super().__init__(stats, depth, ao, ao_params)
 
 
 class EFDTLearningNodeNB(BaseEFDTNode, LearningNodeNB):
@@ -250,9 +273,14 @@ class EFDTLearningNodeNB(BaseEFDTNode, LearningNodeNB):
         Initial class observations
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params):
+        super().__init__(stats, depth, ao, ao_params)
 
 
 class EFDTLearningNodeNBA(BaseEFDTNode, LearningNodeNBA):
@@ -265,6 +293,11 @@ class EFDTLearningNodeNBA(BaseEFDTNode, LearningNodeNBA):
         Initial class observations.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params):
+        super().__init__(stats, depth, ao, ao_params)

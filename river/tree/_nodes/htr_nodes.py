@@ -17,19 +17,25 @@ class LearningNodeMean(LearningNode):
         the target's statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
+    def __init__(self, stats, depth, ao, ao_params):
         if stats is None:
             # Enforce the usage of Var to keep track of target statistics
             stats = Var()
-        super().__init__(stats, depth)
+        super().__init__(stats, depth, ao, ao_params)
 
     @staticmethod
-    def new_nominal_attribute_observer(**kwargs):
+    def new_nominal_attribute_observer():
         return NominalAttributeRegressionObserver()
 
     @staticmethod
-    def new_numeric_attribute_observer(**kwargs):
+    def new_numeric_attribute_observer(ao, ao_params):
+        # Currently this is the only supported numeric attribute observer for regression
         return NumericAttributeRegressionObserver()
 
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
@@ -104,12 +110,17 @@ class LearningNodeModel(LearningNodeMean):
         the target's statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     leaf_model
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
-    def __init__(self, stats, depth, leaf_model):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params, leaf_model):
+        super().__init__(stats, depth, ao, ao_params)
 
         self._leaf_model = leaf_model
         sign = inspect.signature(leaf_model.learn_one).parameters
@@ -140,12 +151,17 @@ class LearningNodeAdaptive(LearningNodeModel):
         the target's statistics.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     leaf_model
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
-    def __init__(self, stats, depth, leaf_model):
-        super().__init__(stats, depth, leaf_model)
+    def __init__(self, stats, depth, ao, ao_params, leaf_model):
+        super().__init__(stats, depth, ao, ao_params, leaf_model)
         self._fmse_mean = 0.
         self._fmse_model = 0.
 

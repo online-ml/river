@@ -1,5 +1,6 @@
 from .._tree_utils import do_naive_bayes_prediction
 from .._attribute_observer import NominalAttributeClassObserver
+from .._attribute_observer import NumericAttributeClassObserverBinaryTree
 from .._attribute_observer import NumericAttributeClassObserverGaussian
 
 from .base import LearningNode
@@ -14,17 +15,27 @@ class LearningNodeMC(LearningNode):
         Initial class observations.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params):
+        super().__init__(stats, depth, ao, ao_params)
 
     @staticmethod
-    def new_nominal_attribute_observer(**kwargs):
-        return NominalAttributeClassObserver(**kwargs)
+    def new_nominal_attribute_observer():
+        return NominalAttributeClassObserver()
 
     @staticmethod
-    def new_numeric_attribute_observer(**kwargs):
-        return NumericAttributeClassObserverGaussian(**kwargs)
+    def new_numeric_attribute_observer(ao, ao_params):
+        if ao == 'bst':
+            return NumericAttributeClassObserverBinaryTree()
+        elif ao == 'gaussian':
+            return NumericAttributeClassObserverGaussian(**ao_params)
+        elif ao == 'histogram':
+            pass  # TODO update that
 
     def update_stats(self, y, sample_weight):
         try:
@@ -89,9 +100,14 @@ class LearningNodeNB(LearningNodeMC):
         Initial class observations.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params):
+        super().__init__(stats, depth, ao, ao_params)
 
     def predict_one(self, x, *, tree=None):
         if self.is_active() and self.total_weight >= tree.nb_threshold:
@@ -122,9 +138,14 @@ class LearningNodeNBA(LearningNodeMC):
         Initial class observations.
     depth
         The depth of the node.
+    ao
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    ao_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, ao, ao_params):
+        super().__init__(stats, depth, ao, ao_params)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
