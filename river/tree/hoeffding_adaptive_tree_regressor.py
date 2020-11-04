@@ -57,6 +57,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     ao_params
         Parameters passed to the numeric attribute observers. See `attribute_observer`
         for more information.
+    min_samples_split
+        The minimum number of samples every branch resulting from a split candidate must have
+        to be considered valid.
     bootstrap_sampling
         If True, perform bootstrap sampling in the leaf nodes.
     drift_window_threshold
@@ -135,6 +138,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  nominal_attributes: list = None,
                  attribute_observer: str = 'e-bst',
                  ao_params: dict = None,
+                 min_samples_split: int = 5,
                  bootstrap_sampling: bool = True,
                  drift_window_threshold: int = 300,
                  adwin_confidence: float = 0.002,
@@ -151,6 +155,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                          nominal_attributes=nominal_attributes,
                          attribute_observer=attribute_observer,
                          ao_params=ao_params,
+                         min_samples_split=min_samples_split,
                          **kwargs)
 
         self._n_alternate_trees = 0

@@ -243,6 +243,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                  nominal_attributes: list = None,
                  attribute_observer: str = 'gaussian',
                  ao_params: dict = None,
+                 min_samples_split: int = 5,
                  max_features: int = 2,
                  seed=None,
                  **kwargs):
@@ -256,6 +257,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                          nominal_attributes=nominal_attributes,
                          attribute_observer=attribute_observer,
                          ao_params=ao_params,
+                         min_samples_split=min_samples_split,
                          **kwargs)
 
         self.max_features = max_features
@@ -317,6 +319,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                               nominal_attributes=self.nominal_attributes,
                               attribute_observer=self.attribute_observer,
                               ao_params=self.ao_params,
+                              min_samples_split=self.min_samples_split,
                               max_depth=self.max_depth,    # noqa
                               seed=self._rng)
 
@@ -669,6 +672,9 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     ao_params
         [*Tree parameter*] Parameters passed to the numeric attribute observers. See
         `attribute_observer` for more information.
+    min_samples_split
+        [*Tree parameter*] The minimum number of samples every branch resulting from a split
+        candidate must have to be considered valid.
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
         tree will grow indefinitely.
@@ -740,6 +746,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                  nominal_attributes: list = None,
                  attribute_observer: str = 'e-bst',
                  ao_params: dict = None,
+                 min_samples_split: int = 5,
                  max_depth: int = None,
                  seed=None):
         super().__init__(
@@ -772,6 +779,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         self.nominal_attributes = nominal_attributes
         self.attribute_observer = attribute_observer
         self.ao_params = ao_params
+        self.min_samples_split = min_samples_split
         self.max_depth = max_depth
 
         if aggregation_method in self._VALID_AGGREGATION_METHOD:
