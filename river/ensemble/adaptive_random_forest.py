@@ -401,31 +401,19 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
     attr_obs
-        [*Tree parameter*] The attribute observer (AO) algorithm used to monitor the class
-        statistics of numeric features and perform splits. Parameters can be passed to the AOs
-        (when supported) by using `attr_obs_params`. Valid options are:</br>
-        - `'bst'`: Binary Search Tree. Uses an exhaustive algorithm to find split candidates,
-        similarly to batch decision tree algorithms. It ends up storing all observations
-        between split attempts. This AO is the most costly one in terms of memory and processing
-        time; however, it tends to yield the most accurate results. Since no approximation
-        is performed, this AO has no parameters.</br>
-        - `'gaussian'`: Gaussian observer. Approximates the numeric feature distribution by using
-        a Gaussian distribution per class. The cumulative probability function necessary to
-        calculate the entropy (and, consequently, the information gain) and the gini index,
-         is then calculated using the fit feature's distribution. The `n_splits` used to query
+        [*Tree parameter*] The Attribute Observer (AO) used to monitor the class statistics of
+        numeric features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `attr_obs_params`. Valid options are:</br>
+        - `'bst'`: Binary Search Tree.</br>
+        - `'gaussian'`: Gaussian observer. The `n_splits` used to query
          for split candidates can be adjusted (defaults to `10`).</br>
-        - `'histogram'`: approximates the numeric feature distribution using an incrementally
-        maintained histogram per class. It represents a compromise between the intensive
-        resource usage of `'bst'` and the strong assumptions about the feature's distribution
-        in `'gaussian'`. Besides that, this AO sits in the middle between `'bst'` and
-        `'gaussian'` in terms of memory usage and running time. The number of histogram
+        - `'histogram'`: Histogram-based class frequency estimation.  The number of histogram
         bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
-        evaluate (`n_splits` -- defaults to `32`) can be adjusted. Note that the number of
-        bins affects the probability density estimation required to use leaves with (adaptive)
-        naive bayes models.
+        evaluate (`n_splits` -- defaults to `32`) can be adjusted.</br>
+        See 'Notes' for more information about the AOs.
     attr_obs_params
-        [*Tree paramater*] Parameters passed to the numeric attribute observers.
-        See `attr_obs` for more information.
+        [*Tree parameter*] Parameters passed to the numeric AOs. See `attr_obs` for more
+        information.
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
         tree will grow indefinitely.
@@ -434,6 +422,34 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         If `RandomState`, `seed` is the random number generator;
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
+
+    Notes
+    -----
+    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
+    and perform splits. Nominal features can be easily dealt with, since the partitions
+    are well-defined. Numerical features, however, require more sophisticated solutions.
+    Currently, three AOs are supported in `river` for classification trees:
+
+    - *Binary Search Tree (BST)*: uses an exhaustive algorithm to find split candidates,
+    similarly to batch decision trees. It ends up storing all observations between split
+    attempts. This AO is the most costly one in terms of memory and processing
+    time; however, it tends to yield the most accurate results when using `leaf_prediction=mc`.
+    It cannot be used to calculate the Probability Density Function (PDF) of the monitored
+    feature due to its binary tree nature. Hence, leaf prediction strategies other than
+    the majority class will end up effectively mimicing the majority class classifier.
+    This AO has no parameters.</br>
+    - *Gaussian Estimator*: Approximates the numeric feature distribution by using
+    a Gaussian distribution per class. The Cumulative Distribution Function (CDF) necessary to
+    calculate the entropy (and, consequently, the information gain), the gini index, and
+    other split criteria is then calculated using the fit feature's distribution.</br>
+    - *Histogram*: approximates the numeric feature distribution using an incrementally
+    maintained histogram per class. It represents a compromise between the intensive
+    resource usage of BST and the strong assumptions about the feature's distribution
+    used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
+    previous two in terms of memory usage and running time. Note that the number of
+    bins affects the probability density approximation required to use leaves with
+    (adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
+    Gaussian estimator when adaptive or naive bayes leaves are used.
 
     Examples
     --------
