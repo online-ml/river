@@ -137,6 +137,9 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.seed = seed
 
     def learn_one(self, x, y, *, sample_weight=1.):
+        # Updates the set of observed classes
+        self.classes.add(y)
+
         self._train_weight_seen_by_model += sample_weight
 
         if self._tree_root is None:
