@@ -677,13 +677,13 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
     attr_obs
-        [*Tree parameter*] The attribute observer (AO) algorithm used to monitor the target
+        [*Tree parameter*] The attribute observer (AO) used to monitor the target
         statistics of numeric features and perform splits. Parameters can be passed to the
         AOs (when supported) by using `attr_obs_params`. Valid options are:</br>
         - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
         See notes for more information about the supported AOs.
     attr_obs_params
-        [*Tree parameter*] Parameters passed to the numeric attribute observers. See `attr_obs`
+        [*Tree parameter*] Parameters passed to the numeric AOs. See `attr_obs`
         for more information.
     min_samples_split
         [*Tree parameter*] The minimum number of samples every branch resulting from a split
