@@ -29,7 +29,7 @@ class NumericAttributeBinaryTest(InstanceConditionalTest):
             compare_char += '=' if branch == equals_branch else ''
 
             if shorten:
-                return f'{compare_char} {round(self._att_value, round_sig_fig(self._att_value))}'
+                return f'{compare_char} {round_sig_fig(self._att_value)}'
             else:
                 return f'{self._att_idx} {compare_char} {self._att_value}'
 
