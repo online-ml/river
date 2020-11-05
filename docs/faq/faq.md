@@ -1,4 +1,4 @@
-# FAQ
+# Frequently Asked Questions
 
 **Do all classifiers support multi-class classification?**
 
