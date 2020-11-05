@@ -170,9 +170,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                     # Option Tree prediction (of sorts): combine the response of all leaves reached
                     # by the instance
                     proba = add_dict_values(proba, dist, inplace=True)
-            sum_values = sum(proba.values())
-            if sum_values > 0:
-                proba = normalize_values_in_dict(proba, factor=sum_values)
+            proba = normalize_values_in_dict(proba)
 
         return proba
 

@@ -35,11 +35,7 @@ class LearningNodeMC(LearningNode):
             self.stats[y] = sample_weight
 
     def predict_one(self, x, *, tree=None):
-        votes = {c: 0. for c in self.stats}
-        votes_sum = sum(self.stats.values())
-        if votes_sum > 0:
-            votes = normalize_values_in_dict(self.stats, factor=votes_sum, inplace=False)
-        return votes
+        return normalize_values_in_dict(self.stats, inplace=False)
 
     @property
     def total_weight(self):

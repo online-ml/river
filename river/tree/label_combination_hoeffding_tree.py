@@ -131,9 +131,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
 
         for label_id, label_val in self._r_label_map[enc_class]:
             result[label_id][label_val] = enc_probas[enc_class]
-            sum_values = sum(result[label_id].values())
-            if sum_values > 0:
-                result[label_id] = normalize_values_in_dict(result[label_id], factor=sum_values)
+            result[label_id] = normalize_values_in_dict(result[label_id])
 
         return result
 

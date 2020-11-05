@@ -371,9 +371,7 @@ class BaseHoeffdingTree(ABC):
                     pred = node.stats
                     if isinstance(self, base.Classifier):
                         class_val = max(pred, key=pred.get)
-                        sum_values = sum(pred.values())
-                        if sum_values > 0:
-                            pred = normalize_values_in_dict(pred, factor=sum_values, inplace=False)
+                        pred = normalize_values_in_dict(pred, inplace=False)
                         _print(f'Class {class_val} | {pred}')
                     else:
                         # Multi-target regression case
@@ -482,11 +480,7 @@ class BaseHoeffdingTree(ABC):
             # Pick a color, the hue depends on the class and the transparency on the distribution
             if isinstance(self, base.Classifier):
                 class_proba = {c: 0 for c in self.classes}   # noqa
-                sum_proba = sum(child.stats.values())
-                if sum_proba > 0:
-                    class_proba.update(
-                        normalize_values_in_dict(child.stats, factor=sum_proba, inplace=False)
-                    )
+                class_proba.update(normalize_values_in_dict(child.stats, inplace=False))
                 mode = max(class_proba, key=class_proba.get)
                 p_mode = class_proba[mode]
                 try:
