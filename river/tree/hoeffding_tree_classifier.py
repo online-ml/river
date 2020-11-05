@@ -43,7 +43,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         List of Nominal attributes identifiers. If empty, then assume that all numeric
         attributes should be treated as continuous.
     attr_obs
-        The attribute observer (AO) algorithm used to monitor the class statistics of numeric
+        The Attribute Observer (AO) used to monitor the class statistics of numeric
         features and perform splits. Parameters can be passed to the AOs (when supported)
         by using `attr_obs_params`. Valid options are:</br>
         - `'bst'`: Binary Search Tree.</br>
@@ -52,10 +52,9 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         - `'histogram'`: Histogram-based class frequency estimation.  The number of histogram
         bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
         evaluate (`n_splits` -- defaults to `32`) can be adjusted.</br>
-        See 'Notes' for more information about the AO algorithms.
+        See 'Notes' for more information about the AOs.
     attr_obs_params
-        Parameters passed to the numeric attribute observers. See `attr_obs`
-        for more information.
+        Parameters passed to the numeric AOs. See `attr_obs` for more information.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -77,14 +76,14 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
     and perform splits. Nominal features can be easily dealt with, since the partitions
     are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, three AO algorithms are supported in `river` for classification trees:
+    Currently, three AOs are supported in `river` for classification trees:
 
     - *Binary Search Tree (BST)*: uses an exhaustive algorithm to find split candidates,
     similarly to batch decision trees. It ends up storing all observations between split
     attempts. This AO is the most costly one in terms of memory and processing
     time; however, it tends to yield the most accurate results when using `leaf_prediction=mc`.
-    It cannot be used to calculate the Probability Density Function (PDF) of the feature
-    monitored due to its binary tree nature. Hence, leaf prediction strategies other than
+    It cannot be used to calculate the Probability Density Function (PDF) of the monitored
+    feature due to its binary tree nature. Hence, leaf prediction strategies other than
     the majority class will end up effectively mimicing the majority class classifier.
     This AO has no parameters.</br>
     - *Gaussian Estimator*: Approximates the numeric feature distribution by using
@@ -95,7 +94,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     maintained histogram per class. It represents a compromise between the intensive
     resource usage of BST and the strong assumptions about the feature's distribution
     used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
-     previous two in terms of memory usage and running time. Note that the number of
+    previous two in terms of memory usage and running time. Note that the number of
     bins affects the probability density approximation required to use leaves with
     (adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
     Gaussian estimator when adaptive or naive bayes leaves are used.
