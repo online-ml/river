@@ -37,7 +37,7 @@ def get_dimensions(X) -> tuple:
     return r, c
 
 
-def normalize_values_in_dict(dictionary, factor=None, inplace=True):
+def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=False):
     """Normalize the values in a dictionary using the given factor.
 
     For each element in the dictionary, applies `value/factor`.
@@ -50,16 +50,30 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True):
         Normalization factor value. If not set, use the sum of values.
     inplace
         If True, perform operation in-place
+    raise_error
+        In case the normalization factor is either `0` or `None`:</br>
+        - `True`: raise an error.
+        - `False`: return gracefully (if `inplace=False`, a copy of) `dictionary`.
+
+    Raises
+    ------
+    ValueError
+        In case the normalization factor is either `0` or `None` and `raise_error=True`.
 
     """
     if factor is None:
         factor = sum(dictionary.values())
-    if factor == 0:
-        raise ValueError('Can not normalize, normalization factor is zero')
-    if math.isnan(factor):
-        raise ValueError('Can not normalize, normalization factor is NaN')
+
+    if raise_error and (factor == 0 or math.isnan(factor)):
+        raise ValueError(f'Can not normalize, normalization factor is {factor}')
+
     if not inplace:
         dictionary = copy.deepcopy(dictionary)
+
+    if math.isnan(factor) or factor == 0:
+        # Can not normalize, return gracefully
+        return dictionary
+
     for key, value in dictionary.items():  # loop over the keys, values in the dictionary
         dictionary[key] = value / factor
 

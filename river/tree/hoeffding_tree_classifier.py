@@ -327,10 +327,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             if node.is_leaf():
                 proba.update(node.predict_one(x, tree=self))
             else:  # Corner case where a decision node is reached
-                proba_sum = sum(node.stats.values())
-                if proba_sum > 0:
-                    pred = normalize_values_in_dict(node.stats, factor=proba_sum, inplace=False)
-                    proba.update(pred)
+                proba.update(normalize_values_in_dict(node.stats, inplace=False))
         return proba
 
     @property

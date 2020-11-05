@@ -43,10 +43,7 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.
         # Revert log likelihood
         votes[class_index] = math.exp(votes[class_index])
-    sum_votes = sum(votes.values())
-    if sum_votes > 0:
-        votes = normalize_values_in_dict(votes)
-    return votes
+    return normalize_values_in_dict(votes)
 
 
 def reg_stat_factory():
