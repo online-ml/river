@@ -51,14 +51,13 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
     attr_obs
-        The attribute observer (AO) algorithm used to monitor the target statistics of numeric
+        The attribute observer (AO) used to monitor the target statistics of numeric
         features and perform splits. Parameters can be passed to the AOs (when supported)
         by using `attr_obs_params`. Valid options are:</br>
         - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
         See notes for more information about the supported AOs.
     attr_obs_params
-        Parameters passed to the numeric attribute observers. See `attr_obs`
-        for more information.
+        Parameters passed to the numeric AOs. See `attr_obs` for more information.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
