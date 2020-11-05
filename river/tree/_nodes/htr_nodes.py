@@ -58,7 +58,7 @@ class LearningNodeMean(LearningNode):
     def update_stats(self, y, sample_weight):
         self.stats.update(y, sample_weight)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         return self.stats.mean.get()
 
     @property
@@ -124,7 +124,7 @@ class LearningNodeModel(LearningNodeMean):
             for _ in range(int(sample_weight)):
                 self._leaf_model.learn_one(x, y)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         return self._leaf_model.predict_one(x)
 
 
@@ -158,8 +158,8 @@ class LearningNodeAdaptive(LearningNodeModel):
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         if self._fmse_mean < self._fmse_model:  # Act as a regression tree
             return self.stats.mean.get()
         else:  # Act as a model tree
-            return super().predict_one(x)
+            return super().leaf_prediction(x)

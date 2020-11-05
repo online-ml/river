@@ -325,7 +325,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 node = found_node.parent
 
             if node.is_leaf():
-                proba.update(node.predict_one(x, tree=self))
+                proba.update(node.leaf_prediction(x, tree=self))
             else:  # Corner case where a decision node is reached
                 proba.update(normalize_values_in_dict(node.stats, inplace=False))
         return proba

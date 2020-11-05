@@ -485,7 +485,7 @@ class LearningNode(Node, metaclass=ABCMeta):
             self.update_attribute_observers(x, y, sample_weight, tree.nominal_attributes)
 
     @abstractmethod
-    def predict_one(self, x, *, tree=None) -> dict:
+    def leaf_prediction(self, x, *, tree=None) -> dict:
         pass
 
     @abstractmethod

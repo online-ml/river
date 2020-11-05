@@ -34,7 +34,7 @@ class LearningNodeMC(LearningNode):
         except KeyError:
             self.stats[y] = sample_weight
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         return normalize_values_in_dict(self.stats, inplace=False)
 
     @property
@@ -95,11 +95,11 @@ class LearningNodeNB(LearningNodeMC):
     def __init__(self, stats, depth):
         super().__init__(stats, depth)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         if self.is_active() and self.total_weight >= tree.nb_threshold:
             return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
         else:
-            return super().predict_one(x)
+            return super().leaf_prediction(x)
 
     def disable_attribute(self, att_index):
         """Disable an attribute observer.
@@ -146,7 +146,7 @@ class LearningNodeNBA(LearningNodeMC):
 
         """
         if self.is_active():
-            mc_pred = super().predict_one(x)
+            mc_pred = super().leaf_prediction(x)
             # Empty node (assume the majority class will be the best option) or majority
             # class prediction is correct
             if len(self.stats) == 0 or max(mc_pred, key=mc_pred.get) == y:
@@ -158,8 +158,8 @@ class LearningNodeNBA(LearningNodeMC):
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-    def predict_one(self, x, *, tree=None):
-        """Get the votes per class for a given instance.
+    def leaf_prediction(self, x, *, tree=None):
+        """Get the probabilities per class for a given instance.
 
         Parameters
         ----------
@@ -176,7 +176,7 @@ class LearningNodeNBA(LearningNodeMC):
         if self.is_active() and self._nb_correct_weight >= self._mc_correct_weight:
             return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
         else:
-            return super().predict_one(x)
+            return super().leaf_prediction(x)
 
     def disable_attribute(self, att_index):
         """Disable an attribute observer.

@@ -28,7 +28,7 @@ class BaseRandomLearningNode(LearningNode):
         Other parameters passed to the learning nodes the ARF implementations randomize.
     """
     def __init__(self, stats, depth, max_features, seed, **kwargs):
-        super().__init__(stats, depth, **kwargs)
+        super().__init__(stats, depth, **kwargs)   # noqa
         self.max_features = max_features
         self.seed = seed
         self._rng = check_random_state(self.seed)
