@@ -50,17 +50,17 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
-    attribute_observer
+    attr_obs
         The attribute observer (AO) algorithm used to monitor the target statistics of numeric
         features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `ao_params`. Valid options are:</br>
+        by using `attr_obs_params`. Valid options are:</br>
         - `'e-bst'`: Extended Binary Search Tree (E-BST). Uses an exhaustive algorithm to find
         split candidates, similarly to batch decision tree algorithms. It ends up storing all
         observations between split attempts. However, E-BST automatically removes
         bad split points periodically from its structure and, thus, alleviates the memory and time
         costs involved in its usage. This AO has no parameters.</br>
-    ao_params
-        Parameters passed to the numeric attribute observers. See `attribute_observer`
+    attr_obs_params
+        Parameters passed to the numeric attribute observers. See `attr_obs`
         for more information.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
@@ -115,8 +115,8 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                  leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
-                 attribute_observer: str = 'e-bst',
-                 ao_params: dict = None,
+                 attr_obs: str = 'e-bst',
+                 attr_obs_params: dict = None,
                  min_samples_split: int = 5,
                  **kwargs):
         super().__init__(grace_period=grace_period,
@@ -127,8 +127,8 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                          leaf_model=leaf_model,
                          model_selector_decay=model_selector_decay,
                          nominal_attributes=nominal_attributes,
-                         attribute_observer=attribute_observer,
-                         ao_params=ao_params,
+                         attr_obs=attr_obs,
+                         attr_obs_params=attr_obs_params,
                          min_samples_split=min_samples_split,
                          **kwargs)
 
@@ -182,15 +182,15 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
         if self.leaf_prediction == self._TARGET_MEAN:
             return LearningNodeMeanMultiTarget(
-                initial_stats, depth, self.attribute_observer, self.ao_params
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
             )
         elif self.leaf_prediction == self._MODEL:
             return LearningNodeModelMultiTarget(
-                initial_stats, depth, self.attribute_observer, self.ao_params, leaf_models
+                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_models
             )
         else:  # adaptive learning node
             new_adaptive = LearningNodeAdaptiveMultiTarget(
-                initial_stats, depth, self.attribute_observer, self.ao_params, leaf_models
+                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_models
             )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean.copy()

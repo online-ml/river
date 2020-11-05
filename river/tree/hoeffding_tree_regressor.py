@@ -44,17 +44,17 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
-    attribute_observer
+    attr_obs
         The attribute observer (AO) algorithm used to monitor the target statistics of numeric
         features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `ao_params`. Valid options are:</br>
+        by using `attr_obs_params`. Valid options are:</br>
         - `'e-bst'`: Extended Binary Search Tree (E-BST). Uses an exhaustive algorithm to find
         split candidates, similarly to batch decision tree algorithms. It ends up storing all
         observations between split attempts. However, E-BST automatically removes
         bad split points periodically from its structure and, thus, alleviates the memory and time
         costs involved in its usage. This AO has no parameters.</br>
-    ao_params
-        Parameters passed to the numeric attribute observers. See `attribute_observer`
+    attr_obs_params
+        Parameters passed to the numeric attribute observers. See `attr_obs`
         for more information.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
@@ -112,8 +112,8 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
-                 attribute_observer: str = 'e-bst',
-                 ao_params: dict = None,
+                 attr_obs: str = 'e-bst',
+                 attr_obs_params: dict = None,
                  min_samples_split: int = 5,
                  **kwargs):
         super().__init__(max_depth=max_depth, **kwargs)
@@ -128,13 +128,13 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.nominal_attributes = nominal_attributes
         self.min_samples_split = min_samples_split
 
-        if attribute_observer not in self._VALID_AO:
+        if attr_obs not in self._VALID_AO:
             raise AttributeError(
-                f'Invalid "attribute_observer" option. Valid options are: {self._VALID_AO}'
+                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
             )
         else:
-            self.attribute_observer = attribute_observer
-        self.ao_params = ao_params if ao_params is not None else {}
+            self.attr_obs = attr_obs
+        self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
 
     @BaseHoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
@@ -177,14 +177,14 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                     leaf_model = deepcopy(self.leaf_model)
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMean(initial_stats, depth, self.attribute_observer, self.ao_params)
+            return LearningNodeMean(initial_stats, depth, self.attr_obs, self.attr_obs_params)
         elif self.leaf_prediction == self._MODEL:
             return LearningNodeModel(
-                initial_stats, depth, self.attribute_observer, self.ao_params, leaf_model
+                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
             )
         else:  # adaptive learning node
             new_adaptive = LearningNodeAdaptive(
-                initial_stats, depth, self.attribute_observer, self.ao_params, leaf_model
+                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
             )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean

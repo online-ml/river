@@ -283,17 +283,17 @@ class LearningNode(Node, metaclass=ABCMeta):
         Target statistics (they differ in classification and regression tasks).
     depth
         The depth of the node
-    ao
+    attr_obs
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    ao_params
+    attr_obs_params
         The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth, ao: str, ao_params: dict, **kwargs):
+    def __init__(self, stats, depth, attr_obs: str, attr_obs_params: dict, **kwargs):
         super().__init__(stats, depth, **kwargs)
 
-        self.ao = ao
-        self.ao_params = ao_params
+        self.attr_obs = attr_obs
+        self.attr_obs_params = attr_obs_params
 
         self._attribute_observers = {}
         self._disabled_attrs = set()
@@ -356,7 +356,7 @@ class LearningNode(Node, metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def new_numeric_attribute_observer(ao, ao_params):
+    def new_numeric_attribute_observer(attr_obs, attr_obs_params):
         pass
 
     @abstractmethod
@@ -375,7 +375,9 @@ class LearningNode(Node, metaclass=ABCMeta):
                         or not isinstance(attr_val, numbers.Number)):
                     obs = self.new_nominal_attribute_observer()
                 else:
-                    obs = self.new_numeric_attribute_observer(ao=self.ao, ao_params=self.ao_params)
+                    obs = self.new_numeric_attribute_observer(
+                        attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params
+                    )
                 self.attribute_observers[attr_idx] = obs
             obs.update(attr_val, y, sample_weight)
 
