@@ -1,7 +1,9 @@
+import bisect
 import collections
 import functools
 
 from river import utils
+from river.utils.histogram import Bin  # noqa
 
 from .._attribute_test import NumericAttributeBinaryTest
 from .._attribute_test import AttributeSplitSuggestion
@@ -39,13 +41,22 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
             return 0.
 
         total_weight = self.hists[class_val].n
-        for b in self.hists[class_val]:
-            if b.left <= att_val < b.right:
-                # Approximates the pdf of x by using the frequency in its corresponding
-                # histogram bin
-                return (b.count * (att_val - b.left) / (b.right - b.left)) / total_weight
+        if not total_weight > 0:
+            return 0.
 
-        return 0.
+        i = bisect.bisect(self.hists[class_val], Bin(att_val, att_val, 1))
+
+        if i < len(self.hists[class_val]):
+            b = self.hists[class_val][i]
+        else:  # att_val exceeds the range: take the last bin
+            b = self.hists[class_val][-1]
+
+        # Approximates the PDF of x by using the frequency in its corresponding
+        # histogram bin
+        if b.left == b.right:
+            return b.count / total_weight
+        else:
+            return (b.count * (att_val - b.left) / (b.right - b.left)) / total_weight
 
     def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         best_suggestion = None
