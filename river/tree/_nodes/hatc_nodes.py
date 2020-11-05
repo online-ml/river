@@ -88,7 +88,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             if k > 0:
                 sample_weight = sample_weight * k
 
-        aux = self.predict_one(x, tree=tree)
+        aux = self.leaf_prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
 
         is_correct = (y == class_prediction)
@@ -121,7 +121,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
                 self.last_split_attempt_at = weight_seen
 
     # Override LearningNodeNBA
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         if not self.stats:
             return
 
@@ -134,7 +134,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             else:  # Use majority class
                 dist = normalize_values_in_dict(self.stats, inplace=False)
         else:  # Naive Bayes Adaptive
-            dist = super().predict_one(x, tree=tree)
+            dist = super().leaf_prediction(x, tree=tree)
 
         dist_sum = sum(dist.values())
         normalization_factor = dist_sum * self.error_estimation * self.error_estimation
@@ -205,7 +205,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
         if leaf.node is not None:
-            aux = leaf.node.predict_one(x, tree=tree)
+            aux = leaf.node.leaf_prediction(x, tree=tree)
             class_prediction = max(aux, key=aux.get) if aux else None
 
         is_correct = (y == class_prediction)
@@ -284,7 +284,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
                                 parent_branch=child_branch)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         # In case split nodes end up being used (if emerging categorical feature appears,
         # for instance) use the MC (majority class) prediction strategy
         return normalize_values_in_dict(self.stats, inplace=False)

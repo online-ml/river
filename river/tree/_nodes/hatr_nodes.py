@@ -55,7 +55,7 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
         pass
 
     def learn_one(self, x, y, *, sample_weight=1., tree=None, parent=None, parent_branch=-1):
-        y_pred = self.predict_one(x, tree=tree)
+        y_pred = self.leaf_prediction(x, tree=tree)
         normalized_error = normalize_error(y, y_pred, self)
 
         if tree.bootstrap_sampling:
@@ -91,14 +91,14 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
                 tree._attempt_to_split(self, parent, parent_branch)
                 self.last_split_attempt_at = weight_seen
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         prediction_option = tree.leaf_prediction
         if prediction_option == tree._TARGET_MEAN:
             return self.stats.mean.get()
         elif prediction_option == tree._MODEL:
             return self._leaf_model.predict_one(x)
         else:  # adaptive node
-            return super().predict_one(x, tree=tree)
+            return super().leaf_prediction(x, tree=tree)
 
     # Override AdaNode: enable option vote (query potentially more than one leaf for responses)
     def filter_instance_to_leaves(self, x, parent, parent_branch, found_nodes):
@@ -164,9 +164,9 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch).node
         if leaf is not None:
-            y_pred = leaf.predict_one(x, tree=tree)
+            y_pred = leaf.leaf_prediction(x, tree=tree)
         else:
-            y_pred = parent.predict_one(x, tree=tree)
+            y_pred = parent.leaf_prediction(x, tree=tree)
 
         normalized_error = normalize_error(y, y_pred, self)
 
@@ -246,7 +246,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
             leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=parent,
                                 parent_branch=parent_branch)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         # Called in case an emerging categorical feature has no path down the split node to be
         # sorted
         return self.stats.mean.get()

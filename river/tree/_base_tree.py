@@ -347,7 +347,7 @@ class BaseHoeffdingTree(ABC):
 
         for node in self._tree_root.path(x):
             if node.is_leaf():
-                pred = node.predict_one(x, tree=self)
+                pred = node.leaf_prediction(x, tree=self)
                 if isinstance(self, base.Classifier):
                     class_val = max(pred, key=pred.get)
                     _print(f'Class {class_val} | {pred}')
