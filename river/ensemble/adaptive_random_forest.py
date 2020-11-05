@@ -678,16 +678,13 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         all attributes are numerical.
     attr_obs
         [*Tree parameter*] The attribute observer (AO) algorithm used to monitor the target
-        statistics of numeric features and perform splits. Parameters can be passed to the AOs
-        (when supported) by using `attr_obs_params`. Valid options are:</br>
-        - `'e-bst'`: Extended Binary Search Tree (E-BST). Uses an exhaustive algorithm to find
-        split candidates, similarly to batch decision tree algorithms. It ends up storing all
-        observations between split attempts. However, E-BST automatically removes
-        bad split points periodically from its structure and, thus, alleviates the memory and time
-        costs involved in its usage. This AO has no parameters.</br>
+        statistics of numeric features and perform splits. Parameters can be passed to the
+        AOs (when supported) by using `attr_obs_params`. Valid options are:</br>
+        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
+        See notes for more information about the supported AOs.
     attr_obs_params
-        [*Tree parameter*] Parameters passed to the numeric attribute observers. See
-        `attr_obs` for more information.
+        [*Tree parameter*] Parameters passed to the numeric attribute observers. See `attr_obs`
+        for more information.
     min_samples_split
         [*Tree parameter*] The minimum number of samples every branch resulting from a split
         candidate must have to be considered valid.
@@ -699,6 +696,19 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         If `RandomState`, `seed` is the random number generator;
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
+
+    Notes
+    -----
+    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
+    and perform splits. Nominal features can be easily dealt with, since the partitions
+    are well-defined. Numerical features, however, require more sophisticated solutions.
+    Currently, only one AO is supported in `river` for regression trees:
+
+    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
+    candidates, similarly to batch decision tree algorithms. It ends up storing all
+    observations between split attempts. However, E-BST automatically removes bad split
+    points periodically from its structure and, thus, alleviates the memory and time
+    costs involved in its usage.
 
     References
     ----------
