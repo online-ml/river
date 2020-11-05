@@ -430,7 +430,7 @@ class BaseHoeffdingTree(ABC):
                 sum_votes = sum(pred.values())
                 if sum_votes > 0:
                     pred = normalize_values_in_dict(pred, factor=sum_votes, inplace=False)
-                    probas = '\n'.join([f'P({c}) = {round(proba, round_sig_fig(proba))}'
+                    probas = '\n'.join([f'P({c}) = {round_sig_fig(proba)}'
                                         for c, proba in pred.items()])
                     text = f'{text}\n{probas}'
                 return text
@@ -438,12 +438,12 @@ class BaseHoeffdingTree(ABC):
                 # Multi-target regression
                 if isinstance(self, base.MultiOutputMixin):
                     return ' | '.join([
-                            f'{t} = {round(s.mean.get(), round_sig_fig(s.mean.get()))}'
+                            f'{t} = {round_sig_fig(s.mean.get())}'
                             for t, s in node.stats.items()
                     ])
                 else:  # vanilla single-target regression
                     pred = node.stats.mean.get()
-                    return f'{round(pred, round_sig_fig(pred))}'
+                    return f'{round_sig_fig(pred)}'
 
         if max_depth is None:
             max_depth = math.inf
