@@ -43,10 +43,10 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
-    attribute_observer
+    attr_obs
         The attribute observer (AO) algorithm used to monitor the class statistics of numeric
         features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `ao_params`. Valid options are:</br>
+        by using `attr_obs_params`. Valid options are:</br>
         - `'bst'`: Binary Search Tree. Uses an exhaustive algorithm to find split candidates,
         similarly to batch decision tree algorithms. It ends up storing all observations
         between split attempts. This AO is the most costly one in terms of memory and processing
@@ -66,8 +66,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         evaluate (`n_splits` -- defaults to `32`) can be adjusted. Note that the number of
         bins affects the probability density estimation required to use leaves with (adaptive)
         naive bayes models.
-    ao_params
-        Parameters passed to the numeric attribute observers. See `attribute_observer`
+    attr_obs_params
+        Parameters passed to the numeric attribute observers. See `attr_obs`
         for more information.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
@@ -120,8 +120,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
-                 attribute_observer: str = 'gaussian',
-                 ao_params: dict = None,
+                 attr_obs: str = 'gaussian',
+                 attr_obs_params: dict = None,
                  **kwargs):
 
         super().__init__(grace_period=grace_period,
@@ -132,8 +132,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
                          nominal_attributes=nominal_attributes,
-                         attribute_observer=attribute_observer,
-                         ao_params=ao_params,
+                         attr_obs=attr_obs,
+                         attr_obs_params=attr_obs_params,
                          **kwargs)
 
         self.min_samples_reevaluate = min_samples_reevaluate
@@ -148,22 +148,23 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return EFDTLearningNodeMC(
-                initial_stats, depth, self.attribute_observer, self.ao_params
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return EFDTLearningNodeNB(
-                initial_stats, depth, self.attribute_observer, self.ao_params
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return EFDTLearningNodeNBA(
-                initial_stats, depth, self.attribute_observer, self.ao_params
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
             )
 
     def _new_split_node(self, split_test, target_stats=None, depth=0, attribute_observers=None):
         """Create a new split node."""
         return EFDTSplitNode(
-            split_test=split_test, stats=target_stats, depth=depth, ao=self.attribute_observer,
-            ao_params=self.ao_params, attribute_observers=attribute_observers
+            split_test=split_test, stats=target_stats, depth=depth,
+            attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params,
+            attribute_observers=attribute_observers
         )
 
     def learn_one(self, x, y, *, sample_weight=1.):

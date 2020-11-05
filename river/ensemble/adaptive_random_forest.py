@@ -152,8 +152,8 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
-                 attribute_observer: str = 'gaussian',
-                 ao_params: dict = None,
+                 attr_obs: str = 'gaussian',
+                 attr_obs_params: dict = None,
                  max_features: int = 2,
                  seed=None,
                  **kwargs):
@@ -165,8 +165,8 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
                          nominal_attributes=nominal_attributes,
-                         attribute_observer=attribute_observer,
-                         ao_params=ao_params,
+                         attr_obs=attr_obs,
+                         attr_obs_params=attr_obs_params,
                          **kwargs)
 
         self.max_features = max_features
@@ -187,17 +187,17 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLearningNodeMC(
-                initial_stats, depth, self.attribute_observer, self.ao_params,
+                initial_stats, depth, self.attr_obs, self.attr_obs_params,
                 self.max_features, seed
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return RandomLearningNodeNB(
-                initial_stats, depth, self.attribute_observer, self.ao_params,
+                initial_stats, depth, self.attr_obs, self.attr_obs_params,
                 self.max_features, seed
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return RandomLearningNodeNBA(
-                initial_stats, depth, self.attribute_observer, self.ao_params,
+                initial_stats, depth, self.attr_obs, self.attr_obs_params,
                 self.max_features, seed
             )
 
@@ -215,8 +215,8 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
                               leaf_prediction=self.leaf_prediction,
                               nb_threshold=self.nb_threshold,
                               nominal_attributes=self.nominal_attributes,
-                              attribute_observer=self.attribute_observer,
-                              ao_params=self.ao_params,
+                              attr_obs=self.attr_obs,
+                              attr_obs_params=self.attr_obs_params,
                               max_features=self.max_features,
                               max_depth=self.max_depth,   # noqa
                               seed=self._rng)
@@ -241,8 +241,8 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
-                 attribute_observer: str = 'gaussian',
-                 ao_params: dict = None,
+                 attr_obs: str = 'gaussian',
+                 attr_obs_params: dict = None,
                  min_samples_split: int = 5,
                  max_features: int = 2,
                  seed=None,
@@ -255,8 +255,8 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                          leaf_model=leaf_model,
                          model_selector_decay=model_selector_decay,
                          nominal_attributes=nominal_attributes,
-                         attribute_observer=attribute_observer,
-                         ao_params=ao_params,
+                         attr_obs=attr_obs,
+                         attr_obs_params=attr_obs_params,
                          min_samples_split=min_samples_split,
                          **kwargs)
 
@@ -286,15 +286,15 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
 
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLearningNodeMean(
-                initial_stats, depth, self.attribute_observer, self.ao_params,
+                initial_stats, depth, self.attr_obs, self.attr_obs_params,
                 self.max_features, seed)
         elif self.leaf_prediction == self._MODEL:
             return RandomLearningNodeModel(
-                initial_stats, depth, self.attribute_observer, self.ao_params,
+                initial_stats, depth, self.attr_obs, self.attr_obs_params,
                 self.max_features, seed, leaf_model=leaf_model)   # noqa
         else:  # adaptive learning node
             new_adaptive = RandomLearningNodeAdaptive(
-                initial_stats, depth, self.attribute_observer, self.ao_params,
+                initial_stats, depth, self.attr_obs, self.attr_obs_params,
                 self.max_features, seed, leaf_model=leaf_model)    # noqa
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean    # noqa
@@ -317,8 +317,8 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                               model_selector_decay=self.model_selector_decay,
                               max_features=self.max_features,
                               nominal_attributes=self.nominal_attributes,
-                              attribute_observer=self.attribute_observer,
-                              ao_params=self.ao_params,
+                              attr_obs=self.attr_obs,
+                              attr_obs_params=self.attr_obs_params,
                               min_samples_split=self.min_samples_split,
                               max_depth=self.max_depth,    # noqa
                               seed=self._rng)
@@ -400,10 +400,10 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     nominal_attributes
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
-    attribute_observer
+    attr_obs
         [*Tree parameter*] The attribute observer (AO) algorithm used to monitor the class
         statistics of numeric features and perform splits. Parameters can be passed to the AOs
-        (when supported) by using `ao_params`. Valid options are:</br>
+        (when supported) by using `attr_obs_params`. Valid options are:</br>
         - `'bst'`: Binary Search Tree. Uses an exhaustive algorithm to find split candidates,
         similarly to batch decision tree algorithms. It ends up storing all observations
         between split attempts. This AO is the most costly one in terms of memory and processing
@@ -423,9 +423,9 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         evaluate (`n_splits` -- defaults to `32`) can be adjusted. Note that the number of
         bins affects the probability density estimation required to use leaves with (adaptive)
         naive bayes models.
-    ao_params
+    attr_obs_params
         [*Tree paramater*] Parameters passed to the numeric attribute observers.
-        See `attribute_observer` for more information.
+        See `attr_obs` for more information.
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
         tree will grow indefinitely.
@@ -486,8 +486,8 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
-                 attribute_observer: str = 'gaussian',
-                 ao_params: dict = None,
+                 attr_obs: str = 'gaussian',
+                 attr_obs_params: dict = None,
                  max_depth: int = None,
                  seed=None):
         super().__init__(
@@ -518,8 +518,8 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
-        self.attribute_observer = attribute_observer
-        self.ao_params = ao_params
+        self.attr_obs = attr_obs
+        self.attr_obs_params = attr_obs_params
         self.max_depth = max_depth
 
     def _multiclass(self):
@@ -560,8 +560,8 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
                     leaf_prediction=self.leaf_prediction,
                     nb_threshold=self.nb_threshold,
                     nominal_attributes=self.nominal_attributes,
-                    attribute_observer=self.attribute_observer,
-                    ao_params=self.ao_params,
+                    attr_obs=self.attr_obs,
+                    attr_obs_params=self.attr_obs_params,
                     max_features=self.max_features,
                     max_depth=self.max_depth,
                     seed=seed
@@ -660,18 +660,18 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     nominal_attributes
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
-    attribute_observer
+    attr_obs
         [*Tree parameter*] The attribute observer (AO) algorithm used to monitor the target
         statistics of numeric features and perform splits. Parameters can be passed to the AOs
-        (when supported) by using `ao_params`. Valid options are:</br>
+        (when supported) by using `attr_obs_params`. Valid options are:</br>
         - `'e-bst'`: Extended Binary Search Tree (E-BST). Uses an exhaustive algorithm to find
         split candidates, similarly to batch decision tree algorithms. It ends up storing all
         observations between split attempts. However, E-BST automatically removes
         bad split points periodically from its structure and, thus, alleviates the memory and time
         costs involved in its usage. This AO has no parameters.</br>
-    ao_params
+    attr_obs_params
         [*Tree parameter*] Parameters passed to the numeric attribute observers. See
-        `attribute_observer` for more information.
+        `attr_obs` for more information.
     min_samples_split
         [*Tree parameter*] The minimum number of samples every branch resulting from a split
         candidate must have to be considered valid.
@@ -744,8 +744,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
-                 attribute_observer: str = 'e-bst',
-                 ao_params: dict = None,
+                 attr_obs: str = 'e-bst',
+                 attr_obs_params: dict = None,
                  min_samples_split: int = 5,
                  max_depth: int = None,
                  seed=None):
@@ -777,8 +777,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         self.leaf_model = leaf_model
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
-        self.attribute_observer = attribute_observer
-        self.ao_params = ao_params
+        self.attr_obs = attr_obs
+        self.attr_obs_params = attr_obs_params
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
 
@@ -837,8 +837,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             model_selector_decay=self.model_selector_decay,
             max_features=self.max_features,
             nominal_attributes=self.nominal_attributes,
-            attribute_observer=self.attribute_observer,
-            ao_params=self.ao_params,
+            attr_obs=self.attr_obs,
+            attr_obs_params=self.attr_obs_params,
             max_depth=self.max_depth,
             seed=seed
         )

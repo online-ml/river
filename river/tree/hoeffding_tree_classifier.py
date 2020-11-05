@@ -42,10 +42,10 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric
         attributes should be treated as continuous.
-    attribute_observer
+    attr_obs
         The attribute observer (AO) algorithm used to monitor the class statistics of numeric
         features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `ao_params`. Valid options are:</br>
+        by using `attr_obs_params`. Valid options are:</br>
         - `'bst'`: Binary Search Tree. Uses an exhaustive algorithm to find split candidates,
         similarly to batch decision tree algorithms. It ends up storing all observations
         between split attempts. This AO is the most costly one in terms of memory and processing
@@ -65,8 +65,8 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         evaluate (`n_splits` -- defaults to `32`) can be adjusted. Note that the number of
         bins affects the probability density estimation required to use leaves with (adaptive)
         naive bayes models.
-    ao_params
-        Parameters passed to the numeric attribute observers. See `attribute_observer`
+    attr_obs_params
+        Parameters passed to the numeric attribute observers. See `attr_obs`
         for more information.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
@@ -140,8 +140,8 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
-                 attribute_observer: str = 'gaussian',
-                 ao_params: dict = None,
+                 attr_obs: str = 'gaussian',
+                 attr_obs_params: dict = None,
                  **kwargs):
 
         super().__init__(max_depth=max_depth, **kwargs)
@@ -153,13 +153,13 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
 
-        if attribute_observer not in self._VALID_AO:
+        if attr_obs not in self._VALID_AO:
             raise AttributeError(
-                f'Invalid "attribute_observer" option. Valid options are: {self._VALID_AO}'
+                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
             )
         else:
-            self.attribute_observer = attribute_observer
-        self.ao_params = ao_params if ao_params is not None else {}
+            self.attr_obs = attr_obs
+        self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
 
         # To keep track of the observed classes
         self.classes: set = set()
@@ -192,11 +192,11 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return LearningNodeMC(initial_stats, depth, self.attribute_observer, self.ao_params)
+            return LearningNodeMC(initial_stats, depth, self.attr_obs, self.attr_obs_params)
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return LearningNodeNB(initial_stats, depth, self.attribute_observer, self.ao_params)
+            return LearningNodeNB(initial_stats, depth, self.attr_obs, self.attr_obs_params)
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return LearningNodeNBA(initial_stats, depth, self.attribute_observer, self.ao_params)
+            return LearningNodeNBA(initial_stats, depth, self.attr_obs, self.attr_obs_params)
 
     def _attempt_to_split(self, node: LearningNode, parent: SplitNode, parent_idx: int):
         """Attempt to split a node.
