@@ -1,4 +1,9 @@
-"""Ensemble learning."""
+"""Ensemble learning.
+
+This module includes ensemble methods. This kind of methods improve predictive performance by
+combining the prediction of their members.
+
+"""
 from .adaptive_random_forest import AdaptiveRandomForestClassifier
 from .adaptive_random_forest import AdaptiveRandomForestRegressor
 from .bagging import ADWINBaggingClassifier
