@@ -279,7 +279,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             node = found_node.node
             if node is not None:
                 if node.is_leaf():
-                    return node.predict_one(x, tree=self)
+                    return node.leaf_prediction(x, tree=self)
                 else:
                     # The instance sorting ended up in a Split Node, since no branch was found
                     # for some of the instance's features. Use the mean prediction in this case

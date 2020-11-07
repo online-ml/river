@@ -32,8 +32,11 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
     def max_branches():
         return -1
 
-    def describe_condition_for_branch(self, branch):
-        return f"{self._att_idx} = {self._reverse_branch_mapping[branch]}"
+    def describe_condition_for_branch(self, branch, shorten=False):
+        if shorten:
+            return f" = {self._reverse_branch_mapping[branch]}"
+        else:
+            return f"{self._att_idx} = {self._reverse_branch_mapping[branch]}"
 
     def attrs_test_depends_on(self):
         return [self._att_idx]
