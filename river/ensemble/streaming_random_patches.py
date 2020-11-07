@@ -82,7 +82,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 87.99%
+    Accuracy: 88.69%
 
     References
     ----------

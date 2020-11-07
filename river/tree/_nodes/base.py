@@ -3,13 +3,13 @@ import collections
 import numbers
 import textwrap
 
-from typing import Dict, List, Union
+from typing import Dict, Iterator, List, Union
 
 
 from river import base
 from river.stats import Var
-from river.tree._attribute_test import InstanceConditionalTest
-from river.tree._attribute_test import AttributeSplitSuggestion
+from river.tree._attribute_test import InstanceConditionalTest      # noqa
+from river.tree._attribute_test import AttributeSplitSuggestion     # noqa
 
 
 # Helper structure to manage nodes
@@ -49,6 +49,24 @@ class Node(metaclass=ABCMeta):
 
         """
         return FoundNode(self, parent, parent_branch)
+
+    def path(self, x) -> Iterator['Node']:
+        """
+        Yield the nodes that lead to the leaf which contains x.
+
+        Parameters
+        ----------
+        x
+            Instance to sort down the tree.
+
+        Returns
+        -------
+
+        """
+        yield self
+
+    def iter_edges(self):
+        yield None, 0, None, self, None
 
     @property
     def stats(self) -> dict:
@@ -223,6 +241,39 @@ class SplitNode(Node):
                 return FoundNode(None, self, child_index)
         else:
             return FoundNode(self, parent, parent_branch)
+
+    def path(self, x):
+        yield self
+        child_index = self.instance_child_index(x)
+        if child_index >= 0:
+            child = self.get_child(child_index)
+            if child is not None:
+                yield from child.path(x)
+
+    def iter_edges(self):
+        """Iterate over edges in a depth-first manner.
+
+        Returns
+        -------
+            Tuples in the form (parent_no, child_id, parent, child, branch_id).
+        """
+        counter = 0
+
+        def iterate(node):
+
+            nonlocal counter
+            no = counter
+
+            if not node.is_leaf():
+
+                for branch_id, child in node._children.items():    # noqa
+                    counter += 1
+                    yield no, counter, node, child, branch_id
+                    if not child.is_leaf():
+                        yield from iterate(child)
+
+        yield None, 0, None, self, None
+        yield from iterate(self)
 
     def subtree_depth(self) -> int:
         """Calculate the depth of the subtree from this node.
@@ -434,7 +485,7 @@ class LearningNode(Node, metaclass=ABCMeta):
             self.update_attribute_observers(x, y, sample_weight, tree.nominal_attributes)
 
     @abstractmethod
-    def predict_one(self, x, *, tree=None) -> dict:
+    def leaf_prediction(self, x, *, tree=None) -> dict:
         pass
 
     @abstractmethod
