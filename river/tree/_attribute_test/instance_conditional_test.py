@@ -37,13 +37,15 @@ class InstanceConditionalTest(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def describe_condition_for_branch(self, branch: int) -> str:
+    def describe_condition_for_branch(self, branch: int, shorten=False) -> str:
         """Describe the condition of a branch. It is used to describe the branch.
 
         Parameters
         ----------
         branch
             The index of the branch to describe
+        shorten
+            Whether or not omit the feature name from the description.
 
         Returns
         -------

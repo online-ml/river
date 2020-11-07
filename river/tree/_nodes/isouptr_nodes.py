@@ -35,7 +35,7 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
         for t in y:
             self.stats[t].update(y[t], sample_weight)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         return {
             t: self.stats[t].mean.get() if t in self.stats else 0.
             for t in tree.targets
@@ -104,7 +104,7 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
                 for _ in range(int(sample_weight)):
                     model.learn_one(x, y_)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         return {
             t: self._leaf_models[t].predict_one(x) if t in self._leaf_models else 0.
             for t in tree.targets
@@ -140,7 +140,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
         pred_mean = {
             t: self.stats[t].mean.get() if t in self.stats else 0. for t in tree.targets
         }
-        pred_model = super().predict_one(x, tree=tree)
+        pred_model = super().leaf_prediction(x, tree=tree)
 
         for t in tree.targets:  # Update the faded errors
             self._fmse_mean[t] = tree.model_selector_decay * self._fmse_mean[t] \
@@ -150,7 +150,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         pred = {}
         for t in tree.targets:
             if self._fmse_mean[t] < self._fmse_model[t]:  # Act as a regression tree

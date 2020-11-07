@@ -203,7 +203,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                         leaf_node = fn.parent
                     # Option Tree prediction (of sorts): combine the response of all leaves reached
                     # by the instance
-                    pred += leaf_node.predict_one(x, tree=self)
+                    pred += leaf_node.leaf_prediction(x, tree=self)
             # Mean prediction among the reached leaves
             return pred / len(found_nodes)
         else:

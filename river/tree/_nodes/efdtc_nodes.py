@@ -162,7 +162,7 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
         except KeyError:
             self.stats[y] = sample_weight
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         return self.stats
 
     def calculate_promise(self):

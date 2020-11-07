@@ -1,15 +1,26 @@
-import typing
 from abc import ABC, abstractmethod
-
+import collections
+import functools
+import io
 import math
+import typing
 
+from river import base
 from river.utils.skmultiflow_utils import calculate_object_size
+from river.utils.skmultiflow_utils import normalize_values_in_dict
+from river.utils.skmultiflow_utils import round_sig_fig
 
 from ._nodes import Node
 from ._nodes import LearningNode
 from ._nodes import SplitNode
 from ._nodes import FoundNode
 from ._attribute_test import InstanceConditionalTest
+
+try:
+    import graphviz
+    GRAPHVIZ_INSTALLED = True
+except ImportError:
+    GRAPHVIZ_INSTALLED = False
 
 
 class BaseHoeffdingTree(ABC):
@@ -310,3 +321,238 @@ class BaseHoeffdingTree(ABC):
                 for i in range(split_node.n_children):
                     self.__find_learning_nodes(
                         split_node.get_child(i), split_node, i, found)
+
+    # Adapted from creme's original implementation
+    def debug_one(self, x: dict) -> typing.Union[str, None]:
+        """Print an explanation of how `x` is predicted.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+
+        Returns
+        -------
+            A representation of the path followed by the tree to predict `x`; `None` if
+            the tree is empty.
+        """
+        if self._tree_root is None:
+            return
+
+        # We'll redirect all the print statement to a buffer, we'll return the content of the
+        # buffer at the end
+        buffer = io.StringIO()
+        _print = functools.partial(print, file=buffer)
+
+        for node in self._tree_root.path(x):
+            if node.is_leaf():
+                pred = node.leaf_prediction(x, tree=self)
+                if isinstance(self, base.Classifier):
+                    class_val = max(pred, key=pred.get)
+                    _print(f'Class {class_val} | {pred}')
+                else:
+                    # Multi-target regression case
+                    if isinstance(self, base.MultiOutputMixin):
+                        _print('Predictions:\n{')
+                        for i, (t, var) in enumerate(pred.items()):
+                            _print(f'\t{t}: {pred[t]} | {node.stats[t].mean} | {node.stats[t]}')
+                        _print('}')
+                    else:  # Single-target regression
+                        _print(f'Prediction {pred} | {node.stats.mean} | {node.stats}')
+                break
+            else:
+                child_index = node.split_test.branch_for_instance(x)
+
+                if child_index >= 0:
+                    _print(node.split_test.describe_condition_for_branch(child_index))
+                else:  # Corner case where an emerging nominal feature value arrives
+                    _print('Decision node reached as final destination')
+                    pred = node.stats
+                    if isinstance(self, base.Classifier):
+                        class_val = max(pred, key=pred.get)
+                        pred = normalize_values_in_dict(pred, inplace=False)
+                        _print(f'Class {class_val} | {pred}')
+                    else:
+                        # Multi-target regression case
+                        if isinstance(self, base.MultiOutputMixin):
+                            _print('Predictions:\n{')
+                            for i, (t, var) in enumerate(pred.items()):
+                                _print(f'\t{t}: {pred[t].mean.get()} | {pred[t]}')
+                            _print('}')
+                        else:  # Single-target regression
+                            _print(f'Prediction {pred} | {node.stats.mean} | {node.stats}')
+
+        return buffer.getvalue()
+
+    def draw(self, max_depth: int = None):
+        """Draw the tree using the `graphviz` library.
+
+        Since the tree is drawn without passing incoming samples, classification trees
+        will show the majority class in their leaves, whereas regression trees will
+        use the target mean.
+
+        Parameters
+        ----------
+        max_depth
+            Only the root will be drawn when set to `0`. Every node will be drawn when
+            set to `None`.
+
+        Notes
+        -----
+        Currently, Label Combination Hoeffding Tree Classifier (for multi-label
+        classification) is not supported.
+
+        Example
+        -------
+        >>> from river import datasets
+        >>> from river import tree
+        >>> model = tree.HoeffdingTreeClassifier(
+        ...    grace_period=5,
+        ...    split_confidence=1e-5,
+        ...    split_criterion='gini',
+        ...    max_depth=10,
+        ...    tie_threshold=0.05,
+        ... )
+        >>> for x, y in datasets.Phishing():
+        ...    model = model.learn_one(x, y)
+        >>> dot = model.draw()
+
+        .. image:: ../../docs/img/dtree_draw.svg
+            :align: center
+        """
+        def node_prediction(node):
+            if isinstance(self, base.Classifier):
+                pred = node.stats
+                text = str(max(pred, key=pred.get))
+                sum_votes = sum(pred.values())
+                if sum_votes > 0:
+                    pred = normalize_values_in_dict(pred, factor=sum_votes, inplace=False)
+                    probas = '\n'.join([f'P({c}) = {round_sig_fig(proba)}'
+                                        for c, proba in pred.items()])
+                    text = f'{text}\n{probas}'
+                return text
+            elif isinstance(self, base.Regressor):
+                # Multi-target regression
+                if isinstance(self, base.MultiOutputMixin):
+                    return ' | '.join([
+                            f'{t} = {round_sig_fig(s.mean.get())}'
+                            for t, s in node.stats.items()
+                    ])
+                else:  # vanilla single-target regression
+                    pred = node.stats.mean.get()
+                    return f'{round_sig_fig(pred)}'
+
+        if max_depth is None:
+            max_depth = math.inf
+
+        dot = graphviz.Digraph(
+            graph_attr={'splines': 'ortho', 'forcelabels': 'true', 'overlap': 'false'},
+            node_attr={
+                'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
+                'fontsize': '11', 'margin': '0.1,0.0'
+            },
+            edge_attr={'penwidth': '0.6', 'center': 'true', 'fontsize': '7  '}
+        )
+
+        if isinstance(self, base.Classifier):
+            n_colors = len(self.classes)   # noqa
+        else:
+            n_colors = 1
+
+        # Pick a color palette which maps classes to colors
+        new_color = functools.partial(next, iter(_color_brew(n_colors)))
+        palette = collections.defaultdict(new_color)
+
+        for parent_no, child_no, parent, child, branch_id in self._tree_root.iter_edges():
+
+            if child.depth > max_depth:
+                continue
+
+            if not child.is_leaf():
+                text = f'{child.split_test.attrs_test_depends_on()[0]}'
+
+                if child.depth == max_depth:
+                    text = f'{text}\n{node_prediction(child)}'
+            else:
+                text = f'{node_prediction(child)}\nsamples: {int(child.total_weight)}'
+
+            # Pick a color, the hue depends on the class and the transparency on the distribution
+            if isinstance(self, base.Classifier):
+                class_proba = {c: 0 for c in self.classes}   # noqa
+                class_proba.update(normalize_values_in_dict(child.stats, inplace=False))
+                mode = max(class_proba, key=class_proba.get)
+                p_mode = class_proba[mode]
+                try:
+                    alpha = (p_mode - 1 / n_colors) / (1 - 1 / n_colors)
+                    fillcolor = str(transparency_hex(color=palette[mode], alpha=alpha))
+                except ZeroDivisionError:
+                    fillcolor = '#FFFFFF'
+            else:
+                fillcolor = '#FFFFFF'
+
+            dot.node(f'{child_no}', text, fillcolor=fillcolor, style='filled')
+
+            if parent_no is not None:
+                dot.edge(
+                    f'{parent_no}', f'{child_no}',
+                    xlabel=parent.split_test.describe_condition_for_branch(
+                        branch_id, shorten=True
+                    )
+                )
+
+        return dot
+
+
+# Utility adapted from the original creme's implementation
+def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
+    """Generate n colors with equally spaced hues.
+
+    Parameters
+    ----------
+    n
+        The number of required colors.
+
+    Returns
+    -------
+        List of n tuples of form (R, G, B) being the components of each color.
+    References
+    ----------
+    https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py
+    """
+    colors = []
+
+    # Initialize saturation & value; calculate chroma & value shift
+    s, v = .75, .9
+    c = s * v
+    m = v - c
+
+    for h in [i for i in range(25, 385, int(360 / n))]:
+
+        # Calculate some intermediate values
+        h_bar = h / 60.
+        x = c * (1 - abs((h_bar % 2) - 1))
+
+        # Initialize RGB with same hue & chroma as our color
+        rgb = [(c, x, 0),
+               (x, c, 0),
+               (0, c, x),
+               (0, x, c),
+               (x, 0, c),
+               (c, 0, x),
+               (c, x, 0)]
+        r, g, b = rgb[int(h_bar)]
+
+        # Shift the initial RGB values to match value and store
+        colors.append((
+            (int(255 * (r + m))),
+            (int(255 * (g + m))),
+            (int(255 * (b + m)))
+        ))
+
+    return colors
+
+
+# Utility adapted from the original creme's implementation
+def transparency_hex(color: typing.Tuple[int, int, int], alpha: float) -> str:
+    """Apply alpha coefficient on hexadecimal color."""
+    return '#%02x%02x%02x' % tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color])
