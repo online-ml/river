@@ -29,9 +29,12 @@ class NominalAttributeBinaryTest(InstanceConditionalTest):
     def max_branches():
         return 2
 
-    def describe_condition_for_branch(self, branch):
+    def describe_condition_for_branch(self, branch, shorten=False):
         condition = ' = ' if branch == 0 else ' != '
-        return f"{self._att_idx}{condition}{self._att_value}"
+        if shorten:
+            return f"{condition}{self._att_value}"
+        else:
+            return f"{self._att_idx}{condition}{self._att_value}"
 
     def attrs_test_depends_on(self):
         return [self._att_idx]
