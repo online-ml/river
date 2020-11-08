@@ -2,7 +2,9 @@ from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from .._tree_utils import do_naive_bayes_prediction
 from .._attribute_observer import NominalAttributeClassObserver
+from .._attribute_observer import NumericAttributeClassObserverBinaryTree
 from .._attribute_observer import NumericAttributeClassObserverGaussian
+from .._attribute_observer import NumericAttributeClassObserverHistogram
 
 from .base import LearningNode
 
@@ -16,17 +18,27 @@ class LearningNodeMC(LearningNode):
         Initial class observations.
     depth
         The depth of the node.
+    attr_obs
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    attr_obs_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, attr_obs, attr_obs_params):
+        super().__init__(stats, depth, attr_obs, attr_obs_params)
 
     @staticmethod
-    def new_nominal_attribute_observer(**kwargs):
-        return NominalAttributeClassObserver(**kwargs)
+    def new_nominal_attribute_observer():
+        return NominalAttributeClassObserver()
 
     @staticmethod
-    def new_numeric_attribute_observer(**kwargs):
-        return NumericAttributeClassObserverGaussian(**kwargs)
+    def new_numeric_attribute_observer(attr_obs, attr_obs_params):
+        if attr_obs == 'bst':
+            return NumericAttributeClassObserverBinaryTree()
+        elif attr_obs == 'gaussian':
+            return NumericAttributeClassObserverGaussian(**attr_obs_params)
+        elif attr_obs == 'histogram':
+            return NumericAttributeClassObserverHistogram(**attr_obs_params)
 
     def update_stats(self, y, sample_weight):
         try:
@@ -91,9 +103,14 @@ class LearningNodeNB(LearningNodeMC):
         Initial class observations.
     depth
         The depth of the node.
+    attr_obs
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    attr_obs_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, attr_obs, attr_obs_params):
+        super().__init__(stats, depth, attr_obs, attr_obs_params)
 
     def leaf_prediction(self, x, *, tree=None):
         if self.is_active() and self.total_weight >= tree.nb_threshold:
@@ -124,9 +141,14 @@ class LearningNodeNBA(LearningNodeMC):
         Initial class observations.
     depth
         The depth of the node.
+    attr_obs
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    attr_obs_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, attr_obs, attr_obs_params):
+        super().__init__(stats, depth, attr_obs, attr_obs_params)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 

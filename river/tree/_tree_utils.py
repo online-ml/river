@@ -45,8 +45,3 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
         votes[class_index] = math.exp(votes[class_index])
     return normalize_values_in_dict(votes)
 
-
-def reg_stat_factory():
-    """Default `river.utils.VectorDict`'s `default_factory` function used
-    in multi-target regression tasks."""
-    return Var()

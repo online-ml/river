@@ -43,6 +43,19 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
+    attr_obs
+        The Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `attr_obs_params`. Valid options are:</br>
+        - `'bst'`: Binary Search Tree.</br>
+        - `'gaussian'`: Gaussian observer. The `n_splits` used to query
+         for split candidates can be adjusted (defaults to `10`).</br>
+        - `'histogram'`: Histogram-based class frequency estimation.  The number of histogram
+        bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
+        evaluate (`n_splits` -- defaults to `32`) can be adjusted.</br>
+        See 'Notes' for more information about the AOs.
+    attr_obs_params
+        Parameters passed to the numeric AOs. See `attr_obs` for more information.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -53,6 +66,32 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     that decision, replacing the split if it subsequently becomes evident that a better split is
     available. The EFDT learns rapidly from a stationary distribution and eventually it learns the
     asymptotic batch tree if the distribution from which the data are drawn is stationary.
+
+    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
+    and perform splits. Nominal features can be easily dealt with, since the partitions
+    are well-defined. Numerical features, however, require more sophisticated solutions.
+    Currently, three AOs are supported in `river` for classification trees:
+
+    - *Binary Search Tree (BST)*: uses an exhaustive algorithm to find split candidates,
+    similarly to batch decision trees. It ends up storing all observations between split
+    attempts. This AO is the most costly one in terms of memory and processing
+    time; however, it tends to yield the most accurate results when using `leaf_prediction=mc`.
+    It cannot be used to calculate the Probability Density Function (PDF) of the monitored
+    feature due to its binary tree nature. Hence, leaf prediction strategies other than
+    the majority class will end up effectively mimicing the majority class classifier.
+    This AO has no parameters.</br>
+    - *Gaussian Estimator*: Approximates the numeric feature distribution by using
+    a Gaussian distribution per class. The Cumulative Distribution Function (CDF) necessary to
+    calculate the entropy (and, consequently, the information gain), the gini index, and
+    other split criteria is then calculated using the fit feature's distribution.</br>
+    - *Histogram*: approximates the numeric feature distribution using an incrementally
+    maintained histogram per class. It represents a compromise between the intensive
+    resource usage of BST and the strong assumptions about the feature's distribution
+    used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
+    previous two in terms of memory usage and running time. Note that the number of
+    bins affects the probability density approximation required to use leaves with
+    (adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
+    Gaussian estimator when adaptive or naive bayes leaves are used.
 
     References
     ----------
@@ -94,6 +133,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
+                 attr_obs: str = 'gaussian',
+                 attr_obs_params: dict = None,
                  **kwargs):
 
         super().__init__(grace_period=grace_period,
@@ -104,6 +145,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                          leaf_prediction=leaf_prediction,
                          nb_threshold=nb_threshold,
                          nominal_attributes=nominal_attributes,
+                         attr_obs=attr_obs,
+                         attr_obs_params=attr_obs_params,
                          **kwargs)
 
         self.min_samples_reevaluate = min_samples_reevaluate
@@ -117,15 +160,25 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return EFDTLearningNodeMC(initial_stats, depth)
+            return EFDTLearningNodeMC(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
+            )
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return EFDTLearningNodeNB(initial_stats, depth)
+            return EFDTLearningNodeNB(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
+            )
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return EFDTLearningNodeNBA(initial_stats, depth)
+            return EFDTLearningNodeNBA(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
+            )
 
     def _new_split_node(self, split_test, target_stats=None, depth=0, attribute_observers=None):
         """Create a new split node."""
-        return EFDTSplitNode(split_test, target_stats, depth, attribute_observers)
+        return EFDTSplitNode(
+            split_test=split_test, stats=target_stats, depth=depth,
+            attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params,
+            attribute_observers=attribute_observers
+        )
 
     def learn_one(self, x, y, *, sample_weight=1.):
         """Incrementally train the model

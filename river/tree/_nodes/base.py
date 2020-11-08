@@ -25,11 +25,24 @@ class Node(metaclass=ABCMeta):
         Statistics kept by the node.
     depth
         The depth of the node.
+    kwargs
+        To insure descendants of this class play nice with each other (in case the trees
+        follow non-trivial structures).
     """
 
-    def __init__(self, stats: Union[dict, Var] = None, depth: int = 0):
+    def __init__(self, stats: Union[dict, Var] = None, depth: int = 0, **kwargs):
         self._stats: Union[dict, Var] = stats if stats is not None else {}
         self._depth = depth
+
+    @staticmethod
+    def is_leaf() -> bool:
+        """Indicate if the node is a leaf.
+
+        Returns
+        -------
+        True if node is a leaf, False otherwise
+        """
+        return True
 
     def filter_instance_to_leaf(self, x: dict, parent: 'Node', parent_branch: int) -> FoundNode:
         """Traverse down the tree to locate the corresponding leaf for an instance.
@@ -69,7 +82,7 @@ class Node(metaclass=ABCMeta):
         yield None, 0, None, self, None
 
     @property
-    def stats(self) -> dict:
+    def stats(self) -> Union[dict, Var]:
         """Statistics observed by the node. """
         return self._stats
 
@@ -140,11 +153,22 @@ class SplitNode(Node):
         The depth of the node.
     """
 
-    def __init__(self, split_test: InstanceConditionalTest, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, split_test: InstanceConditionalTest, stats, depth, **kwargs):
+        super().__init__(stats, depth, **kwargs)
         self._split_test = split_test
         # Dict -> branch_id: child_node
         self._children: Dict[int, Node] = {}
+
+    @staticmethod
+    def is_leaf():
+        """Determine if the node is a leaf.
+
+        Returns
+        -------
+        boolean
+            True if node is a leaf, False otherwise
+        """
+        return False
 
     @property
     def n_children(self) -> int:
@@ -203,17 +227,6 @@ class SplitNode(Node):
             Branch index, -1 if unknown.
         """
         return self._split_test.branch_for_instance(x)
-
-    @staticmethod
-    def is_leaf():
-        """Determine if the node is a leaf.
-
-        Returns
-        -------
-        boolean
-            True if node is a leaf, False otherwise
-        """
-        return False
 
     def filter_instance_to_leaf(self, x: dict, parent: Node, parent_branch: int):
         """Traverse down the tree to locate the corresponding leaf for an instance.
@@ -319,23 +332,23 @@ class LearningNode(Node, metaclass=ABCMeta):
     ----------
     stats
         Target statistics (they differ in classification and regression tasks).
+    depth
+        The depth of the node
+    attr_obs
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    attr_obs_params
+        The parameters passed to the numeric attribute observer algorithm.
     """
-    def __init__(self, stats, depth):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, attr_obs: str, attr_obs_params: dict, **kwargs):
+        super().__init__(stats, depth, **kwargs)
+
+        self.attr_obs = attr_obs
+        self.attr_obs_params = attr_obs_params
 
         self._attribute_observers = {}
         self._disabled_attrs = set()
         self._last_split_attempt_at = self.total_weight
-
-    @staticmethod
-    def is_leaf() -> bool:
-        """Indicate if the node is a leaf.
-
-        Returns
-        -------
-        True if node is a leaf, False otherwise
-        """
-        return True
 
     def is_active(self):
         return self._attribute_observers is not None
@@ -389,19 +402,19 @@ class LearningNode(Node, metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def new_nominal_attribute_observer(**kwargs):
+    def new_nominal_attribute_observer():
         pass
 
     @staticmethod
     @abstractmethod
-    def new_numeric_attribute_observer(**kwargs):
+    def new_numeric_attribute_observer(attr_obs, attr_obs_params):
         pass
 
     @abstractmethod
     def update_stats(self, y, sample_weight):
         pass
 
-    def update_attribute_observers(self, x, y, sample_weight, nominal_attributes, **kwargs):
+    def update_attribute_observers(self, x, y, sample_weight, nominal_attributes):
         for attr_idx, attr_val in x.items():
             if attr_idx in self._disabled_attrs:
                 continue
@@ -411,9 +424,11 @@ class LearningNode(Node, metaclass=ABCMeta):
             except KeyError:
                 if ((nominal_attributes is not None and attr_idx in nominal_attributes)
                         or not isinstance(attr_val, numbers.Number)):
-                    obs = self.new_nominal_attribute_observer(**kwargs)
+                    obs = self.new_nominal_attribute_observer()
                 else:
-                    obs = self.new_numeric_attribute_observer(**kwargs)
+                    obs = self.new_numeric_attribute_observer(
+                        attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params
+                    )
                 self.attribute_observers[attr_idx] = obs
             obs.update(attr_val, y, sample_weight)
 
