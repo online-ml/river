@@ -1,4 +1,4 @@
-import numpy as np
+import math
 
 from .base_split_criterion import SplitCriterion
 
@@ -25,7 +25,7 @@ class HellingerDistanceCriterion(SplitCriterion):
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
         if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_frac_option) < 2:
-            return -np.inf
+            return -math.inf
         return self.compute_hellinger(post_split_dist)
 
     @staticmethod
@@ -40,18 +40,18 @@ class HellingerDistanceCriterion(SplitCriterion):
         total_negative = left_branch_negative + right_branch_negative
         total_positive = left_branch_positive + right_branch_positive
 
-        hellinger = (np.sqrt(left_branch_negative/total_negative)
-                     - np.sqrt(left_branch_positive/total_positive)) ** 2 + \
-                    (np.sqrt(right_branch_negative/total_negative)
-                     - np.sqrt(right_branch_positive/total_positive)) ** 2
+        hellinger = (math.sqrt(left_branch_negative/total_negative)
+                     - math.sqrt(left_branch_positive/total_positive)) ** 2 + \
+                    (math.sqrt(right_branch_negative/total_negative)
+                     - math.sqrt(right_branch_positive/total_positive)) ** 2
 
-        return np.sqrt(hellinger)
+        return math.sqrt(hellinger)
 
     @staticmethod
     def range_of_merit(pre_split_dist):
         num_classes = len(pre_split_dist)
         num_classes = num_classes if num_classes > 2 else 2
-        return np.log2(num_classes)
+        return math.log2(num_classes)
 
     @staticmethod
     def num_subsets_greater_than_frac(distributions, min_frac):

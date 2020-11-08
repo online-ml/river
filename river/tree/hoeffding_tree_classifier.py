@@ -40,8 +40,21 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
-        List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
-        should be treated as continuous.
+        List of Nominal attributes identifiers. If empty, then assume that all numeric
+        attributes should be treated as continuous.
+    attr_obs
+        The Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `attr_obs_params`. Valid options are:</br>
+        - `'bst'`: Binary Search Tree.</br>
+        - `'gaussian'`: Gaussian observer. The `n_splits` used to query
+         for split candidates can be adjusted (defaults to `10`).</br>
+        - `'histogram'`: Histogram-based class frequency estimation.  The number of histogram
+        bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
+        evaluate (`n_splits` -- defaults to `32`) can be adjusted.</br>
+        See 'Notes' for more information about the AOs.
+    attr_obs_params
+        Parameters passed to the numeric AOs. See `attr_obs` for more information.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -58,9 +71,33 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     A theoretically appealing feature of Hoeffding Trees not shared by other incremental decision
     tree learners is that it has sound guarantees of performance. Using the Hoeffding bound one
     can show that its output is asymptotically nearly identical to that of a non-incremental
-    learner using infinitely many examples.
+    learner using infinitely many examples. Implementation based on MOA [^2].
 
-    Implementation based on MOA [^2].
+    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
+    and perform splits. Nominal features can be easily dealt with, since the partitions
+    are well-defined. Numerical features, however, require more sophisticated solutions.
+    Currently, three AOs are supported in `river` for classification trees:
+
+    - *Binary Search Tree (BST)*: uses an exhaustive algorithm to find split candidates,
+    similarly to batch decision trees. It ends up storing all observations between split
+    attempts. This AO is the most costly one in terms of memory and processing
+    time; however, it tends to yield the most accurate results when using `leaf_prediction=mc`.
+    It cannot be used to calculate the Probability Density Function (PDF) of the monitored
+    feature due to its binary tree nature. Hence, leaf prediction strategies other than
+    the majority class will end up effectively mimicing the majority class classifier.
+    This AO has no parameters.</br>
+    - *Gaussian Estimator*: Approximates the numeric feature distribution by using
+    a Gaussian distribution per class. The Cumulative Distribution Function (CDF) necessary to
+    calculate the entropy (and, consequently, the information gain), the gini index, and
+    other split criteria is then calculated using the fit feature's distribution.</br>
+    - *Histogram*: approximates the numeric feature distribution using an incrementally
+    maintained histogram per class. It represents a compromise between the intensive
+    resource usage of BST and the strong assumptions about the feature's distribution
+    used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
+    previous two in terms of memory usage and running time. Note that the number of
+    bins affects the probability density approximation required to use leaves with
+    (adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
+    Gaussian estimator when adaptive or naive bayes leaves are used.
 
     References
     ----------
@@ -100,6 +137,10 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     _MAJORITY_CLASS = 'mc'
     _NAIVE_BAYES = 'nb'
     _NAIVE_BAYES_ADAPTIVE = 'nba'
+    _BST = 'bst'
+    _GAUSSIAN = 'gaussian'
+    _HISTOGRAM = 'histogram'
+    _VALID_AO = [_BST, _GAUSSIAN, _HISTOGRAM]
 
     def __init__(self,
                  grace_period: int = 200,
@@ -110,6 +151,8 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
+                 attr_obs: str = 'gaussian',
+                 attr_obs_params: dict = None,
                  **kwargs):
 
         super().__init__(max_depth=max_depth, **kwargs)
@@ -121,6 +164,15 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
 
+        if attr_obs not in self._VALID_AO:
+            raise AttributeError(
+                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
+            )
+        else:
+            self.attr_obs = attr_obs
+        self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
+
+        # To keep track of the observed classes
         self.classes: set = set()
 
     @BaseHoeffdingTree.split_criterion.setter
@@ -151,11 +203,11 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return LearningNodeMC(initial_stats, depth)
+            return LearningNodeMC(initial_stats, depth, self.attr_obs, self.attr_obs_params)
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return LearningNodeNB(initial_stats, depth)
+            return LearningNodeNB(initial_stats, depth, self.attr_obs, self.attr_obs_params)
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return LearningNodeNBA(initial_stats, depth)
+            return LearningNodeNBA(initial_stats, depth, self.attr_obs, self.attr_obs_params)
 
     def _attempt_to_split(self, node: LearningNode, parent: SplitNode, parent_idx: int):
         """Attempt to split a node.

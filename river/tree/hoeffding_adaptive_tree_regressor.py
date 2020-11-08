@@ -45,6 +45,17 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     nominal_attributes
         List of Nominal attributes. If empty, then assume that all numeric attributes should
         be treated as continuous.
+    attr_obs
+        The attribute observer (AO) used to monitor the target statistics of numeric
+        features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `attr_obs_params`. Valid options are:</br>
+        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
+        See notes for more information about the supported AOs.
+    attr_obs_params
+        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    min_samples_split
+        The minimum number of samples every branch resulting from a split candidate must have
+        to be considered valid.
     bootstrap_sampling
         If True, perform bootstrap sampling in the leaf nodes.
     drift_window_threshold
@@ -76,6 +87,17 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     these errors to a min-max normalization assuming that most of the data lies in the
     $\\left[-3\\sigma, 3\\sigma\\right]$ range. These normalized errors are passed to the ADWIN
     instances. This is the same strategy used by Adaptive Random Forest Regressor.
+
+    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
+    and perform splits. Nominal features can be easily dealt with, since the partitions
+    are well-defined. Numerical features, however, require more sophisticated solutions.
+    Currently, only one AO is supported in `river` for regression trees:
+
+    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
+    candidates, similarly to batch decision tree algorithms. It ends up storing all
+    observations between split attempts. However, E-BST automatically removes bad split
+    points periodically from its structure and, thus, alleviates the memory and time
+    costs involved in its usage.
 
     References
     ----------
@@ -121,6 +143,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
+                 attr_obs: str = 'e-bst',
+                 attr_obs_params: dict = None,
+                 min_samples_split: int = 5,
                  bootstrap_sampling: bool = True,
                  drift_window_threshold: int = 300,
                  adwin_confidence: float = 0.002,
@@ -135,6 +160,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                          leaf_model=leaf_model,
                          model_selector_decay=model_selector_decay,
                          nominal_attributes=nominal_attributes,
+                         attr_obs=attr_obs,
+                         attr_obs_params=attr_obs_params,
+                         min_samples_split=min_samples_split,
                          **kwargs)
 
         self._n_alternate_trees = 0
@@ -203,8 +231,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             leaf_model = deepcopy(self.leaf_model)
 
         new_ada_leaf = AdaLearningNodeRegressor(
-            stats=initial_stats, depth=depth, leaf_model=leaf_model,
-            adwin_delta=self.adwin_confidence, seed=self.seed)
+            stats=initial_stats, depth=depth, attr_obs=self.attr_obs,
+            attr_obs_params=self.attr_obs_params, leaf_model=leaf_model,
+            adwin_delta=self.adwin_confidence, seed=self.seed
+        )
 
         if parent is not None and parent.is_leaf():
             new_ada_leaf._fmse_mean = parent._fmse_mean

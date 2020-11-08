@@ -44,6 +44,17 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
+    attr_obs
+        The attribute observer (AO) used to monitor the target statistics of numeric
+        features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `attr_obs_params`. Valid options are:</br>
+        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
+        See notes for more information about the supported AOs.
+    attr_obs_params
+        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    min_samples_split
+        The minimum number of samples every branch resulting from a split candidate must have
+        to be considered valid.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
@@ -56,6 +67,17 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     split candidates. The smallest the variance at its leaf nodes, the more homogeneous the
     partitions are. At its leaf nodes, HTR fits either linear models or uses the target
     average as the predictor.
+
+    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
+    and perform splits. Nominal features can be easily dealt with, since the partitions
+    are well-defined. Numerical features, however, require more sophisticated solutions.
+    Currently, only one AO is supported in `river` for regression trees:
+
+    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
+    candidates, similarly to batch decision tree algorithms. It ends up storing all
+    observations between split attempts. However, E-BST automatically removes bad split
+    points periodically from its structure and, thus, alleviates the memory and time
+    costs involved in its usage.
 
     Examples
     --------
@@ -85,6 +107,8 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     _TARGET_MEAN = 'mean'
     _MODEL = 'model'
     _ADAPTIVE = 'adaptive'
+    _E_BST = 'e-bst'
+    _VALID_AO = [_E_BST]
 
     def __init__(self,
                  grace_period: int = 200,
@@ -95,6 +119,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
+                 attr_obs: str = 'e-bst',
+                 attr_obs_params: dict = None,
+                 min_samples_split: int = 5,
                  **kwargs):
         super().__init__(max_depth=max_depth, **kwargs)
 
@@ -106,6 +133,15 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.leaf_model = leaf_model if leaf_model else linear_model.LinearRegression()
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
+        self.min_samples_split = min_samples_split
+
+        if attr_obs not in self._VALID_AO:
+            raise AttributeError(
+                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
+            )
+        else:
+            self.attr_obs = attr_obs
+        self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
 
     @BaseHoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
@@ -126,9 +162,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return VarianceReductionSplitCriterion()
+        return VarianceReductionSplitCriterion(min_samples_split=self.min_samples_split)
 
-    def _new_learning_node(self, initial_stats=None, parent=None, **kwargs):
+    def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.
@@ -148,11 +184,15 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                     leaf_model = deepcopy(self.leaf_model)
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMean(initial_stats, depth)
+            return LearningNodeMean(initial_stats, depth, self.attr_obs, self.attr_obs_params)
         elif self.leaf_prediction == self._MODEL:
-            return LearningNodeModel(initial_stats, depth, leaf_model)
+            return LearningNodeModel(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
+            )
         else:  # adaptive learning node
-            new_adaptive = LearningNodeAdaptive(initial_stats, depth, leaf_model)
+            new_adaptive = LearningNodeAdaptive(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
+            )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean
                 new_adaptive._fmse_model = parent._fmse_model
