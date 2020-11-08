@@ -1,6 +1,6 @@
 import math
 
-from river.utils.math import softmax
+from river.utils.skmultiflow_utils import normalize_values_in_dict
 from river.stats import Var
 
 
@@ -41,10 +41,7 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
                 # Prior plus the log likelihood
                 tmp = obs.probability_of_attribute_value_given_class(x[att_idx], class_index)
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.
-    return softmax(votes)
+        # Revert log likelihood
+        votes[class_index] = math.exp(votes[class_index])
+    return normalize_values_in_dict(votes)
 
-
-def reg_stat_factory():
-    """Default `river.utils.VectorDict`'s `default_factory` function used
-    in multi-target regression tasks."""
-    return Var()

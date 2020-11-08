@@ -1,3 +1,5 @@
+from river.utils.skmultiflow_utils import round_sig_fig
+
 from .instance_conditional_test import InstanceConditionalTest
 
 
@@ -20,14 +22,16 @@ class NumericAttributeBinaryTest(InstanceConditionalTest):
     def max_branches():
         return 2
 
-    def describe_condition_for_branch(self, branch):
+    def describe_condition_for_branch(self, branch, shorten=False):
         if branch == 0 or branch == 1:
             compare_char = '<' if branch == 0 else '>'
             equals_branch = 0 if self._equals_passes_test else 1
             compare_char += '=' if branch == equals_branch else ''
-            return '{} {} {}'.format(
-                self._att_idx, compare_char, self._att_value
-            )
+
+            if shorten:
+                return f'{compare_char} {round_sig_fig(self._att_value)}'
+            else:
+                return f'{self._att_idx} {compare_char} {self._att_value}'
 
     def attrs_test_depends_on(self):
         return [self._att_idx]

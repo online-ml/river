@@ -19,14 +19,19 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
         Initial class observations.
     depth
         The depth of the learning node in the tree.
+    attr_obs
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    attr_obs_params
+        The parameters passed to the numeric attribute observer algorithm.
     adwin_delta
         The delta parameter of ADWIN.
     seed
         Seed to control the generation of random numbers and support reproducibility.
     """
 
-    def __init__(self, stats, depth, leaf_model, adwin_delta, seed):
-        super().__init__(stats, depth, leaf_model)
+    def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_model, adwin_delta, seed):
+        super().__init__(stats, depth, attr_obs, attr_obs_params, leaf_model)
 
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
@@ -55,7 +60,7 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
         pass
 
     def learn_one(self, x, y, *, sample_weight=1., tree=None, parent=None, parent_branch=-1):
-        y_pred = self.predict_one(x, tree=tree)
+        y_pred = self.leaf_prediction(x, tree=tree)
         normalized_error = normalize_error(y, y_pred, self)
 
         if tree.bootstrap_sampling:
@@ -91,14 +96,14 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
                 tree._attempt_to_split(self, parent, parent_branch)
                 self.last_split_attempt_at = weight_seen
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         prediction_option = tree.leaf_prediction
         if prediction_option == tree._TARGET_MEAN:
             return self.stats.mean.get()
         elif prediction_option == tree._MODEL:
             return self._leaf_model.predict_one(x)
         else:  # adaptive node
-            return super().predict_one(x, tree=tree)
+            return super().leaf_prediction(x, tree=tree)
 
     # Override AdaNode: enable option vote (query potentially more than one leaf for responses)
     def filter_instance_to_leaves(self, x, parent, parent_branch, found_nodes):
@@ -164,9 +169,9 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch).node
         if leaf is not None:
-            y_pred = leaf.predict_one(x, tree=tree)
+            y_pred = leaf.leaf_prediction(x, tree=tree)
         else:
-            y_pred = parent.predict_one(x, tree=tree)
+            y_pred = parent.leaf_prediction(x, tree=tree)
 
         normalized_error = normalize_error(y, y_pred, self)
 
@@ -246,7 +251,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
             leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=parent,
                                 parent_branch=parent_branch)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         # Called in case an emerging categorical feature has no path down the split node to be
         # sorted
         return self.stats.mean.get()
@@ -256,7 +261,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         for child_id, child in self._children.items():
             if child is not None:
                 # Delete alternate tree if it exists
-                if isinstance(child, SplitNode):
+                if not child.is_leaf():
                     if child._alternate_tree is not None:
                         child._alternate_tree.kill_tree_children(tree)
                         tree._n_pruned_alternate_trees += 1
@@ -292,8 +297,8 @@ def normalize_error(y_true, y_pred, node):
 
     if node._error_normalizer.mean.n == 1:
         return 0.5  # The expected error is the normalized mean error
-    else:
-        sd = math.sqrt(node._error_normalizer.sigma)
+
+    sd = math.sqrt(node._error_normalizer.sigma)
 
     # We assume the error follows a normal distribution -> (empirical rule) 99.73% of the values
     # lie  between [mean - 3*sd, mean + 3*sd]. We assume this range for the normalized data.

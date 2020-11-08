@@ -50,8 +50,32 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
+    attr_obs
+        The attribute observer (AO) used to monitor the target statistics of numeric
+        features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `attr_obs_params`. Valid options are:</br>
+        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
+        See notes for more information about the supported AOs.
+    attr_obs_params
+        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    min_samples_split
+        The minimum number of samples every branch resulting from a split candidate must have
+        to be considered valid.
     kwargs
         Other parameters passed to `river.tree.BaseHoeffdingTree`.
+
+    Notes
+    -----
+    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
+    and perform splits. Nominal features can be easily dealt with, since the partitions
+    are well-defined. Numerical features, however, require more sophisticated solutions.
+    Currently, only one AO is supported in `river` for regression trees:
+
+    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
+    candidates, similarly to batch decision tree algorithms. It ends up storing all
+    observations between split attempts. However, E-BST automatically removes bad split
+    points periodically from its structure and, thus, alleviates the memory and time
+    costs involved in its usage.
 
     References
     ----------
@@ -100,6 +124,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                  leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
                  model_selector_decay: float = 0.95,
                  nominal_attributes: list = None,
+                 attr_obs: str = 'e-bst',
+                 attr_obs_params: dict = None,
+                 min_samples_split: int = 5,
                  **kwargs):
         super().__init__(grace_period=grace_period,
                          max_depth=max_depth,
@@ -109,6 +136,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                          leaf_model=leaf_model,
                          model_selector_decay=model_selector_decay,
                          nominal_attributes=nominal_attributes,
+                         attr_obs=attr_obs,
+                         attr_obs_params=attr_obs_params,
+                         min_samples_split=min_samples_split,
                          **kwargs)
 
         self.split_criterion: str = 'icvr'   # intra cluster variance reduction
@@ -136,7 +166,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return IntraClusterVarianceReductionSplitCriterion()
+        return IntraClusterVarianceReductionSplitCriterion(
+            min_samples_split=self.min_samples_split
+        )
 
     def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
@@ -158,11 +190,17 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                     leaf_models = {}
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMeanMultiTarget(initial_stats, depth)
+            return LearningNodeMeanMultiTarget(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
+            )
         elif self.leaf_prediction == self._MODEL:
-            return LearningNodeModelMultiTarget(initial_stats, depth, leaf_models)
+            return LearningNodeModelMultiTarget(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_models
+            )
         else:  # adaptive learning node
-            new_adaptive = LearningNodeAdaptiveMultiTarget(initial_stats, depth, leaf_models)
+            new_adaptive = LearningNodeAdaptiveMultiTarget(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_models
+            )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean.copy()
                 new_adaptive._fmse_model = parent._fmse_model.copy()
@@ -217,7 +255,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             node = found_node.node
             if node is not None:
                 if node.is_leaf():
-                    return node.predict_one(x, tree=self)
+                    return node.leaf_prediction(x, tree=self)
                 else:
                     # The instance sorting ended up in a Split Node, since no branch was found
                     # for some of the instance's features. Use the mean prediction in this case

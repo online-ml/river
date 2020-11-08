@@ -39,6 +39,8 @@ class NominalAttributeRegressionObserver(AttributeObserver):
                 estimator = self._statistics[att_val]
             self._update_estimator(estimator, target, sample_weight)
 
+        return self
+
     def probability_of_attribute_value_given_class(self, att_val, target):
         raise NotImplementedError
 

@@ -51,13 +51,18 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
         Initial class observations.
     depth
         The depth of the learning node in the tree.
+    attr_obs
+        The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    attr_obs_params
+        The parameters passed to the numeric attribute observer algorithm.
     adwin_delta
         The delta parameter of ADWIN.
     seed
         Seed to control the generation of random numbers and support reproducibility.
     """
-    def __init__(self, stats, depth, adwin_delta, seed):
-        super().__init__(stats, depth)
+    def __init__(self, stats, depth, attr_obs, attr_obs_params, adwin_delta, seed):
+        super().__init__(stats, depth, attr_obs, attr_obs_params)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self.error_change = False
@@ -88,7 +93,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             if k > 0:
                 sample_weight = sample_weight * k
 
-        aux = self.predict_one(x, tree=tree)
+        aux = self.leaf_prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
 
         is_correct = (y == class_prediction)
@@ -121,20 +126,20 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
                 self.last_split_attempt_at = weight_seen
 
     # Override LearningNodeNBA
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         if not self.stats:
             return
 
         prediction_option = tree.leaf_prediction
         if not self.is_active() or prediction_option == tree._MAJORITY_CLASS:
-            dist = self.stats
+            dist = normalize_values_in_dict(self.stats, inplace=False)
         elif prediction_option == tree._NAIVE_BAYES:
             if self.total_weight >= tree.nb_threshold:
                 dist = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
-            else:
-                dist = self.stats
+            else:  # Use majority class
+                dist = normalize_values_in_dict(self.stats, inplace=False)
         else:  # Naive Bayes Adaptive
-            dist = super().predict_one(x, tree=tree)
+            dist = super().leaf_prediction(x, tree=tree)
 
         dist_sum = sum(dist.values())
         normalization_factor = dist_sum * self.error_estimation * self.error_estimation
@@ -142,8 +147,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
         # Weight node's responses accordingly to the estimated error monitored by ADWIN
         # Useful if both the predictions of the alternate tree and the ones from the main tree
         # are combined -> give preference to the most accurate one
-        if normalization_factor > 0.0:
-            dist = normalize_values_in_dict(dist, normalization_factor, inplace=False)
+        dist = normalize_values_in_dict(dist, normalization_factor, inplace=False)
 
         return dist
 
@@ -206,7 +210,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
         if leaf.node is not None:
-            aux = leaf.node.predict_one(x, tree=tree)
+            aux = leaf.node.leaf_prediction(x, tree=tree)
             class_prediction = max(aux, key=aux.get) if aux else None
 
         is_correct = (y == class_prediction)
@@ -285,10 +289,10 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
                                 parent_branch=child_branch)
 
-    def predict_one(self, x, *, tree=None):
+    def leaf_prediction(self, x, *, tree=None):
         # In case split nodes end up being used (if emerging categorical feature appears,
-        # for instance)
-        return self.stats  # Use the MC (majority class) prediction strategy
+        # for instance) use the MC (majority class) prediction strategy
+        return normalize_values_in_dict(self.stats, inplace=False)
 
     # Override AdaNode
     def kill_tree_children(self, tree):

@@ -1,4 +1,4 @@
-import numpy as np
+import math
 
 from .base_split_criterion import SplitCriterion
 
@@ -22,14 +22,14 @@ class InfoGainSplitCriterion(SplitCriterion):
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
         if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_frac_option) < 2:
-            return -np.inf
+            return -math.inf
         return self.compute_entropy(pre_split_dist) - self.compute_entropy(post_split_dist)
 
     @staticmethod
     def range_of_merit(pre_split_dist):
         num_classes = len(pre_split_dist)
         num_classes = num_classes if num_classes > 2 else 2
-        return np.log2(num_classes)
+        return math.log2(num_classes)
 
     def compute_entropy(self, dist):
         if isinstance(dist, dict):
@@ -43,9 +43,9 @@ class InfoGainSplitCriterion(SplitCriterion):
         dis_sums = 0.0
         for _, d in dist.items():
             if d > 0.0:  # TODO: How small can d be before log2 overflows?
-                entropy -= d * np.log2(d)
+                entropy -= d * math.log2(d)
                 dis_sums += d
-        return (entropy + dis_sums * np.log2(dis_sums)) / dis_sums if dis_sums > 0.0 else 0.0
+        return (entropy + dis_sums * math.log2(dis_sums)) / dis_sums if dis_sums > 0.0 else 0.0
 
     def _compute_entropy_list(self, dists):
         total_weight = 0.0
