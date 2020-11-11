@@ -77,8 +77,8 @@ jobs:
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
-      - CREME_VERSION=$(python -c "import river; print(river.__version__)")
-      - mike deploy ${CREME_VERSION} latest --push --force --remote https://${GH_TOKEN}@github.com/creme-ml/creme.git
+      - RIVER_VERSION=$(python -c "import river; print(river.__version__)")
+      - mike deploy ${RIVER_VERSION} latest --push --force --remote https://${GH_TOKEN}@github.com/creme-ml/creme.git
       - mike set-default latest --push --force --remote https://${GH_TOKEN}@github.com/creme-ml/creme.git
     if: tag IS present
 
