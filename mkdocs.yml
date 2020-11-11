@@ -2,11 +2,11 @@
 site_name: River
 site_description: Machine learning for data streams in Python
 site_author: The river developers
-site_url: https://river-ml.github.io/
+site_url: https://river.github.io/
 
 # Repository
-repo_name: river-ml/river
-repo_url: https://github.com/river-ml/river
+repo_name: online-ml/river
+repo_url: https://github.com/online-ml/river
 
 # Copyright
 copyright: Copyright &copy; 2019 - 2020
@@ -32,7 +32,7 @@ theme:
 extra:
     social:
       - icon: fontawesome/brands/github-alt
-        link: https://github.com/river-ml/river
+        link: https://github.com/online-ml/river
 
 # Google Analytics
 google_analytics:
