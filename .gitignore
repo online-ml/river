@@ -1,11 +1,11 @@
 # Documentation
-docs/getting-started.md
-docs/getting-started_files/
+docs/getting-started/getting-started.md
+docs/getting-started/getting-started_files/
 docs/user-guide/*.md
 docs/user-guide/*_files/
 docs/examples/*.md
 docs/examples/*_files/
-docs/api-reference/
+docs/api/
 site
 
 # Byte-compiled / optimized / DLL files
@@ -22,7 +22,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-!creme/dist/*.py
+!river/dist/*.py
 downloads/
 eggs/
 .eggs/
@@ -111,3 +111,6 @@ package.json
 
 # For MacOS
 .DS_store
+
+# ASV
+benchmarks/.asv

@@ -55,7 +55,19 @@ jobs:
     script: *pypi-script
     if: tag IS present
 
-  - stage: docs
+  - stage: dev-docs
+    install:
+      - sudo apt-get install graphviz pandoc
+      - python setup.py install
+      - pip install -e ".[docs]"
+    script: make doc
+    after_success:
+      - git config --global user.email "maxhalford25@gmail.com"
+      - git config --global user.name "MaxHalford"
+      - mike deploy dev --push --force --remote https://${GH_TOKEN}@github.com/river-ml/river.git
+    if: branch = "the-merge"
+
+  - stage: release-docs
     install:
       - sudo apt-get install graphviz pandoc
       - python setup.py install
@@ -65,14 +77,9 @@ jobs:
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
-      - git config --global push.default matching
-      - git clone https://${GH_TOKEN}@github.com/creme-ml/creme-ml.github.io.git creme-ml.github.io
-      - cd creme-ml.github.io
-      - rm -r *
-      - cp -r ../site/* .
-      - git add -A
-      - git commit --allow-empty -m "Travis build number $TRAVIS_BUILD_NUMBER"
-      - git push --set-upstream origin master
+      - CREME_VERSION=$(python -c "import river; print(river.__version__)")
+      - mike deploy ${CREME_VERSION} latest --push --force --remote https://${GH_TOKEN}@github.com/creme-ml/creme.git
+      - mike set-default latest --push --force --remote https://${GH_TOKEN}@github.com/creme-ml/creme.git
     if: tag IS present
 
 env:

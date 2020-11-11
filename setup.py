@@ -1,14 +1,25 @@
 import io
 import platform
 import os
-import setuptools
 import sys
+
+import setuptools
+
+try:
+    from numpy import get_include
+except ImportError:
+    import subprocess
+    errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'numpy'])
+    if errno:
+        print('Please install numpy')
+        raise SystemExit(errno)
+    else:
+        from numpy import get_include
 
 try:
     from Cython.Build import cythonize
 except ImportError:
     import subprocess
-
     errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'Cython'])
     if errno:
         print('Please install Cython')
@@ -18,16 +29,16 @@ except ImportError:
 
 
 # Package meta-data.
-NAME = 'creme'
+NAME = 'river'
 DESCRIPTION = 'Online machine learning in Python'
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
-URL = 'https://github.com/creme-ml/creme'
+URL = 'https://github.com/river-ml/river'
 EMAIL = 'maxhalford25@gmail.com'
 AUTHOR = 'Max Halford'
 REQUIRES_PYTHON = '>=3.6.0'
 
 # Package requirements.
-base_packages = ['mmh3==2.5.1', 'numpy>=1.18.1', 'scipy>=1.4.1', 'pandas>=1.0.1']
+base_packages = ['numpy>=1.18.1', 'scipy>=1.4.1', 'pandas>=1.0.1']
 
 compat_packages = base_packages + [
     'scikit-learn',
@@ -38,6 +49,7 @@ compat_packages = base_packages + [
 ]
 
 dev_packages = base_packages + [
+    'asv',
     'flake8>=3.7.9',
     'graphviz>=0.10.1',
     'matplotlib>=3.0.2',
@@ -53,10 +65,12 @@ docs_packages = dev_packages + [
     'flask',
     'ipykernel',
     'jupyter-client',
+    'mike==0.5.3',
     'mkdocs',
     'mkdocs-awesome-pages-plugin',
     'mkdocs-material',
-    'nbconvert'
+    'nbconvert',
+    'numpydoc'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -81,7 +95,7 @@ setuptools.setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=setuptools.find_packages(exclude=('tests',)),
+    packages=setuptools.find_packages(exclude=('tests', 'scikit-multiflow')),
     install_requires=base_packages,
     extras_require={
         'dev': dev_packages,
@@ -107,13 +121,21 @@ setuptools.setup(
             setuptools.Extension(
                 '*',
                 sources=['**/*.pyx'],
+                include_dirs=[get_include()],
                 libraries=[] if platform.system() == 'Windows' else ['m']
             )
         ],
         compiler_directives={
             'language_level': 3,
             'binding': True,
-            #'embedsignature': True
+            'embedsignature': True
         }
-    )
+    ) + [setuptools.Extension(
+        'river.neighbors.libNearestNeighbor',
+        sources=[os.path.join('river', 'neighbors', 'src',
+                              'libNearestNeighbor', 'nearestNeighbor.cpp')],
+        include_dirs=[get_include()],
+        libraries=[] if platform.system() == 'Windows' else ['m'],
+        language='c++'
+    )]
 )

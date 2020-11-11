@@ -1,7 +1,7 @@
 import collections
 import time
 
-from creme import base
+from river import base
 import pandas as pd
 import tqdm
 
@@ -31,14 +31,14 @@ def format_ns(d):
 
 def benchmark(get_X_y, n, get_pp, models, get_metric):
 
-    Result = collections.namedtuple('Result', 'lib model score fit_time pred_time')
+    Result = collections.namedtuple('Result', 'lib model score learn_time pred_time')
     results = []
 
     for lib, name, model in tqdm.tqdm_notebook(models):
 
         pp = get_pp()
         metric = get_metric()
-        fit_time = 0
+        learn_time = 0
         pred_time = 0
 
         # Determine if predict_one or predict_proba_one should be used in case of a classifier
@@ -48,7 +48,7 @@ def benchmark(get_X_y, n, get_pp, models, get_metric):
 
         for x, y in tqdm.tqdm_notebook(get_X_y(), total=n):
 
-            x = pp.fit_one(x, y).transform_one(x)
+            x = pp.learn_one(x, y).transform_one(x)
 
             # Predict
             tic = time.perf_counter_ns()
@@ -60,17 +60,17 @@ def benchmark(get_X_y, n, get_pp, models, get_metric):
 
             # Fit
             tic = time.perf_counter_ns()
-            model.fit_one(x, y)
-            fit_time += time.perf_counter_ns() - tic
+            model.learn_one(x, y)
+            learn_time += time.perf_counter_ns() - tic
 
-        results.append(Result(lib, name, metric.get(), fit_time, pred_time))
+        results.append(Result(lib, name, metric.get(), learn_time, pred_time))
 
     results = pd.DataFrame({
         'Library': [r.lib for r in results],
         'Model': [r.model for r in results],
         metric.__class__.__name__: [r.score for r in results],
-        'Fit time': [format_ns(r.fit_time) for r in results],
-        'Average fit time': [format_ns(round(r.fit_time / n)) for r in results],
+        'Fit time': [format_ns(r.learn_time) for r in results],
+        'Average fit time': [format_ns(round(r.learn_time / n)) for r in results],
         'Predict time': [format_ns(r.pred_time) for r in results],
         'Average predict time': [format_ns(round(r.pred_time / n)) for r in results]
     })

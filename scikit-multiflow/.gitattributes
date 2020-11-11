@@ -1,0 +1,11 @@
+# excludes content of specified directories from GitHub (language) statistics
+# see https://github.com/github/linguist#using-gitattributes
+
+src/skmultiflow/data/datasets/* linguist-vendored
+
+# more exclusions but file-type based
+(^|/).csv linguist-vendored
+(^|/).jpg linguist-vendored
+(^|/).png linguist-vendored
+(^|/).txt linguist-vendored
+(^|/).log linguist-vendored

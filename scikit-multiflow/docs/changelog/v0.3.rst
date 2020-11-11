@@ -1,0 +1,33 @@
+.. currentmodule:: skmultiflow
+.. include:: _labels.rst
+
+Version 0.3.0
+-------------
+
+**May 2019**
+
+- |Feature| Very Fast Decision Rules classifier :class:`rules.VFDR`
+- |Feature| Online AdaC2 ensemble classifier :class:`meta.OnlineAdaC2`
+- |Feature| Online Boosting ensemble classifier :class:`meta.OnlineBoosting`
+- |Feature| Online CSB2 ensemble classifier :class:`meta.OnlineCSB2`
+- |Feature| Online RUS Boost ensemble classifier :class:`meta.OnlineRUSBoost`
+- |Feature| Online SMOTE Bagging ensemble classifier :class:`meta.OnlineSMOTEBagging`
+- |Feature| Online Under Over Bagging ensemble classifier :class:`meta.OnlineUnderOverBagging`
+- |Enhancement| Project documentation overhaul. Improved documentation layout to ease navigation. Documentation for
+  multiple methods were revisited and corrections/extensions were included. Multiple typos fixed. A map of methods in
+  ``scikit-multiflow`` is added to help users navigate the project.
+- |Fix| Update :class:`lazy.SAMKNN` since changing a dictionary inside a loop now raises a `RunTimeError` (Python 3.7+).
+- |Fix| Fix bug in :class:`meta.LeverageBagging`, use ``set(self.classes)`` instead of ``self.classes``.
+- |Fix| Fix bug in :class:`meta.OzaBagging`, now re-sampling is correctly calculated for each sample (instance).
+  There was a corner case were this value was incorrectly calculated for batches of samples.
+- |API| Rename ``weight`` to ``sample_weight`` in ``partial_fit`` and ``fit`` abstract method
+  (inherited by all estimators in ``scikit-multiflow``)
+- |API| Rename ``cat_features_idx`` to ``cat_features`` and added new attribute ``name`` in :class:`data.DataStream`
+- |API| Rename ``cat_features_idx`` to ``cat_features`` in :class:`data.FileStream`
+- |API| Rename ``min_num_instances`` to ``min_instances`` in :class:`drift_detection.PageHinkley`
+- |API| Rename ``categorical_list`` to ``nominal_attributes`` in :class:`lazy.KNN`
+- |API| New base class :class:`core.BaseSKMObject` for objects in ``scikit-multiflow``.
+  This class is based on ``sklearn.BaseEstimator`` for inter-framework compatibility and adds extra functionality
+  relevant in the context of ``scikit-multiflow``. Stream models (estimators) in are now created by extending
+  :class:`core.BaseSKMObject` and the corresponding task-specific mixin(s): :class:`core.ClassifierMixin`,
+  :class:`core.RegressorMixin`, :class:`core.MetaEstimatorMixin`, :class:`core.MultiOutputMixin`

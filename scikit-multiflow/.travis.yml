@@ -1,0 +1,42 @@
+language: python
+matrix:
+  include:
+    - name: "Python 3.5 on Linux"
+      python: 3.5
+    - name: "Python 3.6 on Linux"
+      python: 3.6
+    - name: "Python 3.7 on Xenial Linux"
+      python: 3.7
+      dist: xenial
+#    - name: "Python 3.8 on Xenial Linux"
+#      python: 3.8
+    - name: "Python 3.7.4 on macOS"
+      os: osx
+      osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
+      language: shell       # 'language: python' is an error on Travis CI macOS
+    - name: "Python 3.7.4 on Windows"
+      os: windows           # Windows 10.0.17134 N/A Build 17134
+      language: shell       # 'language: python' is an error on Travis CI Windows
+      before_install:
+        - choco install python --version 3.7.4
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+# command to install dependencies
+install:
+  # Upgrade tools except for windows
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]];
+    then pip3 install --upgrade pip setuptools wheel;
+    fi
+  # Install only binaries for numpy & scipy in Python <3.8, complete installation otherwise
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.8' ]];
+    then pip3 install --only-binary=numpy,scipy numpy scipy;
+    else pip3 install numpy scipy;
+    fi
+  - pip3 install codecov pytest-cov cython
+  - pip3 install -U .
+# command to run tests
+script:
+  - pytest tests --showlocals -v --cov=skmultiflow
+# after success
+after_success:
+  - codecov
