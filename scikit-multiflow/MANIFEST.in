@@ -1,4 +1,0 @@
-recursive-include src/skmultiflow *.c *.h *.pyx *.pxd *.pxi
-include requirements.txt
-include README.md
-include LICENSE
