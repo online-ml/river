@@ -1,6 +1,8 @@
 <p align="center">
-  <img height="140px" src="docs/img/logo.svg" alt="river_logo">
+  <img height="80px" src="docs/img/logo.svg" alt="river_logo">
 </p>
+
+</br>
 
 <p align="center">
   <!-- Travis -->
@@ -32,6 +34,8 @@
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
   </a>
 </p>
+
+</br>
 
 <p align="center">
   River is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. It is the result of a merger between <a href="https://github.com/MaxHalford/creme">creme</a> and <a href="https://github.com/scikit-multiflow/scikit-multiflow">scikit-multiflow</a>. River's ambition is to be the go-to library for doing machine learning on streaming data.
