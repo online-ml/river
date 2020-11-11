@@ -1,0 +1,24 @@
+
+# Copyright (c) 2019, Henry Schreiner.
+#
+# Distributed under the 3-clause BSD license, see accompanying file LICENSE
+# or https://github.com/scikit-hep/azure-wheel-helpers for details.
+
+steps:
+- script: |
+    docker run --rm \
+      -e NPY_NUM_BUILD_JOBS=4 \
+      -e PLAT=$(plat) \
+      -e package_name=$(package_name) \
+      -e dev_requirements_file='$(dev_requirements_file)' \
+      -e test_requirements_file='$(test_requirements_file)' \
+      -v $PWD:/io \
+      $(image) \
+      /io/cicd/azure-wheel-helpers/build-wheels.sh
+  displayName: Build wheels
+
+- script: |
+    ls -lh wheelhouse/
+    mkdir -p dist
+    cp wheelhouse/$(package_name)*.whl dist/.
+  displayName: Show and copy wheels

@@ -1,0 +1,12 @@
+.. currentmodule:: skmultiflow
+.. include:: _labels.rst
+
+Version 0.2.0
+-------------
+
+**April 2019**
+
+- |Feature| Additive Expert Ensemble (AddExp) :class:`meta.AdditiveExpertEnsemble`
+- |Feature| Dynamic Weighted Majority Ensemble (DWE) :class:`meta.DynamicWeightedMajority`
+- |Enhancement| Drop support for `Python 3.4` as it has reached its `end-of-life` date
+- |Enhancement| Misc minor bug fixes

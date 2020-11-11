@@ -1,4 +1,4 @@
-from creme import base
+from river import base
 from sklearn import exceptions
 import torch
 from vowpalwabbit import pyvw
@@ -9,12 +9,12 @@ class ScikitLearnClassifier(base.Classifier):
     def __init__(self, model, classes):
         self.model = model
         self.classes = classes
-        
+
     @property
     def _multiclass(self):
         return True
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         self.model.partial_fit([list(x.values())], [y], classes=self.classes)
         return self
 
@@ -36,7 +36,7 @@ class ScikitLearnRegressor(base.Regressor):
     def __init__(self, model):
         self.model = model
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         self.model.partial_fit([list(x.values())], [y])
         return self
 
@@ -54,7 +54,7 @@ class PyTorchModel:
         self.loss_fn = loss_fn
         self.optimizer = optimizer
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         x = torch.FloatTensor(list(x.values()))
         y = torch.FloatTensor([y])
 
@@ -89,7 +89,7 @@ class KerasModel:
     def __init__(self, model):
         self.model = model
 
-    def fit_one(self, x, y):
+    def learn_one(self, x, y):
         x = [[list(x.values())]]
         y = [[y]]
         self.model.train_on_batch(x, y)
@@ -109,25 +109,25 @@ class KerasBinaryClassifier(KerasModel, base.Classifier):
         x = [[list(x.values())]]
         p_true = self.model.predict_on_batch(x)[0][0]
         return {True: p_true, False: 1. - p_true}
-    
-    
+
+
 class VW2CremeBase:
-    
+
     def __init__(self, *args, **kwargs):
         self.vw = pyvw.vw(*args, **kwargs)
-    
+
     def _format_x(self, x):
-        return self.vw.example(f'{y_vw} | {" ".join(map(lambda x: ":" + str(x), x.values()))}')
+        return self.vw.example(' '.join(map(lambda x: ':' + str(x), x.values())))
 
 
 class VW2CremeClassifier(VW2CremeBase, base.Classifier):
 
-    def fit_one(self, x, y):
-        
+    def learn_one(self, x, y):
+
         # Convert {False, True} to {-1, 1}
         y = int(y)
         y_vw = 2 * y - 1
-        
+
         ex = self._format_x(x)
         self.vw.learn(ex)
         self.vw.finish_example(ex)
@@ -137,7 +137,7 @@ class VW2CremeClassifier(VW2CremeBase, base.Classifier):
         ex = self._format_x(x)
         y_pred = self.vw.predict(ex)
         return {True: y_pred, False: 1. - y_pred}
-    
+
 
 class VW2CremeRegressor(VW2CremeBase, base.Regressor):
 

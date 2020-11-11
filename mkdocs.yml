@@ -1,38 +1,38 @@
 # Project information
-site_name: creme
-site_description: A Material Design theme for MkDocs
-site_author: The creme developers
-site_url: https://creme-ml.github.io/
+site_name: River
+site_description: Machine learning for data streams in Python
+site_author: The river developers
+site_url: https://river.github.io/
 
 # Repository
-repo_name: creme-ml/creme
-repo_url: https://github.com/creme-ml/creme
+repo_name: online-ml/river
+repo_url: https://github.com/online-ml/river
 
 # Copyright
 copyright: Copyright &copy; 2019 - 2020
 
 # Configuration
 theme:
-  name: material
-  custom_dir: docs/overrides
-  language: en
-  palette:
-    primary: indigo
-    accent: indigo
-  font:
-    text: Roboto
-    code: Roboto Mono
-  logo: img/creme_square.svg
-  favicon: img/favicon.ico
-  features:
-    - tabs
-    #- instant  # experimental, enables SPA
+    name: material
+    custom_dir: docs/overrides
+    language: en
+    palette:
+        primary: indigo
+        accent: indigo
+    font:
+        text: Roboto
+        code: Roboto Mono
+    logo: img/river_square.svg
+    favicon: img/favicon.ico
+    features:
+        - navigation.tabs
+        - navigation.instant
 
 # Extras
 extra:
-  social:
-    - icon: fontawesome/brands/github-alt
-      link: https://github.com/creme-ml/creme
+    social:
+      - icon: fontawesome/brands/github-alt
+        link: https://github.com/online-ml/river
 
 # Google Analytics
 google_analytics:
@@ -43,10 +43,11 @@ google_analytics:
 markdown_extensions:
   - admonition
   - codehilite:
-      guess_lang: false
+        guess_lang: false
+  - footnotes
   - toc:
-      permalink: true
-      toc_depth : "1-3"
+        permalink: true
+        toc_depth: "1-3"
   - pymdownx.details
   - pymdownx.arithmatex
 
@@ -57,5 +58,7 @@ plugins:
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
 
+  - js/version-select.js
 extra_css:
   - stylesheets/extra.css
+  - css/version-select.css

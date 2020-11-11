@@ -1,0 +1,66 @@
+# Install and test scikit-multiflow on multiple Python versions and platforms
+
+jobs:
+
+- job: PEP8
+  steps:
+    - script: |
+        python3 -m pip install flake8
+        chmod +x ./dev/linter.sh
+        ./dev/linter.sh
+      displayName: 'Checking PEP8 style'
+  pool:
+    vmImage: 'ubuntu-latest'
+
+- job: Linux
+  
+  strategy:
+    matrix:
+      Python35:
+        python.version: '3.5'
+      Python36:
+        python.version: '3.6'
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
+  
+  pool:
+    vmImage: 'ubuntu-latest'
+  
+  steps:
+    - template: azure-test-helpers/azure-install.yml
+    - template: azure-test-helpers/azure-test.yml
+
+- job: macOS
+  
+  strategy:
+    matrix:
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
+  
+  pool:
+    vmImage: 'macOS-latest'
+  
+  steps:
+    - template: azure-test-helpers/azure-install.yml
+    - template: azure-test-helpers/azure-test.yml
+
+
+- job: Windows
+  
+  strategy:
+    matrix:
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
+  
+  pool:
+    vmImage: 'windows-latest'
+  
+  steps:
+    - template: azure-test-helpers/azure-install.yml
+    - template: azure-test-helpers/azure-test.yml
