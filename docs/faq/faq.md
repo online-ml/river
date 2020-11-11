@@ -1,4 +1,4 @@
-# FAQ
+# Frequently Asked Questions
 
 **Do all classifiers support multi-class classification?**
 
@@ -56,4 +56,4 @@ There are many great open-source libraries for building neural network models. W
 
 **Who are the authors of this library?**
 
-Most of the development is coming from a group of friends from the city of Toulouse, in France. Some of us are doing a PhD, while the rest are research engineers.
+We are research engineers, graduate students, PhDs and machine learning researchers. The members of the develompent team are mainly located in France, Brazil and New Zealand.
