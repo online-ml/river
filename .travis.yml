@@ -80,6 +80,7 @@ jobs:
       - RIVER_VERSION=$(python -c "import river; print(river.__version__)")
       - mike deploy ${RIVER_VERSION} latest --push --force --remote https://${GH_TOKEN}@github.com/creme-ml/creme.git
       - mike set-default latest --push --force --remote https://${GH_TOKEN}@github.com/creme-ml/creme.git
+    if: tag IS present
 
 env:
   global:
