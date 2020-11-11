@@ -91,13 +91,15 @@ Accuracy: 89.20%
 
 ## 🛠 Installation
 
-`river` is intended to work with **Python 3.6 or above**. Installation can be done with `pip`:
+River is intended to work with **Python 3.6 or above**. Installation can be done with `pip`:
 
 ```sh
 pip install river
 ```
 
-There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows, which means that in most cases you won't have to build `river` from source.
+⚠️ However, we are currently [waiting](https://github.com/pypa/pypi-support/issues/651) for the name "river" to be released on PyPI.
+
+There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows, which means that you most probably won't have to build River from source.
 
 You can install the latest development version from GitHub as so:
 
@@ -115,15 +117,15 @@ pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 
 Machine learning is often done in a batch setting, whereby a model is fitted to a dataset in one go. This results in a static model which has to be retrained in order to learn from new data. In many cases, this isn't elegant nor efficient, and usually incurs [a fair amount of technical debt](https://research.google/pubs/pub43146/). Indeed, if you're using a batch model, then you need to think about maintaining a training set, monitoring real-time performance, model retraining, etc.
 
-With `river`, we encourage a different approach, which is to continuously learn a stream of data. This means that the model process one observation at a time, and can therefore be updated on the fly. This allows to learn from massive datasets that don't fit in main memory. Online machine learning also integrates nicely in cases where new data is constantly arriving. It shines in many use cases, such as time series forecasting, spam filtering, recommender systems, CTR prediction, and IoT applications. If you're bored with retraining models and want to instead build dynamic models, then online machine learning (and therefore `river`!) might be what you're looking for.
+With River, we encourage a different approach, which is to continuously learn a stream of data. This means that the model process one observation at a time, and can therefore be updated on the fly. This allows to learn from massive datasets that don't fit in main memory. Online machine learning also integrates nicely in cases where new data is constantly arriving. It shines in many use cases, such as time series forecasting, spam filtering, recommender systems, CTR prediction, and IoT applications. If you're bored with retraining models and want to instead build dynamic models, then online machine learning (and therefore River!) might be what you're looking for.
 
-Here are some benefits of using `river` (and online machine learning in general):
+Here are some benefits of using River (and online machine learning in general):
 
 - **Incremental**: models can update themselves in real-time.
 - **Adaptive**: models can adapt to [concept drift](https://www.wikiwand.com/en/Concept_drift).
 - **Production-ready**: working with data streams makes it simple to replicate production scenarios during model development.
 - **Efficient**: models don't have to be retrained and require little compute power, which [lowers their carbon footprint](https://arxiv.org/abs/1907.10597)
-- **Fast**: when the goal is to learn and predict with a single instance at a time, then `river` is a order of magnitude faster than PyTorch, Tensorflow, and scikit-learn.
+- **Fast**: when the goal is to learn and predict with a single instance at a time, then River is an order of magnitude faster than PyTorch, Tensorflow, and scikit-learn.
 
 ## 🔥 Features
 
