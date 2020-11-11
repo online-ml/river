@@ -6,20 +6,16 @@
 
 <p align="center">
   <!-- Travis -->
-  <a href="https://travis-ci.org/river-ml/river">
-    <img src="https://img.shields.io/travis/river-ml/river/master.svg?style=flat-square" alt="travis">
+  <a href="https://travis-ci.org/online-ml/river">
+    <img src="https://img.shields.io/travis/online-ml/river/master.svg?style=flat-square" alt="travis">
   </a>
   <!-- Codecov -->
-  <a href="https://codecov.io/gh/river-ml/river">
-    <img src="https://img.shields.io/codecov/c/gh/river-ml/river.svg?style=flat-square" alt="codecov">
+  <a href="https://codecov.io/gh/online-ml/river">
+    <img src="https://img.shields.io/codecov/c/gh/online-ml/river.svg?style=flat-square" alt="codecov">
   </a>
   <!-- Documentation -->
   <a href="https://river-ml.github.io/">
     <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Friver-ml.github.io%2F" alt="documentation">
-  </a>
-  <!-- Gitter -->
-  <a href="https://gitter.im/river-ml/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link">
-    <img src="https://img.shields.io/gitter/room/river-ml/community?color=blueviolet&style=flat-square" alt="gitter">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
