@@ -14,8 +14,8 @@
     <img src="https://img.shields.io/codecov/c/gh/online-ml/river.svg?style=flat-square" alt="codecov">
   </a>
   <!-- Documentation -->
-  <a href="https://river-ml.github.io/">
-    <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Friver-ml.github.io%2F" alt="documentation">
+  <a href="https://online-ml.github.io/">
+    <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Fonline-ml.github.io%2F" alt="documentation">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
@@ -102,13 +102,13 @@ There are [wheels available](https://pypi.org/project/river/#files) for Linux, M
 You can install the latest development version from GitHub as so:
 
 ```sh
-pip install git+https://github.com/river-ml/river --upgrade
+pip install git+https://github.com/online-ml/river --upgrade
 ```
 
 Or, through SSH:
 
 ```sh
-pip install git+ssh://git@github.com/river-ml/river.git --upgrade
+pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 ```
 
 ## 🧠 Philosophy
@@ -139,13 +139,13 @@ Here are some benefits of using `river` (and online machine learning in general)
 - Feature extraction and selection
 - Online statistics and metrics
 - Built-in datasets
-- And [much more](https://river-ml.github.io/content/api.html)
+- And [much more](https://online-ml.github.io/content/api.html)
 
 ## 🔗 Useful links
 
-- [Documentation](https://river-ml.github.io/)
-- [Benchmarks](https://github.com/river-ml/river/tree/master/benchmarks)
-- [Issue tracker](https://github.com/river-ml/river/issues)
+- [Documentation](https://online-ml.github.io/)
+- [Benchmarks](https://github.com/online-ml/river/tree/master/benchmarks)
+- [Issue tracker](https://github.com/online-ml/river/issues)
 - [Package releases](https://pypi.org/project/river/#history)
 
 ## 👁️ Media
@@ -157,25 +157,12 @@ Here are some benefits of using `river` (and online machine learning in general)
 
 ## 👍 Contributing
 
-Feel free to contribute in any way you like, we're always open to new ideas and approaches. You can also take a look at the [issue tracker](https://github.com/river-ml/river/issues) and the [icebox](https://github.com/river-ml/river/projects/2) to see if anything takes your fancy. Please check out the [contribution guidelines](https://github.com/river-ml/river/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/river-ml/river/graphs/contributors).
+Feel free to contribute in any way you like, we're always open to new ideas and approaches. You can also take a look at the [issue tracker](https://github.com/online-ml/river/issues) and the [icebox](https://github.com/online-ml/river/projects/2) to see if anything takes your fancy. Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).
 
 ## 💬 Citation
 
-Please use the following citation if you want to reference river in a scientific publication:
-
-```
-@software{river,
-  title = {{river}, a {P}ython library for online machine learning},
-  author = {Halford, Max and Bolmier, Geoffrey and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil},
-  url = {https://github.com/river-ml/river},
-  version = {0.6.1},
-  date = {2020-06-10},
-  year = {2019}
-}
-```
-
-Note that in the future we will probably publish a dedicated research paper.
+We're in the process of publishing a paper, stay tuned!
 
 ## 📝 License
 
-`river` is free and open-source software licensed under the [3-clause BSD license](https://github.com/river-ml/river/blob/master/LICENSE).
+River is free and open-source software licensed under the [3-clause BSD license](https://github.com/online-ml/river/blob/master/LICENSE).

@@ -32,7 +32,7 @@ except ImportError:
 NAME = 'river'
 DESCRIPTION = 'Online machine learning in Python'
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
-URL = 'https://github.com/river-ml/river'
+URL = 'https://github.com/online-ml/river'
 EMAIL = 'maxhalford25@gmail.com'
 AUTHOR = 'Max Halford'
 REQUIRES_PYTHON = '>=3.6.0'
