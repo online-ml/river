@@ -9,6 +9,7 @@ from .agrawal import Agrawal
 from .anomaly_sine import AnomalySine
 from .concept_drift_stream import ConceptDriftStream
 from .friedman import Friedman
+from .friedman import FriedmanDrift
 from .hyper_plane import Hyperplane
 from .led import LED
 from .led import LEDDrift
@@ -28,6 +29,7 @@ __all__ = [
     'AnomalySine',
     'ConceptDriftStream',
     'Friedman',
+    'FriedmanDrift',
     'Hyperplane',
     'LED',
     'LEDDrift',
