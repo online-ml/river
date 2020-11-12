@@ -15,6 +15,7 @@ from .led import LED
 from .led import LEDDrift
 from .logical import Logical
 from .mixed import Mixed
+from .planes_2d import Planes2D
 from .random_rbf import RandomRBF
 from .random_rbf import RandomRBFDrift
 from .random_tree import RandomTree
@@ -35,6 +36,7 @@ __all__ = [
     'LEDDrift',
     'Logical',
     'Mixed',
+    'Planes2D',
     'RandomRBF',
     'RandomRBFDrift',
     'RandomTree',
