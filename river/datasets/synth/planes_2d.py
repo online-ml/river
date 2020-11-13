@@ -1,4 +1,3 @@
-import math
 import random
 
 from .. import base
@@ -41,7 +40,9 @@ class Planes2D(base.SyntheticDataset):
     [^1]: [2DPlanes in Luís Torgo regression datasets](https://www.dcc.fc.up.pt/~ltorgo/Regression/2dplanes.html)
     [^2]: Breiman, L., Friedman, J., Stone, C.J. and Olshen, R.A., 1984. Classification and
     regression trees. CRC press.
+
     """
+
     def __init__(self, seed: int = None):
         super().__init__(task=base.REG, n_features=10)
         self.seed = seed
