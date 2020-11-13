@@ -65,7 +65,6 @@ jobs:
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
       - mike deploy dev --push --force --remote https://${GH_TOKEN}@github.com/online-ml/river.git
-      - mike set-default dev --push --force --remote https://${GH_TOKEN}@github.com/river-ml/river.git
     if: branch = "master"
 
   - stage: release-docs
