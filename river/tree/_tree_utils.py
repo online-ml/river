@@ -34,7 +34,8 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
     votes = {}
     for class_index, class_weight_sum in observed_class_distribution.items():
         # Prior
-        votes[class_index] = math.log(class_weight_sum / total_weight_sum)
+        votes[class_index] = math.log(class_weight_sum / total_weight_sum) \
+            if class_weight_sum > 0 else 0.
         if attribute_observers:
             for att_idx in attribute_observers:
                 obs = attribute_observers[att_idx]
