@@ -402,8 +402,8 @@ class BaseHoeffdingTree(ABC):
         Currently, Label Combination Hoeffding Tree Classifier (for multi-label
         classification) is not supported.
 
-        Example
-        -------
+        Examples
+        --------
         >>> from river import datasets
         >>> from river import tree
         >>> model = tree.HoeffdingTreeClassifier(
