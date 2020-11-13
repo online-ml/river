@@ -34,10 +34,10 @@ The algorithms from `sklearn` that support incremental learning are mostly meant
 **How do I save and load models?**
 
 ```python
->>> from river import tree
+>>> from river import ensemble
 >>> import pickle
 
->>> model = tree.RandomForestClassifier()
+>>> model = ensemble.AdaptiveRandomForestClassifier()
 
 # save
 >>> with open('model.pkl', 'wb') as f:
