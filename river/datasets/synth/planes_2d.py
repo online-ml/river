@@ -21,6 +21,11 @@ class Planes2D(base.SyntheticDataset):
 
     In the expressions, $\\epsilon \\sim \\mathcal{N}(0, 1)$ is the noise.
 
+    Parameters
+    ----------
+    seed
+        Random seed number used for reproducibility.
+
     Examples
     --------
     >>> from river import synth
