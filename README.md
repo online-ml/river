@@ -14,8 +14,8 @@
     <img src="https://img.shields.io/codecov/c/gh/online-ml/river.svg?style=flat-square" alt="codecov">
   </a>
   <!-- Documentation -->
-  <a href="https://online-ml.github.io/">
-    <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Fonline-ml.github.io%2F" alt="documentation">
+  <a href="https://riverml.xyz">
+    <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
