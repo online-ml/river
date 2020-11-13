@@ -10,7 +10,7 @@ class Friedman(base.SyntheticDataset):
     Each observation is composed of 10 features. Each feature value is sampled uniformly in [0, 1].
     The target is defined by the following function:
 
-    $$y = 10 sin(\\pi x_0 x_1) + 20 (x_2 - .5)^2 + 10 x_3 + 5 x_4 + \\epsilon$$
+    $$y = 10 sin(\\pi x_0 x_1) + 20 (x_2 - 0.5)^2 + 10 x_3 + 5 x_4 + \\epsilon$$
 
     In the last expression, $\\epsilon \\sim \\mathcal{N}(0, 1)$, is the noise. Therefore,
     only the first 5 features are relevant.
@@ -71,14 +71,14 @@ class FriedmanDrift(base.SyntheticDataset):
     ----------
     drift_type
         The variant of concept drift.</br>
-        - 'lea': Local Expanding Abrupt drift. The concept drift appears in two distinct
+        - `'lea'`: Local Expanding Abrupt drift. The concept drift appears in two distinct
         regions of the instance space, while the remaining regions are left unaltered.
         There are three points of abrupt change in the training dataset.
         At every consecutive change the regions of drift are expanded.</br>
-        - 'gra': Global Recurring Abrupt drift. The concept drift appears over the whole
+        - `'gra'`: Global Recurring Abrupt drift. The concept drift appears over the whole
         instance space. There are two points of concept drift. At the second point of drift
         the old concept reoccurs.</br>
-        - 'gsg': Global and Slow Gradual drift. The concept drift affects all the instance
+        - `'gsg'`: Global and Slow Gradual drift. The concept drift affects all the instance
         space. However, the change is gradual and not abrupt. After each one of the two change
         points covered by this variant, and during a window of length `transition_window`,
         examples from both old and the new concepts are generated with equal probability.

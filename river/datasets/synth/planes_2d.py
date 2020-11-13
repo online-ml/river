@@ -15,11 +15,11 @@ class Planes2D(base.SyntheticDataset):
 
     The target value is defined by using rule:
 
-    $$\\text{if} x_1 = 1, y \\leftarrow 3 + 3x_2 + 2x_3 + x_4 + \\epsilon$$
+    $$\\text{if}~x_1 = 1, y \\leftarrow 3 + 3x_2 + 2x_3 + x_4 + \\epsilon$$
 
-    $$\\text{if} x_1 = -1, y \\leftarrow -3 + 3x_5 + 2x_6 + x_7 + \\epsilon$$
+    $$\\text{if}~x_1 = -1, y \\leftarrow -3 + 3x_5 + 2x_6 + x_7 + \\epsilon$$
 
-    In the expressions, $\\epsilon \\sim \\mathcal{N}(0, 1)$ is the noise.
+    In the expressions, $\\epsilon \\sim \\mathcal{N}(0, 1)$, is the noise.
 
     Parameters
     ----------
