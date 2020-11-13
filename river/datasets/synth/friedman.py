@@ -204,7 +204,7 @@ class FriedmanDrift(base.SyntheticDataset):
     def __lea_in_r1(self, x, index):
         if index < self.change_point1:
             return False
-        if self.change_point1 <= index < self.change_point2:
+        elif self.change_point1 <= index < self.change_point2:
             return x[1] < 0.3 and x[2] < 0.3 and x[3] > 0.7 and x[4] < 0.3
         elif self.change_point2 <= index < self.change_point3:
             return x[1] < 0.3 and x[2] < 0.3 and x[3] > 0.7
@@ -214,7 +214,7 @@ class FriedmanDrift(base.SyntheticDataset):
     def __lea_in_r2(self, x, index):
         if index < self.change_point1:
             return False
-        if self.change_point1 <= index < self.change_point2:
+        elif self.change_point1 <= index < self.change_point2:
             return x[1] > 0.7 and x[2] > 0.7 and x[3] < 0.3 and x[4] > 0.7
         elif self.change_point2 <= index < self.change_point3:
             return x[1] > 0.7 and x[2] > 0.7 and x[3] < 0.3
