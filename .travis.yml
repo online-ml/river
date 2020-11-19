@@ -72,7 +72,7 @@ jobs:
       - sudo apt-get install graphviz pandoc
       - python setup.py install
       - pip install -e ".[docs]"
-      - travis_wait 30 make execute-notebooks
+      - travis_wait 60 make execute-notebooks
     script: make doc
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
