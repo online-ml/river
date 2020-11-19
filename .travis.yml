@@ -72,7 +72,7 @@ jobs:
       - sudo apt-get install graphviz pandoc
       - python setup.py install
       - pip install -e ".[docs]"
-      - make execute-notebooks
+      - travis_wait 30 make execute-notebooks
     script: make doc
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
@@ -80,6 +80,7 @@ jobs:
       - RIVER_VERSION=$(python -c "import river; print(river.__version__)")
       - mike deploy ${RIVER_VERSION} latest --push --force --remote https://${GH_TOKEN}@github.com/river-ml/river.git
       - mike set-default latest --push --force --remote https://${GH_TOKEN}@github.com/river-ml/river.git
+    #if: tag IS present
 
 env:
   global:
