@@ -101,7 +101,7 @@ class Bandit(base.EnsembleMixin):
         if self.print_every:
             if (self._n_iter % self.print_every) == 0:
                 self._print_info()
-        
+
         if self.save_percentage_pulled:
             self.store_percentage_pulled += [self.percentage_pulled]
 
@@ -119,7 +119,9 @@ class Bandit(base.EnsembleMixin):
         self.models += new_models
         self._n_arms += length_new_models
         self._N = np.concatenate([self._N, np.zeros(length_new_models, dtype=np.int)])
-        self._average_reward = np.concatenate([self._average_reward, np.zeros(length_new_models, dtype=np.float)])
+        self._average_reward = np.concatenate(
+            [self._average_reward, np.zeros(length_new_models, dtype=np.float)]
+        )
 
     def _compute_scaled_reward(self, y_pred, y_true, update_scaler=True):
         metric_value = self.metric._eval(y_pred, y_true)
@@ -265,4 +267,3 @@ class UCBRegressor(UCBBandit, base.Regressor):
 
     def _pred_func(self, model):
         return model.predict_one
-

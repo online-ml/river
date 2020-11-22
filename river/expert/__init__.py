@@ -29,7 +29,7 @@ from .stacking import StackingClassifier
 
 __all__ = [
     "EpsilonGreedyRegressor",
-    'EWARegressor',  
+    'EWARegressor',
     'SuccessiveHalvingClassifier',
     'SuccessiveHalvingRegressor',
     'StackingClassifier',
