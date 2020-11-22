@@ -71,5 +71,5 @@ def iter_array(X: np.ndarray, y: np.ndarray = None,
 
     else:
 
-        for xi, yi in itertools.zip_longest(X, y if hasattr(y, '__iter__') else []):
-            yield dict(zip(feature_names, xi)), yi
+        for xi in X:
+            yield dict(zip(feature_names, xi))
