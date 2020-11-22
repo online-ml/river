@@ -1,50 +1,53 @@
 import abc
+import copy
+import typing
 
 import numpy as np
 
+from river import base
 from river import metrics
+from river import preprocessing
 
 
 __all__ = [
-    'EpsilonGreedyBandit',
-    'UCBBandit',
-    'RandomBandit',
-    'OracleBandit',
-    'Exp3Bandit'
+    "EpsilonGreedyRegressor",
+    'UCBRegressor',
 ]
 
-# TODO :
-# type annotation in __init__
-# loss-based reward ('compute_reward')
-# tests for classification
-# tests on real datasets
+# TODO:
+# Docstring
+# Determine which object to store (rewards/percentages pulled/loss?)
 
+class Bandit(base.EnsembleMixin):
+    def __init__(self, models, metric: metrics.Metric, reward_scaler: base.Transformer,
+                 print_every=None, save_metric_values=False, save_percentage_pulled=False):
 
-class Bandit(metaclass=abc.ABCMeta):
-    """Abstract class for bandit.
-
-    References
-    ----------
-    [^1] [Python code from Toulouse univ](https://www.math.univ-toulouse.fr/~jlouedec/demoBandits.html)
-    [^2] [Slivkins, A. Introduction to Multi-Armed Bandits](https://arxiv.org/pdf/1904.07272.pdf)
-    """
-
-    def __init__(self, models, compute_reward, metric: metrics.Metric = None,
-                 verbose=False, save_rewards=False):
         if len(models) <= 1:
             raise ValueError(f"You supply {len(models)} models. At least 2 models should be supplied.")
-        
-        self.compute_reward = compute_reward
-        self.metric = metric
-        self.verbose = verbose
-        self.models = models
-        self.save_rewards = save_rewards
-        if save_rewards:
-            self.rewards = []
 
+        # Check that the model and the metric are in accordance
+        for model in models:
+            if not metric.works_with(model):
+                raise ValueError(f"{metric.__class__.__name__} metric can't be used to evaluate a " +
+                                 f'{model.__class__.__name__}')
+        super().__init__(models)
+        self.reward_scaler = copy.deepcopy(reward_scaler)
+        self.metric = copy.deepcopy(metric)
+        self.print_every = print_every
+
+        self.save_metric_values = save_metric_values
+        if save_metric_values:
+            self.metric_values: typing.List = []
+
+        self.save_percentage_pulled = save_percentage_pulled
+        if save_percentage_pulled:
+            self.store_percentage_pulled: typing.List = []
+
+        # Initializing bandits internals
         self._n_arms = len(models)
-        self._Q = np.zeros(self._n_arms, dtype=np.float)
-        self._N = np.ones(self._n_arms, dtype=np.int)
+        self._n_iter = 0 # number of times learn_one is called
+        self._N = np.zeros(self._n_arms, dtype=np.int)
+        self._average_reward = np.zeros(self._n_arms, dtype=np.float)
 
     @abc.abstractmethod
     def _pull_arm(self):
@@ -54,56 +57,123 @@ class Bandit(metaclass=abc.ABCMeta):
     def _update_arm(self, arm, reward):
         pass
 
+    @abc.abstractmethod
+    def _pred_func(self, model):
+        pass
+
     @property
     def _best_model_idx(self):
-        return np.argmax(self._Q)
+        # average reward instead of cumulated (otherwise favors arms which are pulled often)
+        return np.argmax(self._average_reward)
 
     @property
     def best_model(self):
-        return self.models[self._best_model_idx]
+        return self[self._best_model_idx]
 
-    def print_percentage_pulled(self):
+    @property
+    def percentage_pulled(self):
         percentages = self._N / sum(self._N)
-        for i, pct in enumerate(percentages):
-            print(f"Model {i}: {round(pct*100, 2)}% of the time")
+        return percentages
 
     def predict_one(self, x):
         best_arm = self._pull_arm()
-        y_pred = self.models[best_arm].predict_one(x)
-
+        y_pred = self._pred_func(self[best_arm])(x)
         return y_pred
 
     def learn_one(self, x, y):
-        best_arm = self._pull_arm()
-        best_model = self.models[best_arm]
-        y_pred = best_model.predict_one(x)
+        chosen_arm = self._pull_arm()
+        chosen_model = self[chosen_arm]
 
-        best_model.learn_one(x=x, y=y)
+        y_pred = chosen_model.predict_one(x)
+        self.metric.update(y_pred=y_pred, y_true=y)
+        chosen_model.learn_one(x=x, y=y)
 
-        if self.verbose:
-            print(
-                '\t'.join((
-                    f'best {self._best_model_idx}',
-                ))
-            )
-            print("y_pred:", y_pred, ", y_true:", y)
+        # Update bandit internals (common to all bandit)
+        reward = self._compute_scaled_reward(y_pred=y_pred, y_true=y)
+        self._n_iter += 1
+        self._N[chosen_arm] += 1
+        self._average_reward[chosen_arm] += (1.0 / self._N[chosen_arm]) * \
+                                            (reward - self._average_reward[chosen_arm])
 
-        reward = self.compute_reward(y_pred=y_pred, y_true=y)
+        # Specific update of the arm for certain bandit class
+        self._update_arm(chosen_arm, reward)
 
-        if self.metric:
-            self.metric.update(y_pred=y_pred, y_true=y)
+        if self.print_every:
+            if (self._n_iter % self.print_every) == 0:
+                self._print_info()
+        
+        if self.save_percentage_pulled:
+            self.store_percentage_pulled += [self.percentage_pulled]
 
-        if self.save_rewards:
-            self.rewards += [reward]
-
-        self._update_arm(best_arm, reward)
+        if self.save_metric_values:
+            self.metric_values += [self.metric._eval(y_pred, y)]
 
         return self
 
+    def add_models(self, new_models):
+        if not isinstance(new_models, list):
+            raise TypeError("Argument `new_models` must be of a list")
+
+        length_new_models = len(new_models)
+        # Careful, not validation of the model is done here (contrary to __init__)
+        self.models += new_models
+        self._n_arms += length_new_models
+        self._N = np.concatenate([self._N, np.zeros(length_new_models, dtype=np.int)])
+        self._average_reward = np.concatenate([self._average_reward, np.zeros(length_new_models, dtype=np.float)])
+
+    def _compute_scaled_reward(self, y_pred, y_true, update_scaler=True):
+        metric_value = self.metric._eval(y_pred, y_true)
+        metric_to_reward_dict = {
+            "metric": metric_value if self.metric.bigger_is_better else (-1) * metric_value
+        }
+        if update_scaler:
+            self.reward_scaler.learn_one(metric_to_reward_dict)
+        reward = self.reward_scaler.transform_one(metric_to_reward_dict)["metric"]
+        return reward
+
+    def _print_info(self):
+        print(
+            str(self),
+            str(self.metric),
+            "Best model id: " + str(self._best_model_idx),
+            sep="\n\t"
+        )
+
 
 class EpsilonGreedyBandit(Bandit):
-    """Epsilon-greedy bandit implementation
-    
+    def __init__(self, epsilon=0.1, epsilon_decay=None, **kwargs):
+        super().__init__(**kwargs)
+        self.epsilon = epsilon
+        self.epsilon_decay = epsilon_decay
+        if epsilon_decay:
+            self._starting_epsilon = epsilon
+        if not self.reward_scaler:
+            self.reward_scaler = preprocessing.StandardScaler()
+
+    def _pull_arm(self):
+        if np.random.rand() > self.epsilon:
+            chosen_arm = np.argmax(self._average_reward)
+        else:
+            chosen_arm = np.random.choice(self._n_arms)
+
+        return chosen_arm
+
+    def _update_arm(self, arm, reward):
+        # The arm internals are already updated in the `learn_one` phase of class `Bandit`.
+        if self.epsilon_decay:
+            self.epsilon = self._starting_epsilon*np.exp(-self._n_iter*self.epsilon_decay)
+
+
+class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
+    """Epsilon-greedy bandit algorithm for regression.
+
+    This bandit selects the best arm (defined as the one with the highest average reward) with
+    probability $(1 - \epsilon)$ and draws a random arm with probability $\epsilon$. It is also
+    called Follow-The-Leader (FTL) algorithm.
+
+    For this bandit, reward are supposed to be 1-subgaussian, hence the use of the StandardScaler
+    and MaxAbsScaler as `reward_scaler`.
+
     Parameters
     ----------
     models
@@ -112,152 +182,87 @@ class EpsilonGreedyBandit(Bandit):
         Metric used for comparing models with.
     epsilon
         Exploration parameter (default : 0.1).
-    reduce_epsilon
-        Factor applied to reduce epsilon at each time-step (default : 0.99).
 
 
     Examples
     --------
-    TODO
-
-     References
-    ----------
-    [^1]: [Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction. MIT press.](http://incompleteideas.net/book/RLbook2020.pdf)
-    """
-
-    def __init__(self, epsilon=0.1, reduce_epsilon=0.99, **kwargs):
-        super().__init__(**kwargs)
-        self.epsilon = epsilon
-        self.reduce_epsilon = reduce_epsilon
-
-    def _pull_arm(self):
-        if np.random.rand() > self.epsilon:
-            best_arm = np.argmax(self._Q)
-        else:
-            best_arm = np.random.choice(self._n_arms)
-
-        return best_arm
-
-    def _update_arm(self, arm, reward):
-        if self.reduce_epsilon:
-            self.epsilon *= self.reduce_epsilon
-        self._N[arm] += 1
-        self._Q[arm] += (1.0 / self._N[arm]) * (reward - self._Q[arm])
+    >>> from river import linear_model
+    >>> from river import expert
+    >>> from river import preprocessing
+    >>> from river import metrics
 
 
-class UCBBandit(Bandit):
-    """Upper Confidence Bound bandit.
-    
-     References
-    ----------
-    [^1]: [Auer, P., Cesa-Bianchi, N., & Fischer, P. (2002). Finite-time analysis of the multiarmed bandit problem. Machine learning, 47(2-3), 235-256.](https://link.springer.com/content/pdf/10.1023/A:1013689704352.pdf)
-    """
-
-    def __init__(self, delta, **kwargs):
-        super().__init__(**kwargs)
-        self._t = 1
-        self.delta = delta
-
-    def _pull_arm(self):
-        #upper_bound = self._Q + np.sqrt(2*np.log(self._t)/self._N)
-        upper_bound = self._Q + np.sqrt(2*np.log(1/self.delta)/self._N)
-        best_arm = np.argmax(upper_bound)
-        return best_arm
-
-    def _update_arm(self, arm, reward):
-        self._N[arm] += 1
-        self._Q[arm] += (1.0 / self._N[arm]) * (reward - self._Q[arm])
-        self._t += 1
-
-
-class Exp3Bandit(Bandit):
-    """Exp3 implementation from Lattimore and Szepesvári. The algorithm makes the hypothesis that the reward is in [0, 1]
+    TODO: finish ex
 
     References
     ----------
-    [^1]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
+    [^1]: [Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction. MIT press.](http://incompleteideas.net/book/RLbook2020.pdf)
+    [^2]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
+    [^3]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     """
 
-    def __init__(self, gamma=0.5, **kwargs):
-        super().__init__(**kwargs)
-        self._p = np.ones(self._n_arms, dtype=np.float)
-        self._s = np.zeros(self._n_arms, dtype=np.float)
-        self.gamma = gamma
+    def _pred_func(self, model):
+        return model.predict_one
 
-    def _make_distr(self):
-        numerator =  np.exp(self.gamma * self._s)
-        return numerator / np.sum(numerator)
+
+class UCBBandit(Bandit):
+    def __init__(self, delta=None, explore_each_arm=1, **kwargs):
+        super().__init__(**kwargs)
+        if delta is not None and (delta >= 1 or delta <= 0):
+            raise ValueError("The parameter delta should be comprised in ]0, 1[ (or set to None)")
+        self.delta = delta
+        self.explore_each_arm = explore_each_arm
+
+        if not self.reward_scaler:
+            self.reward_scaler = preprocessing.StandardScaler()
 
     def _pull_arm(self):
-        self._p = self._make_distr()
-        best_arm = np.random.choice(a=range(self._n_arms), size=1, p=self._p)[0]
-        return best_arm
+        not_pulled_enough = self._N <= self.explore_each_arm
+        if any(not_pulled_enough): # Explore all arms pulled less than `explore_each_arm` times
+            never_pulled_arm = np.where(not_pulled_enough)[0] #[0] because returned a tuple (array(),) even when input is 1D array
+            chosen_arm = np.random.choice(never_pulled_arm)
+        else:
+            if self.delta:
+                exploration_bonus = np.sqrt(2 * np.log(1/self.delta) / self._N)
+            else:
+                exploration_bonus = np.sqrt(2 * np.log(self._n_iter) / self._N)
+            upper_bound = self._average_reward + exploration_bonus
+            chosen_arm = np.argmax(upper_bound)
+
+        return chosen_arm
 
     def _update_arm(self, arm, reward):
-        self._s += 1.0
-        self._s[arm]-= (1.0 - reward)/self._p[arm]
-
-
-class RandomBandit(Bandit):
-    """Bandit that does random selection and update of models.
-    It is just created for testing purpose"""
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def _pull_arm(self):
-        random_arm = np.random.choice(len(self._N))
-        return random_arm
-
-    def _update_arm(self, arm, reward):
+        # The arm internals are already updated in the `learn_one` phase of class `Bandit`.
         pass
 
 
-class OracleBandit(Bandit):
-    """Oracle bandit that draws and updates every models.
-    The `predict_one` is the prediction that minimize the error for this time step.
-    The `update_one` update all the models available."""
+class UCBRegressor(UCBBandit, base.Regressor):
+    """Upper Confidence Bound bandit for regression.
 
-    def __init__(self, save_predictions=True, **kwargs):
-        super().__init__(**kwargs)
-        self.save_predictions = save_predictions
-        if save_predictions:
-            self.predictions = []
+    The class offers 2 implementations of UCB:
+    - UCB1 from [^1], when the parameter delta has value None
+    - UCB(delta) from [^2], when the parameter delta is in (0, 1)
 
-    @property
-    def _best_model_idx(self):
-        cum_rewards = np.max(np.array(self.rewards), axis=0)
-        return np.argmax(cum_rewards)
+    For this bandit, rewards are supposed to be 1-subgaussian (see Lattimore and Szepesvári,
+    chapter 6, p. 91) hence the use of the `StandardScaler` and `MaxAbsScaler` as `reward_scaler`.
 
-    @property
-    def max_rewards(self):
-        return np.max(np.array(self.rewards), axis=1)
+    Parameters
+    ----------
+    models
+        The models to compare.
+    metric
+        Metric used for comparing models with.
+    delta
+        For UCB(delta) implementation. Lower value means more exploration.
 
-    def predict_one(self, x, y):
-        best_arm = self._pull_arm(x, y)
-        y_pred = self.models[best_arm].predict_one(x)
-        return y_pred
 
-    def _pull_arm(self, x, y):
-        preds = [model.predict_one(x) for model in self.models]
-        losses = [np.abs(y_pred - y) for y_pred in preds]
-        best_arm = np.argmin(losses)
-        return best_arm
+    References
+    ----------
+    [^1]: [Auer, P., Cesa-Bianchi, N., & Fischer, P. (2002). Finite-time analysis of the multiarmed bandit problem. Machine learning, 47(2-3), 235-256.](https://link.springer.com/content/pdf/10.1023/A:1013689704352.pdf)
+    [^2]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
+    [^3]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
+    """
 
-    def _update_arm(self, arm, reward):
-        pass
+    def _pred_func(self, model):
+        return model.predict_one
 
-    def learn_one(self, x, y):
-        reward = []
-        prediction = []
-        for model in self.models:
-            y_pred = model.predict_one(x=x)
-            prediction += [y_pred]
-            r = self.compute_reward(y_pred=y_pred, y_true=y)
-            reward += [r]
-            model.learn_one(x=x, y=y)
-
-        if self.save_predictions:
-            self.predictions += [prediction]
-        if self.save_rewards:
-            self.rewards += [reward]
