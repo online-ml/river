@@ -143,8 +143,11 @@ class Bandit(base.EnsembleMixin):
 
 
 class EpsilonGreedyBandit(Bandit):
-    def __init__(self, epsilon=0.1, epsilon_decay=None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self,  models, metric: metrics.Metric, reward_scaler: base.Transformer,
+                 print_every=None, save_metric_values=False, save_percentage_pulled=False,
+                 epsilon=0.1, epsilon_decay=None):
+        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, print_every=print_every,
+                         save_metric_values=save_metric_values, save_percentage_pulled=save_percentage_pulled)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         if epsilon_decay:
@@ -166,11 +169,11 @@ class EpsilonGreedyBandit(Bandit):
             self.epsilon = self._starting_epsilon*np.exp(-self._n_iter*self.epsilon_decay)
 
 
-class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
+class EpsilonGreedyRegressor(EpsilonGreedyBandit):
     """Epsilon-greedy bandit algorithm for regression.
 
     This bandit selects the best arm (defined as the one with the highest average reward) with
-    probability $(1 - \epsilon)$ and draws a random arm with probability $\epsilon$. It is also
+    probability $(1 - \\epsilon)$ and draws a random arm with probability $\\epsilon$. It is also
     called Follow-The-Leader (FTL) algorithm.
 
     For this bandit, reward are supposed to be 1-subgaussian, hence the use of the StandardScaler
@@ -208,8 +211,11 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
 
 class UCBBandit(Bandit):
-    def __init__(self, delta=None, explore_each_arm=1, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self,  models, metric: metrics.Metric, reward_scaler: base.Transformer,
+                 print_every=None, save_metric_values=False, save_percentage_pulled=False,
+                 delta=None, explore_each_arm=1):
+        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, print_every=print_every,
+                    save_metric_values=save_metric_values, save_percentage_pulled=save_percentage_pulled)
         if delta is not None and (delta >= 1 or delta <= 0):
             raise ValueError("The parameter delta should be comprised in ]0, 1[ (or set to None)")
         self.delta = delta
