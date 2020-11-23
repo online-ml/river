@@ -10,7 +10,7 @@ from river import preprocessing
 
 
 __all__ = [
-    "EpsilonGreedyRegressor",
+    'EpsilonGreedyRegressor',
     'UCBRegressor',
 ]
 
