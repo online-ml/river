@@ -16,11 +16,8 @@ another.
 
 """
 
-from .bandit import (
-     EpsilonGreedyRegressor,
-     UCBRegressor,
-)
-
+from .bandit import EpsilonGreedyRegressor
+from .bandit import UCBRegressor
 from .ewa import EWARegressor
 from .sh import SuccessiveHalvingClassifier
 from .sh import SuccessiveHalvingRegressor
@@ -28,7 +25,7 @@ from .stacking import StackingClassifier
 
 
 __all__ = [
-    "EpsilonGreedyRegressor",
+    'EpsilonGreedyRegressor',
     'EWARegressor',
     'SuccessiveHalvingClassifier',
     'SuccessiveHalvingRegressor',
