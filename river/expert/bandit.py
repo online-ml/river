@@ -1,8 +1,8 @@
 import abc
 import copy
+import math
+import random
 import typing
-
-import numpy as np
 
 from river import base
 from river import metrics
@@ -17,6 +17,9 @@ __all__ = [
 # TODO:
 # Docstring
 # Determine which object to store (rewards/percentages pulled/loss?)
+
+def argmax(l):
+    return max(range(len(l)), key=l.__getitem__)
 
 class Bandit(base.EnsembleMixin):
 
@@ -46,8 +49,8 @@ class Bandit(base.EnsembleMixin):
         # Initializing bandits internals
         self._n_arms = len(models)
         self._n_iter = 0 # number of times learn_one is called
-        self._N = np.zeros(self._n_arms, dtype=np.int)
-        self._average_reward = np.zeros(self._n_arms, dtype=np.float)
+        self._N = [0] * self._n_arms
+        self._average_reward = [0.0] * self._n_arms
 
     def __repr__(self):
         return (
@@ -71,7 +74,7 @@ class Bandit(base.EnsembleMixin):
     @property
     def _best_model_idx(self):
         # average reward instead of cumulated (otherwise favors arms which are pulled often)
-        return np.argmax(self._average_reward)
+        return argmax(self._average_reward)
 
     @property
     def best_model(self):
@@ -79,7 +82,7 @@ class Bandit(base.EnsembleMixin):
 
     @property
     def percentage_pulled(self):
-        percentages = self._N / sum(self._N)
+        percentages = [n / sum(self._N) for n in self._N]
         return percentages
 
     def predict_one(self, x):
@@ -121,10 +124,8 @@ class Bandit(base.EnsembleMixin):
         # Careful, not validation of the model is done here (contrary to __init__)
         self.models += new_models
         self._n_arms += length_new_models
-        self._N = np.concatenate([self._N, np.zeros(length_new_models, dtype=np.int)])
-        self._average_reward = np.concatenate(
-            [self._average_reward, np.zeros(length_new_models, dtype=np.float)]
-        )
+        self._N = self._N + [0] * length_new_models
+        self._average_reward = self._average_reward + [0.0] * length_new_models
 
     def _compute_scaled_reward(self, y_pred, y_true, update_scaler=True):
         metric_value = self.metric._eval(y_pred, y_true)
@@ -152,17 +153,17 @@ class EpsilonGreedyBandit(Bandit):
             self.reward_scaler = preprocessing.StandardScaler()
 
     def _pull_arm(self):
-        if np.random.rand() > self.epsilon:
-            chosen_arm = np.argmax(self._average_reward)
+        if random.random() > self.epsilon:
+            chosen_arm = argmax(self._average_reward)
         else:
-            chosen_arm = np.random.choice(self._n_arms)
+            chosen_arm = random.choice(range(self._n_arms))
 
         return chosen_arm
 
     def _update_arm(self, arm, reward):
         # The arm internals are already updated in the `learn_one` phase of class `Bandit`.
         if self.epsilon_decay:
-            self.epsilon = self._starting_epsilon*np.exp(-self._n_iter*self.epsilon_decay)
+            self.epsilon = self._starting_epsilon * math.exp(-self._n_iter*self.epsilon_decay)
 
 
 class EpsilonGreedyRegressor(EpsilonGreedyBandit):
@@ -222,17 +223,21 @@ class UCBBandit(Bandit):
             self.reward_scaler = preprocessing.StandardScaler()
 
     def _pull_arm(self):
-        not_pulled_enough = self._N <= self.explore_each_arm
-        if any(not_pulled_enough): # Explore all arms pulled less than `explore_each_arm` times
-            never_pulled_arm = np.where(not_pulled_enough)[0] #[0] because returned a tuple (array(),) even when input is 1D array
-            chosen_arm = np.random.choice(never_pulled_arm)
+        # Explore all arms pulled less than `explore_each_arm` times
+        never_pulled_arm = [i for (i, n) in enumerate(self._N) if n <= self.explore_each_arm]
+        if never_pulled_arm:
+            chosen_arm = random.choice(never_pulled_arm)
         else:
             if self.delta:
-                exploration_bonus = np.sqrt(2 * np.log(1/self.delta) / self._N)
+                exploration_bonus = [math.sqrt(2 * math.log(1/self.delta) / n) for n in self._N]
             else:
-                exploration_bonus = np.sqrt(2 * np.log(self._n_iter) / self._N)
-            upper_bound = self._average_reward + exploration_bonus
-            chosen_arm = np.argmax(upper_bound)
+                exploration_bonus = [math.sqrt(2 * math.log(self._n_iter) / n) for n in self._N]
+            upper_bound = [
+                avg_reward + exploration 
+                for (avg_reward, exploration) 
+                in zip(self._average_reward, exploration_bonus)
+            ]
+            chosen_arm = argmax(upper_bound)
 
         return chosen_arm
 
