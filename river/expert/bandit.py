@@ -19,8 +19,9 @@ __all__ = [
 # Determine which object to store (rewards/percentages pulled/loss?)
 
 class Bandit(base.EnsembleMixin):
+
     def __init__(self, models, metric: metrics.Metric, reward_scaler: base.Transformer,
-                 print_every=None, save_metric_values=False, save_percentage_pulled=False):
+                 save_metric_values=False, save_percentage_pulled=False):
 
         if len(models) <= 1:
             raise ValueError(f"You supply {len(models)} models. At least 2 models should be supplied.")
@@ -33,7 +34,6 @@ class Bandit(base.EnsembleMixin):
         super().__init__(models)
         self.reward_scaler = copy.deepcopy(reward_scaler)
         self.metric = copy.deepcopy(metric)
-        self.print_every = print_every
 
         self.save_metric_values = save_metric_values
         if save_metric_values:
@@ -48,6 +48,13 @@ class Bandit(base.EnsembleMixin):
         self._n_iter = 0 # number of times learn_one is called
         self._N = np.zeros(self._n_arms, dtype=np.int)
         self._average_reward = np.zeros(self._n_arms, dtype=np.float)
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}" +
+            f"\n\t{str(self.metric)}" +
+            f"\n\t{'Best model id: ' + str(self._best_model_idx)}"
+        ).expandtabs(2)
 
     @abc.abstractmethod
     def _pull_arm(self):
@@ -98,10 +105,6 @@ class Bandit(base.EnsembleMixin):
         # Specific update of the arm for certain bandit class
         self._update_arm(chosen_arm, reward)
 
-        if self.print_every:
-            if (self._n_iter % self.print_every) == 0:
-                self._print_info()
-
         if self.save_percentage_pulled:
             self.store_percentage_pulled += [self.percentage_pulled]
 
@@ -133,20 +136,13 @@ class Bandit(base.EnsembleMixin):
         reward = self.reward_scaler.transform_one(metric_to_reward_dict)["metric"]
         return reward
 
-    def _print_info(self):
-        print(
-            str(self),
-            str(self.metric),
-            "Best model id: " + str(self._best_model_idx),
-            sep="\n\t"
-        )
-
 
 class EpsilonGreedyBandit(Bandit):
+
     def __init__(self,  models, metric: metrics.Metric, reward_scaler: base.Transformer,
-                 print_every=None, save_metric_values=False, save_percentage_pulled=False,
+                 save_metric_values=False, save_percentage_pulled=False,
                  epsilon=0.1, epsilon_decay=None):
-        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, print_every=print_every,
+        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler,
                          save_metric_values=save_metric_values, save_percentage_pulled=save_percentage_pulled)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
@@ -211,10 +207,11 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit):
 
 
 class UCBBandit(Bandit):
+
     def __init__(self,  models, metric: metrics.Metric, reward_scaler: base.Transformer,
-                 print_every=None, save_metric_values=False, save_percentage_pulled=False,
+                 save_metric_values=False, save_percentage_pulled=False,
                  delta=None, explore_each_arm=1):
-        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, print_every=print_every,
+        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler,
                     save_metric_values=save_metric_values, save_percentage_pulled=save_percentage_pulled)
         if delta is not None and (delta >= 1 or delta <= 0):
             raise ValueError("The parameter delta should be comprised in ]0, 1[ (or set to None)")
