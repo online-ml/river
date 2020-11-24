@@ -41,7 +41,7 @@ echo "Downloading the datasets that are used for testing"
 python -c "from river import datasets; datasets.CreditCard().download()"
 
 echo "Running flake8"
-flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude scikit-multiflow
+flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude benchmarks
 #mypy river
 
 echo "Running pytest"
