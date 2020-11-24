@@ -98,6 +98,11 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
     def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx,
                                         binary_only=True):
+        candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
+
+        if self._root is None:
+            return candidate
+
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
@@ -107,11 +112,6 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             self._aux_estimator = VectorDict(default_factory=functools.partial(Var))
         else:
             self._aux_estimator = Var()
-
-        candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
-
-        if self._root is None:
-            return candidate
 
         best_split = self._find_best_split(self._root, candidate)
 
