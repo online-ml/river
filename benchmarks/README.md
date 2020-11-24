@@ -1,19 +1,25 @@
 # Benchmarks
 
-There are kinds of benchmarks. The first are notebooks, which are used to compare against other libraries. The second are based on [ASV](https://github.com/airspeed-velocity/asv), and are meant to catch performance regressions.
+There are two kinds of benchmarks.
+
+The first kind are notebooks, which are used to compare against other libraries.
+
+The second kind are based on [ASV](https://github.com/airspeed-velocity/asv), and are meant to catch performance regressions.
 
 ## Notebooks
 
 To run these benchmarks, navigate to this directory and create a `conda` virtual environment, as so:
 
 ```sh
-conda env --name river-benchmarks --file requirements.txt
-conda activate river-benchmarks
+$ conda create -n river-benchmarks -y python==3.8.5
+$ conda activate river-benchmarks
+$ pip install -r requirements.txt
+$ conda install -c conda-forge -y vowpalwabbit
 ```
 
 You may then run `jupyter lab` and open the notebooks.
 
-This development version of `river` will be installed from GitHub. You may change this behaviour by modifying `environment.yml` before creating the virtual environment.
+Note that this will install the development version of `river` will be installed from GitHub. You may change this behaviour by modifying `requirements.txt` before creating the virtual environment.
 
 Depending on what you want to do, you might have to run the `download_data.sh` script to obtain the necessary data.
 
