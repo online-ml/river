@@ -110,6 +110,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
 
+        if self._root is None:
+            return candidate
+
         best_split = self._find_best_split(self._root, candidate)
 
         # Delete auxiliary variables
