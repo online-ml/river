@@ -1,3 +1,5 @@
+import river
+
 import collections
 import time
 
@@ -34,7 +36,7 @@ def benchmark(get_X_y, n, get_pp, models, get_metric):
     Result = collections.namedtuple('Result', 'lib model score learn_time pred_time')
     results = []
 
-    for lib, name, model in tqdm.tqdm_notebook(models):
+    for lib, name, model in tqdm.tqdm(models, position=0):
 
         pp = get_pp()
         metric = get_metric()
@@ -46,7 +48,7 @@ def benchmark(get_X_y, n, get_pp, models, get_metric):
         if isinstance(model, base.Classifier) and not metric.requires_labels:
             pred_func = model.predict_proba_one
 
-        for x, y in tqdm.tqdm_notebook(get_X_y(), total=n):
+        for x, y in tqdm.tqdm(get_X_y(), total=n, position=0):
 
             x = pp.learn_one(x, y).transform_one(x)
 
