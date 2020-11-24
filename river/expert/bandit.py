@@ -23,8 +23,7 @@ def argmax(l):
 
 class Bandit(base.EnsembleMixin):
 
-    def __init__(self, models, metric: metrics.Metric, reward_scaler: base.Transformer,
-                 save_metric_values=False, save_percentage_pulled=False):
+    def __init__(self, models, metric: metrics.Metric, reward_scaler: base.Transformer):
 
         if len(models) <= 1:
             raise ValueError(f"You supply {len(models)} models. At least 2 models should be supplied.")
@@ -37,14 +36,6 @@ class Bandit(base.EnsembleMixin):
         super().__init__(models)
         self.reward_scaler = copy.deepcopy(reward_scaler)
         self.metric = copy.deepcopy(metric)
-
-        self.save_metric_values = save_metric_values
-        if save_metric_values:
-            self.metric_values: typing.List = []
-
-        self.save_percentage_pulled = save_percentage_pulled
-        if save_percentage_pulled:
-            self.store_percentage_pulled: typing.List = []
 
         # Initializing bandits internals
         self._n_arms = len(models)
@@ -139,10 +130,8 @@ class Bandit(base.EnsembleMixin):
 class EpsilonGreedyBandit(Bandit):
 
     def __init__(self,  models, metric: metrics.Metric, reward_scaler: base.Transformer,
-                 save_metric_values=False, save_percentage_pulled=False,
                  epsilon=0.1, epsilon_decay=None):
-        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler,
-                         save_metric_values=save_metric_values, save_percentage_pulled=save_percentage_pulled)
+        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         if epsilon_decay:
@@ -208,10 +197,8 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit):
 class UCBBandit(Bandit):
 
     def __init__(self,  models, metric: metrics.Metric, reward_scaler: base.Transformer,
-                 save_metric_values=False, save_percentage_pulled=False,
                  delta=None, explore_each_arm=1):
-        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler,
-                    save_metric_values=save_metric_values, save_percentage_pulled=save_percentage_pulled)
+        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler)
         if delta is not None and (delta >= 1 or delta <= 0):
             raise ValueError("The parameter delta should be comprised in ]0, 1[ (or set to None)")
         self.delta = delta
@@ -270,6 +257,9 @@ class UCBRegressor(UCBBandit, base.Regressor):
     [^2]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     [^3]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
     """
+    @classmethod
+    def _default_params(cls):
+        return {'regressor': linear_model.LogisticRegression()}
 
     def _pred_func(self, model):
         return model.predict_one
