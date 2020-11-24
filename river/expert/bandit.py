@@ -91,6 +91,21 @@ class Bandit(base.EnsembleMixin):
         return y_pred
 
     def learn_one(self, x, y):
+        self._learn_one(x, y)
+        return self
+
+    def add_models(self, new_models):
+        if not isinstance(new_models, list):
+            raise TypeError("Argument `new_models` must be of a list")
+
+        length_new_models = len(new_models)
+        # Careful, not validation of the model is done here (contrary to __init__)
+        self.models += new_models
+        self._n_arms += length_new_models
+        self._N = self._N + [0] * length_new_models
+        self._average_reward = self._average_reward + [0.0] * length_new_models
+
+    def _learn_one(self, x, y):
         chosen_arm = self._pull_arm()
         chosen_model = self[chosen_arm]
 
@@ -108,24 +123,7 @@ class Bandit(base.EnsembleMixin):
         # Specific update of the arm for certain bandit class
         self._update_arm(chosen_arm, reward)
 
-        if self.save_percentage_pulled:
-            self.store_percentage_pulled += [self.percentage_pulled]
-
-        if self.save_metric_values:
-            self.metric_values += [self.metric._eval(y_pred, y)]
-
-        return self
-
-    def add_models(self, new_models):
-        if not isinstance(new_models, list):
-            raise TypeError("Argument `new_models` must be of a list")
-
-        length_new_models = len(new_models)
-        # Careful, not validation of the model is done here (contrary to __init__)
-        self.models += new_models
-        self._n_arms += length_new_models
-        self._N = self._N + [0] * length_new_models
-        self._average_reward = self._average_reward + [0.0] * length_new_models
+        return self, self.percentage_pulled, self.metric._eval(y_pred, y)
 
     def _compute_scaled_reward(self, y_pred, y_true, update_scaler=True):
         metric_value = self.metric._eval(y_pred, y_true)
@@ -233,8 +231,8 @@ class UCBBandit(Bandit):
             else:
                 exploration_bonus = [math.sqrt(2 * math.log(self._n_iter) / n) for n in self._N]
             upper_bound = [
-                avg_reward + exploration 
-                for (avg_reward, exploration) 
+                avg_reward + exploration
+                for (avg_reward, exploration)
                 in zip(self._average_reward, exploration_bonus)
             ]
             chosen_arm = argmax(upper_bound)
