@@ -193,6 +193,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         data streams. Data mining and knowledge discovery, 23(1), 128-168.
         """
 
+        if self._root is None:
+            return
+
         # Auxiliary variables
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
