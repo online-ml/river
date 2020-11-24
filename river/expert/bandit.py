@@ -5,6 +5,8 @@ import random
 import typing
 
 from river import base
+from river import compose
+from river import linear_model
 from river import metrics
 from river import preprocessing
 
@@ -16,14 +18,13 @@ __all__ = [
 
 # TODO:
 # Docstring
-# Determine which object to store (rewards/percentages pulled/loss?)
 
 def argmax(l):
     return max(range(len(l)), key=l.__getitem__)
 
 class Bandit(base.EnsembleMixin):
 
-    def __init__(self, models, metric: metrics.Metric, reward_scaler: base.Transformer):
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer):
 
         if len(models) <= 1:
             raise ValueError(f"You supply {len(models)} models. At least 2 models should be supplied.")
@@ -85,16 +86,12 @@ class Bandit(base.EnsembleMixin):
         self._learn_one(x, y)
         return self
 
-    def add_models(self, new_models):
-        if not isinstance(new_models, list):
-            raise TypeError("Argument `new_models` must be of a list")
-
+    def add_models(self, new_models: typing.List[base.Estimator]):
         length_new_models = len(new_models)
-        # Careful, not validation of the model is done here (contrary to __init__)
         self.models += new_models
         self._n_arms += length_new_models
-        self._N = self._N + [0] * length_new_models
-        self._average_reward = self._average_reward + [0.0] * length_new_models
+        self._N += [0] * length_new_models
+        self._average_reward += [0.0] * length_new_models
 
     def _learn_one(self, x, y):
         chosen_arm = self._pull_arm()
@@ -129,7 +126,7 @@ class Bandit(base.EnsembleMixin):
 
 class EpsilonGreedyBandit(Bandit):
 
-    def __init__(self,  models, metric: metrics.Metric, reward_scaler: base.Transformer,
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer,
                  epsilon=0.1, epsilon_decay=None):
         super().__init__(models=models, metric=metric, reward_scaler=reward_scaler)
         self.epsilon = epsilon
@@ -189,6 +186,12 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit):
     [^2]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
     [^3]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     """
+    @classmethod
+    def _default_params(cls):
+        return {'regressor': compose.Pipeline(
+            linear_model.LinearRegression()
+        )}
+
 
     def _pred_func(self, model):
         return model.predict_one
@@ -196,7 +199,7 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit):
 
 class UCBBandit(Bandit):
 
-    def __init__(self,  models, metric: metrics.Metric, reward_scaler: base.Transformer,
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer,
                  delta=None, explore_each_arm=1):
         super().__init__(models=models, metric=metric, reward_scaler=reward_scaler)
         if delta is not None and (delta >= 1 or delta <= 0):
@@ -259,7 +262,9 @@ class UCBRegressor(UCBBandit, base.Regressor):
     """
     @classmethod
     def _default_params(cls):
-        return {'regressor': linear_model.LogisticRegression()}
+        return {'regressor': compose.Pipeline(
+            linear_model.LinearRegression()
+        )}
 
     def _pred_func(self, model):
         return model.predict_one
