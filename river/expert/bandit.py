@@ -5,11 +5,10 @@ import random
 import typing
 
 from river import base
-from river import compose
 from river import linear_model
 from river import metrics
 from river import preprocessing
-
+from river import utils
 
 __all__ = [
     'EpsilonGreedyRegressor',
@@ -19,8 +18,7 @@ __all__ = [
 # TODO:
 # Docstring
 
-def argmax(l):
-    return max(range(len(l)), key=l.__getitem__)
+
 
 
 class Bandit(base.EnsembleMixin):
@@ -67,7 +65,7 @@ class Bandit(base.EnsembleMixin):
     @property
     def _best_model_idx(self):
         # average reward instead of cumulated (otherwise favors arms which are pulled often)
-        return argmax(self._average_reward)
+        return utils.math.argmax(self._average_reward)
 
     @property
     def best_model(self):
@@ -112,7 +110,7 @@ class Bandit(base.EnsembleMixin):
         # Specific update of the arm for certain bandit class
         self._update_arm(chosen_arm, reward)
 
-        return self, self.percentage_pulled, self.metric._eval(y_pred, y)
+        return self.metric._eval(y_pred, y)
 
     def _compute_scaled_reward(self, y_pred, y_true, update_scaler=True):
         metric_value = self.metric._eval(y_pred, y_true)
@@ -139,7 +137,7 @@ class EpsilonGreedyBandit(Bandit):
 
     def _pull_arm(self):
         if random.random() > self.epsilon:
-            chosen_arm = argmax(self._average_reward)
+            chosen_arm = utils.math.argmax(self._average_reward)
         else:
             chosen_arm = random.choice(range(self._n_arms))
 
@@ -230,7 +228,7 @@ class UCBBandit(Bandit):
                 for (avg_reward, exploration)
                 in zip(self._average_reward, exploration_bonus)
             ]
-            chosen_arm = argmax(upper_bound)
+            chosen_arm = utils.math.argmax(upper_bound)
 
         return chosen_arm
 
