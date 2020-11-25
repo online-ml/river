@@ -64,6 +64,8 @@ jobs:
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
+      - git config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+      - git fetch
       - git checkout gh-pages
       - git pull
       - mike deploy dev --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
