@@ -5,13 +5,9 @@
 </br>
 
 <p align="center">
-  <!-- Travis -->
+  <!-- Tests -->
   <a href="https://travis-ci.org/online-ml/river">
-    <img src="https://img.shields.io/travis/online-ml/river/master.svg?style=flat-square" alt="travis">
-  </a>
-  <!-- Codecov -->
-  <a href="https://codecov.io/gh/online-ml/river">
-    <img src="https://img.shields.io/codecov/c/gh/online-ml/river.svg?style=flat-square" alt="codecov">
+    <img src="https://github.com/online-ml/river/workflows/tests/badge.svg?branch=master" alt="tests">
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
