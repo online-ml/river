@@ -188,9 +188,12 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit):
     [^3]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     """
     @classmethod
-        def _default_params(cls):
+    def _default_params(cls):
         return {
-            'models': [linear_model.LinearRegression(lr=.1), linear_model.LinearRegression(lr=.01)],
+            'models': [
+                linear_model.LinearRegression(intercept_lr=.1),
+                linear_model.LinearRegression(intercept_lr=.01)
+            ],
             'metric': metrics.MSE(),
             'reward_scaler': preprocessing.StandardScaler()
         }
@@ -265,7 +268,10 @@ class UCBRegressor(UCBBandit, base.Regressor):
     @classmethod
     def _default_params(cls):
         return {
-            'models': [linear_model.LinearRegression(lr=.1), linear_model.LinearRegression(lr=.01)],
+            'models': [
+                linear_model.LinearRegression(intercept_lr=.1),
+                linear_model.LinearRegression(intercept_lr=.01)
+            ],
             'metric': metrics.MSE(),
             'reward_scaler': preprocessing.StandardScaler()
         }
