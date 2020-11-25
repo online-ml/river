@@ -3,7 +3,7 @@ name: release-docs
 on:
   push:
     branches:
-      - github-actions
+      - '*'
 
 jobs:
   ubuntu:
@@ -33,6 +33,7 @@ jobs:
 
         git add --all
         git commit -m "Execute notebooks"
+        git push
 
         git fetch
         git checkout gh-pages
