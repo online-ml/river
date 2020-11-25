@@ -33,7 +33,6 @@ jobs:
 
         git add --all
         git commit -m "Execute notebooks"
-        git push
 
         git fetch
         git checkout gh-pages
