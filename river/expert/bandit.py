@@ -22,6 +22,7 @@ __all__ = [
 def argmax(l):
     return max(range(len(l)), key=l.__getitem__)
 
+
 class Bandit(base.EnsembleMixin):
 
     def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer):
@@ -187,11 +188,12 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit):
     [^3]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     """
     @classmethod
-    def _default_params(cls):
-        return {'regressor': compose.Pipeline(
-            linear_model.LinearRegression()
-        )}
-
+        def _default_params(cls):
+        return {
+            'models': [linear_model.LinearRegression(lr=.1), linear_model.LinearRegression(lr=.01)],
+            'metric': metrics.MSE(),
+            'reward_scaler': preprocessing.StandardScaler()
+        }
 
     def _pred_func(self, model):
         return model.predict_one
@@ -262,9 +264,11 @@ class UCBRegressor(UCBBandit, base.Regressor):
     """
     @classmethod
     def _default_params(cls):
-        return {'regressor': compose.Pipeline(
-            linear_model.LinearRegression()
-        )}
+        return {
+            'models': [linear_model.LinearRegression(lr=.1), linear_model.LinearRegression(lr=.01)],
+            'metric': metrics.MSE(),
+            'reward_scaler': preprocessing.StandardScaler()
+        }
 
     def _pred_func(self, model):
         return model.predict_one
