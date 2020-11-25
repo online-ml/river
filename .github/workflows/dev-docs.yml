@@ -1,0 +1,35 @@
+name: Development docs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Ubuntu dependencies
+      run: sudo apt-get install graphviz pandoc
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[docs]"
+    - name: Build docs
+      run: make doc
+    - name: Deploy docs
+      env:
+        GH_TOKEN: ${{ secrets.GitHubToken }}
+      run: |
+        git config --local user.email "maxhalford25@gmail.com"
+        git config --local user.name "MaxHalford"
+        mike deploy dev --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
+        echo riverml.xyz > CNAME
+        git add CNAME
+        git commit -m "Add CNAME"
+        git push
