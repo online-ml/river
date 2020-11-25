@@ -244,17 +244,20 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                         self._attempt_to_split(leaf_node, found_node.parent,
                                                found_node.parent_branch)
                         leaf_node.last_split_attempt_at = weight_seen
-        # Split node encountered a previously unseen categorical value (in a multi-way test),
-        # so there is no branch to sort the instance to
-        elif not leaf_node.is_leaf() and leaf_node.split_test.max_branches() == -1:
+        else:
             current = leaf_node
-            leaf_node = self._new_learning_node(parent=current)
-            branch_id = current.split_test.add_new_branch(
-                x[current.split_test.attrs_test_depends_on()[0]]
-            )
-            current.set_child(branch_id, leaf_node)
-            self._n_active_leaves += 1
-            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            split_feat = current.split_test.attrs_test_depends_on()[0]
+            # Split node encountered a previously unseen categorical value (in a multi-way test),
+            # so there is no branch to sort the instance to
+            if current.split_test.max_branches() == -1 and split_feat in x:
+                # Creates a new branch to the new categorical value
+                leaf_node = self._new_learning_node(parent=current)
+                branch_id = current.split_test.add_new_branch(x[split_feat])
+                current.set_child(branch_id, leaf_node)
+                self._n_active_leaves += 1
+                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            # else: If the feature is numerical but its value is not present in the instance,
+            # there is not much we can do
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
