@@ -64,12 +64,13 @@ jobs:
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
-      - mike deploy dev --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
       - git checkout gh-pages
+      - git pull
+      - mike deploy dev --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
       - echo riverml.xyz > CNAME
       - git add CNAME
       - git commit -m "Add CNAME"
-      - git push
+      - git push --set-upstream origin gh-pages
     if: branch = "master"
 
   - stage: release-docs
@@ -82,14 +83,15 @@ jobs:
     after_success:
       - git config --global user.email "maxhalford25@gmail.com"
       - git config --global user.name "MaxHalford"
+      - git checkout gh-pages
+      - git pull
       - RIVER_VERSION=$(python -c "import river; print(river.__version__)")
       - mike deploy ${RIVER_VERSION} latest --rebase --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
       - mike set-default latest --rebase --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
-      - git checkout gh-pages
       - echo riverml.xyz > CNAME
       - git add CNAME
       - git commit -m "Add CNAME"
-      - git push
+      - git push --set-upstream origin gh-pages
     if: tag IS present
 
 env:
