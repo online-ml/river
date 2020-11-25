@@ -2,9 +2,8 @@ name: Release docs
 
 on:
   push:
-    branches:
-      - github-actions
-      - master
+    tags:
+      - *.*.*
 
 jobs:
   ubuntu:
