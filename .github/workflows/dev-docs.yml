@@ -3,6 +3,7 @@ name: Development docs
 on:
   push:
     branches:
+      - github-actions
       - master
 
 jobs:
