@@ -2,7 +2,7 @@ name: release-docs
 
 on:
   push:
-    branches:
+    tags:
       - '*'
 
 jobs:
@@ -30,10 +30,10 @@ jobs:
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
+        git config pull.rebase false
 
         git add --all
         git commit -m "Execute notebooks"
-        git push
 
         git fetch
         git checkout gh-pages
@@ -43,9 +43,3 @@ jobs:
         RIVER_VERSION=$(python -c "import river; print(river.__version__)")
         mike deploy ${RIVER_VERSION} latest --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
         mike set-default latest --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
-
-        git checkout gh-pages
-        echo riverml.xyz > CNAME
-        git add CNAME
-        git commit -m "Add CNAME"
-        git push
