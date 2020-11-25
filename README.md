@@ -6,7 +6,7 @@
 
 <p align="center">
   <!-- Tests -->
-  <a href="https://travis-ci.org/online-ml/river">
+  <a href="https://github.com/online-ml/river/actions?query=workflow%3Atests+branch%3Amaster">
     <img src="https://github.com/online-ml/river/workflows/tests/badge.svg?branch=master" alt="tests">
   </a>
   <!-- Documentation -->
