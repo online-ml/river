@@ -3,7 +3,7 @@ name: pypi
 on:
   push:
     tags:
-      - *.*.*
+      - '*'
 
 jobs:
   pypi:
