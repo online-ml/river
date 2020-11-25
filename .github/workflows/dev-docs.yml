@@ -27,9 +27,14 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GitHubToken }}
       run: |
-        git config --local user.email "maxhalford25@gmail.com"
-        git config --local user.name "MaxHalford"
-        mike deploy dev --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        build_head=$(git rev-parse HEAD)
+        git fetch
+        git checkout gh-pages
+        git pull
+        git checkout ${build_head}
+        mike deploy dev --push --remote https://github.com/online-ml/river.git
         echo riverml.xyz > CNAME
         git add CNAME
         git commit -m "Add CNAME"
