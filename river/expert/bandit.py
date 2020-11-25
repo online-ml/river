@@ -149,7 +149,7 @@ class EpsilonGreedyBandit(Bandit):
             self.epsilon = self._starting_epsilon * math.exp(-self._n_iter*self.epsilon_decay)
 
 
-class EpsilonGreedyRegressor(EpsilonGreedyBandit):
+class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     """Epsilon-greedy bandit algorithm for regression.
 
     This bandit selects the best arm (defined as the one with the highest average reward) with
@@ -177,7 +177,7 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit):
     >>> from river import metrics
 
 
-    TODO: finish ex
+    TODO: Example
 
     References
     ----------
@@ -256,6 +256,7 @@ class UCBRegressor(UCBBandit, base.Regressor):
     delta
         For UCB(delta) implementation. Lower value means more exploration.
 
+    TODO: Example
 
     References
     ----------
