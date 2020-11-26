@@ -8,7 +8,8 @@ from . import base
 class Quantile(base.Univariate):
     """Running quantile.
 
-    Uses the P-square algorithm. The code is inspired by LiveStat's implementation [^2].
+    Uses the P² algorithm, which is also known as the "Piecewise-Parabolic quantile estimator".
+    The code is inspired by LiveStat's implementation [^2].
 
     Parameters
     ----------
@@ -45,8 +46,9 @@ class Quantile(base.Univariate):
 
     References
     ----------
-    [^1]: [The P2 Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations](https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf)
+    [^1]: [The P² Algorithm for Dynamic Univariateal Computing Calculation of Quantiles and Editor Histograms Without Storing Observations](https://www.cse.wustl.edu/~jain/papers/ftp/psqr.pdf)
     [^2]: [LiveStats](https://github.com/cxxr/LiveStats)
+    [^3]: [P² quantile estimator: estimating the median without storing values](https://aakinshin.net/posts/p2-quantile-estimator/)
 
     """
 

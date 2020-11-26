@@ -56,7 +56,7 @@ class SKL2RiverBase:
 
 
 class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
-    """Converts a `sklearn` regressor to a `river` regressor.
+    """Compatibility layer from scikit-learn to River for regression.
 
     Parameters
     ----------
@@ -110,7 +110,7 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
 
 
 class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
-    """Converts a `sklearn` classifier to `river` classifier.
+    """Compatibility layer from scikit-learn to River for classification.
 
     Parameters
     ----------

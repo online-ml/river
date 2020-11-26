@@ -95,7 +95,7 @@ class River2SKLBase(sklearn_base.BaseEstimator, base.WrapperMixin):
 
 
 class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
-    """Convert a `river` regressor to a `sklearn` regressor.
+    """Compatibility layer from River to scikit-learn for regression.
 
     Parameters
     ----------
@@ -206,7 +206,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
 
 
 class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
-    """Convert a `river` classifier to a `sklearn` classifier.
+    """Compatibility layer from River to scikit-learn for classification.
 
     Parameters
     ----------
@@ -388,7 +388,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
 
 
 class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
-    """Convert a `river` transformer to a `sklearn` transformer.
+    """Compatibility layer from River to scikit-learn for transformation.
 
     Parameters
     ----------
@@ -506,7 +506,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
 
 
 class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
-    """Wraps a `river` clusterer to make it compatible with `sklearn`.
+    """Compatibility layer from River to scikit-learn for clustering.
 
     Parameters
     ----------
