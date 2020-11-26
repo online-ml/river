@@ -5,8 +5,15 @@
 First, create a virtual environment. You'll want to activate it every time you want to work on `river`.
 
 ```sh
-> python -m venv .venv
-> source .venv/bin/activate
+$ python -m venv .venv
+$ source .venv/bin/activate
+```
+
+Note that you can also create a virtual environment via `conda`:
+
+```sh
+$ conda create -n river -y python
+$ conda activate river
 ```
 
 You can also use a `conda` environment, as explained [here](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/).
@@ -14,13 +21,13 @@ You can also use a `conda` environment, as explained [here](https://uoa-eresearc
 You then want to fork the `master` branch of the repository, which you can do from GitHub's interface. Once you've forked the repository, clone it to your work station. Then, navigate to the cloned directory and install the required dependencies:
 
 ```sh
-> pip install -e ".[dev]"
+$ pip install -e ".[dev]"
 ```
 
 Finally, install `river` in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
 
 ```sh
-> python setup.py develop
+$ python setup.py develop
 ```
 
 ## Making changes
@@ -61,7 +68,7 @@ If you're adding a class or a function, then you'll need to add a docstring. We 
 To build the documentation, you need to install some extra dependencies:
 
 ```sh
-> pip install -e ".[docs]"
+$ pip install -e ".[docs]"
 ```
 
 From the root of the repository, you can then run the `make livedoc` command to take a look at the documentation in your browser. This will run a custom script which parses all the docstrings and generate MarkDown files that [MkDocs](https://www.mkdocs.org/) can render.
@@ -73,7 +80,7 @@ All classes and function are automatically picked up and added to the documentat
 ## Building Cython extensions
 
 ```sh
-> make cython
+$ make cython
 ```
 
 ## Testing
@@ -83,7 +90,7 @@ All classes and function are automatically picked up and added to the documentat
 These tests absolutely have to pass.
 
 ```sh
-> pytest
+$ pytest
 ```
 
 **Static typing**
@@ -91,7 +98,7 @@ These tests absolutely have to pass.
 These tests absolutely have to pass.
 
 ```sh
-> mypy river
+$ mypy river
 ```
 
 **Web dependent tests**
@@ -99,7 +106,7 @@ These tests absolutely have to pass.
 This involves tests that need an internet connection, such as those in the `datasets` module which requires downloading some files. In most cases you probably don't need to run these.
 
 ```sh
-> pytest -m web
+$ pytest -m web
 ```
 
 **Notebook tests**
@@ -107,7 +114,7 @@ This involves tests that need an internet connection, such as those in the `data
 You don't have to worry too much about these, as we only check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way around.
 
 ```sh
-> make execute-notebooks
+$ make execute-notebooks
 ```
 
 ## Making a pull request

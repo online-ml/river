@@ -44,7 +44,7 @@ class PyTorch2RiverBase:
 
 
 class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
-    """PyTorch to `river` regressor adapter.
+    """Compatibility layer from PyTorch to River for regression.
 
     Parameters
     ----------
