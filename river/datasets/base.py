@@ -25,7 +25,7 @@ def get_data_home():
 
     """
 
-    data_home = os.environ.get('CREME_DATA', os.path.join('~', 'river_data'))
+    data_home = os.environ.get('RIVER_DATA', os.path.join('~', 'river_data'))
     data_home = os.path.expanduser(data_home)
     if not os.path.exists(data_home):
         os.makedirs(data_home)
