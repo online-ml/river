@@ -225,3 +225,46 @@ def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> s
     rep += ')'
 
     return rep.expandtabs(2)
+
+
+def clone(estimator: typing.Union[Estimator, set, tuple, list, frozenset], safe=True):
+    """Create a new empty estimator with the same parameters.
+
+    Clone yields a new estimator with the same parameters that has not been fit on any data.
+
+    Parameters
+    ----------
+    estimator : estimator object, or list, tuple or set of objects
+        The estimator or group of estimators to be cloned
+
+    safe
+        If False, clone will fall back to a deep copy on objects that are not estimators.
+
+    """
+    estimator_type = type(estimator)
+    # XXX: not handling dictionaries
+    if estimator_type in (list, tuple, set, frozenset):
+        return estimator_type([clone(e, safe=safe) for e in estimator])
+    elif not hasattr(estimator, '_get_params') or isinstance(estimator, type):
+        if not safe:
+            return copy.deepcopy(estimator)
+        else:
+            raise TypeError(f"Cannot clone object {repr(estimator)} "
+                            f"(type {type(estimator)}): "
+                            "it does not seem to be a valid estimator "
+                            "as it does not implement '_get_params' method.")
+    klass = estimator.__class__
+    new_object_params = estimator._get_params()   # noqa
+    for name, param in new_object_params.items():
+        new_object_params[name] = clone(param, safe=False)
+    new_object = klass(**new_object_params)
+    params_set = new_object._get_params()   # noqa
+
+    # quick sanity check of the parameters of the clone
+    for name in new_object_params:
+        param1 = new_object_params[name]
+        param2 = params_set[name]
+        if param1 is not param2:
+            raise RuntimeError(f'Cannot clone object {estimator}, as the constructor '
+                               f'either does not set or modifies parameter {name}')
+    return new_object

@@ -20,6 +20,7 @@ from .clusterer import Clusterer
 from .drift_detector import DriftDetector
 from .ensemble import EnsembleMixin
 from .estimator import Estimator
+from .estimator import clone
 from .multi_output import MultiOutputMixin
 from .regressor import Regressor
 from .regressor import MiniBatchRegressor
@@ -32,6 +33,7 @@ __all__ = [
     'AnomalyDetector',
     'Classifier',
     'Clusterer',
+    'clone',
     'DriftDetector',
     'EnsembleMixin',
     'Estimator',
