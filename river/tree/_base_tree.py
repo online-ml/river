@@ -76,7 +76,7 @@ class BaseHoeffdingTree(ABC):
     conventions:
 
     - *Learning:* choose the subtree branch most traversed so far to pass the instance on.</br>
-    - * Predicting:* Use the last "reachable" decision node to provide responses.
+    - *Predicting:* Use the last "reachable" decision node to provide responses.
 
     """
     def __init__(self, max_depth: int = None, binary_split: bool = False, max_size: int = 100,
