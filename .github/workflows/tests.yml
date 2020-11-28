@@ -18,6 +18,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -e ".[dev]" codecov
+    - name: Cache datasets
+      uses: actions/cache@v2
+      with:
+        path: ~/river_data
+        key: ${{ runner.os }}
     - name: Download datasets
       run: python -c "from river import datasets; datasets.CreditCard().download()"
     - name: flake8
