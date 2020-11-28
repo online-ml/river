@@ -1,6 +1,7 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
+import inspect
 import math
 import pickle
 import random
@@ -180,6 +181,14 @@ def check_doc(model):
     assert model.__doc__
 
 
+def check_clone(model):
+    from river import utils
+
+    clone = utils.clone(model)
+    assert id(clone) != id(model)
+    assert dir(clone) == dir(model)
+
+
 def wrapped_partial(func, *args, **kwargs):
     """
 
@@ -218,6 +227,7 @@ def yield_checks(model):
     yield check_set_params_idempotent
     yield check_init
     yield check_doc
+    yield check_clone
 
     # Checks that make use of datasets
     for dataset in yield_datasets(model):
