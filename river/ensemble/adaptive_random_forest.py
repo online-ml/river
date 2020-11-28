@@ -83,17 +83,17 @@ class BaseForest(base.EnsembleMixin):
         self.models = [
             self._base_member_class(
                 index_original=i,
-                base_model=self._get_base_model(seed=seeds[i]),
+                model=self._new_base_model(seed=seeds[i]),
                 created_on=self._n_samples_seen,
-                base_drift_detector=self.drift_detector,
-                base_warning_detector=self.warning_detector,
+                drift_detector=self.drift_detector,
+                warning_detector=self.warning_detector,
                 is_background_learner=False,
                 base_metric=copy.deepcopy(self.metric))
             for i in range(self.n_models)
         ]
 
     @abc.abstractmethod
-    def _get_base_model(self, seed: int):
+    def _new_base_model(self, seed: int):
         raise NotImplementedError
 
     def _set_max_features(self, n_features):
@@ -594,7 +594,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             return {label: proba / total for label, proba in y_pred.items()}
         return y_pred
 
-    def _get_base_model(self, seed: int):
+    def _new_base_model(self, seed: int):
         return BaseTreeClassifier(
                     max_size=self.max_size,
                     memory_estimate_period=self.memory_estimate_period,
@@ -893,7 +893,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
         return y_pred
 
-    def _get_base_model(self, seed: int):
+    def _new_base_model(self, seed: int):
         return BaseTreeRegressor(
             max_size=self.max_size,
             memory_estimate_period=self.memory_estimate_period,
@@ -937,13 +937,13 @@ class BaseForestMember:
     ----------
     index_original
         Tree index within the ensemble.
-    base_model
-        Tree classifier.
+    model
+        Tree learner.
     created_on
         Number of instances seen by the tree.
-    base_drift_detector
+    drift_detector
         Drift Detection method.
-    base_warning_detector
+    warning_detector
         Warning Detection method.
     is_background_learner
         True if the tree is a background learner.
@@ -951,15 +951,14 @@ class BaseForestMember:
     """
     def __init__(self,
                  index_original: int,
-                 base_model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
+                 model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
                  created_on: int,
-                 base_drift_detector: base.DriftDetector,
-                 base_warning_detector: base.DriftDetector,
+                 drift_detector: base.DriftDetector,
+                 warning_detector: base.DriftDetector,
                  is_background_learner,
                  base_metric: typing.Union[MultiClassMetric, RegressionMetric]):
         self.index_original = index_original
-        self.base_model = base_model
-        self.model = copy.deepcopy(base_model)
+        self.model = base.clone(model)
         self.created_on = created_on
         self.is_background_learner = is_background_learner
         self.base_metric = base_metric
@@ -971,8 +970,6 @@ class BaseForestMember:
         self.background_learner = None
 
         # Drift and warning detection
-        self.base_drift_detector = base_drift_detector  # Drift detector prototype
-        self.base_warning_detector = base_warning_detector  # Warning detector prototype
 
         self.last_drift_on = 0
         self.last_warning_on = 0
@@ -980,17 +977,16 @@ class BaseForestMember:
         self.n_warnings_detected = 0
 
         # Initialize drift and warning detectors
-        # TODO Replace deepcopy with clone
-        if base_drift_detector is not None:
+        if drift_detector is not None:
             self._use_drift_detector = True
-            self.drift_detector = copy.deepcopy(base_drift_detector)  # Actual detector used
+            self.drift_detector = base.clone(drift_detector)
         else:
             self._use_drift_detector = False
             self.drift_detector = None
 
-        if base_warning_detector is not None:
+        if warning_detector is not None:
             self._use_background_learner = True
-            self.warning_detector = copy.deepcopy(base_warning_detector)  # Actual detector used
+            self.warning_detector = base.clone(warning_detector)
         else:
             self._use_background_learner = False
             self.warning_detector = None
@@ -1006,10 +1002,12 @@ class BaseForestMember:
             self.background_learner = None
         else:
             # Reset model
-            self.model = copy.deepcopy(self.base_model)
+            self.model = base.clone(self.model)
             self.metric = copy.deepcopy(self.base_metric)
             self.created_on = n_samples_seen
-            self.drift_detector = copy.deepcopy(self.base_drift_detector)
+            self.drift_detector = base.clone(self.drift_detector)
+        # Make sure that the metric is not initialized, e.g. when creating background learners.
+        self.metric.cm.reset()
 
     def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int,
                   n_samples_seen: int):
@@ -1035,15 +1033,15 @@ class BaseForestMember:
                     # Create a new background learner object
                     self.background_learner = self.__class__(
                         index_original=self.index_original,
-                        base_model=self.model.new_instance(),
+                        model=self.model.new_instance(),
                         created_on=n_samples_seen,
-                        base_drift_detector=self.base_drift_detector,
-                        base_warning_detector=self.base_warning_detector,
+                        drift_detector=self.drift_detector,
+                        warning_detector=self.warning_detector,
                         is_background_learner=True,
                         base_metric=copy.deepcopy(self.base_metric)
                     )
                     # Reset the warning detector for the current object
-                    self.warning_detector = copy.deepcopy(self.base_warning_detector)
+                    self.warning_detector = base.clone(self.warning_detector)
 
             # Update the drift detector
             self.drift_detector.update(drift_detector_input)
@@ -1066,18 +1064,18 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
 
     def __init__(self,
                  index_original: int,
-                 base_model: BaseTreeClassifier,
+                 model: BaseTreeClassifier,
                  created_on: int,
-                 base_drift_detector: base.DriftDetector,
-                 base_warning_detector: base.DriftDetector,
+                 drift_detector: base.DriftDetector,
+                 warning_detector: base.DriftDetector,
                  is_background_learner,
                  base_metric: MultiClassMetric):
         super().__init__(
             index_original=index_original,
-            base_model=base_model,
+            model=model,
             created_on=created_on,
-            base_drift_detector=base_drift_detector,
-            base_warning_detector=base_warning_detector,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
             is_background_learner=is_background_learner,
             base_metric=base_metric
         )
@@ -1097,18 +1095,18 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
 
     def __init__(self,
                  index_original: int,
-                 base_model: BaseTreeRegressor,
+                 model: BaseTreeRegressor,
                  created_on: int,
-                 base_drift_detector: base.DriftDetector,
-                 base_warning_detector: base.DriftDetector,
+                 drift_detector: base.DriftDetector,
+                 warning_detector: base.DriftDetector,
                  is_background_learner,
                  base_metric: RegressionMetric):
         super().__init__(
             index_original=index_original,
-            base_model=base_model,
+            model=model,
             created_on=created_on,
-            base_drift_detector=base_drift_detector,
-            base_warning_detector=base_warning_detector,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
             is_background_learner=is_background_learner,
             base_metric=base_metric
         )
