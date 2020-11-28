@@ -13,6 +13,7 @@ __all__ = ['check_estimator']
 
 def yield_datasets(model):
 
+    from river import base
     from river import compose
     from river import datasets
     from river import preprocessing
@@ -51,7 +52,8 @@ def yield_datasets(model):
 
         # Multi-class classification
         if model._multiclass:
-            yield datasets.ImageSegments().take(500)
+            if base.tags.POSITIVE_INPUT not in model._tags:
+                yield datasets.ImageSegments().take(500)
 
 
 def check_learn_one(model, dataset):
@@ -134,14 +136,28 @@ def check_shuffle_features_no_impact(model, dataset):
         shuffled.learn_one(x_shuffled, y)
 
 
-def check_predict_emerging_feature(model, dataset):
-    """predict_one should work even with previously unseen features."""
+def check_emerging_features(model, dataset):
+    """The model should work fine when new features appear."""
 
-    x, y = next(iter(dataset))
-    features = list(x.keys())[:-1]
+    x, _ = next(iter(dataset))
+    features = list(x.keys())
 
-    model.learn_one({i: x[i] for i in features}, y)
-    model.predict_one(x)
+    for x, y in dataset:
+        random.shuffle(features)
+        model.learn_one({i: x[i] for i in features[:-3]}, y)  # drop 3 features at random
+        model.predict_one(x)
+
+
+def check_disappearing_features(model, dataset):
+    """The model should work fine when features disappear."""
+
+    x, _ = next(iter(dataset))
+    features = list(x.keys())
+
+    for x, y in dataset:
+        random.shuffle(features)
+        model.learn_one(x, y)
+        model.predict_one({i: x[i] for i in features[:-3]})  # drop 3 features at random
 
 
 def check_debug_one(model, dataset):
@@ -239,7 +255,8 @@ def yield_checks(model):
         yield wrapped_partial(check_learn_one, dataset=dataset)
         yield wrapped_partial(check_pickling, dataset=dataset)
         yield wrapped_partial(check_shuffle_features_no_impact, dataset=dataset)
-        yield wrapped_partial(check_predict_emerging_feature, dataset=dataset)
+        yield wrapped_partial(check_emerging_features, dataset=dataset)
+        yield wrapped_partial(check_disappearing_features, dataset=dataset)
 
         if hasattr(model, 'debug_one'):
             yield wrapped_partial(check_debug_one, dataset=dataset)
