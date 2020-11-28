@@ -10,12 +10,12 @@ from .hofm import HOFMRegressor
 
 
 __all__ = [
-    'FFMClassifier',
-    'FFMRegressor',
-    'FMClassifier',
-    'FMRegressor',
-    'FwFMClassifier',
-    'FwFMRegressor',
-    'HOFMClassifier',
-    'HOFMRegressor',
+    "FFMClassifier",
+    "FFMRegressor",
+    "FMClassifier",
+    "FMRegressor",
+    "FwFMClassifier",
+    "FwFMRegressor",
+    "HOFMClassifier",
+    "HOFMRegressor",
 ]

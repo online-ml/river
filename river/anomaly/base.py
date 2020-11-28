@@ -7,7 +7,7 @@ import typing
 class Op:
     """An operator that is part of a split."""
 
-    __slots__ = 'symbol', 'func'
+    __slots__ = "symbol", "func"
 
     def __init__(self, symbol, func):
         self.symbol = symbol
@@ -20,8 +20,8 @@ class Op:
         return self.symbol
 
 
-LT = Op('<', operator.lt)
-EQ = Op('=', operator.eq)
+LT = Op("<", operator.lt)
+EQ = Op("=", operator.eq)
 
 
 class Split:
@@ -38,8 +38,8 @@ class Split:
     def __repr__(self):
         at = self.at
         if isinstance(at, float):
-            at = f'{at:.5f}'
-        return f'{self.on} {repr(self.how)} {at}'
+            at = f"{at:.5f}"
+        return f"{self.on} {repr(self.how)} {at}"
 
 
 class Node:
@@ -94,9 +94,16 @@ class Branch(Node):
 
         """
         return (
-            repr(self.split) + ' ' +
-            str({k: v for k, v in self.__dict__.items() if k not in ('split', 'left', 'right')}) +
-            textwrap.indent(f'\n{self.left}\n{self.right}', prefix=' ' * 2)
+            repr(self.split)
+            + " "
+            + str(
+                {
+                    k: v
+                    for k, v in self.__dict__.items()
+                    if k not in ("split", "left", "right")
+                }
+            )
+            + textwrap.indent(f"\n{self.left}\n{self.right}", prefix=" " * 2)
         )
 
     @property
@@ -240,7 +247,9 @@ class Branch(Node):
         yield None, 0, None, self, 0
         yield from iterate(self, depth=0)
 
-    def iter_blocks(self, limits: typing.Dict[typing.Hashable, typing.Tuple[float, float]], depth=-1):
+    def iter_blocks(
+        self, limits: typing.Dict[typing.Hashable, typing.Tuple[float, float]], depth=-1
+    ):
         """Iterate over the blocks which enclose each node.
 
         This only makes sense if the branches of the provided tree use the `<` operator as a
@@ -285,7 +294,9 @@ class Branch(Node):
         r_limits = {**limits, on: (at, limits[on][1])} if on in limits else limits
         yield from self.right.iter_blocks(limits=r_limits, depth=depth - 1)
 
-    def iter_splits(self, limits: typing.Dict[typing.Hashable, typing.Tuple[float, float]]):
+    def iter_splits(
+        self, limits: typing.Dict[typing.Hashable, typing.Tuple[float, float]]
+    ):
         """Iterate over splits.
 
         This only makes sense if the branches of the provided tree use the `<` operator as a split
@@ -326,7 +337,6 @@ class Branch(Node):
 
 
 class Leaf(Node):
-
     def __repr__(self):
         return str(self.__dict__)
 

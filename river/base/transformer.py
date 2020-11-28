@@ -10,7 +10,7 @@ class Transformer(base.Estimator):
     def _supervised(self):
         return False
 
-    def learn_one(self, x: dict, **kwargs) -> 'Transformer':
+    def learn_one(self, x: dict, **kwargs) -> "Transformer":
         """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `learn_one` step
@@ -50,6 +50,7 @@ class Transformer(base.Estimator):
     def __add__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
         from .. import compose
+
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
         return compose.TransformerUnion(self, other)
@@ -57,6 +58,7 @@ class Transformer(base.Estimator):
     def __radd__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
         from .. import compose
+
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
         return compose.TransformerUnion(other, self)
@@ -64,11 +66,13 @@ class Transformer(base.Estimator):
     def __mul__(self, feature):
         """Creates a Grouper."""
         from .. import compose
+
         return compose.Grouper(transformer=self, by=feature)
 
     def __rmul__(self, feature):
         """Creates a Grouper."""
         from .. import compose
+
         return compose.Grouper(transformer=self, by=feature)
 
 
@@ -79,7 +83,9 @@ class SupervisedTransformer(Transformer):
     def _supervised(self):
         return True
 
-    def learn_one(self, x: dict, y: base.typing.Target, **kwargs) -> 'SupervisedTransformer':
+    def learn_one(
+        self, x: dict, y: base.typing.Target, **kwargs
+    ) -> "SupervisedTransformer":
         """Update with a set of features `x` and a target `y`.
 
         Parameters

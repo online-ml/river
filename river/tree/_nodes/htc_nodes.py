@@ -24,6 +24,7 @@ class LearningNodeMC(LearningNode):
     attr_obs_params
         The parameters passed to the numeric attribute observer algorithm.
     """
+
     def __init__(self, stats, depth, attr_obs, attr_obs_params):
         super().__init__(stats, depth, attr_obs, attr_obs_params)
 
@@ -33,11 +34,11 @@ class LearningNodeMC(LearningNode):
 
     @staticmethod
     def new_numeric_attribute_observer(attr_obs, attr_obs_params):
-        if attr_obs == 'bst':
+        if attr_obs == "bst":
             return NumericAttributeClassObserverBinaryTree()
-        elif attr_obs == 'gaussian':
+        elif attr_obs == "gaussian":
             return NumericAttributeClassObserverGaussian(**attr_obs_params)
-        elif attr_obs == 'histogram':
+        elif attr_obs == "histogram":
             return NumericAttributeClassObserverHistogram(**attr_obs_params)
 
     def update_stats(self, y, sample_weight):
@@ -109,6 +110,7 @@ class LearningNodeNB(LearningNodeMC):
     attr_obs_params
         The parameters passed to the numeric attribute observer algorithm.
     """
+
     def __init__(self, stats, depth, attr_obs, attr_obs_params):
         super().__init__(stats, depth, attr_obs, attr_obs_params)
 
@@ -147,6 +149,7 @@ class LearningNodeNBA(LearningNodeMC):
     attr_obs_params
         The parameters passed to the numeric attribute observer algorithm.
     """
+
     def __init__(self, stats, depth, attr_obs, attr_obs_params):
         super().__init__(stats, depth, attr_obs, attr_obs_params)
         self._mc_correct_weight = 0.0

@@ -12,12 +12,14 @@ from river.drift import PageHinkley
 
 
 np.random.seed(12345)
-data_stream_1 = np.concatenate((np.random.randint(2, size=1000),
-                                  np.random.randint(8, size=1000)))
+data_stream_1 = np.concatenate(
+    (np.random.randint(2, size=1000), np.random.randint(8, size=1000))
+)
 
 np.random.seed(12345)
-data_stream_2 = np.concatenate((np.random.normal(0., 0.1, 1000) > 0,
-                                np.random.normal(0.5, 0.1, 1000) > 0)).astype(int)
+data_stream_2 = np.concatenate(
+    (np.random.normal(0.0, 0.1, 1000) > 0, np.random.normal(0.5, 0.1, 1000) > 0)
+).astype(int)
 
 np.random.seed(12345)
 # np.random.seed(1)
@@ -25,10 +27,14 @@ np.random.seed(12345)
 # d_1 = np.random.normal(mu, sigma, 1000) > 0
 # mu, sigma = 0.5, 0.1  # mean and standard deviation
 # d_2 = np.random.normal(mu, sigma, 1000) > 0
-data_stream_3 = np.concatenate((np.random.normal(0., 0.1, 500) > 0,
-                                np.random.normal(0.25, 0.1, 500) > 0,
-                                np.random.normal(0., 0.1, 500) > 0,
-                                np.random.normal(0.25, 0.1, 500) > 0)).astype(int)
+data_stream_3 = np.concatenate(
+    (
+        np.random.normal(0.0, 0.1, 500) > 0,
+        np.random.normal(0.25, 0.1, 500) > 0,
+        np.random.normal(0.0, 0.1, 500) > 0,
+        np.random.normal(0.25, 0.1, 500) > 0,
+    )
+).astype(int)
 
 
 def test_adwin():

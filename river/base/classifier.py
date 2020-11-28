@@ -12,7 +12,7 @@ class Classifier(estimator.Estimator):
     """A classifier."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> 'Classifier':
+    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> "Classifier":
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters
@@ -81,12 +81,12 @@ class Classifier(estimator.Estimator):
 
 
 class MiniBatchClassifier(Classifier):
-    """A classifier that can can operate on mini-batches.
-
-    """
+    """A classifier that can can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series, **kwargs) -> 'MiniBatchClassifier':
+    def learn_many(
+        self, X: pd.DataFrame, y: pd.Series, **kwargs
+    ) -> "MiniBatchClassifier":
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters
@@ -140,4 +140,4 @@ class MiniBatchClassifier(Classifier):
 
         # The following code acts as a default for each classifier, and may be overridden on an
         # individual basis.
-        return self.predict_proba_many(X).idxmax(axis='columns')
+        return self.predict_proba_many(X).idxmax(axis="columns")

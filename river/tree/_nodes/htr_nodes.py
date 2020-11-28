@@ -23,6 +23,7 @@ class LearningNodeMean(LearningNode):
     attr_obs_params
         The parameters passed to the numeric attribute observer algorithm.
     """
+
     def __init__(self, stats, depth, attr_obs, attr_obs_params):
         if stats is None:
             # Enforce the usage of Var to keep track of target statistics
@@ -57,9 +58,13 @@ class LearningNodeMean(LearningNode):
         """
         for obs in self.attribute_observers.values():
             if isinstance(obs, NumericAttributeRegressionObserver):
-                obs.remove_bad_splits(criterion=criterion, last_check_ratio=last_check_ratio,
-                                      last_check_vr=last_check_vr, last_check_e=last_check_e,
-                                      pre_split_dist=self.stats)
+                obs.remove_bad_splits(
+                    criterion=criterion,
+                    last_check_ratio=last_check_ratio,
+                    last_check_vr=last_check_vr,
+                    last_check_e=last_check_e,
+                    pre_split_dist=self.stats,
+                )
 
     def update_stats(self, y, sample_weight):
         self.stats.update(y, sample_weight)
@@ -119,12 +124,13 @@ class LearningNodeModel(LearningNodeMean):
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
+
     def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_model):
         super().__init__(stats, depth, attr_obs, attr_obs_params)
 
         self._leaf_model = leaf_model
         sign = inspect.signature(leaf_model.learn_one).parameters
-        self._model_supports_weights = 'sample_weight' in sign or 'w' in sign
+        self._model_supports_weights = "sample_weight" in sign or "w" in sign
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
@@ -160,17 +166,22 @@ class LearningNodeAdaptive(LearningNodeModel):
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
+
     def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_model):
         super().__init__(stats, depth, attr_obs, attr_obs_params, leaf_model)
-        self._fmse_mean = 0.
-        self._fmse_model = 0.
+        self._fmse_mean = 0.0
+        self._fmse_model = 0.0
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         pred_mean = self.stats.mean.get()
         pred_model = self._leaf_model.predict_one(x)
 
-        self._fmse_mean = tree.model_selector_decay * self._fmse_mean + (y - pred_mean) ** 2
-        self._fmse_model = tree.model_selector_decay * self._fmse_model + (y - pred_model) ** 2
+        self._fmse_mean = (
+            tree.model_selector_decay * self._fmse_mean + (y - pred_mean) ** 2
+        )
+        self._fmse_model = (
+            tree.model_selector_decay * self._fmse_model + (y - pred_model) ** 2
+        )
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 

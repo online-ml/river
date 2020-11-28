@@ -80,20 +80,30 @@ class ConceptDriftStream(base.SyntheticDataset):
 
     """
 
-    def __init__(self, stream: base.SyntheticDataset = Agrawal(seed=112),
-                 drift_stream: base.SyntheticDataset = Agrawal(seed=112,
-                                                               classification_function=2),
-                 position: int = 5000,
-                 width: int = 1000,
-                 seed: int = None,
-                 alpha: float = None):
+    def __init__(
+        self,
+        stream: base.SyntheticDataset = Agrawal(seed=112),
+        drift_stream: base.SyntheticDataset = Agrawal(
+            seed=112, classification_function=2
+        ),
+        position: int = 5000,
+        width: int = 1000,
+        seed: int = None,
+        alpha: float = None,
+    ):
         # Fairly simple check for consistent number of features
         if stream.n_features != drift_stream.n_features:
-            raise AttributeError(f"Inconsistent number of features between "
-                                 f"{stream.__name__} ({stream.n_features}) and "
-                                 f"{drift_stream.__name__} ({drift_stream.n_features}).")
-        super().__init__(n_features=stream.n_features, n_classes=stream.n_classes,
-                         n_outputs=stream.n_outputs, task=stream.task)
+            raise AttributeError(
+                f"Inconsistent number of features between "
+                f"{stream.__name__} ({stream.n_features}) and "
+                f"{drift_stream.__name__} ({drift_stream.n_features})."
+            )
+        super().__init__(
+            n_features=stream.n_features,
+            n_classes=stream.n_classes,
+            n_outputs=stream.n_outputs,
+            task=stream.task,
+        )
 
         self.n_samples = stream.n_samples
 
@@ -104,8 +114,10 @@ class ConceptDriftStream(base.SyntheticDataset):
                 w = int(1 / np.tan(self.alpha * np.pi / 180))
                 self.width = w if w > 0 else 1
             else:
-                raise ValueError(f"Invalid alpha value: {alpha}. "
-                                 f"Valid values are in the range (0.0, 90.0]")
+                raise ValueError(
+                    f"Invalid alpha value: {alpha}. "
+                    f"Valid values are in the range (0.0, 90.0]"
+                )
         else:
             self.width = width
         self.position = position
@@ -136,24 +148,31 @@ class ConceptDriftStream(base.SyntheticDataset):
         l_len_config = max(map(len, params.keys()))
         r_len_config = max(map(len, map(str, params.values())))
 
-        config = '\n\nConfiguration:\n'
+        config = "\n\nConfiguration:\n"
         for k, v in params.items():
             if not isinstance(v, base.SyntheticDataset):
                 indent = 0
             else:
                 indent = l_len_config + 2
-            config += ''.join(k.rjust(l_len_config) + '  ' +
-                              textwrap.indent(str(v).ljust(r_len_config), ' ' * indent)) + '\n'
+            config += (
+                "".join(
+                    k.rjust(l_len_config)
+                    + "  "
+                    + textwrap.indent(str(v).ljust(r_len_config), " " * indent)
+                )
+                + "\n"
+            )
 
         l_len_prop = max(map(len, self._repr_content.keys()))
         r_len_prop = max(map(len, self._repr_content.values()))
 
         out = (
-                f'Synthetic data generator\n\n' +
-                '\n'.join(
-                    k.rjust(l_len_prop) + '  ' + v.ljust(r_len_prop)
-                    for k, v in self._repr_content.items()
-                ) + config
+            f"Synthetic data generator\n\n"
+            + "\n".join(
+                k.rjust(l_len_prop) + "  " + v.ljust(r_len_prop)
+                for k, v in self._repr_content.items()
+            )
+            + config
         )
 
         return out

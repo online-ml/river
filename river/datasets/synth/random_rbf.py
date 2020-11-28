@@ -56,11 +56,17 @@ class RandomRBF(base.SyntheticDataset):
 
     """
 
-    def __init__(self, seed_model: int or np.random.RandomState = None,
-                 seed_sample: int or np.random.RandomState = None,
-                 n_classes: int = 2, n_features: int = 10, n_centroids: int = 50):
-        super().__init__(n_features=n_features, n_classes=n_classes,
-                         n_outputs=1, task=base.MULTI_CLF)
+    def __init__(
+        self,
+        seed_model: int or np.random.RandomState = None,
+        seed_sample: int or np.random.RandomState = None,
+        n_classes: int = 2,
+        n_features: int = 10,
+        n_centroids: int = 50,
+    ):
+        super().__init__(
+            n_features=n_features, n_classes=n_classes, n_outputs=1, task=base.MULTI_CLF
+        )
         self.seed_sample = seed_sample
         self.seed_model = seed_model
         self.n_num_features = n_features
@@ -88,12 +94,15 @@ class RandomRBF(base.SyntheticDataset):
         magnitude = np.sqrt(magnitude)
         desired_mag = rng_sample.normal() * current_centroid.std_dev
         scale = desired_mag / magnitude
-        x = {i: current_centroid.centre[i] + att_vals[i] * scale for i in range(self.n_features)}
+        x = {
+            i: current_centroid.centre[i] + att_vals[i] * scale
+            for i in range(self.n_features)
+        }
         y = current_centroid.class_label
         return x, y
 
     def _generate_centroids(self):
-        """ Generates centroids
+        """Generates centroids
 
         Sequentially creates all the centroids, choosing at random a center,
         a label, a standard deviation and a weight.
@@ -167,21 +176,31 @@ class RandomRBFDrift(RandomRBF):
 
     """
 
-    def __init__(self, seed_model: int or np.random.RandomState = None,
-                 seed_sample: int or np.random.RandomState = None,
-                 n_classes: int = 2, n_features: int = 10, n_centroids: int = 50,
-                 change_speed: float = 0.0, n_drift_centroids: int = 50):
-        super().__init__(seed_model=seed_model,
-                         seed_sample=seed_sample,
-                         n_classes=n_classes,
-                         n_features=n_features,
-                         n_centroids=n_centroids)
+    def __init__(
+        self,
+        seed_model: int or np.random.RandomState = None,
+        seed_sample: int or np.random.RandomState = None,
+        n_classes: int = 2,
+        n_features: int = 10,
+        n_centroids: int = 50,
+        change_speed: float = 0.0,
+        n_drift_centroids: int = 50,
+    ):
+        super().__init__(
+            seed_model=seed_model,
+            seed_sample=seed_sample,
+            n_classes=n_classes,
+            n_features=n_features,
+            n_centroids=n_centroids,
+        )
         self.change_speed = change_speed
         if n_drift_centroids <= n_centroids:
             self.n_drift_centroids = n_drift_centroids
         else:
-            warnings.warn(f"n_drift_centroids ({n_drift_centroids}) can not be larger than"
-                          f"n_centroids ({n_centroids}). Will use n_centroids instead.")
+            warnings.warn(
+                f"n_drift_centroids ({n_drift_centroids}) can not be larger than"
+                f"n_centroids ({n_centroids}). Will use n_centroids instead."
+            )
             self.n_drift_centroids = n_centroids
         self.centroid_speed = None
 
@@ -193,10 +212,16 @@ class RandomRBFDrift(RandomRBF):
             # Move centroids
             for i in range(self.n_drift_centroids):
                 for j in range(self.n_features):
-                    self.centroids[i].centre[j] += self.centroid_speed[i][j] * self.change_speed
+                    self.centroids[i].centre[j] += (
+                        self.centroid_speed[i][j] * self.change_speed
+                    )
 
-                    if (self.centroids[i].centre[j] > 1) or (self.centroids[i].centre[j] < 0):
-                        self.centroids[i].centre[j] = 1 if (self.centroids[i].centre[j] > 1) else 0
+                    if (self.centroids[i].centre[j] > 1) or (
+                        self.centroids[i].centre[j] < 0
+                    ):
+                        self.centroids[i].centre[j] = (
+                            1 if (self.centroids[i].centre[j] > 1) else 0
+                        )
                         self.centroid_speed[i][j] = -self.centroid_speed[i][j]
 
             x, y = self._generate_sample(rng_sample)
@@ -234,6 +259,7 @@ class RandomRBFDrift(RandomRBF):
 
 class Centroid:
     """ Class that stores a centroid's attributes. """
+
     def __init__(self):
         self.centre = None
         self.class_label = None

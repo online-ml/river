@@ -54,15 +54,10 @@ class KNNADWINClassifier(KNNClassifier):
 
     """
 
-    def __init__(self,
-                 n_neighbors=5,
-                 window_size=1000,
-                 leaf_size=30,
-                 p=2):
-        super().__init__(n_neighbors=n_neighbors,
-                         window_size=window_size,
-                         leaf_size=leaf_size,
-                         p=p)
+    def __init__(self, n_neighbors=5, window_size=1000, leaf_size=30, p=2):
+        super().__init__(
+            n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size, p=p
+        )
         self.adwin = ADWIN()
 
     def learn_one(self, x, y):

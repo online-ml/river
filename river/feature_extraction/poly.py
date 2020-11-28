@@ -4,16 +4,20 @@ from river import base
 from river import utils
 
 
-__all__ = ['PolynomialExtender']
+__all__ = ["PolynomialExtender"]
 
 
 def powerset(iterable, min_size, max_size, with_replacement=False):
     """powerset([A, B, C], 1, 2) --> (A,) (B,) (C,) (A, B) (A, C) (B, C)"""
-    combiner = itertools.combinations_with_replacement \
-        if with_replacement \
+    combiner = (
+        itertools.combinations_with_replacement
+        if with_replacement
         else itertools.combinations
+    )
     sizes = range(min_size, max_size + 1)
-    return itertools.chain.from_iterable(combiner(list(iterable), size) for size in sizes)
+    return itertools.chain.from_iterable(
+        combiner(list(iterable), size) for size in sizes
+    )
 
 
 class PolynomialExtender(base.Transformer):
@@ -91,7 +95,9 @@ class PolynomialExtender(base.Transformer):
 
     """
 
-    def __init__(self, degree=2, interaction_only=False, include_bias=False, bias_name='bias'):
+    def __init__(
+        self, degree=2, interaction_only=False, include_bias=False, bias_name="bias"
+    ):
         self.degree = degree
         self.interaction_only = interaction_only
         self.include_bias = include_bias
@@ -102,12 +108,12 @@ class PolynomialExtender(base.Transformer):
             keys,
             min_size=1,
             max_size=self.degree,
-            with_replacement=not self.interaction_only
+            with_replacement=not self.interaction_only,
         )
 
     def transform_one(self, x):
         features = {
-            '*'.join(map(str, sorted(combo))): utils.math.prod(x[c] for c in combo)
+            "*".join(map(str, sorted(combo))): utils.math.prod(x[c] for c in combo)
             for combo in self._enumerate(x.keys())
         }
         if self.include_bias:

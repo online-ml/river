@@ -9,7 +9,7 @@ import numpy as np
 
 
 def get_dimensions(X) -> tuple:
-    """ Return the dimensions from a numpy.array, numpy.ndarray or list.
+    """Return the dimensions from a numpy.array, numpy.ndarray or list.
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=
         factor = sum(dictionary.values())
 
     if raise_error and (factor == 0 or math.isnan(factor)):
-        raise ValueError(f'Can not normalize, normalization factor is {factor}')
+        raise ValueError(f"Can not normalize, normalization factor is {factor}")
 
     if not inplace:
         dictionary = copy.deepcopy(dictionary)
@@ -74,14 +74,17 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=
         # Can not normalize, return gracefully
         return dictionary
 
-    for key, value in dictionary.items():  # loop over the keys, values in the dictionary
+    for (
+        key,
+        value,
+    ) in dictionary.items():  # loop over the keys, values in the dictionary
         dictionary[key] = value / factor
 
     return dictionary
 
 
 def get_max_value_key(dictionary):
-    """ Get the key of the maximum value in a dictionary.
+    """Get the key of the maximum value in a dictionary.
 
     Parameters
     ----------
@@ -100,7 +103,7 @@ def get_max_value_key(dictionary):
         return 0
 
 
-def calculate_object_size(obj, unit='byte') -> int:
+def calculate_object_size(obj, unit="byte") -> int:
     """Iteratively calculates the `obj` size in bytes.
 
     Visits all the elements related to obj accounting for their respective
@@ -148,16 +151,15 @@ def calculate_object_size(obj, unit='byte') -> int:
 
             for k in obj.keys():
                 to_visit.append(k)
-        elif hasattr(obj, '__dict__'):
+        elif hasattr(obj, "__dict__"):
             to_visit.append(obj.__dict__)
-        elif hasattr(obj, '__iter__') and \
-                not isinstance(obj, (str, bytes, bytearray)):
+        elif hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes, bytearray)):
             for i in obj:
                 to_visit.append(i)
 
-    if unit == 'kB':
+    if unit == "kB":
         final_size = byte_size / 1024
-    elif unit == 'MB':
+    elif unit == "MB":
         final_size = byte_size / (2 ** 20)
     else:
         final_size = byte_size
@@ -195,7 +197,7 @@ def is_scalar_nan(x) -> bool:
 
 
 def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
-    """ Adds two dictionaries, summing the values of elements with the same key.
+    """Adds two dictionaries, summing the values of elements with the same key.
 
     This function iterates over the keys of dict_b and adds their corresponding
     values to the elements in dict_a. If dict_b has a (key, value) pair that
@@ -231,7 +233,7 @@ def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
 
 
 def add_delay_to_timestamps(timestamps, delay):
-    """ Add a given delay to a list of timestamps.
+    """Add a given delay to a list of timestamps.
 
     This function iterates over the timestamps, adding a time delay to them.
 
@@ -272,12 +274,14 @@ def check_random_state(seed):
 
     """
     if seed is None or seed is np.random:
-        return np.random.mtrand._rand    # noqa
+        return np.random.mtrand._rand  # noqa
     if isinstance(seed, (numbers.Integral, np.integer)):
         return np.random.RandomState(seed)
     if isinstance(seed, np.random.RandomState):
         return seed
-    raise ValueError(f'{seed} cannot be used to seed a numpy.random.RandomState instance')
+    raise ValueError(
+        f"{seed} cannot be used to seed a numpy.random.RandomState instance"
+    )
 
 
 def round_sig_fig(x, significant_digits=2) -> float:
@@ -287,7 +291,7 @@ def round_sig_fig(x, significant_digits=2) -> float:
     If`significant_digits` match the number of significant figures in `x`, its value
     will be used for rounding; otherwise, decimal places will be added or removed
     accordingly to the significant figures in `x`.
-    
+
     Parameters
     ----------
     x

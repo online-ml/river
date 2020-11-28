@@ -23,20 +23,20 @@ class MovieLens100K(base.RemoteDataset):
             n_samples=100_000,
             n_features=10,
             task=base.REG,
-            url='https://maxhalford.github.io/files/datasets/ml_100k.zip',
+            url="https://maxhalford.github.io/files/datasets/ml_100k.zip",
             size=11057876,
-            filename='ml_100k.csv'
+            filename="ml_100k.csv",
         )
 
     def _iter(self):
         return stream.iter_csv(
             self.path,
-            target='rating',
+            target="rating",
             converters={
-                'timestamp': int,
-                'release_date': int,
-                'age': float,
-                'rating': float
+                "timestamp": int,
+                "release_date": int,
+                "age": float,
+                "rating": float,
             },
-            delimiter='\t'
+            delimiter="\t",
         )

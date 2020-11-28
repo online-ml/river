@@ -59,7 +59,9 @@ class HDDM_A(DriftDetector):
 
     """
 
-    def __init__(self, drift_confidence=0.001, warning_confidence=0.005, two_sided_test=False):
+    def __init__(
+        self, drift_confidence=0.001, warning_confidence=0.005, two_sided_test=False
+    ):
         super().__init__()
         super().reset()
         self.n_min = 0
@@ -113,19 +115,17 @@ class HDDM_A(DriftDetector):
             self.n_max = self.total_n
 
         if self._mean_incr(
-                self.c_min,
-                self.n_min,
-                self.total_c,
-                self.total_n,
-                self.drift_confidence):
+            self.c_min, self.n_min, self.total_c, self.total_n, self.drift_confidence
+        ):
             self.n_estimation = self.total_n - self.n_min
             self.c_estimation = self.total_c - self.c_min
             self.n_min = self.n_max = self.total_n = 0
             self.c_min = self.c_max = self.total_c = 0
             self._in_concept_change = True
             self._in_warning_zone = False
-        elif self._mean_incr(self.c_min, self.n_min, self.total_c, self.total_n,
-                             self.warning_confidence):
+        elif self._mean_incr(
+            self.c_min, self.n_min, self.total_c, self.total_n, self.warning_confidence
+        ):
             self._in_concept_change = False
             self._in_warning_zone = True
         else:
@@ -133,7 +133,8 @@ class HDDM_A(DriftDetector):
             self._in_warning_zone = False
 
         if self.two_sided_test and self._mean_decr(
-                self.c_max, self.n_max, self.total_c, self.total_n):
+            self.c_max, self.n_max, self.total_c, self.total_n
+        ):
             self.n_estimation = self.total_n - self.n_max
             self.c_estimation = self.total_c - self.c_max
             self.n_min = self.n_max = self.total_n = 0

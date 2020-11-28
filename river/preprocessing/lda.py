@@ -9,7 +9,7 @@ from scipy import ndimage
 from river import base
 
 
-__all__ = ['LDA']
+__all__ = ["LDA"]
 
 
 class LDA(base.Transformer):
@@ -111,10 +111,21 @@ class LDA(base.Transformer):
 
     """
 
-    def __init__(self, n_components=10, number_of_documents=1e6, alpha_theta=.5, alpha_beta=100.,
-                 tau=64., kappa=.75, vocab_prune_interval=10, number_of_samples=10,
-                 ranking_smooth_factor=1e-12, burn_in_sweeps=5, maximum_size_vocabulary=4000,
-                 seed: int = None):
+    def __init__(
+        self,
+        n_components=10,
+        number_of_documents=1e6,
+        alpha_theta=0.5,
+        alpha_beta=100.0,
+        tau=64.0,
+        kappa=0.75,
+        vocab_prune_interval=10,
+        number_of_samples=10,
+        ranking_smooth_factor=1e-12,
+        burn_in_sweeps=5,
+        maximum_size_vocabulary=4000,
+        seed: int = None,
+    ):
 
         self.n_components = n_components
         self.number_of_documents = number_of_documents
@@ -170,9 +181,10 @@ class LDA(base.Transformer):
         words_indexes_list = [self.word_to_index[word] for word in word_list]
 
         # Sample empirical topic assignment:
-        statistics, batch_document_topic_distribution = self._compute_statistics_components(
-            words_indexes_list
-        )
+        (
+            statistics,
+            batch_document_topic_distribution,
+        ) = self._compute_statistics_components(words_indexes_list)
 
         # Online variational inference
         self._update_weights(statistics=statistics)
@@ -221,7 +233,9 @@ class LDA(base.Transformer):
                 self.truncation_size_prime += 1
 
     @classmethod
-    def _compute_weights(cls, n_components: int, nu_1: dict, nu_2: dict) -> typing.Tuple[dict, dict]:
+    def _compute_weights(
+        cls, n_components: int, nu_1: dict, nu_2: dict
+    ) -> typing.Tuple[dict, dict]:
         """Calculates the vocabulary weighting according to the word distribution present in the
         vocabulary.
 
@@ -256,12 +270,12 @@ class LDA(base.Transformer):
             exp_oov_weights[topic] = np.exp(psi_nu_1_nu_2_minus_psi_nu_2[0][-1])
 
             psi_nu_1_nu_2_minus_psi_nu_2 = ndimage.interpolation.shift(
-                input=psi_nu_1_nu_2_minus_psi_nu_2[0],
-                shift=1,
-                cval=0
+                input=psi_nu_1_nu_2_minus_psi_nu_2[0], shift=1, cval=0
             )
 
-            exp_weights[topic] = np.exp(psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2)
+            exp_weights[topic] = np.exp(
+                psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2
+            )
 
         return exp_weights, exp_oov_weights
 
@@ -279,9 +293,7 @@ class LDA(base.Transformer):
         for k in range(self.n_components):
 
             reverse_cumulated_phi[k] = ndimage.interpolation.shift(
-                input=statistics[k],
-                shift=-1,
-                cval=0
+                input=statistics[k], shift=-1, cval=0
             )
 
             reverse_cumulated_phi[k] = np.flip(reverse_cumulated_phi[k])
@@ -296,21 +308,29 @@ class LDA(base.Transformer):
 
             if self.truncation_size < self.truncation_size_prime:
 
-                difference_truncation = self.truncation_size_prime - self.truncation_size
+                difference_truncation = (
+                    self.truncation_size_prime - self.truncation_size
+                )
 
                 self.nu_1[k] = np.append(self.nu_1[k], np.ones(difference_truncation))
                 self.nu_2[k] = np.append(self.nu_2[k], np.ones(difference_truncation))
 
             # Variational Approximation
-            self.nu_1[k] += (self.epsilon * (self.number_of_documents *
-                                             np.array(statistics[k]) + 1 - self.nu_1[k]))
+            self.nu_1[k] += self.epsilon * (
+                self.number_of_documents * np.array(statistics[k]) + 1 - self.nu_1[k]
+            )
 
-            self.nu_2[k] += (self.epsilon * (self.alpha_beta + self.number_of_documents *
-                                             np.array(reverse_cumulated_phi[k]) - self.nu_2[k]))
+            self.nu_2[k] += self.epsilon * (
+                self.alpha_beta
+                + self.number_of_documents * np.array(reverse_cumulated_phi[k])
+                - self.nu_2[k]
+            )
 
         self.truncation_size = self.truncation_size_prime
 
-    def _compute_statistics_components(self, words_indexes_list: list) -> typing.Tuple[dict, dict]:
+    def _compute_statistics_components(
+        self, words_indexes_list: list
+    ) -> typing.Tuple[dict, dict]:
         """Extract latent variables from the document and words.
 
         Parameters
@@ -377,7 +397,7 @@ class LDA(base.Transformer):
 
         for k in range(self.n_components):
 
-            statistics[k] /= (self.number_of_samples - self.burn_in_sweeps)
+            statistics[k] /= self.number_of_samples - self.burn_in_sweeps
 
         return statistics, document_topic_distribution
 
@@ -387,8 +407,8 @@ class LDA(base.Transformer):
 
             for topic in range(self.n_components):
                 # Updates words latent variables
-                self.nu_1[topic] = self.nu_1[topic][:self.maximum_size_vocabulary]
-                self.nu_2[topic] = self.nu_2[topic][:self.maximum_size_vocabulary]
+                self.nu_1[topic] = self.nu_1[topic][: self.maximum_size_vocabulary]
+                self.nu_2[topic] = self.nu_2[topic][: self.maximum_size_vocabulary]
 
             new_word_to_index = {}
             new_index_to_word = {}

@@ -7,18 +7,19 @@ from river import optim
 from river import utils
 
 
-__all__ = ['PAClassifier', 'PARegressor']
+__all__ = ["PAClassifier", "PARegressor"]
 
 
 class BasePA:
-
     def __init__(self, C, mode, learn_intercept):
         self.C = C
         self.mode = mode
-        self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[mode]
+        self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[
+            mode
+        ]
         self.learn_intercept = learn_intercept
         self.weights = collections.defaultdict(float)
-        self.intercept = 0.
+        self.intercept = 0.0
 
     @classmethod
     def _calc_tau_0(cls, x, loss):
@@ -167,7 +168,7 @@ class PAClassifier(BasePA, base.Classifier):
 
     """
 
-    def __init__(self, C=1., mode=1, learn_intercept=True):
+    def __init__(self, C=1.0, mode=1, learn_intercept=True):
         super().__init__(C=C, mode=mode, learn_intercept=learn_intercept)
         self.loss = optim.losses.Hinge()
 
@@ -186,4 +187,4 @@ class PAClassifier(BasePA, base.Classifier):
 
     def predict_proba_one(self, x):
         y_pred = utils.math.sigmoid(utils.math.dot(x, self.weights) + self.intercept)
-        return {False: 1. - y_pred, True: y_pred}
+        return {False: 1.0 - y_pred, True: y_pred}

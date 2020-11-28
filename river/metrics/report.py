@@ -1,6 +1,3 @@
-import collections
-import functools
-
 from .. import utils
 
 from . import base
@@ -77,11 +74,10 @@ class ClassificationReport(base.MultiClassMetric):
         raise NotImplementedError
 
     def __repr__(self):
-
         def fmt_float(x):
-            return f'{x:.{self.decimals}f}'
+            return f"{x:.{self.decimals}f}"
 
-        headers = ['', 'Precision', 'Recall', 'F1', 'Support']
+        headers = ["", "Precision", "Recall", "F1", "Support"]
         classes = sorted(self.cm.classes)
 
         for c in classes:
@@ -90,36 +86,51 @@ class ClassificationReport(base.MultiClassMetric):
 
         columns = [
             # Row names
-            ['', *map(str, classes), '', 'Macro', 'Micro', 'Weighted'],
+            ["", *map(str, classes), "", "Macro", "Micro", "Weighted"],
             # Precision values
             [
-                '', *[fmt_float(self._f1s[c].precision.get()) for c in classes], '',
-                *map(fmt_float, [
-                    self._macro_precision.get(),
-                    self._micro_precision.get(),
-                    self._weighted_precision.get()
-                ])
+                "",
+                *[fmt_float(self._f1s[c].precision.get()) for c in classes],
+                "",
+                *map(
+                    fmt_float,
+                    [
+                        self._macro_precision.get(),
+                        self._micro_precision.get(),
+                        self._weighted_precision.get(),
+                    ],
+                ),
             ],
             # Recall values
             [
-                '', *[fmt_float(self._f1s[c].recall.get()) for c in classes], '',
-                *map(fmt_float, [
-                    self._macro_recall.get(),
-                    self._micro_recall.get(),
-                    self._weighted_recall.get()
-                ])
+                "",
+                *[fmt_float(self._f1s[c].recall.get()) for c in classes],
+                "",
+                *map(
+                    fmt_float,
+                    [
+                        self._macro_recall.get(),
+                        self._micro_recall.get(),
+                        self._weighted_recall.get(),
+                    ],
+                ),
             ],
             # F1 values
             [
-                '', *[fmt_float(self._f1s[c].get()) for c in classes], '',
-                *map(fmt_float, [
-                    self._macro_f1.get(),
-                    self._micro_f1.get(),
-                    self._weighted_f1.get()
-                ])
+                "",
+                *[fmt_float(self._f1s[c].get()) for c in classes],
+                "",
+                *map(
+                    fmt_float,
+                    [
+                        self._macro_f1.get(),
+                        self._micro_f1.get(),
+                        self._weighted_f1.get(),
+                    ],
+                ),
             ],
             # Support
-            ['', *[str(self.cm.sum_row[c]).rstrip('.0') for c in classes], *[''] * 4]
+            ["", *[str(self.cm.sum_row[c]).rstrip(".0") for c in classes], *[""] * 4],
         ]
 
         # Build the table
@@ -127,7 +138,7 @@ class ClassificationReport(base.MultiClassMetric):
 
         # Write down the accuracy
         width = len(table.splitlines()[0])
-        accuracy = f'{self._accuracy.get():.{self.decimals - 2}%}' + ' accuracy'
-        table += '\n\n' + f'{accuracy:^{width}}'
+        accuracy = f"{self._accuracy.get():.{self.decimals - 2}%}" + " accuracy"
+        table += "\n\n" + f"{accuracy:^{width}}"
 
         return table

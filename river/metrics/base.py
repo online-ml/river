@@ -10,15 +10,15 @@ from . import confusion
 
 
 __all__ = [
-    'BinaryMetric',
-    'ClassificationMetric',
-    'Metric',
-    'Metrics',
-    'MultiClassMetric',
-    'MultiOutputClassificationMetric',
-    'MultiOutputRegressionMetric',
-    'RegressionMetric',
-    'WrapperMetric'
+    "BinaryMetric",
+    "ClassificationMetric",
+    "Metric",
+    "Metrics",
+    "MultiClassMetric",
+    "MultiOutputClassificationMetric",
+    "MultiOutputRegressionMetric",
+    "RegressionMetric",
+    "WrapperMetric",
 ]
 
 
@@ -26,14 +26,14 @@ class Metric(abc.ABC):
     """Mother class for all metrics."""
 
     # Define the format specification used for string representation.
-    _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+    _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, y_true, y_pred, sample_weight) -> 'Metric':
+    def update(self, y_true, y_pred, sample_weight) -> "Metric":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true, y_pred, sample_weight) -> 'Metric':
+    def revert(self, y_true, y_pred, sample_weight) -> "Metric":
         """Revert the metric."""
 
     @abc.abstractmethod
@@ -50,7 +50,7 @@ class Metric(abc.ABC):
 
     def __repr__(self):
         """Returns the class name along with the current value of the metric."""
-        return f'{self.__class__.__name__}: {self.get():{self._fmt}}'.rstrip('0')
+        return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
 
 class ClassificationMetric(Metric):
@@ -61,11 +61,11 @@ class ClassificationMetric(Metric):
             cm = confusion.ConfusionMatrix()
         self.cm = cm
 
-    def update(self, y_true, y_pred, sample_weight=1.):
+    def update(self, y_true, y_pred, sample_weight=1.0):
         self.cm.update(y_true, y_pred, sample_weight)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1., correction=None):
+    def revert(self, y_true, y_pred, sample_weight=1.0, correction=None):
         self.cm.revert(y_true, y_pred, sample_weight, correction)
         return self
 
@@ -86,10 +86,12 @@ class ClassificationMetric(Metric):
         """Clamp a number in between the (0, 1) interval."""
         return utils.math.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
 
-    def __add__(self, other) -> 'Metrics':
+    def __add__(self, other) -> "Metrics":
         if not isinstance(other, ClassificationMetric):
-            raise ValueError(f'{self.__class__.__name__} and {other.__class__.__name__} metrics '
-                             'are not compatible')
+            raise ValueError(
+                f"{self.__class__.__name__} and {other.__class__.__name__} metrics "
+                "are not compatible"
+            )
         return Metrics([self, other])
 
     @property
@@ -115,14 +117,23 @@ class BinaryMetric(ClassificationMetric):
         super().__init__(cm)
         self.pos_val = pos_val
 
-    def update(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-               sample_weight=1.) -> 'BinaryMetric':
+    def update(
+        self,
+        y_true: bool,
+        y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
+        sample_weight=1.0,
+    ) -> "BinaryMetric":
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
         return super().update(y_true == self.pos_val, y_pred, sample_weight)
 
-    def revert(self, y_true: bool, y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
-               sample_weight=1., correction=None) -> 'BinaryMetric':
+    def revert(
+        self,
+        y_true: bool,
+        y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
+        sample_weight=1.0,
+        correction=None,
+    ) -> "BinaryMetric":
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
         return super().revert(y_true == self.pos_val, y_pred, sample_weight, correction)
@@ -136,13 +147,21 @@ class RegressionMetric(Metric):
     """Mother class for all regression metrics."""
 
     @abc.abstractmethod
-    def update(self, y_true: numbers.Number, y_pred: numbers.Number,
-               sample_weight: numbers.Number) -> 'RegressionMetric':
+    def update(
+        self,
+        y_true: numbers.Number,
+        y_pred: numbers.Number,
+        sample_weight: numbers.Number,
+    ) -> "RegressionMetric":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true: numbers.Number, y_pred: numbers.Number,
-               sample_weight: numbers.Number) -> 'RegressionMetric':
+    def revert(
+        self,
+        y_true: numbers.Number,
+        y_pred: numbers.Number,
+        sample_weight: numbers.Number,
+    ) -> "RegressionMetric":
         """Revert the metric."""
 
     @property
@@ -152,10 +171,12 @@ class RegressionMetric(Metric):
     def works_with(self, model) -> bool:
         return utils.inspect.isregressor(model)
 
-    def __add__(self, other) -> 'Metrics':
+    def __add__(self, other) -> "Metrics":
         if not isinstance(other, RegressionMetric):
-            raise ValueError(f'{self.__class__.__name__} and {other.__class__.__name__} metrics '
-                             'are not compatible')
+            raise ValueError(
+                f"{self.__class__.__name__} and {other.__class__.__name__} metrics "
+                "are not compatible"
+            )
         return Metrics([self, other])
 
 
@@ -172,10 +193,12 @@ class MultiOutputClassificationMetric(Metric):
         y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
         y_pred: typing.Union[
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]]
+            typing.Dict[
+                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]
+            ],
         ],
         sample_weight: numbers.Number = 1.0,
-    ) -> 'MultiOutputClassificationMetric':
+    ) -> "MultiOutputClassificationMetric":
         """Update the metric."""
         self.cm.update(y_true, y_pred, sample_weight)
         return self
@@ -185,11 +208,13 @@ class MultiOutputClassificationMetric(Metric):
         y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
         y_pred: typing.Union[
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]]
+            typing.Dict[
+                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]
+            ],
         ],
         sample_weight: numbers.Number = 1.0,
         correction=None,
-    ) -> 'MultiOutputClassificationMetric':
+    ) -> "MultiOutputClassificationMetric":
         """Revert the metric."""
         self.cm.revert(y_true, y_pred, sample_weight, correction)
         return self
@@ -209,16 +234,16 @@ class MultiOutputRegressionMetric(Metric):
         self,
         y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        sample_weight: numbers.Number
-    ) -> 'MultiOutputRegressionMetric':
+        sample_weight: numbers.Number,
+    ) -> "MultiOutputRegressionMetric":
         """Update the metric."""
 
     def revert(
         self,
         y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        sample_weight: numbers.Number
-    ) -> 'MultiOutputRegressionMetric':
+        sample_weight: numbers.Number,
+    ) -> "MultiOutputRegressionMetric":
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
@@ -228,15 +253,15 @@ class MultiOutputRegressionMetric(Metric):
 class Metrics(Metric, collections.UserList):
     """A container class for handling multiple metrics at once."""
 
-    def __init__(self, metrics, str_sep=', '):
+    def __init__(self, metrics, str_sep=", "):
         super().__init__(metrics)
         self.str_sep = str_sep
 
-    def update(self, y_true, y_pred, sample_weight=1.):
+    def update(self, y_true, y_pred, sample_weight=1.0):
 
         # If the metrics are classification metrics, then we have to handle the case where some
         # of the metrics require labels, whilst others need to be fed probabilities
-        if hasattr(self, 'requires_labels') and not self.requires_labels:
+        if hasattr(self, "requires_labels") and not self.requires_labels:
             for m in self:
                 if m.requires_labels:
                     m.update(y_true, max(y_pred, key=y_pred.get))
@@ -248,11 +273,11 @@ class Metrics(Metric, collections.UserList):
             m.update(y_true, y_pred)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.):
+    def revert(self, y_true, y_pred, sample_weight=1.0):
 
         # If the metrics are classification metrics, then we have to handle the case where some
         # of the metrics require labels, whilst others need to be fed probabilities
-        if hasattr(self, 'requires_labels') and not self.requires_labels:
+        if hasattr(self, "requires_labels") and not self.requires_labels:
             for m in self:
                 if m.requires_labels:
                     m.revert(y_true, max(y_pred, key=y_pred.get), sample_weight)
@@ -291,7 +316,6 @@ class Metrics(Metric, collections.UserList):
 
 
 class WrapperMetric(Metric):
-
     @property
     def _fmt(self):
         return self.metric._fmt
@@ -335,11 +359,11 @@ class MeanMetric(abc.ABC):
     def _eval(self, y_true, y_pred):
         pass
 
-    def update(self, y_true, y_pred, sample_weight=1.):
+    def update(self, y_true, y_pred, sample_weight=1.0):
         self._mean.update(x=self._eval(y_true, y_pred), w=sample_weight)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.):
+    def revert(self, y_true, y_pred, sample_weight=1.0):
         self._mean.revert(x=self._eval(y_true, y_pred), w=sample_weight)
         return self
 

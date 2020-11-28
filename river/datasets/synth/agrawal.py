@@ -85,38 +85,57 @@ class Agrawal(base.SyntheticDataset):
           Data Engineering, 5(6), December 1993.
 
     """
-    def __init__(self, classification_function: int = 0,
-                 seed: int or np.random.RandomState = None,
-                 balance_classes: bool = False,
-                 perturbation: float = 0.0):
+
+    def __init__(
+        self,
+        classification_function: int = 0,
+        seed: int or np.random.RandomState = None,
+        balance_classes: bool = False,
+        perturbation: float = 0.0,
+    ):
         super().__init__(n_features=9, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
 
         # Classification functions to use
-        self._classification_functions = [self._classification_function_0,
-                                          self._classification_function_1,
-                                          self._classification_function_2,
-                                          self._classification_function_3,
-                                          self._classification_function_4,
-                                          self._classification_function_5,
-                                          self._classification_function_6,
-                                          self._classification_function_7,
-                                          self._classification_function_8,
-                                          self._classification_function_9]
+        self._classification_functions = [
+            self._classification_function_0,
+            self._classification_function_1,
+            self._classification_function_2,
+            self._classification_function_3,
+            self._classification_function_4,
+            self._classification_function_5,
+            self._classification_function_6,
+            self._classification_function_7,
+            self._classification_function_8,
+            self._classification_function_9,
+        ]
         if classification_function not in range(10):
-            raise ValueError(f"classification_function takes values from 0 to 9 "
-                             f"and {classification_function} was passed")
+            raise ValueError(
+                f"classification_function takes values from 0 to 9 "
+                f"and {classification_function} was passed"
+            )
         self.classification_function = classification_function
         self.balance_classes = balance_classes
         if not 0.0 <= perturbation <= 1.0:
-            raise ValueError(f"noise percentage should be in [0.0..1.0] "
-                             f"and {perturbation} was passed")
+            raise ValueError(
+                f"noise percentage should be in [0.0..1.0] "
+                f"and {perturbation} was passed"
+            )
         self.perturbation = perturbation
         self.seed = seed
         self.n_num_features = 6
         self.n_cat_features = 3
         self._next_class_should_be_zero = False
-        self.feature_names = ["salary", "commission", "age", "elevel", "car", "zipcode", "hvalue",
-                              "hyears", "loan"]
+        self.feature_names = [
+            "salary",
+            "commission",
+            "age",
+            "elevel",
+            "car",
+            "zipcode",
+            "hvalue",
+            "hyears",
+            "loan",
+        ]
         self.target_values = [i for i in range(self.n_classes)]
 
     def __iter__(self):
@@ -128,7 +147,9 @@ class Agrawal(base.SyntheticDataset):
             desired_class_found = False
             while not desired_class_found:
                 salary = 20000 + 130000 * self._rng.rand()
-                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.rand())
+                commission = (
+                    0 if (salary >= 75000) else (10000 + 75000 * self._rng.rand())
+                )
                 age = 20 + self._rng.randint(61)
                 elevel = self._rng.randint(5)
                 car = self._rng.randint(20)
@@ -136,19 +157,19 @@ class Agrawal(base.SyntheticDataset):
                 hvalue = (9 - zipcode) * 100000 * (0.5 + self._rng.rand())
                 hyears = 1 + self._rng.randint(30)
                 loan = self._rng.rand() * 500000
-                y = self._classification_functions[self.classification_function](salary,
-                                                                                 commission,
-                                                                                 age, elevel,
-                                                                                 car, zipcode,
-                                                                                 hvalue, hyears,
-                                                                                 loan)
+                y = self._classification_functions[self.classification_function](
+                    salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+                )
                 if not self.balance_classes:
                     desired_class_found = True
                 else:
-                    if (self._next_class_should_be_zero and (y == 0)) or \
-                            ((not self._next_class_should_be_zero) and (y == 1)):
+                    if (self._next_class_should_be_zero and (y == 0)) or (
+                        (not self._next_class_should_be_zero) and (y == 1)
+                    ):
                         desired_class_found = True
-                        self._next_class_should_be_zero = not self._next_class_should_be_zero
+                        self._next_class_should_be_zero = (
+                            not self._next_class_should_be_zero
+                        )
 
             if self.perturbation > 0.0:
                 salary = self._perturb_value(salary, 20000, 150000)
@@ -186,13 +207,15 @@ class Agrawal(base.SyntheticDataset):
         self.classification_function = new_function
 
     @staticmethod
-    def _classification_function_0(salary, commission, age, elevel, car, zipcode, hvalue,
-                                   hyears, loan):
+    def _classification_function_0(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
         return int((age < 40) or (60 <= age))
 
     @staticmethod
-    def _classification_function_1(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
-                                   loan):
+    def _classification_function_1(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
         if age < 40:
             return int((50000 <= salary) and (salary <= 100000))
         elif age < 60:
@@ -201,8 +224,9 @@ class Agrawal(base.SyntheticDataset):
             return int((25000 <= salary) and (salary <= 75000))
 
     @staticmethod
-    def _classification_function_2(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
-                                   loan):
+    def _classification_function_2(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
         if age < 40:
             return int((elevel == 0) or (elevel == 1))
         elif age < 60:
@@ -211,8 +235,9 @@ class Agrawal(base.SyntheticDataset):
             return int((elevel == 2) or (elevel == 3) or (elevel == 4))
 
     @staticmethod
-    def _classification_function_3(salary, commission, age, elevel, car, zipcode, hvalue,
-                                   hyears, loan):
+    def _classification_function_3(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
         if age < 40:
             if (elevel == 0) or (elevel == 1):
                 return int((25000 <= salary) and (salary <= 75000))
@@ -230,8 +255,9 @@ class Agrawal(base.SyntheticDataset):
                 return int((25000 <= salary) and (salary <= 75000))
 
     @staticmethod
-    def _classification_function_4(salary, commission, age, elevel, car, zipcode, hvalue,
-                                   hyears, loan):
+    def _classification_function_4(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
         if age < 40:
             if (50000 <= salary) and (salary <= 100000):
                 return int((100000 <= loan) and (loan <= 300000))
@@ -249,8 +275,9 @@ class Agrawal(base.SyntheticDataset):
                 return int((75000 <= loan) and (loan <= 300000))
 
     @staticmethod
-    def _classification_function_5(salary, commission, age, elevel, car, zipcode, hvalue,
-                                   hyears, loan):
+    def _classification_function_5(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
         totalsalary = salary + commission
 
         if age < 40:
@@ -261,29 +288,32 @@ class Agrawal(base.SyntheticDataset):
             return int((25000 <= totalsalary) and (totalsalary <= 75000))
 
     @staticmethod
-    def _classification_function_6(salary, commission, age, elevel, car, zipcode, hvalue, hyears,
-                                   loan):
-        disposable = (2 * (salary + commission) / 3 - loan / 5 - 20000)
+    def _classification_function_6(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
+        disposable = 2 * (salary + commission) / 3 - loan / 5 - 20000
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def _classification_function_7(salary, commission, age, elevel, car, zipcode, hvalue,
-                                   hyears, loan):
-        disposable = (2 * (salary + commission) / 3 - 5000 * elevel - 20000)
+    def _classification_function_7(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
+        disposable = 2 * (salary + commission) / 3 - 5000 * elevel - 20000
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def _classification_function_8(salary, commission, age, elevel, car, zipcode, hvalue,
-                                   hyears, loan):
-        disposable = (2 * (salary + commission) / 3 - 5000 * elevel - loan / 5 - 10000)
+    def _classification_function_8(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
+        disposable = 2 * (salary + commission) / 3 - 5000 * elevel - loan / 5 - 10000
         return 0 if disposable > 1 else 1
 
     @staticmethod
-    def _classification_function_9(salary, commission, age, elevel, car, zipcode, hvalue,
-                                   hyears, loan):
+    def _classification_function_9(
+        salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
+    ):
         equity = 0
         if hyears >= 20:
             equity = hvalue * (hyears - 20) / 10
-        disposable = (2 * (salary + commission) / 3 - 5000 * elevel + equity / 5 - 10000)
+        disposable = 2 * (salary + commission) / 3 - 5000 * elevel + equity / 5 - 10000
         return 0 if disposable > 1 else 1
-

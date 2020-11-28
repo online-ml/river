@@ -66,14 +66,25 @@ class Waveform(base.SyntheticDataset):
     _N_CLASSES = 3
     _N_BASE_FEATURES = 21
     _N_FEATURES_INCLUDING_NOISE = 40
-    _H_FUNCTION = np.array([[0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],
-                            [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0]])
+    _H_FUNCTION = np.array(
+        [
+            [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0],
+            [0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0],
+        ]
+    )
 
-    def __init__(self, seed: int or np.random.RandomState = None, has_noise: bool = False):
-        super().__init__(n_features=self._N_BASE_FEATURES if not has_noise else
-                         self._N_FEATURES_INCLUDING_NOISE, n_classes=self._N_CLASSES,
-                         n_outputs=1, task=base.MULTI_CLF)
+    def __init__(
+        self, seed: int or np.random.RandomState = None, has_noise: bool = False
+    ):
+        super().__init__(
+            n_features=self._N_BASE_FEATURES
+            if not has_noise
+            else self._N_FEATURES_INCLUDING_NOISE,
+            n_classes=self._N_CLASSES,
+            n_outputs=1,
+            task=base.MULTI_CLF,
+        )
         self.seed = seed
         self.has_noise = has_noise
         self.n_num_features = self._N_BASE_FEATURES
@@ -92,8 +103,11 @@ class Waveform(base.SyntheticDataset):
             multiplier_b = 1.0 - multiplier_a
 
             for i in range(self._N_BASE_FEATURES):
-                x[i] = multiplier_a * self._H_FUNCTION[choice_a][i] + multiplier_b * \
-                    self._H_FUNCTION[choice_b][i] + rng.normal()
+                x[i] = (
+                    multiplier_a * self._H_FUNCTION[choice_a][i]
+                    + multiplier_b * self._H_FUNCTION[choice_b][i]
+                    + rng.normal()
+                )
 
             if self.has_noise:
                 for i in range(self._N_BASE_FEATURES, self._N_FEATURES_INCLUDING_NOISE):

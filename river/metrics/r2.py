@@ -1,7 +1,7 @@
 from . import base
 from river import stats
 
-__all__ = ['R2']
+__all__ = ["R2"]
 
 
 class R2(base.RegressionMetric):
@@ -40,6 +40,7 @@ class R2(base.RegressionMetric):
     [^1]: [Coefficient of determination (Wikipedia)](https://en.wikipedia.org/wiki/Coefficient_of_determination)
 
     """
+
     def __init__(self):
         super().__init__()
         self._y_var = stats.Var()
@@ -51,19 +52,19 @@ class R2(base.RegressionMetric):
     def bigger_is_better(self):
         return True
 
-    def update(self, y_true, y_pred, sample_weight=1.):
+    def update(self, y_true, y_pred, sample_weight=1.0):
         self._y_var.update(y_true, w=sample_weight)
         squared_error = (y_true - y_pred) * (y_true - y_pred) * sample_weight
         self._residual_sum_of_squares += squared_error
 
         # To track back
-        self.sample_correction = {'squared_error': squared_error}
+        self.sample_correction = {"squared_error": squared_error}
 
         return self
 
     def revert(self, y_true, y_pred, sample_weight, correction=None):
         self._y_var.update(y_true, w=-sample_weight)
-        self._residual_sum_of_squares -= correction['squared_error']
+        self._residual_sum_of_squares -= correction["squared_error"]
 
         return self
 
@@ -73,7 +74,7 @@ class R2(base.RegressionMetric):
                 total_sum_of_squares = (self._y_var.mean.n - 1) * self._y_var.get()
                 return 1 - (self._residual_sum_of_squares / total_sum_of_squares)
             except ZeroDivisionError:
-                return 0.
+                return 0.0
 
         # Not defined for n_samples < 2
-        return 0.
+        return 0.0

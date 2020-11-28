@@ -7,8 +7,7 @@ from river import optim
 from river import utils
 
 
-class Triplet(collections.namedtuple('Triplet', 'x y loss')):
-
+class Triplet(collections.namedtuple("Triplet", "x y loss")):
     def __lt__(self, other):
         return self.loss < other.loss
 
@@ -129,8 +128,14 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
 
     """
 
-    def __init__(self, regressor: base.Regressor, size: int, p: float,
-                 loss: optim.losses.RegressionLoss = None, seed: int = None):
+    def __init__(
+        self,
+        regressor: base.Regressor,
+        size: int,
+        p: float,
+        loss: optim.losses.RegressionLoss = None,
+        seed: int = None,
+    ):
         if loss is None:
             loss = optim.losses.Absolute()
         super().__init__(model=regressor, loss=loss, size=size, p=p, seed=seed)
@@ -195,11 +200,20 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
 
     """
 
-    def __init__(self, classifier: base.Classifier, size: int, p: float,
-                 loss: typing.Union[optim.losses.BinaryLoss, optim.losses.MultiClassLoss] = None,
-                 seed: int = None):
+    def __init__(
+        self,
+        classifier: base.Classifier,
+        size: int,
+        p: float,
+        loss: typing.Union[optim.losses.BinaryLoss, optim.losses.MultiClassLoss] = None,
+        seed: int = None,
+    ):
         if loss is None:
-            loss = optim.losses.CrossEntropy() if classifier._multiclass else optim.losses.Log()
+            loss = (
+                optim.losses.CrossEntropy()
+                if classifier._multiclass
+                else optim.losses.Log()
+            )
         super().__init__(model=classifier, loss=loss, size=size, p=p, seed=seed)
 
     @property

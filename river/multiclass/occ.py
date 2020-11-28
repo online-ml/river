@@ -6,7 +6,7 @@ from river import base
 from river import linear_model
 
 
-__all__ = ['OutputCodeClassifier']
+__all__ = ["OutputCodeClassifier"]
 
 
 def l1_dist(a, b):
@@ -108,7 +108,7 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
 
     @classmethod
     def _default_params(cls):
-        return {'classifier': linear_model.LogisticRegression(), 'code_size': 6}
+        return {"classifier": linear_model.LogisticRegression(), "code_size": 6}
 
     def learn_one(self, x, y):
 
@@ -127,6 +127,6 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
         output = [None for _ in range(self.code_size)]
 
         for i, clf in self.classifiers.items():
-            output[i] = clf.predict_proba_one(x).get(True, 0.)
+            output[i] = clf.predict_proba_one(x).get(True, 0.0)
 
         return min(self.code_book, key=lambda c: l1_dist(self.code_book[c], output))

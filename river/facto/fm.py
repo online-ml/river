@@ -12,18 +12,30 @@ from river import utils
 from .base import BaseFM
 
 
-__all__ = [
-    'FMClassifier',
-    'FMRegressor'
-]
+__all__ = ["FMClassifier", "FMRegressor"]
 
 
 class FM(BaseFM):
     """Factorization machine base class."""
 
-    def __init__(self, n_factors, weight_optimizer, latent_optimizer, loss, sample_normalization,
-                 l1_weight, l2_weight, l1_latent, l2_latent, intercept, intercept_lr,
-                 weight_initializer, latent_initializer, clip_gradient, seed):
+    def __init__(
+        self,
+        n_factors,
+        weight_optimizer,
+        latent_optimizer,
+        loss,
+        sample_normalization,
+        l1_weight,
+        l2_weight,
+        l1_latent,
+        l2_latent,
+        intercept,
+        intercept_lr,
+        weight_initializer,
+        latent_initializer,
+        clip_gradient,
+        seed,
+    ):
         super().__init__(
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
@@ -39,13 +51,12 @@ class FM(BaseFM):
             weight_initializer=weight_initializer,
             latent_initializer=latent_initializer,
             clip_gradient=clip_gradient,
-            seed=seed
+            seed=seed,
         )
 
     def _init_latents(self):
         random_latents = functools.partial(
-            self.latent_initializer,
-            shape=self.n_factors
+            self.latent_initializer, shape=self.n_factors
         )
         return collections.defaultdict(random_latents)
 
@@ -61,10 +72,7 @@ class FM(BaseFM):
         # For notational convenience
         w, l1, l2, sign = self.weights, self.l1_weight, self.l2_weight, utils.math.sign
 
-        return {
-            j: g_loss * xj + l1 * sign(w[j]) + l2 * w[j]
-            for j, xj in x.items()
-        }
+        return {j: g_loss * xj + l1 * sign(w[j]) + l2 * w[j] for j, xj in x.items()}
 
     def _update_latents(self, x, g_loss):
 
@@ -73,22 +81,24 @@ class FM(BaseFM):
 
         # Precompute feature independent sum for time efficiency
         precomputed_sum = {
-            f: sum(v[j][f] * xj for j, xj in x.items())
-            for f in range(self.n_factors)
+            f: sum(v[j][f] * xj for j, xj in x.items()) for f in range(self.n_factors)
         }
 
         # Calculate each latent factor gradient before updating any
         gradients = {}
         for j, xj in x.items():
             gradients[j] = {
-                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2) +
-                   l1 * sign(v[j][f]) + l2 * v[j][f]
+                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2)
+                + l1 * sign(v[j][f])
+                + l2 * v[j][f]
                 for f in range(self.n_factors)
             }
 
         # Finally update the latent weights
         for j in x.keys():
-            self.latents[j] = self.latent_optimizer.update_after_pred(w=v[j], g=gradients[j])
+            self.latents[j] = self.latent_optimizer.update_after_pred(
+                w=v[j], g=gradients[j]
+            )
 
 
 class FMRegressor(FM, base.Regressor):
@@ -183,14 +193,24 @@ class FMRegressor(FM, base.Regressor):
 
     """
 
-    def __init__(self, n_factors=10, weight_optimizer: optim.Optimizer = None,
-                 latent_optimizer: optim.Optimizer = None, loss: optim.losses.RegressionLoss = None,
-                 sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
-                 l2_latent=0., intercept=0.,
-                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
-                 weight_initializer: optim.initializers.Initializer = None,
-                 latent_initializer: optim.initializers.Initializer = None, clip_gradient=1e12,
-                 seed: int = None):
+    def __init__(
+        self,
+        n_factors=10,
+        weight_optimizer: optim.Optimizer = None,
+        latent_optimizer: optim.Optimizer = None,
+        loss: optim.losses.RegressionLoss = None,
+        sample_normalization=False,
+        l1_weight=0.0,
+        l2_weight=0.0,
+        l1_latent=0.0,
+        l2_latent=0.0,
+        intercept=0.0,
+        intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = 0.01,
+        weight_initializer: optim.initializers.Initializer = None,
+        latent_initializer: optim.initializers.Initializer = None,
+        clip_gradient=1e12,
+        seed: int = None,
+    ):
 
         super().__init__(
             n_factors=n_factors,
@@ -207,7 +227,7 @@ class FMRegressor(FM, base.Regressor):
             weight_initializer=weight_initializer,
             latent_initializer=latent_initializer,
             clip_gradient=clip_gradient,
-            seed=seed
+            seed=seed,
         )
 
     def predict_one(self, x):
@@ -306,14 +326,24 @@ class FMClassifier(FM, base.Classifier):
 
     """
 
-    def __init__(self, n_factors=10, weight_optimizer: optim.Optimizer = None,
-                 latent_optimizer: optim.Optimizer = None, loss: optim.losses.BinaryLoss = None,
-                 sample_normalization=False, l1_weight=0., l2_weight=0., l1_latent=0.,
-                 l2_latent=0., intercept=0.,
-                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
-                 weight_initializer: optim.initializers.Initializer = None,
-                 latent_initializer: optim.initializers.Initializer = None, clip_gradient=1e12,
-                 seed: int = None):
+    def __init__(
+        self,
+        n_factors=10,
+        weight_optimizer: optim.Optimizer = None,
+        latent_optimizer: optim.Optimizer = None,
+        loss: optim.losses.BinaryLoss = None,
+        sample_normalization=False,
+        l1_weight=0.0,
+        l2_weight=0.0,
+        l1_latent=0.0,
+        l2_latent=0.0,
+        intercept=0.0,
+        intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = 0.01,
+        weight_initializer: optim.initializers.Initializer = None,
+        latent_initializer: optim.initializers.Initializer = None,
+        clip_gradient=1e12,
+        seed: int = None,
+    ):
 
         super().__init__(
             n_factors=n_factors,
@@ -330,10 +360,10 @@ class FMClassifier(FM, base.Classifier):
             weight_initializer=weight_initializer,
             latent_initializer=latent_initializer,
             clip_gradient=clip_gradient,
-            seed=seed
+            seed=seed,
         )
 
     def predict_proba_one(self, x):
         x = self._ohe_cat_features(x)
         p = utils.math.sigmoid(self._raw_dot(x))  # Convert logit to probability
-        return {False: 1. - p, True: p}
+        return {False: 1.0 - p, True: p}

@@ -15,15 +15,23 @@ class InfoGainSplitCriterion(SplitCriterion):
     [Wikipedia entry](https://en.wikipedia.org/wiki/Decision_tree_learning#Information_gain)
 
     """
+
     def __init__(self, min_branch_frac_option=0.01):
         super().__init__()
         # Minimum fraction of weight required down at least two branches.
         self.min_branch_frac_option = min_branch_frac_option
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
-        if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_frac_option) < 2:
+        if (
+            self.num_subsets_greater_than_frac(
+                post_split_dist, self.min_branch_frac_option
+            )
+            < 2
+        ):
             return -math.inf
-        return self.compute_entropy(pre_split_dist) - self.compute_entropy(post_split_dist)
+        return self.compute_entropy(pre_split_dist) - self.compute_entropy(
+            post_split_dist
+        )
 
     @staticmethod
     def range_of_merit(pre_split_dist):
@@ -45,11 +53,15 @@ class InfoGainSplitCriterion(SplitCriterion):
             if d > 0.0:  # TODO: How small can d be before log2 overflows?
                 entropy -= d * math.log2(d)
                 dis_sums += d
-        return (entropy + dis_sums * math.log2(dis_sums)) / dis_sums if dis_sums > 0.0 else 0.0
+        return (
+            (entropy + dis_sums * math.log2(dis_sums)) / dis_sums
+            if dis_sums > 0.0
+            else 0.0
+        )
 
     def _compute_entropy_list(self, dists):
         total_weight = 0.0
-        dist_weights = [0.0]*len(dists)
+        dist_weights = [0.0] * len(dists)
         for i in range(len(dists)):
             dist_weights[i] = sum(dists[i].values())
             total_weight += dist_weights[i]
@@ -61,7 +73,7 @@ class InfoGainSplitCriterion(SplitCriterion):
     @staticmethod
     def num_subsets_greater_than_frac(distributions, min_frac):
         total_weight = 0.0
-        dist_sums = [0.0]*len(distributions)
+        dist_sums = [0.0] * len(distributions)
         for i in range(len(dist_sums)):
             dist_sums[i] = sum(distributions[i].values())
             total_weight += dist_sums[i]

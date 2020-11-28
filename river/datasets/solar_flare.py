@@ -18,30 +18,26 @@ class SolarFlare(base.FileDataset):
             n_features=10,
             n_outputs=3,
             task=base.MO_REG,
-            filename='solar-flare.csv.zip'
+            filename="solar-flare.csv.zip",
         )
 
     def __iter__(self):
         return stream.iter_csv(
             self.path,
-            target=[
-                'c-class-flares',
-                'm-class-flares',
-                'x-class-flares'
-            ],
+            target=["c-class-flares", "m-class-flares", "x-class-flares"],
             converters={
-                'zurich-class': str,
-                'largest-spot-size': str,
-                'spot-distribution': str,
-                'activity': int,
-                'evolution': int,
-                'previous-24h-flare-activity': int,
-                'hist-complex': int,
-                'hist-complex-this-pass': int,
-                'area': int,
-                'largest-spot-area': int,
-                'c-class-flares': int,
-                'm-class-flares': int,
-                'x-class-flares': int
-            }
+                "zurich-class": str,
+                "largest-spot-size": str,
+                "spot-distribution": str,
+                "activity": int,
+                "evolution": int,
+                "previous-24h-flare-activity": int,
+                "hist-complex": int,
+                "hist-complex-this-pass": int,
+                "area": int,
+                "largest-spot-area": int,
+                "c-class-flares": int,
+                "m-class-flares": int,
+                "x-class-flares": int,
+            },
         )

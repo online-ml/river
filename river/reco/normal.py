@@ -5,7 +5,7 @@ from river import stats
 from . import base
 
 
-__all__ = ['RandomNormal']
+__all__ = ["RandomNormal"]
 
 
 class RandomNormal(base.Recommender):

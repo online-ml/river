@@ -7,18 +7,17 @@ from . import recall
 
 
 __all__ = [
-    'F1',
-    'FBeta',
-    'MacroF1',
-    'MacroFBeta',
-    'MicroF1',
-    'MicroFBeta',
-    'MultiFBeta',
-    'WeightedF1',
-    'WeightedFBeta',
-    'ExampleF1',
-    'ExampleFBeta'
-
+    "F1",
+    "FBeta",
+    "MacroF1",
+    "MacroFBeta",
+    "MicroF1",
+    "MicroFBeta",
+    "MultiFBeta",
+    "WeightedF1",
+    "WeightedFBeta",
+    "ExampleF1",
+    "ExampleFBeta",
 ]
 
 
@@ -76,7 +75,7 @@ class FBeta(base.BinaryMetric):
         try:
             return (1 + b2) * p * r / (b2 * p + r)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class MacroFBeta(base.MultiClassMetric):
@@ -141,7 +140,7 @@ class MacroFBeta(base.MultiClassMetric):
         try:
             return total / len(self.cm.classes)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class MicroFBeta(base.MultiClassMetric):
@@ -193,7 +192,7 @@ class MicroFBeta(base.MultiClassMetric):
         try:
             return (1 + b2) * p * r / (b2 * p + r)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class WeightedFBeta(base.MultiClassMetric):
@@ -259,7 +258,7 @@ class WeightedFBeta(base.MultiClassMetric):
         try:
             return total / self.cm.total_weight
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class MultiFBeta(base.MultiClassMetric):
@@ -336,7 +335,7 @@ class MultiFBeta(base.MultiClassMetric):
         try:
             return total / sum(self.weights[c] for c in self.cm.classes)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class ExampleFBeta(base.MultiOutputClassificationMetric):
@@ -402,7 +401,7 @@ class ExampleFBeta(base.MultiOutputClassificationMetric):
         try:
             return (1 + b2) * p * r / (b2 * p + r)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class F1(FBeta):
@@ -436,7 +435,7 @@ class F1(FBeta):
     """
 
     def __init__(self, cm=None, pos_val=True):
-        super().__init__(beta=1., cm=cm, pos_val=pos_val)
+        super().__init__(beta=1.0, cm=cm, pos_val=pos_val)
 
 
 class MacroF1(MacroFBeta):
@@ -472,7 +471,7 @@ class MacroF1(MacroFBeta):
     """
 
     def __init__(self, cm=None):
-        super().__init__(beta=1., cm=cm)
+        super().__init__(beta=1.0, cm=cm)
 
 
 class MicroF1(MicroFBeta):
@@ -510,7 +509,7 @@ class MicroF1(MicroFBeta):
     """
 
     def __init__(self, cm=None):
-        super().__init__(beta=1., cm=cm)
+        super().__init__(beta=1.0, cm=cm)
 
 
 class WeightedF1(WeightedFBeta):
@@ -549,7 +548,7 @@ class WeightedF1(WeightedFBeta):
     """
 
     def __init__(self, cm=None):
-        super().__init__(beta=1., cm=cm)
+        super().__init__(beta=1.0, cm=cm)
 
 
 class ExampleF1(ExampleFBeta):
@@ -589,4 +588,4 @@ class ExampleF1(ExampleFBeta):
     """
 
     def __init__(self, cm=None):
-        super().__init__(beta=1., cm=cm)
+        super().__init__(beta=1.0, cm=cm)

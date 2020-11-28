@@ -54,13 +54,16 @@ class CentralMoments(base.Univariate):
         return self
 
     def _update_m3(self):
-        self.M3 += (self.M1 * self.delta * (self.count.get() - 2) - 3 *
-                    self.delta * self.M2)
+        self.M3 += (
+            self.M1 * self.delta * (self.count.get() - 2) - 3 * self.delta * self.M2
+        )
         return self
 
     def _update_m4(self):
         delta_square = self.delta ** 2
-        self.M4 += (self.M1 * delta_square *
-                    (self.count.get() ** 2 - 3 * self.count.get() + 3) +
-                    6 * delta_square * self.M2 - 4 * self.delta * self.M3)
+        self.M4 += (
+            self.M1 * delta_square * (self.count.get() ** 2 - 3 * self.count.get() + 3)
+            + 6 * delta_square * self.M2
+            - 4 * self.delta * self.M3
+        )
         return self

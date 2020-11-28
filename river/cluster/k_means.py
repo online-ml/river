@@ -6,7 +6,7 @@ from river import base
 from river import utils
 
 
-__all__ = ['KMeans']
+__all__ = ["KMeans"]
 
 
 class KMeans(base.Clusterer):
@@ -87,7 +87,9 @@ class KMeans(base.Clusterer):
 
     """
 
-    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int = None):
+    def __init__(
+        self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int = None
+    ):
         self.n_clusters = n_clusters
         self.halflife = halflife
         self.mu = mu
@@ -115,7 +117,6 @@ class KMeans(base.Clusterer):
         return self
 
     def predict_one(self, x):
-
         def get_distance(c):
             return utils.math.minkowski_distance(a=self.centers[c], b=x, p=self.p)
 

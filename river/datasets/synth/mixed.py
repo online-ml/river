@@ -5,7 +5,7 @@ from river.utils.skmultiflow_utils import check_random_state
 
 
 class Mixed(base.SyntheticDataset):
-    r""" Mixed data stream generator.
+    r"""Mixed data stream generator.
 
     This generator is an implementation of a data stream with abrupt concept
     drift and boolean noise-free examples as described in [^1].
@@ -71,20 +71,27 @@ class Mixed(base.SyntheticDataset):
           artificial intelligence–SBIA 2004. Springer Berlin Heidelberg,
           2004. 286-295"
 
-   """
+    """
 
-    def __init__(self, classification_function: int = 0,
-                 seed: int or np.random.RandomState = None,
-                 balance_classes: bool = False):
+    def __init__(
+        self,
+        classification_function: int = 0,
+        seed: int or np.random.RandomState = None,
+        balance_classes: bool = False,
+    ):
         super().__init__(n_features=4, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
 
         # Classification functions to use
-        self._functions = [self._classification_function_zero,
-                           self._classification_function_one]
+        self._functions = [
+            self._classification_function_zero,
+            self._classification_function_one,
+        ]
         self.seed = seed
         if classification_function not in [0, 1]:
-            raise ValueError(f"Invalid classification_function ({classification_function}). "
-                             "Valid values are 0 or 1.")
+            raise ValueError(
+                f"Invalid classification_function ({classification_function}). "
+                "Valid values are 0 or 1."
+            )
         self.classification_function = classification_function
         self._rng = None  # This is the actual random_state object used internally
         self.balance_classes = balance_classes
@@ -100,8 +107,8 @@ class Mixed(base.SyntheticDataset):
         while True:
             att_0 = False
             att_1 = False
-            att_2 = 0.
-            att_3 = 0.
+            att_2 = 0.0
+            att_3 = 0.0
             y = 0
             desired_class_found = False
             while not desired_class_found:
@@ -110,15 +117,20 @@ class Mixed(base.SyntheticDataset):
                 att_2 = self._rng.rand()
                 att_3 = self._rng.rand()
 
-                y = self._functions[self.classification_function](att_0, att_1, att_2, att_3)
+                y = self._functions[self.classification_function](
+                    att_0, att_1, att_2, att_3
+                )
 
                 if not self.balance_classes:
                     desired_class_found = True
                 else:
-                    if (self.next_class_should_be_zero and (y == 0)) or \
-                            ((not self.next_class_should_be_zero) and (y == 1)):
+                    if (self.next_class_should_be_zero and (y == 0)) or (
+                        (not self.next_class_should_be_zero) and (y == 1)
+                    ):
                         desired_class_found = True
-                        self.next_class_should_be_zero = not self.next_class_should_be_zero
+                        self.next_class_should_be_zero = (
+                            not self.next_class_should_be_zero
+                        )
 
             x = {0: att_0, 1: att_1, 2: att_2, 3: att_3}
 
@@ -135,6 +147,5 @@ class Mixed(base.SyntheticDataset):
         return 1 if (v == 1 and w == 1) or (v == 1 and z) or (w == 1 and z) else 0
 
     def generate_drift(self):
-        """Generate drift by switching the classification function.
-        """
+        """Generate drift by switching the classification function."""
         self.classification_function = 1 - self.classification_function

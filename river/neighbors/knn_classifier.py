@@ -67,10 +67,22 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
     """
 
-    def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
-                 p: float = 2, weighted: bool = True, **kwargs):
-        super().__init__(n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size,
-                         p=p, **kwargs)
+    def __init__(
+        self,
+        n_neighbors: int = 5,
+        window_size: int = 1000,
+        leaf_size: int = 30,
+        p: float = 2,
+        weighted: bool = True,
+        **kwargs
+    ):
+        super().__init__(
+            n_neighbors=n_neighbors,
+            window_size=window_size,
+            leaf_size=leaf_size,
+            p=p,
+            **kwargs
+        )
         self.weighted = weighted
         self.classes_: typing.Set = set()
 
@@ -118,7 +130,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         """
 
-        proba = {class_idx: 0. for class_idx in self.classes_}
+        proba = {class_idx: 0.0 for class_idx in self.classes_}
         if self.data_window.size == 0:
             # The model is empty, default to None
             return proba
@@ -130,23 +142,28 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         # If the closest neighbor has a distance of 0, then return it's output
         if dists[0][0] == 0:
-            proba[target_buffer[neighbor_idx[0][0]]] = 1.
+            proba[target_buffer[neighbor_idx[0][0]]] = 1.0
             return proba
 
         if self.data_window.size < self.n_neighbors:  # Select only the valid neighbors
-            neighbor_idx = [index for cnt, index in enumerate(neighbor_idx[0])
-                            if cnt < self.data_window.size]
-            dists = [dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size]
+            neighbor_idx = [
+                index
+                for cnt, index in enumerate(neighbor_idx[0])
+                if cnt < self.data_window.size
+            ]
+            dists = [
+                dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size
+            ]
         else:
             neighbor_idx = neighbor_idx[0]
             dists = dists[0]
 
         if not self.weighted:  # Uniform weights
             for index in neighbor_idx:
-                proba[target_buffer[index]] += 1.
+                proba[target_buffer[index]] += 1.0
         else:  # Use the inverse of the distance to weight the votes
             for d, index in zip(dists, neighbor_idx):
-                proba[target_buffer[index]] += 1. / d
+                proba[target_buffer[index]] += 1.0 / d
 
         return softmax(proba)
 

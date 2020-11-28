@@ -8,7 +8,7 @@ from .. import base
 from . import utils
 
 
-__all__ = ['iter_csv']
+__all__ = ["iter_csv"]
 
 
 class DictReader(csv.DictReader):
@@ -33,10 +33,18 @@ class DictReader(csv.DictReader):
         return dict(zip(self.fieldnames, row))
 
 
-def iter_csv(filepath_or_buffer, target: typing.Union[str, typing.List[str]] = None,
-             converters: dict = None, parse_dates: dict = None, drop: typing.List[str] = None,
-             fraction=1., compression='infer', seed: int = None, field_size_limit: int = None,
-             **kwargs) -> base.typing.Stream:
+def iter_csv(
+    filepath_or_buffer,
+    target: typing.Union[str, typing.List[str]] = None,
+    converters: dict = None,
+    parse_dates: dict = None,
+    drop: typing.List[str] = None,
+    fraction=1.0,
+    compression="infer",
+    seed: int = None,
+    field_size_limit: int = None,
+    **kwargs
+) -> base.typing.Stream:
     """Iterates over rows from a CSV file.
 
     Reading CSV files can be quite slow. If, for whatever reason, you're going to loop through
@@ -134,7 +142,7 @@ def iter_csv(filepath_or_buffer, target: typing.Union[str, typing.List[str]] = N
 
     # If a file is not opened, then we open it
     buffer = filepath_or_buffer
-    if not hasattr(buffer, 'read'):
+    if not hasattr(buffer, "read"):
         buffer = utils.open_filepath(buffer, compression)
 
     for x in DictReader(fraction=fraction, rng=random.Random(seed), f=buffer, **kwargs):

@@ -4,7 +4,7 @@ import math
 from . import base
 
 
-__all__ = ['BernoulliNB']
+__all__ = ["BernoulliNB"]
 
 
 class BernoulliNB(base.BaseNB):
@@ -98,7 +98,7 @@ class BernoulliNB(base.BaseNB):
 
     """
 
-    def __init__(self, alpha=1., true_threshold=0.):
+    def __init__(self, alpha=1.0, true_threshold=0.0):
         self.alpha = alpha
         self.true_threshold = true_threshold
         self.class_counts = collections.Counter()
@@ -113,7 +113,7 @@ class BernoulliNB(base.BaseNB):
         return self
 
     def p_feature_given_class(self, f: str, c: str) -> float:
-        num = self.feature_counts.get(f, {}).get(c, 0.) + self.alpha
+        num = self.feature_counts.get(f, {}).get(c, 0.0) + self.alpha
         den = self.class_counts[c] + self.alpha * 2
         return num / den
 
@@ -122,14 +122,17 @@ class BernoulliNB(base.BaseNB):
 
     def joint_log_likelihood(self, x):
         return {
-            c: math.log(self.p_class(c)) + sum(map(
-                math.log,
-                (
-                    10e-10 + self.p_feature_given_class(f, c)
-                    if f in x and x[f] > self.true_threshold
-                    else 10e-10 + (1. - self.p_feature_given_class(f, c))
-                    for f in self.feature_counts
+            c: math.log(self.p_class(c))
+            + sum(
+                map(
+                    math.log,
+                    (
+                        10e-10 + self.p_feature_given_class(f, c)
+                        if f in x and x[f] > self.true_threshold
+                        else 10e-10 + (1.0 - self.p_feature_given_class(f, c))
+                        for f in self.feature_counts
+                    ),
                 )
-            ))
+            )
             for c in self.class_counts
         }

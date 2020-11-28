@@ -5,9 +5,9 @@ from .nominal_attribute_multiway_test import NominalAttributeMultiwayTest
 from .numeric_attribute_binary_test import NumericAttributeBinaryTest
 
 __all__ = [
-    'AttributeSplitSuggestion',
-    'InstanceConditionalTest',
-    'NominalAttributeBinaryTest',
-    'NominalAttributeMultiwayTest',
-    'NumericAttributeBinaryTest'
+    "AttributeSplitSuggestion",
+    "InstanceConditionalTest",
+    "NominalAttributeBinaryTest",
+    "NominalAttributeMultiwayTest",
+    "NumericAttributeBinaryTest",
 ]

@@ -1,15 +1,11 @@
 from . import base
 
 
-__all__ = [
-    'CohenKappa',
-    'KappaT',
-    'KappaM'
-]
+__all__ = ["CohenKappa", "KappaT", "KappaM"]
 
 
 class CohenKappa(base.MultiClassMetric):
-    """Cohen's Kappa score.
+    r"""Cohen's Kappa score.
 
     Cohen's Kappa expresses the level of agreement between two annotators on a classification
     problem. It is defined as
@@ -67,7 +63,7 @@ class CohenKappa(base.MultiClassMetric):
         try:
             return (p0 - pe) / (1 - pe)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class KappaM(base.MultiClassMetric):
@@ -125,7 +121,7 @@ class KappaM(base.MultiClassMetric):
             pe = self.cm.weight_majority_classifier / self.cm.n_samples
             return (p0 - pe) / (1.0 - pe)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class KappaT(base.MultiClassMetric):
@@ -185,4 +181,4 @@ class KappaT(base.MultiClassMetric):
             pe = self.cm.weight_no_change_classifier / self.cm.n_samples
             return (p0 - pe) / (1.0 - pe)
         except ZeroDivisionError:
-            return 0.
+            return 0.0

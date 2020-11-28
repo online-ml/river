@@ -6,7 +6,7 @@ import typing
 from river import base
 
 
-__all__ = ['Grouper']
+__all__ = ["Grouper"]
 
 
 class Grouper(base.Transformer):
@@ -26,15 +26,20 @@ class Grouper(base.Transformer):
 
     """
 
-    def __init__(self, transformer: base.Transformer,
-                 by: typing.Union[base.typing.FeatureName, typing.List[base.typing.FeatureName]]):
+    def __init__(
+        self,
+        transformer: base.Transformer,
+        by: typing.Union[base.typing.FeatureName, typing.List[base.typing.FeatureName]],
+    ):
 
         self.transformer = transformer
         self.by = by if isinstance(by, list) else [by]
-        self.transformers = collections.defaultdict(functools.partial(copy.deepcopy, transformer))
+        self.transformers = collections.defaultdict(
+            functools.partial(copy.deepcopy, transformer)
+        )
 
     def _get_key(self, x):
-        return '_'.join(str(x[k]) for k in self.by)
+        return "_".join(str(x[k]) for k in self.by)
 
     def learn_one(self, x):
         key = self._get_key(x)

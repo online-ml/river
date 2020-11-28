@@ -28,7 +28,9 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
         super().__init__()
         self.n_bins = n_bins
         self.n_splits = n_splits
-        self.hists = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
+        self.hists = collections.defaultdict(
+            functools.partial(utils.Histogram, max_bins=n_bins)
+        )
 
     def update(self, att_val, class_val, sample_weight):
         for _ in range(int(sample_weight)):
@@ -38,11 +40,11 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
 
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         if class_val not in self.hists:
-            return 0.
+            return 0.0
 
         total_weight = self.hists[class_val].n
         if not total_weight > 0:
-            return 0.
+            return 0.0
 
         i = bisect.bisect(self.hists[class_val], Bin(att_val, att_val, 1))
 
@@ -58,7 +60,9 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
         else:
             return (b.count * (att_val - b.left) / (b.right - b.left)) / total_weight
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(
+        self, criterion, pre_split_dist, att_idx, binary_only
+    ):
         best_suggestion = None
 
         low = min(h[0].right for h in self.hists.values())
@@ -68,10 +72,7 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
         if low >= high:
             return
 
-        n_thresholds = min(
-            self.n_splits,
-            max(map(len, self.hists.values())) - 1
-        )
+        n_thresholds = min(self.n_splits, max(map(len, self.hists.values())) - 1)
 
         thresholds = list(decimal_range(start=low, stop=high, num=n_thresholds))
         cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.hists.items()}
@@ -83,7 +84,7 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
             total_weight = sum(pre_split_dist.values())
 
             for y in pre_split_dist:
-                p_xy = next(cdfs[y]) if y in cdfs else 0.  # P(x < t | y)
+                p_xy = next(cdfs[y]) if y in cdfs else 0.0  # P(x < t | y)
                 p_y = pre_split_dist[y] / total_weight  # P(y)
                 l_dist[y] = total_weight * p_y * p_xy  # P(y | x < t)
                 r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x >= t)
@@ -95,9 +96,9 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
                     num_att_binary_test = NumericAttributeBinaryTest(
                         att_idx, at, equal_passes_test=False
                     )
-                    best_suggestion = AttributeSplitSuggestion(num_att_binary_test,
-                                                               post_split_dist,
-                                                               merit)
+                    best_suggestion = AttributeSplitSuggestion(
+                        num_att_binary_test, post_split_dist, merit
+                    )
 
         return best_suggestion
 

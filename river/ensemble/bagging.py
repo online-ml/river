@@ -9,12 +9,15 @@ from river import linear_model
 from river.drift import ADWIN
 
 
-__all__ = ['BaggingClassifier', 'BaggingRegressor',
-           'ADWINBaggingClassifier', 'LeveragingBaggingClassifier']
+__all__ = [
+    "BaggingClassifier",
+    "BaggingRegressor",
+    "ADWINBaggingClassifier",
+    "LeveragingBaggingClassifier",
+]
 
 
 class BaseBagging(base.WrapperMixin, base.EnsembleMixin):
-
     def __init__(self, model, n_models=10, seed=None):
         super().__init__(copy.deepcopy(model) for _ in range(n_models))
         self.n_models = n_models
@@ -97,7 +100,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
     @classmethod
     def _default_params(cls):
-        return {'model': linear_model.LogisticRegression()}
+        return {"model": linear_model.LogisticRegression()}
 
     def predict_proba_one(self, x):
         """Averages the predictions of each classifier."""
@@ -169,7 +172,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
     @classmethod
     def _default_params(cls):
-        return {'model': linear_model.LinearRegression()}
+        return {"model": linear_model.LinearRegression()}
 
     def predict_one(self, x):
         """Averages the predictions of each regressor."""
@@ -254,8 +257,10 @@ class ADWINBaggingClassifier(BaggingClassifier):
                 change_detected = False
 
         if change_detected:
-            max_error_idx = max(range(len(self._drift_detectors)),
-                                key=lambda j: self._drift_detectors[j].estimation)
+            max_error_idx = max(
+                range(len(self._drift_detectors)),
+                key=lambda j: self._drift_detectors[j].estimation,
+            )
             self.models[max_error_idx] = copy.deepcopy(self.model)
             self._drift_detectors[max_error_idx] = ADWIN()
 
@@ -328,41 +333,43 @@ class LeveragingBaggingClassifier(BaggingClassifier):
     F1: 0.886282
 
     """
-    _BAGGING_METHODS = ('bag',
-                        'me',
-                        'half',
-                        'wt',
-                        'subag')
 
-    def __init__(self,
-                 model: base.Classifier,
-                 n_models: int = 10,
-                 w: float = 6,
-                 adwin_delta: float = 0.002,
-                 bagging_method: str = 'bag',
-                 seed: int = None):
+    _BAGGING_METHODS = ("bag", "me", "half", "wt", "subag")
+
+    def __init__(
+        self,
+        model: base.Classifier,
+        n_models: int = 10,
+        w: float = 6,
+        adwin_delta: float = 0.002,
+        bagging_method: str = "bag",
+        seed: int = None,
+    ):
         super().__init__(model=model, n_models=n_models, seed=seed)
         self.n_detected_changes = 0
         self.w = w
         self.adwin_delta = adwin_delta
         self.bagging_method = bagging_method
-        self._drift_detectors = [copy.deepcopy(ADWIN(delta=self.adwin_delta))
-                                 for _ in range(self.n_models)]
+        self._drift_detectors = [
+            copy.deepcopy(ADWIN(delta=self.adwin_delta)) for _ in range(self.n_models)
+        ]
 
         # Set bagging function
-        if bagging_method == 'bag':
+        if bagging_method == "bag":
             self._bagging_fct = self._leveraging_bag
-        elif bagging_method == 'me':
+        elif bagging_method == "me":
             self._bagging_fct = self._leveraging_bag_me
-        elif bagging_method == 'half':
+        elif bagging_method == "half":
             self._bagging_fct = self._leveraging_bag_half
-        elif bagging_method == 'wt':
+        elif bagging_method == "wt":
             self._bagging_fct = self._leveraging_bag_wt
-        elif bagging_method == 'subag':
+        elif bagging_method == "subag":
             self._bagging_fct = self._leveraging_subag
         else:
-            raise ValueError(f"Invalid bagging_method: {bagging_method}\n"
-                             f"Valid options: {self._BAGGING_METHODS}")
+            raise ValueError(
+                f"Invalid bagging_method: {bagging_method}\n"
+                f"Valid options: {self._BAGGING_METHODS}"
+            )
 
     def _leveraging_bag(self, **kwargs):
         # Leveraging bagging
@@ -371,9 +378,9 @@ class LeveragingBaggingClassifier(BaggingClassifier):
     def _leveraging_bag_me(self, **kwargs):
         # Miss-classification error using weight=1 if misclassified.
         # Otherwise using weight=error/(1-error)
-        x = kwargs['x']
-        y = kwargs['y']
-        i = kwargs['model_idx']
+        x = kwargs["x"]
+        y = kwargs["y"]
+        i = kwargs["model_idx"]
         error = self._drift_detectors[i].estimation
         y_pred = self.models[i].predict_one(x)
         if y_pred != y:
@@ -415,8 +422,10 @@ class LeveragingBaggingClassifier(BaggingClassifier):
 
         if change_detected:
             self.n_detected_changes += 1
-            max_error_idx = max(range(len(self._drift_detectors)),
-                                key=lambda j: self._drift_detectors[j].estimation)
+            max_error_idx = max(
+                range(len(self._drift_detectors)),
+                key=lambda j: self._drift_detectors[j].estimation,
+            )
             self.models[max_error_idx] = copy.deepcopy(self.model)
             self._drift_detectors[max_error_idx] = ADWIN(delta=self.adwin_delta)
 

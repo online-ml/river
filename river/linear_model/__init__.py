@@ -9,11 +9,11 @@ from .softmax import SoftmaxRegression
 
 
 __all__ = [
-    'ALMAClassifier',
-    'LinearRegression',
-    'LogisticRegression',
-    'PAClassifier',
-    'PARegressor',
-    'Perceptron',
-    'SoftmaxRegression'
+    "ALMAClassifier",
+    "LinearRegression",
+    "LogisticRegression",
+    "PAClassifier",
+    "PARegressor",
+    "Perceptron",
+    "SoftmaxRegression",
 ]

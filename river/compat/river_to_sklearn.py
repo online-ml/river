@@ -2,8 +2,10 @@ import copy
 import typing
 
 import numpy as np
+
 try:
     import pandas as pd
+
     PANDAS_INSTALLED = True
 except ImportError:
     PANDAS_INSTALLED = False
@@ -18,11 +20,11 @@ from river import stream
 
 
 __all__ = [
-    'convert_river_to_sklearn',
-    'River2SKLRegressor',
-    'River2SKLClassifier',
-    'River2SKLClusterer',
-    'River2SKLTransformer'
+    "convert_river_to_sklearn",
+    "River2SKLRegressor",
+    "River2SKLClassifier",
+    "River2SKLClusterer",
+    "River2SKLTransformer",
 ]
 
 
@@ -36,23 +38,20 @@ if PANDAS_INSTALLED:
 
 # Params passed to sklearn.utils.check_X_y and sklearn.utils.check_array
 SKLEARN_INPUT_X_PARAMS = {
-    'accept_sparse': False,
-    'accept_large_sparse': True,
-    'dtype': 'numeric',
-    'order': None,
-    'copy': False,
-    'force_all_finite': True,
-    'ensure_2d': True,
-    'allow_nd': False,
-    'ensure_min_samples': 1,
-    'ensure_min_features': 1
+    "accept_sparse": False,
+    "accept_large_sparse": True,
+    "dtype": "numeric",
+    "order": None,
+    "copy": False,
+    "force_all_finite": True,
+    "ensure_2d": True,
+    "allow_nd": False,
+    "ensure_min_samples": 1,
+    "ensure_min_features": 1,
 }
 
 # Params passed to sklearn.utils.check_X_y in addition to SKLEARN_INPUT_X_PARAMS
-SKLEARN_INPUT_Y_PARAMS = {
-    'multi_output': False,
-    'y_numeric': False
-}
+SKLEARN_INPUT_Y_PARAMS = {"multi_output": False, "y_numeric": False}
 
 
 def convert_river_to_sklearn(estimator: base.Estimator):
@@ -65,16 +64,18 @@ def convert_river_to_sklearn(estimator: base.Estimator):
     """
 
     if isinstance(estimator, compose.Pipeline):
-        return pipeline.Pipeline([
-            (name, convert_river_to_sklearn(step))
-            for name, step in estimator.steps.items()
-        ])
+        return pipeline.Pipeline(
+            [
+                (name, convert_river_to_sklearn(step))
+                for name, step in estimator.steps.items()
+            ]
+        )
 
     wrappers = [
         (base.Classifier, River2SKLClassifier),
         (base.Clusterer, River2SKLClusterer),
         (base.Regressor, River2SKLRegressor),
-        (base.Transformer, River2SKLTransformer)
+        (base.Transformer, River2SKLTransformer),
     ]
 
     for base_type, wrapper in wrappers:
@@ -107,7 +108,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
 
         # Check the estimator is a Regressor
         if not isinstance(estimator, base.Regressor):
-            raise ValueError('estimator is not a Regressor')
+            raise ValueError("estimator is not a Regressor")
 
         self.estimator = estimator
 
@@ -117,13 +118,15 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
 
         # Store the number of features so that future inputs can be checked
-        if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
-            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+        if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
+            raise ValueError(
+                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
+            )
         self.n_features_in_ = X.shape[1]
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
-        if not hasattr(self, 'instance_'):
+        if not hasattr(self, "instance_"):
             self.instance_ = copy.deepcopy(self.estimator)
 
         # Call learn_one for each observation
@@ -149,7 +152,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         """
 
         # Reset the state if already fitted
-        for attr in ('instance_', 'n_features_in_'):
+        for attr in ("instance_", "n_features_in_"):
             self.__dict__.pop(attr, None)
 
         # Fit with one pass of the dataset
@@ -189,13 +192,15 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, attributes='instance_')
+        utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         if X.shape[1] != self.n_features_in_:
-            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+            raise ValueError(
+                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
+            )
 
         # Make a prediction for each observation
         y_pred = np.empty(shape=len(X))
@@ -218,17 +223,17 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
 
         # Check the estimator is Classifier
         if not isinstance(estimator, base.Classifier):
-            raise ValueError('estimator is not a Classifier')
+            raise ValueError("estimator is not a Classifier")
 
         self.estimator = estimator
 
     def _more_tags(self):
-        return {'binary_only': not self.estimator._multiclass}
+        return {"binary_only": not self.estimator._multiclass}
 
     def _partial_fit(self, X, y, classes):
 
         # If first _partial_fit call, set the classes, else check consistency
-        if not hasattr(self, 'classes_'):
+        if not hasattr(self, "classes_"):
             self.classes_ = classes
 
         # Check the inputs
@@ -240,27 +245,32 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
             # https://github.com/scikit-learn/scikit-learn/issues/16798#issuecomment-651784267
             # TODO: change to a ValueError when fixed
             import warnings
-            warnings.warn(f'more than 2 classes were given but {self.estimator} is a'
-                           ' binary classifier')
+
+            warnings.warn(
+                f"more than 2 classes were given but {self.estimator} is a"
+                " binary classifier"
+            )
 
         # Store the number of features so that future inputs can be checked
-        if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
-            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+        if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
+            raise ValueError(
+                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
+            )
         self.n_features_in_ = X.shape[1]
 
         # Check the target
         utils.multiclass.check_classification_targets(y)
         if set(y) - set(self.classes_):
-            raise ValueError('classes should include all valid labels that can be in y')
+            raise ValueError("classes should include all valid labels that can be in y")
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
-        if not hasattr(self, 'instance_'):
+        if not hasattr(self, "instance_"):
             self.instance_ = copy.deepcopy(self.estimator)
 
         # river's binary classifiers expects bools or 0/1 values
         if not self.estimator._multiclass:
-            if not hasattr(self, 'label_encoder_'):
+            if not hasattr(self, "label_encoder_"):
                 self.label_encoder_ = preprocessing.LabelEncoder().fit(self.classes_)
             y = self.label_encoder_.transform(y)
 
@@ -287,7 +297,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Reset the state if already fitted
-        for attr in ('classes_', 'instance_', 'label_encoder_', 'n_features_in_'):
+        for attr in ("classes_", "instance_", "label_encoder_", "n_features_in_"):
             self.__dict__.pop(attr, None)
 
         # Fit with one pass of the dataset
@@ -332,13 +342,15 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, attributes='instance_')
+        utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         if X.shape[1] != self.n_features_in_:
-            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+            raise ValueError(
+                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
+            )
 
         # river's predictions have to converted to follow the scikit-learn conventions
         def reshape_probas(y_pred):
@@ -366,13 +378,15 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, attributes='instance_')
+        utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         if X.shape[1] != self.n_features_in_:
-            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+            raise ValueError(
+                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
+            )
 
         # Make a prediction for each observation
         y_pred = [None] * len(X)
@@ -381,7 +395,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
 
         # Convert back to the expected labels if an encoder was necessary for binary classification
         y_pred = np.asarray(y_pred)
-        if hasattr(self, 'label_encoder_'):
+        if hasattr(self, "label_encoder_"):
             y_pred = self.label_encoder_.inverse_transform(y_pred.astype(int))
 
         return y_pred
@@ -400,7 +414,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
 
         # Check the estimator is a Transformer
         if not isinstance(estimator, base.Transformer):
-            raise ValueError('estimator is not a Transformer')
+            raise ValueError("estimator is not a Transformer")
 
         self.estimator = estimator
 
@@ -410,16 +424,20 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         if y is None:
             X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
         else:
-            X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+            X, y = utils.check_X_y(
+                X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS
+            )
 
         # Store the number of features so that future inputs can be checked
-        if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
-            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+        if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
+            raise ValueError(
+                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
+            )
         self.n_features_in_ = X.shape[1]
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
-        if not hasattr(self, 'instance_'):
+        if not hasattr(self, "instance_"):
             self.instance_ = copy.deepcopy(self.estimator)
 
         # Call learn_one for each observation
@@ -449,7 +467,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         """
 
         # Reset the state if already fitted
-        for attr in ('instance_', 'n_features_in_'):
+        for attr in ("instance_", "n_features_in_"):
             self.__dict__.pop(attr, None)
 
         # Fit with one pass of the dataset
@@ -489,13 +507,15 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, attributes='instance_')
+        utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         if X.shape[1] != self.n_features_in_:
-            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+            raise ValueError(
+                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
+            )
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)
@@ -518,7 +538,7 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
 
         # Check the estimator is a Clusterer
         if not isinstance(estimator, base.Clusterer):
-            raise ValueError('estimator is not a Clusterer')
+            raise ValueError("estimator is not a Clusterer")
 
         self.estimator = estimator
 
@@ -528,13 +548,15 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         # Store the number of features so that future inputs can be checked
-        if hasattr(self, 'n_features_in_') and X.shape[1] != self.n_features_in_:
-            raise ValueError(f'Expected {self.n_features_in_} features, got {X.shape[1]}')
+        if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
+            raise ValueError(
+                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
+            )
         self.n_features_in_ = X.shape[1]
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
-        if not hasattr(self, 'instance_'):
+        if not hasattr(self, "instance_"):
             self.instance_ = copy.deepcopy(self.estimator)
 
         # Call learn_one for each observation
@@ -562,7 +584,7 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         """
 
         # Reset the state if already fitted
-        for attr in ('instance_', 'n_features_in_'):
+        for attr in ("instance_", "n_features_in_"):
             self.__dict__.pop(attr, None)
 
         # Fit with one pass of the dataset
@@ -602,7 +624,7 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         """
 
         # Check the fit method has been called
-        utils.validation.check_is_fitted(self, attributes='instance_')
+        utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)

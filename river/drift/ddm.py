@@ -98,8 +98,7 @@ class DDM(DriftDetector):
         self.reset()
 
     def reset(self):
-        """Reset the change detector.
-        """
+        """Reset the change detector."""
         super().reset()
         self.sample_count = 1
         self.miss_prob = 1.0
@@ -121,8 +120,12 @@ class DDM(DriftDetector):
         if self._in_concept_change:
             self.reset()
 
-        self.miss_prob = self.miss_prob + (value - self.miss_prob) / float(self.sample_count)
-        self.miss_std = np.sqrt(self.miss_prob * (1 - self.miss_prob) / float(self.sample_count))
+        self.miss_prob = self.miss_prob + (value - self.miss_prob) / float(
+            self.sample_count
+        )
+        self.miss_std = np.sqrt(
+            self.miss_prob * (1 - self.miss_prob) / float(self.sample_count)
+        )
         self.sample_count += 1
 
         self.estimation = self.miss_prob
@@ -138,12 +141,16 @@ class DDM(DriftDetector):
             self.miss_sd_min = self.miss_std
             self.miss_prob_sd_min = self.miss_prob + self.miss_std
 
-        if self.miss_prob + self.miss_std > self.miss_prob_min + self.out_control_level \
-                * self.miss_sd_min:
+        if (
+            self.miss_prob + self.miss_std
+            > self.miss_prob_min + self.out_control_level * self.miss_sd_min
+        ):
             self._in_concept_change = True
 
-        elif self.miss_prob + self.miss_std > self.miss_prob_min + self.warning_level \
-                * self.miss_sd_min:
+        elif (
+            self.miss_prob + self.miss_std
+            > self.miss_prob_min + self.warning_level * self.miss_sd_min
+        ):
             self._in_warning_zone = True
 
         else:
