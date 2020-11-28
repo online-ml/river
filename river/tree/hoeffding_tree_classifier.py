@@ -165,12 +165,10 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         self.nominal_attributes = nominal_attributes
 
         if attr_obs not in self._VALID_AO:
-            raise AttributeError(
-                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
-            )
-        else:
-            self.attr_obs = attr_obs
+            raise AttributeError(f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}')
+        self.attr_obs = attr_obs
         self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
+        self.kwargs = kwargs
 
         # To keep track of the observed classes
         self.classes: set = set()

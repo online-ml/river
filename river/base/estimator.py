@@ -42,11 +42,16 @@ class Estimator(abc.ABC):
 
     def _get_params(self) -> typing.Dict[str, typing.Any]:
         """Return the parameters that were used during initialization."""
-        return {
-            name: getattr(self, name)
-            for name, param in inspect.signature(self.__init__).parameters.items()  # type: ignore
-            if param.kind != param.VAR_KEYWORD
-        }
+
+        params = {}
+
+        for name, param in inspect.signature(self.__init__).parameters.items():
+            if param.kind == param.VAR_KEYWORD:  # handles **kwargs
+                params.update(getattr(self, name))
+            else:
+                params[name] = getattr(self, name)
+
+        return params
 
     def _set_params(self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None) -> 'Estimator':
         """Return a new instance with the current parameters as well as new ones.

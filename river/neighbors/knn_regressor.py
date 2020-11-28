@@ -80,6 +80,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
                                                             {self._MEAN, self._MEDIAN,
                                                              self._WEIGHTED_MEAN}))
         self.aggregation_method = aggregation_method
+        self.kwargs = kwargs
 
     def learn_one(self, x, y):
         """Update the model with a set of features `x` and a real target value `y`.
