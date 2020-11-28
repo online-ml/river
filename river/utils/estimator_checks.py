@@ -1,7 +1,6 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
-import inspect
 import math
 import pickle
 import random
