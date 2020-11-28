@@ -342,8 +342,8 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             else:
                 found_nodes.append(FoundNode(None, self, child_index))
         else:
-            # Emerging value in a categorical feature appears or a numerical feature is
-            # being evaluated but it is absent from the instance: use parent node in both cases
+            # Emerging value in a categorical feature appears or the split feature is missing from
+            # the instance: use parent node in both cases
             found_nodes.append(FoundNode(None, self, child_index))
 
         if self._alternate_tree is not None:
