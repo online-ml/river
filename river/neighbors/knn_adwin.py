@@ -26,6 +26,15 @@ class KNNADWINClassifier(KNNClassifier):
         p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
         Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid
         values are in the interval $[1, +\\infty)$
+    compact_nodes
+        scipy.spatial.cKDTree parameter. If True, the kd-tree is built to shrink the
+        hyperrectangles to the actual data range. This usually gives a more compact tree
+        that is robust against degenerated input data and gives faster queries at the
+        expense of longer build time.
+    balanced_tree
+        scipy.spatial.cKDTree parameter. If True, the median is used to split the
+        hyperrectangles instead of the midpoint. This usually gives a more compact tree
+        and faster queries at the expense of longer build time. Default: True.
 
     Notes
     -----

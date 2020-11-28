@@ -156,7 +156,12 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
                  attr_obs_params: dict = None,
                  max_features: int = 2,
                  seed=None,
-                 **kwargs):
+                 binary_split: bool = False,
+                 max_size: int = 100,
+                 memory_estimate_period: int = 1000000,
+                 stop_mem_management: bool = False,
+                 remove_poor_attrs: bool = False,
+                 merit_preprune: bool = True):
         super().__init__(grace_period=grace_period,
                          max_depth=max_depth,
                          split_criterion=split_criterion,
@@ -167,7 +172,12 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
                          nominal_attributes=nominal_attributes,
                          attr_obs=attr_obs,
                          attr_obs_params=attr_obs_params,
-                         **kwargs)
+                         binary_split=binary_split,
+                         max_size=max_size,
+                         memory_estimate_period=memory_estimate_period,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_attrs=remove_poor_attrs,
+                         merit_preprune=merit_preprune)
 
         self.max_features = max_features
         self.seed = seed
@@ -246,7 +256,12 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                  min_samples_split: int = 5,
                  max_features: int = 2,
                  seed=None,
-                 **kwargs):
+                 binary_split: bool = False,
+                 max_size: int = 100,
+                 memory_estimate_period: int = 1000000,
+                 stop_mem_management: bool = False,
+                 remove_poor_attrs: bool = False,
+                 merit_preprune: bool = True):
         super().__init__(grace_period=grace_period,
                          max_depth=max_depth,
                          split_confidence=split_confidence,
@@ -258,7 +273,12 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                          attr_obs=attr_obs,
                          attr_obs_params=attr_obs_params,
                          min_samples_split=min_samples_split,
-                         **kwargs)
+                         binary_split=binary_split,
+                         max_size=max_size,
+                         memory_estimate_period=memory_estimate_period,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_attrs=remove_poor_attrs,
+                         merit_preprune=merit_preprune)
 
         self.max_features = max_features
         self.seed = seed
@@ -417,6 +437,19 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
         tree will grow indefinitely.
+    binary_split
+        [*Tree parameter*] If True, only allow binary splits.
+    max_size
+        [*Tree parameter*] The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        [*Tree parameter*] Interval (number of processed instances) between memory consumption
+        checks.
+    stop_mem_management
+        [*Tree parameter*] If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        [*Tree parameter*] If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        [*Tree parameter*] If True, enable merit-based tree pre-pruning.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;
@@ -691,6 +724,19 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
         tree will grow indefinitely.
+    binary_split
+        [*Tree parameter*] If True, only allow binary splits.
+    max_size
+        [*Tree parameter*] The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        [*Tree parameter*] Interval (number of processed instances) between memory consumption
+        checks.
+    stop_mem_management
+        [*Tree parameter*] If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        [*Tree parameter*] If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        [*Tree parameter*] If True, enable merit-based tree pre-pruning.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;

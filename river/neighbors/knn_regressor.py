@@ -34,8 +34,15 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
             | 'mean'
             | 'median'
             | 'weighted_mean'
-    kwargs
-        Other parameters passed to scipy.spatial.cKDTree.
+    compact_nodes
+        scipy.spatial.cKDTree parameter. If True, the kd-tree is built to shrink the
+        hyperrectangles to the actual data range. This usually gives a more compact tree
+        that is robust against degenerated input data and gives faster queries at the
+        expense of longer build time.
+    balanced_tree
+        scipy.spatial.cKDTree parameter. If True, the median is used to split the
+        hyperrectangles instead of the midpoint. This usually gives a more compact tree
+        and faster queries at the expense of longer build time. Default: True.
 
     Notes
     -----
@@ -70,10 +77,11 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     _WEIGHTED_MEAN = 'weighted_mean'
 
     def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
-                 p: float = 2, aggregation_method: str = 'mean', **kwargs):
+                 p: float = 2, aggregation_method: str = 'mean', compact_nodes=True,
+                 balanced_tree=True):
 
         super().__init__(n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size,
-                         p=p, **kwargs)
+                         p=p, compact_nodes=compact_nodes, balanced_tree=balanced_tree)
         if aggregation_method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
             raise ValueError('Invalid aggregation_method: {}.\n'
                              'Valid options are: {}'.format(aggregation_method,

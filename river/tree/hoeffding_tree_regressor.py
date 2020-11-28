@@ -55,8 +55,18 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
-    kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
+    binary_split
+        If True, only allow binary splits.
+    max_size
+        The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        Interval (number of processed instances) between memory consumption checks.
+    stop_mem_management
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        If True, enable merit-based tree pre-pruning.
 
     Notes
     -----
@@ -122,8 +132,19 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                  attr_obs: str = 'e-bst',
                  attr_obs_params: dict = None,
                  min_samples_split: int = 5,
-                 **kwargs):
-        super().__init__(max_depth=max_depth, **kwargs)
+                 binary_split: bool = False,
+                 max_size: int = 100,
+                 memory_estimate_period: int = 1000000,
+                 stop_mem_management: bool = False,
+                 remove_poor_attrs: bool = False,
+                 merit_preprune: bool = True):
+        super().__init__(max_depth=max_depth,
+                         binary_split=binary_split,
+                         max_size=max_size,
+                         memory_estimate_period=memory_estimate_period,
+                         stop_mem_management=stop_mem_management,
+                         remove_poor_attrs=remove_poor_attrs,
+                         merit_preprune=merit_preprune)
 
         self._split_criterion: str = 'vr'
         self.grace_period = grace_period
