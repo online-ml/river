@@ -80,22 +80,24 @@ class Cache:
         # Guess the directory from the system
         system = platform.system()
         if directory is None:
-            directory = {'Linux': '/tmp', 'Darwin': '/tmp'}.get(system)
+            directory = {"Linux": "/tmp", "Darwin": "/tmp"}.get(system)
 
         if directory is None:
-            raise ValueError('There is no default directory defined for {systems} systems, '
-                             'please provide one')
+            raise ValueError(
+                "There is no default directory defined for {systems} systems, "
+                "please provide one"
+            )
 
         self.directory = directory
         self.keys = set()
 
         # Check if there is anything already in the cache
-        for f in glob.glob(f'{self.directory}/*.river_cache.pkl'):
-            key = os.path.basename(f).split('.')[0]
+        for f in glob.glob(f"{self.directory}/*.river_cache.pkl"):
+            key = os.path.basename(f).split(".")[0]
             self.keys.add(key)
 
     def _get_path(self, key):
-        return os.path.join(self.directory, f'{key}.river_cache.pkl')
+        return os.path.join(self.directory, f"{key}.river_cache.pkl")
 
     def __call__(self, stream, key=None):
 
@@ -105,8 +107,10 @@ class Cache:
                 key = stream.__name__
 
         if key is None:
-            raise ValueError('No default key could be guessed for the given stream, '
-                             'please provide one')
+            raise ValueError(
+                "No default key could be guessed for the given stream, "
+                "please provide one"
+            )
 
         path = self._get_path(key)
 
@@ -114,7 +118,7 @@ class Cache:
             yield from self[key]
             return
 
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             pickler = pickle.Pickler(f)
             for el in stream:
                 pickler.dump(el)
@@ -123,7 +127,7 @@ class Cache:
 
     def __getitem__(self, key):
         """Iterates over the stream associated with the given key."""
-        with open(self._get_path(key), 'rb') as f:
+        with open(self._get_path(key), "rb") as f:
             unpickler = pickle.Unpickler(f)
             while f.peek(1):
                 yield unpickler.load()
@@ -146,7 +150,10 @@ class Cache:
             self.keys.remove(key)
 
     def __repr__(self):
-        return '\n'.join([self.directory] + [
-            f'{key} - {utils.pretty.humanize_bytes(os.path.getsize(self._get_path(key)))}'
-            for key in self.keys
-        ])
+        return "\n".join(
+            [self.directory]
+            + [
+                f"{key} - {utils.pretty.humanize_bytes(os.path.getsize(self._get_path(key)))}"
+                for key in self.keys
+            ]
+        )

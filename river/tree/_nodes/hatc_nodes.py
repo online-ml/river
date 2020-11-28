@@ -12,7 +12,7 @@ from .htc_nodes import LearningNodeNBA
 
 class AdaNode(metaclass=ABCMeta):
     """Abstract Class to create a new Node for the Hoeffding Adaptive Tree
-    Classifier/Regressor """
+    Classifier/Regressor"""
 
     @property
     @abstractmethod
@@ -61,6 +61,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
     seed
         Seed to control the generation of random numbers and support reproducibility.
     """
+
     def __init__(self, stats, depth, attr_obs, attr_obs_params, adwin_delta, seed):
         super().__init__(stats, depth, attr_obs, attr_obs_params)
         self.adwin_delta = adwin_delta
@@ -86,7 +87,9 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
     def kill_tree_children(self, hat):
         pass
 
-    def learn_one(self, x, y, *, sample_weight=1., tree=None, parent=None, parent_branch=-1):
+    def learn_one(
+        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
+    ):
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
             k = self._rng.poisson(1.0)
@@ -96,7 +99,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
         aux = self.leaf_prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
 
-        is_correct = (y == class_prediction)
+        is_correct = y == class_prediction
 
         if self._adwin is None:
             self._adwin = ADWIN(delta=self.adwin_delta)
@@ -135,7 +138,9 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             dist = normalize_values_in_dict(self.stats, inplace=False)
         elif prediction_option == tree._NAIVE_BAYES:
             if self.total_weight >= tree.nb_threshold:
-                dist = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
+                dist = do_naive_bayes_prediction(
+                    x, self.stats, self.attribute_observers
+                )
             else:  # Use majority class
                 dist = normalize_values_in_dict(self.stats, inplace=False)
         else:  # Naive Bayes Adaptive
@@ -172,6 +177,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
     seed
         Internal random state used to sample from poisson distributions.
     """
+
     def __init__(self, split_test, stats, depth, adwin_delta, seed):
         super().__init__(split_test, stats, depth)
         self.adwin_delta = adwin_delta
@@ -205,7 +211,9 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
     def error_is_null(self):
         return self._adwin is None
 
-    def learn_one(self, x, y, *, sample_weight=1., tree=None, parent=None, parent_branch=-1):
+    def learn_one(
+        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
+    ):
         class_prediction = None
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
@@ -213,7 +221,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             aux = leaf.node.leaf_prediction(x, tree=tree)
             class_prediction = max(aux, key=aux.get) if aux else None
 
-        is_correct = (y == class_prediction)
+        is_correct = y == class_prediction
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
@@ -240,16 +248,26 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
         # Condition to replace alternate tree
-        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
-            if self.error_width > tree.drift_window_threshold \
-                    and self._alternate_tree.error_width > tree.drift_window_threshold:
+        elif (
+            self._alternate_tree is not None
+            and not self._alternate_tree.error_is_null()
+        ):
+            if (
+                self.error_width > tree.drift_window_threshold
+                and self._alternate_tree.error_width > tree.drift_window_threshold
+            ):
                 old_error_rate = self.error_estimation
                 alt_error_rate = self._alternate_tree.error_estimation
-                f_delta = .05
+                f_delta = 0.05
                 f_n = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
 
-                bound = math.sqrt(2.0 * old_error_rate * (1.0 - old_error_rate) *
-                                  math.log(2.0 / f_delta) * f_n)
+                bound = math.sqrt(
+                    2.0
+                    * old_error_rate
+                    * (1.0 - old_error_rate)
+                    * math.log(2.0 / f_delta)
+                    * f_n
+                )
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves
                     tree._n_active_leaves += self._alternate_tree.n_leaves
@@ -270,24 +288,43 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
         # Learn one sample in alternate tree and child nodes
         if self._alternate_tree is not None:
-            self._alternate_tree.learn_one(x, y, sample_weight=sample_weight, tree=tree,
-                                           parent=parent, parent_branch=parent_branch)
+            self._alternate_tree.learn_one(
+                x,
+                y,
+                sample_weight=sample_weight,
+                tree=tree,
+                parent=parent,
+                parent_branch=parent_branch,
+            )
         child_branch = self.instance_child_index(x)
         child = self.get_child(child_branch)
         if child is not None:
-            child.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                            parent_branch=child_branch)
+            child.learn_one(
+                x,
+                y,
+                sample_weight=sample_weight,
+                tree=tree,
+                parent=self,
+                parent_branch=child_branch,
+            )
         # Instance contains a categorical value previously unseen by the split node
         elif self.split_test.branch_for_instance(x) < 0:
             # Creates a new learning node to encompass the new observed feature
             # value
             leaf_node = tree._new_learning_node(parent=self)
             branch_id = self.split_test.add_new_branch(
-                x[self.split_test.attrs_test_depends_on()[0]])
+                x[self.split_test.attrs_test_depends_on()[0]]
+            )
             self.set_child(branch_id, leaf_node)
             tree._n_active_leaves += 1
-            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                                parent_branch=child_branch)
+            leaf_node.learn_one(
+                x,
+                y,
+                sample_weight=sample_weight,
+                tree=tree,
+                parent=self,
+                parent_branch=child_branch,
+            )
 
     def leaf_prediction(self, x, *, tree=None):
         # In case split nodes end up being used (if emerging categorical feature appears,

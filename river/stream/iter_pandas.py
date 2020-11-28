@@ -6,8 +6,9 @@ from river import base
 from river import stream
 
 
-def iter_pandas(X: pd.DataFrame, y: typing.Union[pd.Series, pd.DataFrame] = None,
-                **kwargs) -> base.typing.Stream:
+def iter_pandas(
+    X: pd.DataFrame, y: typing.Union[pd.Series, pd.DataFrame] = None, **kwargs
+) -> base.typing.Stream:
     """Iterates over the rows of a `pandas.DataFrame`.
 
     Parameters
@@ -41,8 +42,10 @@ def iter_pandas(X: pd.DataFrame, y: typing.Union[pd.Series, pd.DataFrame] = None
 
     """
 
-    kwargs['feature_names'] = X.columns
+    kwargs["feature_names"] = X.columns
     if isinstance(y, pd.DataFrame):
-        kwargs['target_names'] = y.columns
+        kwargs["target_names"] = y.columns
 
-    yield from stream.iter_array(X=X.to_numpy(), y=y if y is None else y.to_numpy(), **kwargs)
+    yield from stream.iter_array(
+        X=X.to_numpy(), y=y if y is None else y.to_numpy(), **kwargs
+    )

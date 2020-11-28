@@ -66,12 +66,14 @@ class SelectKBest(base.SupervisedTransformer):
     def __init__(self, similarity: stats.Bivariate, k=10):
         self.k = k
         self.similarity = similarity
-        self.similarities = collections.defaultdict(functools.partial(copy.deepcopy, similarity))
+        self.similarities = collections.defaultdict(
+            functools.partial(copy.deepcopy, similarity)
+        )
         self.leaderboard = collections.Counter()
 
     @classmethod
     def _default_params(cls):
-        return {'similarity': stats.PearsonCorr()}
+        return {"similarity": stats.PearsonCorr()}
 
     def learn_one(self, x, y):
 
@@ -86,10 +88,6 @@ class SelectKBest(base.SupervisedTransformer):
 
         if self.leaderboard:
 
-            return {
-                i: xi
-                for i, xi in x.items()
-                if i in best_features
-            }
+            return {i: xi for i, xi in x.items() if i in best_features}
 
         return copy.deepcopy(x)

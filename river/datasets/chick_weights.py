@@ -17,11 +17,13 @@ class ChickWeights(base.FileDataset):
     """
 
     def __init__(self):
-        super().__init__(filename='chick-weights.csv', n_samples=578, n_features=3, task=base.REG)
+        super().__init__(
+            filename="chick-weights.csv", n_samples=578, n_features=3, task=base.REG
+        )
 
     def __iter__(self):
         return stream.iter_csv(
             self.path,
-            target='weight',
-            converters={'time': int, 'weight': int, 'chick': int, 'diet': int}
+            target="weight",
+            converters={"time": int, "weight": int, "chick": int, "diet": int},
         )

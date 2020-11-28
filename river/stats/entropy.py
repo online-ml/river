@@ -65,7 +65,7 @@ class Entropy(base.Univariate):
         if 0 < alpha <= 1:
             self.alpha = alpha
         else:
-            raise ValueError('alpha must be between 0 excluded and 1')
+            raise ValueError("alpha must be between 0 excluded and 1")
         self.eps = eps
         self.entropy = 0
         self.n = 0
@@ -73,7 +73,7 @@ class Entropy(base.Univariate):
 
     @property
     def name(self):
-        return 'entropy'
+        return "entropy"
 
     def update(self, x):
 
@@ -83,7 +83,9 @@ class Entropy(base.Univariate):
         alpha = self.alpha
 
         entropy = self.entropy
-        entropy = (n + eps) / (n + 1) * (alpha * entropy - math.log((n + eps) / (n + 1)))
+        entropy = (
+            (n + eps) / (n + 1) * (alpha * entropy - math.log((n + eps) / (n + 1)))
+        )
         entropy -= (cx + 1) / (n + 1) * math.log((cx + 1) / (n + 1))
         entropy += (cx + eps) / (n + 1) * math.log((cx + eps) / (n + 1))
         self.entropy = entropy

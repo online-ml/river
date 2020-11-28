@@ -7,19 +7,27 @@ from river import base
 from river import metrics
 
 
-__all__ = ['SuccessiveHalvingClassifier', 'SuccessiveHalvingRegressor']
+__all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
 
 class SuccessiveHalving:
-
-    def __init__(self, models, metric: metrics.Metric, budget: int, eta=2, verbose=False,
-                 **print_kwargs):
+    def __init__(
+        self,
+        models,
+        metric: metrics.Metric,
+        budget: int,
+        eta=2,
+        verbose=False,
+        **print_kwargs,
+    ):
 
         # Check that the model and the metric are in accordance
         for model in models:
             if not metric.works_with(model):
-                raise ValueError(f"{metric.__class__.__name__} metric can't be used to evaluate a " +
-                                 f'{model.__class__.__name__}')
+                raise ValueError(
+                    f"{metric.__class__.__name__} metric can't be used to evaluate a "
+                    + f"{model.__class__.__name__}"
+                )
 
         self.models = models
         self.metric = metric
@@ -50,7 +58,7 @@ class SuccessiveHalving:
 
     def learn_one(self, x, y):
 
-        for i in self._rankings[:self._s]:
+        for i in self._rankings[: self._s]:
             model = self.models[i]
             metric = self._metrics[i]
             y_pred = self._pred_func(model)(x)
@@ -60,7 +68,9 @@ class SuccessiveHalving:
             # Check for a new best model
             if i != self._best_model_idx:
                 op = operator.gt if self.metric.bigger_is_better else operator.lt
-                if op(self._metrics[i].get(), self._metrics[self._best_model_idx].get()):
+                if op(
+                    self._metrics[i].get(), self._metrics[self._best_model_idx].get()
+                ):
                     self._best_model_idx = i
 
         self._n_iterations += 1
@@ -71,10 +81,10 @@ class SuccessiveHalving:
             self._budget_used += self._s * self._r
 
             # Update the rankings of the current models based on their respective metric values
-            self._rankings[:self._s] = sorted(
-                self._rankings[:self._s],
+            self._rankings[: self._s] = sorted(
+                self._rankings[: self._s],
                 key=lambda i: self._metrics[i].get(),
-                reverse=self.metric.bigger_is_better
+                reverse=self.metric.bigger_is_better,
             )
 
             # Determine how many models to keep for the current rung
@@ -82,21 +92,25 @@ class SuccessiveHalving:
 
             if self.verbose:
                 print(
-                    '\t'.join((
-                        f'[{self._n_rungs}]',
-                        f'{self._s - cutoff} removed',
-                        f'{cutoff} left',
-                        f'{self._r} iterations',
-                        f'budget used: {self._budget_used}',
-                        f'budget left: {self.budget - self._budget_used}',
-                        f'best {self._metrics[self._rankings[0]]}',
-                    )),
-                    **self.print_kwargs
+                    "\t".join(
+                        (
+                            f"[{self._n_rungs}]",
+                            f"{self._s - cutoff} removed",
+                            f"{cutoff} left",
+                            f"{self._r} iterations",
+                            f"budget used: {self._budget_used}",
+                            f"budget left: {self.budget - self._budget_used}",
+                            f"best {self._metrics[self._rankings[0]]}",
+                        )
+                    ),
+                    **self.print_kwargs,
                 )
 
             # Determine where the next rung is located
             self._s = cutoff
-            self._r = math.floor(self.budget / (self._s * math.ceil(math.log(self._n, self.eta))))
+            self._r = math.floor(
+                self.budget / (self._s * math.ceil(math.log(self._n, self.eta)))
+            )
 
         return self
 
@@ -112,7 +126,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     If you have `k` combinations of hyperparameters and that your dataset contains `n`
     observations, then the maximal budget you can allocate is:
 
-    $$\\frac{2kn}{eta}$$
+    $$\frac{2kn}{eta}$$
 
     It is recommended that you check this beforehand. This bound can't be checked by the function
     because the size of the dataset is not known. In fact it is potentially infinite, in which case
@@ -122,7 +136,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     number of hyperparameter combinations that will spend all the budget and go through all the
     data is:
 
-    $$\\ceil(\\floor(\\frac{B}{2n}) \\times eta)$$
+    $$\ceil(\floor(\frac{B}{2n}) \times eta)$$
 
     Parameters
     ----------
@@ -258,7 +272,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     If you have `k` combinations of hyperparameters and that your dataset contains `n`
     observations, then the maximal budget you can allocate is:
 
-    $$\\frac{2kn}{eta}$$
+    $$\frac{2kn}{eta}$$
 
     It is recommended that you check this beforehand. This bound can't be checked by the function
     because the size of the dataset is not known. In fact it is potentially infinite, in which case
@@ -268,7 +282,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     number of hyperparameter combinations that will spend all the budget and go through all the
     data is:
 
-    $$\\ceil(\\floor(\\frac{B}{(2n)}) \times eta)$$
+    $$\ceil(\floor(\frac{B}{(2n)}) \times eta)$$
 
     Parameters
     ----------

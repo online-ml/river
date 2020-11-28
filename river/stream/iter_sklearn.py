@@ -4,7 +4,9 @@ from river import base
 from river import stream
 
 
-def iter_sklearn_dataset(dataset: 'sklearn.utils.Bunch', **kwargs) -> base.typing.Stream:
+def iter_sklearn_dataset(
+    dataset: "sklearn.utils.Bunch", **kwargs
+) -> base.typing.Stream:
     """Iterates rows from one of the datasets provided by scikit-learn.
 
     This allows you to use any dataset from [scikit-learn's `datasets` module](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.datasets). For instance, you can use the `fetch_openml` function to get access to all of the
@@ -46,10 +48,10 @@ def iter_sklearn_dataset(dataset: 'sklearn.utils.Bunch', **kwargs) -> base.typin
     24.0
 
     """
-    kwargs['X'] = dataset.data
-    kwargs['y'] = dataset.target
+    kwargs["X"] = dataset.data
+    kwargs["y"] = dataset.target
     try:
-        kwargs['feature_names'] = dataset.feature_names
+        kwargs["feature_names"] = dataset.feature_names
     except AttributeError:
         pass
 

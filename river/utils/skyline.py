@@ -150,7 +150,7 @@ class Skyline(collections.UserList):
         self.maximize = [] if maximize is None else maximize
 
         if len(self.minimize) + len(self.maximize) == 0:
-            raise ValueError('At least one name has to be specified')
+            raise ValueError("At least one name has to be specified")
 
     def _count_diffs(self, a, b):
         n_better = 0

@@ -20,11 +20,16 @@ class HTTP(base.RemoteDataset):
             n_samples=567_498,
             n_features=3,
             task=base.BINARY_CLF,
-            url='https://maxhalford.github.io/files/datasets/kdd99_http.zip',
+            url="https://maxhalford.github.io/files/datasets/kdd99_http.zip",
             size=32400738,
-            filename='kdd99_http.csv'
+            filename="kdd99_http.csv",
         )
 
     def _iter(self):
-        converters = {'duration': float, 'src_bytes': float, 'dst_bytes': float, 'service': int}
-        return stream.iter_csv(self.path, target='service', converters=converters)
+        converters = {
+            "duration": float,
+            "src_bytes": float,
+            "dst_bytes": float,
+            "service": int,
+        }
+        return stream.iter_csv(self.path, target="service", converters=converters)

@@ -5,7 +5,7 @@ from .htr_nodes import LearningNodeAdaptive
 
 
 class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
-    """ ARF learning Node for regression tasks that always use the average target
+    """ARF learning Node for regression tasks that always use the average target
     value as response.
 
     Parameters
@@ -28,12 +28,13 @@ class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     """
+
     def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed):
         super().__init__(stats, depth, attr_obs, attr_obs_params, max_features, seed)
 
 
 class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
-    """ ARF learning Node for regression tasks that always use a learning model to provide
+    """ARF learning Node for regression tasks that always use a learning model to provide
     responses.
 
     Parameters
@@ -59,14 +60,23 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model):
+
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model
+    ):
         super().__init__(
-            stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model=leaf_model
+            stats,
+            depth,
+            attr_obs,
+            attr_obs_params,
+            max_features,
+            seed,
+            leaf_model=leaf_model,
         )
 
 
 class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
-    """ ARF learning node for regression tasks that dynamically selects between the
+    """ARF learning node for regression tasks that dynamically selects between the
     target mean and the output of a learning model to provide responses.
 
     Parameters
@@ -92,7 +102,16 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
     """
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model):
+
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model
+    ):
         super().__init__(
-            stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model=leaf_model
+            stats,
+            depth,
+            attr_obs,
+            attr_obs_params,
+            max_features,
+            seed,
+            leaf_model=leaf_model,
         )

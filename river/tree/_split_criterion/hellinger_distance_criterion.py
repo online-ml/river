@@ -24,7 +24,12 @@ class HellingerDistanceCriterion(SplitCriterion):
         self.best_idx = 0
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
-        if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_frac_option) < 2:
+        if (
+            self.num_subsets_greater_than_frac(
+                post_split_dist, self.min_branch_frac_option
+            )
+            < 2
+        ):
             return -math.inf
         return self.compute_hellinger(post_split_dist)
 
@@ -40,10 +45,13 @@ class HellingerDistanceCriterion(SplitCriterion):
         total_negative = left_branch_negative + right_branch_negative
         total_positive = left_branch_positive + right_branch_positive
 
-        hellinger = (math.sqrt(left_branch_negative/total_negative)
-                     - math.sqrt(left_branch_positive/total_positive)) ** 2 + \
-                    (math.sqrt(right_branch_negative/total_negative)
-                     - math.sqrt(right_branch_positive/total_positive)) ** 2
+        hellinger = (
+            math.sqrt(left_branch_negative / total_negative)
+            - math.sqrt(left_branch_positive / total_positive)
+        ) ** 2 + (
+            math.sqrt(right_branch_negative / total_negative)
+            - math.sqrt(right_branch_positive / total_positive)
+        ) ** 2
 
         return math.sqrt(hellinger)
 
@@ -56,7 +64,7 @@ class HellingerDistanceCriterion(SplitCriterion):
     @staticmethod
     def num_subsets_greater_than_frac(distributions, min_frac):
         total_weight = 0.0
-        dist_sums = [0.0]*len(distributions)
+        dist_sums = [0.0] * len(distributions)
         for i in range(len(dist_sums)):
             dist_sums[i] = sum(distributions[i].values())
             total_weight += dist_sums[i]

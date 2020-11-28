@@ -43,9 +43,15 @@ class Logical(base.SyntheticDataset):
 
     """
 
-    def __init__(self, n_tiles: int = 1, shuffle: bool = True,
-                 seed: int or np.random.RandomState = None):
-        super().__init__(n_features=2, n_outputs=3, n_samples=4 * n_tiles, task=base.MO_BINARY_CLF)
+    def __init__(
+        self,
+        n_tiles: int = 1,
+        shuffle: bool = True,
+        seed: int or np.random.RandomState = None,
+    ):
+        super().__init__(
+            n_features=2, n_outputs=3, n_samples=4 * n_tiles, task=base.MO_BINARY_CLF
+        )
         self.n_tiles = n_tiles
         self.shuffle = shuffle
         self.seed = seed
@@ -54,23 +60,30 @@ class Logical(base.SyntheticDataset):
 
     def __iter__(self):
         rng = check_random_state(self.seed)
-        X, Y = self._make_logical(n_tiles=self.n_tiles, shuffle=self.shuffle, random_state=rng)
+        X, Y = self._make_logical(
+            n_tiles=self.n_tiles, shuffle=self.shuffle, random_state=rng
+        )
 
-        for xi, yi in itertools.zip_longest(X, Y if hasattr(Y, '__iter__') else []):
+        for xi, yi in itertools.zip_longest(X, Y if hasattr(Y, "__iter__") else []):
             yield dict(zip(self.feature_names, xi)), dict(zip(self.target_names, yi))
 
     @staticmethod
-    def _make_logical(n_tiles: int = 1, shuffle: bool = True,
-                      random_state: np.random.RandomState=None):
-        """Make toy dataset
-        """
-        base_pattern = np.array([
-            # A  B  OR  XOR  AND
-            [0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 0],
-            [1, 0, 1, 1, 0],
-            [1, 1, 1, 0, 1]
-        ], dtype=int)
+    def _make_logical(
+        n_tiles: int = 1,
+        shuffle: bool = True,
+        random_state: np.random.RandomState = None,
+    ):
+        """Make toy dataset"""
+        base_pattern = np.array(
+            [
+                # A  B  OR  XOR  AND
+                [0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0],
+                [1, 0, 1, 1, 0],
+                [1, 1, 1, 0, 1],
+            ],
+            dtype=int,
+        )
 
         N, E = base_pattern.shape
         D = 2
@@ -83,4 +96,6 @@ class Logical(base.SyntheticDataset):
         if shuffle:
             random_state.shuffle(pattern)
         # return X, Y
-        return np.array(pattern[:, L:E], dtype=int), np.array(pattern[:, 0:L], dtype=int)
+        return np.array(pattern[:, L:E], dtype=int), np.array(
+            pattern[:, 0:L], dtype=int
+        )

@@ -72,10 +72,12 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             # Value was not yet added to the tree
             if is_right:
                 antecedent._right = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight)
+                    att_val, target, sample_weight
+                )
             else:
                 antecedent._left = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight)
+                    att_val, target, sample_weight
+                )
 
     def __init__(self):
         super().__init__()
@@ -86,8 +88,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeRegressionObserver.Node(att_val, target_val,
-                                                                     sample_weight)
+                self._root = NumericAttributeRegressionObserver.Node(
+                    att_val, target_val, sample_weight
+                )
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
@@ -96,8 +99,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         raise NotImplementedError
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx,
-                                        binary_only=True):
+    def best_evaluated_split_suggestion(
+        self, criterion, pre_split_dist, att_idx, binary_only=True
+    ):
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
@@ -108,7 +112,7 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         else:
             self._aux_estimator = Var()
 
-        candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
+        candidate = AttributeSplitSuggestion(None, [{}], -float("inf"))
 
         best_split = self._find_best_split(self._root, candidate)
 
@@ -134,8 +138,12 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
         if merit > candidate.merit:
-            num_att_binary_test = NumericAttributeBinaryTest(self._att_idx, node.att_val, True)
-            candidate = AttributeSplitSuggestion(num_att_binary_test, post_split_dists, merit)
+            num_att_binary_test = NumericAttributeBinaryTest(
+                self._att_idx, node.att_val, True
+            )
+            candidate = AttributeSplitSuggestion(
+                num_att_binary_test, post_split_dists, merit
+            )
 
         if node._right is not None:
             self._aux_estimator += node.estimator
@@ -149,8 +157,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         return candidate
 
-    def remove_bad_splits(self, criterion, last_check_ratio, last_check_vr, last_check_e,
-                          pre_split_dist):
+    def remove_bad_splits(
+        self, criterion, last_check_ratio, last_check_vr, last_check_e, pre_split_dist
+    ):
         """Remove bad splits.
 
         Based on FIMT-DD's [^1] procedure to remove bad split candidates from the E-BST. This
@@ -217,7 +226,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         is_bad = False
 
         if current_node._left is not None:
-            is_bad = self._remove_bad_split_nodes(current_node._left, current_node, True)
+            is_bad = self._remove_bad_split_nodes(
+                current_node._left, current_node, True
+            )
         else:  # Every leaf node is potentially a bad candidate
             is_bad = True
 
@@ -225,7 +236,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             if current_node._right is not None:
                 self._aux_estimator += current_node.estimator
 
-                is_bad = self._remove_bad_split_nodes(current_node._right, current_node, False)
+                is_bad = self._remove_bad_split_nodes(
+                    current_node._right, current_node, False
+                )
 
                 self._aux_estimator -= current_node.estimator
             else:  # Every leaf node is potentially a bad candidate
@@ -240,8 +253,12 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             right_dist = self._pre_split_dist - left_dist
 
             post_split_dists = [left_dist, right_dist]
-            merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
-            if (merit / self._last_check_vr) < (self._last_check_ratio - 2 * self._last_check_e):
+            merit = self._criterion.merit_of_split(
+                self._pre_split_dist, post_split_dists
+            )
+            if (merit / self._last_check_vr) < (
+                self._last_check_ratio - 2 * self._last_check_e
+            ):
                 # Remove children nodes
                 current_node._left = None
                 current_node._right = None

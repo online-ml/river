@@ -11,7 +11,7 @@ class Regressor(estimator.Estimator):
     """A regressor."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.RegTarget, **kwargs) -> 'Regressor':
+    def learn_one(self, x: dict, y: base.typing.RegTarget, **kwargs) -> "Regressor":
         """Fits to a set of features `x` and a real-valued target `y`.
 
         Parameters
@@ -46,12 +46,12 @@ class Regressor(estimator.Estimator):
 
 
 class MiniBatchRegressor(Regressor):
-    """A regressor that can operate on mini-batches.
-
-    """
+    """A regressor that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series, **kwargs) -> 'MiniBatchRegressor':
+    def learn_many(
+        self, X: pd.DataFrame, y: pd.Series, **kwargs
+    ) -> "MiniBatchRegressor":
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters

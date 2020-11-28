@@ -4,7 +4,7 @@ from river import base
 from river import stats
 
 
-__all__ = ['PreviousImputer', 'StatImputer']
+__all__ = ["PreviousImputer", "StatImputer"]
 
 
 class PreviousImputer(base.Transformer):
@@ -44,7 +44,6 @@ class PreviousImputer(base.Transformer):
                 x[i] = self._latest.get(i)
 
         return x
-
 
 
 class StatImputer(base.Transformer):

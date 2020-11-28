@@ -4,11 +4,11 @@ from . import base
 
 
 __all__ = [
-    'MacroPrecision',
-    'MicroPrecision',
-    'Precision',
-    'WeightedPrecision',
-    'ExamplePrecision'
+    "MacroPrecision",
+    "MicroPrecision",
+    "Precision",
+    "WeightedPrecision",
+    "ExamplePrecision",
 ]
 
 
@@ -49,7 +49,7 @@ class Precision(base.BinaryMetric):
         try:
             return tp / (tp + fp)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class MacroPrecision(base.MultiClassMetric):
@@ -92,7 +92,7 @@ class MacroPrecision(base.MultiClassMetric):
         try:
             return total / len(self.cm.classes)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class MicroPrecision(base.MultiClassMetric):
@@ -141,7 +141,7 @@ class MicroPrecision(base.MultiClassMetric):
         try:
             return num / den
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class WeightedPrecision(base.MultiClassMetric):
@@ -187,7 +187,7 @@ class WeightedPrecision(base.MultiClassMetric):
         try:
             return total / self.cm.total_weight
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class ExamplePrecision(base.MultiOutputClassificationMetric):
@@ -238,4 +238,4 @@ class ExamplePrecision(base.MultiOutputClassificationMetric):
         try:
             return self.cm.precision_sum / self.cm.n_samples
         except ZeroDivisionError:
-            return 0.
+            return 0.0

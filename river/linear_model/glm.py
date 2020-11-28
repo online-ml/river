@@ -10,11 +10,7 @@ from river import optim
 from river import utils
 
 
-__all__ = [
-    'LinearRegression',
-    'LogisticRegression',
-    'Perceptron'
-]
+__all__ = ["LinearRegression", "LogisticRegression", "Perceptron"]
 
 
 class GLM:
@@ -24,15 +20,17 @@ class GLM:
 
     """
 
-    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, clip_gradient, initializer):
+    def __init__(
+        self, optimizer, loss, l2, intercept, intercept_lr, clip_gradient, initializer
+    ):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
         self.intercept = intercept
         self.intercept_lr = (
             optim.schedulers.Constant(intercept_lr)
-            if isinstance(intercept_lr, numbers.Number) else
-            intercept_lr
+            if isinstance(intercept_lr, numbers.Number)
+            else intercept_lr
         )
         self.clip_gradient = clip_gradient
         self.initializer = initializer
@@ -65,7 +63,9 @@ class GLM:
         gradient, loss_gradient = get_grad(x, y, w)
 
         # Update the intercept
-        self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
+        self.intercept -= (
+            self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
+        )
 
         # Update the weights
         self.optimizer.update_after_pred(w=self._weights, g=gradient)
@@ -81,11 +81,16 @@ class GLM:
 
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
-        loss_gradient = float(utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient))
+        loss_gradient = float(
+            utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient)
+        )
 
-        return loss_gradient * utils.VectorDict(x) + 2. * self.l2 * self._weights, loss_gradient
+        return (
+            loss_gradient * utils.VectorDict(x) + 2.0 * self.l2 * self._weights,
+            loss_gradient,
+        )
 
-    def learn_one(self, x, y, w=1.):
+    def learn_one(self, x, y, w=1.0):
         with self._learn_mode(x):
             return self._fit(x, y, w, get_grad=self._eval_gradient_one)
 
@@ -94,12 +99,13 @@ class GLM:
     def _raw_dot_many(self, X: pd.DataFrame) -> np.ndarray:
         return X.values @ self._weights.to_numpy(X.columns) + self.intercept
 
-    def _eval_gradient_many(self,
-                            X: pd.DataFrame,
-                            y: pd.Series,
-                            w: typing.Union[float, pd.Series]) -> (dict, float):
+    def _eval_gradient_many(
+        self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
+    ) -> (dict, float):
 
-        loss_gradient = self.loss.gradient(y_true=y.values, y_pred=self._raw_dot_many(X))
+        loss_gradient = self.loss.gradient(
+            y_true=y.values, y_pred=self._raw_dot_many(X)
+        )
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
 
@@ -108,11 +114,13 @@ class GLM:
         # gradient. When this is all done, we collapse X by computing the average of each column,
         # thereby obtaining the mean gradient of the batch. From thereon, the code reduces to the
         # single instance case.
-        gradient = np.einsum('ij,i->ij', X.values, loss_gradient).mean(axis=0)
+        gradient = np.einsum("ij,i->ij", X.values, loss_gradient).mean(axis=0)
 
         return dict(zip(X.columns, gradient)), loss_gradient.mean()
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1):
+    def learn_many(
+        self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1
+    ):
         self._y_name = y.name
         with self._learn_mode(set(X)):
             return self._fit(X, y, w, get_grad=self._eval_gradient_many)
@@ -214,18 +222,24 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
 
     """
 
-    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.RegressionLoss = None,
-                 l2=.0, intercept=0.,
-                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
-                 clip_gradient=1e+12, initializer: optim.initializers.Initializer = None):
+    def __init__(
+        self,
+        optimizer: optim.Optimizer = None,
+        loss: optim.losses.RegressionLoss = None,
+        l2=0.0,
+        intercept=0.0,
+        intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = 0.01,
+        clip_gradient=1e12,
+        initializer: optim.initializers.Initializer = None,
+    ):
         super().__init__(
-            optimizer=optim.SGD(.01) if optimizer is None else optimizer,
+            optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Squared() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
             clip_gradient=clip_gradient,
-            initializer=initializer if initializer else optim.initializers.Zeros()
+            initializer=initializer if initializer else optim.initializers.Zeros(),
         )
 
     def predict_one(self, x):
@@ -236,7 +250,7 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
             self.loss.mean_func(self._raw_dot_many(X)),
             index=X.index,
             name=self._y_name,
-            copy=False
+            copy=False,
         )
 
     def debug_one(self, x: dict, decimals=5) -> str:
@@ -256,19 +270,23 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
         """
 
         def fmt_float(x):
-            return '{: ,.{prec}f}'.format(x, prec=decimals)
+            return "{: ,.{prec}f}".format(x, prec=decimals)
 
-        names = list(map(str, x.keys())) + ['Intercept']
+        names = list(map(str, x.keys())) + ["Intercept"]
         values = list(map(fmt_float, list(x.values()) + [1]))
-        weights = list(map(fmt_float, [self._weights.get(i, 0) for i in x] + [self.intercept]))
-        contributions = [xi * self._weights.get(i, 0) for i, xi in x.items()] + [self.intercept]
+        weights = list(
+            map(fmt_float, [self._weights.get(i, 0) for i in x] + [self.intercept])
+        )
+        contributions = [xi * self._weights.get(i, 0) for i, xi in x.items()] + [
+            self.intercept
+        ]
         order = reversed(np.argsort(contributions))
         contributions = list(map(fmt_float, contributions))
 
         table = utils.pretty.print_table(
-            headers=['Name', 'Value', 'Weight', 'Contribution'],
+            headers=["Name", "Value", "Weight", "Contribution"],
             columns=[names, values, weights, contributions],
-            order=order
+            order=order,
         )
 
         return table
@@ -332,28 +350,36 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
 
     """
 
-    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.BinaryLoss = None,
-                 l2=.0, intercept=0.,
-                 intercept_lr: typing.Union[float, optim.schedulers.Scheduler] = .01,
-                 clip_gradient=1e12, initializer: optim.initializers.Initializer = None):
+    def __init__(
+        self,
+        optimizer: optim.Optimizer = None,
+        loss: optim.losses.BinaryLoss = None,
+        l2=0.0,
+        intercept=0.0,
+        intercept_lr: typing.Union[float, optim.schedulers.Scheduler] = 0.01,
+        clip_gradient=1e12,
+        initializer: optim.initializers.Initializer = None,
+    ):
 
         super().__init__(
-            optimizer=optim.SGD(.01) if optimizer is None else optimizer,
+            optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
             intercept=intercept,
             intercept_lr=intercept_lr,
             l2=l2,
             clip_gradient=clip_gradient,
-            initializer=initializer if initializer else optim.initializers.Zeros()
+            initializer=initializer if initializer else optim.initializers.Zeros(),
         )
 
     def predict_proba_one(self, x):
         p = self.loss.mean_func(self._raw_dot_one(x))  # Convert logit to probability
-        return {False: 1. - p, True: p}
+        return {False: 1.0 - p, True: p}
 
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
-        return pd.DataFrame({False: 1. - p, True: p}, index=X.index, copy=False)
+        p = self.loss.mean_func(
+            self._raw_dot_many(X)
+        )  # Convert logits to probabilities
+        return pd.DataFrame({False: 1.0 - p, True: p}, index=X.index, copy=False)
 
 
 class Perceptron(LogisticRegression):
@@ -398,13 +424,17 @@ class Perceptron(LogisticRegression):
 
     """
 
-    def __init__(self, l2=.0, clip_gradient=1e12,
-                 initializer: optim.initializers.Initializer = None):
+    def __init__(
+        self,
+        l2=0.0,
+        clip_gradient=1e12,
+        initializer: optim.initializers.Initializer = None,
+    ):
         super().__init__(
             optimizer=optim.SGD(1),
             intercept_lr=1,
-            loss=optim.losses.Hinge(threshold=0.),
+            loss=optim.losses.Hinge(threshold=0.0),
             l2=l2,
             clip_gradient=clip_gradient,
-            initializer=initializer
+            initializer=initializer,
         )

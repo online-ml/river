@@ -4,7 +4,7 @@ from . import base
 from . import confusion
 
 
-__all__ = ['ROCAUC']
+__all__ = ["ROCAUC"]
 
 
 class ROCAUC(base.BinaryMetric):
@@ -60,14 +60,14 @@ class ROCAUC(base.BinaryMetric):
         self.thresholds[-1] += 1e-7
         self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
 
-    def update(self, y_true, y_pred, sample_weight=1.):
-        p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
+    def update(self, y_true, y_pred, sample_weight=1.0):
+        p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
             cm.update(y_true == self.pos_val, p_true > t, sample_weight)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.):
-        p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
+    def revert(self, y_true, y_pred, sample_weight=1.0):
+        p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
             cm.revert(y_true == self.pos_val, p_true > t, sample_weight)
         return self
@@ -85,7 +85,7 @@ class ROCAUC(base.BinaryMetric):
             try:
                 return a / b
             except ZeroDivisionError:
-                return 0.
+                return 0.0
 
         for i, cm in enumerate(self.cms):
             tp = cm.true_positives(self.pos_val)

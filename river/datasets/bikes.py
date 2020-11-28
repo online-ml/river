@@ -17,25 +17,25 @@ class Bikes(base.RemoteDataset):
 
     def __init__(self):
         super().__init__(
-            url='https://maxhalford.github.io/files/datasets/toulouse_bikes.zip',
+            url="https://maxhalford.github.io/files/datasets/toulouse_bikes.zip",
             size=13125015,
             n_samples=182_470,
             n_features=8,
             task=base.REG,
-            filename='toulouse_bikes.csv'
+            filename="toulouse_bikes.csv",
         )
 
     def _iter(self):
         return stream.iter_csv(
             self.path,
-            target='bikes',
+            target="bikes",
             converters={
-                'clouds': int,
-                'humidity': int,
-                'pressure': float,
-                'temperature': float,
-                'wind': float,
-                'bikes': int
+                "clouds": int,
+                "humidity": int,
+                "pressure": float,
+                "temperature": float,
+                "wind": float,
+                "bikes": int,
             },
-            parse_dates={'moment': '%Y-%m-%d %H:%M:%S'}
+            parse_dates={"moment": "%Y-%m-%d %H:%M:%S"},
         )

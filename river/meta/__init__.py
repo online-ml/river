@@ -4,8 +4,4 @@ from .target_transform import BoxCoxRegressor
 from .target_transform import TransformedTargetRegressor
 
 
-__all__ = [
-    'BoxCoxRegressor',
-    'PredClipper',
-    'TransformedTargetRegressor'
-]
+__all__ = ["BoxCoxRegressor", "PredClipper", "TransformedTargetRegressor"]

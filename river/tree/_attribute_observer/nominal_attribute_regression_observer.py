@@ -7,8 +7,7 @@ from .attribute_observer import AttributeObserver
 
 
 class NominalAttributeRegressionObserver(AttributeObserver):
-    """Nominal attribute observer for regression tasks.
-    """
+    """Nominal attribute observer for regression tasks."""
 
     def __init__(self):
         super().__init__()
@@ -32,7 +31,9 @@ class NominalAttributeRegressionObserver(AttributeObserver):
                 estimator = self._statistics[att_val]
             except KeyError:
                 if isinstance(target, dict):  # Multi-target case
-                    self._statistics[att_val] = VectorDict(default_factory=lambda: Var())
+                    self._statistics[att_val] = VectorDict(
+                        default_factory=lambda: Var()
+                    )
                     self._update_estimator = self._update_estimator_multivariate
                 else:
                     self._statistics[att_val] = Var()
@@ -44,18 +45,23 @@ class NominalAttributeRegressionObserver(AttributeObserver):
     def probability_of_attribute_value_given_class(self, att_val, target):
         raise NotImplementedError
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(
+        self, criterion, pre_split_dist, att_idx, binary_only
+    ):
         current_best = None
         ordered_feature_values = sorted(list(self._statistics.keys()))
         if not binary_only:
             post_split_dist = [self._statistics[k] for k in ordered_feature_values]
 
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
-            branch_mapping = {attr_val: branch_id for branch_id, attr_val in
-                              enumerate(ordered_feature_values)}
+            branch_mapping = {
+                attr_val: branch_id
+                for branch_id, attr_val in enumerate(ordered_feature_values)
+            }
             current_best = AttributeSplitSuggestion(
                 NominalAttributeMultiwayTest(att_idx, branch_mapping),
-                post_split_dist, merit
+                post_split_dist,
+                merit,
             )
 
         for att_val in ordered_feature_values:

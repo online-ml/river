@@ -1,7 +1,7 @@
 from . import base
 
 
-__all__ = ['RegressionMultiOutput']
+__all__ = ["RegressionMultiOutput"]
 
 
 class RegressionMultiOutput(base.MultiOutputRegressionMetric, base.WrapperMetric):
@@ -17,19 +17,19 @@ class RegressionMultiOutput(base.MultiOutputRegressionMetric, base.WrapperMetric
 
     """
 
-    def __init__(self, metric: 'base.RegressionMetric'):
+    def __init__(self, metric: "base.RegressionMetric"):
         self._metric = metric
 
     @property
     def metric(self):
         return self._metric
 
-    def update(self, y_true, y_pred, sample_weight=1.):
+    def update(self, y_true, y_pred, sample_weight=1.0):
         for i in y_true:
             self.metric.update(y_true[i], y_pred[i], sample_weight)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.):
+    def revert(self, y_true, y_pred, sample_weight=1.0):
         for i in y_true:
             self.metric.revert(y_true[i], y_pred[i], sample_weight)
         return self

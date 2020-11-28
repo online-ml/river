@@ -3,7 +3,7 @@ import math
 from . import base
 
 
-__all__ = ['MCC']
+__all__ = ["MCC"]
 
 
 class MCC(base.BinaryMetric):
@@ -52,4 +52,4 @@ class MCC(base.BinaryMetric):
         try:
             return (tp / n - s * p) / math.sqrt(p * s * (1 - s) * (1 - p))
         except ZeroDivisionError:
-            return 0.
+            return 0.0

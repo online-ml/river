@@ -9,7 +9,7 @@ from river import utils
 from . import base
 
 
-__all__ = ['Baseline']
+__all__ = ["Baseline"]
 
 
 class Baseline(base.Recommender):
@@ -82,11 +82,21 @@ class Baseline(base.Recommender):
 
     """
 
-    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.Loss = None,
-                 l2=0., initializer: optim.initializers.Initializer = None, clip_gradient=1e12):
+    def __init__(
+        self,
+        optimizer: optim.Optimizer = None,
+        loss: optim.losses.Loss = None,
+        l2=0.0,
+        initializer: optim.initializers.Initializer = None,
+        clip_gradient=1e12,
+    ):
         self.optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
-        self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
-        self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        self.u_optimizer = (
+            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        )
+        self.i_optimizer = (
+            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        )
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2 = l2
 
@@ -96,8 +106,12 @@ class Baseline(base.Recommender):
 
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
-        self.u_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(initializer)
-        self.i_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(initializer)
+        self.u_biases: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(initializer)
+        self.i_biases: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(initializer)
 
     def _predict_one(self, user, item):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]
@@ -111,7 +125,9 @@ class Baseline(base.Recommender):
         g_loss = self.loss.gradient(y, self._predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
+        g_loss = utils.math.clamp(
+            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
+        )
 
         # Calculate bias gradients
         u_grad_bias = {user: g_loss + self.l2 * self.u_biases[user]}

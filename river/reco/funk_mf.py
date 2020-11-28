@@ -11,7 +11,7 @@ from river import utils
 from . import base
 
 
-__all__ = ['FunkMF']
+__all__ = ["FunkMF"]
 
 
 class FunkMF(base.Recommender):
@@ -91,30 +91,41 @@ class FunkMF(base.Recommender):
 
     """
 
-    def __init__(self, n_factors=10, optimizer: optim.Optimizer = None,
-                 loss: optim.losses.Loss = None, l2=0.,
-                 initializer: optim.initializers.Initializer = None,
-                 clip_gradient=1e12, seed: int = None):
+    def __init__(
+        self,
+        n_factors=10,
+        optimizer: optim.Optimizer = None,
+        loss: optim.losses.Loss = None,
+        l2=0.0,
+        initializer: optim.initializers.Initializer = None,
+        clip_gradient=1e12,
+        seed: int = None,
+    ):
 
         self.n_factors = n_factors
-        self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
-        self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        self.u_optimizer = (
+            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        )
+        self.i_optimizer = (
+            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        )
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2 = l2
 
         if initializer is None:
-            initializer = optim.initializers.Normal(mu=0., sigma=.1, seed=seed)
+            initializer = optim.initializers.Normal(mu=0.0, sigma=0.1, seed=seed)
         self.initializer = initializer
 
         self.clip_gradient = clip_gradient
         self.seed = seed
 
-        random_latents = functools.partial(
-            self.initializer,
-            shape=self.n_factors
-        )
-        self.u_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
-        self.i_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
+        random_latents = functools.partial(self.initializer, shape=self.n_factors)
+        self.u_latents: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(random_latents)
+        self.i_latents: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(random_latents)
 
     def _predict_one(self, user, item):
         return np.dot(self.u_latents[user], self.i_latents[item])
@@ -125,14 +136,24 @@ class FunkMF(base.Recommender):
         g_loss = self.loss.gradient(y, self._predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
+        g_loss = utils.math.clamp(
+            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
+        )
 
         # Calculate latent gradients
-        u_latent_grad = {user: g_loss * self.i_latents[item] + self.l2 * self.u_latents[user]}
-        i_latent_grad = {item: g_loss * self.u_latents[user] + self.l2 * self.i_latents[item]}
+        u_latent_grad = {
+            user: g_loss * self.i_latents[item] + self.l2 * self.u_latents[user]
+        }
+        i_latent_grad = {
+            item: g_loss * self.u_latents[user] + self.l2 * self.i_latents[item]
+        }
 
         # Update latent weights
-        self.u_latents = self.u_optimizer.update_after_pred(self.u_latents, u_latent_grad)
-        self.i_latents = self.i_optimizer.update_after_pred(self.i_latents, i_latent_grad)
+        self.u_latents = self.u_optimizer.update_after_pred(
+            self.u_latents, u_latent_grad
+        )
+        self.i_latents = self.i_optimizer.update_after_pred(
+            self.i_latents, i_latent_grad
+        )
 
         return self

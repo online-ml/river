@@ -3,13 +3,10 @@ import torch
 from .. import base
 
 
-__all__ = [
-    'PyTorch2RiverRegressor'
-]
+__all__ = ["PyTorch2RiverRegressor"]
 
 
 class PyTorch2RiverBase:
-
     def __init__(self, net, loss_fn, optimizer, batch_size, x_tensor, y_tensor):
         self.net = net
         self.loss_fn = loss_fn
@@ -91,15 +88,20 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
 
     """
 
-    def __init__(self, net: torch.nn.Sequential, loss_fn: torch.nn.modules.loss._Loss,
-                 optimizer: torch.optim.Optimizer, batch_size=1):
+    def __init__(
+        self,
+        net: torch.nn.Sequential,
+        loss_fn: torch.nn.modules.loss._Loss,
+        optimizer: torch.optim.Optimizer,
+        batch_size=1,
+    ):
         super().__init__(
             net=net,
             loss_fn=loss_fn,
             optimizer=optimizer,
             batch_size=batch_size,
             x_tensor=torch.Tensor,
-            y_tensor=torch.Tensor
+            y_tensor=torch.Tensor,
         )
 
     def predict_one(self, x):

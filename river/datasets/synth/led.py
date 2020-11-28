@@ -5,7 +5,7 @@ from river.utils.skmultiflow_utils import check_random_state
 
 
 class LED(base.SyntheticDataset):
-    """ LED stream generator.
+    """LED stream generator.
 
     This data source originates from the CART book [^1]. An implementation
     in C was donated to the UCI [^2] machine learning repository by David Aha.
@@ -62,29 +62,46 @@ class LED(base.SyntheticDataset):
           Computer Sciences,2007.
 
     """
+
     _N_RELEVANT_FEATURES = 7
     _N_FEATURES_INCLUDING_NOISE = 24
-    _ORIGINAL_INSTANCES = np.array([[1, 1, 1, 0, 1, 1, 1],
-                                    [0, 0, 1, 0, 0, 1, 0],
-                                    [1, 0, 1, 1, 1, 0, 1],
-                                    [1, 0, 1, 1, 0, 1, 1],
-                                    [0, 1, 1, 1, 0, 1, 0],
-                                    [1, 1, 0, 1, 0, 1, 1],
-                                    [1, 1, 0, 1, 1, 1, 1],
-                                    [1, 0, 1, 0, 0, 1, 0],
-                                    [1, 1, 1, 1, 1, 1, 1],
-                                    [1, 1, 1, 1, 0, 1, 1]], dtype=int)
+    _ORIGINAL_INSTANCES = np.array(
+        [
+            [1, 1, 1, 0, 1, 1, 1],
+            [0, 0, 1, 0, 0, 1, 0],
+            [1, 0, 1, 1, 1, 0, 1],
+            [1, 0, 1, 1, 0, 1, 1],
+            [0, 1, 1, 1, 0, 1, 0],
+            [1, 1, 0, 1, 0, 1, 1],
+            [1, 1, 0, 1, 1, 1, 1],
+            [1, 0, 1, 0, 0, 1, 0],
+            [1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 0, 1, 1],
+        ],
+        dtype=int,
+    )
 
-    def __init__(self, seed: int or np.random.RandomState = None,
-                 noise_percentage: float = 0.0, irrelevant_features: bool = False):
-        super().__init__(n_features=self._N_FEATURES_INCLUDING_NOISE if irrelevant_features else
-                         self._N_RELEVANT_FEATURES, n_classes=10, n_outputs=1,
-                         task=base.MULTI_CLF)
+    def __init__(
+        self,
+        seed: int or np.random.RandomState = None,
+        noise_percentage: float = 0.0,
+        irrelevant_features: bool = False,
+    ):
+        super().__init__(
+            n_features=self._N_FEATURES_INCLUDING_NOISE
+            if irrelevant_features
+            else self._N_RELEVANT_FEATURES,
+            n_classes=10,
+            n_outputs=1,
+            task=base.MULTI_CLF,
+        )
         self.seed = seed
         self._rng = None  # This is the actual random_state object used internally
         if not (0.0 <= noise_percentage <= 1.0):
-            raise ValueError(f"Invalid noise_percentage ({noise_percentage}). "
-                             "Valid range is [0.0, 1.0]")
+            raise ValueError(
+                f"Invalid noise_percentage ({noise_percentage}). "
+                "Valid range is [0.0, 1.0]"
+            )
         self.noise_percentage = noise_percentage
         self.irrelevant_features = irrelevant_features
         self.n_cat_features = self.n_features
@@ -104,14 +121,16 @@ class LED(base.SyntheticDataset):
                     x[i] = self._ORIGINAL_INSTANCES[y, i]
 
             if self.irrelevant_features:
-                for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
+                for i in range(
+                    self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE
+                ):
                     x[i] = self._rng.randint(2)
 
             yield x, y
 
 
 class LEDDrift(LED):
-    """ LED stream generator with concept drift.
+    """LED stream generator with concept drift.
 
     This class is an extension of the `LED` generator whose purpose is to add
     concept drift to the stream.
@@ -157,11 +176,18 @@ class LEDDrift(LED):
 
     _N_IRRELEVANT_ATTRIBUTES = 17
 
-    def __init__(self, seed: int or np.random.RandomState = None,
-                 noise_percentage: float = 0.0, irrelevant_features: bool = False,
-                 n_drift_features: int = 0):
-        super().__init__(seed=seed, noise_percentage=noise_percentage,
-                         irrelevant_features=irrelevant_features)
+    def __init__(
+        self,
+        seed: int or np.random.RandomState = None,
+        noise_percentage: float = 0.0,
+        irrelevant_features: bool = False,
+        n_drift_features: int = 0,
+    ):
+        super().__init__(
+            seed=seed,
+            noise_percentage=noise_percentage,
+            irrelevant_features=irrelevant_features,
+        )
         self.n_drift_features = n_drift_features
 
     def __iter__(self):
@@ -179,7 +205,9 @@ class LEDDrift(LED):
                 self._attr_idx[value_2] = value_1
 
         while True:
-            x = {i: -1 for i in range(self.n_features)}   # Initialize to keep order in dictionary
+            x = {
+                i: -1 for i in range(self.n_features)
+            }  # Initialize to keep order in dictionary
             y = self._rng.randint(self.n_classes)
 
             for i in range(self._N_RELEVANT_FEATURES):
@@ -188,7 +216,9 @@ class LEDDrift(LED):
                 else:
                     x[self._attr_idx[i]] = self._ORIGINAL_INSTANCES[y, i]
             if self.irrelevant_features:
-                for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
+                for i in range(
+                    self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE
+                ):
                     x[self._attr_idx[i]] = self._rng.randint(2)
 
             yield x, y

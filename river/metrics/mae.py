@@ -1,7 +1,7 @@
 from . import base
 
 
-__all__ = ['MAE']
+__all__ = ["MAE"]
 
 
 class MAE(base.MeanMetric, base.RegressionMetric):

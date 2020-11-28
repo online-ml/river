@@ -14,12 +14,12 @@ from river import compose
 
 
 __all__ = [
-    'extract_relevant',
-    'isclassifier',
-    'isregressor',
-    'ismoclassifier',
-    'ismoregressor',
-    'isdriftdetector'
+    "extract_relevant",
+    "isclassifier",
+    "isregressor",
+    "ismoclassifier",
+    "ismoregressor",
+    "isdriftdetector",
 ]
 
 
@@ -42,7 +42,9 @@ def isclassifier(model):
 
 
 def ismoclassifier(model):
-    return isclassifier(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
+    return isclassifier(model) and isinstance(
+        extract_relevant(model), base.MultiOutputMixin
+    )
 
 
 def isregressor(model):
@@ -54,7 +56,9 @@ def istransformer(model):
 
 
 def ismoregressor(model):
-    return isregressor(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
+    return isregressor(model) and isinstance(
+        extract_relevant(model), base.MultiOutputMixin
+    )
 
 
 def isdriftdetector(model):

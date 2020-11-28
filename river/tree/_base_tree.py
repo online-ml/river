@@ -18,6 +18,7 @@ from ._attribute_test import InstanceConditionalTest
 
 try:
     import graphviz
+
     GRAPHVIZ_INSTALLED = True
 except ImportError:
     GRAPHVIZ_INSTALLED = False
@@ -69,9 +70,17 @@ class BaseHoeffdingTree(ABC):
     merit_preprune
         If True, enable merit-based tree pre-pruning.
     """
-    def __init__(self, max_depth: int = None, binary_split: bool = False, max_size: int = 100,
-                 memory_estimate_period: int = 1000000, stop_mem_management: bool = False,
-                 remove_poor_attrs: bool = False, merit_preprune: bool = True):
+
+    def __init__(
+        self,
+        max_depth: int = None,
+        binary_split: bool = False,
+        max_size: int = 100,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
+    ):
         # Properties common to all the Hoeffding trees
         self._split_criterion: str
         self._leaf_prediction: str
@@ -124,7 +133,9 @@ class BaseHoeffdingTree(ABC):
         n
             Number of processed samples.
         """
-        return math.sqrt((range_val * range_val * math.log(1. / confidence)) / (2. * n))
+        return math.sqrt(
+            (range_val * range_val * math.log(1.0 / confidence)) / (2.0 * n)
+        )
 
     @property
     def max_size(self):
@@ -141,16 +152,17 @@ class BaseHoeffdingTree(ABC):
         """Collect metrics corresponding to the current status of the tree
         in a string buffer.
         """
-        measurements = {'Tree size (nodes)': self._n_decision_nodes
-                        + self._n_active_leaves + self._n_inactive_leaves,
-                        'Tree size (leaves)': self._n_active_leaves
-                        + self._n_inactive_leaves,
-                        'Active learning nodes': self._n_active_leaves,
-                        'Tree depth': self.depth,
-                        'Active leaf byte size estimate': self._active_leaf_size_estimate,
-                        'Inactive leaf byte size estimate': self._inactive_leaf_size_estimate,
-                        'Byte size estimate overhead': self._size_estimate_overhead_fraction
-                        }
+        measurements = {
+            "Tree size (nodes)": (
+                self._n_decision_nodes + self._n_active_leaves + self._n_inactive_leaves
+            ),
+            "Tree size (leaves)": self._n_active_leaves + self._n_inactive_leaves,
+            "Active learning nodes": self._n_active_leaves,
+            "Tree depth": self.depth,
+            "Active leaf byte size estimate": self._active_leaf_size_estimate,
+            "Inactive leaf byte size estimate": self._inactive_leaf_size_estimate,
+            "Byte size estimate overhead": self._size_estimate_overhead_fraction,
+        }
         return measurements
 
     def model_description(self):
@@ -162,20 +174,26 @@ class BaseHoeffdingTree(ABC):
 
         """
         if self._tree_root is not None:
-            buffer = ['']
-            description = ''
+            buffer = [""]
+            description = ""
             self._tree_root.describe_subtree(self, buffer, 0)
             for line in range(len(buffer)):
                 description += buffer[line]
             return description
 
-    def _new_split_node(self, split_test: InstanceConditionalTest, target_stats: dict = None,
-                        depth: int = 0) -> SplitNode:
+    def _new_split_node(
+        self,
+        split_test: InstanceConditionalTest,
+        target_stats: dict = None,
+        depth: int = 0,
+    ) -> SplitNode:
         """Create a new split node."""
         return SplitNode(split_test, target_stats, depth)
 
     @abstractmethod
-    def _new_learning_node(self, initial_stats: dict = None, parent: Node = None) -> LearningNode:
+    def _new_learning_node(
+        self, initial_stats: dict = None, parent: Node = None
+    ) -> LearningNode:
         """Create a new learning node.
 
         The characteristics of the learning node depends on the tree algorithm.
@@ -221,9 +239,10 @@ class BaseHoeffdingTree(ABC):
 
     def _enforce_size_limit(self):
         """Track the size of the tree and disable/enable nodes if required."""
-        tree_size = (self._active_leaf_size_estimate
-                     + self._n_inactive_leaves * self._inactive_leaf_size_estimate) \
-            * self._size_estimate_overhead_fraction
+        tree_size = self._size_estimate_overhead_fraction * (
+            self._active_leaf_size_estimate
+            + self._n_inactive_leaves * self._inactive_leaf_size_estimate
+        )
         if self._n_inactive_leaves > 0 or tree_size > self._max_byte_size:
             if self.stop_mem_management:
                 self._growth_allowed = False
@@ -233,9 +252,14 @@ class BaseHoeffdingTree(ABC):
         max_active = 0
         while max_active < len(learning_nodes):
             max_active += 1
-            if (((max_active * self._active_leaf_size_estimate
-                    + (len(learning_nodes) - max_active) * self._inactive_leaf_size_estimate)
-                    * self._size_estimate_overhead_fraction) > self._max_byte_size):
+            if (
+                (
+                    max_active * self._active_leaf_size_estimate
+                    + (len(learning_nodes) - max_active)
+                    * self._inactive_leaf_size_estimate
+                )
+                * self._size_estimate_overhead_fraction
+            ) > self._max_byte_size:
                 max_active -= 1
                 break
         cutoff = len(learning_nodes) - max_active
@@ -245,8 +269,10 @@ class BaseHoeffdingTree(ABC):
                 self._n_inactive_leaves += 1
                 self._n_active_leaves -= 1
         for i in range(cutoff, len(learning_nodes)):
-            if not learning_nodes[i].node.is_active() and learning_nodes[i].node.depth \
-                    < self.max_depth:
+            if (
+                not learning_nodes[i].node.is_active()
+                and learning_nodes[i].node.depth < self.max_depth
+            ):
                 learning_nodes[i].node.activate()
                 self._n_active_leaves += 1
                 self._n_inactive_leaves -= 1
@@ -258,7 +284,9 @@ class BaseHoeffdingTree(ABC):
         total_active_size = 0
         total_inactive_size = 0
         for found_node in learning_nodes:
-            if not found_node.node.is_leaf():  # Safety check for non-trivial tree structures
+            if (
+                not found_node.node.is_leaf()
+            ):  # Safety check for non-trivial tree structures
                 continue
             if found_node.node.is_active():
                 total_active_size += calculate_object_size(found_node.node)
@@ -267,11 +295,14 @@ class BaseHoeffdingTree(ABC):
         if total_active_size > 0:
             self._active_leaf_size_estimate = total_active_size / self._n_active_leaves
         if total_inactive_size > 0:
-            self._inactive_leaf_size_estimate = total_inactive_size / self._n_inactive_leaves
+            self._inactive_leaf_size_estimate = (
+                total_inactive_size / self._n_inactive_leaves
+            )
         actual_model_size = calculate_object_size(self)
-        estimated_model_size = (self._n_active_leaves * self._active_leaf_size_estimate
-                                + self._n_inactive_leaves
-                                * self._inactive_leaf_size_estimate)
+        estimated_model_size = (
+            self._n_active_leaves * self._active_leaf_size_estimate
+            + self._n_inactive_leaves * self._inactive_leaf_size_estimate
+        )
         self._size_estimate_overhead_fraction = actual_model_size / estimated_model_size
         if actual_model_size > self._max_byte_size:
             self._enforce_size_limit()
@@ -320,7 +351,8 @@ class BaseHoeffdingTree(ABC):
                 split_node = node
                 for i in range(split_node.n_children):
                     self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found)
+                        split_node.get_child(i), split_node, i, found
+                    )
 
     # Adapted from creme's original implementation
     def debug_one(self, x: dict) -> typing.Union[str, None]:
@@ -349,16 +381,18 @@ class BaseHoeffdingTree(ABC):
                 pred = node.leaf_prediction(x, tree=self)
                 if isinstance(self, base.Classifier):
                     class_val = max(pred, key=pred.get)
-                    _print(f'Class {class_val} | {pred}')
+                    _print(f"Class {class_val} | {pred}")
                 else:
                     # Multi-target regression case
                     if isinstance(self, base.MultiOutputMixin):
-                        _print('Predictions:\n{')
+                        _print("Predictions:\n{")
                         for i, (t, var) in enumerate(pred.items()):
-                            _print(f'\t{t}: {pred[t]} | {node.stats[t].mean} | {node.stats[t]}')
-                        _print('}')
+                            _print(
+                                f"\t{t}: {pred[t]} | {node.stats[t].mean} | {node.stats[t]}"
+                            )
+                        _print("}")
                     else:  # Single-target regression
-                        _print(f'Prediction {pred} | {node.stats.mean} | {node.stats}')
+                        _print(f"Prediction {pred} | {node.stats.mean} | {node.stats}")
                 break
             else:
                 child_index = node.split_test.branch_for_instance(x)
@@ -366,21 +400,23 @@ class BaseHoeffdingTree(ABC):
                 if child_index >= 0:
                     _print(node.split_test.describe_condition_for_branch(child_index))
                 else:  # Corner case where an emerging nominal feature value arrives
-                    _print('Decision node reached as final destination')
+                    _print("Decision node reached as final destination")
                     pred = node.stats
                     if isinstance(self, base.Classifier):
                         class_val = max(pred, key=pred.get)
                         pred = normalize_values_in_dict(pred, inplace=False)
-                        _print(f'Class {class_val} | {pred}')
+                        _print(f"Class {class_val} | {pred}")
                     else:
                         # Multi-target regression case
                         if isinstance(self, base.MultiOutputMixin):
-                            _print('Predictions:\n{')
+                            _print("Predictions:\n{")
                             for i, (t, var) in enumerate(pred.items()):
-                                _print(f'\t{t}: {pred[t].mean.get()} | {pred[t]}')
-                            _print('}')
+                                _print(f"\t{t}: {pred[t].mean.get()} | {pred[t]}")
+                            _print("}")
                         else:  # Single-target regression
-                            _print(f'Prediction {pred} | {node.stats.mean} | {node.stats}')
+                            _print(
+                                f"Prediction {pred} | {node.stats.mean} | {node.stats}"
+                            )
 
         return buffer.getvalue()
 
@@ -420,42 +456,54 @@ class BaseHoeffdingTree(ABC):
         .. image:: ../../docs/img/dtree_draw.svg
             :align: center
         """
+
         def node_prediction(node):
             if isinstance(self, base.Classifier):
                 pred = node.stats
                 text = str(max(pred, key=pred.get))
                 sum_votes = sum(pred.values())
                 if sum_votes > 0:
-                    pred = normalize_values_in_dict(pred, factor=sum_votes, inplace=False)
-                    probas = '\n'.join([f'P({c}) = {round_sig_fig(proba)}'
-                                        for c, proba in pred.items()])
-                    text = f'{text}\n{probas}'
+                    pred = normalize_values_in_dict(
+                        pred, factor=sum_votes, inplace=False
+                    )
+                    probas = "\n".join(
+                        [
+                            f"P({c}) = {round_sig_fig(proba)}"
+                            for c, proba in pred.items()
+                        ]
+                    )
+                    text = f"{text}\n{probas}"
                 return text
             elif isinstance(self, base.Regressor):
                 # Multi-target regression
                 if isinstance(self, base.MultiOutputMixin):
-                    return ' | '.join([
-                            f'{t} = {round_sig_fig(s.mean.get())}'
+                    return " | ".join(
+                        [
+                            f"{t} = {round_sig_fig(s.mean.get())}"
                             for t, s in node.stats.items()
-                    ])
+                        ]
+                    )
                 else:  # vanilla single-target regression
                     pred = node.stats.mean.get()
-                    return f'{round_sig_fig(pred)}'
+                    return f"{round_sig_fig(pred)}"
 
         if max_depth is None:
             max_depth = math.inf
 
         dot = graphviz.Digraph(
-            graph_attr={'splines': 'ortho', 'forcelabels': 'true', 'overlap': 'false'},
+            graph_attr={"splines": "ortho", "forcelabels": "true", "overlap": "false"},
             node_attr={
-                'shape': 'box', 'penwidth': '1.2', 'fontname': 'trebuchet',
-                'fontsize': '11', 'margin': '0.1,0.0'
+                "shape": "box",
+                "penwidth": "1.2",
+                "fontname": "trebuchet",
+                "fontsize": "11",
+                "margin": "0.1,0.0",
             },
-            edge_attr={'penwidth': '0.6', 'center': 'true', 'fontsize': '7  '}
+            edge_attr={"penwidth": "0.6", "center": "true", "fontsize": "7  "},
         )
 
         if isinstance(self, base.Classifier):
-            n_colors = len(self.classes)   # noqa
+            n_colors = len(self.classes)  # noqa
         else:
             n_colors = 1
 
@@ -463,22 +511,28 @@ class BaseHoeffdingTree(ABC):
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
         palette = collections.defaultdict(new_color)
 
-        for parent_no, child_no, parent, child, branch_id in self._tree_root.iter_edges():
+        for (
+            parent_no,
+            child_no,
+            parent,
+            child,
+            branch_id,
+        ) in self._tree_root.iter_edges():
 
             if child.depth > max_depth:
                 continue
 
             if not child.is_leaf():
-                text = f'{child.split_test.attrs_test_depends_on()[0]}'
+                text = f"{child.split_test.attrs_test_depends_on()[0]}"
 
                 if child.depth == max_depth:
-                    text = f'{text}\n{node_prediction(child)}'
+                    text = f"{text}\n{node_prediction(child)}"
             else:
-                text = f'{node_prediction(child)}\nsamples: {int(child.total_weight)}'
+                text = f"{node_prediction(child)}\nsamples: {int(child.total_weight)}"
 
             # Pick a color, the hue depends on the class and the transparency on the distribution
             if isinstance(self, base.Classifier):
-                class_proba = {c: 0 for c in self.classes}   # noqa
+                class_proba = {c: 0 for c in self.classes}  # noqa
                 class_proba.update(normalize_values_in_dict(child.stats, inplace=False))
                 mode = max(class_proba, key=class_proba.get)
                 p_mode = class_proba[mode]
@@ -486,18 +540,19 @@ class BaseHoeffdingTree(ABC):
                     alpha = (p_mode - 1 / n_colors) / (1 - 1 / n_colors)
                     fillcolor = str(transparency_hex(color=palette[mode], alpha=alpha))
                 except ZeroDivisionError:
-                    fillcolor = '#FFFFFF'
+                    fillcolor = "#FFFFFF"
             else:
-                fillcolor = '#FFFFFF'
+                fillcolor = "#FFFFFF"
 
-            dot.node(f'{child_no}', text, fillcolor=fillcolor, style='filled')
+            dot.node(f"{child_no}", text, fillcolor=fillcolor, style="filled")
 
             if parent_no is not None:
                 dot.edge(
-                    f'{parent_no}', f'{child_no}',
+                    f"{parent_no}",
+                    f"{child_no}",
                     xlabel=parent.split_test.describe_condition_for_branch(
                         branch_id, shorten=True
-                    )
+                    ),
                 )
 
         return dot
@@ -522,32 +577,32 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
     colors = []
 
     # Initialize saturation & value; calculate chroma & value shift
-    s, v = .75, .9
+    s, v = 0.75, 0.9
     c = s * v
     m = v - c
 
     for h in [i for i in range(25, 385, int(360 / n))]:
 
         # Calculate some intermediate values
-        h_bar = h / 60.
+        h_bar = h / 60.0
         x = c * (1 - abs((h_bar % 2) - 1))
 
         # Initialize RGB with same hue & chroma as our color
-        rgb = [(c, x, 0),
-               (x, c, 0),
-               (0, c, x),
-               (0, x, c),
-               (x, 0, c),
-               (c, 0, x),
-               (c, x, 0)]
+        rgb = [
+            (c, x, 0),
+            (x, c, 0),
+            (0, c, x),
+            (0, x, c),
+            (x, 0, c),
+            (c, 0, x),
+            (c, x, 0),
+        ]
         r, g, b = rgb[int(h_bar)]
 
         # Shift the initial RGB values to match value and store
-        colors.append((
-            (int(255 * (r + m))),
-            (int(255 * (g + m))),
-            (int(255 * (b + m)))
-        ))
+        colors.append(
+            ((int(255 * (r + m))), (int(255 * (g + m))), (int(255 * (b + m))))
+        )
 
     return colors
 
@@ -555,4 +610,6 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
 # Utility adapted from the original creme's implementation
 def transparency_hex(color: typing.Tuple[int, int, int], alpha: float) -> str:
     """Apply alpha coefficient on hexadecimal color."""
-    return '#%02x%02x%02x' % tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color])
+    return "#%02x%02x%02x" % tuple(
+        [int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]
+    )

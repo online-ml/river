@@ -5,12 +5,7 @@ import math
 from river import optim
 
 
-__all__ = [
-    'Constant',
-    'InverseScaling',
-    'Optimal',
-    'Scheduler'
-]
+__all__ = ["Constant", "InverseScaling", "Optimal", "Scheduler"]
 
 
 class Scheduler(abc.ABC):
@@ -31,7 +26,7 @@ class Scheduler(abc.ABC):
         return self.__class__.__name__
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({vars(self)})'
+        return f"{self.__class__.__name__}({vars(self)})"
 
 
 class Constant(Scheduler):
@@ -92,9 +87,9 @@ class Optimal(Scheduler):
         self.loss = loss
         self.alpha = alpha
 
-        typw = math.sqrt(1. / math.sqrt(self.alpha))
+        typw = math.sqrt(1.0 / math.sqrt(self.alpha))
         initial_eta0 = typw / max(1.0, self.loss.gradient(-typw, 1.0))
-        self.t0 = 1. / (initial_eta0 * self.alpha)
+        self.t0 = 1.0 / (initial_eta0 * self.alpha)
 
     def get(self, t):
-        return 1. / (self.alpha * (self.t0 + t))
+        return 1.0 / (self.alpha * (self.t0 + t))

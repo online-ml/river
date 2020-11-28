@@ -21,7 +21,7 @@ import numpy as np
 
 
 class _ClassificationReport:
-    """"Classification report
+    """ "Classification report
 
     Incrementally tracks classification performance and provide, at any moment, updated
     performance metrics. This performance evaluator is designed for single-output
@@ -67,7 +67,7 @@ class _ClassificationReport:
     """
 
     # Define the format specification used for string representation.
-    _fmt = '>10.4f'
+    _fmt = ">10.4f"
 
     def __init__(self, cm: ConfusionMatrix = None):
 
@@ -133,32 +133,36 @@ class _ClassificationReport:
         self.cm.reset()
 
     def __repr__(self):
-        return ''.join([
-            'Classification report\n\n',
-            f'n_classes:\t\t{self.n_classes:>10}\n',
-            f'n_samples:\t\t{self.n_samples:>10}\n',
-            '\n',
-            self._info(),
-        ])
+        return "".join(
+            [
+                "Classification report\n\n",
+                f"n_classes:\t\t{self.n_classes:>10}\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                "\n",
+                self._info(),
+            ]
+        )
 
     def _info(self):
-        return ''.join([
-            f'Accuracy:\t\t{self.accuracy.get():{self._fmt}}\n',
-            f'Kappa:\t\t\t{self.kappa.get():{self._fmt}}\n',
-            f'KappaT:\t\t\t{self.kappa_t.get():{self._fmt}}\n',
-            f'KappaM:\t\t\t{self.kappa_m.get():{self._fmt}}\n',
-            f'Precision:\t\t{self.precision.get():{self._fmt}}\n',
-            f'Recall:\t\t\t{self.recall.get():{self._fmt}}\n',
-            f'F1:\t\t\t\t{self.f1.get():{self._fmt}}\n',
-            f'GeometricMean:\t{self.geometric_mean.get():{self._fmt}}\n',
-            '\n',
-            f'MicroPrecision:\t{self.micro_precision.get():{self._fmt}}\n',
-            f'MicroRecall:\t{self.micro_recall.get():{self._fmt}}\n',
-            f'MicroF1:\t\t{self.micro_f1.get():{self._fmt}}\n',
-            f'MacroPrecision:\t{self.macro_precision.get():{self._fmt}}\n',
-            f'MacroRecall:\t{self.macro_recall.get():{self._fmt}}\n',
-            f'MacroF1:\t\t{self.macro_f1.get():{self._fmt}}\n',
-        ])
+        return "".join(
+            [
+                f"Accuracy:\t\t{self.accuracy.get():{self._fmt}}\n",
+                f"Kappa:\t\t\t{self.kappa.get():{self._fmt}}\n",
+                f"KappaT:\t\t\t{self.kappa_t.get():{self._fmt}}\n",
+                f"KappaM:\t\t\t{self.kappa_m.get():{self._fmt}}\n",
+                f"Precision:\t\t{self.precision.get():{self._fmt}}\n",
+                f"Recall:\t\t\t{self.recall.get():{self._fmt}}\n",
+                f"F1:\t\t\t\t{self.f1.get():{self._fmt}}\n",
+                f"GeometricMean:\t{self.geometric_mean.get():{self._fmt}}\n",
+                "\n",
+                f"MicroPrecision:\t{self.micro_precision.get():{self._fmt}}\n",
+                f"MicroRecall:\t{self.micro_recall.get():{self._fmt}}\n",
+                f"MicroF1:\t\t{self.micro_f1.get():{self._fmt}}\n",
+                f"MacroPrecision:\t{self.macro_precision.get():{self._fmt}}\n",
+                f"MacroRecall:\t{self.macro_recall.get():{self._fmt}}\n",
+                f"MacroF1:\t\t{self.macro_f1.get():{self._fmt}}\n",
+            ]
+        )
 
 
 class _RollingClassificationReport(_ClassificationReport):
@@ -213,22 +217,27 @@ class _RollingClassificationReport(_ClassificationReport):
 
     def __init__(self, cm: ConfusionMatrix = None, window_size=200):
         self.window_size = window_size
-        self._rolling_cm = Rolling(ConfusionMatrix() if cm is None else cm,
-                                   window_size=self.window_size)
+        self._rolling_cm = Rolling(
+            ConfusionMatrix() if cm is None else cm, window_size=self.window_size
+        )
         super().__init__(cm=self._rolling_cm.metric)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
-        self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
 
     def __repr__(self):
-        return ''.join([
-            'Rolling classification report\n\n',
-            f'n_classes:\t\t{self.n_classes:>10}\n',
-            f'n_samples:\t\t{self.n_samples:>10}\n',
-            f'window_size:\t{self.window_size:>10}\n',
-            '\n',
-            self._info(),
-            ])
+        return "".join(
+            [
+                "Rolling classification report\n\n",
+                f"n_classes:\t\t{self.n_classes:>10}\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                f"window_size:\t{self.window_size:>10}\n",
+                "\n",
+                self._info(),
+            ]
+        )
 
 
 class _MLClassificationReport:
@@ -274,7 +283,7 @@ class _MLClassificationReport:
     """
 
     # Define the format specification used for string representation.
-    _fmt = '>10.4f'
+    _fmt = ">10.4f"
 
     def __init__(self, cm: MultiLabelConfusionMatrix = None):
         self.cm = MultiLabelConfusionMatrix() if cm is None else cm
@@ -317,21 +326,25 @@ class _MLClassificationReport:
         self.cm.reset()
 
     def __repr__(self):
-        return ''.join([
-            'Multi-label classification report\n\n',
-            f'n_classes:\t\t{self.n_labels:>10}\n',
-            f'n_samples:\t\t{self.n_samples:>10}\n',
-            '\n',
-            self._info(),
-        ])
+        return "".join(
+            [
+                "Multi-label classification report\n\n",
+                f"n_classes:\t\t{self.n_labels:>10}\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                "\n",
+                self._info(),
+            ]
+        )
 
     def _info(self):
-        return ''.join([
-            f'Hamming:\t\t{self.hamming.get():{self._fmt}}\n',
-            f'HammingLoss:\t{self.hamming_loss.get():{self._fmt}}\n',
-            f'ExactMatch:\t\t{self.exact_match.get():{self._fmt}}\n',
-            f'JaccardIndex:\t{self.jaccard_index.get():{self._fmt}}\n',
-        ])
+        return "".join(
+            [
+                f"Hamming:\t\t{self.hamming.get():{self._fmt}}\n",
+                f"HammingLoss:\t{self.hamming_loss.get():{self._fmt}}\n",
+                f"ExactMatch:\t\t{self.exact_match.get():{self._fmt}}\n",
+                f"JaccardIndex:\t{self.jaccard_index.get():{self._fmt}}\n",
+            ]
+        )
 
 
 class _RollingMLClassificationReport(_MLClassificationReport):
@@ -381,22 +394,28 @@ class _RollingMLClassificationReport(_MLClassificationReport):
 
     def __init__(self, cm: ConfusionMatrix = None, window_size=200):
         self.window_size = window_size
-        self._rolling_cm = Rolling(MultiLabelConfusionMatrix() if cm is None else cm,
-                                   window_size=self.window_size)
+        self._rolling_cm = Rolling(
+            MultiLabelConfusionMatrix() if cm is None else cm,
+            window_size=self.window_size,
+        )
         super().__init__(cm=self._rolling_cm.metric)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
-        self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
 
     def __repr__(self):
-        return ''.join([
-            'Rolling multi-label classification report\n\n',
-            f'n_labels:\t\t{self.n_labels:>10}\n',
-            f'n_samples:\t\t{self.n_samples:>10}\n',
-            f'window_size:\t{self.window_size:>10}\n',
-            '\n',
-            self._info(),
-            ])
+        return "".join(
+            [
+                "Rolling multi-label classification report\n\n",
+                f"n_labels:\t\t{self.n_labels:>10}\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                f"window_size:\t{self.window_size:>10}\n",
+                "\n",
+                self._info(),
+            ]
+        )
 
 
 class _RegressionReport(object):
@@ -428,7 +447,7 @@ class _RegressionReport(object):
     """
 
     # Define the format specification used for string representation.
-    _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+    _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     def __init__(self):
         super().__init__()
@@ -470,19 +489,23 @@ class _RegressionReport(object):
         return int(self.mae._mean.n)
 
     def __repr__(self):
-        return ''.join([
-            'Regression report\n\n',
-            f'n_samples:\t\t{self.n_samples:>10}\n',
-            '\n',
-            self._info(),
-        ])
+        return "".join(
+            [
+                "Regression report\n\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                "\n",
+                self._info(),
+            ]
+        )
 
     def _info(self):
-        return ''.join([
-            f'MAE:\t\t\t\t{self.mae.get():{self._fmt}}\n',
-            f'MSE:\t\t\t\t{self.mse.get():{self._fmt}}\n',
-            f' R2:\t\t\t\t{self.r2.get():{self._fmt}}\n',
-        ])
+        return "".join(
+            [
+                f"MAE:\t\t\t\t{self.mae.get():{self._fmt}}\n",
+                f"MSE:\t\t\t\t{self.mse.get():{self._fmt}}\n",
+                f" R2:\t\t\t\t{self.r2.get():{self._fmt}}\n",
+            ]
+        )
 
 
 class _RollingRegressionReport(_RegressionReport):
@@ -537,13 +560,15 @@ class _RollingRegressionReport(_RegressionReport):
         return int(self.mae._metric._mean.n)
 
     def __repr__(self):
-        return ''.join([
-            'Rolling regression report\n\n',
-            f'n_samples:\t\t{self.n_samples:>10}\n',
-            f'window_size:\t{self.window_size:>10}\n',
-            '\n',
-            self._info(),
-        ])
+        return "".join(
+            [
+                "Rolling regression report\n\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                f"window_size:\t{self.window_size:>10}\n",
+                "\n",
+                self._info(),
+            ]
+        )
 
 
 class _MTRegressionReport(object):
@@ -579,7 +604,7 @@ class _MTRegressionReport(object):
     """
 
     # Define the format specification used for string representation.
-    _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+    _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     def __init__(self):
         super().__init__()
@@ -612,39 +637,46 @@ class _MTRegressionReport(object):
         try:
             return np.sum(self.total_square_error / self.n_samples) / self.n_targets
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
     def get_average_absolute_error(self):
         try:
             return np.sum(self.average_error / self.n_samples) / self.n_targets
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
     def get_average_root_mean_square_error(self):
         try:
             mse = self.total_square_error / self.n_samples
-            return np.sum(np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0)) / self.n_targets
+            return (
+                np.sum(np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0))
+                / self.n_targets
+            )
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
     def get_last(self):
         return self.last_true_label, self.last_prediction
 
     def __repr__(self):
-        return ''.join([
-            'Multi-target regression report\n\n',
-            f'n_targets:\t\t{self.n_targets:>10}\n',
-            f'n_samples:\t\t{self.n_samples:>10}\n',
-            '\n',
-            self._info(),
-        ])
+        return "".join(
+            [
+                "Multi-target regression report\n\n",
+                f"n_targets:\t\t{self.n_targets:>10}\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                "\n",
+                self._info(),
+            ]
+        )
 
     def _info(self):
-        return ''.join([
-            f'Average MAE:\t\t\t{self.get_average_absolute_error():{self._fmt}}\n',
-            f'Average MSE:\t\t\t{self.get_average_mean_square_error():{self._fmt}}\n',
-            f'Average RMSE:\t\t\t{self.get_average_root_mean_square_error():{self._fmt}}\n',
-        ])
+        return "".join(
+            [
+                f"Average MAE:\t\t\t{self.get_average_absolute_error():{self._fmt}}\n",
+                f"Average MSE:\t\t\t{self.get_average_mean_square_error():{self._fmt}}\n",
+                f"Average RMSE:\t\t\t{self.get_average_root_mean_square_error():{self._fmt}}\n",
+            ]
+        )
 
 
 class _RollingMTRegressionReport(_MTRegressionReport):
@@ -709,11 +741,19 @@ class _RollingMTRegressionReport(_MTRegressionReport):
         self.total_square_error += (y_true - y_pred) * (y_true - y_pred)
         self.average_error += np.absolute(y_true - y_pred)
 
-        old_square = self.total_square_error_correction[0] \
-            if len(self.total_square_error_correction) == self.window_size else None
-        self.total_square_error_correction.append(-1 * (y_true - y_pred) * (y_true - y_pred))
-        old_average = self.average_error_correction[0] \
-            if len(self.average_error_correction) == self.window_size else None
+        old_square = (
+            self.total_square_error_correction[0]
+            if len(self.total_square_error_correction) == self.window_size
+            else None
+        )
+        self.total_square_error_correction.append(
+            -1 * (y_true - y_pred) * (y_true - y_pred)
+        )
+        old_average = (
+            self.average_error_correction[0]
+            if len(self.average_error_correction) == self.window_size
+            else None
+        )
         self.average_error_correction.append(-1 * (np.absolute(y_true - y_pred)))
 
         if (old_square is not None) and (old_average is not None):
@@ -729,33 +769,35 @@ class _RollingMTRegressionReport(_MTRegressionReport):
         pass
 
     def __repr__(self):
-        return ''.join([
-            'Rolling multi-target regression report\n\n',
-            f'n_targets:\t\t{self.n_targets:>10}\n',
-            f'n_samples:\t\t{self.n_samples:>10}\n',
-            f'window_size:\t{self.window_size:>10}\n',
-            '\n',
-            self._info(),
-        ])
+        return "".join(
+            [
+                "Rolling multi-target regression report\n\n",
+                f"n_targets:\t\t{self.n_targets:>10}\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                f"window_size:\t{self.window_size:>10}\n",
+                "\n",
+                self._info(),
+            ]
+        )
 
 
 class RunningTimeMeasurements(object):
-    """ Class used to compute the running time of a predictive model.
+    """Class used to compute the running time of a predictive model.
 
-        The training, prediction, and total time are considered separately. The
-        class accounts for the amount of time each model effectively spent on
-        training and testing. To do so, timers for each of the actions are
-        considered.
+    The training, prediction, and total time are considered separately. The
+    class accounts for the amount of time each model effectively spent on
+    training and testing. To do so, timers for each of the actions are
+    considered.
 
-        Besides the properties getters, the available compute time methods
-        must be used as follows:
+    Besides the properties getters, the available compute time methods
+    must be used as follows:
 
-        - `compute_{training, testing}_time_begin`
-        - Perform training/action
-        - `compute_{training, testing}_time_end`
+    - `compute_{training, testing}_time_begin`
+    - Perform training/action
+    - `compute_{training, testing}_time_end`
 
-        Additionally, the `update_time_measurements` method updates the total
-        running time accounting, as well as, the total seen samples count.
+    Additionally, the `update_time_measurements` method updates the total
+    running time accounting, as well as, the total seen samples count.
     """
 
     def __init__(self):
@@ -774,28 +816,23 @@ class RunningTimeMeasurements(object):
         self._total_time = 0
 
     def compute_training_time_begin(self):
-        """ Start measuring training time.
-        """
+        """Start measuring training time."""
         self._training_start = timer()
 
     def compute_training_time_end(self):
-        """ Finish measuring training time.
-        """
+        """Finish measuring training time."""
         self._training_time += timer() - self._training_start
 
     def compute_testing_time_begin(self):
-        """ Start measuring testing time.
-        """
+        """Start measuring testing time."""
         self._testing_start = timer()
 
     def compute_testing_time_end(self):
-        """ Finish measuring testing time.
-        """
+        """Finish measuring testing time."""
         self._testing_time += timer() - self._testing_start
 
     def update_time_measurements(self, inrivernt=1):
-        """ Update the current total running time.
-        """
+        """Update the current total running time."""
         if inrivernt > 0:
             self._sample_count += inrivernt
         else:
@@ -813,10 +850,13 @@ class RunningTimeMeasurements(object):
         return self._total_time
 
     def get_info(self):
-        return 'RunningTimeMeasurements: sample_count: ' + \
-                str(self._sample_count) + ' - Total running time: ' + \
-                str(self.get_current_total_running_time()) + \
-                ' - training_time: ' + \
-                str(self.get_current_training_time()) + \
-                ' - testing_time: ' + \
-                str(self.get_current_testing_time())
+        return (
+            "RunningTimeMeasurements: sample_count: "
+            + str(self._sample_count)
+            + " - Total running time: "
+            + str(self.get_current_total_running_time())
+            + " - training_time: "
+            + str(self.get_current_training_time())
+            + " - testing_time: "
+            + str(self.get_current_testing_time())
+        )

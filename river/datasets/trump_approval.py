@@ -22,20 +22,20 @@ class TrumpApproval(base.FileDataset):
             n_samples=1001,
             n_features=6,
             task=base.REG,
-            filename='trump_approval.csv.gz'
+            filename="trump_approval.csv.gz",
         )
 
     def __iter__(self):
         return stream.iter_csv(
             self.path,
-            target='five_thirty_eight',
+            target="five_thirty_eight",
             converters={
-                'ordinal_date': int,
-                'gallup': float,
-                'ipsos': float,
-                'morning_consult': float,
-                'rasmussen': float,
-                'you_gov': float,
-                'five_thirty_eight': float
-            }
+                "ordinal_date": int,
+                "gallup": float,
+                "ipsos": float,
+                "morning_consult": float,
+                "rasmussen": float,
+                "you_gov": float,
+                "five_thirty_eight": float,
+            },
         )

@@ -9,7 +9,7 @@ from river import base
 from river import stats
 
 
-__all__ = ['NoChangeClassifier', 'PriorClassifier', 'StatisticRegressor']
+__all__ = ["NoChangeClassifier", "PriorClassifier", "StatisticRegressor"]
 
 
 class NoChangeClassifier(base.Classifier):
@@ -28,7 +28,8 @@ class NoChangeClassifier(base.Classifier):
     Examples
     --------
 
-    Taken from example 2.1 from [this page](https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html).
+    Taken from example 2.1 from
+    [this page](https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html).
 
     >>> import pprint
     >>> from river import dummy
@@ -92,7 +93,8 @@ class PriorClassifier(base.Classifier):
     Examples
     --------
 
-    Taken from example 2.1 from [this page](https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html)
+    Taken from example 2.1 from
+    [this page](https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html)
 
     >>> from river import dummy
 
@@ -170,7 +172,7 @@ class StatisticRegressor(base.Regressor):
 
     @classmethod
     def _default_params(cls):
-        return {'statistic': stats.Mean()}
+        return {"statistic": stats.Mean()}
 
     def learn_one(self, x, y):
         self.statistic.update(y)

@@ -4,7 +4,7 @@ import math
 from . import base
 
 
-__all__ = ['ComplementNB']
+__all__ = ["ComplementNB"]
 
 
 class ComplementNB(base.BaseNB):
@@ -58,7 +58,7 @@ class ComplementNB(base.BaseNB):
 
     """
 
-    def __init__(self, alpha=1.):
+    def __init__(self, alpha=1.0):
         self.alpha = alpha
         self.class_counts = collections.Counter()
         self.feature_counts = collections.defaultdict(collections.Counter)
@@ -82,9 +82,14 @@ class ComplementNB(base.BaseNB):
         return {
             c: sum(
                 (
-                    frequency * -math.log(
-                        (self.feature_totals[f] - self.feature_counts.get(f, {}).get(c, 0.) + 1) /
-                        (self.class_totals[c] + 1 * len(self.feature_counts))
+                    frequency
+                    * -math.log(
+                        (
+                            self.feature_totals[f]
+                            - self.feature_counts.get(f, {}).get(c, 0.0)
+                            + 1
+                        )
+                        / (self.class_totals[c] + 1 * len(self.feature_counts))
                     )
                     for f, frequency in x.items()
                 )

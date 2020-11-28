@@ -1,7 +1,7 @@
 from . import base
 
 
-__all__ = ['ExactMatch']
+__all__ = ["ExactMatch"]
 
 
 class ExactMatch(base.MultiOutputClassificationMetric):
@@ -56,4 +56,4 @@ class ExactMatch(base.MultiOutputClassificationMetric):
         try:
             return self.cm.exact_match_cnt / self.cm.n_samples
         except ZeroDivisionError:
-            return 0.
+            return 0.0

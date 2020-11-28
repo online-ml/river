@@ -5,7 +5,7 @@ from river import base
 from river import utils
 
 
-__all__ = ['ALMAClassifier']
+__all__ = ["ALMAClassifier"]
 
 
 class ALMAClassifier(base.Classifier):
@@ -52,7 +52,7 @@ class ALMAClassifier(base.Classifier):
 
     """
 
-    def __init__(self, p=2, alpha=.9, B=1 / .9, C=2 ** .5):
+    def __init__(self, p=2, alpha=0.9, B=1 / 0.9, C=2 ** 0.5):
         self.p = p
         self.alpha = alpha
         self.B = B

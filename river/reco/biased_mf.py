@@ -12,7 +12,7 @@ from river import utils
 from . import base
 
 
-__all__ = ['BiasedMF']
+__all__ = ["BiasedMF"]
 
 
 class BiasedMF(base.Recommender):
@@ -114,18 +114,33 @@ class BiasedMF(base.Recommender):
 
     """
 
-    def __init__(self, n_factors=10, bias_optimizer: optim.Optimizer = None,
-                 latent_optimizer: optim.Optimizer = None, loss: optim.losses.Loss = None,
-                 l2_bias=0., l2_latent=0.,
-                 weight_initializer: optim.initializers.Initializer = None,
-                 latent_initializer: optim.initializers.Initializer = None,
-                 clip_gradient=1e12, seed: int = None):
+    def __init__(
+        self,
+        n_factors=10,
+        bias_optimizer: optim.Optimizer = None,
+        latent_optimizer: optim.Optimizer = None,
+        loss: optim.losses.Loss = None,
+        l2_bias=0.0,
+        l2_latent=0.0,
+        weight_initializer: optim.initializers.Initializer = None,
+        latent_initializer: optim.initializers.Initializer = None,
+        clip_gradient=1e12,
+        seed: int = None,
+    ):
 
         self.n_factors = n_factors
-        self.u_bias_optimizer = optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
-        self.i_bias_optimizer = optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
-        self.u_latent_optimizer = optim.SGD() if latent_optimizer is None else copy.deepcopy(latent_optimizer)
-        self.i_latent_optimizer = optim.SGD() if latent_optimizer is None else copy.deepcopy(latent_optimizer)
+        self.u_bias_optimizer = (
+            optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
+        )
+        self.i_bias_optimizer = (
+            optim.SGD() if bias_optimizer is None else copy.deepcopy(bias_optimizer)
+        )
+        self.u_latent_optimizer = (
+            optim.SGD() if latent_optimizer is None else copy.deepcopy(latent_optimizer)
+        )
+        self.i_latent_optimizer = (
+            optim.SGD() if latent_optimizer is None else copy.deepcopy(latent_optimizer)
+        )
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2_bias = l2_bias
         self.l2_latent = l2_latent
@@ -135,22 +150,29 @@ class BiasedMF(base.Recommender):
         self.weight_initializer = weight_initializer
 
         if latent_initializer is None:
-            latent_initializer = optim.initializers.Normal(sigma=.1, seed=seed)
+            latent_initializer = optim.initializers.Normal(sigma=0.1, seed=seed)
         self.latent_initializer = latent_initializer
 
         self.clip_gradient = clip_gradient
         self.seed = seed
         self.global_mean = stats.Mean()
 
-        self.u_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(weight_initializer)
-        self.i_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(weight_initializer)
+        self.u_biases: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(weight_initializer)
+        self.i_biases: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(weight_initializer)
 
         random_latents = functools.partial(
-            self.latent_initializer,
-            shape=self.n_factors
+            self.latent_initializer, shape=self.n_factors
         )
-        self.u_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
-        self.i_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
+        self.u_latents: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(random_latents)
+        self.i_latents: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(random_latents)
 
     def _predict_one(self, user, item):
 
@@ -177,18 +199,32 @@ class BiasedMF(base.Recommender):
         g_loss = self.loss.gradient(y, self._predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
+        g_loss = utils.math.clamp(
+            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
+        )
 
         # Calculate weights gradients
         u_grad_bias = {user: g_loss + self.l2_bias * self.u_biases[user]}
         i_grad_bias = {item: g_loss + self.l2_bias * self.i_biases[item]}
-        u_latent_grad = {user: g_loss * self.i_latents[item] + self.l2_latent * self.u_latents[user]}
-        i_latent_grad = {item: g_loss * self.u_latents[user] + self.l2_latent * self.i_latents[item]}
+        u_latent_grad = {
+            user: g_loss * self.i_latents[item] + self.l2_latent * self.u_latents[user]
+        }
+        i_latent_grad = {
+            item: g_loss * self.u_latents[user] + self.l2_latent * self.i_latents[item]
+        }
 
         # Update weights
-        self.u_biases = self.u_bias_optimizer.update_after_pred(self.u_biases, u_grad_bias)
-        self.i_biases = self.i_bias_optimizer.update_after_pred(self.i_biases, i_grad_bias)
-        self.u_latents = self.u_latent_optimizer.update_after_pred(self.u_latents, u_latent_grad)
-        self.i_latents = self.i_latent_optimizer.update_after_pred(self.i_latents, i_latent_grad)
+        self.u_biases = self.u_bias_optimizer.update_after_pred(
+            self.u_biases, u_grad_bias
+        )
+        self.i_biases = self.i_bias_optimizer.update_after_pred(
+            self.i_biases, i_grad_bias
+        )
+        self.u_latents = self.u_latent_optimizer.update_after_pred(
+            self.u_latents, u_latent_grad
+        )
+        self.i_latents = self.i_latent_optimizer.update_after_pred(
+            self.i_latents, i_latent_grad
+        )
 
         return self

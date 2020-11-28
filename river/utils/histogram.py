@@ -4,13 +4,13 @@ import itertools
 import math
 
 
-__all__ = ['Histogram']
+__all__ = ["Histogram"]
 
 
 class Bin:
     """A Bin is an element of a Histogram."""
 
-    __slots__ = ['left', 'right', 'count']
+    __slots__ = ["left", "right", "count"]
 
     def __init__(self, left, right, count):
         self.left = left
@@ -33,7 +33,7 @@ class Bin:
         return self.left == other.left and self.right == other.right
 
     def __repr__(self):
-        return f'[{self.left:.5f}, {self.right:.5f}]: {self.count}'
+        return f"[{self.left:.5f}, {self.right:.5f}]: {self.count}"
 
 
 def coverage_ratio(x: Bin, y: Bin) -> float:
@@ -184,7 +184,9 @@ class Histogram(collections.UserList):
         def bin_distance(i):
             return self[i + 1].right - self[i].right
 
-        for i in sorted(heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True):
+        for i in sorted(
+            heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True
+        ):
             self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
 
     def iter_cdf(self, X, verbose=False):
@@ -300,7 +302,7 @@ class Histogram(collections.UserList):
         ys = iter(other)
         rights = heapq.merge(
             itertools.chain.from_iterable((b.left, b.right) for b in self),
-            itertools.chain.from_iterable((b.left, b.right) for b in other)
+            itertools.chain.from_iterable((b.left, b.right) for b in other),
         )
 
         b = Bin(next(rights), next(rights), 0)
@@ -333,4 +335,4 @@ class Histogram(collections.UserList):
         return hist
 
     def __repr__(self):
-        return '\n'.join(str(b) for b in self)
+        return "\n".join(str(b) for b in self)
