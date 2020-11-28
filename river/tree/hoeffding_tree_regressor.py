@@ -256,8 +256,34 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 current.set_child(branch_id, leaf_node)
                 self._n_active_leaves += 1
                 leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-            # else: If the feature is numerical but its value is not present in the instance,
-            # there is not much we can do
+            # The split feature is not present in the instance. Hence, we pass the new example
+            # to the most traversed path in the current subtree
+            else:
+                nd = leaf_node
+                # Keep traversing down the tree until a leaf is found
+                while not nd.is_leaf():
+                    path = max(
+                        nd._children,
+                        key=lambda c: nd._children[c].total_weight if nd._children[c] else 0.
+                    )
+                    most_traversed = nd.get_child(path)
+                    # Pass instance to the most traversed path
+                    if most_traversed is not None:
+                        found_node = most_traversed.filter_instance_to_leaf(x, nd, path)
+                        nd = found_node.node
+
+                        if nd is None:
+                            nd = self._new_learning_node(parent=found_node.parent)
+                            found_node.parent.set_child(found_node.parent_branch, nd)
+                            self._n_active_leaves += 1
+                    else:
+                        leaf = self._new_learning_node(parent=nd)
+                        nd.set_child(path, leaf)
+                        nd = leaf
+                        self._n_active_leaves += 1
+
+                # Learn from the sample
+                nd.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
