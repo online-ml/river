@@ -55,6 +55,7 @@ def yield_datasets(model):
 
 
 def check_learn_one(model, dataset):
+    """learn_one should return the calling model and be pure."""
 
     klass = model.__class__
 
@@ -73,6 +74,7 @@ def check_learn_one(model, dataset):
 
 
 def check_predict_proba_one(classifier, dataset):
+    """predict_proba_one should return a valid probability distribution and be pure."""
 
     for x, y in dataset:
 
@@ -93,6 +95,7 @@ def check_predict_proba_one(classifier, dataset):
 
 
 def check_predict_proba_one_binary(classifier, dataset):
+    """predict_proba_one should return a dict with True and False keys."""
 
     for x, y in dataset:
         y_pred = classifier.predict_proba_one(x)
@@ -101,6 +104,7 @@ def check_predict_proba_one_binary(classifier, dataset):
 
 
 def check_shuffle_features_no_impact(model, dataset):
+    """Changing the order of the features between calls should have no effect on a model."""
 
     from river import utils
 
@@ -128,6 +132,16 @@ def check_shuffle_features_no_impact(model, dataset):
 
         model.learn_one(x, y)
         shuffled.learn_one(x_shuffled, y)
+
+
+def check_predict_emerging_feature(model, dataset):
+    """predict_one should work even with previously unseen features."""
+
+    x, y = next(iter(dataset))
+    features = list(x.keys())[:-1]
+
+    model.learn_one({i: x[i] for i in features}, y)
+    model.predict_one(x)
 
 
 def check_debug_one(model, dataset):
@@ -224,9 +238,11 @@ def yield_checks(model):
 
         yield wrapped_partial(check_learn_one, dataset=dataset)
         yield wrapped_partial(check_pickling, dataset=dataset)
+        yield wrapped_partial(check_shuffle_features_no_impact, dataset=dataset)
+        yield wrapped_partial(check_predict_emerging_feature, dataset=dataset)
+
         if hasattr(model, 'debug_one'):
             yield wrapped_partial(check_debug_one, dataset=dataset)
-        yield wrapped_partial(check_shuffle_features_no_impact, dataset=dataset)
 
         # Classifier checks
         if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
