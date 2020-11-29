@@ -22,9 +22,9 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-py{{ matrix.python }}-pip-${{ hashFiles('setup.py') }}
+        key: ${{ runner.os }}-py{{ matrix.python }}-${{ hashFiles('setup.py') }}
         restore-keys: |
-          ${{ runner.os }}-py{{ matrix.python }}-pip-
+          ${{ runner.os }}-py{{ matrix.python }}-
     - name: Cache datasets
       uses: actions/cache@v2
       with:
