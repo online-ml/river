@@ -16,7 +16,8 @@ jobs:
         python-version: ${{ matrix.python }}
     - name: Install dependencies
       run: |
-        pip3 install -e ".[dev]" codecov
+        pip install Cython numpy
+        pip install -e ".[dev]" codecov
     - name: Cache datasets
       uses: actions/cache@v2
       with:
