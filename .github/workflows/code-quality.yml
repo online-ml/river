@@ -10,7 +10,11 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8.3
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
     - name: Cache dependencies
       uses: actions/cache@v2
       with:
@@ -18,9 +22,5 @@ jobs:
         key: pip-${{ hashFiles('setup.py') }}
         restore-keys: |
           pip-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]"
     - name: Run pre-commit on all files
       run: pre-commit run --all-files
