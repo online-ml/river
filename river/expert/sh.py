@@ -214,25 +214,24 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
 
     >>> sh.best_model
     Pipeline (
-        StandardScaler (),
-        LinearRegression (
+      StandardScaler (),
+      LinearRegression (
         optimizer=Adam (
-            lr=Constant (
+          lr=Constant (
             learning_rate=0.1
-            )
-            beta_1=0.01
-            beta_2=0.999
-            eps=1e-08
+          )
+          beta_1=0.01
+          beta_2=0.999
+          eps=1e-08
         )
         loss=Squared ()
         l2=0.
-        intercept=39.93843
         intercept_lr=Constant (
-            learning_rate=0.1
+          learning_rate=0.1
         )
         clip_gradient=1e+12
         initializer=Zeros ()
-        )
+      )
     )
 
     References
@@ -360,28 +359,27 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
 
     >>> sh.best_model
     Pipeline (
-        StandardScaler (),
-        LogisticRegression (
+      StandardScaler (),
+      LogisticRegression (
         optimizer=Adam (
-            lr=Constant (
+          lr=Constant (
             learning_rate=0.01
-            )
-            beta_1=0.01
-            beta_2=0.999
-            eps=1e-08
+          )
+          beta_1=0.01
+          beta_2=0.999
+          eps=1e-08
         )
         loss=Log (
-            weight_pos=1.
-            weight_neg=1.
+          weight_pos=1.
+          weight_neg=1.
         )
         l2=0.
-        intercept=-0.397923
         intercept_lr=Constant (
-            learning_rate=0.01
+          learning_rate=0.01
         )
         clip_gradient=1e+12
         initializer=Zeros ()
-        )
+      )
     )
 
     References

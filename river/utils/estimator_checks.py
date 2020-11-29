@@ -181,9 +181,7 @@ def check_doc(model):
 
 
 def check_clone(model):
-    from river import utils
-
-    clone = utils.clone(model)
+    clone = model.clone()
     assert id(clone) != id(model)
     assert dir(clone) == dir(model)
 

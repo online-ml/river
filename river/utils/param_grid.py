@@ -48,19 +48,18 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
 
     >>> models[0]
     LinearRegression (
-        optimizer=SGD (
+      optimizer=SGD (
         lr=Constant (
-            learning_rate=0.1
+          learning_rate=0.1
         )
-        )
-        loss=Squared ()
-        l2=0.
-        intercept=0.
-        intercept_lr=Constant (
+      )
+      loss=Squared ()
+      l2=0.
+      intercept_lr=Constant (
         learning_rate=0.01
-        )
-        clip_gradient=1e+12
-        initializer=Zeros ()
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
     )
 
     You can expand parameters for multiple choices like so:

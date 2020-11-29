@@ -19,6 +19,7 @@ from river import linear_model
 from river import meta
 from river import multiclass
 from river import naive_bayes
+from river import optim
 from river import preprocessing
 from river import reco
 from river import stats
@@ -101,11 +102,11 @@ def get_all_estimators():
 
 @pytest.mark.parametrize('estimator, check', [
     pytest.param(
-        estimator,
+        model,
         check,
-        id=f'{estimator}:{check.__name__}'
+        id=f'{model}:{check.__name__}'
     )
-    for estimator in list(get_all_estimators()) + [
+    for model in list(get_all_estimators()) + [
         feature_extraction.TFIDF(),
         linear_model.LogisticRegression(),
         preprocessing.StandardScaler() | linear_model.LinearRegression(),
@@ -124,9 +125,17 @@ def get_all_estimators():
             linear_model.LinearRegression()
         ),
         feature_selection.VarianceThreshold(),
-        feature_selection.SelectKBest(similarity=stats.PearsonCorr())
+        feature_selection.SelectKBest(similarity=stats.PearsonCorr()),
+        (
+            preprocessing.StandardScaler() |
+            linear_model.LogisticRegression(
+                optimizer=optim.Adam(),
+                initializer=optim.initializers.Normal(seed=42),
+                l2=.1
+            )
+        )
     ]
-    for check in utils.estimator_checks.yield_checks(estimator)
+    for check in utils.estimator_checks.yield_checks(model)
 ])
 def test_check_estimator(estimator, check):
     check(copy.deepcopy(estimator))

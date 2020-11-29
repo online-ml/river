@@ -58,41 +58,39 @@ class Pipeline(base.Estimator):
 
     >>> model
     Pipeline (
-        StandardScaler (),
-        LinearRegression (
+      StandardScaler (),
+      LinearRegression (
         optimizer=SGD (
-            lr=Constant (
+          lr=Constant (
             learning_rate=0.01
-            )
+          )
         )
         loss=Squared ()
         l2=0.
-        intercept=0.
         intercept_lr=Constant (
-        learning_rate=0.01
+          learning_rate=0.01
         )
         clip_gradient=1e+12
         initializer=Zeros ()
-        )
+      )
     )
 
     You can access parts of a pipeline in the same manner as a dictionary:
 
     >>> model['LinearRegression']
     LinearRegression (
-        optimizer=SGD (
+      optimizer=SGD (
         lr=Constant (
-            learning_rate=0.01
+          learning_rate=0.01
         )
-        )
-        loss=Squared ()
-        l2=0.
-        intercept=0.
-        intercept_lr=Constant (
+      )
+      loss=Squared ()
+      l2=0.
+      intercept_lr=Constant (
         learning_rate=0.01
-        )
-        clip_gradient=1e+12
-        initializer=Zeros ()
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
     )
 
     Note that you can also declare a pipeline by using the `compose.Pipeline` constructor

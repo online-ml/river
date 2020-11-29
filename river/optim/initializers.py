@@ -3,6 +3,8 @@ import abc
 
 import numpy as np
 
+from river import base
+
 
 __all__ = [
     'Constant',
@@ -11,11 +13,8 @@ __all__ = [
 ]
 
 
-class Initializer(abc.ABC):
+class Initializer(base.Base, abc.ABC):
     """An initializer is used to set initial weights in a model."""
-
-    def __str__(self):
-        return self.__class__.__name__
 
     @abc.abstractmethod
     def __call__(self, shape=1):
