@@ -4,19 +4,21 @@ on: [pull_request]
 
 jobs:
   ubuntu:
+
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.8]
-    runs-on: ubuntu-latest
+        python-version: [3.8]
+
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python }}
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python }}
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install Cython numpy
+        python -m pip install --upgrade pip
         pip install -e ".[dev]" codecov
     - name: Cache datasets
       uses: actions/cache@v2
