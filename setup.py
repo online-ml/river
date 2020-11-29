@@ -35,7 +35,7 @@ compat_packages = base_packages + ["scikit-learn", "scikit-surprise", "sqlalchem
 
 dev_packages = base_packages + [
     "asv",
-    "git+git://github.com/psf/black",
+    "black>=20.8b1",
     "flake8>=3.7.9",
     "graphviz>=0.10.1",
     "matplotlib>=3.0.2",
