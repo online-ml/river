@@ -15,11 +15,7 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
     - name: Install dependencies
-      run: |
-        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-        python get-pip.py
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]" codecov
+      run: pip install -e ".[dev]" codecov
     - name: Cache datasets
       uses: actions/cache@v2
       with:
