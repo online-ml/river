@@ -15,7 +15,10 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
     - name: Install dependencies
-      run: pip install -e ".[dev]" codecov
+      run: |
+        pip freeze
+        pip3 freeze
+        pip3 install -e ".[dev]" codecov
     - name: Cache datasets
       uses: actions/cache@v2
       with:
