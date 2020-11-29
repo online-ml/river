@@ -3,7 +3,6 @@ from . import inspect
 from . import math
 from . import pretty
 from . import skmultiflow_utils
-from .clone import clone
 from .estimator_checks import check_estimator
 from .histogram import Histogram
 from .param_grid import expand_param_grid
@@ -19,7 +18,6 @@ from .data_conversion import numpy2dict
 
 __all__ = [
     'check_estimator',
-    'clone',
     'dict2numpy',
     'expand_param_grid',
     'inspect',
