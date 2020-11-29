@@ -6,7 +6,7 @@ jobs:
   ubuntu:
     strategy:
       matrix:
-        python: [3.8.1]
+        python: [3.8]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -16,14 +16,11 @@ jobs:
         python-version: ${{ matrix.python }}
     - name: Install dependencies
       run: |
-        pip freeze
         pip3 freeze
-        pip3 install -e ".[dev]" codecov
     - name: Cache datasets
       uses: actions/cache@v2
       with:
         path: ~/river_data
-        key: ${{ runner.os }}
     - name: Download datasets
       run: python -c "from river import datasets; datasets.CreditCard().download()"
     - name: pytest
