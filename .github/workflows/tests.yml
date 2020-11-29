@@ -18,10 +18,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip3 -V
-        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-        python get-pip.py --force-reinstall
-        pip3 -V
+        sudo apt remove python-pip
         python -m pip install --upgrade pip
         pip install -e ".[dev]" codecov
     - name: Cache datasets
