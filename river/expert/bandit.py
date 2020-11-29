@@ -10,6 +10,7 @@ from river import metrics
 from river import preprocessing
 from river import utils
 
+
 __all__ = [
     'EpsilonGreedyRegressor',
     'UCBRegressor',
@@ -23,7 +24,7 @@ __all__ = [
 
 class Bandit(base.EnsembleMixin):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer):
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed=None):
 
         if len(models) <= 1:
             raise ValueError(f"You supply {len(models)} models. At least 2 models should be supplied.")
@@ -42,6 +43,10 @@ class Bandit(base.EnsembleMixin):
         self._n_iter = 0 # number of times learn_one is called
         self._N = [0] * self._n_arms
         self._average_reward = [0.0] * self._n_arms
+        self.seed = seed
+        self._rng = random.Random(seed)
+
+
 
     def __repr__(self):
         return (
@@ -125,9 +130,9 @@ class Bandit(base.EnsembleMixin):
 
 class EpsilonGreedyBandit(Bandit):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer,
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed=None,
                  epsilon=0.1, epsilon_decay=None):
-        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler)
+        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, seed=seed)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         if epsilon_decay:
@@ -136,10 +141,10 @@ class EpsilonGreedyBandit(Bandit):
             self.reward_scaler = preprocessing.StandardScaler()
 
     def _pull_arm(self):
-        if random.random() > self.epsilon:
+        if self._rng.random() > self.epsilon:
             chosen_arm = utils.math.argmax(self._average_reward)
         else:
-            chosen_arm = random.choice(range(self._n_arms))
+            chosen_arm = self._rng.choice(range(self._n_arms))
 
         return chosen_arm
 
@@ -193,7 +198,8 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
                 linear_model.LinearRegression(intercept_lr=.01)
             ],
             'metric': metrics.MSE(),
-            'reward_scaler': preprocessing.StandardScaler()
+            'reward_scaler': preprocessing.StandardScaler(),
+            'seed': 1
         }
 
     def _pred_func(self, model):
@@ -202,9 +208,9 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
 class UCBBandit(Bandit):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer,
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed=None,
                  delta=None, explore_each_arm=1):
-        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler)
+        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, seed=seed)
         if delta is not None and (delta >= 1 or delta <= 0):
             raise ValueError("The parameter delta should be comprised in ]0, 1[ (or set to None)")
         self.delta = delta
@@ -217,7 +223,7 @@ class UCBBandit(Bandit):
         # Explore all arms pulled less than `explore_each_arm` times
         never_pulled_arm = [i for (i, n) in enumerate(self._N) if n <= self.explore_each_arm]
         if never_pulled_arm:
-            chosen_arm = random.choice(never_pulled_arm)
+            chosen_arm = self._rng.choice(never_pulled_arm)
         else:
             if self.delta:
                 exploration_bonus = [math.sqrt(2 * math.log(1/self.delta) / n) for n in self._N]
@@ -272,7 +278,8 @@ class UCBRegressor(UCBBandit, base.Regressor):
                 linear_model.LinearRegression(intercept_lr=.01)
             ],
             'metric': metrics.MSE(),
-            'reward_scaler': preprocessing.StandardScaler()
+            'reward_scaler': preprocessing.StandardScaler(),
+            'seed': 1
         }
 
     def _pred_func(self, model):
