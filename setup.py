@@ -1,7 +1,6 @@
 import io
 import platform
 import os
-import sys
 
 import setuptools
 
@@ -16,7 +15,7 @@ try:
     from Cython.Build import cythonize
 except ImportError:
     import subprocess
-    subprocess.check_call(["pip", "install", "numpy"])
+    subprocess.check_call(["pip", "install", "Cython"])
     from Cython.Build import cythonize
 
 
