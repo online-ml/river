@@ -27,6 +27,8 @@ __all__ = [
     "MinMaxScaler",
     "Normalizer",
     "OneHotEncoder",
+    "PreviousImputer",
     "RobustScaler",
     "StandardScaler",
+    "StatImputer",
 ]

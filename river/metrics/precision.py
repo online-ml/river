@@ -1,5 +1,3 @@
-import collections
-
 from . import base
 
 

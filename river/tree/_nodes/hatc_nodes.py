@@ -87,9 +87,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
     def kill_tree_children(self, hat):
         pass
 
-    def learn_one(
-        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
-    ):
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1):
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
             k = self._rng.poisson(1.0)
@@ -138,9 +136,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             dist = normalize_values_in_dict(self.stats, inplace=False)
         elif prediction_option == tree._NAIVE_BAYES:
             if self.total_weight >= tree.nb_threshold:
-                dist = do_naive_bayes_prediction(
-                    x, self.stats, self.attribute_observers
-                )
+                dist = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
             else:  # Use majority class
                 dist = normalize_values_in_dict(self.stats, inplace=False)
         else:  # Naive Bayes Adaptive
@@ -211,9 +207,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
     def error_is_null(self):
         return self._adwin is None
 
-    def learn_one(
-        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
-    ):
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1):
         class_prediction = None
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
@@ -248,10 +242,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
         # Condition to replace alternate tree
-        elif (
-            self._alternate_tree is not None
-            and not self._alternate_tree.error_is_null()
-        ):
+        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
             if (
                 self.error_width > tree.drift_window_threshold
                 and self._alternate_tree.error_width > tree.drift_window_threshold
@@ -262,11 +253,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                 f_n = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
 
                 bound = math.sqrt(
-                    2.0
-                    * old_error_rate
-                    * (1.0 - old_error_rate)
-                    * math.log(2.0 / f_delta)
-                    * f_n
+                    2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / f_delta) * f_n
                 )
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves

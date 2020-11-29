@@ -83,9 +83,7 @@ class Entropy(base.Univariate):
         alpha = self.alpha
 
         entropy = self.entropy
-        entropy = (
-            (n + eps) / (n + 1) * (alpha * entropy - math.log((n + eps) / (n + 1)))
-        )
+        entropy = (n + eps) / (n + 1) * (alpha * entropy - math.log((n + eps) / (n + 1)))
         entropy -= (cx + 1) / (n + 1) * math.log((cx + 1) / (n + 1))
         entropy += (cx + eps) / (n + 1) * math.log((cx + eps) / (n + 1))
         self.entropy = entropy

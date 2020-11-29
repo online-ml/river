@@ -51,11 +51,6 @@ class Friedman(base.SyntheticDataset):
         while True:
 
             x = {i: rng.uniform(a=0, b=1) for i in range(10)}
-            y = (
-                10 * math.sin(math.pi * x[0] * x[1])
-                + 20 * (x[2] - 0.5) ** 2
-                + 10 * x[3]
-                + 5 * x[4]
-            )
+            y = 10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - 0.5) ** 2 + 10 * x[3] + 5 * x[4]
 
             yield x, y

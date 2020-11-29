@@ -67,7 +67,7 @@ class CohenKappa(base.MultiClassMetric):
 
 
 class KappaM(base.MultiClassMetric):
-    """Kappa-M score.
+    r"""Kappa-M score.
 
     The Kappa-M statistic compares performance with the majority class classifier.
     It is defined as
@@ -125,7 +125,7 @@ class KappaM(base.MultiClassMetric):
 
 
 class KappaT(base.MultiClassMetric):
-    """Kappa-T score.
+    r"""Kappa-T score.
 
     The Kappa-T measures the temporal correlation between samples.
     It is defined as

@@ -55,28 +55,22 @@ class HOFM(BaseFM):
         self.degree = degree
 
     def _init_latents(self):
-        random_latents = functools.partial(
-            self.latent_initializer, shape=self.n_factors
-        )
+        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         order_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(order_latents_dict)
 
     def _calculate_interactions(self, x):
         """Calculates greater than unary interactions."""
         return sum(
-            self._calculate_interaction(x, l, combination)
-            for l in range(2, self.degree + 1)
-            for combination in itertools.combinations(x.keys(), l)
+            self._calculate_interaction(x, d, combination)
+            for d in range(2, self.degree + 1)
+            for combination in itertools.combinations(x.keys(), d)
         )
 
-    def _calculate_interaction(self, x, l, combination):
-        feature_product = functools.reduce(
-            lambda x, y: x * y, (x[j] for j in combination)
-        )
+    def _calculate_interaction(self, x, d, combination):
+        feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
         latent_scalar_product = sum(
-            functools.reduce(
-                lambda x, y: x * y, (self.latents[j][l][f] for j in combination)
-            )
+            functools.reduce(lambda x, y: x * y, (self.latents[j][d][f] for j in combination))
             for f in range(self.n_factors)
         )
         return feature_product * latent_scalar_product
@@ -98,32 +92,26 @@ class HOFM(BaseFM):
             lambda: collections.defaultdict(lambda: collections.defaultdict(float))
         )
 
-        for l in range(2, self.degree + 1):
+        for d in range(2, self.degree + 1):
 
-            for combination in itertools.combinations(x.keys(), l):
-                feature_product = functools.reduce(
-                    lambda x, y: x * y, (x[j] for j in combination)
-                )
+            for combination in itertools.combinations(x.keys(), d):
+                feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
 
                 for f in range(self.n_factors):
                     latent_product = functools.reduce(
-                        lambda x, y: x * y, (v[j][l][f] for j in combination)
+                        lambda x, y: x * y, (v[j][d][f] for j in combination)
                     )
 
                     for j in combination:
-                        gradients[j][l][f] += (
-                            feature_product * latent_product / v[j][l][f]
-                        )
+                        gradients[j][d][f] += feature_product * latent_product / v[j][d][f]
 
         # Finally update the latent weights
         for j in x.keys():
-            for l in range(2, self.degree + 1):
-                self.latents[j][l] = self.latent_optimizer.update_after_pred(
-                    w=v[j][l],
+            for d in range(2, self.degree + 1):
+                self.latents[j][d] = self.latent_optimizer.update_after_pred(
+                    w=v[j][d],
                     g={
-                        f: g_loss * gradients[j][l][f]
-                        + l1 * sign(v[j][l][f])
-                        + 2 * l2 * v[j][l][f]
+                        f: g_loss * gradients[j][d][f] + l1 * sign(v[j][d][f]) + 2 * l2 * v[j][d][f]
                         for f in range(self.n_factors)
                     },
                 )

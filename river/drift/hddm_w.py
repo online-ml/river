@@ -117,9 +117,7 @@ class HDDM_W(DriftDetector):
             )
             self.total.independent_bounded_condition_sum = (
                 self.lambda_option * self.lambda_option
-                + aux_decay_rate
-                * aux_decay_rate
-                * self.total.independent_bounded_condition_sum
+                + aux_decay_rate * aux_decay_rate * self.total.independent_bounded_condition_sum
             )
 
         self._update_incr_statistics(value, self.drift_confidence)
@@ -146,8 +144,7 @@ class HDDM_W(DriftDetector):
         if sample1.EWMA_estimator < 0 or sample2.EWMA_estimator < 0:
             return False
         ibc_sum = (
-            sample1.independent_bounded_condition_sum
-            + sample2.independent_bounded_condition_sum
+            sample1.independent_bounded_condition_sum + sample2.independent_bounded_condition_sum
         )
         bound = sqrt(ibc_sum * log(1 / confidence) / 2)
         return sample2.EWMA_estimator - sample1.EWMA_estimator > bound
@@ -164,9 +161,7 @@ class HDDM_W(DriftDetector):
 
     def _update_incr_statistics(self, value, confidence):
         aux_decay = 1.0 - self.lambda_option
-        bound = sqrt(
-            self.total.independent_bounded_condition_sum * log(1.0 / confidence) / 2
-        )
+        bound = sqrt(self.total.independent_bounded_condition_sum * log(1.0 / confidence) / 2)
 
         if self.total.EWMA_estimator + bound < self.incr_cutpoint:
             self.incr_cutpoint = self.total.EWMA_estimator + bound
@@ -195,9 +190,7 @@ class HDDM_W(DriftDetector):
 
     def _update_decr_statistics(self, value, confidence):
         aux_decay = 1.0 - self.lambda_option
-        epsilon = sqrt(
-            self.total.independent_bounded_condition_sum * log(1.0 / confidence) / 2
-        )
+        epsilon = sqrt(self.total.independent_bounded_condition_sum * log(1.0 / confidence) / 2)
 
         if self.total.EWMA_estimator - epsilon > self.decr_cutpoint:
             self.decr_cutpoint = self.total.EWMA_estimator - epsilon
