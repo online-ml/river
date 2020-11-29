@@ -9,14 +9,14 @@ try:
     from numpy import get_include
 except ImportError:
     import subprocess
-    subprocess.check_call([sys.executable, "-m", "pip3", "install", "numpy"])
+    subprocess.check_call(["pip", "install", "numpy"])
     from numpy import get_include
 
 try:
     from Cython.Build import cythonize
 except ImportError:
     import subprocess
-    subprocess.check_call([sys.executable, "-m", "pip3", "install", "Cython"])
+    subprocess.check_call(["pip", "install", "numpy"])
     from Cython.Build import cythonize
 
 
