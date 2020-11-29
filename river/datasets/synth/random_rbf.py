@@ -94,10 +94,7 @@ class RandomRBF(base.SyntheticDataset):
         magnitude = np.sqrt(magnitude)
         desired_mag = rng_sample.normal() * current_centroid.std_dev
         scale = desired_mag / magnitude
-        x = {
-            i: current_centroid.centre[i] + att_vals[i] * scale
-            for i in range(self.n_features)
-        }
+        x = {i: current_centroid.centre[i] + att_vals[i] * scale for i in range(self.n_features)}
         y = current_centroid.class_label
         return x, y
 
@@ -212,16 +209,10 @@ class RandomRBFDrift(RandomRBF):
             # Move centroids
             for i in range(self.n_drift_centroids):
                 for j in range(self.n_features):
-                    self.centroids[i].centre[j] += (
-                        self.centroid_speed[i][j] * self.change_speed
-                    )
+                    self.centroids[i].centre[j] += self.centroid_speed[i][j] * self.change_speed
 
-                    if (self.centroids[i].centre[j] > 1) or (
-                        self.centroids[i].centre[j] < 0
-                    ):
-                        self.centroids[i].centre[j] = (
-                            1 if (self.centroids[i].centre[j] > 1) else 0
-                        )
+                    if (self.centroids[i].centre[j] > 1) or (self.centroids[i].centre[j] < 0):
+                        self.centroids[i].centre[j] = 1 if (self.centroids[i].centre[j] > 1) else 0
                         self.centroid_speed[i][j] = -self.centroid_speed[i][j]
 
             x, y = self._generate_sample(rng_sample)

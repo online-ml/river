@@ -260,13 +260,9 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             if isinstance(node, SplitNode):
                 split_node = node
                 for i in range(split_node.n_children):
-                    self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found
-                    )
+                    self.__find_learning_nodes(split_node.get_child(i), split_node, i, found)
                 if split_node._alternate_tree is not None:
-                    self.__find_learning_nodes(
-                        split_node._alternate_tree, split_node, -999, found
-                    )
+                    self.__find_learning_nodes(split_node._alternate_tree, split_node, -999, found)
 
     @classmethod
     def _default_params(cls):

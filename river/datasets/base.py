@@ -98,8 +98,7 @@ class Dataset(abc.ABC):
         r_len = max(map(len, self._repr_content.values()))
 
         out = f"{self.desc}\n\n" + "\n".join(
-            k.rjust(l_len) + "  " + v.ljust(r_len)
-            for k, v in self._repr_content.items()
+            k.rjust(l_len) + "  " + v.ljust(r_len) for k, v in self._repr_content.items()
         )
 
         if "Parameters\n    ----------" in self.__doc__:
@@ -123,15 +122,14 @@ class SyntheticDataset(Dataset):
         r_len_config = max(map(len, map(str, params.values())))
 
         out = (
-            f"Synthetic data generator\n\n"
+            "Synthetic data generator\n\n"
             + "\n".join(
                 k.rjust(l_len_prop) + "  " + v.ljust(r_len_prop)
                 for k, v in self._repr_content.items()
             )
             + "\n\nConfiguration\n-------------\n"
             + "\n".join(
-                k.rjust(l_len_config) + "  " + str(v).ljust(r_len_config)
-                for k, v in params.items()
+                k.rjust(l_len_config) + "  " + str(v).ljust(r_len_config) for k, v in params.items()
             )
         )
 

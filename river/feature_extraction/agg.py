@@ -129,9 +129,7 @@ class Agg(base.Transformer):
 
     """
 
-    def __init__(
-        self, on: str, by: typing.Union[str, typing.List[str]], how: stats.Univariate
-    ):
+    def __init__(self, on: str, by: typing.Union[str, typing.List[str]], how: stats.Univariate):
         self.on = on
         self.by = by if isinstance(by, list) else [by]
         self.how = how

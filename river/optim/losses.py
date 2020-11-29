@@ -248,9 +248,7 @@ class CrossEntropy(MultiClassLoss):
 
         for label, proba in y_pred.items():
             if y_true == label:
-                total += self.class_weight.get(label, 1.0) * math.log(
-                    clamp_proba(proba)
-                )
+                total += self.class_weight.get(label, 1.0) * math.log(clamp_proba(proba))
 
         return -total
 
@@ -265,7 +263,7 @@ class CrossEntropy(MultiClassLoss):
 
 
 class Hinge(BinaryLoss):
-    """Computes the hinge loss.
+    r"""Computes the hinge loss.
 
     Mathematically, it is defined as
 

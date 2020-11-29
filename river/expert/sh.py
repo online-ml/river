@@ -1,7 +1,6 @@
 import copy
 import math
 import operator
-import typing
 
 from river import base
 from river import metrics
@@ -68,9 +67,7 @@ class SuccessiveHalving:
             # Check for a new best model
             if i != self._best_model_idx:
                 op = operator.gt if self.metric.bigger_is_better else operator.lt
-                if op(
-                    self._metrics[i].get(), self._metrics[self._best_model_idx].get()
-                ):
+                if op(self._metrics[i].get(), self._metrics[self._best_model_idx].get()):
                     self._best_model_idx = i
 
         self._n_iterations += 1
@@ -108,15 +105,13 @@ class SuccessiveHalving:
 
             # Determine where the next rung is located
             self._s = cutoff
-            self._r = math.floor(
-                self.budget / (self._s * math.ceil(math.log(self._n, self.eta)))
-            )
+            self._r = math.floor(self.budget / (self._s * math.ceil(math.log(self._n, self.eta))))
 
         return self
 
 
 class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
-    """Successive halving algorithm for regression.
+    r"""Successive halving algorithm for regression.
 
     Successive halving is a method for performing model selection without having to train each
     model on all the dataset. At certain points in time (called "rungs"), the worst performing will
@@ -262,7 +257,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
 
 
 class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
-    """Successive halving algorithm for classification.
+    r"""Successive halving algorithm for classification.
 
     Successive halving is a method for performing model selection without having to train each
     model on all the dataset. At certain points in time (called "rungs"), the worst performing will

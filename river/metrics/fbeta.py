@@ -305,9 +305,7 @@ class MultiFBeta(base.MultiClassMetric):
         super().__init__(cm)
         self.betas = betas
         self.weights = (
-            collections.defaultdict(functools.partial(int, 1))
-            if weights is None
-            else weights
+            collections.defaultdict(functools.partial(int, 1)) if weights is None else weights
         )
 
     def get(self):

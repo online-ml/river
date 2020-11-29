@@ -1,6 +1,3 @@
-import typing
-
-
 class EnsembleMixin:
     """An ensemble model.
 

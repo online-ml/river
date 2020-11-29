@@ -55,9 +55,7 @@ class FFM(BaseFM):
         )
 
     def _init_latents(self):
-        random_latents = functools.partial(
-            self.latent_initializer, shape=self.n_factors
-        )
+        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         field_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(field_latents_dict)
 
@@ -65,9 +63,7 @@ class FFM(BaseFM):
         """Calculates pairwise interactions."""
         field = self._field
         return sum(
-            x[j1]
-            * x[j2]
-            * np.dot(self.latents[j1][field(j2)], self.latents[j2][field(j1)])
+            x[j1] * x[j2] * np.dot(self.latents[j1][field(j2)], self.latents[j2][field(j1)])
             for j1, j2 in itertools.combinations(x.keys(), 2)
         )
 

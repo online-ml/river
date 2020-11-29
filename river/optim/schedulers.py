@@ -46,7 +46,7 @@ class Constant(Scheduler):
 
 
 class InverseScaling(Scheduler):
-    """Reduces the learning rate using a power schedule.
+    r"""Reduces the learning rate using a power schedule.
 
     Assuming an initial learning rate $\eta$, the learning rate at step $t$ is:
 

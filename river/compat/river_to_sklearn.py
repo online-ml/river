@@ -29,9 +29,7 @@ __all__ = [
 
 
 # Define a streaming method for each kind of batch input
-STREAM_METHODS: typing.Dict[typing.Type, typing.Callable] = {
-    np.ndarray: stream.iter_array
-}
+STREAM_METHODS: typing.Dict[typing.Type, typing.Callable] = {np.ndarray: stream.iter_array}
 
 if PANDAS_INSTALLED:
     STREAM_METHODS[pd.DataFrame] = stream.iter_pandas
@@ -65,10 +63,7 @@ def convert_river_to_sklearn(estimator: base.Estimator):
 
     if isinstance(estimator, compose.Pipeline):
         return pipeline.Pipeline(
-            [
-                (name, convert_river_to_sklearn(step))
-                for name, step in estimator.steps.items()
-            ]
+            [(name, convert_river_to_sklearn(step)) for name, step in estimator.steps.items()]
         )
 
     wrappers = [
@@ -119,9 +114,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
 
         # Store the number of features so that future inputs can be checked
         if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
-            )
+            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
         self.n_features_in_ = X.shape[1]
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
@@ -198,9 +191,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         if X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
-            )
+            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
 
         # Make a prediction for each observation
         y_pred = np.empty(shape=len(X))
@@ -247,15 +238,12 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
             import warnings
 
             warnings.warn(
-                f"more than 2 classes were given but {self.estimator} is a"
-                " binary classifier"
+                f"more than 2 classes were given but {self.estimator} is a" " binary classifier"
             )
 
         # Store the number of features so that future inputs can be checked
         if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
-            )
+            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
         self.n_features_in_ = X.shape[1]
 
         # Check the target
@@ -348,9 +336,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         if X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
-            )
+            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
 
         # river's predictions have to converted to follow the scikit-learn conventions
         def reshape_probas(y_pred):
@@ -384,9 +370,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         if X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
-            )
+            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
 
         # Make a prediction for each observation
         y_pred = [None] * len(X)
@@ -424,15 +408,11 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         if y is None:
             X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
         else:
-            X, y = utils.check_X_y(
-                X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS
-            )
+            X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
 
         # Store the number of features so that future inputs can be checked
         if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
-            )
+            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
         self.n_features_in_ = X.shape[1]
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
@@ -513,9 +493,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 
         if X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
-            )
+            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)
@@ -549,9 +527,7 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
 
         # Store the number of features so that future inputs can be checked
         if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
-            raise ValueError(
-                f"Expected {self.n_features_in_} features, got {X.shape[1]}"
-            )
+            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
         self.n_features_in_ = X.shape[1]
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to

@@ -164,9 +164,7 @@ class BiasedMF(base.Recommender):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(weight_initializer)
 
-        random_latents = functools.partial(
-            self.latent_initializer, shape=self.n_factors
-        )
+        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         self.u_latents: typing.DefaultDict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
@@ -199,9 +197,7 @@ class BiasedMF(base.Recommender):
         g_loss = self.loss.gradient(y, self._predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(
-            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
-        )
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
         # Calculate weights gradients
         u_grad_bias = {user: g_loss + self.l2_bias * self.u_biases[user]}
@@ -214,17 +210,9 @@ class BiasedMF(base.Recommender):
         }
 
         # Update weights
-        self.u_biases = self.u_bias_optimizer.update_after_pred(
-            self.u_biases, u_grad_bias
-        )
-        self.i_biases = self.i_bias_optimizer.update_after_pred(
-            self.i_biases, i_grad_bias
-        )
-        self.u_latents = self.u_latent_optimizer.update_after_pred(
-            self.u_latents, u_latent_grad
-        )
-        self.i_latents = self.i_latent_optimizer.update_after_pred(
-            self.i_latents, i_latent_grad
-        )
+        self.u_biases = self.u_bias_optimizer.update_after_pred(self.u_biases, u_grad_bias)
+        self.i_biases = self.i_bias_optimizer.update_after_pred(self.i_biases, i_grad_bias)
+        self.u_latents = self.u_latent_optimizer.update_after_pred(self.u_latents, u_latent_grad)
+        self.i_latents = self.i_latent_optimizer.update_after_pred(self.i_latents, i_latent_grad)
 
         return self

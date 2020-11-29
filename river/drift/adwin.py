@@ -4,7 +4,7 @@ from river.base import DriftDetector
 
 
 class ADWIN(DriftDetector):
-    """Adaptive Windowing method for concept drift detection.
+    r"""Adaptive Windowing method for concept drift detection.
 
     ADWIN (ADaptive WINdowing) is a popular drift detection method with
     mathematical guarantees. ADWIN efficiently keeps a variable-length window
@@ -287,14 +287,14 @@ class ADWIN(DriftDetector):
                         u2 = cursor.get_total(k)
 
                         if n0 > 0:
-                            v0 += cursor.get_variance(k) + 1.0 * n0 * n2 * (
+                            v0 += cursor.get_variance(k) + 1.0 * n0 * n2 * (u0 / n0 - u2 / n2) * (
                                 u0 / n0 - u2 / n2
-                            ) * (u0 / n0 - u2 / n2) / (n0 + n2)
+                            ) / (n0 + n2)
 
                         if n1 > 0:
-                            v1 -= cursor.get_variance(k) + 1.0 * n1 * n2 * (
+                            v1 -= cursor.get_variance(k) + 1.0 * n1 * n2 * (u1 / n1 - u2 / n2) * (
                                 u1 / n1 - u2 / n2
-                            ) * (u1 / n1 - u2 / n2) / (n1 + n2)
+                            ) / (n1 + n2)
 
                         n0 += self._bucket_size(i)
                         n1 -= self._bucket_size(i)
