@@ -9,23 +9,15 @@ try:
     from numpy import get_include
 except ImportError:
     import subprocess
-    errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'numpy'])
-    if errno:
-        print('Please install numpy')
-        raise SystemExit(errno)
-    else:
-        from numpy import get_include
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'numpy'])
+    from numpy import get_include
 
 try:
     from Cython.Build import cythonize
 except ImportError:
     import subprocess
-    errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'Cython'])
-    if errno:
-        print('Please install Cython')
-        raise SystemExit(errno)
-    else:
-        from Cython.Build import cythonize
+    errno = subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'Cython'])
+    from Cython.Build import cythonize
 
 
 # Package meta-data.
