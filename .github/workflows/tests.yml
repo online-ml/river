@@ -6,7 +6,7 @@ jobs:
   ubuntu:
     strategy:
       matrix:
-        python: [3.6, 3.7, 3.8]
+        python: [3.8]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -32,8 +32,6 @@ jobs:
         key: ${{ runner.os }}
     - name: Download datasets
       run: python -c "from river import datasets; datasets.CreditCard().download()"
-    - name: flake8
-      run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude benchmarks
     - name: pytest
       run: pytest --cov=river -m "not datasets"
     - name: codecov
