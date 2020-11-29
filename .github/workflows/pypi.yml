@@ -26,7 +26,12 @@ jobs:
         python-version: 3.8
 
     - name: Install Python dependencies
-      run: pip install cibuildwheel cython twine
+      run: pip install -e ".[compat,dev]" cibuildwheel twine
+
+    - name: pytest
+      run: |
+        pytest
+        pytest -m "datasets and slow"
 
     - name: Build wheels
       env:
