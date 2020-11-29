@@ -40,7 +40,7 @@ def print_table(
 
     # Determine the order in which to print the column values
     if order is None:
-        order = range(len(columns[0]))
+        order = list(range(len(columns[0])))
 
     # Build the table
     table = (
@@ -66,7 +66,7 @@ def humanize_bytes(n_bytes: int):
 
     """
     suffixes = ["B", "KB", "MB", "GB", "TB", "PB"]
-    human = n_bytes
+    human = float(n_bytes)
     rank = 0
     if n_bytes != 0:
         rank = int((math.log10(n_bytes)) / 3)
