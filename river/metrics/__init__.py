@@ -52,6 +52,14 @@ from .rolling import Rolling
 from .r2 import R2
 from .smape import SMAPE
 from .time_rolling import TimeRolling
+from ._performance_evaluator import _ClassificationReport  # noqa: F401
+from ._performance_evaluator import _RollingClassificationReport  # noqa: F401
+from ._performance_evaluator import _MLClassificationReport  # noqa: F401
+from ._performance_evaluator import _RollingMLClassificationReport  # noqa: F401
+from ._performance_evaluator import _RegressionReport  # noqa: F401
+from ._performance_evaluator import _RollingRegressionReport  # noqa: F401
+from ._performance_evaluator import _MTRegressionReport  # noqa: F401
+from ._performance_evaluator import _RollingMTRegressionReport  # noqa: F401
 
 __all__ = [
     "Accuracy",
