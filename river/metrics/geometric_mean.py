@@ -60,5 +60,5 @@ class GeometricMean(base.MultiClassMetric):
                 except ZeroDivisionError:
                     continue
             with np.errstate(divide="ignore", invalid="ignore"):
-                return stats(sensitivity_per_class)
+                return stats.gmean(sensitivity_per_class)
         return 0.0
