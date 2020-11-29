@@ -19,7 +19,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e ".[dev]" codecov
     - name: Cache dependencies
-    - uses: actions/cache@v2
+      uses: actions/cache@v2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
