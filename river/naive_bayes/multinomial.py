@@ -145,7 +145,8 @@ class MultinomialNB(base.BaseNB):
         return {
             c: math.log(self.p_class(c))
             + sum(
-                frequency * math.log(self.p_feature_given_class(f, c)) for f, frequency in x.items()
+                frequency * math.log(self.p_feature_given_class(f, c))
+                for f, frequency in x.items()
             )
             for c in self.classes_
         }

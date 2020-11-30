@@ -112,5 +112,3 @@ def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> s
     rep += ")"
 
     return rep.expandtabs(2)
-=======
->>>>>>> master

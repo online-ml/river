@@ -25,7 +25,9 @@ class NominalAttributeClassObserver(AttributeObserver):
                 self._att_val_dist_per_class[class_val]
             except KeyError:
                 self._att_val_dist_per_class[class_val] = {att_val: 0.0}
-                self._att_val_dist_per_class = dict(sorted(self._att_val_dist_per_class.items()))
+                self._att_val_dist_per_class = dict(
+                    sorted(self._att_val_dist_per_class.items())
+                )
             try:
                 self._att_val_dist_per_class[class_val][att_val] += sample_weight
             except KeyError:
@@ -45,7 +47,9 @@ class NominalAttributeClassObserver(AttributeObserver):
             return (value + 1.0) / (sum(obs.values()) + len(obs))
         return 0.0
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(
+        self, criterion, pre_split_dist, att_idx, binary_only
+    ):
         best_suggestion = None
         att_values = sorted(
             set(
@@ -59,7 +63,9 @@ class NominalAttributeClassObserver(AttributeObserver):
         if not binary_only:
             post_split_dist = self.class_dist_from_multiway_split()
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
-            branch_mapping = {attr_val: branch_id for branch_id, attr_val in enumerate(att_values)}
+            branch_mapping = {
+                attr_val: branch_id for branch_id, attr_val in enumerate(att_values)
+            }
             best_suggestion = AttributeSplitSuggestion(
                 NominalAttributeMultiwayTest(att_idx, branch_mapping),
                 post_split_dist,

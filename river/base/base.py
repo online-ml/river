@@ -6,7 +6,6 @@ import typing
 
 
 class Base:
-
     def __str__(self):
         return self.__class__.__name__
 
@@ -39,7 +38,9 @@ class Base:
 
         return params
 
-    def _set_params(self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None) -> 'Base':
+    def _set_params(
+        self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None
+    ) -> "Base":
         """Return a new instance with the current parameters as well as new ones.
 
         Calling this without any parameters will essentially clone the estimator.
@@ -136,9 +137,11 @@ class Base:
             if isinstance(obj, dict):
                 size += sum([get_size(v, seen) for v in obj.values()])
                 size += sum([get_size(k, seen) for k in obj.keys()])
-            elif hasattr(obj, '__dict__'):
+            elif hasattr(obj, "__dict__"):
                 size += get_size(vars(obj), seen)
-            elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
+            elif hasattr(obj, "__iter__") and not isinstance(
+                obj, (str, bytes, bytearray)
+            ):
                 size += sum([get_size(i, seen) for i in obj])
             return size
 
@@ -148,24 +151,27 @@ class Base:
     def _memory_usage(self) -> str:
         """Return the memory usage in a human readable format."""
         from river import utils
+
         return utils.pretty.humanize_bytes(self._memory_usage_raw)
 
 
 def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> str:
     """Return a pretty representation of an object."""
 
-    rep = f'{obj.__class__.__name__} ('
+    rep = f"{obj.__class__.__name__} ("
     if show_modules:
-        rep = f'{obj.__class__.__module__}.{rep}'
-    tab = '\t'
+        rep = f"{obj.__class__.__module__}.{rep}"
+    tab = "\t"
 
     if params is None:
         params = {
             name: getattr(obj, name)
             for name, param in inspect.signature(obj.__init__).parameters.items()  # type: ignore
             if not (
-                param.name == 'args' and param.kind == param.VAR_POSITIONAL or
-                param.name == 'kwargs' and param.kind == param.VAR_KEYWORD
+                param.name == "args"
+                and param.kind == param.VAR_POSITIONAL
+                or param.name == "kwargs"
+                and param.kind == param.VAR_KEYWORD
             )
         }
 
@@ -182,19 +188,19 @@ def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> s
             val = f'"{val}"'
         elif isinstance(val, float):
             val = (
-                f'{val:.0e}'
-                if (val > 1e5 or (val < 1e-4 and val > 0)) else
-                f'{val:.6f}'.rstrip('0')
+                f"{val:.0e}"
+                if (val > 1e5 or (val < 1e-4 and val > 0))
+                else f"{val:.6f}".rstrip("0")
             )
         elif isinstance(val, set):
             val = sorted(val)
-        elif hasattr(val, '__class__') and 'river.' in str(type(val)):
+        elif hasattr(val, "__class__") and "river." in str(type(val)):
             val = _repr_obj(obj=val, show_modules=show_modules, depth=depth + 1)
 
-        rep += f'\n{tab * (depth + 1)}{name}={val}'
+        rep += f"\n{tab * (depth + 1)}{name}={val}"
 
     if n_params:
-        rep += f'\n{tab * depth}'
-    rep += ')'
+        rep += f"\n{tab * depth}"
+    rep += ")"
 
     return rep.expandtabs(2)

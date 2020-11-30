@@ -33,7 +33,9 @@ class BaseRandomLearningNode(LearningNode):
         Other parameters passed to the learning nodes the ARF implementations randomize.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, **kwargs):
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, max_features, seed, **kwargs
+    ):
         super().__init__(stats, depth, attr_obs, attr_obs_params, **kwargs)  # noqa
         self.max_features = max_features
         self.seed = seed
@@ -51,9 +53,9 @@ class BaseRandomLearningNode(LearningNode):
             try:
                 obs = self.attribute_observers[idx]
             except KeyError:
-                if (nominal_attributes is not None and idx in nominal_attributes) or not isinstance(
-                    x[idx], numbers.Number
-                ):
+                if (
+                    nominal_attributes is not None and idx in nominal_attributes
+                ) or not isinstance(x[idx], numbers.Number):
                     obs = self.new_nominal_attribute_observer()
                 else:
                     obs = self.new_numeric_attribute_observer(

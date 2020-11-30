@@ -174,7 +174,10 @@ def outer(u: dict, v: dict) -> dict:
         (2, 2): 24}
 
     """
-    return {(ki, kj): vi * vj for (ki, vi), (kj, vj) in itertools.product(u.items(), v.items())}
+    return {
+        (ki, kj): vi * vj
+        for (ki, vi), (kj, vj) in itertools.product(u.items(), v.items())
+    }
 
 
 def minkowski_distance(a: dict, b: dict, p: int):
@@ -189,7 +192,9 @@ def minkowski_distance(a: dict, b: dict, p: int):
         Manhattan distance. When `p=2`, this is equivalent to using the Euclidean distance.
 
     """
-    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in set([*a.keys(), *b.keys()]))
+    return sum(
+        (abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in set([*a.keys(), *b.keys()])
+    )
 
 
 def softmax(y_pred: dict):

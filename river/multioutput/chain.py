@@ -327,7 +327,10 @@ class ProbabilisticClassifierChain(ClassifierChain):
         # for each and every possible label combination
         for label in range(2 ** n_labels):
             # put together a binary label vector
-            y_gen = {i: int(v) for i, v in zip(self.order, list(bin(label)[2:].zfill(n_labels)))}
+            y_gen = {
+                i: int(v)
+                for i, v in zip(self.order, list(bin(label)[2:].zfill(n_labels)))
+            }
             # ... and gauge a probability for it (given x)
             payoff = self._payoff(x=x, y=y_gen)
             # if it performs well, keep it, and record the max
@@ -438,7 +441,9 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
         max_payoff = self._payoff(x=x, y=y_pred)
         # for M times
         for m in range(self.m):
-            y_, p_ = self._sample(x)  # N.B. in fact, the calculation p_ is done again in P.
+            y_, p_ = self._sample(
+                x
+            )  # N.B. in fact, the calculation p_ is done again in P.
             payoff = self._payoff(x=x, y=y_)
             # if it performs well, keep it, and record the max
             if payoff > max_payoff:

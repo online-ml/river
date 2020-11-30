@@ -155,12 +155,16 @@ class StandardScaler(base.Transformer):
             self.counts[i] += 1
             old_mean = self.means[i]
             self.means[i] += (xi - old_mean) / self.counts[i]
-            self.vars[i] += ((xi - old_mean) * (xi - self.means[i]) - self.vars[i]) / self.counts[i]
+            self.vars[i] += (
+                (xi - old_mean) * (xi - self.means[i]) - self.vars[i]
+            ) / self.counts[i]
 
         return self
 
     def transform_one(self, x):
-        return {i: safe_div(xi - self.means[i], self.vars[i] ** 0.5) for i, xi in x.items()}
+        return {
+            i: safe_div(xi - self.means[i], self.vars[i] ** 0.5) for i, xi in x.items()
+        }
 
     def learn_many(self, X: pd.DataFrame):
         """Update with a mini-batch of features.
@@ -188,7 +192,9 @@ class StandardScaler(base.Transformer):
         new_vars = np.einsum("ij,ij->j", X, X) / len(X) - new_means ** 2
         new_counts = np.sum(~np.isnan(X), axis=0)
 
-        for col, new_mean, new_var, new_count in zip(columns, new_means, new_vars, new_counts):
+        for col, new_mean, new_var, new_count in zip(
+            columns, new_means, new_vars, new_counts
+        ):
 
             old_mean = self.means[col]
             old_var = self.vars[col]
@@ -198,7 +204,9 @@ class StandardScaler(base.Transformer):
             b = new_count / (old_count + new_count)
 
             self.means[col] = a * old_mean + b * new_mean
-            self.vars[col] = a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
+            self.vars[col] = (
+                a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
+            )
             self.counts[col] += new_count
 
         return self
@@ -394,7 +402,9 @@ class RobustScaler(base.Transformer):
         self.q_inf = q_inf
         self.q_sup = q_sup
         self.median = collections.defaultdict(functools.partial(stats.Quantile, 0.5))
-        self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
+        self.iqr = collections.defaultdict(
+            functools.partial(stats.IQR, self.q_inf, self.q_sup)
+        )
 
     def learn_one(self, x):
 

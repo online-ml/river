@@ -72,7 +72,9 @@ class BaseForest(base.EnsembleMixin):
             k = self._rng.poisson(lam=self.lambda_value)
             if k > 0:
                 # print(self._n_samples_seen)
-                model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
+                model.learn_one(
+                    x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen
+                )
 
         return self
 
@@ -601,7 +603,9 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
-                y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
+                y_proba_temp = {
+                    k: val * metric_value for k, val in y_proba_temp.items()
+                }
             y_pred.update(y_proba_temp)
 
         total = sum(y_pred.values())
@@ -992,14 +996,18 @@ class BaseForestMember:
         # TODO Replace deepcopy with clone
         if base_drift_detector is not None:
             self._use_drift_detector = True
-            self.drift_detector = copy.deepcopy(base_drift_detector)  # Actual detector used
+            self.drift_detector = copy.deepcopy(
+                base_drift_detector
+            )  # Actual detector used
         else:
             self._use_drift_detector = False
             self.drift_detector = None
 
         if base_warning_detector is not None:
             self._use_background_learner = True
-            self.warning_detector = copy.deepcopy(base_warning_detector)  # Actual detector used
+            self.warning_detector = copy.deepcopy(
+                base_warning_detector
+            )  # Actual detector used
         else:
             self._use_background_learner = False
             self.warning_detector = None
@@ -1020,13 +1028,17 @@ class BaseForestMember:
             self.created_on = n_samples_seen
             self.drift_detector = copy.deepcopy(self.base_drift_detector)
 
-    def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int):
+    def learn_one(
+        self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int
+    ):
 
         self.model.learn_one(x, y, sample_weight=sample_weight)
 
         if self.background_learner:
             # Train the background learner
-            self.background_learner.model.learn_one(x=x, y=y, sample_weight=sample_weight)
+            self.background_learner.model.learn_one(
+                x=x, y=y, sample_weight=sample_weight
+            )
 
         if self._use_drift_detector and not self.is_background_learner:
             drift_detector_input = self._drift_detector_input(
@@ -1094,7 +1106,9 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
             base_metric=base_metric,
         )
 
-    def _drift_detector_input(self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget):
+    def _drift_detector_input(
+        self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget
+    ):
         return int(not y_true == y_pred)  # Not correctly_classifies
 
     def predict_one(self, x):

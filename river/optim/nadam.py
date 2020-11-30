@@ -65,7 +65,9 @@ class Nadam(base.Optimizer):
                 self.learning_rate
                 * (
                     self.beta_1 * m_hat
-                    + (1 - self.beta_1) * gi / (1 - math.pow(self.beta_1, self.n_iterations + 1))
+                    + (1 - self.beta_1)
+                    * gi
+                    / (1 - math.pow(self.beta_1, self.n_iterations + 1))
                 )
                 / (v_hat ** 0.5 + self.eps)
             )

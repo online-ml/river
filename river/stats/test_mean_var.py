@@ -25,7 +25,9 @@ def test_add(stat1, stat2, func):
         stat1.update(x)
         stat2.update(y)
         if i >= 1:
-            assert math.isclose((stat1 + stat2).get(), func(X[: i + 1] + Y[: i + 1]), abs_tol=1e-10)
+            assert math.isclose(
+                (stat1 + stat2).get(), func(X[: i + 1] + Y[: i + 1]), abs_tol=1e-10
+            )
 
     stat1 += stat2
     assert math.isclose(stat1.get(), func(X + Y), abs_tol=1e-10)

@@ -61,7 +61,9 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         responses.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model):
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model
+    ):
         super().__init__(
             stats,
             depth,
@@ -101,7 +103,9 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
         responses.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model):
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model
+    ):
         super().__init__(
             stats,
             depth,

@@ -15,7 +15,9 @@ from scipy import stats as sp_stats
 
 
 def load_stats():
-    for _, obj in inspect.getmembers(importlib.import_module("river.stats"), inspect.isclass):
+    for _, obj in inspect.getmembers(
+        importlib.import_module("river.stats"), inspect.isclass
+    ):
         try:
 
             if issubclass(obj, stats.Link):
