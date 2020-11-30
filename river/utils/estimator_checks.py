@@ -152,8 +152,7 @@ def check_has_tag(model, tag):
 
 
 def check_repr(model):
-    rep = repr(model)
-    assert isinstance(rep, str)
+    assert isinstance(repr(model), str)
 
 
 def check_str(model):

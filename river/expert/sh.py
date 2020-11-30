@@ -1,7 +1,6 @@
 import copy
 import math
 import operator
-import typing
 
 from river import base
 from river import metrics
@@ -226,6 +225,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
         )
         loss=Squared ()
         l2=0.
+        intercept_init=0.
         intercept_lr=Constant (
           learning_rate=0.1
         )
@@ -374,6 +374,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
           weight_neg=1.
         )
         l2=0.
+        intercept_init=0.
         intercept_lr=Constant (
           learning_rate=0.01
         )
