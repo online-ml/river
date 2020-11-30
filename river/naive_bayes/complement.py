@@ -1,6 +1,8 @@
 import collections
 import math
 
+from river.base import tags
+
 from . import base
 
 
@@ -64,6 +66,9 @@ class ComplementNB(base.BaseNB):
         self.feature_counts = collections.defaultdict(collections.Counter)
         self.feature_totals = collections.Counter()
         self.class_totals = collections.Counter()
+
+    def _more_tags(self):
+        return {tags.POSITIVE_INPUT}
 
     def learn_one(self, x, y):
         self.class_counts.update((y,))

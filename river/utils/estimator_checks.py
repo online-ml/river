@@ -13,6 +13,7 @@ __all__ = ['check_estimator']
 
 def yield_datasets(model):
 
+    from river import base
     from river import compose
     from river import datasets
     from river import preprocessing
@@ -50,7 +51,7 @@ def yield_datasets(model):
         yield ((x, np.bool_(y)) for x, y in datasets.Phishing())
 
         # Multi-class classification
-        if model._multiclass:
+        if model._multiclass and base.tags.POSITIVE_INPUT not in model._tags:
             yield datasets.ImageSegments().take(500)
 
 
