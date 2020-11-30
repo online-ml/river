@@ -96,13 +96,7 @@ class Branch(Node):
         return (
             repr(self.split)
             + " "
-            + str(
-                {
-                    k: v
-                    for k, v in self.__dict__.items()
-                    if k not in ("split", "left", "right")
-                }
-            )
+            + str({k: v for k, v in self.__dict__.items() if k not in ("split", "left", "right")})
             + textwrap.indent(f"\n{self.left}\n{self.right}", prefix=" " * 2)
         )
 
@@ -294,9 +288,7 @@ class Branch(Node):
         r_limits = {**limits, on: (at, limits[on][1])} if on in limits else limits
         yield from self.right.iter_blocks(limits=r_limits, depth=depth - 1)
 
-    def iter_splits(
-        self, limits: typing.Dict[typing.Hashable, typing.Tuple[float, float]]
-    ):
+    def iter_splits(self, limits: typing.Dict[typing.Hashable, typing.Tuple[float, float]]):
         """Iterate over splits.
 
         This only makes sense if the branches of the provided tree use the `<` operator as a split

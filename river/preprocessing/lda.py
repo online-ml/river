@@ -273,9 +273,7 @@ class LDA(base.Transformer):
                 input=psi_nu_1_nu_2_minus_psi_nu_2[0], shift=1, cval=0
             )
 
-            exp_weights[topic] = np.exp(
-                psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2
-            )
+            exp_weights[topic] = np.exp(psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2)
 
         return exp_weights, exp_oov_weights
 
@@ -308,9 +306,7 @@ class LDA(base.Transformer):
 
             if self.truncation_size < self.truncation_size_prime:
 
-                difference_truncation = (
-                    self.truncation_size_prime - self.truncation_size
-                )
+                difference_truncation = self.truncation_size_prime - self.truncation_size
 
                 self.nu_1[k] = np.append(self.nu_1[k], np.ones(difference_truncation))
                 self.nu_2[k] = np.append(self.nu_2[k], np.ones(difference_truncation))
@@ -328,9 +324,7 @@ class LDA(base.Transformer):
 
         self.truncation_size = self.truncation_size_prime
 
-    def _compute_statistics_components(
-        self, words_indexes_list: list
-    ) -> typing.Tuple[dict, dict]:
+    def _compute_statistics_components(self, words_indexes_list: list) -> typing.Tuple[dict, dict]:
         """Extract latent variables from the document and words.
 
         Parameters

@@ -57,9 +57,7 @@ class Var(base.Univariate):
         self.mean.update(x, w)
         if self.mean.n > self.ddof:
             self.sigma += (
-                w
-                * ((x - mean) * (x - self.mean.get()) - self.sigma)
-                / (self.mean.n - self.ddof)
+                w * ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
             )
         return self
 
@@ -86,8 +84,7 @@ class Var(base.Univariate):
         ) * other.sigma
         # apply correction
         result.sigma = (
-            result.sigma
-            + (delta * delta) * (self.mean.n * other.mean.n) / result.mean.n
+            result.sigma + (delta * delta) * (self.mean.n * other.mean.n) / result.mean.n
         ) / (result.mean.n - result.ddof)
 
         return result
@@ -101,13 +98,11 @@ class Var(base.Univariate):
 
         self.mean += other.mean
         # scale and merge sigma
-        self.sigma = (old_n - self.ddof) * self.sigma + (
-            other.mean.n - other.ddof
-        ) * other.sigma
+        self.sigma = (old_n - self.ddof) * self.sigma + (other.mean.n - other.ddof) * other.sigma
         # apply correction
-        self.sigma = (
-            self.sigma + (delta * delta) * (old_n * other.mean.n) / self.mean.n
-        ) / (self.mean.n - self.ddof)
+        self.sigma = (self.sigma + (delta * delta) * (old_n * other.mean.n) / self.mean.n) / (
+            self.mean.n - self.ddof
+        )
 
         return self
 
@@ -124,8 +119,7 @@ class Var(base.Univariate):
             ) * other.sigma
             # apply the correction
             result.sigma = (
-                result.sigma
-                - (delta * delta) * (result.mean.n * other.mean.n) / self.mean.n
+                result.sigma - (delta * delta) * (result.mean.n * other.mean.n) / self.mean.n
             ) / (result.mean.n - result.ddof)
         else:
             result.sigma = 0.0
@@ -145,9 +139,9 @@ class Var(base.Univariate):
                 other.mean.n - other.ddof
             ) * other.sigma
             # apply the correction
-            self.sigma = (
-                self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n
-            ) / (self.mean.n - self.ddof)
+            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n) / (
+                self.mean.n - self.ddof
+            )
 
         else:
             self.sigma = 0.0

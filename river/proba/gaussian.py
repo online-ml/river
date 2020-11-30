@@ -56,9 +56,7 @@ class Gaussian(base.ContinuousDistribution):
         var = self._var.get()
         if var:
             try:
-                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(
-                    math.tau * var
-                )
+                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
             except ValueError:
                 return 0.0
             except OverflowError:

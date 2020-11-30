@@ -121,6 +121,4 @@ class RollingCov(base.Bivariate):
 
     def get(self):
         n = len(self.sx)  # current window size
-        return (self.sxy.get() - self.sx.get() * self.sy.get() / n) / max(
-            1, n - self.ddof
-        )
+        return (self.sxy.get() - self.sx.get() * self.sy.get() / n) / max(1, n - self.ddof)

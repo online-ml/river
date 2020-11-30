@@ -53,9 +53,7 @@ class Hamming(base.MultiOutputClassificationMetric):
     def get(self):
 
         try:
-            return np.sum(self.cm.data[:, 1, 1]) / (
-                self.cm.n_samples * self.cm.n_labels
-            )
+            return np.sum(self.cm.data[:, 1, 1]) / (self.cm.n_samples * self.cm.n_labels)
         except ZeroDivisionError:
             return 0.0
 
@@ -108,8 +106,6 @@ class HammingLoss(base.MultiOutputClassificationMetric):
     def get(self):
 
         try:
-            return 1.0 - np.sum(self.cm.data[:, 1, 1]) / (
-                self.cm.n_samples * self.cm.n_labels
-            )
+            return 1.0 - np.sum(self.cm.data[:, 1, 1]) / (self.cm.n_samples * self.cm.n_labels)
         except ZeroDivisionError:
             return 0.0
