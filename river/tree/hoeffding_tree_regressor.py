@@ -256,7 +256,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 current.set_child(branch_id, leaf_node)
                 self._n_active_leaves += 1
                 leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-            # The split feature is not present in the instance. Hence, we pass the new example
+            # The split feature is missing in the instance. Hence, we pass the new example
             # to the most traversed path in the current subtree
             else:
                 nd = leaf_node

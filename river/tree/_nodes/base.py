@@ -206,14 +206,7 @@ class SplitNode(Node):
         -------
         Total weight seen.
         """
-        w = 0.
-
-        for child in self._children.values():
-            if child is None:
-                continue
-            w += child.total_weight
-
-        return w
+        return sum(ch.total_weight for ch in filter(None, self._children.values()))
 
     def set_child(self, index: int, node: Node):
         """Set node as child.

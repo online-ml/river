@@ -72,7 +72,7 @@ class BaseHoeffdingTree(ABC):
     Notes
     -----
     Hoeffding trees might face situations where an input feature previously used to make
-    a split decision is now absent in an incoming sample. In this case, the trees follow the
+    a split decision is missing in an incoming sample. In this case, the trees follow the
     conventions:
 
     - *Learning:* choose the subtree branch most traversed so far to pass the instance on.</br>
