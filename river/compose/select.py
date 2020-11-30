@@ -60,7 +60,7 @@ class Discard(base.Transformer):
     def _set_params(self, blacklist=None):
         if not blacklist:
             blacklist = self.blacklist
-        return Select(*blacklist)
+        return Discard(*blacklist)
 
 
 class Select(base.Transformer):

@@ -286,32 +286,35 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
         child_branch = self.instance_child_index(x)
         child = self.get_child(child_branch)
         if child is not None:
-            child.learn_one(
-                x,
-                y,
-                sample_weight=sample_weight,
-                tree=tree,
-                parent=self,
-                parent_branch=child_branch,
-            )
-        # Instance contains a categorical value previously unseen by the split node
-        elif self.split_test.branch_for_instance(x) < 0:
-            # Creates a new learning node to encompass the new observed feature
-            # value
-            leaf_node = tree._new_learning_node(parent=self)
-            branch_id = self.split_test.add_new_branch(
-                x[self.split_test.attrs_test_depends_on()[0]]
-            )
-            self.set_child(branch_id, leaf_node)
-            tree._n_active_leaves += 1
-            leaf_node.learn_one(
-                x,
-                y,
-                sample_weight=sample_weight,
-                tree=tree,
-                parent=self,
-                parent_branch=child_branch,
-            )
+            child.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
+                            parent_branch=child_branch)
+        elif self.split_test.branch_for_instance(x) == -1:
+            split_feat = self.split_test.attrs_test_depends_on()[0]
+            # Instance contains a categorical value previously unseen by the split node
+            if self.split_test.max_branches() == -1 and split_feat in x:
+                # Creates a new learning node to encompass the new observed feature value
+                leaf_node = tree._new_learning_node(parent=self)
+                branch_id = self.split_test.add_new_branch(x[split_feat])
+                self.set_child(branch_id, leaf_node)
+                tree._n_active_leaves += 1
+                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
+                                    parent_branch=branch_id)
+            # The split feature is missing in the instance. Hence, we pass the new example
+            # to the most traversed path in the current subtree
+            else:
+                path = max(
+                    self._children,
+                    key=lambda c: self._children[c].total_weight if self._children[c] else 0.
+                )
+                leaf_node = self.get_child(path)
+                # Pass instance to the most traversed path
+                if leaf_node is None:
+                    leaf_node = tree._new_learning_node(parent=self)
+                    self.set_child(path, leaf_node)
+                    tree._n_active_leaves += 1
+
+                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
+                                    parent_branch=path)
 
     def leaf_prediction(self, x, *, tree=None):
         # In case split nodes end up being used (if emerging categorical feature appears,
@@ -349,5 +352,10 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                 child.filter_instance_to_leaves(x, parent, parent_branch, found_nodes)
             else:
                 found_nodes.append(FoundNode(None, self, child_index))
+        else:
+            # Emerging value in a categorical feature appears or the split feature is missing from
+            # the instance: use parent node in both cases
+            found_nodes.append(FoundNode(None, self, child_index))
+
         if self._alternate_tree is not None:
             self._alternate_tree.filter_instance_to_leaves(x, self, -999, found_nodes)

@@ -100,6 +100,17 @@ class Node(metaclass=ABCMeta):
         if depth >= 0:
             self._depth = depth
 
+    @property
+    @abstractmethod
+    def total_weight(self) -> float:
+        """Calculate the total weight seen by the node.
+
+        Returns
+        -------
+        Total weight seen.
+        """
+        pass
+
     def subtree_depth(self) -> int:
         """Calculate the depth of the subtree from this node.
 
@@ -186,6 +197,16 @@ class SplitNode(Node):
         """
 
         return self._split_test
+
+    @property
+    def total_weight(self) -> float:
+        """Calculate the total weight seen by the node.
+
+        Returns
+        -------
+        Total weight seen.
+        """
+        return sum(ch.total_weight for ch in filter(None, self._children.values()))
 
     def set_child(self, index: int, node: Node):
         """Set node as child.
@@ -360,17 +381,6 @@ class LearningNode(Node, metaclass=ABCMeta):
 
     def deactivate(self):
         self._attribute_observers = None
-
-    @property
-    @abstractmethod
-    def total_weight(self) -> float:
-        """Calculate the total weight seen by the node.
-
-        Returns
-        -------
-        Total weight seen.
-        """
-        pass
 
     @property
     def last_split_attempt_at(self) -> float:

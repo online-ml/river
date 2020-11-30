@@ -2,10 +2,12 @@ import abc
 import numbers
 import typing
 
+from river import base
+
 from . import schedulers
 
 
-class Optimizer(abc.ABC):
+class Optimizer(base.Base, abc.ABC):
     """Optimizer interface.
 
     Every optimizer inherits from this base interface.
@@ -67,9 +69,6 @@ class Optimizer(abc.ABC):
         self.n_iterations += 1
 
         return w
-
-    def __str__(self):
-        return self.__class__.__name__
 
     def __repr__(self):
         return f"{self.__class__.__name__}({vars(self)})"
