@@ -31,6 +31,7 @@ from .wrapper import WrapperMixin
 
 __all__ = [
     "AnomalyDetector",
+    "Base",
     "Classifier",
     "Clusterer",
     "DriftDetector",
