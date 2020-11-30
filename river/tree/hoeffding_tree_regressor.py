@@ -136,12 +136,10 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.min_samples_split = min_samples_split
 
         if attr_obs not in self._VALID_AO:
-            raise AttributeError(
-                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
-            )
-        else:
-            self.attr_obs = attr_obs
+            raise AttributeError(f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}')
+        self.attr_obs = attr_obs
         self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
+        self.kwargs = kwargs
 
     @BaseHoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):

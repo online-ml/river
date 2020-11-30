@@ -152,8 +152,7 @@ def check_has_tag(model, tag):
 
 
 def check_repr(model):
-    rep = repr(model)
-    assert isinstance(rep, str)
+    assert isinstance(repr(model), str)
 
 
 def check_str(model):
@@ -179,6 +178,12 @@ def check_init(model):
 
 def check_doc(model):
     assert model.__doc__
+
+
+def check_clone(model):
+    clone = model.clone()
+    assert id(clone) != id(model)
+    assert dir(clone) == dir(model)
 
 
 def wrapped_partial(func, *args, **kwargs):
@@ -219,6 +224,7 @@ def yield_checks(model):
     yield check_set_params_idempotent
     yield check_init
     yield check_doc
+    yield check_clone
 
     # Checks that make use of datasets
     for dataset in yield_datasets(model):
