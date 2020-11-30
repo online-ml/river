@@ -431,9 +431,7 @@ class Pipeline(base.Estimator):
             else:
                 for k, v in sorted(x.items()):
                     type_str = f" ({type(v).__name__})" if show_types else ""
-                    _print(
-                        (tab if indent else "") + f"{k}: {format_value(v)}" + type_str
-                    )
+                    _print((tab if indent else "") + f"{k}: {format_value(v)}" + type_str)
             if space_after:
                 _print()
 
@@ -455,9 +453,7 @@ class Pipeline(base.Estimator):
                     if isinstance(sub_t, Pipeline):
                         name = str(sub_t)
                     print_title(f"{i+1}.{j} {name}", indent=True)
-                    print_dict(
-                        sub_t.transform_one(x), show_types=show_types, indent=True
-                    )
+                    print_dict(sub_t.transform_one(x), show_types=show_types, indent=True)
                 x = t.transform_one(x)
                 print_dict(x, show_types=show_types)
 
@@ -478,9 +474,7 @@ class Pipeline(base.Estimator):
             # Display the prediction
             _print()
             if utils.inspect.isclassifier(final):
-                print_dict(
-                    final.predict_proba_one(x), show_types=False, space_after=False
-                )
+                print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
                 _print(f"Prediction: {format_value(final.predict_one(x))}")
 

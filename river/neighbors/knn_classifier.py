@@ -77,11 +77,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         **kwargs
     ):
         super().__init__(
-            n_neighbors=n_neighbors,
-            window_size=window_size,
-            leaf_size=leaf_size,
-            p=p,
-            **kwargs
+            n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size, p=p, **kwargs
         )
         self.weighted = weighted
         self.classes_: typing.Set = set()
@@ -148,13 +144,9 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
 
         if self.data_window.size < self.n_neighbors:  # Select only the valid neighbors
             neighbor_idx = [
-                index
-                for cnt, index in enumerate(neighbor_idx[0])
-                if cnt < self.data_window.size
+                index for cnt, index in enumerate(neighbor_idx[0]) if cnt < self.data_window.size
             ]
-            dists = [
-                dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size
-            ]
+            dists = [dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size]
         else:
             neighbor_idx = neighbor_idx[0]
             dists = dists[0]

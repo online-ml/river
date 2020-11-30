@@ -6,7 +6,7 @@ repos:
         name: black
         language: system
         types: [python]
-        entry: black --check --line-length 100
+        entry: black river --line-length 100 --check
       - id: flake8
         name: flake8
         language: system

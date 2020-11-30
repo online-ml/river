@@ -80,11 +80,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
     ):
 
         super().__init__(
-            n_neighbors=n_neighbors,
-            window_size=window_size,
-            leaf_size=leaf_size,
-            p=p,
-            **kwargs
+            n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size, p=p, **kwargs
         )
         if aggregation_method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
             raise ValueError(
@@ -158,9 +154,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
                 for cnt, index in enumerate(neighbor_idx[0])
                 if cnt < self.data_window.size
             ]
-            dists = [
-                dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size
-            ]
+            dists = [dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size]
         else:
             neighbor_vals = [target_buffer[index] for index in neighbor_idx[0]]
             dists = dists[0]
@@ -170,6 +164,4 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         elif self.aggregation_method == self._MEDIAN:
             return np.median(neighbor_vals)
         else:  # weighted mean
-            return sum(y / d for y, d in zip(neighbor_vals, dists)) / sum(
-                1 / d for d in dists
-            )
+            return sum(y / d for y, d in zip(neighbor_vals, dists)) / sum(1 / d for d in dists)

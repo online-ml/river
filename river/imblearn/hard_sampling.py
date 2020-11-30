@@ -209,11 +209,7 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
         seed: int = None,
     ):
         if loss is None:
-            loss = (
-                optim.losses.CrossEntropy()
-                if classifier._multiclass
-                else optim.losses.Log()
-            )
+            loss = optim.losses.CrossEntropy() if classifier._multiclass else optim.losses.Log()
         super().__init__(model=classifier, loss=loss, size=size, p=p, seed=seed)
 
     @property

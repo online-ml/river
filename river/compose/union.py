@@ -140,9 +140,7 @@ class TransformerUnion(base.Transformer):
     def __repr__(self):
         return (
             "TransformerUnion (\n\t"
-            + "\t".join(
-                ",\n".join(map(repr, self.transformers.values())).splitlines(True)
-            )
+            + "\t".join(",\n".join(map(repr, self.transformers.values())).splitlines(True))
             + "\n)"
         ).expandtabs(2)
 
@@ -224,8 +222,4 @@ class TransformerUnion(base.Transformer):
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
-        return dict(
-            collections.ChainMap(
-                *(t.transform_one(x) for t in self.transformers.values())
-            )
-        )
+        return dict(collections.ChainMap(*(t.transform_one(x) for t in self.transformers.values())))

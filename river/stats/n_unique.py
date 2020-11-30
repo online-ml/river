@@ -93,15 +93,8 @@ class NUnique(base.Univariate):
             if self.n_buckets <= 64
             else 0.7213 / (1 + 1.079 / self.n_buckets)
         )
-        e = (
-            a
-            * self.n_buckets
-            * self.n_buckets
-            / sum(1.0 / (1 << x) for x in self.buckets)
-        )
+        e = a * self.n_buckets * self.n_buckets / sum(1.0 / (1 << x) for x in self.buckets)
         if e <= self.n_buckets * 2.5:
             z = len([r for r in self.buckets if not r])
             return int(self.n_buckets * math.log(float(self.n_buckets) / z) if z else e)
-        return int(
-            e if e < NUnique.P32 / 30 else -NUnique.P32 * math.log(1 - e / NUnique.P32)
-        )
+        return int(e if e < NUnique.P32 / 30 else -NUnique.P32 * math.log(1 - e / NUnique.P32))

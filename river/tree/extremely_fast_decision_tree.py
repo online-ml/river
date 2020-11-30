@@ -165,21 +165,13 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return EFDTLearningNodeMC(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params
-            )
+            return EFDTLearningNodeMC(initial_stats, depth, self.attr_obs, self.attr_obs_params)
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return EFDTLearningNodeNB(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params
-            )
+            return EFDTLearningNodeNB(initial_stats, depth, self.attr_obs, self.attr_obs_params)
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return EFDTLearningNodeNBA(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params
-            )
+            return EFDTLearningNodeNBA(initial_stats, depth, self.attr_obs, self.attr_obs_params)
 
-    def _new_split_node(
-        self, split_test, target_stats=None, depth=0, attribute_observers=None
-    ):
+    def _new_split_node(self, split_test, target_stats=None, depth=0, attribute_observers=None):
         """Create a new split node."""
         return EFDTSplitNode(
             split_test=split_test,
@@ -270,9 +262,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 if child_index >= 0:
                     child = node.get_child(child_index)
                     if child is not None:
-                        self._process_nodes(
-                            x, y, sample_weight, child, node, child_index
-                        )
+                        self._process_nodes(x, y, sample_weight, child, node, child_index)
         elif self._growth_allowed and node.is_active():
             if node.depth >= self.max_depth:  # Max depth reached
                 node.deactivate()
@@ -421,9 +411,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                     # Update EFDT
                     for i in range(x_best.num_splits()):
-                        new_child = self._new_learning_node(
-                            x_best.resulting_stats_from_split(i)
-                        )
+                        new_child = self._new_learning_node(x_best.resulting_stats_from_split(i))
                         new_split.set_child(i, new_child)
 
                     deleted_node_cnt = node.count_nodes()

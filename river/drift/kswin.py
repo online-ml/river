@@ -110,9 +110,7 @@ class KSWIN(DriftDetector):
         currentLength = self.window.shape[0]
         if currentLength >= self.window_size:
             self.window = np.delete(self.window, 0)
-            rnd_window = np.random.choice(
-                self.window[: -self.stat_size], self.stat_size
-            )
+            rnd_window = np.random.choice(self.window[: -self.stat_size], self.stat_size)
 
             (st, self.p_value) = stats.ks_2samp(
                 rnd_window, self.window[-self.stat_size :], mode="exact"

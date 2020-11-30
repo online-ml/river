@@ -92,19 +92,12 @@ class SoftmaxRegression(base.Classifier):
 
             # Compute the gradient w.r.t. each feature
             weights = self.weights[label]
-            gradient = {
-                i: xi * loss + self.l2 * weights.get(i, 0) for i, xi in x.items()
-            }
-            self.weights[label] = self.optimizers[label].update_after_pred(
-                w=weights, g=gradient
-            )
+            gradient = {i: xi * loss + self.l2 * weights.get(i, 0) for i, xi in x.items()}
+            self.weights[label] = self.optimizers[label].update_after_pred(w=weights, g=gradient)
 
         return self
 
     def predict_proba_one(self, x):
         return utils.math.softmax(
-            {
-                label: utils.math.dot(weights, x)
-                for label, weights in self.weights.items()
-            }
+            {label: utils.math.dot(weights, x) for label, weights in self.weights.items()}
         )

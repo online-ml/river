@@ -126,9 +126,7 @@ class STAGGER(base.SyntheticDataset):
                         (not self.next_class_should_be_zero) and (y == 1)
                     ):
                         desired_class_found = True
-                        self.next_class_should_be_zero = (
-                            not self.next_class_should_be_zero
-                        )
+                        self.next_class_should_be_zero = not self.next_class_should_be_zero
 
             x = {"size": size, "color": color, "shape": shape}
 

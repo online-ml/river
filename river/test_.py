@@ -91,9 +91,7 @@ def get_all_estimators():
 
         submodule = f"river.{submodule}"
 
-        for _, obj in inspect.getmembers(
-            importlib.import_module(submodule), is_estimator
-        ):
+        for _, obj in inspect.getmembers(importlib.import_module(submodule), is_estimator):
             if issubclass(obj, ignored):
                 continue
             try:
