@@ -55,6 +55,7 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
       )
       loss=Squared ()
       l2=0.
+      intercept_init=0.
       intercept_lr=Constant (
         learning_rate=0.01
       )

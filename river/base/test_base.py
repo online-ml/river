@@ -34,17 +34,16 @@ def test_clone_idempotent():
         preprocessing.StandardScaler() |
         linear_model.LogisticRegression(
             optimizer=optim.Adam(),
-            initializer=optim.initializers.Normal(seed=42),
             l2=.1
         )
     )
 
     trace = []
     for x, y in datasets.Phishing():
-        trace.append(model.predict_one(x))
+        trace.append(model.predict_proba_one(x))
         model.learn_one(x, y)
 
     clone = model.clone()
     for i, (x, y) in enumerate(datasets.Phishing()):
-        assert clone.predict_one(x) == trace[i]
+        assert clone.predict_proba_one(x) == trace[i]
         clone.learn_one(x, y)
