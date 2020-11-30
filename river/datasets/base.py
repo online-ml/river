@@ -190,7 +190,10 @@ class RemoteDataset(FileDataset):
     def path(self):
         return pathlib.Path(get_data_home(), self.__class__.__name__, self.filename)
 
-    def download(self, verbose=True):
+    def download(self, force=False, verbose=True):
+
+        if not force and self.is_downloaded:
+            return
 
         # Determine where to download the archive
         directory = self.path.parent
