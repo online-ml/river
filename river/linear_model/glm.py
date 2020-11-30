@@ -20,11 +20,12 @@ class GLM:
 
     """
 
-    def __init__(self, optimizer, loss, l2, intercept, intercept_lr, clip_gradient, initializer):
+    def __init__(self, optimizer, loss, l2, intercept_init, intercept_lr, clip_gradient, initializer):
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
-        self.intercept = intercept
+        self.intercept_init = intercept_init
+        self.intercept = intercept_init
         self.intercept_lr = (
             optim.schedulers.Constant(intercept_lr)
             if isinstance(intercept_lr, numbers.Number)
@@ -137,7 +138,7 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
         The loss function to optimize for.
     l2
         Amount of L2 regularization used to push weights towards 0.
-    intercept
+    intercept_init
         Initial intercept value.
     intercept_lr
         Learning rate scheduler used for updating the intercept. A `optim.schedulers.Constant` is
@@ -224,10 +225,14 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
         clip_gradient=1e12,
         initializer: optim.initializers.Initializer = None,
     ):
+    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.RegressionLoss = None,
+                 l2=.0, intercept_init=0.,
+                 intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = .01,
+                 clip_gradient=1e+12, initializer: optim.initializers.Initializer = None):
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Squared() if loss is None else loss,
-            intercept=intercept,
+            intercept_init=intercept_init,
             intercept_lr=intercept_lr,
             l2=l2,
             clip_gradient=clip_gradient,
@@ -299,7 +304,7 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         The loss function to optimize for. Defaults to `optim.losses.Log`.
     l2
         Amount of L2 regularization used to push weights towards 0.
-    intercept
+    intercept_init
         Initial intercept value.
     intercept_lr
         Learning rate scheduler used for updating the intercept. A `optim.schedulers.Constant` is
@@ -338,21 +343,15 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
 
     """
 
-    def __init__(
-        self,
-        optimizer: optim.Optimizer = None,
-        loss: optim.losses.BinaryLoss = None,
-        l2=0.0,
-        intercept=0.0,
-        intercept_lr: typing.Union[float, optim.schedulers.Scheduler] = 0.01,
-        clip_gradient=1e12,
-        initializer: optim.initializers.Initializer = None,
-    ):
+    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.BinaryLoss = None,
+                 l2=.0, intercept_init=0.,
+                 intercept_lr: typing.Union[float, optim.schedulers.Scheduler] = .01,
+                 clip_gradient=1e12, initializer: optim.initializers.Initializer = None):
 
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
-            intercept=intercept,
+            intercept_init=intercept_init,
             intercept_lr=intercept_lr,
             l2=l2,
             clip_gradient=clip_gradient,

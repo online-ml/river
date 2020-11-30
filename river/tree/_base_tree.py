@@ -69,6 +69,16 @@ class BaseHoeffdingTree(ABC):
         If True, disable poor attributes to reduce memory usage.
     merit_preprune
         If True, enable merit-based tree pre-pruning.
+
+    Notes
+    -----
+    Hoeffding trees might face situations where an input feature previously used to make
+    a split decision is missing in an incoming sample. In this case, the trees follow the
+    conventions:
+
+    - *Learning:* choose the subtree branch most traversed so far to pass the instance on.</br>
+    - *Predicting:* Use the last "reachable" decision node to provide responses.
+
     """
 
     def __init__(

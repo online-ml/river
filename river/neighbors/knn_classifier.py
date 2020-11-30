@@ -56,8 +56,8 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     >>> dataset = datasets.Phishing()
 
     >>> model = (
-    ...    preprocessing.StandardScaler() |
-    ...    neighbors.KNNClassifier()
+    ...     preprocessing.StandardScaler() |
+    ...     neighbors.KNNClassifier()
     ... )
 
     >>> metric = metrics.Accuracy()
@@ -81,6 +81,7 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         )
         self.weighted = weighted
         self.classes_: typing.Set = set()
+        self.kwargs = kwargs
 
     def learn_one(self, x, y):
         """Update the model with a set of features `x` and a label `y`.

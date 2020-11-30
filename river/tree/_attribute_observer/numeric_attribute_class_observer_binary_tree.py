@@ -71,10 +71,11 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         return 0.0
 
     def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+        current_best_option = AttributeSplitSuggestion(None, [{}], -float('inf'))
 
         return self._search_for_best_split_option(
             current_node=self._root,
-            current_best_option=None,
+            current_best_option=current_best_option,
             actual_parent_left=None,
             parent_left=None,
             parent_right=None,

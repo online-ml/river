@@ -99,7 +99,13 @@ class NumericAttributeRegressionObserver(AttributeObserver):
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         raise NotImplementedError
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only=True):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx,
+                                        binary_only=True):
+        candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
+
+        if self._root is None:
+            return candidate
+
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
@@ -109,8 +115,6 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             self._aux_estimator = VectorDict(default_factory=functools.partial(Var))
         else:
             self._aux_estimator = Var()
-
-        candidate = AttributeSplitSuggestion(None, [{}], -float("inf"))
 
         best_split = self._find_best_split(self._root, candidate)
 
@@ -192,6 +196,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         [^1]: Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving
         data streams. Data mining and knowledge discovery, 23(1), 128-168.
         """
+
+        if self._root is None:
+            return
 
         # Auxiliary variables
         self._criterion = criterion

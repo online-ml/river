@@ -1,12 +1,12 @@
 import abc
-import copy
 import inspect
-import sys
 import types
 import typing
 
+from . import base
 
-class Estimator(abc.ABC):
+
+class Estimator(base.Base, abc.ABC):
     """An estimator."""
 
     @property
@@ -19,12 +19,6 @@ class Estimator(abc.ABC):
 
         """
         return True
-
-    def __str__(self):
-        return self.__class__.__name__
-
-    def __repr__(self):
-        return _repr_obj(obj=self, params=self._get_params())
 
     def __or__(self, other):
         """Merge with another Transformer into a Pipeline."""
@@ -41,120 +35,6 @@ class Estimator(abc.ABC):
         if isinstance(other, compose.Pipeline):
             return other.__or__(self)
         return compose.Pipeline(other, self)
-
-    def _get_params(self) -> typing.Dict[str, typing.Any]:
-        """Return the parameters that were used during initialization."""
-        return {
-            name: getattr(self, name)
-            for name, param in inspect.signature(self.__init__).parameters.items()  # type: ignore
-            if param.kind != param.VAR_KEYWORD
-        }
-
-    def _set_params(
-        self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None
-    ) -> "Estimator":
-        """Return a new instance with the current parameters as well as new ones.
-
-        Calling this without any parameters will essentially clone the estimator.
-
-        The algorithm will be recursively called down `Pipeline`s and `TransformerUnion`s.
-
-        Examples
-        --------
-
-        >>> from river import linear_model
-        >>> from river import optim
-        >>> from river import preprocessing
-
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
-        ...     linear_model.LinearRegression(
-        ...         optimizer=optim.SGD(lr=0.042),
-        ...     )
-        ... )
-
-        >>> new_params = {
-        ...     'LinearRegression': {
-        ...         'l2': .001
-        ...     }
-        ... }
-
-        >>> model._set_params(new_params)
-        Pipeline (
-            StandardScaler (),
-            LinearRegression (
-            optimizer=SGD (
-                lr=Constant (
-                learning_rate=0.042
-                )
-            )
-            loss=Squared ()
-            l2=0.001
-            intercept=0.
-            intercept_lr=Constant (
-                learning_rate=0.01
-            )
-            clip_gradient=1e+12
-            initializer=Zeros ()
-            )
-        )
-
-        """
-
-        if new_params is None:
-            new_params = {}
-
-        params = {**self._get_params(), **new_params}
-
-        return self.__class__(**copy.deepcopy(params))  # type: ignore
-
-    @classmethod
-    def _default_params(cls):
-        """Instantiates an estimator with default arguments.
-
-        Most parameters of each estimator have a default value. However, this isn't always the
-        case, in particular for meta-models where the wrapped model is typically not given a
-        default value. It's useful to have a default value set for testing reasons, which is the
-        purpose of this method. By default it simply calls the __init__ function. It may be
-        overridden on an individual as needed.
-
-        """
-        return {}
-
-    @property
-    def _memory_usage_raw(self) -> int:
-        """Return the memory usage in bytes."""
-
-        def get_size(obj, seen=None):
-            """Recursively finds size of objects"""
-            size = sys.getsizeof(obj)
-            if seen is None:
-                seen = set()
-            obj_id = id(obj)
-            if obj_id in seen:
-                return 0
-            # Important mark as seen *before* entering recursion to gracefully handle
-            # self-referential objects
-            seen.add(obj_id)
-            if isinstance(obj, dict):
-                size += sum([get_size(v, seen) for v in obj.values()])
-                size += sum([get_size(k, seen) for k in obj.keys()])
-            elif hasattr(obj, "__dict__"):
-                size += get_size(vars(obj), seen)
-            elif hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes, bytearray)):
-                size += sum([get_size(i, seen) for i in obj])
-            return size
-
-        return get_size(self)
-
-    @property
-    def _memory_usage(self) -> str:
-        """Return the memory usage in a human readable format."""
-        from river import utils
-
-        return utils.pretty.humanize_bytes(self._memory_usage_raw)
-
-    # TAGS
 
     @property
     def _tags(self) -> typing.Dict[str, bool]:
@@ -232,3 +112,5 @@ def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> s
     rep += ")"
 
     return rep.expandtabs(2)
+=======
+>>>>>>> master

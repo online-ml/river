@@ -1,12 +1,9 @@
-cimport river.stats.base
-cimport river.stats.mean
-
 from . import base
 from . import mean
 
 
-cdef class Var(river.stats.base.Univariate):
-    """Running variance using Welford's algorithm.
+class Var(base.Univariate):
+    r"""Running variance using Welford's algorithm.
 
     Parameters
     ----------
@@ -50,25 +47,22 @@ cdef class Var(river.stats.base.Univariate):
 
     """
 
-    cdef readonly long ddof
-    cdef readonly river.stats.mean.Mean mean
-    cdef readonly double sigma
-
     def __init__(self, ddof=1):
         self.ddof = ddof
         self.mean = mean.Mean()
+        self.sigma = 0.
 
-    cpdef Var update(self, double x, double w=1.):
+    def update(self, x, w=1.):
         mean = self.mean.get()
         self.mean.update(x, w)
         if self.mean.n > self.ddof:
             self.sigma += w * ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
         return self
 
-    cpdef double get(self):
+    def get(self):
         return self.sigma
 
-    def __add__(self, Var other):
+    def __add__(self, other):
         result = Var(ddof=self.ddof)
 
         if other.mean.n <= self.ddof:
@@ -78,7 +72,7 @@ cdef class Var(river.stats.base.Univariate):
 
             return result
 
-        cdef double delta = 0.
+        delta = 0.
         result.mean = self.mean + other.mean
         delta = other.mean.get() - self.mean.get()
 
@@ -90,12 +84,12 @@ cdef class Var(river.stats.base.Univariate):
 
         return result
 
-    def __iadd__(self, Var other):
+    def __iadd__(self, other):
         if other.mean.n <= self.ddof:
             return self
 
-        cdef double old_n = self.mean.n
-        cdef double delta = other.mean.get() - self.mean.get()
+        old_n = self.mean.n
+        delta = other.mean.get() - self.mean.get()
 
         self.mean += other.mean
         # scale and merge sigma
@@ -106,8 +100,8 @@ cdef class Var(river.stats.base.Univariate):
 
         return self
 
-    def __sub__(self, Var other):
-        cdef double delta = 0.
+    def __sub__(self, other):
+        delta = 0.
         result = Var(ddof=self.ddof)
         result.mean = self.mean - other.mean
 
@@ -123,9 +117,9 @@ cdef class Var(river.stats.base.Univariate):
 
         return result
 
-    def __isub__(self, Var other):
-        cdef double old_n = self.mean.n
-        cdef double delta = 0.
+    def __isub__(self, other):
+        old_n = self.mean.n
+        delta = 0.
 
         self.mean -= other.mean
 
@@ -141,6 +135,7 @@ cdef class Var(river.stats.base.Univariate):
             self.sigma = 0.
 
         return self
+
 
 class RollingVar(base.RollingUnivariate):
     """Running variance over a window.
