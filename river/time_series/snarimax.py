@@ -252,7 +252,7 @@ class SNARIMAX(base.Forecaster):
     ...         regressor=(
     ...             preprocessing.StandardScaler() |
     ...             linear_model.LinearRegression(
-    ...                 intercept=110,
+    ...                 intercept_init=110,
     ...                 optimizer=optim.SGD(0.01),
     ...                 intercept_lr=0.3
     ...             )
