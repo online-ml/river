@@ -1,5 +1,6 @@
 import math
 import random
+from typing import Tuple
 
 from .. import base
 
@@ -58,7 +59,7 @@ class Friedman(base.SyntheticDataset):
             yield x, y
 
 
-class FriedmanDrift(base.SyntheticDataset):
+class FriedmanDrift(Friedman):
     """Friedman synthetic dataset with concept drifts.
 
     Each observation is composed of 10 features. Each feature value is sampled uniformly in [0, 1].
@@ -83,13 +84,10 @@ class FriedmanDrift(base.SyntheticDataset):
         points covered by this variant, and during a window of length `transition_window`,
         examples from both old and the new concepts are generated with equal probability.
         After the transition period, only the examples from the new concept are generated.
-    change_point1
-        The amount of monitored instances after which the first drift occurs.
-    change_point2
-        The amount of monitored instances after which the second drift occurs.
-    change_point3
-        The amount of monitored instances after which the third drift occurs. Only used when
-        `drift_type='lea'`.
+    position
+        The amount of monitored instances after which each concept drift occurs. A tuple with
+        at least two element must be passed, where each number is greater than the preceding one.
+        If `drift_type='lea'`, then the tuple must have three elements.
     transition_window
         The length of the transition window between two concepts. Only applicable when
          `drift_type='gsg'`. If set to zero, the drifts will be abrupt. Anytime
@@ -105,9 +103,7 @@ class FriedmanDrift(base.SyntheticDataset):
 
     >>> dataset = synth.FriedmanDrift(
     ...     drift_type='lea',
-    ...     change_point1=1,
-    ...     change_point2=2,
-    ...     change_point3=3,
+    ...     position=(1, 2, 3),
     ...     seed=42
     ... )
 
@@ -121,8 +117,7 @@ class FriedmanDrift(base.SyntheticDataset):
 
     >>> dataset = synth.FriedmanDrift(
     ...     drift_type='gra',
-    ...     change_point1=2,
-    ...     change_point2=3,
+    ...     position=(2, 3),
     ...     seed=42
     ... )
 
@@ -136,8 +131,7 @@ class FriedmanDrift(base.SyntheticDataset):
 
     >>> dataset = synth.FriedmanDrift(
     ...     drift_type='gsg',
-    ...     change_point1=1,
-    ...     change_point2=4,
+    ...     position=(1, 4),
     ...     transition_window=2,
     ...     seed=42
     ... )
@@ -166,10 +160,10 @@ class FriedmanDrift(base.SyntheticDataset):
         _GLOBAL_AND_SLOW_GRADUAL
     ]
 
-    def __init__(self, drift_type: str = 'lea', change_point1: int = 50_000,
-                 change_point2: int = 100_000, change_point3: int = 150_000,
+    def __init__(self, drift_type: str = 'lea',
+                 position: Tuple[int, ...] = (50_000, 100_000, 150_000),
                  transition_window: int = 10_000, seed: int = None):
-        super().__init__(task=base.REG, n_features=10)
+        super().__init__(seed=seed)
 
         if drift_type not in self._VALID_DRIFT_TYPES:
             raise ValueError(f'Invalid "drift_type: {drift_type}"\n'
@@ -177,22 +171,34 @@ class FriedmanDrift(base.SyntheticDataset):
 
         self.drift_type = drift_type
 
-        if not change_point1 < change_point2 < change_point3:
-            raise ValueError(f'"change_point3" must be greater than "change_point2", and'
-                             f'"change_point2 must be greater than "change_point1."')
+        if self.drift_type == self._LOCAL_EXPANDING_ABRUPT and len(position) < 3:
+            raise ValueError('Insufficient number of concept drift locations passed.\n'
+                             'Three concept drift points should be passed when drift_type=="lea"')
+        elif self.drift_type != self._LOCAL_EXPANDING_ABRUPT and len(position) < 2:
+            raise ValueError('Insufficient number of concept drift locations passed.\n'
+                             'Two locations must be defined.')
+        elif len(position) > 3:
+            raise ValueError('Too many concept drift locations passed. Check the documentation'
+                             'for details on the usage of this class.')
 
-        if (transition_window > change_point2 - change_point1 or transition_window
-                > change_point3 - change_point2) \
+        self.position = position
+
+        if self.drift_type == self._LOCAL_EXPANDING_ABRUPT:
+            self._change_point1, self._change_point2, self._change_point3 = self.position
+        else:
+            self._change_point1, self._change_point2 = self.position
+            self._change_point3 = math.inf
+
+        if not self._change_point1 < self._change_point2 < self._change_point3:
+            raise ValueError('The concept drift locations must be defined in an increasing order.')
+
+        if (transition_window > self._change_point2 - self._change_point1 or transition_window
+                > self._change_point3 - self._change_point2) \
                 and self.drift_type == self._GLOBAL_AND_SLOW_GRADUAL:
             raise ValueError(
                 f'The chosen "transition_window" value is too big: {transition_window}')
 
-        self.change_point1 = change_point1
-        self.change_point2 = change_point2
-        self.change_point3 = change_point3
         self.transition_window = transition_window
-
-        self.seed = seed
 
         if self.drift_type == self._LOCAL_EXPANDING_ABRUPT:
             self._y_maker = self._local_expanding_abrupt_gen
@@ -202,21 +208,21 @@ class FriedmanDrift(base.SyntheticDataset):
             self._y_maker = self._global_and_slow_gradual_gen
 
     def __lea_in_r1(self, x, index):
-        if index < self.change_point1:
+        if index < self._change_point1:
             return False
-        elif self.change_point1 <= index < self.change_point2:
+        elif self._change_point1 <= index < self._change_point2:
             return x[1] < 0.3 and x[2] < 0.3 and x[3] > 0.7 and x[4] < 0.3
-        elif self.change_point2 <= index < self.change_point3:
+        elif self._change_point2 <= index < self._change_point3:
             return x[1] < 0.3 and x[2] < 0.3 and x[3] > 0.7
         else:
             return x[1] < 0.3 and x[2] < 0.3
 
     def __lea_in_r2(self, x, index):
-        if index < self.change_point1:
+        if index < self._change_point1:
             return False
-        elif self.change_point1 <= index < self.change_point2:
+        elif self._change_point1 <= index < self._change_point2:
             return x[1] > 0.7 and x[2] > 0.7 and x[3] < 0.3 and x[4] > 0.7
-        elif self.change_point2 <= index < self.change_point3:
+        elif self._change_point2 <= index < self._change_point3:
             return x[1] > 0.7 and x[2] > 0.7 and x[3] < 0.3
         else:
             return x[1] > 0.7 and x[2] > 0.7
@@ -232,7 +238,7 @@ class FriedmanDrift(base.SyntheticDataset):
         return 10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - .5) ** 2 + 10 * x[3] + 5 * x[4]
 
     def _global_recurring_abrupt_gen(self, x, index: int, rc: random.Random = None):  # noqa
-        if index < self.change_point1 or index >= self.change_point2:
+        if index < self._change_point1 or index >= self._change_point2:
             # The initial concept is recurring
             return 10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - .5) ** 2 + 10 * x[3] \
                    + 5 * x[4]
@@ -242,20 +248,20 @@ class FriedmanDrift(base.SyntheticDataset):
                    + 5 * x[2]
 
     def _global_and_slow_gradual_gen(self, x, index: int, rc: random.Random):
-        if index < self.change_point1:
+        if index < self._change_point1:
             # default function
             return 10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - .5) ** 2 + 10 * x[3] \
                    + 5 * x[4]
-        elif self.change_point1 <= index < self.change_point2:
-            if index < self.change_point1 + self.transition_window and bool(rc.getrandbits(1)):
+        elif self._change_point1 <= index < self._change_point2:
+            if index < self._change_point1 + self.transition_window and bool(rc.getrandbits(1)):
                 # default function
                 return 10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - .5) ** 2 + 10 * x[3] \
                        + 5 * x[4]
             else:  # First new function
                 return 10 * math.sin(math.pi * x[3] * x[4]) + 20 * (x[1] - .5) ** 2 + 10 * x[0] \
                        + 5 * x[2]
-        elif index >= self.change_point2:
-            if index < self.change_point2 + self.transition_window and bool(rc.getrandbits(1)):
+        elif index >= self._change_point2:
+            if index < self._change_point2 + self.transition_window and bool(rc.getrandbits(1)):
                 # First new function
                 return 10 * math.sin(math.pi * x[3] * x[4]) + 20 * (x[1] - .5) ** 2 + 10 * x[0] \
                        + 5 * x[2]

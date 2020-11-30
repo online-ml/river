@@ -13,7 +13,7 @@ class Planes2D(base.SyntheticDataset):
 
     $$P(x_m = -1) = P(x_m = 0) = P(x_m = 1) = \\frac{1}{3}, m=2,\\ldots, 10$$
 
-    The target value is defined by using rule:
+    The target value is defined by the following rule:
 
     $$\\text{if}~x_1 = 1, y \\leftarrow 3 + 3x_2 + 2x_3 + x_4 + \\epsilon$$
 
