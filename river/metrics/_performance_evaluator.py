@@ -223,7 +223,9 @@ class _RollingClassificationReport(_ClassificationReport):
         super().__init__(cm=self._rolling_cm.metric)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
-        self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
 
     def __repr__(self):
         return "".join(
@@ -399,7 +401,9 @@ class _RollingMLClassificationReport(_MLClassificationReport):
         super().__init__(cm=self._rolling_cm.metric)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
-        self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
 
     def __repr__(self):
         return "".join(
@@ -644,7 +648,10 @@ class _MTRegressionReport(object):
     def get_average_root_mean_square_error(self):
         try:
             mse = self.total_square_error / self.n_samples
-            return np.sum(np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0)) / self.n_targets
+            return (
+                np.sum(np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0))
+                / self.n_targets
+            )
         except ZeroDivisionError:
             return 0.0
 
@@ -739,7 +746,9 @@ class _RollingMTRegressionReport(_MTRegressionReport):
             if len(self.total_square_error_correction) == self.window_size
             else None
         )
-        self.total_square_error_correction.append(-1 * (y_true - y_pred) * (y_true - y_pred))
+        self.total_square_error_correction.append(
+            -1 * (y_true - y_pred) * (y_true - y_pred)
+        )
         old_average = (
             self.average_error_correction[0]
             if len(self.average_error_correction) == self.window_size

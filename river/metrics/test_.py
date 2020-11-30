@@ -17,7 +17,9 @@ from sklearn import metrics as sk_metrics
 def load_metrics():
     """Yields all the metrics."""
 
-    for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
+    for name, obj in inspect.getmembers(
+        importlib.import_module("river.metrics"), inspect.isclass
+    ):
 
         if name == "Metric":
             continue
@@ -128,7 +130,9 @@ TEST_CASES = [
     ],
 )
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
+@pytest.mark.filterwarnings(
+    "ignore::sklearn.metrics.classification.UndefinedMetricWarning"
+)
 def test_metric(metric, sk_metric):
 
     # Check str works
@@ -166,7 +170,9 @@ def test_metric(metric, sk_metric):
     ],
 )
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
+@pytest.mark.filterwarnings(
+    "ignore::sklearn.metrics.classification.UndefinedMetricWarning"
+)
 def test_rolling_metric(metric, sk_metric):
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
@@ -210,7 +216,9 @@ def test_log_loss():
         metric.update(yt, yp)
 
         if i >= 1:
-            assert math.isclose(metric.get(), sk_metrics.log_loss(y_true[: i + 1], y_pred[: i + 1]))
+            assert math.isclose(
+                metric.get(), sk_metrics.log_loss(y_true[: i + 1], y_pred[: i + 1])
+            )
 
     metric.revert(y_true[-1], y_pred[-1])
     assert math.isclose(metric.get(), sk_metrics.log_loss(y_true[:-1], y_pred[:-1]))
@@ -242,7 +250,9 @@ def test_cross_entropy():
     assert math.isclose(metric.get(), sk_metrics.log_loss(y_true[:-1], y_pred[:-1]))
 
 
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
+@pytest.mark.filterwarnings(
+    "ignore::sklearn.metrics.classification.UndefinedMetricWarning"
+)
 def test_multi_fbeta():
 
     fbeta = metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2})
@@ -255,9 +265,15 @@ def test_multi_fbeta():
         fbeta.update(yt, yp)
 
         if i >= 2:
-            fbeta_0, _, _ = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=0.25, average=None)
-            _, fbeta_1, _ = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=1, average=None)
-            _, _, fbeta_2 = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=4, average=None)
+            fbeta_0, _, _ = sk_fbeta(
+                y_true[: i + 1], y_pred[: i + 1], beta=0.25, average=None
+            )
+            _, fbeta_1, _ = sk_fbeta(
+                y_true[: i + 1], y_pred[: i + 1], beta=1, average=None
+            )
+            _, _, fbeta_2 = sk_fbeta(
+                y_true[: i + 1], y_pred[: i + 1], beta=4, average=None
+            )
 
             multi_fbeta = fbeta_0 * 1 + fbeta_1 * 1 + fbeta_2 * 2
             multi_fbeta /= 1 + 1 + 2
@@ -265,13 +281,17 @@ def test_multi_fbeta():
             assert math.isclose(fbeta.get(), multi_fbeta)
 
 
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
+@pytest.mark.filterwarnings(
+    "ignore::sklearn.metrics.classification.UndefinedMetricWarning"
+)
 def test_rolling_multi_fbeta():
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
 
     fbeta = metrics.Rolling(
-        metric=metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}),
+        metric=metrics.MultiFBeta(
+            betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}
+        ),
         window_size=3,
     )
     n = fbeta.window_size
@@ -295,7 +315,9 @@ def test_rolling_multi_fbeta():
             assert math.isclose(fbeta.get(), multi_fbeta)
 
 
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
+@pytest.mark.filterwarnings(
+    "ignore::sklearn.metrics.classification.UndefinedMetricWarning"
+)
 def test_r2():
 
     r2 = metrics.R2()
@@ -348,7 +370,9 @@ def test_r2():
             )
 
 
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
+@pytest.mark.filterwarnings(
+    "ignore::sklearn.metrics.classification.UndefinedMetricWarning"
+)
 def test_rolling_r2():
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
@@ -376,7 +400,9 @@ def test_rolling_r2():
         r2.update(yt, yp)
 
         if i >= 2:
-            assert math.isclose(r2.get(), sk_r2(tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n)))
+            assert math.isclose(
+                r2.get(), sk_r2(tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n))
+            )
 
 
 def test_compose():

@@ -105,9 +105,13 @@ class KNeighborsBuffer:
 
         # Update the instance storing logic
         self._imask[self._next_insert] = True  # Mark slot as filled
-        self._next_insert = self._next_insert + 1 if self._next_insert < self.window_size - 1 else 0
+        self._next_insert = (
+            self._next_insert + 1 if self._next_insert < self.window_size - 1 else 0
+        )
 
-        if slot_replaced:  # The oldest sample was replaced (complete cycle in the buffer)
+        if (
+            slot_replaced
+        ):  # The oldest sample was replaced (complete cycle in the buffer)
             self._oldest = self._next_insert
         else:  # Actual buffer increased
             self._size += 1
@@ -135,7 +139,9 @@ class KNeighborsBuffer:
         if self.size > 0:
             x, y = self._X[self._oldest], self._y[self._oldest]
             self._imask[self._oldest] = False  # Mark slot as free
-            self._oldest = self._oldest + 1 if self._oldest < self.window_size - 1 else 0
+            self._oldest = (
+                self._oldest + 1 if self._oldest < self.window_size - 1 else 0
+            )
             if self._oldest == self._next_insert:
                 # Shift circular buffer and make its starting point be the index 0
                 self._oldest = self._next_insert = 0

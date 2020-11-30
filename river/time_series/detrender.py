@@ -24,7 +24,9 @@ class Detrender(base.Regressor, base.WrapperMixin):
 
     def __init__(self, regressor: base.Regressor, window_size: int = None):
         self.regressor = regressor
-        self.mean = stats.Mean() if window_size is None else stats.RollingMean(window_size)
+        self.mean = (
+            stats.Mean() if window_size is None else stats.RollingMean(window_size)
+        )
 
     @property
     def _wrapped_model(self):
@@ -55,8 +57,12 @@ class GroupDetrender(base.Regressor, base.WrapperMixin):
     def __init__(self, regressor: base.Regressor, by: str, window_size: int = None):
         self.regressor = regressor
         self.by = by
-        self.means: typing.DefaultDict[typing.Any, stats.Univariate] = collections.defaultdict(
-            stats.Mean if window_size is None else functools.partial(stats.RollingMean, window_size)
+        self.means: typing.DefaultDict[
+            typing.Any, stats.Univariate
+        ] = collections.defaultdict(
+            stats.Mean
+            if window_size is None
+            else functools.partial(stats.RollingMean, window_size)
         )
 
     @property

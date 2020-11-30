@@ -31,12 +31,8 @@ def test_set_params_pipeline():
 
 def test_clone_idempotent():
 
-    model = (
-        preprocessing.StandardScaler() |
-        linear_model.LogisticRegression(
-            optimizer=optim.Adam(),
-            l2=.1
-        )
+    model = preprocessing.StandardScaler() | linear_model.LogisticRegression(
+        optimizer=optim.Adam(), l2=0.1
     )
 
     trace = []

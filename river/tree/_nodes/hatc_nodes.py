@@ -87,7 +87,9 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
     def kill_tree_children(self, hat):
         pass
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1):
+    def learn_one(
+        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
+    ):
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
             k = self._rng.poisson(1.0)
@@ -136,7 +138,9 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             dist = normalize_values_in_dict(self.stats, inplace=False)
         elif prediction_option == tree._NAIVE_BAYES:
             if self.total_weight >= tree.nb_threshold:
-                dist = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
+                dist = do_naive_bayes_prediction(
+                    x, self.stats, self.attribute_observers
+                )
             else:  # Use majority class
                 dist = normalize_values_in_dict(self.stats, inplace=False)
         else:  # Naive Bayes Adaptive
@@ -207,7 +211,9 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
     def error_is_null(self):
         return self._adwin is None
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1):
+    def learn_one(
+        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
+    ):
         class_prediction = None
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
@@ -242,7 +248,10 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
         # Condition to replace alternate tree
-        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
+        elif (
+            self._alternate_tree is not None
+            and not self._alternate_tree.error_is_null()
+        ):
             if (
                 self.error_width > tree.drift_window_threshold
                 and self._alternate_tree.error_width > tree.drift_window_threshold
@@ -253,7 +262,11 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                 f_n = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
 
                 bound = math.sqrt(
-                    2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / f_delta) * f_n
+                    2.0
+                    * old_error_rate
+                    * (1.0 - old_error_rate)
+                    * math.log(2.0 / f_delta)
+                    * f_n
                 )
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves
@@ -286,8 +299,14 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
         child_branch = self.instance_child_index(x)
         child = self.get_child(child_branch)
         if child is not None:
-            child.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                            parent_branch=child_branch)
+            child.learn_one(
+                x,
+                y,
+                sample_weight=sample_weight,
+                tree=tree,
+                parent=self,
+                parent_branch=child_branch,
+            )
         elif self.split_test.branch_for_instance(x) == -1:
             split_feat = self.split_test.attrs_test_depends_on()[0]
             # Instance contains a categorical value previously unseen by the split node
@@ -297,14 +316,22 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                 branch_id = self.split_test.add_new_branch(x[split_feat])
                 self.set_child(branch_id, leaf_node)
                 tree._n_active_leaves += 1
-                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                                    parent_branch=branch_id)
+                leaf_node.learn_one(
+                    x,
+                    y,
+                    sample_weight=sample_weight,
+                    tree=tree,
+                    parent=self,
+                    parent_branch=branch_id,
+                )
             # The split feature is missing in the instance. Hence, we pass the new example
             # to the most traversed path in the current subtree
             else:
                 path = max(
                     self._children,
-                    key=lambda c: self._children[c].total_weight if self._children[c] else 0.
+                    key=lambda c: self._children[c].total_weight
+                    if self._children[c]
+                    else 0.0,
                 )
                 leaf_node = self.get_child(path)
                 # Pass instance to the most traversed path
@@ -313,8 +340,14 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                     self.set_child(path, leaf_node)
                     tree._n_active_leaves += 1
 
-                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                                    parent_branch=path)
+                leaf_node.learn_one(
+                    x,
+                    y,
+                    sample_weight=sample_weight,
+                    tree=tree,
+                    parent=self,
+                    parent_branch=path,
+                )
 
     def leaf_prediction(self, x, *, tree=None):
         # In case split nodes end up being used (if emerging categorical feature appears,

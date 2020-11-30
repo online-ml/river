@@ -117,7 +117,9 @@ class Mixed(base.SyntheticDataset):
                 att_2 = self._rng.rand()
                 att_3 = self._rng.rand()
 
-                y = self._functions[self.classification_function](att_0, att_1, att_2, att_3)
+                y = self._functions[self.classification_function](
+                    att_0, att_1, att_2, att_3
+                )
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -126,7 +128,9 @@ class Mixed(base.SyntheticDataset):
                         (not self.next_class_should_be_zero) and (y == 1)
                     ):
                         desired_class_found = True
-                        self.next_class_should_be_zero = not self.next_class_should_be_zero
+                        self.next_class_should_be_zero = (
+                            not self.next_class_should_be_zero
+                        )
 
             x = {0: att_0, 1: att_1, 2: att_2, 3: att_3}
 

@@ -30,7 +30,9 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
         Seed to control the generation of random numbers and support reproducibility.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_model, adwin_delta, seed):
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, leaf_model, adwin_delta, seed
+    ):
         super().__init__(stats, depth, attr_obs, attr_obs_params, leaf_model)
 
         self.adwin_delta = adwin_delta
@@ -59,7 +61,9 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
     def kill_tree_children(self, hatr):
         pass
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1):
+    def learn_one(
+        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
+    ):
         y_pred = self.leaf_prediction(x, tree=tree)
         normalized_error = normalize_error(y, y_pred, self)
 
@@ -198,7 +202,10 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
             tree._n_alternate_trees += 1
 
         # Condition to replace alternate tree
-        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
+        elif (
+            self._alternate_tree is not None
+            and not self._alternate_tree.error_is_null()
+        ):
             if (
                 self.error_width > tree.drift_window_threshold
                 and self._alternate_tree.error_width > tree.drift_window_threshold
@@ -249,8 +256,14 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         child_branch = self.instance_child_index(x)
         child = self.get_child(child_branch)
         if child is not None:
-            child.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                            parent_branch=child_branch)
+            child.learn_one(
+                x,
+                y,
+                sample_weight=sample_weight,
+                tree=tree,
+                parent=self,
+                parent_branch=child_branch,
+            )
         elif self.split_test.branch_for_instance(x) == -1:
             split_feat = self.split_test.attrs_test_depends_on()[0]
             # Instance contains a categorical value previously unseen by the split node
@@ -260,14 +273,22 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                 branch_id = self.split_test.add_new_branch(x[split_feat])
                 self.set_child(branch_id, leaf_node)
                 tree._n_active_leaves += 1
-                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                                    parent_branch=branch_id)
+                leaf_node.learn_one(
+                    x,
+                    y,
+                    sample_weight=sample_weight,
+                    tree=tree,
+                    parent=self,
+                    parent_branch=branch_id,
+                )
             # The split feature is missing in the instance. Hence, we pass the new example
             # to the most traversed path in the current subtree
             else:
                 path = max(
                     self._children,
-                    key=lambda c: self._children[c].total_weight if self._children[c] else 0.
+                    key=lambda c: self._children[c].total_weight
+                    if self._children[c]
+                    else 0.0,
                 )
                 leaf_node = self.get_child(path)
                 # Pass instance to the most traversed path
@@ -276,8 +297,14 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                     self.set_child(path, leaf_node)
                     tree._n_active_leaves += 1
 
-                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=tree, parent=self,
-                                    parent_branch=path)
+                leaf_node.learn_one(
+                    x,
+                    y,
+                    sample_weight=sample_weight,
+                    tree=tree,
+                    parent=self,
+                    parent_branch=path,
+                )
 
     def leaf_prediction(self, x, *, tree=None):
         # Called in case an emerging categorical feature has no path down the split node to be

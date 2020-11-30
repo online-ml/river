@@ -133,7 +133,9 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
         Existing attribute observers from previous nodes passed to provide a warm-start.
     """
 
-    def __init__(self, split_test, stats, depth, attr_obs, attr_obs_params, attribute_observers):
+    def __init__(
+        self, split_test, stats, depth, attr_obs, attr_obs_params, attribute_observers
+    ):
         super().__init__(
             stats=stats,
             depth=depth,

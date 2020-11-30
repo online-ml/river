@@ -83,7 +83,9 @@ class ConceptDriftStream(base.SyntheticDataset):
     def __init__(
         self,
         stream: base.SyntheticDataset = Agrawal(seed=112),
-        drift_stream: base.SyntheticDataset = Agrawal(seed=112, classification_function=2),
+        drift_stream: base.SyntheticDataset = Agrawal(
+            seed=112, classification_function=2
+        ),
         position: int = 5000,
         width: int = 1000,
         seed: int = None,
@@ -113,7 +115,8 @@ class ConceptDriftStream(base.SyntheticDataset):
                 self.width = w if w > 0 else 1
             else:
                 raise ValueError(
-                    f"Invalid alpha value: {alpha}. " f"Valid values are in the range (0.0, 90.0]"
+                    f"Invalid alpha value: {alpha}. "
+                    f"Valid values are in the range (0.0, 90.0]"
                 )
         else:
             self.width = width

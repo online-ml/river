@@ -61,4 +61,6 @@ class Multinomial(base.DiscreteDistribution):
             return 0.0
 
     def __str__(self):
-        return "\n".join(f"P({c}) = {self.pmf(c):.3f}" for c in self.counts.most_common())
+        return "\n".join(
+            f"P({c}) = {self.pmf(c):.3f}" for c in self.counts.most_common()
+        )

@@ -22,9 +22,16 @@ class InfoGainSplitCriterion(SplitCriterion):
         self.min_branch_frac_option = min_branch_frac_option
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
-        if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_frac_option) < 2:
+        if (
+            self.num_subsets_greater_than_frac(
+                post_split_dist, self.min_branch_frac_option
+            )
+            < 2
+        ):
             return -math.inf
-        return self.compute_entropy(pre_split_dist) - self.compute_entropy(post_split_dist)
+        return self.compute_entropy(pre_split_dist) - self.compute_entropy(
+            post_split_dist
+        )
 
     @staticmethod
     def range_of_merit(pre_split_dist):
@@ -46,7 +53,11 @@ class InfoGainSplitCriterion(SplitCriterion):
             if d > 0.0:  # TODO: How small can d be before log2 overflows?
                 entropy -= d * math.log2(d)
                 dis_sums += d
-        return (entropy + dis_sums * math.log2(dis_sums)) / dis_sums if dis_sums > 0.0 else 0.0
+        return (
+            (entropy + dis_sums * math.log2(dis_sums)) / dis_sums
+            if dis_sums > 0.0
+            else 0.0
+        )
 
     def _compute_entropy_list(self, dists):
         total_weight = 0.0

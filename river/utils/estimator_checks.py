@@ -32,9 +32,9 @@ def yield_datasets(model):
             """One-hot encoded version of `datasets.SolarFlare"""
 
             def __iter__(self):
-                oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(
-                    int
-                )
+                oh = (
+                    compose.SelectType(str) | preprocessing.OneHotEncoder()
+                ) + compose.SelectType(int)
                 for x, y in datasets.SolarFlare():
                     yield oh.transform_one(x), y
 
@@ -241,7 +241,9 @@ def yield_checks(model):
         yield wrapped_partial(check_shuffle_features_no_impact, dataset=dataset)
 
         # Classifier checks
-        if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
+        if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(
+            model
+        ):
 
             # Some classifiers do not implement predict_proba_one
             yield with_ignore_exception(
