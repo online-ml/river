@@ -51,9 +51,8 @@ def yield_datasets(model):
         yield ((x, np.bool_(y)) for x, y in datasets.Phishing())
 
         # Multi-class classification
-        if model._multiclass:
-            if base.tags.POSITIVE_INPUT not in model._tags:
-                yield datasets.ImageSegments().take(500)
+        if model._multiclass and base.tags.POSITIVE_INPUT not in model._tags:
+            yield datasets.ImageSegments().take(500)
 
 
 def check_learn_one(model, dataset):
@@ -181,8 +180,7 @@ def check_has_tag(model, tag):
 
 
 def check_repr(model):
-    rep = repr(model)
-    assert isinstance(rep, str)
+    assert isinstance(repr(model), str)
 
 
 def check_str(model):
@@ -208,6 +206,12 @@ def check_init(model):
 
 def check_doc(model):
     assert model.__doc__
+
+
+def check_clone(model):
+    clone = model.clone()
+    assert id(clone) != id(model)
+    assert dir(clone) == dir(model)
 
 
 def wrapped_partial(func, *args, **kwargs):
@@ -248,6 +252,7 @@ def yield_checks(model):
     yield check_set_params_idempotent
     yield check_init
     yield check_doc
+    yield check_clone
 
     # Checks that make use of datasets
     for dataset in yield_datasets(model):

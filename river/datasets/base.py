@@ -25,7 +25,7 @@ def get_data_home():
 
     """
 
-    data_home = os.environ.get('CREME_DATA', os.path.join('~', 'river_data'))
+    data_home = os.environ.get('RIVER_DATA', os.path.join('~', 'river_data'))
     data_home = os.path.expanduser(data_home)
     if not os.path.exists(data_home):
         os.makedirs(data_home)
@@ -190,7 +190,10 @@ class RemoteDataset(FileDataset):
     def path(self):
         return pathlib.Path(get_data_home(), self.__class__.__name__, self.filename)
 
-    def download(self, verbose=True):
+    def download(self, force=False, verbose=True):
+
+        if not force and self.is_downloaded:
+            return
 
         # Determine where to download the archive
         directory = self.path.parent

@@ -2,6 +2,7 @@
 import abc
 import math
 
+from river import base
 from river import optim
 
 
@@ -13,7 +14,7 @@ __all__ = [
 ]
 
 
-class Scheduler(abc.ABC):
+class Scheduler(base.Base, abc.ABC):
     """Can be used to program the learning rate schedule of an `optim.Optimizer`."""
 
     @abc.abstractmethod
@@ -26,9 +27,6 @@ class Scheduler(abc.ABC):
             The iteration number.
 
         """
-
-    def __str__(self):
-        return self.__class__.__name__
 
     def __repr__(self):
         return f'{self.__class__.__name__}({vars(self)})'

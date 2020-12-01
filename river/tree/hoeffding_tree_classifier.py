@@ -165,12 +165,10 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         self.nominal_attributes = nominal_attributes
 
         if attr_obs not in self._VALID_AO:
-            raise AttributeError(
-                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
-            )
-        else:
-            self.attr_obs = attr_obs
+            raise AttributeError(f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}')
+        self.attr_obs = attr_obs
         self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
+        self.kwargs = kwargs
 
         # To keep track of the observed classes
         self.classes: set = set()
@@ -351,17 +349,46 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                         self._attempt_to_split(leaf_node, found_node.parent,
                                                found_node.parent_branch)
                         leaf_node.last_split_attempt_at = weight_seen
-        # Split node encountered a previously unseen categorical value (in a multi-way test),
-        # so there is no branch to sort the instance to
-        elif not leaf_node.is_leaf() and leaf_node.split_test.max_branches() == -1:
-            # Creates a new branch to the new categorical value
+        else:
             current = leaf_node
-            leaf_node = self._new_learning_node(parent=current)
-            branch_id = current.split_test.add_new_branch(
-                x[current.split_test.attrs_test_depends_on()[0]])
-            current.set_child(branch_id, leaf_node)
-            self._n_active_leaves += 1
-            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            split_feat = current.split_test.attrs_test_depends_on()[0]
+            # Split node encountered a previously unseen categorical value (in a multi-way test),
+            # so there is no branch to sort the instance to
+            if current.split_test.max_branches() == -1 and split_feat in x:
+                # Creates a new branch to the new categorical value
+                leaf_node = self._new_learning_node(parent=current)
+                branch_id = current.split_test.add_new_branch(x[split_feat])
+                current.set_child(branch_id, leaf_node)
+                self._n_active_leaves += 1
+                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            # The split feature is missing in the instance. Hence, we pass the new example
+            # to the most traversed path in the current subtree
+            else:
+                nd = leaf_node
+                # Keep traversing down the tree until a leaf is found
+                while not nd.is_leaf():
+                    path = max(
+                        nd._children,
+                        key=lambda c: nd._children[c].total_weight if nd._children[c] else 0.
+                    )
+                    most_traversed = nd.get_child(path)
+                    # Pass instance to the most traversed path
+                    if most_traversed is not None:
+                        found_node = most_traversed.filter_instance_to_leaf(x, nd, path)
+                        nd = found_node.node
+
+                        if nd is None:
+                            nd = self._new_learning_node(parent=found_node.parent)
+                            found_node.parent.set_child(found_node.parent_branch, nd)
+                            self._n_active_leaves += 1
+                    else:
+                        leaf = self._new_learning_node(parent=nd)
+                        nd.set_child(path, leaf)
+                        nd = leaf
+                        self._n_active_leaves += 1
+
+                # Learn from the sample
+                nd.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
