@@ -203,10 +203,10 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
             )
 
     def new_instance(self):
-        params = self._get_params()
+        new_instance = self.clone()
         # Use existing rng to enforce a different model
-        params.update(seed=self._rng)
-        return self.__class__(**params)
+        new_instance._rng = self._rng
+        return new_instance
 
 
 class BaseTreeRegressor(HoeffdingTreeRegressor):
@@ -290,10 +290,10 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
             return new_adaptive
 
     def new_instance(self):
-        params = self._get_params()
+        new_instance = self.clone()
         # Use existing rng to enforce a different model
-        params.update(seed=self._rng)
-        return self.__class__(**params)
+        new_instance._rng = self._rng
+        return new_instance
 
 
 class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
@@ -467,7 +467,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
                  attr_obs_params: dict = None,
                  max_size: int = 32,
                  memory_estimate_period: int = 2000000,
-                 seed=None,
+                 seed: int = None,
                  **kwargs,
                  ):
         super().__init__(
@@ -722,7 +722,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                  min_samples_split: int = 5,
                  max_size: int = 100,
                  memory_estimate_period: int = 2000000,
-                 seed=None,
+                 seed: int = None,
                  **kwargs):
         super().__init__(
             n_models=n_models,
