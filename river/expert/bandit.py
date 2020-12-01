@@ -16,15 +16,11 @@ __all__ = [
     'UCBRegressor',
 ]
 
-# TODO:
-# Docstring
-
-
-
+# TODO: Docstring, example with pca, crossval on n_components
 
 class Bandit(base.EnsembleMixin):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed=None):
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed: int = None):
 
         if len(models) <= 1:
             raise ValueError(f"You supply {len(models)} models. At least 2 models should be supplied.")
@@ -130,7 +126,7 @@ class Bandit(base.EnsembleMixin):
 
 class EpsilonGreedyBandit(Bandit):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed=None,
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed: int = None,
                  epsilon=0.1, epsilon_decay=None):
         super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, seed=seed)
         self.epsilon = epsilon
@@ -199,7 +195,6 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
             ],
             'metric': metrics.MSE(),
             'reward_scaler': preprocessing.StandardScaler(),
-            'seed': 1
         }
 
     def _pred_func(self, model):
@@ -208,7 +203,7 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
 class UCBBandit(Bandit):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed=None,
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed: int = None,
                  delta=None, explore_each_arm=1):
         super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, seed=seed)
         if delta is not None and (delta >= 1 or delta <= 0):
@@ -279,7 +274,6 @@ class UCBRegressor(UCBBandit, base.Regressor):
             ],
             'metric': metrics.MSE(),
             'reward_scaler': preprocessing.StandardScaler(),
-            'seed': 1
         }
 
     def _pred_func(self, model):
