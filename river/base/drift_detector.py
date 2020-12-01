@@ -2,15 +2,11 @@ import abc
 import numbers
 import typing
 
-from . import estimator
+from . import base
 
 
-class DriftDetector(estimator.Estimator):
+class DriftDetector(base.Base):
     """A drift detector."""
-
-    @property
-    def _supervised(self):
-        return False
 
     def __init__(self):
         super().__init__()
