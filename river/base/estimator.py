@@ -74,7 +74,6 @@ class Estimator(base.Base, abc.ABC):
         """
         return {}
 
-    @classmethod
     def _unit_test_skips(self):
         """Indicates which checks to skip during unit testing.
 

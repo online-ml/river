@@ -154,3 +154,6 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     @property
     def _multiclass(self):
         return True
+
+    def _unit_test_skips(self):
+        return {'check_emerging_features', 'check_disappearing_features'}

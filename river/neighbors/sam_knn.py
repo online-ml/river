@@ -30,7 +30,7 @@ class SAMKNNClassifier(Classifier):
     window_size
          Maximum number of overall stored data points.
     ltm_size
-        Proportion of the overall instances that may be used for the LTM. This is 
+        Proportion of the overall instances that may be used for the LTM. This is
         only relevant when the maximum number(maxSize) of stored instances is reached.
     stm_aprox_adaption
         Type of STM size adaption.<br/>
@@ -44,7 +44,7 @@ class SAMKNNClassifier(Classifier):
         Minimum STM size which is evaluated during the STM size adaption.
     use_ltm
         Specifies whether the LTM should be used at all.
-    
+
     Examples
     --------
     >>> from river import synth
@@ -64,9 +64,9 @@ class SAMKNNClassifier(Classifier):
     Notes
     -----
     This modules uses libNearestNeighbor, a C++ library used to speed up some of
-    the algorithm's computations. When invoking the library's functions it's important 
+    the algorithm's computations. When invoking the library's functions it's important
     to pass the right argument type. Although most of this framework's functionality
-    will work with python standard types, the C++ library will work with 8-bit labels, 
+    will work with python standard types, the C++ library will work with 8-bit labels,
     which is already done by the SAMKNN class, but may be absent in custom classes that
     use SAMKNN static methods, or other custom functions that use the C++ library.
 
@@ -660,3 +660,6 @@ class STMSizer:
                 prediction_histories = STMSizer._adapt_histories(best_n_train_idx,
                                                                  prediction_histories)
             return int(window_size), prediction_histories
+
+    def _unit_test_skips(self):
+        return {'check_emerging_features', 'check_disappearing_features'}

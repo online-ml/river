@@ -101,3 +101,6 @@ class KNNADWINClassifier(KNNClassifier):
                     for i in range(self.data_window.size, self.adwin.width, -1):
                         self.data_window.popleft()
         return self
+
+    def _unit_test_skips(self):
+        return {'check_emerging_features', 'check_disappearing_features'}

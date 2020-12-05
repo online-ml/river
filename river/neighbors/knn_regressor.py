@@ -155,3 +155,6 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
                 sum(y / d for y, d in zip(neighbor_vals, dists)) /
                 sum(1 / d for d in dists)
             )
+
+    def _unit_test_skips(self):
+        return {'check_emerging_features', 'check_disappearing_features'}
