@@ -27,6 +27,11 @@ class Cov(base.Bivariate):
     -1.044999
     -4.286
 
+    Notes
+    -----
+    The outcomes of the incremental and parallel updates are consistent with numpy's
+    batch processing when $\\text{ddof} \\le 1$.
+
     References
     ----------
     [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
@@ -39,16 +44,129 @@ class Cov(base.Bivariate):
         self.mean_y = mean.Mean()
         self.cov = 0
 
-    def update(self, x, y):
+    def update(self, x, y, w=1.):
         dx = x - self.mean_x.get()
-        self.mean_x.update(x)
-        self.mean_y.update(y)
+        self.mean_x.update(x, w)
+        self.mean_y.update(y, w)
         dy = y - self.mean_y.get()
-        self.cov += (dx * dy - self.cov) / max(1, self.mean_x.n - self.ddof)
+        self.cov += w * (dx * dy - self.cov) / max(1, self.mean_x.n - self.ddof)
         return self
 
     def get(self):
         return self.cov
+
+    def __add__(self, other):
+        result = Cov(ddof=self.ddof)
+
+        # Update mean estimates
+        result.mean_x = self.mean_x + other.mean_x
+        result.mean_y = self.mean_y + other.mean_y
+
+        if result.mean_x.n <= result.ddof:
+            return result
+
+        # Scale factors
+        scale_a = self.mean_x.n - self.ddof
+        scale_b = other.mean_x.n - other.ddof
+
+        # Scale the covariances
+        result.cov = scale_a * self.cov + scale_b * other.cov
+        # Apply correction factor
+        result.cov += (
+            (self.mean_x.get() - other.mean_x.get()) * (self.mean_y.get() - other.mean_y.get())
+            * ((self.mean_x.n * other.mean_x.n) / result.mean_x.n)
+        )
+        # Reapply scale
+        result.cov /= (result.mean_x.n - result.ddof)
+
+        return result
+
+    def __iadd__(self, other):
+        old_mean_x = self.mean_x.get()
+        old_mean_y = self.mean_y.get()
+        old_n = self.mean_x.n
+
+        # Update mean estimates
+        self.mean_x += other.mean_x
+        self.mean_y += other.mean_y
+
+        if self.mean_x.n <= self.ddof:
+            return self
+
+        # Scale factors
+        scale_a = old_n - self.ddof
+        scale_b = other.mean_x.n - other.ddof
+
+        # Scale the covariances
+        self.cov = scale_a * self.cov + scale_b * other.cov
+        # Apply correction factor
+        self.cov += (
+            (old_mean_x - other.mean_x.get()) * (old_mean_y - other.mean_y.get())
+            * ((old_n * other.mean_x.n) / self.mean_x.n)
+        )
+        # Reapply scale
+        self.cov /= (self.mean_x.n - self.ddof)
+
+        return self
+
+    def __sub__(self, other):
+        result = Cov(ddof=self.ddof)
+
+        if self.mean_x.n <= self.ddof:
+            return result
+
+        # Update mean estimates
+        result.mean_x = self.mean_x - other.mean_x
+        result.mean_y = self.mean_y - other.mean_y
+
+        if result.mean_x.n <= result.ddof:
+            return result
+
+        # Scale factors
+        scale_x = self.mean_x.n - self.ddof
+        scale_b = other.mean_x.n - other.ddof
+
+        # Scale the covariances
+        result.cov = scale_x * self.cov - scale_b * other.cov
+        # Apply correction
+        result.cov -= (
+            (result.mean_x.get() - other.mean_x.get()) * (result.mean_y.get() - other.mean_y.get())
+            * ((result.mean_x.n * other.mean_x.n) / self.mean_x.n)
+        )
+        # Re-apply scale factor
+        result.cov /= (result.mean_x.n - result.ddof)
+
+        return result
+
+    def __isub__(self, other):
+        if self.mean_x.n <= self.ddof:
+            return self
+
+        old_n = self.mean_x.n
+
+        # Update mean estimates
+        self.mean_x -= other.mean_x
+        self.mean_y -= other.mean_y
+
+        if self.mean_x.n <= self.ddof:
+            self.cov = 0
+            return self
+
+        # Scale factors
+        scale_x = old_n - self.ddof
+        scale_b = other.mean_x.n - other.ddof
+
+        # Scale the covariances
+        self.cov = scale_x * self.cov - scale_b * other.cov
+        # Apply correction
+        self.cov -= (
+            (self.mean_x.get() - other.mean_x.get()) * (self.mean_y.get() - other.mean_y.get())
+            * ((self.mean_x.n * other.mean_x.n) / old_n)
+        )
+        # Re-apply scale factor
+        self.cov /= (self.mean_x.n - self.ddof)
+
+        return self
 
 
 class RollingCov(base.Bivariate):
