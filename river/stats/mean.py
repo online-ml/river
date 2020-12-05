@@ -7,13 +7,6 @@ from . import summing
 class Mean(base.Univariate):
     """Running mean.
 
-    Parameters
-    ----------
-    mean
-        Initial mean.
-    n
-        Initial sum of weights.
-
     Attributes
     ----------
     mean : float

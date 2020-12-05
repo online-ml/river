@@ -17,8 +17,8 @@ class Var(base.Univariate):
     ----------
     mean : stats.Mean
         The running mean.
-    sos : float
-        The running sum of squares.
+    sigma : float
+        The running variance.
 
     Notes
     -----
@@ -97,8 +97,8 @@ class Var(base.Univariate):
             # scale both sigma and take the difference
             self.sigma = (old_n - self.ddof) * self.sigma - (other.mean.n - other.ddof) * other.sigma
             # apply the correction
-            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n)
-                            / old_n) / (self.mean.n - self.ddof)
+            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n)\
+                / (self.mean.n - self.ddof)
 
         else:
             self.sigma = 0.
