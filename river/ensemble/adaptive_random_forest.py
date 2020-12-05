@@ -583,6 +583,14 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
                     seed=seed
                 )
 
+    @classmethod
+    def _unit_test_params(cls):
+        return {'n_models': 3}
+
+    @classmethod
+    def _unit_test_skips(cls):
+        return {'check_shuffle_features_no_impact'}
+
 
 class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     r"""Adaptive Random Forest regressor.
@@ -873,6 +881,14 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     def valid_aggregation_method(self):
         """Valid aggregation_method values."""
         return self._VALID_AGGREGATION_METHOD
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {'n_models': 3}
+
+    @classmethod
+    def _unit_test_skips(cls):
+        return {'check_shuffle_features_no_impact'}
 
 
 class BaseForestMember:

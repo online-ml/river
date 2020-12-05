@@ -14,7 +14,7 @@ class Base:
         return _repr_obj(obj=self, params=self._get_params())
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         """Instantiates an object with default arguments.
 
         Most parameters of each object have a default value. However, this isn't always the case,

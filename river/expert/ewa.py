@@ -89,7 +89,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
         self.weights = [1.] * len(regressors)
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {'regressors': [
             pp.StandardScaler() | lm.LinearRegression(intercept_lr=.1),
             pp.StandardScaler() | lm.PARegressor(),

@@ -70,7 +70,7 @@ class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
         return True
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {'classifier': linear_model.LogisticRegression()}
 
     def learn_one(self, x, y):

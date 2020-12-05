@@ -96,7 +96,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
         super().__init__(model, n_models, seed)
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {'model': linear_model.LogisticRegression()}
 
     def predict_proba_one(self, x):
@@ -168,7 +168,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
         super().__init__(model, n_models, seed)
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {'model': linear_model.LinearRegression()}
 
     def predict_one(self, x):

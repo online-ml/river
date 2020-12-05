@@ -288,6 +288,14 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         self._n_samples_seen = 0
         self._rng = check_random_state(self.seed)
 
+    @classmethod
+    def _unit_test_params(cls):
+        return {'n_models': 3}
+
+    @classmethod
+    def _unit_test_skips(cls):
+        return {'check_shuffle_features_no_impact'}
+
 
 class StreamingRandomPatchesBaseLearner:
     """

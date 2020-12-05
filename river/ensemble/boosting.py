@@ -88,7 +88,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
         return self.model
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {'model': linear_model.LogisticRegression()}
 
     def learn_one(self, x, y):

@@ -56,7 +56,7 @@ model = linear_model.LinearRegression()
    1. Stateless transformers do not require a `learn_one` method.
    2. In case of a classifier, the `predict_one` is implemented by default, but can be overridden.
 4. Add type hints to the parameters of the `__init__` method.
-5. If possible provide a default value for each parameter. If, for whatever reason, no good default exists, then implement the `_default_params` method. This is a private method that is meant to be used for testing.
+5. If possible provide a default value for each parameter. If, for whatever reason, no good default exists, then implement the `_unit_test_params` method. This is a private method that is meant to be used for testing.
 6. Write a comprehensive docstring with example usage. Try to have empathy for new users when you do this.
 7. Check that the class you have implemented is imported in the `__init__.py` file of the module it belongs to.
 8. When you're done, run the `utils.check_estimator` function on your class and check that no exceptions are raised.

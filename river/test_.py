@@ -36,9 +36,6 @@ def get_all_estimators():
         compose.FuncTransformer,
         compose.Pipeline,
         compose.Grouper,
-        ensemble.AdaptiveRandomForestClassifier,
-        ensemble.AdaptiveRandomForestRegressor,
-        ensemble.SRPClassifier,
         expert.StackingClassifier,
         expert.SuccessiveHalvingClassifier,
         expert.SuccessiveHalvingRegressor,
@@ -92,10 +89,7 @@ def get_all_estimators():
         for _, obj in inspect.getmembers(importlib.import_module(f'river.{submodule}'), is_estimator):
             if issubclass(obj, ignored):
                 continue
-            try:
-                params = obj._default_params()
-            except AttributeError:
-                params = {}
+            params = obj._unit_test_params()
             yield obj(**params)
 
 
@@ -127,6 +121,7 @@ def get_all_estimators():
         feature_selection.SelectKBest(similarity=stats.PearsonCorr())
     ]
     for check in utils.estimator_checks.yield_checks(estimator)
+    if check.__name__ not in estimator._unit_test_skips()
 ])
 def test_check_estimator(estimator, check):
     check(copy.deepcopy(estimator))

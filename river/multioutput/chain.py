@@ -111,7 +111,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
         super().__init__(model, order, seed)
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {'model': linear_model.LogisticRegression()}
 
     def _multiclass(self):
@@ -225,7 +225,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
         super().__init__(model, order, seed)
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {'model': linear_model.LinearRegression()}
 
     def learn_one(self, x, y):
