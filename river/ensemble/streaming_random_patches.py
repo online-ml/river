@@ -273,11 +273,11 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             subspace = self._subspaces[subspace_indexes[i]]
             self.models.append(self._base_learner_class(
                 idx_original=i,
-                base_model=self.model,    # TODO replace with clone
-                metric=copy.deepcopy(self.metric),
+                model=self.model,
+                metric=self.metric,
                 created_on=self._n_samples_seen,
-                base_drift_detector=self.drift_detector,
-                base_warning_detector=self.warning_detector,
+                drift_detector=self.drift_detector,
+                warning_detector=self.warning_detector,
                 is_background_learner=False,
                 features=subspace,
                 nominal_attributes=self.nominal_attributes,
@@ -295,20 +295,19 @@ class StreamingRandomPatchesBaseLearner:
     """
     def __init__(self,
                  idx_original: int,
-                 base_model: base.Classifier,
+                 model: base.Classifier,
                  metric: MultiClassMetric,
                  created_on: int,
-                 base_drift_detector: base.DriftDetector,
-                 base_warning_detector: base.DriftDetector,
+                 drift_detector: base.DriftDetector,
+                 warning_detector: base.DriftDetector,
                  is_background_learner,
                  features=None,
                  nominal_attributes=None,
                  rng=None):
         self.idx_original = idx_original
         self.created_on = created_on
-        self.base_model = base_model    # Model prototype
-        self.model = copy.deepcopy(base_model)  # Actual model used
-        self.metric = metric
+        self.model = model.clone()
+        self.metric = copy.deepcopy(metric)
         # Make sure that the metric is not initialized, e.g. when creating background learners.
         self.metric.cm.reset()
 
@@ -316,21 +315,16 @@ class StreamingRandomPatchesBaseLearner:
         self.features = features
 
         # Drift and warning detection
-        self.base_drift_detector = base_drift_detector  # Drift detector prototype
-        self.base_warning_detector = base_warning_detector  # Warning detector prototype
-
-        if base_drift_detector is not None:
+        if drift_detector is not None:
             self.disable_drift_detector = False
-            # TODO Replace with clone
-            self.drift_detector = copy.deepcopy(base_drift_detector)  # Actual detector used
+            self.drift_detector = drift_detector.clone()  # Actual detector used
         else:
             self.disable_drift_detector = True
             self.drift_detector = None
 
-        if base_warning_detector is not None:
+        if warning_detector is not None:
             self.disable_background_learner = False
-            # TODO Replace with clone
-            self.warning_detector = copy.deepcopy(base_warning_detector)  # Actual detector used
+            self.warning_detector = warning_detector.clone()  # Actual detector used
         else:
             self.disable_background_learner = True
             self.warning_detector = None
@@ -417,18 +411,18 @@ class StreamingRandomPatchesBaseLearner:
         # Initialize the background learner
         self._background_learner = self._background_learner_class(
             idx_original=self.idx_original,
-            base_model=self.base_model,
-            metric=copy.deepcopy(self.metric),
+            model=self.model,
+            metric=self.metric,
             created_on=n_samples_seen,
-            base_drift_detector=self.base_drift_detector,
-            base_warning_detector=self.base_warning_detector,
+            drift_detector=self.drift_detector,
+            warning_detector=self.warning_detector,
             is_background_learner=True,
             features=subspace,
             nominal_attributes=self.nominal_attributes,
             rng=self._rng
         )
         # Hard-reset the warning method
-        self.warning_detector = copy.deepcopy(self.base_warning_detector)
+        self.warning_detector = self.warning_detector.clone()
 
     def reset(self, all_features: list, n_samples_seen: int, rng: np.random.RandomState):
         # Randomly generate a new subspace from all the original features
@@ -448,10 +442,10 @@ class StreamingRandomPatchesBaseLearner:
             self._background_learner = None
         else:
             # Reset model
-            self.model = copy.deepcopy(self.base_model)
+            self.model = self.model.clone()
             self.metric.cm.reset()
             self.created_on = n_samples_seen
-            self.drift_detector = copy.deepcopy(self.base_drift_detector)
+            self.drift_detector = self.drift_detector.clone()
             self.features = subspace
             self._set_nominal_attributes = self._can_set_nominal_attributes()
 
