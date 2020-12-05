@@ -1,3 +1,5 @@
+import copy
+
 from . import base
 from . import mean
 from . import summing
@@ -58,32 +60,6 @@ class Cov(base.Bivariate):
     def get(self):
         return self.cov
 
-    def __add__(self, other):
-        result = Cov(ddof=self.ddof)
-
-        # Update mean estimates
-        result.mean_x = self.mean_x + other.mean_x
-        result.mean_y = self.mean_y + other.mean_y
-
-        if result.mean_x.n <= result.ddof:
-            return result
-
-        # Scale factors
-        scale_a = self.mean_x.n - self.ddof
-        scale_b = other.mean_x.n - other.ddof
-
-        # Scale the covariances
-        result.cov = scale_a * self.cov + scale_b * other.cov
-        # Apply correction factor
-        result.cov += (
-            (self.mean_x.get() - other.mean_x.get()) * (self.mean_y.get() - other.mean_y.get())
-            * ((self.mean_x.n * other.mean_x.n) / result.mean_x.n)
-        )
-        # Reapply scale
-        result.cov /= (result.mean_x.n - result.ddof)
-
-        return result
-
     def __iadd__(self, other):
         old_mean_x = self.mean_x.get()
         old_mean_y = self.mean_y.get()
@@ -112,32 +88,9 @@ class Cov(base.Bivariate):
 
         return self
 
-    def __sub__(self, other):
-        result = Cov(ddof=self.ddof)
-
-        if self.mean_x.n <= self.ddof:
-            return result
-
-        # Update mean estimates
-        result.mean_x = self.mean_x - other.mean_x
-        result.mean_y = self.mean_y - other.mean_y
-
-        if result.mean_x.n <= result.ddof:
-            return result
-
-        # Scale factors
-        scale_x = self.mean_x.n - self.ddof
-        scale_b = other.mean_x.n - other.ddof
-
-        # Scale the covariances
-        result.cov = scale_x * self.cov - scale_b * other.cov
-        # Apply correction
-        result.cov -= (
-            (result.mean_x.get() - other.mean_x.get()) * (result.mean_y.get() - other.mean_y.get())
-            * ((result.mean_x.n * other.mean_x.n) / self.mean_x.n)
-        )
-        # Re-apply scale factor
-        result.cov /= (result.mean_x.n - result.ddof)
+    def __add__(self, other):
+        result = copy.deepcopy(self)
+        result += other
 
         return result
 
@@ -170,6 +123,12 @@ class Cov(base.Bivariate):
         self.cov /= (self.mean_x.n - self.ddof)
 
         return self
+
+    def __sub__(self, other):
+        result = copy.deepcopy(self)
+        result -= other
+
+        return result
 
 
 class RollingCov(base.Bivariate):
