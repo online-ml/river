@@ -38,6 +38,8 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
             if class_weight_sum > 0 else 0.
         if attribute_observers:
             for att_idx in attribute_observers:
+                if att_idx not in x:
+                    continue
                 obs = attribute_observers[att_idx]
                 # Prior plus the log likelihood
                 tmp = obs.probability_of_attribute_value_given_class(x[att_idx], class_index)
