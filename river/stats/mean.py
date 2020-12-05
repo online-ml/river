@@ -1,3 +1,5 @@
+import copy
+
 from . import base
 from . import summing
 
@@ -67,13 +69,6 @@ class Mean(base.Univariate):
     def get(self):
         return self.mean
 
-    def __add__(self, other):
-        result = Mean()
-        result.n = self.n + other.n
-        result.mean = (self.n * self.mean + other.n * other.mean) / result.n
-
-        return result
-
     def __iadd__(self, other):
         old_n = self.n
         self.n += other.n
@@ -81,15 +76,9 @@ class Mean(base.Univariate):
 
         return self
 
-    def __sub__(self, other):
-        result = Mean()
-        result.n = self.n - other.n
-
-        if result.n > 0:
-            result.mean = (self.n * self.mean - other.n * other.mean) / result.n
-        else:
-            result.n = 0.
-            result.mean = 0.
+    def __add__(self, other):
+        result = copy.deepcopy(self)
+        result += other
 
         return result
 
@@ -104,6 +93,12 @@ class Mean(base.Univariate):
             self.mean = 0.
 
         return self
+
+    def __sub__(self, other):
+        result = copy.deepcopy(self)
+        result -= other
+
+        return result
 
 
 class RollingMean(summing.RollingSum):
