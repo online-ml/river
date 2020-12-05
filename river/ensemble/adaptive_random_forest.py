@@ -83,17 +83,18 @@ class BaseForest(base.EnsembleMixin):
         self.models = [
             self._base_member_class(
                 index_original=i,
-                base_model=self._get_base_model(seed=seeds[i]),
+                model=self._new_base_model(seed=seeds[i]),
                 created_on=self._n_samples_seen,
-                base_drift_detector=self.drift_detector,
-                base_warning_detector=self.warning_detector,
+                drift_detector=self.drift_detector,
+                warning_detector=self.warning_detector,
                 is_background_learner=False,
-                base_metric=copy.deepcopy(self.metric))
+                metric=self.metric
+            )
             for i in range(self.n_models)
         ]
 
     @abc.abstractmethod
-    def _get_base_model(self, seed: int):
+    def _new_base_model(self, seed: int):
         raise NotImplementedError
 
     def _set_max_features(self, n_features):
@@ -144,6 +145,7 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
 
     """
     def __init__(self,
+                 max_features: int = 2,
                  grace_period: int = 200,
                  max_depth: int = None,
                  split_criterion: str = 'info_gain',
@@ -154,7 +156,6 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
                  nominal_attributes: list = None,
                  attr_obs: str = 'gaussian',
                  attr_obs_params: dict = None,
-                 max_features: int = 2,
                  seed=None,
                  **kwargs):
         super().__init__(grace_period=grace_period,
@@ -202,24 +203,10 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
             )
 
     def new_instance(self):
-        return self.__class__(max_size=self.max_size,
-                              memory_estimate_period=self.memory_estimate_period,
-                              grace_period=self.grace_period,
-                              split_criterion=self.split_criterion,
-                              split_confidence=self.split_confidence,
-                              tie_threshold=self.tie_threshold,
-                              binary_split=self.binary_split,
-                              stop_mem_management=self.stop_mem_management,
-                              remove_poor_attrs=self.remove_poor_attrs,
-                              merit_preprune=self.merit_preprune,
-                              leaf_prediction=self.leaf_prediction,
-                              nb_threshold=self.nb_threshold,
-                              nominal_attributes=self.nominal_attributes,
-                              attr_obs=self.attr_obs,
-                              attr_obs_params=self.attr_obs_params,
-                              max_features=self.max_features,
-                              max_depth=self.max_depth,   # noqa
-                              seed=self._rng)
+        new_instance = self.clone()
+        # Use existing rng to enforce a different model
+        new_instance._rng = self._rng
+        return new_instance
 
 
 class BaseTreeRegressor(HoeffdingTreeRegressor):
@@ -233,6 +220,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
     """
 
     def __init__(self,
+                 max_features: int = 2,
                  grace_period: int = 200,
                  max_depth: int = None,
                  split_confidence: float = 1e-7,
@@ -244,7 +232,6 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
                  attr_obs: str = 'gaussian',
                  attr_obs_params: dict = None,
                  min_samples_split: int = 5,
-                 max_features: int = 2,
                  seed=None,
                  **kwargs):
         super().__init__(grace_period=grace_period,
@@ -303,25 +290,10 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
             return new_adaptive
 
     def new_instance(self):
-        return self.__class__(max_size=self.max_size,
-                              memory_estimate_period=self.memory_estimate_period,
-                              grace_period=self.grace_period,
-                              split_confidence=self.split_confidence,
-                              tie_threshold=self.tie_threshold,
-                              binary_split=self.binary_split,
-                              stop_mem_management=self.stop_mem_management,
-                              remove_poor_attrs=self.remove_poor_attrs,
-                              merit_preprune=self.merit_preprune,
-                              leaf_prediction=self.leaf_prediction,
-                              leaf_model=self.leaf_model,
-                              model_selector_decay=self.model_selector_decay,
-                              max_features=self.max_features,
-                              nominal_attributes=self.nominal_attributes,
-                              attr_obs=self.attr_obs,
-                              attr_obs_params=self.attr_obs_params,
-                              min_samples_split=self.min_samples_split,
-                              max_depth=self.max_depth,    # noqa
-                              seed=self._rng)
+        new_instance = self.clone()
+        # Use existing rng to enforce a different model
+        new_instance._rng = self._rng
+        return new_instance
 
 
 class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
@@ -363,13 +335,12 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         Drift Detection method. Set to None to disable Drift detection.
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
-    max_size
-        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
-    memory_estimate_period
-        [*Tree parameter*] Number of instances between memory consumption checks.
     grace_period
         [*Tree parameter*] Number of instances a leaf should observe between
         split attempts.
+    max_depth
+        [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
+        tree will grow indefinitely.
     split_criterion
         [*Tree parameter*] Split criterion to use.<br/>
         - 'gini' - Gini<br/>
@@ -381,14 +352,6 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     tie_threshold
         [*Tree parameter*] Threshold below which a split will be forced to break
         ties.
-    binary_split
-        [*Tree parameter*] If True, only allow binary splits.
-    stop_mem_management
-        [*Tree parameter*] If True, stop growing as soon as memory limit is hit.
-    remove_poor_attrs
-        [*Tree parameter*] If True, disable poor attributes.
-    merit_preprune
-        [*Tree parameter*] If True, disable pre-pruning.
     leaf_prediction
         [*Tree parameter*] Prediction mechanism used at leafs.<br/>
         - 'mc' - Majority Class<br/>
@@ -414,14 +377,17 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     attr_obs_params
         [*Tree parameter*] Parameters passed to the numeric AOs. See `attr_obs` for more
         information.
-    max_depth
-        [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
-        tree will grow indefinitely.
+    max_size
+        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
+    memory_estimate_period
+        [*Tree parameter*] Number of instances between memory consumption checks.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
+    kwargs
+        Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     Notes
     -----
@@ -489,23 +455,21 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
                  drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
                  warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
                  # Tree parameters
-                 max_size: int = 32,
-                 memory_estimate_period: int = 2000000,
                  grace_period: int = 50,
+                 max_depth: int = None,
                  split_criterion: str = 'info_gain',
                  split_confidence: float = 0.01,
                  tie_threshold: float = 0.05,
-                 binary_split=False,
-                 stop_mem_management=False,
-                 remove_poor_attrs=False,
-                 merit_preprune=True,
                  leaf_prediction: str = 'nba',
                  nb_threshold: int = 0,
                  nominal_attributes: list = None,
                  attr_obs: str = 'gaussian',
                  attr_obs_params: dict = None,
-                 max_depth: int = None,
-                 seed=None):
+                 max_size: int = 32,
+                 memory_estimate_period: int = 2000000,
+                 seed: int = None,
+                 **kwargs,
+                 ):
         super().__init__(
             n_models=n_models,
             max_features=max_features,
@@ -521,22 +485,19 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self._base_member_class = ForestMemberClassifier
 
         # Tree parameters
-        self.max_size = max_size
-        self. memory_estimate_period = memory_estimate_period
         self.grace_period = grace_period
+        self.max_depth = max_depth
         self.split_criterion = split_criterion
         self.split_confidence = split_confidence
         self.tie_threshold = tie_threshold
-        self.binary_split = binary_split
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_attrs = remove_poor_attrs
-        self.merit_preprune = merit_preprune
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
         self.attr_obs = attr_obs
         self.attr_obs_params = attr_obs_params
-        self.max_depth = max_depth
+        self.max_size = max_size
+        self.memory_estimate_period = memory_estimate_period
+        self.kwargs = kwargs
 
     def _multiclass(self):
         return True
@@ -561,26 +522,23 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             return {label: proba / total for label, proba in y_pred.items()}
         return y_pred
 
-    def _get_base_model(self, seed: int):
+    def _new_base_model(self, seed: int):
         return BaseTreeClassifier(
-                    max_size=self.max_size,
-                    memory_estimate_period=self.memory_estimate_period,
+                    max_features=self.max_features,
                     grace_period=self.grace_period,
                     split_criterion=self.split_criterion,
                     split_confidence=self.split_confidence,
                     tie_threshold=self.tie_threshold,
-                    binary_split=self.binary_split,
-                    stop_mem_management=self.stop_mem_management,
-                    remove_poor_attrs=self.remove_poor_attrs,
-                    merit_preprune=self.merit_preprune,
                     leaf_prediction=self.leaf_prediction,
                     nb_threshold=self.nb_threshold,
                     nominal_attributes=self.nominal_attributes,
                     attr_obs=self.attr_obs,
                     attr_obs_params=self.attr_obs_params,
-                    max_features=self.max_features,
                     max_depth=self.max_depth,
-                    seed=seed
+                    memory_estimate_period=self.memory_estimate_period,
+                    max_size=self.max_size,
+                    seed=seed,
+                    **self.kwargs
                 )
 
 
@@ -635,27 +593,18 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         Drift Detection method. Set to None to disable Drift detection.
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
-    max_size
-        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
-    memory_estimate_period
-        [*Tree parameter*] Number of instances between memory consumption checks.
     grace_period
         [*Tree parameter*] Number of instances a leaf should observe between
         split attempts.
+    max_depth
+        [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
+        tree will grow indefinitely.
     split_confidence
         [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
     tie_threshold
         [*Tree parameter*] Threshold below which a split will be forced to break
         ties.
-    binary_split
-        [*Tree parameter*] If True, only allow binary splits.
-    stop_mem_management
-        [*Tree parameter*] If True, stop growing as soon as memory limit is hit.
-    remove_poor_attrs
-        [*Tree parameter*] If True, disable poor attributes.
-    merit_preprune
-        [*Tree parameter*] If True, disable pre-pruning.
     leaf_prediction
         [*Tree parameter*] Prediction mechanism used at leaves.</br>
         - 'mean' - Target mean</br>
@@ -688,14 +637,17 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     min_samples_split
         [*Tree parameter*] The minimum number of samples every branch resulting from a split
         candidate must have to be considered valid.
-    max_depth
-        [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
-        tree will grow indefinitely.
+    max_size
+        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
+    memory_estimate_period
+        [*Tree parameter*] Number of instances between memory consumption checks.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
+    kwargs
+        Other parameters passed to `river.tree.BaseHoeffdingTree`.
 
     Notes
     -----
@@ -757,15 +709,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                  drift_detector: base.DriftDetector = ADWIN(0.001),
                  warning_detector: base.DriftDetector = ADWIN(0.01),
                  # Tree parameters
-                 max_size: int = 100,
-                 memory_estimate_period: int = 2000000,
                  grace_period: int = 50,
+                 max_depth: int = None,
                  split_confidence: float = 0.01,
                  tie_threshold: float = 0.05,
-                 binary_split: bool = False,
-                 stop_mem_management: bool = False,
-                 remove_poor_attrs: bool = False,
-                 merit_preprune: bool = True,
                  leaf_prediction: str = 'model',
                  leaf_model: base.Regressor = None,
                  model_selector_decay: float = 0.95,
@@ -773,8 +720,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                  attr_obs: str = 'e-bst',
                  attr_obs_params: dict = None,
                  min_samples_split: int = 5,
-                 max_depth: int = None,
-                 seed=None):
+                 max_size: int = 100,
+                 memory_estimate_period: int = 2000000,
+                 seed: int = None,
+                 **kwargs):
         super().__init__(
             n_models=n_models,
             max_features=max_features,
@@ -790,15 +739,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         self._base_member_class = ForestMemberRegressor
 
         # Tree parameters
-        self.max_size = max_size
-        self.memory_estimate_period = memory_estimate_period
         self.grace_period = grace_period
+        self.max_depth = max_depth
         self.split_confidence = split_confidence
         self.tie_threshold = tie_threshold
-        self.binary_split = binary_split
-        self.stop_mem_management = stop_mem_management
-        self.remove_poor_attrs = remove_poor_attrs
-        self.merit_preprune = merit_preprune
         self.leaf_prediction = leaf_prediction
         self.leaf_model = leaf_model
         self.model_selector_decay = model_selector_decay
@@ -806,7 +750,9 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         self.attr_obs = attr_obs
         self.attr_obs_params = attr_obs_params
         self.min_samples_split = min_samples_split
-        self.max_depth = max_depth
+        self.max_size = max_size
+        self.memory_estimate_period = memory_estimate_period
+        self.kwargs = kwargs
 
         if aggregation_method in self._VALID_AGGREGATION_METHOD:
             self.aggregation_method = aggregation_method
@@ -847,26 +793,23 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
         return y_pred
 
-    def _get_base_model(self, seed: int):
+    def _new_base_model(self, seed: int):
         return BaseTreeRegressor(
-            max_size=self.max_size,
-            memory_estimate_period=self.memory_estimate_period,
+            max_features=self.max_features,
             grace_period=self.grace_period,
+            max_depth=self.max_depth,
             split_confidence=self.split_confidence,
             tie_threshold=self.tie_threshold,
-            binary_split=self.binary_split,
-            stop_mem_management=self.stop_mem_management,
-            remove_poor_attrs=self.remove_poor_attrs,
-            merit_preprune=self.merit_preprune,
             leaf_prediction=self.leaf_prediction,
             leaf_model=self.leaf_model,
             model_selector_decay=self.model_selector_decay,
-            max_features=self.max_features,
             nominal_attributes=self.nominal_attributes,
             attr_obs=self.attr_obs,
             attr_obs_params=self.attr_obs_params,
-            max_depth=self.max_depth,
-            seed=seed
+            max_size=self.max_size,
+            memory_estimate_period=self.memory_estimate_period,
+            seed=seed,
+            **self.kwargs
         )
 
     @property
@@ -891,60 +834,58 @@ class BaseForestMember:
     ----------
     index_original
         Tree index within the ensemble.
-    base_model
-        Tree classifier.
+    model
+        Tree learner.
     created_on
         Number of instances seen by the tree.
-    base_drift_detector
+    drift_detector
         Drift Detection method.
-    base_warning_detector
+    warning_detector
         Warning Detection method.
     is_background_learner
         True if the tree is a background learner.
+    metric
+        Metric to track performance.
 
     """
     def __init__(self,
                  index_original: int,
-                 base_model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
+                 model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
                  created_on: int,
-                 base_drift_detector: base.DriftDetector,
-                 base_warning_detector: base.DriftDetector,
+                 drift_detector: base.DriftDetector,
+                 warning_detector: base.DriftDetector,
                  is_background_learner,
-                 base_metric: typing.Union[MultiClassMetric, RegressionMetric]):
+                 metric: typing.Union[MultiClassMetric, RegressionMetric]):
         self.index_original = index_original
-        self.base_model = base_model
-        self.model = copy.deepcopy(base_model)
+        self.model = model.clone()
         self.created_on = created_on
         self.is_background_learner = is_background_learner
-        self.base_metric = base_metric
+        self.metric = copy.deepcopy(metric)
         # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.base_metric, MultiClassMetric):
-            self.base_metric.cm.reset()
-        self.metric = copy.deepcopy(base_metric)
+        if isinstance(self.metric, MultiClassMetric):
+            self.metric.cm.reset()
+        # Keep a copy of the original metric for background learners or reset
+        self._original_metric = copy.deepcopy(metric)
 
         self.background_learner = None
 
         # Drift and warning detection
-        self.base_drift_detector = base_drift_detector  # Drift detector prototype
-        self.base_warning_detector = base_warning_detector  # Warning detector prototype
-
         self.last_drift_on = 0
         self.last_warning_on = 0
         self.n_drifts_detected = 0
         self.n_warnings_detected = 0
 
         # Initialize drift and warning detectors
-        # TODO Replace deepcopy with clone
-        if base_drift_detector is not None:
+        if drift_detector is not None:
             self._use_drift_detector = True
-            self.drift_detector = copy.deepcopy(base_drift_detector)  # Actual detector used
+            self.drift_detector = drift_detector.clone()
         else:
             self._use_drift_detector = False
             self.drift_detector = None
 
-        if base_warning_detector is not None:
+        if warning_detector is not None:
             self._use_background_learner = True
-            self.warning_detector = copy.deepcopy(base_warning_detector)  # Actual detector used
+            self.warning_detector = warning_detector.clone()
         else:
             self._use_background_learner = False
             self.warning_detector = None
@@ -955,15 +896,18 @@ class BaseForestMember:
             self.model = self.background_learner.model
             self.warning_detector = self.background_learner.warning_detector
             self.drift_detector = self.background_learner.drift_detector
-            self.metric = copy.deepcopy(self.background_learner.base_metric)
+            self.metric = self.background_learner.metric
             self.created_on = self.background_learner.created_on
             self.background_learner = None
         else:
             # Reset model
-            self.model = copy.deepcopy(self.base_model)
-            self.metric = copy.deepcopy(self.base_metric)
+            self.model = self.model.clone()
+            self.metric = copy.deepcopy(self._original_metric)
             self.created_on = n_samples_seen
-            self.drift_detector = copy.deepcopy(self.base_drift_detector)
+            self.drift_detector = self.drift_detector.clone()
+        # Make sure that the metric is not initialized, e.g. when creating background learners.
+        if isinstance(self.metric, MultiClassMetric):
+            self.metric.cm.reset()
 
     def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int,
                   n_samples_seen: int):
@@ -989,15 +933,15 @@ class BaseForestMember:
                     # Create a new background learner object
                     self.background_learner = self.__class__(
                         index_original=self.index_original,
-                        base_model=self.model.new_instance(),
+                        model=self.model.new_instance(),
                         created_on=n_samples_seen,
-                        base_drift_detector=self.base_drift_detector,
-                        base_warning_detector=self.base_warning_detector,
+                        drift_detector=self.drift_detector,
+                        warning_detector=self.warning_detector,
                         is_background_learner=True,
-                        base_metric=copy.deepcopy(self.base_metric)
+                        metric=self.metric
                     )
                     # Reset the warning detector for the current object
-                    self.warning_detector = copy.deepcopy(self.base_warning_detector)
+                    self.warning_detector = self.warning_detector.clone()
 
             # Update the drift detector
             self.drift_detector.update(drift_detector_input)
@@ -1020,20 +964,20 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
 
     def __init__(self,
                  index_original: int,
-                 base_model: BaseTreeClassifier,
+                 model: BaseTreeClassifier,
                  created_on: int,
-                 base_drift_detector: base.DriftDetector,
-                 base_warning_detector: base.DriftDetector,
+                 drift_detector: base.DriftDetector,
+                 warning_detector: base.DriftDetector,
                  is_background_learner,
-                 base_metric: MultiClassMetric):
+                 metric: MultiClassMetric):
         super().__init__(
             index_original=index_original,
-            base_model=base_model,
+            model=model,
             created_on=created_on,
-            base_drift_detector=base_drift_detector,
-            base_warning_detector=base_warning_detector,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
             is_background_learner=is_background_learner,
-            base_metric=base_metric
+            metric=metric
         )
 
     def _drift_detector_input(self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget):
@@ -1051,20 +995,20 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
 
     def __init__(self,
                  index_original: int,
-                 base_model: BaseTreeRegressor,
+                 model: BaseTreeRegressor,
                  created_on: int,
-                 base_drift_detector: base.DriftDetector,
-                 base_warning_detector: base.DriftDetector,
+                 drift_detector: base.DriftDetector,
+                 warning_detector: base.DriftDetector,
                  is_background_learner,
-                 base_metric: RegressionMetric):
+                 metric: RegressionMetric):
         super().__init__(
             index_original=index_original,
-            base_model=base_model,
+            model=model,
             created_on=created_on,
-            base_drift_detector=base_drift_detector,
-            base_warning_detector=base_warning_detector,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
             is_background_learner=is_background_learner,
-            base_metric=base_metric
+            metric=metric
         )
         self._var = Var()   # Used to track drift
 
