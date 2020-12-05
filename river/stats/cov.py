@@ -35,6 +35,9 @@ class Cov(base.Bivariate):
     References
     ----------
     [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+    [^2]: Schubert, E. and Gertz, M., 2018, July. Numerically stable parallel computation of
+    (co-) variance. In Proceedings of the 30th International Conference on Scientific and
+    Statistical Database Management (pp. 1-12).
 
     """
 
