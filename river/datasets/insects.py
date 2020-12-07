@@ -36,44 +36,44 @@ class Insects(base.RemoteDataset):
     """
 
     variant_sizes = {
-        'abrupt_balanced': (52848, 16419025),
-        'abrupt_imbalanced': (355275, 110043637),
-        'gradual_balanced': (24150, 7503750),
-        'gradual_imbalanced': (143323, 44371501),
-        'incremental-abrupt_balanced': (79986, 24849436),
-        'incremental-abrupt_imbalanced': (452044, 140004225),
-        'incremental-reoccurring_balanced': (79986, 24849092),
-        'incremental-reoccurring_imbalanced': (452044, 140004230),
-        'incremental_balanced': (57018, 17713574),
-        'incremental_imbalanced': (452044, 140004218),
-        'out-of-control': (905145, 277777854)
+        "abrupt_balanced": (52848, 16419025),
+        "abrupt_imbalanced": (355275, 110043637),
+        "gradual_balanced": (24150, 7503750),
+        "gradual_imbalanced": (143323, 44371501),
+        "incremental-abrupt_balanced": (79986, 24849436),
+        "incremental-abrupt_imbalanced": (452044, 140004225),
+        "incremental-reoccurring_balanced": (79986, 24849092),
+        "incremental-reoccurring_imbalanced": (452044, 140004230),
+        "incremental_balanced": (57018, 17713574),
+        "incremental_imbalanced": (452044, 140004218),
+        "out-of-control": (905145, 277777854),
     }
 
     variants = list(variant_sizes.keys())
 
-    def __init__(self, variant='abrupt_balanced'):
+    def __init__(self, variant="abrupt_balanced"):
 
         try:
             n_samples, size = self.variant_sizes[variant]
         except KeyError:
-            variants = '\n'.join(f'- {v}' for v in self.variant_sizes)
-            raise ValueError(f'Unknown variant, possible choices are:\n{variants}')
-        n_classes = 24 if variant == 'out-of-control' else 6
+            variants = "\n".join(f"- {v}" for v in self.variant_sizes)
+            raise ValueError(f"Unknown variant, possible choices are:\n{variants}")
+        n_classes = 24 if variant == "out-of-control" else 6
 
         super().__init__(
             n_classes=n_classes,
             n_samples=n_samples,
             n_features=33,
             task=base.MULTI_CLF,
-            url=f'http://sites.labic.icmc.usp.br/vsouza/repository/river/INSECTS-{variant}_norm.arff',
+            url=f"http://sites.labic.icmc.usp.br/vsouza/repository/river/INSECTS-{variant}_norm.arff",
             size=size,
-            unpack=False
+            unpack=False,
         )
         self.variant = variant
 
     def _iter(self):
-        return stream.iter_arff(self.path, target='class')
+        return stream.iter_arff(self.path, target="class")
 
     @property
     def _repr_content(self):
-        return {**super()._repr_content, 'Variant': self.variant}
+        return {**super()._repr_content, "Variant": self.variant}

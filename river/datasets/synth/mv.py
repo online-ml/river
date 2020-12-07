@@ -89,17 +89,14 @@ class Mv(base.SyntheticDataset):
         rng = random.Random(self.seed)
 
         while True:
-            x = {
-                1: rng.uniform(-5, 5),
-                2: rng.uniform(-15, -10)
-            }
+            x = {1: rng.uniform(-5, 5), 2: rng.uniform(-15, -10)}
 
             if x[1] > 0:
-                x[3] = 'green'
+                x[3] = "green"
             else:
-                x[3] = rng.choices(population=['red', 'brown'], weights=[0.4, 0.6])[0]
+                x[3] = rng.choices(population=["red", "brown"], weights=[0.4, 0.6])[0]
 
-            if x[3] == 'green':
+            if x[3] == "green":
                 x[4] = x[1] + 2 * x[2]
             else:
                 choice = rng.choices(population=[True, False], weights=[0.3, 0.7])[0]
@@ -114,9 +111,9 @@ class Mv(base.SyntheticDataset):
             epsilon = rng.uniform(0, 5)
             x[6] = x[4] * epsilon
 
-            x[7] = rng.choices(population=['yes', 'no'], weights=[0.3, 0.7])[0]
+            x[7] = rng.choices(population=["yes", "no"], weights=[0.3, 0.7])[0]
 
-            x[8] = 'normal' if x[5] < 0.5 else 'large'
+            x[8] = "normal" if x[5] < 0.5 else "large"
 
             x[9] = rng.uniform(100, 500)
 
@@ -126,9 +123,9 @@ class Mv(base.SyntheticDataset):
                 y = 35 - 0.5 * x[4]
             elif -2 <= x[4] <= 2:
                 y = 10 - 2 * x[1]
-            elif x[7] == 'yes':
+            elif x[7] == "yes":
                 y = 3 - (x[1] / x[4] if x[4] != 0 else 0)
-            elif x[8] == 'normal':
+            elif x[8] == "normal":
                 y = x[6] + x[1]
             else:
                 y = x[1] / 2

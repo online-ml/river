@@ -4,7 +4,7 @@ from river.base import DriftDetector
 
 
 class ADWIN(DriftDetector):
-    """ Adaptive Windowing method for concept drift detection.
+    r"""Adaptive Windowing method for concept drift detection.
 
     ADWIN (ADaptive WINdowing) is a popular drift detection method with
     mathematical guarantees. ADWIN efficiently keeps a variable-length window
@@ -57,9 +57,10 @@ class ADWIN(DriftDetector):
     [^1]: Bifet, Albert, and Ricard Gavalda. "Learning from time-changing data with adaptive windowing." In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     """
+
     MAX_BUCKETS = 5
 
-    def __init__(self, delta=.002):
+    def __init__(self, delta=0.002):
         super().__init__()
         # default values affected by init_bucket()
         self.delta = delta
@@ -75,7 +76,7 @@ class ADWIN(DriftDetector):
         # other default values
         self.mint_min_window_longitude = 10
 
-        self.mdbl_delta = .002
+        self.mdbl_delta = 0.002
         self.mint_time = 0
         self.mdbl_width = 0
 
@@ -89,8 +90,7 @@ class ADWIN(DriftDetector):
         super().reset()
 
     def reset(self):
-        """Reset the change detector.
-        """
+        """Reset the change detector."""
         self.__init__(delta=self.delta)
 
     @property
@@ -118,7 +118,7 @@ class ADWIN(DriftDetector):
         return self._total / self._width
 
     def __init_buckets(self):
-        """ Initialize the bucket's List and statistics
+        """Initialize the bucket's List and statistics
 
         Set all statistics to 0 and create a new bucket List.
 
@@ -155,9 +155,12 @@ class ADWIN(DriftDetector):
         incremental_variance = 0
 
         if self._width > 1:
-            incremental_variance = (self._width - 1) * \
-                                   (value - self._total / (self._width - 1)) * \
-                                   (value - self._total / (self._width - 1)) / self._width
+            incremental_variance = (
+                (self._width - 1)
+                * (value - self._total / (self._width - 1))
+                * (value - self._total / (self._width - 1))
+                / self._width
+            )
 
         self._variance += incremental_variance
         self._total += value
@@ -192,8 +195,8 @@ class ADWIN(DriftDetector):
         self._total -= node.get_total(0)
         u1 = node.get_total(0) / n1
         incremental_variance = node.get_variance(0) + n1 * self._width * (
-            u1 - self._total / self._width) * (u1 - self._total / self._width) / (
-            n1 + self._width)
+            u1 - self._total / self._width
+        ) * (u1 - self._total / self._width) / (n1 + self._width)
         self._variance -= incremental_variance
         node.remove_bucket()
         self.bucket_number -= 1
@@ -222,7 +225,8 @@ class ADWIN(DriftDetector):
                 incremental_variance = n1 * n2 * ((u1 - u2) * (u1 - u2)) / (n1 + n2)
                 next_node.insert_bucket(
                     cursor.get_total(0) + cursor.get_total(1),
-                    cursor.get_variance(1) + incremental_variance)
+                    cursor.get_variance(1) + incremental_variance,
+                )
                 self.bucket_number += 1
                 cursor.compress_bucket_row(2)
 
@@ -260,7 +264,8 @@ class ADWIN(DriftDetector):
         self.mint_time += 1
         n0 = 0
         if (self.mint_time % self.mint_clock == 0) and (
-                self.width > self.mint_min_window_longitude):
+            self.width > self.mint_min_window_longitude
+        ):
             bln_reduce_width = True
             while bln_reduce_width:
                 bln_reduce_width = not bln_reduce_width
@@ -282,12 +287,14 @@ class ADWIN(DriftDetector):
                         u2 = cursor.get_total(k)
 
                         if n0 > 0:
-                            v0 += cursor.get_variance(k) + 1. * n0 * n2 * \
-                                (u0 / n0 - u2 / n2) * (u0 / n0 - u2 / n2) / (n0 + n2)
+                            v0 += cursor.get_variance(k) + 1.0 * n0 * n2 * (u0 / n0 - u2 / n2) * (
+                                u0 / n0 - u2 / n2
+                            ) / (n0 + n2)
 
                         if n1 > 0:
-                            v1 -= cursor.get_variance(k) + 1. * n1 * n2 * \
-                                (u1 / n1 - u2 / n2) * (u1 / n1 - u2 / n2) / (n1 + n2)
+                            v1 -= cursor.get_variance(k) + 1.0 * n1 * n2 * (u1 / n1 - u2 / n2) * (
+                                u1 / n1 - u2 / n2
+                            ) / (n1 + n2)
 
                         n0 += self._bucket_size(i)
                         n1 -= self._bucket_size(i)
@@ -298,12 +305,16 @@ class ADWIN(DriftDetector):
                             bln_exit = True
                             break
 
-                        abs_value = 1. * ((u0 / n0) - (u1 / n1))
-                        if (n1 >= self.mint_min_window_length) \
-                                and (n0 >= self.mint_min_window_length) \
-                                and (
-                                self.__bln_cut_expression(n0, n1, u0, u1, v0, v1, abs_value,
-                                                          self.delta)):
+                        abs_value = 1.0 * ((u0 / n0) - (u1 / n1))
+                        if (
+                            (n1 >= self.mint_min_window_length)
+                            and (n0 >= self.mint_min_window_length)
+                            and (
+                                self.__bln_cut_expression(
+                                    n0, n1, u0, u1, v0, v1, abs_value, self.delta
+                                )
+                            )
+                        ):
                             bln_bucket_deleted = True  # noqa: F841
                             self.detect = self.mint_time
                             if self.detect == 0:
@@ -331,14 +342,15 @@ class ADWIN(DriftDetector):
         n = self.width
         dd = np.log(2 * np.log(n) / delta)
         v = self.variance
-        m = (1. / (n0 - self.mint_min_window_length + 1)) + \
-            (1. / (n1 - self.mint_min_window_length + 1))
-        epsilon = np.sqrt(2 * m * v * dd) + 1. * 2 / 3 * dd * m
+        m = (1.0 / (n0 - self.mint_min_window_length + 1)) + (
+            1.0 / (n1 - self.mint_min_window_length + 1)
+        )
+        epsilon = np.sqrt(2 * m * v * dd) + 1.0 * 2 / 3 * dd * m
         return np.absolute(abs_value) > epsilon
 
 
 class List(object):
-    """ A linked list object for ADWIN algorithm.
+    """A linked list object for ADWIN algorithm.
 
     Used for storing ADWIN's bucket list. Is composed of Item objects.
     Acts as a linked list, where each element points to its predecessor
@@ -430,7 +442,7 @@ class Item(object):
         self.reset()
 
     def reset(self):
-        """ Reset the algorithm's statistics and window
+        """Reset the algorithm's statistics and window
 
         Returns
         -------

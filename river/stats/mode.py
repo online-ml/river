@@ -6,7 +6,7 @@ from river import utils
 from . import base
 
 
-__all__ = ['Mode']
+__all__ = ["Mode"]
 
 
 class Mode(base.Univariate):
@@ -55,7 +55,7 @@ class Mode(base.Univariate):
 
     @property
     def name(self):
-        return 'mode'
+        return "mode"
 
     def update(self, x):
         if self.k == -1 or x in self.counts or len(self.counts) < self.k:

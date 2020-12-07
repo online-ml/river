@@ -15,13 +15,12 @@ class NominalAttributeMultiwayTest(InstanceConditionalTest):
         A dictionary that maps the feature values to their respective
         branch ids.
     """
+
     def __init__(self, att_idx, branch_mapping):
         super().__init__()
         self._att_idx = att_idx
         self._branch_mapping = branch_mapping
-        self._reverse_branch_mapping = {
-            b: v for v, b in branch_mapping.items()
-        }
+        self._reverse_branch_mapping = {b: v for v, b in branch_mapping.items()}
 
     def branch_for_instance(self, x):
         # Return branch for feature value or -1 in case the element was not

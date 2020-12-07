@@ -2,13 +2,14 @@ from . import base
 
 import numpy as np
 
-from scipy.stats import gmean
+from scipy import stats
 
-__all__ = ['GeometricMean']
+
+__all__ = ["GeometricMean"]
 
 
 class GeometricMean(base.MultiClassMetric):
-    """Geometric mean score.
+    r"""Geometric mean score.
 
     The geometric mean is a good indicator of a classifier's performance in the presence of class
     imbalance because it is independent of the distribution of examples between classes. This
@@ -58,6 +59,6 @@ class GeometricMean(base.MultiClassMetric):
                     sensitivity_per_class[i] = self.cm[c][c] / self.cm.sum_row[c]
                 except ZeroDivisionError:
                     continue
-            with np.errstate(divide='ignore', invalid='ignore'):
-                return gmean(sensitivity_per_class)
-        return 0.
+            with np.errstate(divide="ignore", invalid="ignore"):
+                return stats.gmean(sensitivity_per_class)
+        return 0.0

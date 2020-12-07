@@ -2,7 +2,7 @@ from river import base
 from river import utils
 
 
-__all__ = ['PredClipper']
+__all__ = ["PredClipper"]
 
 
 class PredClipper(base.Regressor, base.WrapperMixin):
@@ -57,7 +57,7 @@ class PredClipper(base.Regressor, base.WrapperMixin):
 
     @property
     def _labelloc(self):
-        return 'b'  # for bottom
+        return "b"  # for bottom
 
     def learn_one(self, x, y):
         self.regressor.learn_one(x, y)

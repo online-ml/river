@@ -3,7 +3,7 @@ import random
 from river import base
 
 
-__all__ = ['PoissonInclusion']
+__all__ = ["PoissonInclusion"]
 
 
 class PoissonInclusion(base.Transformer):

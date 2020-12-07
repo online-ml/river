@@ -11,12 +11,12 @@ from river import utils
 
 
 __all__ = [
-    'Binarizer',
-    'MaxAbsScaler',
-    'MinMaxScaler',
-    'Normalizer',
-    'RobustScaler',
-    'StandardScaler'
+    "Binarizer",
+    "MaxAbsScaler",
+    "MinMaxScaler",
+    "Normalizer",
+    "RobustScaler",
+    "StandardScaler",
 ]
 
 
@@ -27,7 +27,7 @@ def safe_div(a, b):
     the denominator can be nil if a feature has no variance.
 
     """
-    return a / b if b else 0.
+    return a / b if b else 0.0
 
 
 class Binarizer(base.Transformer):
@@ -61,7 +61,7 @@ class Binarizer(base.Transformer):
 
     """
 
-    def __init__(self, threshold=0., dtype=bool):
+    def __init__(self, threshold=0.0, dtype=bool):
         self.threshold = threshold
         self.dtype = dtype
 
@@ -160,10 +160,7 @@ class StandardScaler(base.Transformer):
         return self
 
     def transform_one(self, x):
-        return {
-            i: safe_div(xi - self.means[i], self.vars[i] ** .5)
-            for i, xi in x.items()
-        }
+        return {i: safe_div(xi - self.means[i], self.vars[i] ** 0.5) for i, xi in x.items()}
 
     def learn_many(self, X: pd.DataFrame):
         """Update with a mini-batch of features.
@@ -188,7 +185,7 @@ class StandardScaler(base.Transformer):
 
         new_means = np.nanmean(X, axis=0)
         # We could call np.var, but we already have the mean so we can be smart
-        new_vars = np.einsum('ij,ij->j', X, X) / len(X) - new_means ** 2
+        new_vars = np.einsum("ij,ij->j", X, X) / len(X) - new_means ** 2
         new_counts = np.sum(~np.isnan(X), axis=0)
 
         for col, new_mean, new_var, new_count in zip(columns, new_means, new_vars, new_counts):
@@ -201,11 +198,7 @@ class StandardScaler(base.Transformer):
             b = new_count / (old_count + new_count)
 
             self.means[col] = a * old_mean + b * new_mean
-            self.vars[col] = (
-                a * old_var +
-                b * new_var +
-                a * b * (old_mean - new_mean) ** 2
-            )
+            self.vars[col] = a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
             self.counts[col] += new_count
 
         return self
@@ -222,7 +215,7 @@ class StandardScaler(base.Transformer):
         """
 
         means = np.array([self.means[c] for c in X.columns])
-        stds = np.array([self.vars[c] ** .5 for c in X.columns])
+        stds = np.array([self.vars[c] ** 0.5 for c in X.columns])
 
         Xt = X.values - means
         np.divide(Xt, stds, where=stds > 0, out=Xt)
@@ -340,10 +333,7 @@ class MaxAbsScaler(base.Transformer):
         return self
 
     def transform_one(self, x):
-        return {
-            i: safe_div(xi, self.abs_max[i].get())
-            for i, xi in x.items()
-        }
+        return {i: safe_div(xi, self.abs_max[i].get()) for i, xi in x.items()}
 
 
 class RobustScaler(base.Transformer):
@@ -398,12 +388,12 @@ class RobustScaler(base.Transformer):
 
     """
 
-    def __init__(self, with_centering=True, with_scaling=True, q_inf=.25, q_sup=.75):
+    def __init__(self, with_centering=True, with_scaling=True, q_inf=0.25, q_sup=0.75):
         self.with_centering = with_centering
         self.with_scaling = with_scaling
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.median = collections.defaultdict(functools.partial(stats.Quantile, .5))
+        self.median = collections.defaultdict(functools.partial(stats.Quantile, 0.5))
         self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
 
     def learn_one(self, x):

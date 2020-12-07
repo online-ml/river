@@ -4,12 +4,11 @@ from .. import base
 
 
 class Forecaster(base.Estimator):
-
     @property
     def _supervised(self):
         return True
 
-    def learn_one(self, y: float, x: dict = None) -> 'Forecaster':
+    def learn_one(self, y: float, x: dict = None) -> "Forecaster":
         """Updates the model.
 
         Parameters

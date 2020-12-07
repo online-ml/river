@@ -6,8 +6,11 @@ from vaex.utils import _ensure_strings_from_expressions, _ensure_list
 from river import base
 
 
-def iter_vaex(X: vaex.dataframe.DataFrame, y: typing.Union[str, vaex.expression.Expression] = None,
-              features: typing.Union[typing.List[str], vaex.expression.Expression] = None) -> base.typing.Stream:
+def iter_vaex(
+    X: vaex.dataframe.DataFrame,
+    y: typing.Union[str, vaex.expression.Expression] = None,
+    features: typing.Union[typing.List[str], vaex.expression.Expression] = None,
+) -> base.typing.Stream:
     """Yields rows from a ``vaex.DataFrame``.
 
     Parameters
@@ -36,7 +39,7 @@ def iter_vaex(X: vaex.dataframe.DataFrame, y: typing.Union[str, vaex.expression.
         for i in range(len(X)):
             yield (
                 {key: X.evaluate(key, i, i + 1)[0] for key in feature_names},
-                {key: X.evaluate(key, i, i + 1)[0] for key in y}
+                {key: X.evaluate(key, i, i + 1)[0] for key in y},
             )
 
     else:
@@ -44,5 +47,5 @@ def iter_vaex(X: vaex.dataframe.DataFrame, y: typing.Union[str, vaex.expression.
         for i in range(len(X)):
             yield (
                 {key: X.evaluate(key, i, i + 1)[0] for key in feature_names},
-                X.evaluate(y[0], i, i + 1)[0]
+                X.evaluate(y[0], i, i + 1)[0],
             )

@@ -7,10 +7,14 @@ import numpy as np
 from river import base
 
 
-def iter_array(X: np.ndarray, y: np.ndarray = None,
-               feature_names: typing.List[base.typing.FeatureName] = None,
-               target_names: typing.List[base.typing.FeatureName] = None, shuffle: bool = False,
-               seed: int = None) -> base.typing.Stream:
+def iter_array(
+    X: np.ndarray,
+    y: np.ndarray = None,
+    feature_names: typing.List[base.typing.FeatureName] = None,
+    target_names: typing.List[base.typing.FeatureName] = None,
+    shuffle: bool = False,
+    seed: int = None,
+) -> base.typing.Stream:
     """Iterates over the rows from an array of features and an array of targets.
 
     This method is intended to work with `numpy` arrays, but should also work with Python lists.
@@ -66,10 +70,10 @@ def iter_array(X: np.ndarray, y: np.ndarray = None,
 
     if multioutput:
 
-        for xi, yi in itertools.zip_longest(X, y if hasattr(y, '__iter__') else []):
+        for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):
             yield dict(zip(feature_names, xi)), dict(zip(target_names, yi))
 
     else:
 
-        for xi, yi in itertools.zip_longest(X, y if hasattr(y, '__iter__') else []):
+        for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):
             yield dict(zip(feature_names, xi)), yi

@@ -4,7 +4,6 @@ from .variance_reduction_split_criterion import VarianceReductionSplitCriterion
 # This class extends VarianceReductionSplitCriterion since it just computes
 # the variance differently than its ancestor (considering multiple targets)
 class IntraClusterVarianceReductionSplitCriterion(VarianceReductionSplitCriterion):
-
     def __init__(self, min_samples_split: int = 5):
         super().__init__(min_samples_split)
 
@@ -30,4 +29,4 @@ class IntraClusterVarianceReductionSplitCriterion(VarianceReductionSplitCriterio
     def compute_var(dist):
         icvr = [vr.get() for vr in dist.values()]
         n = len(icvr)
-        return sum(icvr) / n if n > 0 else 0.
+        return sum(icvr) / n if n > 0 else 0.0

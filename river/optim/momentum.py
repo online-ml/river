@@ -3,7 +3,7 @@ import collections
 from . import base
 
 
-__all__ = ['Momentum']
+__all__ = ["Momentum"]
 
 
 class Momentum(base.Optimizer):
@@ -37,7 +37,7 @@ class Momentum(base.Optimizer):
 
     """
 
-    def __init__(self, lr=.1, rho=.9):
+    def __init__(self, lr=0.1, rho=0.9):
         super().__init__(lr)
         self.rho = rho
         self.s = collections.defaultdict(float)

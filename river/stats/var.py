@@ -52,13 +52,15 @@ class Var(base.Univariate):
     def __init__(self, ddof=1):
         self.ddof = ddof
         self.mean = mean.Mean()
-        self.sigma = 0.
+        self.sigma = 0.0
 
-    def update(self, x, w=1.):
+    def update(self, x, w=1.0):
         mean = self.mean.get()
         self.mean.update(x, w)
         if self.mean.n > self.ddof:
-            self.sigma += w * ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
+            self.sigma += (
+                w * ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
+            )
         return self
 
     def get(self):
@@ -75,8 +77,9 @@ class Var(base.Univariate):
         # scale and merge sigma
         self.sigma = (old_n - self.ddof) * self.sigma + (other.mean.n - other.ddof) * other.sigma
         # apply correction
-        self.sigma = (self.sigma + (delta * delta) * (old_n * other.mean.n)
-                      / self.mean.n) / (self.mean.n - self.ddof)
+        self.sigma = (self.sigma + (delta * delta) * (old_n * other.mean.n) / self.mean.n) / (
+            self.mean.n - self.ddof
+        )
 
         return self
 
@@ -88,20 +91,23 @@ class Var(base.Univariate):
 
     def __isub__(self, other):
         old_n = self.mean.n
-        delta = 0.
+        delta = 0.0
 
         self.mean -= other.mean
 
         if self.mean.n > 0 and self.mean.n > self.ddof:
             delta = other.mean.get() - self.mean.get()
             # scale both sigma and take the difference
-            self.sigma = (old_n - self.ddof) * self.sigma - (other.mean.n - other.ddof) * other.sigma
+            self.sigma = (old_n - self.ddof) * self.sigma - (
+                other.mean.n - other.ddof
+            ) * other.sigma
             # apply the correction
-            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n)\
-                / (self.mean.n - self.ddof)
+            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n) / (
+                self.mean.n - self.ddof
+            )
 
         else:
-            self.sigma = 0.
+            self.sigma = 0.0
 
         return self
 
@@ -186,4 +192,4 @@ class RollingVar(base.RollingUnivariate):
             var = (self.sos / len(self.rolling_mean)) - self.rolling_mean.get() ** 2
             return self.correction_factor * var
         except ZeroDivisionError:
-            return 0.
+            return 0.0

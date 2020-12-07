@@ -6,7 +6,7 @@ from river.base import tags
 from . import base
 
 
-__all__ = ['MultinomialNB']
+__all__ = ["MultinomialNB"]
 
 
 class MultinomialNB(base.BaseNB):
@@ -107,7 +107,7 @@ class MultinomialNB(base.BaseNB):
 
     """
 
-    def __init__(self, alpha=1.):
+    def __init__(self, alpha=1.0):
         self.alpha = alpha
         self.class_counts = collections.Counter()
         self.feature_counts = collections.defaultdict(collections.Counter)
@@ -134,7 +134,7 @@ class MultinomialNB(base.BaseNB):
         return len(self.feature_counts)
 
     def p_feature_given_class(self, f, c):
-        num = self.feature_counts.get(f, {}).get(c, 0.) + self.alpha
+        num = self.feature_counts.get(f, {}).get(c, 0.0) + self.alpha
         den = self.class_totals[c] + self.alpha * self.n_terms
         return num / den
 
@@ -143,9 +143,9 @@ class MultinomialNB(base.BaseNB):
 
     def joint_log_likelihood(self, x):
         return {
-            c: math.log(self.p_class(c)) + sum(
-                frequency * math.log(self.p_feature_given_class(f, c))
-                for f, frequency in x.items()
+            c: math.log(self.p_class(c))
+            + sum(
+                frequency * math.log(self.p_feature_given_class(f, c)) for f, frequency in x.items()
             )
             for c in self.classes_
         }

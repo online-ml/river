@@ -14,12 +14,12 @@ from river.metrics.base import MultiClassMetric
 from river.metrics.base import RegressionMetric
 from river.tree import HoeffdingTreeClassifier
 from river.tree import HoeffdingTreeRegressor
-from river.tree._nodes import RandomLearningNodeMC          # noqa
-from river.tree._nodes import RandomLearningNodeNB          # noqa
-from river.tree._nodes import RandomLearningNodeNBA         # noqa
-from river.tree._nodes import RandomLearningNodeMean        # noqa
-from river.tree._nodes import RandomLearningNodeModel       # noqa
-from river.tree._nodes import RandomLearningNodeAdaptive    # noqa
+from river.tree._nodes import RandomLearningNodeMC  # noqa
+from river.tree._nodes import RandomLearningNodeNB  # noqa
+from river.tree._nodes import RandomLearningNodeNBA  # noqa
+from river.tree._nodes import RandomLearningNodeMean  # noqa
+from river.tree._nodes import RandomLearningNodeModel  # noqa
+from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
 from river.stats import Var
 from river.utils.skmultiflow_utils import check_random_state
 
@@ -29,15 +29,17 @@ class BaseForest(base.EnsembleMixin):
     _FEATURES_SQRT = "sqrt"
     _FEATURES_LOG2 = "log2"
 
-    def __init__(self,
-                 n_models: int,
-                 max_features: typing.Union[bool, str, int],
-                 lambda_value: int,
-                 drift_detector: typing.Union[base.DriftDetector, None],
-                 warning_detector: typing.Union[base.DriftDetector, None],
-                 metric: typing.Union[MultiClassMetric, RegressionMetric],
-                 disable_weighted_vote,
-                 seed):
+    def __init__(
+        self,
+        n_models: int,
+        max_features: typing.Union[bool, str, int],
+        lambda_value: int,
+        drift_detector: typing.Union[base.DriftDetector, None],
+        warning_detector: typing.Union[base.DriftDetector, None],
+        metric: typing.Union[MultiClassMetric, RegressionMetric],
+        disable_weighted_vote,
+        seed,
+    ):
         super().__init__([None])  # List of models is properly initialized later
         self.models = []
         self.n_models = n_models
@@ -48,7 +50,7 @@ class BaseForest(base.EnsembleMixin):
         self.drift_detector = drift_detector
         self.warning_detector = warning_detector
         self.seed = seed
-        self._rng = check_random_state(self.seed)   # Actual random number generator
+        self._rng = check_random_state(self.seed)  # Actual random number generator
 
         # Internal parameters
         self._n_samples_seen = 0
@@ -78,7 +80,7 @@ class BaseForest(base.EnsembleMixin):
         self._set_max_features(len(features))
 
         # Generate a different random seed per tree
-        seeds = self._rng.randint(0, 4294967295, size=self.n_models, dtype='u8')
+        seeds = self._rng.randint(0, 4294967295, size=self.n_models, dtype="u8")
 
         self.models = [
             self._base_member_class(
@@ -88,7 +90,7 @@ class BaseForest(base.EnsembleMixin):
                 drift_detector=self.drift_detector,
                 warning_detector=self.warning_detector,
                 is_background_learner=False,
-                metric=self.metric
+                metric=self.metric,
             )
             for i in range(self.n_models)
         ]
@@ -98,9 +100,9 @@ class BaseForest(base.EnsembleMixin):
         raise NotImplementedError
 
     def _set_max_features(self, n_features):
-        if self.max_features == 'sqrt':
+        if self.max_features == "sqrt":
             self.max_features = round(math.sqrt(n_features))
-        elif self.max_features == 'log2':
+        elif self.max_features == "log2":
             self.max_features = round(math.log2(n_features))
         elif isinstance(self.max_features, int):
             # Consider 'max_features' features at each split.
@@ -111,10 +113,11 @@ class BaseForest(base.EnsembleMixin):
         elif self.max_features is None:
             self.max_features = n_features
         else:
-            raise AttributeError(f"Invalid max_features: {self.max_features}.\n"
-                                 f"Valid options are: int [2, M], float (0., 1.],"
-                                 f" {self._FEATURES_SQRT}, {self._FEATURES_LOG2}"
-                                 )
+            raise AttributeError(
+                f"Invalid max_features: {self.max_features}.\n"
+                f"Valid options are: int [2, M], float (0., 1.],"
+                f" {self._FEATURES_SQRT}, {self._FEATURES_LOG2}"
+            )
         # Sanity checks
         # max_features is negative, use max_features + n
         if self.max_features < 0:
@@ -144,31 +147,50 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
     considered at each split.
 
     """
-    def __init__(self,
-                 max_features: int = 2,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_criterion: str = 'info_gain',
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'nba',
-                 nb_threshold: int = 0,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 seed=None,
-                 **kwargs):
-        super().__init__(grace_period=grace_period,
-                         max_depth=max_depth,
-                         split_criterion=split_criterion,
-                         split_confidence=split_confidence,
-                         tie_threshold=tie_threshold,
-                         leaf_prediction=leaf_prediction,
-                         nb_threshold=nb_threshold,
-                         nominal_attributes=nominal_attributes,
-                         attr_obs=attr_obs,
-                         attr_obs_params=attr_obs_params,
-                         **kwargs)
+
+    def __init__(
+        self,
+        max_features: int = 2,
+        grace_period: int = 200,
+        max_depth: int = None,
+        split_criterion: str = "info_gain",
+        split_confidence: float = 1e-7,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "nba",
+        nb_threshold: int = 0,
+        nominal_attributes: list = None,
+        attr_obs: str = "gaussian",
+        attr_obs_params: dict = None,
+        seed=None,
+        **kwargs,
+    ):
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_criterion=split_criterion,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            nb_threshold=nb_threshold,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            **kwargs,
+        )
+
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_criterion=split_criterion,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            nb_threshold=nb_threshold,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            **kwargs,
+        )
 
         self.max_features = max_features
         self.seed = seed
@@ -184,22 +206,34 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
             depth = parent.depth + 1
 
         # Generate a random seed for the new learning node
-        seed = self._rng.randint(0, 4294967295, dtype='u8')
+        seed = self._rng.randint(0, 4294967295, dtype="u8")
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLearningNodeMC(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params,
-                self.max_features, seed
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return RandomLearningNodeNB(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params,
-                self.max_features, seed
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return RandomLearningNodeNBA(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params,
-                self.max_features, seed
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
             )
 
     def new_instance(self):
@@ -219,39 +253,43 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
 
     """
 
-    def __init__(self,
-                 max_features: int = 2,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'model',
-                 leaf_model: base.Regressor = None,
-                 model_selector_decay: float = 0.95,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 min_samples_split: int = 5,
-                 seed=None,
-                 **kwargs):
-        super().__init__(grace_period=grace_period,
-                         max_depth=max_depth,
-                         split_confidence=split_confidence,
-                         tie_threshold=tie_threshold,
-                         leaf_prediction=leaf_prediction,
-                         leaf_model=leaf_model,
-                         model_selector_decay=model_selector_decay,
-                         nominal_attributes=nominal_attributes,
-                         attr_obs=attr_obs,
-                         attr_obs_params=attr_obs_params,
-                         min_samples_split=min_samples_split,
-                         **kwargs)
+    def __init__(
+        self,
+        max_features: int = 2,
+        grace_period: int = 200,
+        max_depth: int = None,
+        split_confidence: float = 1e-7,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "model",
+        leaf_model: base.Regressor = None,
+        model_selector_decay: float = 0.95,
+        nominal_attributes: list = None,
+        attr_obs: str = "gaussian",
+        attr_obs_params: dict = None,
+        min_samples_split: int = 5,
+        seed=None,
+        **kwargs,
+    ):
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            leaf_model=leaf_model,
+            model_selector_decay=model_selector_decay,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            min_samples_split=min_samples_split,
+            **kwargs,
+        )
 
         self.max_features = max_features
         self.seed = seed
         self._rng = check_random_state(self.seed)
 
-    def _new_learning_node(self, initial_stats=None, parent=None):   # noqa
+    def _new_learning_node(self, initial_stats=None, parent=None):  # noqa
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.
@@ -263,29 +301,46 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
             depth = 0
 
         # Generate a random seed for the new learning node
-        seed = self._rng.randint(0, 4294967295, dtype='u8')
+        seed = self._rng.randint(0, 4294967295, dtype="u8")
 
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
             if parent is None:
                 leaf_model = copy.deepcopy(self.leaf_model)
             else:
-                leaf_model = copy.deepcopy(parent._leaf_model)    # noqa
+                leaf_model = copy.deepcopy(parent._leaf_model)  # noqa
 
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLearningNodeMean(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params,
-                self.max_features, seed)
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
+            )
         elif self.leaf_prediction == self._MODEL:
             return RandomLearningNodeModel(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params,
-                self.max_features, seed, leaf_model=leaf_model)   # noqa
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
+                leaf_model=leaf_model,
+            )  # noqa
         else:  # adaptive learning node
             new_adaptive = RandomLearningNodeAdaptive(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params,
-                self.max_features, seed, leaf_model=leaf_model)    # noqa
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
+                leaf_model=leaf_model,
+            )  # noqa
             if parent is not None:
-                new_adaptive._fmse_mean = parent._fmse_mean    # noqa
-                new_adaptive._fmse_model = parent._fmse_model    # noqa
+                new_adaptive._fmse_mean = parent._fmse_mean  # noqa
+                new_adaptive._fmse_model = parent._fmse_model  # noqa
 
             return new_adaptive
 
@@ -446,30 +501,31 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     """
 
-    def __init__(self,
-                 n_models: int = 10,
-                 max_features: typing.Union[bool, str, int] = 'sqrt',
-                 lambda_value: int = 6,
-                 metric: MultiClassMetric = Accuracy(),
-                 disable_weighted_vote=False,
-                 drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
-                 warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
-                 # Tree parameters
-                 grace_period: int = 50,
-                 max_depth: int = None,
-                 split_criterion: str = 'info_gain',
-                 split_confidence: float = 0.01,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'nba',
-                 nb_threshold: int = 0,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 max_size: int = 32,
-                 memory_estimate_period: int = 2000000,
-                 seed: int = None,
-                 **kwargs,
-                 ):
+    def __init__(
+        self,
+        n_models: int = 10,
+        max_features: typing.Union[bool, str, int] = "sqrt",
+        lambda_value: int = 6,
+        metric: MultiClassMetric = Accuracy(),
+        disable_weighted_vote=False,
+        drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
+        warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
+        # Tree parameters
+        grace_period: int = 50,
+        max_depth: int = None,
+        split_criterion: str = "info_gain",
+        split_confidence: float = 0.01,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "nba",
+        nb_threshold: int = 0,
+        nominal_attributes: list = None,
+        attr_obs: str = "gaussian",
+        attr_obs_params: dict = None,
+        max_size: int = 32,
+        memory_estimate_period: int = 2000000,
+        seed: int = None,
+        **kwargs,
+    ):
         super().__init__(
             n_models=n_models,
             max_features=max_features,
@@ -478,7 +534,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             disable_weighted_vote=disable_weighted_vote,
             drift_detector=drift_detector,
             warning_detector=warning_detector,
-            seed=seed
+            seed=seed,
         )
 
         self._n_samples_seen = 0
@@ -513,7 +569,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         for model in self.models:
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
-            if not self.disable_weighted_vote and metric_value > 0.:
+            if not self.disable_weighted_vote and metric_value > 0.0:
                 y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
             y_pred.update(y_proba_temp)
 
@@ -524,22 +580,22 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     def _new_base_model(self, seed: int):
         return BaseTreeClassifier(
-                    max_features=self.max_features,
-                    grace_period=self.grace_period,
-                    split_criterion=self.split_criterion,
-                    split_confidence=self.split_confidence,
-                    tie_threshold=self.tie_threshold,
-                    leaf_prediction=self.leaf_prediction,
-                    nb_threshold=self.nb_threshold,
-                    nominal_attributes=self.nominal_attributes,
-                    attr_obs=self.attr_obs,
-                    attr_obs_params=self.attr_obs_params,
-                    max_depth=self.max_depth,
-                    memory_estimate_period=self.memory_estimate_period,
-                    max_size=self.max_size,
-                    seed=seed,
-                    **self.kwargs
-                )
+            max_features=self.max_features,
+            grace_period=self.grace_period,
+            split_criterion=self.split_criterion,
+            split_confidence=self.split_confidence,
+            tie_threshold=self.tie_threshold,
+            leaf_prediction=self.leaf_prediction,
+            nb_threshold=self.nb_threshold,
+            nominal_attributes=self.nominal_attributes,
+            attr_obs=self.attr_obs,
+            attr_obs_params=self.attr_obs_params,
+            max_depth=self.max_depth,
+            memory_estimate_period=self.memory_estimate_period,
+            max_size=self.max_size,
+            seed=seed,
+            **self.kwargs,
+        )
 
 
 class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
@@ -694,36 +750,38 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
     """
 
-    _MEAN = 'mean'
-    _MEDIAN = 'median'
+    _MEAN = "mean"
+    _MEDIAN = "median"
     _VALID_AGGREGATION_METHOD = [_MEAN, _MEDIAN]
 
-    def __init__(self,
-                 # Forest parameters
-                 n_models: int = 10,
-                 max_features='sqrt',
-                 aggregation_method: str = 'median',
-                 lambda_value: int = 6,
-                 metric: RegressionMetric = MSE(),
-                 disable_weighted_vote=False,
-                 drift_detector: base.DriftDetector = ADWIN(0.001),
-                 warning_detector: base.DriftDetector = ADWIN(0.01),
-                 # Tree parameters
-                 grace_period: int = 50,
-                 max_depth: int = None,
-                 split_confidence: float = 0.01,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'model',
-                 leaf_model: base.Regressor = None,
-                 model_selector_decay: float = 0.95,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'e-bst',
-                 attr_obs_params: dict = None,
-                 min_samples_split: int = 5,
-                 max_size: int = 100,
-                 memory_estimate_period: int = 2000000,
-                 seed: int = None,
-                 **kwargs):
+    def __init__(
+        self,
+        # Forest parameters
+        n_models: int = 10,
+        max_features="sqrt",
+        aggregation_method: str = "median",
+        lambda_value: int = 6,
+        metric: RegressionMetric = MSE(),
+        disable_weighted_vote=False,
+        drift_detector: base.DriftDetector = ADWIN(0.001),
+        warning_detector: base.DriftDetector = ADWIN(0.01),
+        # Tree parameters
+        grace_period: int = 50,
+        max_depth: int = None,
+        split_confidence: float = 0.01,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "model",
+        leaf_model: base.Regressor = None,
+        model_selector_decay: float = 0.95,
+        nominal_attributes: list = None,
+        attr_obs: str = "e-bst",
+        attr_obs_params: dict = None,
+        min_samples_split: int = 5,
+        max_size: int = 100,
+        memory_estimate_period: int = 2000000,
+        seed: int = None,
+        **kwargs,
+    ):
         super().__init__(
             n_models=n_models,
             max_features=max_features,
@@ -732,7 +790,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             disable_weighted_vote=disable_weighted_vote,
             drift_detector=drift_detector,
             warning_detector=warning_detector,
-            seed=seed
+            seed=seed,
         )
 
         self._n_samples_seen = 0
@@ -757,20 +815,22 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         if aggregation_method in self._VALID_AGGREGATION_METHOD:
             self.aggregation_method = aggregation_method
         else:
-            raise ValueError(f'Invalid aggregation_method: {aggregation_method}.\n'
-                             f'Valid values are: {self._VALID_AGGREGATION_METHOD}')
+            raise ValueError(
+                f"Invalid aggregation_method: {aggregation_method}.\n"
+                f"Valid values are: {self._VALID_AGGREGATION_METHOD}"
+            )
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
 
         if not self.models:
             self._init_ensemble(features=list(x.keys()))
-            return 0.
+            return 0.0
 
         y_pred = np.zeros(self.n_models)
 
         if not self.disable_weighted_vote:
             weights = np.zeros(self.n_models)
-            sum_weights = 0.
+            sum_weights = 0.0
             for idx, model in enumerate(self.models):
                 y_pred[idx] = model.predict_one(x)
                 weights[idx] = model.metric.get()
@@ -809,7 +869,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             max_size=self.max_size,
             memory_estimate_period=self.memory_estimate_period,
             seed=seed,
-            **self.kwargs
+            **self.kwargs,
         )
 
     @property
@@ -848,14 +908,17 @@ class BaseForestMember:
         Metric to track performance.
 
     """
-    def __init__(self,
-                 index_original: int,
-                 model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 metric: typing.Union[MultiClassMetric, RegressionMetric]):
+
+    def __init__(
+        self,
+        index_original: int,
+        model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        metric: typing.Union[MultiClassMetric, RegressionMetric],
+    ):
         self.index_original = index_original
         self.model = model.clone()
         self.created_on = created_on
@@ -909,8 +972,7 @@ class BaseForestMember:
         if isinstance(self.metric, MultiClassMetric):
             self.metric.cm.reset()
 
-    def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int,
-                  n_samples_seen: int):
+    def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int):
 
         self.model.learn_one(x, y, sample_weight=sample_weight)
 
@@ -938,7 +1000,7 @@ class BaseForestMember:
                         drift_detector=self.drift_detector,
                         warning_detector=self.warning_detector,
                         is_background_learner=True,
-                        metric=self.metric
+                        metric=self.metric,
                     )
                     # Reset the warning detector for the current object
                     self.warning_detector = self.warning_detector.clone()
@@ -953,23 +1015,27 @@ class BaseForestMember:
                 self.reset(n_samples_seen)
 
     @abc.abstractmethod
-    def _drift_detector_input(self,
-                              y_true: typing.Union[base.typing.ClfTarget, base.typing.RegTarget],
-                              y_pred: typing.Union[base.typing.ClfTarget, base.typing.RegTarget]):
+    def _drift_detector_input(
+        self,
+        y_true: typing.Union[base.typing.ClfTarget, base.typing.RegTarget],
+        y_pred: typing.Union[base.typing.ClfTarget, base.typing.RegTarget],
+    ):
         raise NotImplementedError
 
 
 class ForestMemberClassifier(BaseForestMember, base.Classifier):
     """Forest member class for classification"""
 
-    def __init__(self,
-                 index_original: int,
-                 model: BaseTreeClassifier,
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 metric: MultiClassMetric):
+    def __init__(
+        self,
+        index_original: int,
+        model: BaseTreeClassifier,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        metric: MultiClassMetric,
+    ):
         super().__init__(
             index_original=index_original,
             model=model,
@@ -977,11 +1043,11 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
             drift_detector=drift_detector,
             warning_detector=warning_detector,
             is_background_learner=is_background_learner,
-            metric=metric
+            metric=metric,
         )
 
     def _drift_detector_input(self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget):
-        return int(not y_true == y_pred)    # Not correctly_classifies
+        return int(not y_true == y_pred)  # Not correctly_classifies
 
     def predict_one(self, x):
         return self.model.predict_one(x)
@@ -993,14 +1059,16 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
 class ForestMemberRegressor(BaseForestMember, base.Regressor):
     """Forest member class for regression"""
 
-    def __init__(self,
-                 index_original: int,
-                 model: BaseTreeRegressor,
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 metric: RegressionMetric):
+    def __init__(
+        self,
+        index_original: int,
+        model: BaseTreeRegressor,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        metric: RegressionMetric,
+    ):
         super().__init__(
             index_original=index_original,
             model=model,
@@ -1008,9 +1076,9 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
             drift_detector=drift_detector,
             warning_detector=warning_detector,
             is_background_learner=is_background_learner,
-            metric=metric
+            metric=metric,
         )
-        self._var = Var()   # Used to track drift
+        self._var = Var()  # Used to track drift
 
     def _drift_detector_input(self, y_true: float, y_pred: float):
         drift_input = y_true - y_pred

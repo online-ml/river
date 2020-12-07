@@ -4,11 +4,14 @@ import typing
 from river import base
 
 
-__all__ = ['iter_sql']
+__all__ = ["iter_sql"]
 
 
-def iter_sql(query: typing.Union[str, sqlalchemy.sql.expression.Selectable],
-             conn: sqlalchemy.engine.Connectable, target_name: str = None) -> base.typing.Stream:
+def iter_sql(
+    query: typing.Union[str, sqlalchemy.sql.expression.Selectable],
+    conn: sqlalchemy.engine.Connectable,
+    target_name: str = None,
+) -> base.typing.Stream:
     """Iterates over the results from an SQL query.
 
     By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the

@@ -7,8 +7,7 @@ from .attribute_observer import AttributeObserver
 
 
 class NominalAttributeRegressionObserver(AttributeObserver):
-    """Nominal attribute observer for regression tasks.
-    """
+    """Nominal attribute observer for regression tasks."""
 
     def __init__(self):
         super().__init__()
@@ -51,11 +50,13 @@ class NominalAttributeRegressionObserver(AttributeObserver):
             post_split_dist = [self._statistics[k] for k in ordered_feature_values]
 
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
-            branch_mapping = {attr_val: branch_id for branch_id, attr_val in
-                              enumerate(ordered_feature_values)}
+            branch_mapping = {
+                attr_val: branch_id for branch_id, attr_val in enumerate(ordered_feature_values)
+            }
             current_best = AttributeSplitSuggestion(
                 NominalAttributeMultiwayTest(att_idx, branch_mapping),
-                post_split_dist, merit
+                post_split_dist,
+                merit,
             )
 
         for att_val in ordered_feature_values:
@@ -67,8 +68,6 @@ class NominalAttributeRegressionObserver(AttributeObserver):
 
             if current_best is None or merit > current_best.merit:
                 nom_att_binary_test = NominalAttributeBinaryTest(att_idx, att_val)
-                current_best = AttributeSplitSuggestion(
-                    nom_att_binary_test, post_split_dist, merit
-                )
+                current_best = AttributeSplitSuggestion(nom_att_binary_test, post_split_dist, merit)
 
         return current_best

@@ -3,7 +3,7 @@ import math
 from . import base
 
 
-__all__ = ['MSE', 'RMSE', 'RMSLE']
+__all__ = ["MSE", "RMSE", "RMSLE"]
 
 
 class MSE(base.MeanMetric, base.RegressionMetric):
@@ -57,7 +57,7 @@ class RMSE(MSE):
     """
 
     def get(self):
-        return super().get() ** .5
+        return super().get() ** 0.5
 
 
 class RMSLE(RMSE):
@@ -80,5 +80,5 @@ class RMSLE(RMSE):
 
     """
 
-    def update(self, y_true, y_pred, sample_weight=1.):
+    def update(self, y_true, y_pred, sample_weight=1.0):
         return super().update(math.log(y_true + 1), math.log(y_pred + 1), sample_weight)

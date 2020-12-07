@@ -61,8 +61,4 @@ class VarianceThreshold(base.Transformer):
         return self.variances[feature].get() > self.threshold
 
     def transform_one(self, x):
-        return {
-            i: xi
-            for i, xi in x.items()
-            if self.check_feature(i)
-        }
+        return {i: xi for i, xi in x.items() if self.check_feature(i)}

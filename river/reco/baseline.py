@@ -9,7 +9,7 @@ from river import utils
 from . import base
 
 
-__all__ = ['Baseline']
+__all__ = ["Baseline"]
 
 
 class Baseline(base.Recommender):
@@ -82,8 +82,14 @@ class Baseline(base.Recommender):
 
     """
 
-    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.Loss = None,
-                 l2=0., initializer: optim.initializers.Initializer = None, clip_gradient=1e12):
+    def __init__(
+        self,
+        optimizer: optim.Optimizer = None,
+        loss: optim.losses.Loss = None,
+        l2=0.0,
+        initializer: optim.initializers.Initializer = None,
+        clip_gradient=1e12,
+    ):
         self.optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
@@ -96,8 +102,12 @@ class Baseline(base.Recommender):
 
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
-        self.u_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(initializer)
-        self.i_biases: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(initializer)
+        self.u_biases: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(initializer)
+        self.i_biases: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(initializer)
 
     def _predict_one(self, user, item):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]

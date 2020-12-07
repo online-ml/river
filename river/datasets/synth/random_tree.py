@@ -64,17 +64,24 @@ class RandomTree(base.SyntheticDataset):
 
     """
 
-    def __init__(self, seed_tree: int or np.random.RandomState = None,
-                 seed_sample: int or np.random.RandomState = None,
-                 n_classes: int = 2,
-                 n_num_features: int = 5,
-                 n_cat_features: int = 5,
-                 n_categories_per_feature: int = 5,
-                 max_tree_depth: int = 5,
-                 first_leaf_level: int = 3,
-                 fraction_leaves_per_level: float = 0.15):
-        super().__init__(n_features=n_num_features + n_cat_features,
-                         n_classes=n_classes, n_outputs=1, task=base.MULTI_CLF)
+    def __init__(
+        self,
+        seed_tree: int or np.random.RandomState = None,
+        seed_sample: int or np.random.RandomState = None,
+        n_classes: int = 2,
+        n_num_features: int = 5,
+        n_cat_features: int = 5,
+        n_categories_per_feature: int = 5,
+        max_tree_depth: int = 5,
+        first_leaf_level: int = 3,
+        fraction_leaves_per_level: float = 0.15,
+    ):
+        super().__init__(
+            n_features=n_num_features + n_cat_features,
+            n_classes=n_classes,
+            n_outputs=1,
+            task=base.MULTI_CLF,
+        )
 
         self.seed_tree = seed_tree
         self.seed_sample = seed_sample
@@ -104,14 +111,18 @@ class RandomTree(base.SyntheticDataset):
         min_numeric_values = np.zeros(self.n_num_features)
         max_numeric_values = np.ones(self.n_num_features)
 
-        self.tree_root = self._generate_random_tree_node(0, candidate_features,
-                                                         min_numeric_values,
-                                                         max_numeric_values,
-                                                         rng_tree)
+        self.tree_root = self._generate_random_tree_node(
+            0, candidate_features, min_numeric_values, max_numeric_values, rng_tree
+        )
 
-    def _generate_random_tree_node(self, current_depth: int, candidate_features: np.ndarray,
-                                   min_numeric_value: np.ndarray, max_numeric_value: np.ndarray,
-                                   rng: np.random.RandomState):
+    def _generate_random_tree_node(
+        self,
+        current_depth: int,
+        candidate_features: np.ndarray,
+        min_numeric_value: np.ndarray,
+        max_numeric_value: np.ndarray,
+        rng: np.random.RandomState,
+    ):
         """
         Creates a node, choosing at random the splitting feature and value.
         Then recursively generates its children. If the split feature is a
@@ -150,9 +161,10 @@ class RandomTree(base.SyntheticDataset):
 
         """
         # Stop recursive call
-        if ((current_depth >= self.max_tree_depth) or
-                ((current_depth >= self.first_leaf_level)
-                 and (self.fraction_leaves_per_level >= (1.0 - rng.rand())))):
+        if (current_depth >= self.max_tree_depth) or (
+            (current_depth >= self.first_leaf_level)
+            and (self.fraction_leaves_per_level >= (1.0 - rng.rand()))
+        ):
             leaf_node = TreeNode()
             leaf_node.class_label = rng.randint(self.n_classes)
             return leaf_node
@@ -164,32 +176,50 @@ class RandomTree(base.SyntheticDataset):
             split_node.split_feature_idx = chosen_feature
             min_val = min_numeric_value[chosen_feature]
             max_val = max_numeric_value[chosen_feature]
-            split_node.split_feature_val = ((max_val - min_val) * rng.rand() + min_val)
+            split_node.split_feature_val = (max_val - min_val) * rng.rand() + min_val
             # Left node
             new_max_value = np.array(max_numeric_value)
             new_max_value[chosen_feature] = split_node.split_feature_val
             split_node.children.append(
-                self._generate_random_tree_node(current_depth + 1, candidate_features,
-                                                min_numeric_value, new_max_value, rng))
+                self._generate_random_tree_node(
+                    current_depth + 1,
+                    candidate_features,
+                    min_numeric_value,
+                    new_max_value,
+                    rng,
+                )
+            )
             # Right node
             new_min_value = np.array(min_numeric_value)
             new_min_value[chosen_feature] = split_node.split_feature_val
             split_node.children.append(
-                self._generate_random_tree_node(current_depth + 1, candidate_features,
-                                                new_min_value, max_numeric_value, rng))
+                self._generate_random_tree_node(
+                    current_depth + 1,
+                    candidate_features,
+                    new_min_value,
+                    max_numeric_value,
+                    rng,
+                )
+            )
         else:
             # Chosen feature is categorical
             split_node.split_feature_idx = candidate_features[chosen_feature]
             # Remove chosen features from candidates
-            new_candidates = \
-                np.delete(candidate_features,
-                          np.argwhere(candidate_features == split_node.split_feature_idx))
+            new_candidates = np.delete(
+                candidate_features,
+                np.argwhere(candidate_features == split_node.split_feature_idx),
+            )
             # Generate children per category
             for i in range(self.n_categories_per_feature):
                 split_node.children.append(
-                    self._generate_random_tree_node(current_depth + 1, new_candidates,
-                                                    min_numeric_value, max_numeric_value,
-                                                    rng))
+                    self._generate_random_tree_node(
+                        current_depth + 1,
+                        new_candidates,
+                        min_numeric_value,
+                        max_numeric_value,
+                        rng,
+                    )
+                )
         return split_node
 
     def _classify_instance(self, node, x):
@@ -235,9 +265,12 @@ class TreeNode:
         Feature value for the split, if the node is a split node.
     """
 
-    def __init__(self, class_label: int = None,
-                 split_feature_idx: int = None,
-                 split_feature_val: int or float = None):
+    def __init__(
+        self,
+        class_label: int = None,
+        split_feature_idx: int = None,
+        split_feature_val: int or float = None,
+    ):
         self.class_label = class_label
         self.split_feature_idx = split_feature_idx
         self.split_feature_val = split_feature_val

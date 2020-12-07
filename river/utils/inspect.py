@@ -14,12 +14,12 @@ from river import compose
 
 
 __all__ = [
-    'extract_relevant',
-    'isclassifier',
-    'isregressor',
-    'ismoclassifier',
-    'ismoregressor',
-    'isdriftdetector'
+    "extract_relevant",
+    "isclassifier",
+    "isregressor",
+    "ismoclassifier",
+    "ismoregressor",
+    "isdriftdetector",
 ]
 
 

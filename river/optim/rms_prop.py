@@ -3,7 +3,7 @@ import collections
 from . import base
 
 
-__all__ = ['RMSProp']
+__all__ = ["RMSProp"]
 
 
 class RMSProp(base.Optimizer):
@@ -42,7 +42,7 @@ class RMSProp(base.Optimizer):
 
     """
 
-    def __init__(self, lr=.1, rho=.9, eps=1e-8):
+    def __init__(self, lr=0.1, rho=0.9, eps=1e-8):
         super().__init__(lr)
         self.rho = rho
         self.eps = eps

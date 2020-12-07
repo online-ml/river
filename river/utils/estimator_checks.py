@@ -8,7 +8,7 @@ import random
 import numpy as np
 
 
-__all__ = ['check_estimator']
+__all__ = ["check_estimator"]
 
 
 def yield_datasets(model):
@@ -30,10 +30,14 @@ def yield_datasets(model):
         # 2
         class SolarFlare:
             """One-hot encoded version of `datasets.SolarFlare"""
+
             def __iter__(self):
-                oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(int)
+                oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(
+                    int
+                )
                 for x, y in datasets.SolarFlare():
                     yield oh.transform_one(x), y
+
         yield SolarFlare()
 
     # Regression
@@ -84,9 +88,9 @@ def check_predict_proba_one(classifier, dataset):
 
         # Check the probabilities are coherent
         assert isinstance(y_pred, dict)
-        assert math.isclose(sum(y_pred.values()), 1.)
+        assert math.isclose(sum(y_pred.values()), 1.0)
         for proba in y_pred.values():
-            assert 0. <= proba <= 1.
+            assert 0.0 <= proba <= 1.0
 
         # Check predict_proba_one is pure (i.e. x and y haven't changed)
         assert x == xx
@@ -203,6 +207,7 @@ def with_ignore_exception(func, exception):
             func(*args, **kwargs)
         except exception:
             pass
+
     f.__name__ = func.__name__
     return f
 
@@ -231,7 +236,7 @@ def yield_checks(model):
 
         yield wrapped_partial(check_learn_one, dataset=dataset)
         yield wrapped_partial(check_pickling, dataset=dataset)
-        if hasattr(model, 'debug_one'):
+        if hasattr(model, "debug_one"):
             yield wrapped_partial(check_debug_one, dataset=dataset)
         yield wrapped_partial(check_shuffle_features_no_impact, dataset=dataset)
 
@@ -241,14 +246,14 @@ def yield_checks(model):
             # Some classifiers do not implement predict_proba_one
             yield with_ignore_exception(
                 wrapped_partial(check_predict_proba_one, dataset=dataset),
-                NotImplementedError
+                NotImplementedError,
             )
 
             # Specific checks for binary classifiers
             if not model._multiclass:
                 yield with_ignore_exception(
                     wrapped_partial(check_predict_proba_one_binary, dataset=dataset),
-                    NotImplementedError
+                    NotImplementedError,
                 )
 
 

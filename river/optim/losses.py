@@ -15,19 +15,19 @@ from river import utils
 
 
 __all__ = [
-    'Absolute',
-    'BinaryLoss',
-    'BinaryFocalLoss',
-    'Cauchy',
-    'CrossEntropy',
-    'Hinge',
-    'EpsilonInsensitiveHinge',
-    'Log',
-    'MultiClassLoss',
-    'Poisson',
-    'Quantile',
-    'RegressionLoss',
-    'Squared'
+    "Absolute",
+    "BinaryLoss",
+    "BinaryFocalLoss",
+    "Cauchy",
+    "CrossEntropy",
+    "Hinge",
+    "EpsilonInsensitiveHinge",
+    "Log",
+    "MultiClassLoss",
+    "Poisson",
+    "Quantile",
+    "RegressionLoss",
+    "Squared",
 ]
 
 
@@ -105,7 +105,7 @@ class BinaryLoss(Loss):
 
     def mean_func(self, y_pred):
         if isinstance(y_pred, np.ndarray):
-            return 1. / (1. + np.exp(-y_pred))
+            return 1.0 / (1.0 + np.exp(-y_pred))
         return utils.math.sigmoid(y_pred)
 
 
@@ -248,22 +248,22 @@ class CrossEntropy(MultiClassLoss):
 
         for label, proba in y_pred.items():
             if y_true == label:
-                total += self.class_weight.get(label, 1.) * math.log(clamp_proba(proba))
+                total += self.class_weight.get(label, 1.0) * math.log(clamp_proba(proba))
 
         return -total
 
     def gradient(self, y_true, y_pred):
         return {
             label: (
-                self.class_weight.get(label, 1.) *
-                (clamp_proba(y_pred.get(label, 0.)) - (y_true == label))
+                self.class_weight.get(label, 1.0)
+                * (clamp_proba(y_pred.get(label, 0.0)) - (y_true == label))
             )
             for label in {*y_pred.keys(), y_true}
         }
 
 
 class Hinge(BinaryLoss):
-    """Computes the hinge loss.
+    r"""Computes the hinge loss.
 
     Mathematically, it is defined as
 
@@ -300,7 +300,7 @@ class Hinge(BinaryLoss):
 
     """
 
-    def __init__(self, threshold=1.):
+    def __init__(self, threshold=1.0):
         self.threshold = threshold
 
     def __call__(self, y_true, y_pred):
@@ -331,7 +331,7 @@ class EpsilonInsensitiveHinge(RegressionLoss):
 
     """
 
-    def __init__(self, eps=.1):
+    def __init__(self, eps=0.1):
         self.eps = eps
 
     def __call__(self, y_true, y_pred):
@@ -375,7 +375,7 @@ class Log(BinaryLoss):
 
     """
 
-    def __init__(self, weight_pos=1., weight_neg=1.):
+    def __init__(self, weight_pos=1.0, weight_neg=1.0):
         self.weight_pos = weight_pos
         self.weight_neg = weight_neg
 
@@ -385,7 +385,7 @@ class Log(BinaryLoss):
             weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
             y_true = 2 * y_true - 1  # map {0, 1} to {-1, 1}
             z = y_pred * y_true
-            return weights * np.log(1. + np.exp(-z))
+            return weights * np.log(1.0 + np.exp(-z))
 
         weight = self.weight_pos
         if y_true == 0:
@@ -395,11 +395,11 @@ class Log(BinaryLoss):
             y_true = int(y_true)
 
         z = y_pred * y_true
-        if z > 18.:
+        if z > 18.0:
             return weight * math.exp(-z)
-        if z < -18.:
+        if z < -18.0:
             return weight * -z
-        return weight * math.log(1. + math.exp(-z))
+        return weight * math.log(1.0 + math.exp(-z))
 
     def gradient(self, y_true, y_pred):
 
@@ -407,7 +407,7 @@ class Log(BinaryLoss):
             weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
             y_true = 2 * y_true - 1  # map {0, 1} to {-1, 1}
             z = y_pred * y_true
-            return weights * -y_true / (np.exp(z) + 1.)
+            return weights * -y_true / (np.exp(z) + 1.0)
 
         weight = self.weight_pos
         if y_true == 0:
@@ -417,11 +417,11 @@ class Log(BinaryLoss):
             y_true = int(y_true)
 
         z = y_pred * y_true
-        if z > 18.:
+        if z > 18.0:
             return weight * math.exp(-z) * -y_true
-        if z < -18.:
+        if z < -18.0:
             return weight * -y_true
-        return weight * -y_true / (math.exp(z) + 1.)
+        return weight * -y_true / (math.exp(z) + 1.0)
 
 
 class Quantile(RegressionLoss):
@@ -454,7 +454,7 @@ class Quantile(RegressionLoss):
 
     """
 
-    def __init__(self, alpha=.5):
+    def __init__(self, alpha=0.5):
         self.alpha = alpha
 
     def __call__(self, y_true, y_pred):
@@ -529,7 +529,7 @@ class BinaryFocalLoss(BinaryLoss):
         xt = y_true * y_pred
 
         if isinstance(y_true, np.ndarray):
-            pt = 1. / (1 + np.exp(-(self.gamma * xt + self.beta)))
+            pt = 1.0 / (1 + np.exp(-(self.gamma * xt + self.beta)))
             return -np.log(pt) / self.gamma
 
         pt = utils.math.sigmoid(self.gamma * xt + self.beta)
@@ -542,7 +542,7 @@ class BinaryFocalLoss(BinaryLoss):
         xt = y_true * y_pred
 
         if isinstance(y_true, np.ndarray):
-            pt = 1. / (1 + np.exp(-(self.gamma * xt + self.beta)))
+            pt = 1.0 / (1 + np.exp(-(self.gamma * xt + self.beta)))
             return y_true * (pt - 1)
 
         pt = utils.math.sigmoid(self.gamma * xt + self.beta)

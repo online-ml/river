@@ -6,11 +6,7 @@ import numpy as np
 from river import base
 
 
-__all__ = [
-    'Constant',
-    'Normal',
-    'Zeros'
-]
+__all__ = ["Constant", "Normal", "Zeros"]
 
 
 class Initializer(base.Base, abc.ABC):
@@ -77,7 +73,7 @@ class Zeros(Constant):
     """
 
     def __init__(self):
-        super().__init__(value=0.)
+        super().__init__(value=0.0)
 
 
 class Normal(Initializer):
@@ -107,7 +103,7 @@ class Normal(Initializer):
 
     """
 
-    def __init__(self, mu=0., sigma=1., seed=None):
+    def __init__(self, mu=0.0, sigma=1.0, seed=None):
         self.mu = mu
         self.sigma = sigma
         self.seed = seed

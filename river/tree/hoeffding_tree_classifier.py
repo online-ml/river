@@ -131,29 +131,31 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     Accuracy: 86.09%
     """
 
-    _GINI_SPLIT = 'gini'
-    _INFO_GAIN_SPLIT = 'info_gain'
-    _HELLINGER = 'hellinger'
-    _MAJORITY_CLASS = 'mc'
-    _NAIVE_BAYES = 'nb'
-    _NAIVE_BAYES_ADAPTIVE = 'nba'
-    _BST = 'bst'
-    _GAUSSIAN = 'gaussian'
-    _HISTOGRAM = 'histogram'
+    _GINI_SPLIT = "gini"
+    _INFO_GAIN_SPLIT = "info_gain"
+    _HELLINGER = "hellinger"
+    _MAJORITY_CLASS = "mc"
+    _NAIVE_BAYES = "nb"
+    _NAIVE_BAYES_ADAPTIVE = "nba"
+    _BST = "bst"
+    _GAUSSIAN = "gaussian"
+    _HISTOGRAM = "histogram"
     _VALID_AO = [_BST, _GAUSSIAN, _HISTOGRAM]
 
-    def __init__(self,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_criterion: str = 'info_gain',
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'nba',
-                 nb_threshold: int = 0,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 **kwargs):
+    def __init__(
+        self,
+        grace_period: int = 200,
+        max_depth: int = None,
+        split_criterion: str = "info_gain",
+        split_confidence: float = 1e-7,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "nba",
+        nb_threshold: int = 0,
+        nominal_attributes: list = None,
+        attr_obs: str = "gaussian",
+        attr_obs_params: dict = None,
+        **kwargs,
+    ):
 
         super().__init__(max_depth=max_depth, **kwargs)
         self.grace_period = grace_period
@@ -175,19 +177,32 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
 
     @BaseHoeffdingTree.split_criterion.setter
     def split_criterion(self, split_criterion):
-        if split_criterion not in [self._GINI_SPLIT, self._INFO_GAIN_SPLIT, self._HELLINGER]:
-            print("Invalid split_criterion option {}', will use default '{}'".
-                  format(split_criterion, self._INFO_GAIN_SPLIT))
+        if split_criterion not in [
+            self._GINI_SPLIT,
+            self._INFO_GAIN_SPLIT,
+            self._HELLINGER,
+        ]:
+            print(
+                "Invalid split_criterion option {}', will use default '{}'".format(
+                    split_criterion, self._INFO_GAIN_SPLIT
+                )
+            )
             self._split_criterion = self._INFO_GAIN_SPLIT
         else:
             self._split_criterion = split_criterion
 
     @BaseHoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in [self._MAJORITY_CLASS, self._NAIVE_BAYES,
-                                   self._NAIVE_BAYES_ADAPTIVE]:
-            print("Invalid leaf_prediction option {}', will use default '{}'".
-                  format(leaf_prediction, self._NAIVE_BAYES_ADAPTIVE))
+        if leaf_prediction not in [
+            self._MAJORITY_CLASS,
+            self._NAIVE_BAYES,
+            self._NAIVE_BAYES_ADAPTIVE,
+        ]:
+            print(
+                "Invalid leaf_prediction option {}', will use default '{}'".format(
+                    leaf_prediction, self._NAIVE_BAYES_ADAPTIVE
+                )
+            )
             self._leaf_prediction = self._NAIVE_BAYES_ADAPTIVE
         else:
             self._leaf_prediction = leaf_prediction
@@ -240,28 +255,36 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             else:
                 split_criterion = InfoGainSplitCriterion()
             best_split_suggestions = node.best_split_suggestions(split_criterion, self)
-            best_split_suggestions.sort(key=attrgetter('merit'))
+            best_split_suggestions.sort(key=attrgetter("merit"))
             should_split = False
             if len(best_split_suggestions) < 2:
                 should_split = len(best_split_suggestions) > 0
             else:
-                hoeffding_bound = self._hoeffding_bound(split_criterion.range_of_merit(
-                    node.stats), self.split_confidence, node.total_weight)
+                hoeffding_bound = self._hoeffding_bound(
+                    split_criterion.range_of_merit(node.stats),
+                    self.split_confidence,
+                    node.total_weight,
+                )
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
-                if (best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
-                        or hoeffding_bound < self.tie_threshold):
+                if (
+                    best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
+                    or hoeffding_bound < self.tie_threshold
+                ):
                     should_split = True
                 if self.remove_poor_attrs:
                     poor_atts = set()
                     # Add any poor attribute to set
                     for i in range(len(best_split_suggestions)):
                         if best_split_suggestions[i] is not None:
-                            split_atts = best_split_suggestions[i].split_test.\
-                                attrs_test_depends_on()
+                            split_atts = best_split_suggestions[
+                                i
+                            ].split_test.attrs_test_depends_on()
                             if len(split_atts) == 1:
-                                if (best_suggestion.merit - best_split_suggestions[i].merit
-                                        > hoeffding_bound):
+                                if (
+                                    best_suggestion.merit - best_split_suggestions[i].merit
+                                    > hoeffding_bound
+                                ):
                                     poor_atts.add(split_atts[0])
                     for poor_att in poor_atts:
                         node.disable_attribute(poor_att)
@@ -273,12 +296,15 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                     self._n_inactive_leaves += 1
                     self._n_active_leaves -= 1
                 else:
-                    new_split = self._new_split_node(split_decision.split_test, node.stats,
-                                                     node.depth)
+                    new_split = self._new_split_node(
+                        split_decision.split_test, node.stats, node.depth
+                    )
 
                     for i in range(split_decision.num_splits()):
                         new_child = self._new_learning_node(
-                            split_decision.resulting_stats_from_split(i), parent=new_split)
+                            split_decision.resulting_stats_from_split(i),
+                            parent=new_split,
+                        )
                         new_split.set_child(i, new_child)
                     self._n_active_leaves -= 1
                     self._n_decision_nodes += 1
@@ -291,7 +317,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 # Manage memory
                 self._enforce_size_limit()
 
-    def learn_one(self, x, y, *, sample_weight=1.):
+    def learn_one(self, x, y, *, sample_weight=1.0):
         """Train the model on instance x and corresponding target y.
 
         Parameters
@@ -346,8 +372,9 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                     weight_seen = leaf_node.total_weight
                     weight_diff = weight_seen - leaf_node.last_split_attempt_at
                     if weight_diff >= self.grace_period:
-                        self._attempt_to_split(leaf_node, found_node.parent,
-                                               found_node.parent_branch)
+                        self._attempt_to_split(
+                            leaf_node, found_node.parent, found_node.parent_branch
+                        )
                         leaf_node.last_split_attempt_at = weight_seen
         else:
             current = leaf_node
@@ -369,7 +396,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 while not nd.is_leaf():
                     path = max(
                         nd._children,
-                        key=lambda c: nd._children[c].total_weight if nd._children[c] else 0.
+                        key=lambda c: nd._children[c].total_weight if nd._children[c] else 0.0,
                     )
                     most_traversed = nd.get_child(path)
                     # Pass instance to the most traversed path
@@ -396,7 +423,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         return self
 
     def predict_proba_one(self, x):
-        proba = {c: 0. for c in self.classes}
+        proba = {c: 0.0 for c in self.classes}
         if self._tree_root is not None:
             found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
             node = found_node.node

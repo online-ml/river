@@ -20,19 +20,19 @@ class MaliciousURL(base.RemoteDataset):
             n_samples=2_396_130,
             n_features=3_231_961,
             task=base.BINARY_CLF,
-            url='http://www.sysnet.ucsd.edu/projects/url/url_svmlight.tar.gz',
-            filename='url_svmlight',
+            url="http://www.sysnet.ucsd.edu/projects/url/url_svmlight.tar.gz",
+            filename="url_svmlight",
             size=2210273352,
-            sparse=True
+            sparse=True,
         )
 
     def _iter(self):
 
-        files = list(self.path.glob('Day*.svm'))
-        files.sort(key=lambda x: int(os.path.basename(x).split('.')[0][3:]))
+        files = list(self.path.glob("Day*.svm"))
+        files.sort(key=lambda x: int(os.path.basename(x).split(".")[0][3:]))
 
         def parse_libsvm_feature(f):
-            k, v = f.split(':')
+            k, v = f.split(":")
             return int(k), float(v)
 
         # There are 150 files with each one corresponding to a day
@@ -40,7 +40,7 @@ class MaliciousURL(base.RemoteDataset):
             with open(file) as f:
                 for line in f:
                     # Each file has the libsvm format
-                    elements = line.rstrip().split(' ')
-                    y = elements.pop(0) == '+1'
+                    elements = line.rstrip().split(" ")
+                    y = elements.pop(0) == "+1"
                     x = dict(parse_libsvm_feature(f) for f in elements)
                     yield x, y

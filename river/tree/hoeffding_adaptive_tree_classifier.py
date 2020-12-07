@@ -137,38 +137,43 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     Accuracy: 91.09%
 
     """
+
     # =============================================
     # == Hoeffding Adaptive Tree implementation ===
     # =============================================
 
-    def __init__(self,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_criterion: str = 'info_gain',
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'nba',
-                 nb_threshold: int = 0,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 bootstrap_sampling: bool = True,
-                 drift_window_threshold: int = 300,
-                 adwin_confidence: float = 0.002,
-                 seed=None,
-                 **kwargs):
+    def __init__(
+        self,
+        grace_period: int = 200,
+        max_depth: int = None,
+        split_criterion: str = "info_gain",
+        split_confidence: float = 1e-7,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "nba",
+        nb_threshold: int = 0,
+        nominal_attributes: list = None,
+        attr_obs: str = "gaussian",
+        attr_obs_params: dict = None,
+        bootstrap_sampling: bool = True,
+        drift_window_threshold: int = 300,
+        adwin_confidence: float = 0.002,
+        seed=None,
+        **kwargs
+    ):
 
-        super().__init__(grace_period=grace_period,
-                         max_depth=max_depth,
-                         split_criterion=split_criterion,
-                         split_confidence=split_confidence,
-                         tie_threshold=tie_threshold,
-                         leaf_prediction=leaf_prediction,
-                         nb_threshold=nb_threshold,
-                         nominal_attributes=nominal_attributes,
-                         attr_obs=attr_obs,
-                         attr_obs_params=attr_obs_params,
-                         **kwargs)
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_criterion=split_criterion,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            nb_threshold=nb_threshold,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            **kwargs
+        )
 
         self._n_alternate_trees = 0
         self._n_pruned_alternate_trees = 0
@@ -179,7 +184,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.adwin_confidence = adwin_confidence
         self.seed = seed
 
-    def learn_one(self, x, y, *, sample_weight=1.):
+    def learn_one(self, x, y, *, sample_weight=1.0):
         # Updates the set of observed classes
         self.classes.add(y)
 
@@ -188,8 +193,9 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
-        self._tree_root.learn_one(x, y, sample_weight=sample_weight, tree=self, parent=None,
-                                  parent_branch=-1)
+        self._tree_root.learn_one(
+            x, y, sample_weight=sample_weight, tree=self, parent=None, parent_branch=-1
+        )
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -198,7 +204,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     # Override HoeffdingTreeClassifier
     def predict_proba_one(self, x):
-        proba = {c: 0. for c in self.classes}
+        proba = {c: 0.0 for c in self.classes}
         if self._tree_root is not None:
             found_nodes = self._filter_instance_to_leaves(x, None, -1)
             for fn in found_nodes:
@@ -229,14 +235,22 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             depth = 0
 
         return AdaLearningNodeClassifier(
-            stats=initial_stats, depth=depth, attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params, adwin_delta=self.adwin_confidence,
-            seed=self.seed
+            stats=initial_stats,
+            depth=depth,
+            attr_obs=self.attr_obs,
+            attr_obs_params=self.attr_obs_params,
+            adwin_delta=self.adwin_confidence,
+            seed=self.seed,
         )
 
     def _new_split_node(self, split_test, target_stats=None, depth=0, **kwargs):
-        return AdaSplitNodeClassifier(split_test=split_test, stats=target_stats, depth=depth,
-                                      adwin_delta=self.adwin_confidence, seed=self.seed)
+        return AdaSplitNodeClassifier(
+            split_test=split_test,
+            stats=target_stats,
+            depth=depth,
+            adwin_delta=self.adwin_confidence,
+            seed=self.seed,
+        )
 
     # Override river.tree.BaseHoeffdingTree to include alternate trees
     def __find_learning_nodes(self, node, parent, parent_branch, found):
@@ -246,12 +260,10 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             if isinstance(node, SplitNode):
                 split_node = node
                 for i in range(split_node.n_children):
-                    self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found)
+                    self.__find_learning_nodes(split_node.get_child(i), split_node, i, found)
                 if split_node._alternate_tree is not None:
-                    self.__find_learning_nodes(
-                        split_node._alternate_tree, split_node, -999, found)
+                    self.__find_learning_nodes(split_node._alternate_tree, split_node, -999, found)
 
     @classmethod
     def _default_params(cls):
-        return {'seed': 1}
+        return {"seed": 1}

@@ -85,7 +85,7 @@ class Skew(moments.CentralMoments):
 
     @property
     def name(self):
-        return 'skew'
+        return "skew"
 
     def update(self, x):
         self.count.update()
