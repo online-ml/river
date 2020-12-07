@@ -6,7 +6,6 @@ from river import base
 
 
 class ClassificationSampler(base.WrapperMixin, base.Classifier):
-
     def __init__(self, classifier, seed=None):
         self.classifier = classifier
         self.seed = seed
@@ -150,8 +149,13 @@ class RandomSampler(ClassificationSampler):
 
     """
 
-    def __init__(self, classifier: base.Classifier, desired_dist: dict, sampling_rate=1.,
-                 seed: int = None):
+    def __init__(
+        self,
+        classifier: base.Classifier,
+        desired_dist: dict,
+        sampling_rate=1.0,
+        seed: int = None,
+    ):
         super().__init__(classifier=classifier, seed=seed)
         self.sampling_rate = sampling_rate
         self._actual_dist = collections.Counter()

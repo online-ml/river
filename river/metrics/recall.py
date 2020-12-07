@@ -1,16 +1,8 @@
-import collections
-
 from . import base
 from . import precision
 
 
-__all__ = [
-    'MacroRecall',
-    'MicroRecall',
-    'Recall',
-    'WeightedRecall',
-    'ExampleRecall'
-]
+__all__ = ["MacroRecall", "MicroRecall", "Recall", "WeightedRecall", "ExampleRecall"]
 
 
 class Recall(base.BinaryMetric):
@@ -50,7 +42,7 @@ class Recall(base.BinaryMetric):
         try:
             return tp / (tp + fn)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class MacroRecall(base.MultiClassMetric):
@@ -92,7 +84,7 @@ class MacroRecall(base.MultiClassMetric):
         try:
             return total / len(self.cm.classes)
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class MicroRecall(precision.MicroPrecision):
@@ -174,7 +166,7 @@ class WeightedRecall(base.MultiClassMetric):
         try:
             return total / self.cm.total_weight
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
 
 class ExampleRecall(base.MultiOutputClassificationMetric):
@@ -225,4 +217,4 @@ class ExampleRecall(base.MultiOutputClassificationMetric):
         try:
             return self.cm.recall_sum / self.cm.n_samples
         except ZeroDivisionError:
-            return 0.
+            return 0.0

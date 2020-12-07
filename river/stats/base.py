@@ -7,14 +7,14 @@ class Statistic(base.Base):
     """A statistic."""
 
     # Define the format specification used for string representation.
-    _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+    _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     def get(self):
         """Return the current value of the statistic."""
         raise NotImplementedError
 
     def __repr__(self):
-        return f'{self.__class__.__name__}: {self.get():{self._fmt}}'.rstrip('0')
+        return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
 
 class Univariate(base.Base):
@@ -34,6 +34,7 @@ class Univariate(base.Base):
 
     def __or__(self, other):
         from .link import Link
+
         return Link(left=self, right=other)
 
 
@@ -46,7 +47,7 @@ class RollingUnivariate(Univariate):
 
     @property
     def name(self):
-        return f'{super().name}_{self.window_size}'
+        return f"{super().name}_{self.window_size}"
 
 
 class Bivariate(Statistic):

@@ -18,7 +18,7 @@ class VarianceReductionSplitCriterion(SplitCriterion):
         self.min_samples_split = min_samples_split
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
-        vr = 0.
+        vr = 0.0
         n = pre_split_dist.mean.n
 
         count = 0

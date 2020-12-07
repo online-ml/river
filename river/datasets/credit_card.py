@@ -38,16 +38,16 @@ class CreditCard(base.RemoteDataset):
             n_samples=150828752,
             n_features=30,
             task=base.BINARY_CLF,
-            url='https://maxhalford.github.io/files/datasets/creditcardfraud.zip',
+            url="https://maxhalford.github.io/files/datasets/creditcardfraud.zip",
             size=150828752,
-            filename='creditcard.csv'
+            filename="creditcard.csv",
         )
 
     def _iter(self):
 
-        converters = {f'V{i}': float for i in range(1, 29)}
-        converters['Class'] = int
-        converters['Time'] = float
-        converters['Amount'] = float
+        converters = {f"V{i}": float for i in range(1, 29)}
+        converters["Class"] = int
+        converters["Time"] = float
+        converters["Amount"] = float
 
-        return stream.iter_csv(self.path, target='Class', converters=converters)
+        return stream.iter_csv(self.path, target="Class", converters=converters)

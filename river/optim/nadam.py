@@ -4,7 +4,7 @@ import collections
 from . import base
 
 
-__all__ = ['Nadam']
+__all__ = ["Nadam"]
 
 
 class Nadam(base.Optimizer):
@@ -44,7 +44,7 @@ class Nadam(base.Optimizer):
 
     """
 
-    def __init__(self, lr=.1, beta_1=.9, beta_2=.999, eps=1e-8):
+    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8):
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2
@@ -56,14 +56,18 @@ class Nadam(base.Optimizer):
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
-            m_hat = self.m[i] / \
-                (1 - math.pow(self.beta_1, self.n_iterations + 1))
+            m_hat = self.m[i] / (1 - math.pow(self.beta_1, self.n_iterations + 1))
 
             self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
-            v_hat = self.v[i] / \
-                (1 - math.pow(self.beta_2, self.n_iterations + 1))
+            v_hat = self.v[i] / (1 - math.pow(self.beta_2, self.n_iterations + 1))
 
-            w[i] -= self.learning_rate * (self.beta_1 * m_hat + (1 - self.beta_1) * gi / (
-                1 - math.pow(self.beta_1, self.n_iterations + 1))) / (v_hat ** .5 + self.eps)
+            w[i] -= (
+                self.learning_rate
+                * (
+                    self.beta_1 * m_hat
+                    + (1 - self.beta_1) * gi / (1 - math.pow(self.beta_1, self.n_iterations + 1))
+                )
+                / (v_hat ** 0.5 + self.eps)
+            )
 
         return w

@@ -2,7 +2,7 @@ import math
 from . import base
 
 
-__all__ = ['LogLoss']
+__all__ = ["LogLoss"]
 
 
 class LogLoss(base.MeanMetric, base.BinaryMetric):
@@ -39,7 +39,7 @@ class LogLoss(base.MeanMetric, base.BinaryMetric):
         return False
 
     def _eval(self, y_true, y_pred):
-        p_true = y_pred.get(True, 0.) if isinstance(y_pred, dict) else y_pred
+        p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
         p_true = self._clamp_proba(p_true)
         if y_true:
             return -math.log(p_true)

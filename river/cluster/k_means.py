@@ -6,7 +6,7 @@ from river import base
 from river import utils
 
 
-__all__ = ['KMeans']
+__all__ = ["KMeans"]
 
 
 class KMeans(base.Clusterer):
@@ -115,7 +115,6 @@ class KMeans(base.Clusterer):
         return self
 
     def predict_one(self, x):
-
         def get_distance(c):
             return utils.math.minkowski_distance(a=self.centers[c], b=x, p=self.p)
 

@@ -5,7 +5,7 @@ from river import base
 from . import utils
 
 
-def iter_arff(filepath_or_buffer, target: str = None, compression='infer') -> base.typing.Stream:
+def iter_arff(filepath_or_buffer, target: str = None, compression="infer") -> base.typing.Stream:
     """Iterates over rows from an ARFF file.
 
     Parameters
@@ -24,13 +24,13 @@ def iter_arff(filepath_or_buffer, target: str = None, compression='infer') -> ba
 
     # If a file is not opened, then we open it
     buffer = filepath_or_buffer
-    if not hasattr(buffer, 'read'):
+    if not hasattr(buffer, "read"):
         buffer = utils.open_filepath(buffer, compression)
 
     try:
         rel, attrs = arffread.read_header(buffer)
     except ValueError as e:
-        msg = f'Error while parsing header, error was: {e}'
+        msg = f"Error while parsing header, error was: {e}"
         raise arffread.ParseArffError(msg)
 
     names = [attr.name for attr in attrs]
@@ -39,7 +39,7 @@ def iter_arff(filepath_or_buffer, target: str = None, compression='infer') -> ba
     for r in buffer:
         x = {
             name: typ(val) if typ else val
-            for name, typ, val in zip(names, types, r.rstrip().split(','))
+            for name, typ, val in zip(names, types, r.rstrip().split(","))
         }
         try:
             y = x.pop(target) if target else None

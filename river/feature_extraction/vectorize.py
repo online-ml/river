@@ -10,13 +10,10 @@ import unicodedata
 from river import base
 
 
-__all__ = ['BagOfWords', 'TFIDF']
+__all__ = ["BagOfWords", "TFIDF"]
 
 
-N_GRAM = typing.Union[
-    str,  # unigram
-    typing.Tuple[str, ...]  # n-gram
-]
+N_GRAM = typing.Union[str, typing.Tuple[str, ...]]  # unigram  # n-gram
 
 
 def strip_accents_unicode(s: str) -> str:
@@ -24,11 +21,11 @@ def strip_accents_unicode(s: str) -> str:
     try:
         # If `s` is ASCII-compatible, then it does not contain any accented
         # characters and we can avoid an expensive list comprehension
-        s.encode('ASCII', errors='strict')
+        s.encode("ASCII", errors="strict")
         return s
     except UnicodeEncodeError:
-        normalized = unicodedata.normalize('NFKD', s)
-        return ''.join([c for c in normalized if not unicodedata.combining(c)])
+        normalized = unicodedata.normalize("NFKD", s)
+        return "".join([c for c in normalized if not unicodedata.combining(c)])
 
 
 def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
@@ -110,14 +107,20 @@ class VectorizerMixin:
 
     """
 
-    def __init__(self, on: str = None, strip_accents=True, lowercase=True,
-                 preprocessor: typing.Callable = None,
-                 tokenizer: typing.Callable = None, ngram_range=(1, 1)):
+    def __init__(
+        self,
+        on: str = None,
+        strip_accents=True,
+        lowercase=True,
+        preprocessor: typing.Callable = None,
+        tokenizer: typing.Callable = None,
+        ngram_range=(1, 1),
+    ):
         self.on = on
         self.strip_accents = strip_accents
         self.lowercase = lowercase
         self.preprocessor = preprocessor
-        self.tokenizer = re.compile(r'(?u)\b\w\w+\b').findall if tokenizer is None else tokenizer
+        self.tokenizer = re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
         self.ngram_range = ngram_range
 
         self.processing_steps = []
@@ -141,10 +144,12 @@ class VectorizerMixin:
 
         # n-grams
         if ngram_range[1] > 1:
-            self.processing_steps.append(functools.partial(
-                find_all_ngrams,
-                ngram_range=range(ngram_range[0], ngram_range[1] + 1)
-            ))
+            self.processing_steps.append(
+                functools.partial(
+                    find_all_ngrams,
+                    ngram_range=range(ngram_range[0], ngram_range[1] + 1),
+                )
+            )
 
     def process_text(self, x):
         for step in self.processing_steps:
@@ -332,16 +337,23 @@ class TFIDF(BagOfWords):
 
     """
 
-    def __init__(self, normalize=True, on: str = None, strip_accents=True, lowercase=True,
-                 preprocessor: typing.Callable = None, tokenizer: typing.Callable = None,
-                 ngram_range=(1, 1)):
+    def __init__(
+        self,
+        normalize=True,
+        on: str = None,
+        strip_accents=True,
+        lowercase=True,
+        preprocessor: typing.Callable = None,
+        tokenizer: typing.Callable = None,
+        ngram_range=(1, 1),
+    ):
         super().__init__(
             on=on,
             strip_accents=strip_accents,
             lowercase=lowercase,
             preprocessor=preprocessor,
             tokenizer=tokenizer,
-            ngram_range=ngram_range
+            ngram_range=ngram_range,
         )
         self.normalize = normalize
         self.dfs = collections.Counter()

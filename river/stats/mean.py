@@ -41,20 +41,20 @@ class Mean(base.Univariate):
 
     def __init__(self):
         self.n = 0
-        self.mean = 0.
+        self.mean = 0.0
 
-    def update(self, x, w=1.):
+    def update(self, x, w=1.0):
         self.n += w
         if self.n > 0:
             self.mean += w * (x - self.mean) / self.n
         return self
 
-    def revert(self, x, w=1.):
+    def revert(self, x, w=1.0):
         self.n -= w
         if self.n < 0:
-            raise ValueError('Cannot go below 0')
+            raise ValueError("Cannot go below 0")
         elif self.n == 0:
-            self.mean = 0.
+            self.mean = 0.0
         else:
             self.mean -= w * (x - self.mean) / self.n
         return self
@@ -82,8 +82,8 @@ class Mean(base.Univariate):
         if self.n > 0:
             self.mean = (old_n * self.mean - other.n * other.mean) / self.n
         else:
-            self.n = 0.
-            self.mean = 0.
+            self.n = 0.0
+            self.mean = 0.0
 
         return self
 
@@ -158,7 +158,7 @@ class BayesianMean(base.Univariate):
 
     @property
     def name(self):
-        return 'bayes_mean'
+        return "bayes_mean"
 
     def update(self, x):
         self.mean.update(x)

@@ -99,23 +99,29 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     _FEATURES_SQRT = "sqrt"
     _FEATURES_SQRT_INV = "rmsqrt"
 
-    _VALID_TRAINING_METHODS = {_TRAIN_RANDOM_PATCHES, _TRAIN_RESAMPLING, _TRAIN_RESAMPLING}
+    _VALID_TRAINING_METHODS = {
+        _TRAIN_RANDOM_PATCHES,
+        _TRAIN_RESAMPLING,
+        _TRAIN_RESAMPLING,
+    }
 
-    def __init__(self, model=HoeffdingTreeClassifier(grace_period=50,
-                                                     split_confidence=0.01),
-                 n_models: int = 100,
-                 subspace_size: typing.Union[int, float, str] = .6,
-                 training_method: str = "patches",
-                 lam: float = 6.0,
-                 drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=1e-5),
-                 warning_detector: base.DriftDetector = ADWIN(delta=1e-4),
-                 disable_weighted_vote: bool = False,
-                 nominal_attributes=None,
-                 seed=None,
-                 metric: MultiClassMetric = Accuracy()):
-        super().__init__([None])   # List of models is properly initialized later
+    def __init__(
+        self,
+        model=HoeffdingTreeClassifier(grace_period=50, split_confidence=0.01),
+        n_models: int = 100,
+        subspace_size: typing.Union[int, float, str] = 0.6,
+        training_method: str = "patches",
+        lam: float = 6.0,
+        drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=1e-5),
+        warning_detector: base.DriftDetector = ADWIN(delta=1e-4),
+        disable_weighted_vote: bool = False,
+        nominal_attributes=None,
+        seed=None,
+        metric: MultiClassMetric = Accuracy(),
+    ):
+        super().__init__([None])  # List of models is properly initialized later
         self.models = []
-        self.model = model   # Not restricted to a specific base estimator.
+        self.model = model  # Not restricted to a specific base estimator.
         self.n_models = n_models
         self.subspace_size = subspace_size
         self.training_method = training_method
@@ -149,7 +155,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             if y_pred:
                 y_pred = max(y_pred, key=y_pred.get)
             else:
-                y_pred = None   # Model is empty
+                y_pred = None  # Model is empty
 
             # Update performance evaluator
             model.metric.update(y_true=y, y_pred=y_pred)
@@ -158,15 +164,21 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             # i.e. all instances are used for training.
             if self.training_method == self._TRAIN_RANDOM_SUBSPACES:
                 model.learn_one(
-                    X=x, y=y, sample_weight=1.,
-                    n_samples_seen=self._n_samples_seen, rng=self._rng
+                    X=x,
+                    y=y,
+                    sample_weight=1.0,
+                    n_samples_seen=self._n_samples_seen,
+                    rng=self._rng,
                 )
             # Train using random patches or resampling,
             # thus we simulate online bagging with Poisson(lambda=...)
             else:
                 model.learn_one(
-                    x=x, y=y, sample_weight=self._rng.poisson(lam=self.lam),
-                    n_samples_seen=self._n_samples_seen, rng=self._rng
+                    x=x,
+                    y=y,
+                    sample_weight=self._rng.poisson(lam=self.lam),
+                    n_samples_seen=self._n_samples_seen,
+                    rng=self._rng,
                 )
 
         return self
@@ -182,7 +194,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         for model in self.models:
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
-            if not self.disable_weighted_vote and metric_value > 0.:
+            if not self.disable_weighted_vote and metric_value > 0.0:
                 y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
             y_pred.update(y_proba_temp)
 
@@ -202,7 +214,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             # 1. Calculate the number of features k
             if isinstance(self.subspace_size, float) and 0.0 < self.subspace_size <= 1:
                 k = self.subspace_size
-                percent = (1. + k) / 1. if k < 0 else k
+                percent = (1.0 + k) / 1.0 if k < 0 else k
                 k = round(n_features * percent)
                 if k < 2:
                     k = round(n_features * percent) + 1
@@ -241,8 +253,9 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                     # Generate n_models subspaces from all possible
                     # feature combinations of size k
                     self._subspaces = []
-                    for i, combination in enumerate(itertools.cycle(
-                            itertools.combinations(features, k))):
+                    for i, combination in enumerate(
+                        itertools.cycle(itertools.combinations(features, k))
+                    ):
                         if i == self.n_models:
                             break
                         self._subspaces.append(list(combination))
@@ -251,8 +264,10 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                 # of repeating a subspace is lower, so we randomly generate
                 # subspaces without worrying about repetitions.
                 else:
-                    self._subspaces = [random_subspace(all_features=features, k=k, rng=self._rng)
-                                       for _ in range(self.n_models)]
+                    self._subspaces = [
+                        random_subspace(all_features=features, k=k, rng=self._rng)
+                        for _ in range(self.n_models)
+                    ]
             else:
                 # k == 0 or k > n_features (subspace size is larger than the
                 # number of features), then default to re-sampling
@@ -262,8 +277,10 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         self._generate_subspaces(features=features)
 
         subspace_indexes = np.arange(self.n_models)  # For matching subspaces with ensemble members
-        if self.training_method == self._TRAIN_RANDOM_PATCHES or \
-                self.training_method == self._TRAIN_RANDOM_SUBSPACES:
+        if (
+            self.training_method == self._TRAIN_RANDOM_PATCHES
+            or self.training_method == self._TRAIN_RANDOM_SUBSPACES
+        ):
             # Shuffle indexes
             self._rng.shuffle(subspace_indexes)
 
@@ -271,17 +288,20 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         for i in range(self.n_models):
             # If self.training_method == self._TRAIN_RESAMPLING then subspace is None
             subspace = self._subspaces[subspace_indexes[i]]
-            self.models.append(self._base_learner_class(
-                idx_original=i,
-                model=self.model,
-                metric=self.metric,
-                created_on=self._n_samples_seen,
-                drift_detector=self.drift_detector,
-                warning_detector=self.warning_detector,
-                is_background_learner=False,
-                features=subspace,
-                nominal_attributes=self.nominal_attributes,
-                rng=self._rng))
+            self.models.append(
+                self._base_learner_class(
+                    idx_original=i,
+                    model=self.model,
+                    metric=self.metric,
+                    created_on=self._n_samples_seen,
+                    drift_detector=self.drift_detector,
+                    warning_detector=self.warning_detector,
+                    is_background_learner=False,
+                    features=subspace,
+                    nominal_attributes=self.nominal_attributes,
+                    rng=self._rng,
+                )
+            )
 
     def reset(self):
         self.models = []
@@ -293,17 +313,20 @@ class StreamingRandomPatchesBaseLearner:
     """
     Class representing the base learner of StreamingRandomPatchesClassifier.
     """
-    def __init__(self,
-                 idx_original: int,
-                 model: base.Classifier,
-                 metric: MultiClassMetric,
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 features=None,
-                 nominal_attributes=None,
-                 rng=None):
+
+    def __init__(
+        self,
+        idx_original: int,
+        model: base.Classifier,
+        metric: MultiClassMetric,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        features=None,
+        nominal_attributes=None,
+        rng=None,
+    ):
         self.idx_original = idx_original
         self.created_on = created_on
         self.model = model.clone()
@@ -349,15 +372,23 @@ class StreamingRandomPatchesBaseLearner:
         # Random number generator (initialized)
         self._rng = rng
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, *, sample_weight: int,
-                  n_samples_seen: int, rng: np.random.RandomState):
+    def learn_one(
+        self,
+        x: dict,
+        y: base.typing.ClfTarget,
+        *,
+        sample_weight: int,
+        n_samples_seen: int,
+        rng: np.random.RandomState,
+    ):
         all_features = [feature for feature in x.keys()]
         if self.features is not None:
             # Select the subset of features to use
             x_subset = {k: x[k] for k in self.features}
-            if self._set_nominal_attributes and hasattr(self.model, 'nominal_attributes'):
-                self.model.nominal_attributes = \
-                    list(set(self.features).intersection(set(self.nominal_attributes)))
+            if self._set_nominal_attributes and hasattr(self.model, "nominal_attributes"):
+                self.model.nominal_attributes = list(
+                    set(self.features).intersection(set(self.nominal_attributes))
+                )
                 self._set_nominal_attributes = False
         else:
             # Use all features
@@ -371,8 +402,13 @@ class StreamingRandomPatchesBaseLearner:
             # Train the background learner
             # Note: Pass the original instance x so features are correctly
             # selected based on the corresponding subspace
-            self._background_learner.learn_one(x=x, y=y, sample_weight=sample_weight,
-                                               n_samples_seen=n_samples_seen, rng=rng)
+            self._background_learner.learn_one(
+                x=x,
+                y=y,
+                sample_weight=sample_weight,
+                n_samples_seen=n_samples_seen,
+                rng=rng,
+            )
 
         if not self.disable_drift_detector and not self.is_background_learner:
             correctly_classifies = self.model.predict_one(x_subset) == y
@@ -384,7 +420,9 @@ class StreamingRandomPatchesBaseLearner:
                 if self.warning_detector.change_detected:
                     self.n_warnings_detected += 1
                     self._trigger_warning(
-                        all_features=all_features, n_samples_seen=n_samples_seen, rng=rng
+                        all_features=all_features,
+                        n_samples_seen=n_samples_seen,
+                        rng=rng,
                     )
 
             # ===== Drift detection =====
@@ -404,8 +442,10 @@ class StreamingRandomPatchesBaseLearner:
 
     def _trigger_warning(self, all_features, n_samples_seen: int, rng: np.random.RandomState):
         # Randomly generate a new subspace from all the original features
-        subspace = None if self.features is None else random_subspace(
-            all_features=all_features, k=len(self.features), rng=rng
+        subspace = (
+            None
+            if self.features is None
+            else random_subspace(all_features=all_features, k=len(self.features), rng=rng)
         )
 
         # Initialize the background learner
@@ -419,15 +459,17 @@ class StreamingRandomPatchesBaseLearner:
             is_background_learner=True,
             features=subspace,
             nominal_attributes=self.nominal_attributes,
-            rng=self._rng
+            rng=self._rng,
         )
         # Hard-reset the warning method
         self.warning_detector = self.warning_detector.clone()
 
     def reset(self, all_features: list, n_samples_seen: int, rng: np.random.RandomState):
         # Randomly generate a new subspace from all the original features
-        subspace = None if self.features is None else random_subspace(
-            all_features=all_features, k=len(self.features), rng=rng
+        subspace = (
+            None
+            if self.features is None
+            else random_subspace(all_features=all_features, k=len(self.features), rng=rng)
         )
 
         if not self.disable_background_learner and self._background_learner is not None:

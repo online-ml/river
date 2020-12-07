@@ -111,7 +111,7 @@ class AbsMax(base.Univariate):
     """
 
     def __init__(self):
-        self.abs_max = 0.
+        self.abs_max = 0.0
 
     def update(self, x):
         if abs(x) > self.abs_max:

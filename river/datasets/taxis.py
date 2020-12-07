@@ -19,23 +19,23 @@ class Taxis(base.RemoteDataset):
             n_samples=1_458_644,
             n_features=8,
             task=base.REG,
-            url='https://maxhalford.github.io/files/datasets/nyc_taxis.zip',
+            url="https://maxhalford.github.io/files/datasets/nyc_taxis.zip",
             size=195271696,
-            filename='train.csv'
+            filename="train.csv",
         )
 
     def _iter(self):
         return stream.iter_csv(
             self.path,
-            target='trip_duration',
+            target="trip_duration",
             converters={
-                'passenger_count': int,
-                'pickup_longitude': float,
-                'pickup_latitude': float,
-                'dropoff_longitude': float,
-                'dropoff_latitude': float,
-                'trip_duration': int
+                "passenger_count": int,
+                "pickup_longitude": float,
+                "pickup_latitude": float,
+                "dropoff_longitude": float,
+                "dropoff_latitude": float,
+                "trip_duration": int,
             },
-            parse_dates={'pickup_datetime': '%Y-%m-%d %H:%M:%S'},
-            drop=['dropoff_datetime', 'id']
+            parse_dates={"pickup_datetime": "%Y-%m-%d %H:%M:%S"},
+            drop=["dropoff_datetime", "id"],
         )

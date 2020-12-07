@@ -5,7 +5,7 @@ from .. import stats
 from . import base
 
 
-__all__ = ['Gaussian']
+__all__ = ["Gaussian"]
 
 
 class Gaussian(base.ContinuousDistribution):
@@ -46,9 +46,9 @@ class Gaussian(base.ContinuousDistribution):
         return self.mu
 
     def __str__(self):
-        return f'𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})'
+        return f"𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})"
 
-    def update(self, x, w=1.):
+    def update(self, x, w=1.0):
         self._var.update(x, w)
         return self
 
@@ -58,13 +58,13 @@ class Gaussian(base.ContinuousDistribution):
             try:
                 return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
             except ValueError:
-                return 0.
+                return 0.0
             except OverflowError:
-                return 0.
-        return 0.
+                return 0.0
+        return 0.0
 
     def cdf(self, x):
         try:
-            return 0.5 * (1. + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.))))
+            return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
         except ZeroDivisionError:
-            return 0.
+            return 0.0

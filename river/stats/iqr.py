@@ -39,9 +39,9 @@ class IQR(base.Univariate):
 
     """
 
-    def __init__(self, q_inf=.25, q_sup=.75):
+    def __init__(self, q_inf=0.25, q_sup=0.75):
         if q_inf >= q_sup:
-            raise ValueError('q_inf must be strictly less than q_sup')
+            raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
         self.q_sup = q_sup
         self.quantile_inf = quantile.Quantile(q=self.q_inf)
@@ -49,7 +49,7 @@ class IQR(base.Univariate):
 
     @property
     def name(self):
-        return f'{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
+        return f"{self.__class__.__name__}_{self.q_inf}_{self.q_sup}"
 
     def update(self, x):
         self.quantile_inf.update(x)
@@ -100,10 +100,10 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
 
     """
 
-    def __init__(self, window_size: int, q_inf=.25, q_sup=.75):
+    def __init__(self, window_size: int, q_inf=0.25, q_sup=0.75):
         super().__init__(size=window_size)
         if q_inf >= q_sup:
-            raise ValueError('q_inf must be strictly less than q_sup')
+            raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
         self.q_sup = q_sup
         self.quantile_inf = quantile.RollingQuantile(q=self.q_inf, window_size=window_size)
@@ -111,7 +111,7 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
 
     @property
     def name(self):
-        return f'rolling_{self.__class__.__name__}_{self.q_inf}_{self.q_sup}'
+        return f"rolling_{self.__class__.__name__}_{self.q_inf}_{self.q_sup}"
 
     def update(self, x):
         self.quantile_inf.update(x)

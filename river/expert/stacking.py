@@ -3,7 +3,7 @@ import typing
 from river import base
 
 
-__all__ = ['StackingClassifier']
+__all__ = ["StackingClassifier"]
 
 
 class StackingClassifier(base.EnsembleMixin, base.Classifier):
@@ -53,8 +53,12 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
 
     """
 
-    def __init__(self, classifiers: typing.List[base.Classifier],
-                 meta_classifier: base.Classifier, include_features=True):
+    def __init__(
+        self,
+        classifiers: typing.List[base.Classifier],
+        meta_classifier: base.Classifier,
+        include_features=True,
+    ):
         super().__init__(classifiers)
         self.meta_classifier = meta_classifier
         self.include_features = include_features
@@ -69,7 +73,7 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
         oof = {}
         for i, clf in enumerate(self):
             for k, p in clf.predict_proba_one(x).items():
-                oof[f'oof_{i}_{k}'] = p
+                oof[f"oof_{i}_{k}"] = p
             clf.learn_one(x, y)
 
         # Optionally, add the base features
@@ -84,7 +88,7 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
     def predict_proba_one(self, x):
 
         oof = {
-            f'oof_{i}_{k}': p
+            f"oof_{i}_{k}": p
             for i, clf in enumerate(self)
             for k, p in clf.predict_proba_one(x).items()
         }

@@ -8,12 +8,12 @@ from typing import Dict, Iterator, List, Union
 
 from river import base
 from river.stats import Var
-from river.tree._attribute_test import InstanceConditionalTest      # noqa
-from river.tree._attribute_test import AttributeSplitSuggestion     # noqa
+from river.tree._attribute_test import InstanceConditionalTest  # noqa
+from river.tree._attribute_test import AttributeSplitSuggestion  # noqa
 
 
 # Helper structure to manage nodes
-FoundNode = collections.namedtuple('FoundNode', ['node', 'parent', 'parent_branch'])
+FoundNode = collections.namedtuple("FoundNode", ["node", "parent", "parent_branch"])
 
 
 class Node(metaclass=ABCMeta):
@@ -44,7 +44,7 @@ class Node(metaclass=ABCMeta):
         """
         return True
 
-    def filter_instance_to_leaf(self, x: dict, parent: 'Node', parent_branch: int) -> FoundNode:
+    def filter_instance_to_leaf(self, x: dict, parent: "Node", parent_branch: int) -> FoundNode:
         """Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
@@ -63,7 +63,7 @@ class Node(metaclass=ABCMeta):
         """
         return FoundNode(self, parent, parent_branch)
 
-    def path(self, x) -> Iterator['Node']:
+    def path(self, x) -> Iterator["Node"]:
         """
         Yield the nodes that lead to the leaf which contains x.
 
@@ -133,22 +133,22 @@ class Node(metaclass=ABCMeta):
         indent
             Indentation level (number of white spaces for current node.)
         """
-        buffer[0] += textwrap.indent('Leaf = ', ' ' * indent)
+        buffer[0] += textwrap.indent("Leaf = ", " " * indent)
 
         if isinstance(tree, base.Classifier):
             class_val = max(self.stats, key=self.stats.get)
-            buffer[0] += f'Class {class_val} | {self.stats}\n'
+            buffer[0] += f"Class {class_val} | {self.stats}\n"
         else:
-            text = '{'
+            text = "{"
             # Multi-target regression case
             if isinstance(tree, base.MultiOutputMixin):
                 for i, (target_id, var) in enumerate(self.stats.items()):
-                    text += f'{target_id}: {self.stats[target_id].mean} | {self.stats[target_id]}'
-                    text += ', ' if i < len(self.stats) - 1 else ''
+                    text += f"{target_id}: {self.stats[target_id].mean} | {self.stats[target_id]}"
+                    text += ", " if i < len(self.stats) - 1 else ""
             else:  # Single-target regression
-                text += f'{self.stats.mean} | {self.stats}'
-            text += '}'
-            buffer[0] += f'Output {text}\n'  # Regression problems
+                text += f"{self.stats.mean} | {self.stats}"
+            text += "}"
+            buffer[0] += f"Output {text}\n"  # Regression problems
 
 
 class SplitNode(Node):
@@ -300,7 +300,7 @@ class SplitNode(Node):
 
             if not node.is_leaf():
 
-                for branch_id, child in node._children.items():    # noqa
+                for branch_id, child in node._children.items():  # noqa
                     counter += 1
                     yield no, counter, node, child, branch_id
                     if not child.is_leaf():
@@ -340,9 +340,9 @@ class SplitNode(Node):
         for branch_idx in range(self.n_children):
             child = self.get_child(branch_idx)
             if child is not None:
-                buffer[0] += textwrap.indent('if ', ' ' * indent)
+                buffer[0] += textwrap.indent("if ", " " * indent)
                 buffer[0] += self._split_test.describe_condition_for_branch(branch_idx)
-                buffer[0] += ':\n'
+                buffer[0] += ":\n"
                 child.describe_subtree(tree, buffer, indent + 2)
 
 
@@ -361,6 +361,7 @@ class LearningNode(Node, metaclass=ABCMeta):
     attr_obs_params
         The parameters passed to the numeric attribute observer algorithm.
     """
+
     def __init__(self, stats, depth, attr_obs: str, attr_obs_params: dict, **kwargs):
         super().__init__(stats, depth, **kwargs)
 
@@ -432,8 +433,9 @@ class LearningNode(Node, metaclass=ABCMeta):
             try:
                 obs = self.attribute_observers[attr_idx]
             except KeyError:
-                if ((nominal_attributes is not None and attr_idx in nominal_attributes)
-                        or not isinstance(attr_val, numbers.Number)):
+                if (
+                    nominal_attributes is not None and attr_idx in nominal_attributes
+                ) or not isinstance(attr_val, numbers.Number):
                     obs = self.new_nominal_attribute_observer()
                 else:
                     obs = self.new_numeric_attribute_observer(

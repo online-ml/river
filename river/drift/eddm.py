@@ -97,8 +97,7 @@ class EDDM(DriftDetector):
         self.reset()
 
     def reset(self):
-        """Reset the change detector.
-        """
+        """Reset the change detector."""
         super().reset()
         self.m_n = 1
         self.m_num_errors = 0

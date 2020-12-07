@@ -15,12 +15,12 @@ from .select import SelectType
 
 
 __all__ = [
-    'Discard',
-    'FuncTransformer',
-    'Grouper',
-    'Pipeline',
-    'Renamer',
-    'TransformerUnion',
-    'Select',
-    'SelectType'
+    "Discard",
+    "FuncTransformer",
+    "Grouper",
+    "Pipeline",
+    "Renamer",
+    "TransformerUnion",
+    "Select",
+    "SelectType",
 ]

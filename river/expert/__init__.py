@@ -23,8 +23,8 @@ from .stacking import StackingClassifier
 
 
 __all__ = [
-    'EWARegressor',
-    'SuccessiveHalvingClassifier',
-    'SuccessiveHalvingRegressor',
-    'StackingClassifier'
+    "EWARegressor",
+    "SuccessiveHalvingClassifier",
+    "SuccessiveHalvingRegressor",
+    "StackingClassifier",
 ]

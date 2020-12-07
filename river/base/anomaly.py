@@ -11,7 +11,7 @@ class AnomalyDetector(estimator.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, x: dict) -> 'AnomalyDetector':
+    def learn_one(self, x: dict) -> "AnomalyDetector":
         """Update the model.
 
         Parameters

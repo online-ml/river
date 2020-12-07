@@ -23,27 +23,27 @@ class Elec2(base.RemoteDataset):
 
     def __init__(self):
         super().__init__(
-            url='https://maxhalford.github.io/files/datasets/electricity.zip',
+            url="https://maxhalford.github.io/files/datasets/electricity.zip",
             size=3091689,
             task=base.BINARY_CLF,
             n_samples=45_312,
             n_features=8,
-            filename='electricity.csv'
+            filename="electricity.csv",
         )
 
     def _iter(self):
         return stream.iter_csv(
             self.path,
-            target='class',
+            target="class",
             converters={
-                'date': float,
-                'day': int,
-                'period': float,
-                'nswprice': float,
-                'nswdemand': float,
-                'vicprice': float,
-                'vicdemand': float,
-                'transfer': float,
-                'class': lambda x: x == 'UP'
-            }
+                "date": float,
+                "day": int,
+                "period": float,
+                "nswprice": float,
+                "nswdemand": float,
+                "vicprice": float,
+                "vicdemand": float,
+                "transfer": float,
+                "class": lambda x: x == "UP",
+            },
         )

@@ -18,8 +18,8 @@ class SurpriseWrapper(surprise.AlgoBase):
     def fit(self, trainset):
         surprise.AlgoBase.fit(self, trainset)
         for user, item, y in trainset.all_ratings():
-            self.river_recommender.learn_one({'user': user, 'item': item}, y)
+            self.river_recommender.learn_one({"user": user, "item": item}, y)
         return self
 
     def estimate(self, user, item):
-        return self.river_recommender.predict_one({'user': user, 'item': item})
+        return self.river_recommender.predict_one({"user": user, "item": item})

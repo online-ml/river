@@ -4,7 +4,7 @@ from . import base
 from . import report
 
 
-__all__ = ['Rolling']
+__all__ = ["Rolling"]
 
 
 class Rolling(base.WrapperMetric, utils.Window):
@@ -53,7 +53,7 @@ class Rolling(base.WrapperMetric, utils.Window):
     def metric(self):
         return self._metric
 
-    def update(self, y_true, y_pred, sample_weight=1.):
+    def update(self, y_true, y_pred, sample_weight=1.0):
         if len(self) == self.window_size:
             self.metric.revert(*self[0])
         self.metric.update(y_true, y_pred, sample_weight)
@@ -65,11 +65,11 @@ class Rolling(base.WrapperMetric, utils.Window):
             self.append((y_true, y_pred, sample_weight))
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.):
+    def revert(self, y_true, y_pred, sample_weight=1.0):
         self.metric.revert(y_true, y_pred, sample_weight)
         return self
 
     def __repr__(self):
         if isinstance(self.metric, report.ClassificationReport):
             return self.metric.__repr__()
-        return f'Rolling of size {self.window_size} {str(self.metric)}'
+        return f"Rolling of size {self.window_size} {str(self.metric)}"

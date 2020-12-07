@@ -3,7 +3,7 @@ import collections
 from . import base
 
 
-__all__ = ['Adam']
+__all__ = ["Adam"]
 
 
 class Adam(base.Optimizer):
@@ -59,13 +59,13 @@ class Adam(base.Optimizer):
     def _update_after_pred(self, w, g):
 
         # Correct bias for `v`
-        lr = self.learning_rate * (1 - self.beta_2 ** (self.n_iterations + 1)) ** .5
+        lr = self.learning_rate * (1 - self.beta_2 ** (self.n_iterations + 1)) ** 0.5
         # Correct bias for `m`
-        lr /= (1 - self.beta_1 ** (self.n_iterations + 1))
+        lr /= 1 - self.beta_1 ** (self.n_iterations + 1)
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
             self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
-            w[i] -= lr * self.m[i] / (self.v[i] ** .5 + self.eps)
+            w[i] -= lr * self.m[i] / (self.v[i] ** 0.5 + self.eps)
 
         return w

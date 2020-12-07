@@ -61,9 +61,9 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
                 num_att_binary_test = NumericAttributeBinaryTest(att_idx, split_value, True)
-                best_suggestion = AttributeSplitSuggestion(num_att_binary_test,
-                                                           post_split_dist,
-                                                           merit)
+                best_suggestion = AttributeSplitSuggestion(
+                    num_att_binary_test, post_split_dist, merit
+                )
         return best_suggestion
 
     def _split_point_suggestions(self):
@@ -77,7 +77,7 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
                 max_value = self._max_per_class[k]
         if min_value < math.inf:
             bin_size = max_value - min_value
-            bin_size /= (self.n_splits + 1.)
+            bin_size /= self.n_splits + 1.0
             for i in range(self.n_splits):
                 split_value = min_value + (bin_size * (i + 1))
                 if min_value < split_value < max_value:

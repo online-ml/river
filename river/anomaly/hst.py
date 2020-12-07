@@ -8,7 +8,7 @@ from river import base
 from .base import Leaf, Branch, Split
 
 
-__all__ = ['HalfSpaceTrees']
+__all__ = ["HalfSpaceTrees"]
 
 
 def make_padded_tree(limits, height, padding, rng=random, **node_params):
@@ -20,7 +20,7 @@ def make_padded_tree(limits, height, padding, rng=random, **node_params):
     # We weight each feature by the gap between each feature's limits
     on = rng.choices(
         population=list(limits.keys()),
-        weights=[limits[i][1] - limits[i][0] for i in limits]
+        weights=[limits[i][1] - limits[i][0] for i in limits],
     )[0]
 
     # Pick a split point; use padding to avoid too narrow a split
@@ -31,13 +31,17 @@ def make_padded_tree(limits, height, padding, rng=random, **node_params):
     # Build the left node
     tmp = limits[on]
     limits[on] = (tmp[0], at)
-    left = make_padded_tree(limits=limits, height=height - 1, padding=padding, rng=rng, **node_params)
+    left = make_padded_tree(
+        limits=limits, height=height - 1, padding=padding, rng=rng, **node_params
+    )
     limits[on] = tmp
 
     # Build the right node
     tmp = limits[on]
     limits[on] = (at, tmp[1])
-    right = make_padded_tree(limits=limits, height=height - 1, padding=padding, rng=rng, **node_params)
+    right = make_padded_tree(
+        limits=limits, height=height - 1, padding=padding, rng=rng, **node_params
+    )
     limits[on] = tmp
 
     split = Split(on=on, how=operator.lt, at=at)
@@ -135,9 +139,14 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     """
 
-    def __init__(self, n_trees=10, height=8, window_size=250,
-                 limits: typing.Dict[base.typing.FeatureName, typing.Tuple[float, float]] = None,
-                 seed: int = None):
+    def __init__(
+        self,
+        n_trees=10,
+        height=8,
+        window_size=250,
+        limits: typing.Dict[base.typing.FeatureName, typing.Tuple[float, float]] = None,
+        seed: int = None,
+    ):
 
         self.n_trees = n_trees
         self.window_size = window_size
@@ -159,7 +168,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
         The value .1 is a magic constant indicated in the original paper.
 
         """
-        return .1 * self.window_size
+        return 0.1 * self.window_size
 
     @property
     def _max_score(self):
@@ -174,11 +183,11 @@ class HalfSpaceTrees(base.AnomalyDetector):
                 make_padded_tree(
                     limits={i: self.limits[i] for i in x},
                     height=self.height,
-                    padding=.15,
+                    padding=0.15,
                     rng=self.rng,
                     # kwargs
                     r_mass=0,
-                    l_mass=0
+                    l_mass=0,
                 )
                 for _ in range(self.n_trees)
             ]
@@ -205,7 +214,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
         if self._first_window:
             return 0
 
-        score = 0.
+        score = 0.0
         for tree in self.trees:
             for depth, node in enumerate(tree.path(x)):
                 score += node.r_mass * 2 ** depth

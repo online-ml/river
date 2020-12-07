@@ -10,13 +10,13 @@ import tqdm
 
 def format_ns(d):
 
-    units = collections.OrderedDict({'ns': 1})
-    units['μs'] = 1000 * units['ns']
-    units['ms'] = 1000 * units['μs']
-    units['s'] = 1000 * units['ms']
-    units['m'] = 60 * units['s']
-    units['h'] = 60 * units['m']
-    units['d'] = 24 * units['h']
+    units = collections.OrderedDict({"ns": 1})
+    units["μs"] = 1000 * units["ns"]
+    units["ms"] = 1000 * units["μs"]
+    units["s"] = 1000 * units["ms"]
+    units["m"] = 60 * units["s"]
+    units["h"] = 60 * units["m"]
+    units["d"] = 24 * units["h"]
 
     parts = []
 
@@ -24,16 +24,16 @@ def format_ns(d):
         amount = units[unit]
         quotient, d = divmod(d, amount)
         if quotient > 0:
-            parts.append(f'{quotient}{unit}')
+            parts.append(f"{quotient}{unit}")
         elif d == 0:
             break
 
-    return ', '.join(parts)
+    return ", ".join(parts)
 
 
 def benchmark(get_X_y, n, get_pp, models, get_metric):
 
-    Result = collections.namedtuple('Result', 'lib model score learn_time pred_time')
+    Result = collections.namedtuple("Result", "lib model score learn_time pred_time")
     results = []
 
     for lib, name, model in tqdm.tqdm(models, position=0):
@@ -67,14 +67,16 @@ def benchmark(get_X_y, n, get_pp, models, get_metric):
 
         results.append(Result(lib, name, metric.get(), learn_time, pred_time))
 
-    results = pd.DataFrame({
-        'Library': [r.lib for r in results],
-        'Model': [r.model for r in results],
-        metric.__class__.__name__: [r.score for r in results],
-        'Fit time': [format_ns(r.learn_time) for r in results],
-        'Average fit time': [format_ns(round(r.learn_time / n)) for r in results],
-        'Predict time': [format_ns(r.pred_time) for r in results],
-        'Average predict time': [format_ns(round(r.pred_time / n)) for r in results]
-    })
+    results = pd.DataFrame(
+        {
+            "Library": [r.lib for r in results],
+            "Model": [r.model for r in results],
+            metric.__class__.__name__: [r.score for r in results],
+            "Fit time": [format_ns(r.learn_time) for r in results],
+            "Average fit time": [format_ns(round(r.learn_time / n)) for r in results],
+            "Predict time": [format_ns(r.pred_time) for r in results],
+            "Average predict time": [format_ns(round(r.pred_time / n)) for r in results],
+        }
+    )
 
     return results

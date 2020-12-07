@@ -8,14 +8,15 @@ class Recommender(base.Regressor):
     """A recommender."""
 
     def learn_one(self, x, y):
-        return self._learn_one(x['user'], x['item'], y)
+        return self._learn_one(x["user"], x["item"], y)
 
     def predict_one(self, x):
-        return self._predict_one(x['user'], x['item'])
+        return self._predict_one(x["user"], x["item"])
 
     @abc.abstractmethod
-    def _learn_one(self, user: typing.Union[str, int], item: typing.Union[str, int],
-                 y: float) -> 'Recommender':
+    def _learn_one(
+        self, user: typing.Union[str, int], item: typing.Union[str, int], y: float
+    ) -> "Recommender":
         """Fits a `user`-`item` pair and a real-valued target `y`.
 
         Parameters

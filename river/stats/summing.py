@@ -30,7 +30,7 @@ class Sum(base.Univariate):
     """
 
     def __init__(self):
-        self.sum = 0.
+        self.sum = 0.0
 
     def update(self, x):
         self.sum += x
