@@ -90,7 +90,7 @@ class BaseForest(base.EnsembleMixin):
                 drift_detector=self.drift_detector,
                 warning_detector=self.warning_detector,
                 is_background_learner=False,
-                metric=self.metric
+                metric=self.metric,
             )
             for i in range(self.n_models)
         ]
@@ -147,34 +147,10 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
     considered at each split.
 
     """
-    def __init__(self,
-                 max_features: int = 2,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_criterion: str = 'info_gain',
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'nba',
-                 nb_threshold: int = 0,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 seed=None,
-                 **kwargs):
-        super().__init__(grace_period=grace_period,
-                         max_depth=max_depth,
-                         split_criterion=split_criterion,
-                         split_confidence=split_confidence,
-                         tie_threshold=tie_threshold,
-                         leaf_prediction=leaf_prediction,
-                         nb_threshold=nb_threshold,
-                         nominal_attributes=nominal_attributes,
-                         attr_obs=attr_obs,
-                         attr_obs_params=attr_obs_params,
-                         **kwargs)
 
     def __init__(
         self,
+        max_features: int = 2,
         grace_period: int = 200,
         max_depth: int = None,
         split_criterion: str = "info_gain",
@@ -185,10 +161,23 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
         nominal_attributes: list = None,
         attr_obs: str = "gaussian",
         attr_obs_params: dict = None,
-        max_features: int = 2,
         seed=None,
         **kwargs,
     ):
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_criterion=split_criterion,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            nb_threshold=nb_threshold,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            **kwargs,
+        )
+
         super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,
@@ -264,33 +253,37 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
 
     """
 
-    def __init__(self,
-                 max_features: int = 2,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'model',
-                 leaf_model: base.Regressor = None,
-                 model_selector_decay: float = 0.95,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 min_samples_split: int = 5,
-                 seed=None,
-                 **kwargs):
-        super().__init__(grace_period=grace_period,
-                         max_depth=max_depth,
-                         split_confidence=split_confidence,
-                         tie_threshold=tie_threshold,
-                         leaf_prediction=leaf_prediction,
-                         leaf_model=leaf_model,
-                         model_selector_decay=model_selector_decay,
-                         nominal_attributes=nominal_attributes,
-                         attr_obs=attr_obs,
-                         attr_obs_params=attr_obs_params,
-                         min_samples_split=min_samples_split,
-                         **kwargs)
+    def __init__(
+        self,
+        max_features: int = 2,
+        grace_period: int = 200,
+        max_depth: int = None,
+        split_confidence: float = 1e-7,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "model",
+        leaf_model: base.Regressor = None,
+        model_selector_decay: float = 0.95,
+        nominal_attributes: list = None,
+        attr_obs: str = "gaussian",
+        attr_obs_params: dict = None,
+        min_samples_split: int = 5,
+        seed=None,
+        **kwargs,
+    ):
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            leaf_model=leaf_model,
+            model_selector_decay=model_selector_decay,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            min_samples_split=min_samples_split,
+            **kwargs,
+        )
 
         self.max_features = max_features
         self.seed = seed
@@ -508,30 +501,31 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     """
 
-    def __init__(self,
-                 n_models: int = 10,
-                 max_features: typing.Union[bool, str, int] = 'sqrt',
-                 lambda_value: int = 6,
-                 metric: MultiClassMetric = Accuracy(),
-                 disable_weighted_vote=False,
-                 drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
-                 warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
-                 # Tree parameters
-                 grace_period: int = 50,
-                 max_depth: int = None,
-                 split_criterion: str = 'info_gain',
-                 split_confidence: float = 0.01,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'nba',
-                 nb_threshold: int = 0,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 max_size: int = 32,
-                 memory_estimate_period: int = 2000000,
-                 seed: int = None,
-                 **kwargs,
-                 ):
+    def __init__(
+        self,
+        n_models: int = 10,
+        max_features: typing.Union[bool, str, int] = "sqrt",
+        lambda_value: int = 6,
+        metric: MultiClassMetric = Accuracy(),
+        disable_weighted_vote=False,
+        drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
+        warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
+        # Tree parameters
+        grace_period: int = 50,
+        max_depth: int = None,
+        split_criterion: str = "info_gain",
+        split_confidence: float = 0.01,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "nba",
+        nb_threshold: int = 0,
+        nominal_attributes: list = None,
+        attr_obs: str = "gaussian",
+        attr_obs_params: dict = None,
+        max_size: int = 32,
+        memory_estimate_period: int = 2000000,
+        seed: int = None,
+        **kwargs,
+    ):
         super().__init__(
             n_models=n_models,
             max_features=max_features,
@@ -586,22 +580,22 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     def _new_base_model(self, seed: int):
         return BaseTreeClassifier(
-                    max_features=self.max_features,
-                    grace_period=self.grace_period,
-                    split_criterion=self.split_criterion,
-                    split_confidence=self.split_confidence,
-                    tie_threshold=self.tie_threshold,
-                    leaf_prediction=self.leaf_prediction,
-                    nb_threshold=self.nb_threshold,
-                    nominal_attributes=self.nominal_attributes,
-                    attr_obs=self.attr_obs,
-                    attr_obs_params=self.attr_obs_params,
-                    max_depth=self.max_depth,
-                    memory_estimate_period=self.memory_estimate_period,
-                    max_size=self.max_size,
-                    seed=seed,
-                    **self.kwargs
-                )
+            max_features=self.max_features,
+            grace_period=self.grace_period,
+            split_criterion=self.split_criterion,
+            split_confidence=self.split_confidence,
+            tie_threshold=self.tie_threshold,
+            leaf_prediction=self.leaf_prediction,
+            nb_threshold=self.nb_threshold,
+            nominal_attributes=self.nominal_attributes,
+            attr_obs=self.attr_obs,
+            attr_obs_params=self.attr_obs_params,
+            max_depth=self.max_depth,
+            memory_estimate_period=self.memory_estimate_period,
+            max_size=self.max_size,
+            seed=seed,
+            **self.kwargs,
+        )
 
 
 class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
@@ -760,32 +754,34 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     _MEDIAN = "median"
     _VALID_AGGREGATION_METHOD = [_MEAN, _MEDIAN]
 
-    def __init__(self,
-                 # Forest parameters
-                 n_models: int = 10,
-                 max_features='sqrt',
-                 aggregation_method: str = 'median',
-                 lambda_value: int = 6,
-                 metric: RegressionMetric = MSE(),
-                 disable_weighted_vote=False,
-                 drift_detector: base.DriftDetector = ADWIN(0.001),
-                 warning_detector: base.DriftDetector = ADWIN(0.01),
-                 # Tree parameters
-                 grace_period: int = 50,
-                 max_depth: int = None,
-                 split_confidence: float = 0.01,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'model',
-                 leaf_model: base.Regressor = None,
-                 model_selector_decay: float = 0.95,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'e-bst',
-                 attr_obs_params: dict = None,
-                 min_samples_split: int = 5,
-                 max_size: int = 100,
-                 memory_estimate_period: int = 2000000,
-                 seed: int = None,
-                 **kwargs):
+    def __init__(
+        self,
+        # Forest parameters
+        n_models: int = 10,
+        max_features="sqrt",
+        aggregation_method: str = "median",
+        lambda_value: int = 6,
+        metric: RegressionMetric = MSE(),
+        disable_weighted_vote=False,
+        drift_detector: base.DriftDetector = ADWIN(0.001),
+        warning_detector: base.DriftDetector = ADWIN(0.01),
+        # Tree parameters
+        grace_period: int = 50,
+        max_depth: int = None,
+        split_confidence: float = 0.01,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "model",
+        leaf_model: base.Regressor = None,
+        model_selector_decay: float = 0.95,
+        nominal_attributes: list = None,
+        attr_obs: str = "e-bst",
+        attr_obs_params: dict = None,
+        min_samples_split: int = 5,
+        max_size: int = 100,
+        memory_estimate_period: int = 2000000,
+        seed: int = None,
+        **kwargs,
+    ):
         super().__init__(
             n_models=n_models,
             max_features=max_features,
@@ -873,7 +869,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             max_size=self.max_size,
             memory_estimate_period=self.memory_estimate_period,
             seed=seed,
-            **self.kwargs
+            **self.kwargs,
         )
 
     @property
@@ -912,14 +908,17 @@ class BaseForestMember:
         Metric to track performance.
 
     """
-    def __init__(self,
-                 index_original: int,
-                 model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 metric: typing.Union[MultiClassMetric, RegressionMetric]):
+
+    def __init__(
+        self,
+        index_original: int,
+        model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        metric: typing.Union[MultiClassMetric, RegressionMetric],
+    ):
         self.index_original = index_original
         self.model = model.clone()
         self.created_on = created_on
@@ -1001,7 +1000,7 @@ class BaseForestMember:
                         drift_detector=self.drift_detector,
                         warning_detector=self.warning_detector,
                         is_background_learner=True,
-                        metric=self.metric
+                        metric=self.metric,
                     )
                     # Reset the warning detector for the current object
                     self.warning_detector = self.warning_detector.clone()
@@ -1027,14 +1026,16 @@ class BaseForestMember:
 class ForestMemberClassifier(BaseForestMember, base.Classifier):
     """Forest member class for classification"""
 
-    def __init__(self,
-                 index_original: int,
-                 model: BaseTreeClassifier,
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 metric: MultiClassMetric):
+    def __init__(
+        self,
+        index_original: int,
+        model: BaseTreeClassifier,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        metric: MultiClassMetric,
+    ):
         super().__init__(
             index_original=index_original,
             model=model,
@@ -1042,7 +1043,7 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
             drift_detector=drift_detector,
             warning_detector=warning_detector,
             is_background_learner=is_background_learner,
-            metric=metric
+            metric=metric,
         )
 
     def _drift_detector_input(self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget):
@@ -1058,14 +1059,16 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
 class ForestMemberRegressor(BaseForestMember, base.Regressor):
     """Forest member class for regression"""
 
-    def __init__(self,
-                 index_original: int,
-                 model: BaseTreeRegressor,
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 metric: RegressionMetric):
+    def __init__(
+        self,
+        index_original: int,
+        model: BaseTreeRegressor,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        metric: RegressionMetric,
+    ):
         super().__init__(
             index_original=index_original,
             model=model,
@@ -1073,7 +1076,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
             drift_detector=drift_detector,
             warning_detector=warning_detector,
             is_background_learner=is_background_learner,
-            metric=metric
+            metric=metric,
         )
         self._var = Var()  # Used to track drift
 

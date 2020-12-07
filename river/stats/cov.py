@@ -49,7 +49,7 @@ class Cov(base.Bivariate):
         self.mean_y = mean.Mean()
         self.cov = 0
 
-    def update(self, x, y, w=1.):
+    def update(self, x, y, w=1.0):
         dx = x - self.mean_x.get()
         self.mean_x.update(x, w)
         self.mean_y.update(y, w)
@@ -80,11 +80,12 @@ class Cov(base.Bivariate):
         self.cov = scale_a * self.cov + scale_b * other.cov
         # Apply correction factor
         self.cov += (
-            (old_mean_x - other.mean_x.get()) * (old_mean_y - other.mean_y.get())
+            (old_mean_x - other.mean_x.get())
+            * (old_mean_y - other.mean_y.get())
             * ((old_n * other.mean_x.n) / self.mean_x.n)
         )
         # Reapply scale
-        self.cov /= (self.mean_x.n - self.ddof)
+        self.cov /= self.mean_x.n - self.ddof
 
         return self
 
@@ -116,11 +117,12 @@ class Cov(base.Bivariate):
         self.cov = scale_x * self.cov - scale_b * other.cov
         # Apply correction
         self.cov -= (
-            (self.mean_x.get() - other.mean_x.get()) * (self.mean_y.get() - other.mean_y.get())
+            (self.mean_x.get() - other.mean_x.get())
+            * (self.mean_y.get() - other.mean_y.get())
             * ((self.mean_x.n * other.mean_x.n) / old_n)
         )
         # Re-apply scale factor
-        self.cov /= (self.mean_x.n - self.ddof)
+        self.cov /= self.mean_x.n - self.ddof
 
         return self
 
