@@ -13,6 +13,10 @@
   <a href="https://riverml.xyz">
     <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
   </a>
+  <!-- Black -->
+  <a href="https://github.com/psf/black">
+    <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square">
+  </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
     <img src="https://img.shields.io/pypi/v/river.svg?label=release&color=blue&style=flat-square" alt="pypi">
