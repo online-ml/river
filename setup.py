@@ -1,20 +1,20 @@
 import io
 import platform
 import os
+import subprocess
+import sys
 
 import setuptools
 
 try:
     from numpy import get_include
 except ImportError:
-    import subprocess
     subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
     from numpy import get_include
 
 try:
     from Cython.Build import cythonize
 except ImportError:
-    import subprocess
     subprocess.check_call([sys.executable, "-m", "pip", "install", "Cython"])
     from Cython.Build import cythonize
 

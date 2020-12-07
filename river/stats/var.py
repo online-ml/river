@@ -102,8 +102,9 @@ class Var(base.Univariate):
                 other.mean.n - other.ddof
             ) * other.sigma
             # apply the correction
-            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n)\
-                / (self.mean.n - self.ddof)
+            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n) / (
+                self.mean.n - self.ddof
+            )
 
         else:
             self.sigma = 0.0

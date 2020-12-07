@@ -288,17 +288,20 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         for i in range(self.n_models):
             # If self.training_method == self._TRAIN_RESAMPLING then subspace is None
             subspace = self._subspaces[subspace_indexes[i]]
-            self.models.append(self._base_learner_class(
-                idx_original=i,
-                model=self.model,
-                metric=self.metric,
-                created_on=self._n_samples_seen,
-                drift_detector=self.drift_detector,
-                warning_detector=self.warning_detector,
-                is_background_learner=False,
-                features=subspace,
-                nominal_attributes=self.nominal_attributes,
-                rng=self._rng))
+            self.models.append(
+                self._base_learner_class(
+                    idx_original=i,
+                    model=self.model,
+                    metric=self.metric,
+                    created_on=self._n_samples_seen,
+                    drift_detector=self.drift_detector,
+                    warning_detector=self.warning_detector,
+                    is_background_learner=False,
+                    features=subspace,
+                    nominal_attributes=self.nominal_attributes,
+                    rng=self._rng,
+                )
+            )
 
     def reset(self):
         self.models = []
@@ -310,17 +313,20 @@ class StreamingRandomPatchesBaseLearner:
     """
     Class representing the base learner of StreamingRandomPatchesClassifier.
     """
-    def __init__(self,
-                 idx_original: int,
-                 model: base.Classifier,
-                 metric: MultiClassMetric,
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 features=None,
-                 nominal_attributes=None,
-                 rng=None):
+
+    def __init__(
+        self,
+        idx_original: int,
+        model: base.Classifier,
+        metric: MultiClassMetric,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        features=None,
+        nominal_attributes=None,
+        rng=None,
+    ):
         self.idx_original = idx_original
         self.created_on = created_on
         self.model = model.clone()
