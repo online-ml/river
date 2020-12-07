@@ -9,11 +9,14 @@ from .agrawal import Agrawal
 from .anomaly_sine import AnomalySine
 from .concept_drift_stream import ConceptDriftStream
 from .friedman import Friedman
+from .friedman import FriedmanDrift
 from .hyper_plane import Hyperplane
 from .led import LED
 from .led import LEDDrift
 from .logical import Logical
 from .mixed import Mixed
+from .mv import Mv
+from .planes_2d import Planes2D
 from .random_rbf import RandomRBF
 from .random_rbf import RandomRBFDrift
 from .random_tree import RandomTree
@@ -24,20 +27,23 @@ from .waveform import Waveform
 
 
 __all__ = [
-    "Agrawal",
-    "AnomalySine",
-    "ConceptDriftStream",
-    "Friedman",
-    "Hyperplane",
-    "LED",
-    "LEDDrift",
-    "Logical",
-    "Mixed",
-    "RandomRBF",
-    "RandomRBFDrift",
-    "RandomTree",
-    "SEA",
-    "Sine",
-    "STAGGER",
-    "Waveform",
+    'Agrawal',
+    'AnomalySine',
+    'ConceptDriftStream',
+    'Friedman',
+    'FriedmanDrift',
+    'Hyperplane',
+    'LED',
+    'LEDDrift',
+    'Logical',
+    'Mixed',
+    'Mv',
+    'Planes2D',
+    'RandomRBF',
+    'RandomRBFDrift',
+    'RandomTree',
+    'SEA',
+    'Sine',
+    'STAGGER',
+    'Waveform'
 ]
