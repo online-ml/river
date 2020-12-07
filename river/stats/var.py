@@ -1,3 +1,5 @@
+import copy
+
 from . import base
 from . import mean
 
@@ -15,8 +17,8 @@ class Var(base.Univariate):
     ----------
     mean : stats.Mean
         The running mean.
-    sos : float
-        The running sum of squares.
+    sigma : float
+        The running variance.
 
     Notes
     -----
@@ -64,31 +66,6 @@ class Var(base.Univariate):
     def get(self):
         return self.sigma
 
-    def __add__(self, other):
-        result = Var(ddof=self.ddof)
-
-        if other.mean.n <= self.ddof:
-            result.mean.n = self.mean.n
-            result.mean.mean = self.mean.mean
-            result.sigma = self.sigma
-
-            return result
-
-        delta = 0.0
-        result.mean = self.mean + other.mean
-        delta = other.mean.get() - self.mean.get()
-
-        # scale and merge both sigma
-        result.sigma = (self.mean.n - self.ddof) * self.sigma + (
-            other.mean.n - other.ddof
-        ) * other.sigma
-        # apply correction
-        result.sigma = (
-            result.sigma + (delta * delta) * (self.mean.n * other.mean.n) / result.mean.n
-        ) / (result.mean.n - result.ddof)
-
-        return result
-
     def __iadd__(self, other):
         if other.mean.n <= self.ddof:
             return self
@@ -106,23 +83,9 @@ class Var(base.Univariate):
 
         return self
 
-    def __sub__(self, other):
-        delta = 0.0
-        result = Var(ddof=self.ddof)
-        result.mean = self.mean - other.mean
-
-        if result.mean.n > 0 and result.mean.n > result.ddof:
-            delta = other.mean.get() - result.mean.get()
-            # scale both sigma and take the difference
-            result.sigma = (self.mean.n - self.ddof) * self.sigma - (
-                other.mean.n - other.ddof
-            ) * other.sigma
-            # apply the correction
-            result.sigma = (
-                result.sigma - (delta * delta) * (result.mean.n * other.mean.n) / self.mean.n
-            ) / (result.mean.n - result.ddof)
-        else:
-            result.sigma = 0.0
+    def __add__(self, other):
+        result = copy.deepcopy(self)
+        result += other
 
         return result
 
@@ -139,14 +102,19 @@ class Var(base.Univariate):
                 other.mean.n - other.ddof
             ) * other.sigma
             # apply the correction
-            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n) / (
-                self.mean.n - self.ddof
-            )
+            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n)\
+                / (self.mean.n - self.ddof)
 
         else:
             self.sigma = 0.0
 
         return self
+
+    def __sub__(self, other):
+        result = copy.deepcopy(self)
+        result -= other
+
+        return result
 
 
 class RollingVar(base.RollingUnivariate):
