@@ -163,7 +163,21 @@ Feel free to contribute in any way you like, we're always open to new ideas and 
 
 ## 💬 Citation
 
-We're in the process of publishing a paper, stay tuned!
+If `river` has been useful for your research and you would like to cite it in an scientific publication, please refer to this [paper](https://arxiv.org/abs/2012.04740):
+
+```bibtex
+@misc{2020river,
+      title={River: machine learning for streaming data in Python},
+      author={Jacob Montiel and Max Halford and Saulo Martiello Mastelini
+              and Geoffrey Bolmier and Raphael Sourty and Robin Vaysse
+              and Adil Zouitine and Heitor Murilo Gomes and Jesse Read
+              and Talel Abdessalem and Albert Bifet},
+      year={2020},
+      eprint={2012.04740},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
 
 ## 📝 License
 
