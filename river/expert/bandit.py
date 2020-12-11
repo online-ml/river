@@ -172,13 +172,45 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
     Examples
     --------
+    Let's use `UCBRegressor` to select the best learning rate for a linear regression model. First, we define the grid of models:
+
+    >>> from river import compose
     >>> from river import linear_model
-    >>> from river import expert
     >>> from river import preprocessing
+    >>> from river import optim
+
+    >>> models = [
+    ...     compose.Pipeline(
+    ...     preprocessing.StandardScaler(),
+    ...         linear_model.LinearRegression(optimizer=optim.SGD(lr=lr))
+    ...         ) for lr in [1e-4, 1e-3, 1e-2, 1e-1]
+    ... ]
+
+    We decide to use TrumpApproval dataset:
+
+    >>> from river import datasets
+    >>> dataset = datasets.TrumpApproval()
+
+    We then define the metric and the scaler for the reward
+
+    >>> from river.expert import EpsilonGreedyRegressor
     >>> from river import metrics
 
+    >>> metric = metrics.MSE()
+    >>> reward_scaler = preprocessing.StandardScaler()
+    >>> bandit = EpsilonGreedyRegressor(models=models, metric=metric, reward_scaler=reward_scaler, seed=1)
 
-    TODO: Example
+    We can then train the models in the bandit in an online fashion:
+
+    >>> for x,y in dataset:
+    ...     bandit.learn_one(x=x, y=y)
+
+    We can inspect the number of times (in percentage) each arm has been pulled:
+    >>> bandit.percentage_pulled
+
+    We can also select the best model (the one with the highest average reward)
+    >>> best_model = bandit.best_model
+
 
     References
     ----------
@@ -257,7 +289,48 @@ class UCBRegressor(UCBBandit, base.Regressor):
     delta
         For UCB(delta) implementation. Lower value means more exploration.
 
-    TODO: Example
+     Let's use `UCBRegressor` to select the best learning rate for a linear regression model.
+
+    Examples
+    --------
+    Let's use `UCBRegressor` to select the best learning rate for a linear regression model. First, we define the grid of models:
+
+    >>> from river import compose
+    >>> from river import linear_model
+    >>> from river import preprocessing
+    >>> from river import optim
+
+    >>> models = [
+    ...     compose.Pipeline(
+    ...     preprocessing.StandardScaler(),
+    ...         linear_model.LinearRegression(optimizer=optim.SGD(lr=lr))
+    ...         ) for lr in [1e-4, 1e-3, 1e-2, 1e-1]
+    ... ]
+
+    We decide to use TrumpApproval dataset:
+
+    >>> from river import datasets
+    >>> dataset = datasets.TrumpApproval()
+
+    We then define the metric and the scaler for the reward
+
+    >>> from river.expert import UCBRegressor
+    >>> from river import metrics
+
+    >>> metric = metrics.MSE()
+    >>> reward_scaler = preprocessing.StandardScaler()
+    >>> bandit = UCBRegressor(models=models, metric=metric, reward_scaler=reward_scaler, seed=1)
+
+    We can then train the models in the bandit in an online fashion:
+
+    >>> for x,y in dataset:
+    ...     bandit.learn_one(x=x, y=y)
+
+    We can inspect the number of times (in percentage) each arm has been pulled:
+    >>> bandit.percentage_pulled
+
+    We can also select the best model (the one with the highest average reward)
+    >>> best_model = bandit.best_model
 
     References
     ----------
