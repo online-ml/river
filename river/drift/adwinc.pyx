@@ -4,7 +4,7 @@ from libc.math cimport sqrt, log, fabs, pow
 from sys import getsizeof
 from collections import deque
 
-from creme.base import DriftDetector
+from river.base import DriftDetector
 
 cdef class AdWinList:
     """ A linked list object for ADWIN algorithm.
@@ -422,7 +422,7 @@ class ADWIN(ADWINC, DriftDetector):
     Examples
     --------
     >>> import numpy as np
-    >>> from creme.drift import ADWIN
+    >>> from river.drift import ADWIN
     >>> np.random.seed(12345)
 
     >>> adwin = ADWIN()
