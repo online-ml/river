@@ -555,6 +555,13 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.memory_estimate_period = memory_estimate_period
         self.kwargs = kwargs
 
+    @classmethod
+    def _unit_test_params(cls):
+        return {'n_models': 3}
+
+    def _unit_test_skips(self):
+        return {'check_shuffle_features_no_impact'}
+
     def _multiclass(self):
         return True
 
@@ -819,6 +826,13 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                 f"Invalid aggregation_method: {aggregation_method}.\n"
                 f"Valid values are: {self._VALID_AGGREGATION_METHOD}"
             )
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {'n_models': 3}
+
+    def _unit_test_skips(self):
+        return {'check_shuffle_features_no_impact'}
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
 

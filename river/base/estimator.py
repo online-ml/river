@@ -62,6 +62,29 @@ class Estimator(base.Base, abc.ABC):
 
         return tags
 
+    @classmethod
+    def _unit_test_params(self):
+        """Indicates which parameters to use during unit testing.
+
+        Most estimators have a default value for each of their parameters. However, in some cases,
+        no default value is specified. This class method allows to circumvent this issue when the
+        model has to be instantiated during unit testing.
+
+        This can also be used to override default parameters that are computationally expensive,
+        such as the number of base models in an ensemble.
+
+        """
+        return {}
+
+    def _unit_test_skips(self):
+        """Indicates which checks to skip during unit testing.
+
+        Most estimators pass the full test suite. However, in some cases, some estimators might not
+        be able to pass certain checks.
+
+        """
+        return set()
+
 
 def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> str:
     """Return a pretty representation of an object."""

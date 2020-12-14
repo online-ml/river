@@ -171,7 +171,7 @@ class StatisticRegressor(base.Regressor):
         self.statistic = statistic
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {"statistic": stats.Mean()}
 
     def learn_one(self, x, y):

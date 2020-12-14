@@ -134,6 +134,9 @@ class SAMKNNClassifier(Classifier):
         self.classifier_choice = []
         self.pred_history = []
 
+    def _unit_test_skips(self):
+        return {'check_emerging_features', 'check_disappearing_features'}
+
     @staticmethod
     def _get_distances(sample, samples):
         """Calculate distances from sample to all samples."""
