@@ -89,7 +89,7 @@ cdef class AdWinList:
 
         self._nodes.pop()
         tail = self.tail
-        tail._prev = None
+        tail._next = None
         self._count -= 1
 
 
@@ -243,8 +243,7 @@ cdef class ADWINC:
                 u2 = cursor._sum[1]/n2
                 incVariance = n1 * n2 * (u1 - u2) * (u1 - u2) / (n1 + n2)
                 value = cursor._sum[0] + cursor._sum[1]
-                variance = (cursor._variance[0] + cursor._variance[1]
-                            + incVariance)
+                variance = cursor._variance[1] + incVariance
                 nextNode.add_back(value=value, var=variance)
                 self._bucket_n -= 1
                 cursor.drop_front(2)
@@ -304,8 +303,8 @@ cdef class ADWINC:
                 it = self._buckets.tail
                 i = self._last_bucket
 
-                while True:
-                    for k in range(it._size):
+                while not quit and it:
+                    for k in range(it._size - 1):
                         if i == 0 and k == it._size-1:
                             quit = True
                             break
@@ -324,8 +323,7 @@ cdef class ADWINC:
                                 break
                     it = it._prev
                     i -= 1
-                    if quit or it is None:
-                        break
+
         return change
 
     cpdef double delete_element(self):
@@ -375,7 +373,7 @@ cdef class ADWINC:
         # retard fix patch for numeric approximation error
         # (need to debug latter)
         try:
-            eps = sqrt(2 * m * v * dd) + 2 / 3 * dd * m
+            eps = sqrt(2.0 * m * v * dd) + 2.0 / 3 * dd * m
         except ValueError:
             if m < 10e-15:
                 m = 0
@@ -383,7 +381,8 @@ cdef class ADWINC:
                 v = 0
             if dd < 10e-15:
                 dd = 0
-            eps = sqrt(2 * m * v * dd) + 2 / 3 * dd * m
+            eps = sqrt(2.0 * m * v * dd) + 2.0 / 3 * dd * m
+
         return fabs(diff) > eps
 
     cpdef int bucket_size(self, double row):

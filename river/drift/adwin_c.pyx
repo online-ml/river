@@ -238,6 +238,10 @@ cdef class ADWINC:
 
                 while (not bln_exit) and (cursor is not None):
                     for k in range(cursor.bucket_size_row - 1):
+                        if (i == 0) and (k == cursor.bucket_size_row - 1):
+                            bln_exit = True
+                            break
+
                         n2 = self._bucket_size(i)
                         u2 = cursor.get_total(k)
                         if n0 > 0:
@@ -252,10 +256,6 @@ cdef class ADWINC:
                         n1 -= self._bucket_size(i)
                         u0 += cursor.get_total(k)
                         u1 -= cursor.get_total(k)
-                        if (i == 0) and (k == cursor.bucket_size_row - 1):
-                            bln_exit = True
-                            break
-
                         abs_value = 1. * ((u0 / n0) - (u1 / n1))
                         if (n1 >= self.mint_min_window_length) \
                                 and (n0 >= self.mint_min_window_length) \
