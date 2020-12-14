@@ -77,7 +77,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
         return True
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {"classifier": linear_model.LogisticRegression()}
 
     def learn_one(self, x, y):
@@ -103,10 +103,8 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
             total += yp
 
         if total:
-            for label in y_pred:
-                y_pred[label] /= total
-
-        return y_pred
+            return {label: votes / total for label, votes in y_pred.items()}
+        return {label: 1 / len(y_pred) for label in y_pred}
 
     def learn_many(self, X, y, **params):
 

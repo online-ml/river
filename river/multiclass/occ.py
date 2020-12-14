@@ -107,7 +107,7 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
         return self.classifier
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {"classifier": linear_model.LogisticRegression(), "code_size": 6}
 
     def learn_one(self, x, y):
