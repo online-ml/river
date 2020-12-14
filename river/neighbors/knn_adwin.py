@@ -58,6 +58,9 @@ class KNNADWINClassifier(KNNClassifier):
         super().__init__(n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size, p=p)
         self.adwin = ADWIN()
 
+    def _unit_test_skips(self):
+        return {'check_emerging_features', 'check_disappearing_features'}
+
     def learn_one(self, x, y):
         """Update the model with a set of features `x` and a label `y`.
 

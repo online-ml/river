@@ -143,6 +143,13 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     def _wrapped_model(self):
         return self.model
 
+    @classmethod
+    def _unit_test_params(cls):
+        return {'n_models': 3}
+
+    def _unit_test_skips(self):
+        return {'check_shuffle_features_no_impact'}
+
     def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs):
         self._n_samples_seen += 1
 

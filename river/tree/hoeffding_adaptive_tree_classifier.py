@@ -265,5 +265,5 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                     self.__find_learning_nodes(split_node._alternate_tree, split_node, -999, found)
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {"seed": 1}
