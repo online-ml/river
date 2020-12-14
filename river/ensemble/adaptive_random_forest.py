@@ -557,10 +557,10 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        return {'n_models': 3}
+        return {"n_models": 3}
 
     def _unit_test_skips(self):
-        return {'check_shuffle_features_no_impact'}
+        return {"check_shuffle_features_no_impact"}
 
     def _multiclass(self):
         return True
@@ -829,10 +829,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
     @classmethod
     def _unit_test_params(cls):
-        return {'n_models': 3}
+        return {"n_models": 3}
 
     def _unit_test_skips(self):
-        return {'check_shuffle_features_no_impact'}
+        return {"check_shuffle_features_no_impact"}
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
 
