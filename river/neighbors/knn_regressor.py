@@ -93,7 +93,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         self.kwargs = kwargs
 
     def _unit_test_skips(self):
-        return {'check_emerging_features', 'check_disappearing_features'}
+        return {"check_emerging_features", "check_disappearing_features"}
 
     def learn_one(self, x, y):
         """Update the model with a set of features `x` and a real target value `y`.
