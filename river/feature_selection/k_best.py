@@ -70,7 +70,7 @@ class SelectKBest(base.SupervisedTransformer):
         self.leaderboard = collections.Counter()
 
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {"similarity": stats.PearsonCorr()}
 
     def learn_one(self, x, y):
