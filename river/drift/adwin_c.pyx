@@ -1,7 +1,9 @@
 # cython: boundscheck=False
 
-cimport numpy as np
+from libc.math cimport sqrt, log, fabs, pow
 import numpy as np
+cimport numpy as np
+from collections import deque
 
 
 cdef class ADWINC:
@@ -16,9 +18,9 @@ cdef class ADWINC:
     cdef:
         # dict __dict__
         List list_row_bucket
-        double delta, _total, _variance, _v, mdbl_delta
-        int last_bucket_row, _width, bucket_number, mint_min_window_longitude, mint_min_window_length, mint_time, \
-            mdbl_width, _n_detections, detect_twice, mint_clock, bucket_num_max, detect
+        double delta, _total, _variance, _v, mdbl_delta, mdbl_width, _width
+        int last_bucket_row, bucket_number, mint_min_window_longitude, mint_min_window_length, mint_time, \
+            _n_detections, detect_twice, mint_clock, bucket_num_max, detect
         bint _in_concept_change
 
     MAX_BUCKETS = 5
@@ -90,7 +92,7 @@ cdef class ADWINC:
             detected.
 
         """
-        cdef int _w = self._width
+        cdef double _w = self._width
 
         self._width += 1
 
@@ -113,10 +115,10 @@ cdef class ADWINC:
             self.bucket_num_max = self.bucket_number
 
     # @staticmethod
-    cdef int _bucket_size(self, int row):
-        return np.power(2, row)
+    cdef double _bucket_size(self, int row):
+        return pow(2, row)
 
-    cdef int _delete_element(self):
+    cdef double _delete_element(self):
         """Delete an item from the bucket list.
 
         Deletes the last item and updates relevant statistics kept by ADWIN.
@@ -127,7 +129,7 @@ cdef class ADWINC:
 
         """
         cdef:
-            int n1
+            double n1, u1
             Item node
             double incremental_variance
 
@@ -153,8 +155,8 @@ cdef class ADWINC:
     cdef void __compress_buckets(self):
 
         cdef:
-            int i, k, n1, n2
-            double u1, u2, incremental_variance
+            int i, k
+            double n1, n2, u1, u2, incremental_variance
             Item cursor, next_node
 
         cursor = self.list_row_bucket.first()
@@ -210,8 +212,7 @@ cdef class ADWINC:
         """
         cdef:
             bint bln_change, bln_exit, bln_bucket_deleted
-            int n0, n1, n2
-            double u0, u1, u2, v0, v1
+            double n0, n1, n2, u0, u1, u2
             Item cursor
 
         bln_change = False
@@ -229,8 +230,6 @@ cdef class ADWINC:
                 n1 = self._width
                 u0 = 0
                 u1 = self._total
-                v0 = 0
-                v1 = self._variance
                 n2 = 0
                 u2 = 0
                 cursor = self.list_row_bucket.last()
@@ -244,13 +243,6 @@ cdef class ADWINC:
 
                         n2 = self._bucket_size(i)
                         u2 = cursor.get_total(k)
-                        if n0 > 0:
-                            v0 += cursor.get_variance(k) + 1. * n0 * n2 * \
-                                (u0 / n0 - u2 / n2) * (u0 / n0 - u2 / n2) / (n0 + n2)
-
-                        if n1 > 0:
-                            v1 -= cursor.get_variance(k) + 1. * n1 * n2 * \
-                                (u1 / n1 - u2 / n2) * (u1 / n1 - u2 / n2) / (n1 + n2)
 
                         n0 += self._bucket_size(i)
                         n1 -= self._bucket_size(i)
@@ -260,7 +252,7 @@ cdef class ADWINC:
                         if (n1 >= self.mint_min_window_length) \
                                 and (n0 >= self.mint_min_window_length) \
                                 and (
-                                self.__bln_cut_expression(n0, n1, u0, u1, v0, v1, abs_value,
+                                self.__bln_cut_expression(n0, n1, u0, u1, abs_value,
                                                           self.delta)):
                             bln_bucket_deleted = True  # noqa: F841
                             self.detect = self.mint_time
@@ -285,19 +277,18 @@ cdef class ADWINC:
 
         return self._in_concept_change
 
-    cdef double __bln_cut_expression(self, int n0, int n1, double u0, double u1, double v0, double v1,
+    cdef double __bln_cut_expression(self, double n0, double n1, double u0, double u1,
                                      double abs_value, double delta):
         cdef:
-            int n
-            double dd, v, m, epsilon
+            double n, dd, v, m, epsilon
 
         n = self._width
-        dd = np.log(2 * np.log(n) / delta)
+        dd = log(2 * log(n) / delta)
         v = self._v
         m = (1. / (n0 - self.mint_min_window_length + 1)) + \
             (1. / (n1 - self.mint_min_window_length + 1))
-        epsilon = np.sqrt(2 * m * v * dd) + 1. * 2 / 3 * dd * m
-        return np.absolute(abs_value) > epsilon
+        epsilon = sqrt(2 * m * v * dd) + 1. * 2 / 3 * dd * m
+        return fabs(abs_value) > epsilon
 
 
 cdef class List:
@@ -311,53 +302,55 @@ cdef class List:
 
     cdef:
         int _count
-        Item _first, _last
+        dict __dict__
 
     def __init__(self):
-        # self.reset()
+        self._nodes = deque()
         self.add_to_head()
-
-    # cdef void reset(self):
         self._count = 0
-        # self._first = None
-        # self._last = None
+
+    cdef Item first(self):
+        if self._nodes and len(self._nodes) > 0:
+            return self._nodes[0]
+        return None
+
+    cdef Item last(self):
+        if self._nodes and len(self._nodes) > 0:
+            return self._nodes[-1]
+        return None
 
     cdef void add_to_head(self):
-        self._first = Item(self._first, None)
-        if self._last is None:
-            self._last = self._first
+        cdef Item head, new_head
+
+        head = self.first()
+        new_head = Item(head, None)
+        self._nodes.appendleft(new_head)
+        if head:
+            self.first().set_previous(new_head)
+        self._count += 1
 
     cdef void remove_from_head(self):
-        self._first = self._first.get_next_item()
-        if self._first is not None:
-            self._first.set_previous(None)
-        else:
-            self._last = None
+        self._nodes.popleft()
+        if self.first():
+            self.first().set_previous(None)
         self._count -= 1
 
     cdef void add_to_tail(self):
-        self._last = Item(None, self._last)
-        if self._first is None:
-            self._first = self._last
+        cdef Item tail, new_tail
+
+        tail = self.last()
+        new_tail = Item(None, tail)
+        if tail:
+            tail.next = new_tail
+        self._nodes.append(new_tail)
         self._count += 1
 
     cdef void remove_from_tail(self):
-        self._last = self._last.get_previous()
-        if self._last is not None:
-            self._last.set_next_item(None)
-        else:
-            self._first = None
+        self._nodes.pop()
+        if self.last():
+            self.last().set_next_item(None)
         self._count -= 1
 
-    # @property
-    cdef Item first(self):
-        return self._first
-
-    # @property
-    cdef Item last(self):
-        return self._last
-
-    # @property
     cdef int size(self):
         return self._count
 
