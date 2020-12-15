@@ -264,7 +264,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "gaussian",
+        attr_obs: str = "e-bst",
         attr_obs_params: dict = None,
         min_samples_split: int = 5,
         seed=None,
@@ -753,7 +753,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 23.320694
+    MAE: 1.870913
 
     """
 
@@ -769,7 +769,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         aggregation_method: str = "median",
         lambda_value: int = 6,
         metric: RegressionMetric = MSE(),
-        disable_weighted_vote=False,
+        disable_weighted_vote=True,
         drift_detector: base.DriftDetector = ADWIN(0.001),
         warning_detector: base.DriftDetector = ADWIN(0.01),
         # Tree parameters
@@ -842,7 +842,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
         y_pred = np.zeros(self.n_models)
 
-        if not self.disable_weighted_vote:
+        if not self.disable_weighted_vote and self.aggregation_method != self._MEDIAN:
             weights = np.zeros(self.n_models)
             sum_weights = 0.0
             for idx, model in enumerate(self.models):
@@ -1101,7 +1101,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
         if self._var.mean.n == 1:
             return 0.5  # The expected error is the normalized mean error
 
-        sd = math.sqrt(self._var.sigma)
+        sd = math.sqrt(self._var.get())
 
         # We assume the error follows a normal distribution -> (empirical rule)
         # 99.73% of the values lie  between [mean - 3*sd, mean + 3*sd]. We
