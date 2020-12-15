@@ -1,0 +1,44 @@
+name: pypi
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  pypi:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Configure cibuildwheel
+      run: |
+        CIBW_BUILD="cp36-* cp37-* cp38-*"
+        CIBW_BEFORE_BUILD="pip install cython"
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install Python dependencies
+      run: pip install -e ".[compat,dev]" cibuildwheel twine
+
+    - name: pytest
+      run: |
+        pytest
+        pytest -m "datasets and slow"
+
+    - name: Build wheels
+      env:
+        PYPI_USER: ${{ secrets.PYPI_USER }}
+        PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        cibuildwheel --output-dir dist
+        python setup.py sdist
+        ls dist
+        twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD}

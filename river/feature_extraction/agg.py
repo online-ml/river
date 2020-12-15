@@ -7,7 +7,7 @@ from river import base
 from river import stats
 
 
-__all__ = ['Agg', 'TargetAgg']
+__all__ = ["Agg", "TargetAgg"]
 
 
 class Agg(base.Transformer):
@@ -137,7 +137,7 @@ class Agg(base.Transformer):
         self.feature_name = f'{self.on}_{self.how.name}_by_{"_and_".join(self.by)}'
 
     def _get_key(self, x):
-        return '_'.join(str(x[k]) for k in self.by)
+        return "_".join(str(x[k]) for k in self.by)
 
     def learn_one(self, x):
         self.groups[self._get_key(x)].update(x[self.on])
@@ -247,8 +247,12 @@ class TargetAgg(base.SupervisedTransformer):
 
     """
 
-    def __init__(self, by: typing.Union[str, typing.List[str]], how: stats.Univariate,
-                 target_name='target'):
+    def __init__(
+        self,
+        by: typing.Union[str, typing.List[str]],
+        how: stats.Univariate,
+        target_name="target",
+    ):
         self.by = by if isinstance(by, list) else [by]
         self.how = how
         self.target_name = target_name
@@ -256,7 +260,7 @@ class TargetAgg(base.SupervisedTransformer):
         self.feature_name = f'{target_name}_{how.name}_by_{"_and_".join(self.by)}'
 
     def _get_key(self, x):
-        return '_'.join(str(x[k]) for k in self.by)
+        return "_".join(str(x[k]) for k in self.by)
 
     def learn_one(self, x, y):
         self.groups[self._get_key(x)].update(y)

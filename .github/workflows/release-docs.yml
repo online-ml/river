@@ -1,0 +1,52 @@
+name: release-docs
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Install Ubuntu dependencies
+      run: sudo apt-get install graphviz pandoc
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[docs]"
+
+    - name: Execute notebooks
+      run: make execute-notebooks
+
+    - name: Build docs
+      run: make doc
+
+    - name: Deploy docs
+      env:
+        GH_TOKEN: ${{ secrets.GitHubToken }}
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git config pull.rebase false
+
+        git add --all
+        git commit -m "Execute notebooks"
+
+        git fetch
+        git checkout gh-pages
+        git pull
+
+        git checkout master
+        RIVER_VERSION=$(python -c "import river; print(river.__version__)")
+        mike deploy ${RIVER_VERSION} latest --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
+        mike set-default latest --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git

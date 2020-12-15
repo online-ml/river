@@ -1,26 +1,47 @@
 # Contribution guidelines
 
-## Installation
+## Fork/clone/pull
 
-First, create a virtual environment. You'll want to activate it every time you want to work on `river`.
+The typical workflow for contributing to `river` is:
+
+1. Fork the `master` branch from the [GitHub repository](https://github.com/online-ml/river/).
+2. Clone your fork locally.
+3. Commit changes.
+4. Push the changes to your fork.
+5. Send a pull request from your fork back to the original `master` branch.
+
+## Local setup
+
+We encourage you to use a virtual environment. You'll want to activate it every time you want to work on `river`.
 
 ```sh
-> python -m venv .venv
-> source .venv/bin/activate
+$ python -m venv .venv
+$ source .venv/bin/activate
 ```
 
-You can also use a `conda` environment, as explained [here](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/).
-
-You then want to fork the `master` branch of the repository, which you can do from GitHub's interface. Once you've forked the repository, clone it to your work station. Then, navigate to the cloned directory and install the required dependencies:
+You can also create a virtual environment via `conda`:
 
 ```sh
-> pip install -e ".[dev]"
+$ conda create -n river -y python
+$ conda activate river
 ```
 
-Finally, install `river` in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
+Then, navigate to your cloned fork and install the required dependencies:
 
 ```sh
-> python setup.py develop
+$ pip install -e ".[dev]"
+```
+
+Next, install `river` in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
+
+```sh
+$ python setup.py develop
+```
+
+Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will run some code quality checks every time you push to GitHub.
+
+```sh
+$ pre-commit install --hook-type pre-push
 ```
 
 ## Making changes
@@ -49,7 +70,7 @@ model = linear_model.LinearRegression()
    1. Stateless transformers do not require a `learn_one` method.
    2. In case of a classifier, the `predict_one` is implemented by default, but can be overridden.
 4. Add type hints to the parameters of the `__init__` method.
-5. If possible provide a default value for each parameter. If, for whatever reason, no good default exists, then implement the `_default_params` method. This is a private method that is meant to be used for testing.
+5. If possible provide a default value for each parameter. If, for whatever reason, no good default exists, then implement the `_unit_test_params` method. This is a private method that is meant to be used for testing.
 6. Write a comprehensive docstring with example usage. Try to have empathy for new users when you do this.
 7. Check that the class you have implemented is imported in the `__init__.py` file of the module it belongs to.
 8. When you're done, run the `utils.check_estimator` function on your class and check that no exceptions are raised.
@@ -61,7 +82,7 @@ If you're adding a class or a function, then you'll need to add a docstring. We 
 To build the documentation, you need to install some extra dependencies:
 
 ```sh
-> pip install -e ".[docs]"
+$ pip install -e ".[docs]"
 ```
 
 From the root of the repository, you can then run the `make livedoc` command to take a look at the documentation in your browser. This will run a custom script which parses all the docstrings and generate MarkDown files that [MkDocs](https://www.mkdocs.org/) can render.
@@ -73,7 +94,7 @@ All classes and function are automatically picked up and added to the documentat
 ## Building Cython extensions
 
 ```sh
-> make cython
+$ make cython
 ```
 
 ## Testing
@@ -83,7 +104,7 @@ All classes and function are automatically picked up and added to the documentat
 These tests absolutely have to pass.
 
 ```sh
-> pytest
+$ pytest
 ```
 
 **Static typing**
@@ -91,7 +112,7 @@ These tests absolutely have to pass.
 These tests absolutely have to pass.
 
 ```sh
-> mypy river
+$ mypy river
 ```
 
 **Web dependent tests**
@@ -99,7 +120,7 @@ These tests absolutely have to pass.
 This involves tests that need an internet connection, such as those in the `datasets` module which requires downloading some files. In most cases you probably don't need to run these.
 
 ```sh
-> pytest -m web
+$ pytest -m web
 ```
 
 **Notebook tests**
@@ -107,9 +128,5 @@ This involves tests that need an internet connection, such as those in the `data
 You don't have to worry too much about these, as we only check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way around.
 
 ```sh
-> make execute-notebooks
+$ make execute-notebooks
 ```
-
-## Making a pull request
-
-Once you're happy with your changes, you can push them to your remote fork. By the way do not hesitate to make small commits rather than one big one, it makes things easier to review. You can create a pull request to `river`'s `master` branch.

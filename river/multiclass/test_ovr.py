@@ -12,11 +12,8 @@ def test_online_batch_consistent():
 
     # Batch
 
-    batch = (
-        preprocessing.StandardScaler() |
-        multiclass.OneVsRestClassifier(
-            linear_model.LogisticRegression()
-        )
+    batch = preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(
+        linear_model.LogisticRegression()
     )
 
     dataset = datasets.ImageSegments()
@@ -24,7 +21,7 @@ def test_online_batch_consistent():
     batch_metric = metrics.MacroF1()
 
     for i, x in enumerate(pd.read_csv(dataset.path, chunksize=1)):
-        y = x.pop('category')
+        y = x.pop("category")
         y_pred = batch.predict_many(x)
         batch.learn_many(x, y)
 
@@ -37,17 +34,14 @@ def test_online_batch_consistent():
 
     # Online
 
-    online = (
-        preprocessing.StandardScaler() |
-        multiclass.OneVsRestClassifier(
-            linear_model.LogisticRegression()
-        )
+    online = preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(
+        linear_model.LogisticRegression()
     )
 
     online_metric = metrics.MacroF1()
 
     X = pd.read_csv(dataset.path)
-    Y = X.pop('category')
+    Y = X.pop("category")
 
     for i, (x, y) in enumerate(stream.iter_pandas(X, Y)):
         y_pred = online.predict_one(x)

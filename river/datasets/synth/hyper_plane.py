@@ -77,24 +77,29 @@ class Hyperplane(base.SyntheticDataset):
 
     """
 
-    def __init__(self, seed: int or np.random.RandomState = None, n_features: int = 10,
-                 n_drift_features: int = 2, mag_change: float = 0.0,
-                 noise_percentage: float = 0.05, sigma: float = 0.1):
+    def __init__(
+        self,
+        seed: int or np.random.RandomState = None,
+        n_features: int = 10,
+        n_drift_features: int = 2,
+        mag_change: float = 0.0,
+        noise_percentage: float = 0.05,
+        sigma: float = 0.1,
+    ):
         super().__init__(n_features=n_features, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
 
         self.seed = seed
         self.n_drift_features = n_drift_features
         if not (0.0 <= mag_change <= 1.0):
-            raise ValueError(f"Invalid mag_change ({mag_change}). "
-                             "Valid range is [0.0, 1.0]")
+            raise ValueError(f"Invalid mag_change ({mag_change}). " "Valid range is [0.0, 1.0]")
         self.mag_change = mag_change
         if not (0.0 <= sigma <= 1.0):
-            raise ValueError(f"Invalid sigma_percentage ({sigma}). "
-                             "Valid range is [0.0, 1.0]")
+            raise ValueError(f"Invalid sigma_percentage ({sigma}). " "Valid range is [0.0, 1.0]")
         self.sigma = sigma
         if not (0.0 <= noise_percentage <= 1.0):
-            raise ValueError(f"Invalid noise_percentage ({noise_percentage}). "
-                             "Valid range is [0.0, 1.0]")
+            raise ValueError(
+                f"Invalid noise_percentage ({noise_percentage}). " "Valid range is [0.0, 1.0]"
+            )
         self.noise_percentage = noise_percentage
         self.target_values = [0, 1]
 
@@ -102,7 +107,7 @@ class Hyperplane(base.SyntheticDataset):
         self._rng = check_random_state(self.seed)
         self._weights = self._rng.rand(self.n_features)
         self._change_direction = np.zeros(self.n_features)
-        self._change_direction[:self.n_drift_features] = 1
+        self._change_direction[: self.n_drift_features] = 1
 
         while True:
             x = dict()

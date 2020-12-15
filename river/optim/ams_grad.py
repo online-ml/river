@@ -5,7 +5,7 @@ from . import base
 from . import schedulers
 
 
-__all__ = ['AMSGrad']
+__all__ = ["AMSGrad"]
 
 
 class AMSGrad(base.Optimizer):
@@ -53,8 +53,14 @@ class AMSGrad(base.Optimizer):
 
     """
 
-    def __init__(self, lr: typing.Union[float, schedulers.Scheduler] = .1,
-                 beta_1=.9, beta_2=.999, eps=1e-8, correct_bias=True):
+    def __init__(
+        self,
+        lr: typing.Union[float, schedulers.Scheduler] = 0.1,
+        beta_1=0.9,
+        beta_2=0.999,
+        eps=1e-8,
+        correct_bias=True,
+    ):
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2
@@ -70,7 +76,7 @@ class AMSGrad(base.Optimizer):
 
         if self.correct_bias:
             # Correct bias for `v`
-            lr *= (1 - self.beta_2 ** (self.n_iterations + 1)) ** .5
+            lr *= (1 - self.beta_2 ** (self.n_iterations + 1)) ** 0.5
             # Correct bias for `m`
             lr /= 1 - self.beta_1 ** (self.n_iterations + 1)
 

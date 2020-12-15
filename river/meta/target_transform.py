@@ -3,7 +3,7 @@ import math
 from river import base
 
 
-__all__ = ['BoxCoxRegressor', 'TransformedTargetRegressor']
+__all__ = ["BoxCoxRegressor", "TransformedTargetRegressor"]
 
 
 class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
@@ -108,9 +108,9 @@ class BoxCoxRegressor(TransformedTargetRegressor):
 
     """
 
-    def __init__(self, regressor: base.Regressor, power=1.):
+    def __init__(self, regressor: base.Regressor, power=1.0):
         super().__init__(
             regressor=regressor,
             func=(lambda y: (y ** power - 1) / power) if power > 0 else math.log,
-            inverse_func=(lambda y: (power * y + 1) ** (1 / power)) if power > 0 else math.exp
+            inverse_func=(lambda y: (power * y + 1) ** (1 / power)) if power > 0 else math.exp,
         )

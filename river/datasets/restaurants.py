@@ -22,20 +22,20 @@ class Restaurants(base.RemoteDataset):
             n_samples=252_108,
             n_features=7,
             task=base.REG,
-            url='https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip',
+            url="https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip",
             size=28881242,
-            filename='kaggle_recruit_restaurants.csv'
+            filename="kaggle_recruit_restaurants.csv",
         )
 
     def _iter(self):
         return stream.iter_csv(
             self.path,
-            target='visitors',
+            target="visitors",
             converters={
-                'latitude': float,
-                'longitude': float,
-                'visitors': int,
-                'is_holiday': ast.literal_eval
+                "latitude": float,
+                "longitude": float,
+                "visitors": int,
+                "is_holiday": ast.literal_eval,
             },
-            parse_dates={'date': '%Y-%m-%d'}
+            parse_dates={"date": "%Y-%m-%d"},
         )

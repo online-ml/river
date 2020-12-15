@@ -3,7 +3,7 @@ from river import utils
 from . import base
 
 
-__all__ = ['SGD']
+__all__ = ["SGD"]
 
 
 class SGD(base.Optimizer):
@@ -40,7 +40,7 @@ class SGD(base.Optimizer):
 
     """
 
-    def __init__(self, lr=.01):
+    def __init__(self, lr=0.01):
         super().__init__(lr)
 
     def _update_after_pred(self, w, g):

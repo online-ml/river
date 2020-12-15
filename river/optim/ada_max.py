@@ -3,7 +3,7 @@ import collections
 from . import base
 
 
-__all__ = ['AdaMax']
+__all__ = ["AdaMax"]
 
 
 class AdaMax(base.Optimizer):

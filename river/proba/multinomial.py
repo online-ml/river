@@ -4,7 +4,7 @@ import typing
 from . import base
 
 
-__all__ = ['Multinomial']
+__all__ = ["Multinomial"]
 
 
 class Multinomial(base.DiscreteDistribution):
@@ -58,7 +58,7 @@ class Multinomial(base.DiscreteDistribution):
         try:
             return self.counts[x] / self._n
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
     def __str__(self):
-        return '\n'.join(f'P({c}) = {self.pmf(c):.3f}' for c in self.counts.most_common())
+        return "\n".join(f"P({c}) = {self.pmf(c):.3f}" for c in self.counts.most_common())

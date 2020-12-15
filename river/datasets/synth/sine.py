@@ -5,7 +5,7 @@ from river.utils.skmultiflow_utils import check_random_state
 
 
 class Sine(base.SyntheticDataset):
-    r""" Sine generator.
+    r"""Sine generator.
 
     This generator is an implementation of the dara stream with abrupt
     concept drift, as described in Gama, Joao, et al. [^1].
@@ -84,21 +84,32 @@ class Sine(base.SyntheticDataset):
     _N_BASE_FEATURES = 2
     _N_FEATURES_INCLUDING_NOISE = 4
 
-    def __init__(self, classification_function: int = 0,
-                 seed: int or np.random.RandomState = None,
-                 balance_classes: bool = False, has_noise: bool = False):
-        super().__init__(n_features=self._N_BASE_FEATURES if not has_noise else
-                         self._N_FEATURES_INCLUDING_NOISE, n_classes=2, n_outputs=1,
-                         task=base.BINARY_CLF)
+    def __init__(
+        self,
+        classification_function: int = 0,
+        seed: int or np.random.RandomState = None,
+        balance_classes: bool = False,
+        has_noise: bool = False,
+    ):
+        super().__init__(
+            n_features=self._N_BASE_FEATURES if not has_noise else self._N_FEATURES_INCLUDING_NOISE,
+            n_classes=2,
+            n_outputs=1,
+            task=base.BINARY_CLF,
+        )
 
         # Classification functions to use
-        self._functions = [self._classification_function_zero,
-                           self._classification_function_one,
-                           self._classification_function_two,
-                           self._classification_function_three]
+        self._functions = [
+            self._classification_function_zero,
+            self._classification_function_one,
+            self._classification_function_two,
+            self._classification_function_three,
+        ]
         if classification_function not in range(4):
-            raise ValueError(f"Invalid classification_function {classification_function}. "
-                             "Valid values are: 0, 1, 2, 3.")
+            raise ValueError(
+                f"Invalid classification_function {classification_function}. "
+                "Valid values are: 0, 1, 2, 3."
+            )
         self.classification_function = classification_function
         self.seed = seed
         self.has_noise = has_noise
@@ -113,8 +124,6 @@ class Sine(base.SyntheticDataset):
 
         while True:
             x = dict()
-            feature_1 = 0.
-            feature_2 = 0.
             y = 0
             desired_class_found = False
             while not desired_class_found:
@@ -125,8 +134,9 @@ class Sine(base.SyntheticDataset):
                 if not self.balance_classes:
                     desired_class_found = True
                 else:
-                    if (self.next_class_should_be_zero and (y == 0)) or \
-                            ((not self.next_class_should_be_zero) and (y == 1)):
+                    if (self.next_class_should_be_zero and (y == 0)) or (
+                        (not self.next_class_should_be_zero) and (y == 1)
+                    ):
                         desired_class_found = True
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
@@ -137,8 +147,7 @@ class Sine(base.SyntheticDataset):
             yield x, y
 
     def generate_drift(self):
-        """Generate drift by switching the classification function at random.
-        """
+        """Generate drift by switching the classification function at random."""
         new_function = self._rng.randint(4)
         while new_function == self.classification_function:
             new_function = self._rng.randint(4)

@@ -16,70 +16,70 @@ from river import preprocessing
 
 
 DOC_SET = [
-    'weather cold',
-    'weather hot dry',
-    'weather cold rainny',
-    'weather hot',
-    'weather cold humid',
+    "weather cold",
+    "weather hot dry",
+    "weather cold rainny",
+    "weather hot",
+    "weather cold humid",
 ]
 
 REFERENCE_STATISTICS_TWO_COMPONENTS = [
     {
-        0: np.array([0., 0., 0.]),
-        1: np.array([0., 1., 1.]),
+        0: np.array([0.0, 0.0, 0.0]),
+        1: np.array([0.0, 1.0, 1.0]),
+    },
+    {0: np.array([0.0, 0.6, 0.0, 0.8, 0.6]), 1: np.array([0.0, 0.4, 0.0, 0.2, 0.4])},
+    {
+        0: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+        1: np.array([0.0, 1.0, 1.0, 0.0, 0.0, 1.0]),
     },
     {
-        0: np.array([0., 0.6, 0., 0.8, 0.6]),
-        1: np.array([0., 0.4, 0., 0.2, 0.4])},
+        0: np.array([0.0, 0.2, 0.0, 0.6, 0.0, 0.0]),
+        1: np.array([0.0, 0.8, 0.0, 0.4, 0.0, 0.0]),
+    },
     {
-        0: np.array([0., 0., 0., 0., 0., 0.]),
-        1: np.array([0., 1., 1., 0., 0., 1.])},
-    {
-        0: np.array([0., 0.2, 0., 0.6, 0., 0.]),
-        1: np.array([0., 0.8, 0., 0.4, 0., 0.])},
-    {
-        0: np.array([0., 0., 0.2, 0., 0., 0., 0.2]),
-        1: np.array([0., 1., 0.8, 0., 0., 0., 0.8]),
+        0: np.array([0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.2]),
+        1: np.array([0.0, 1.0, 0.8, 0.0, 0.0, 0.0, 0.8]),
     },
 ]
 
 
 REFERENCE_STATISTICS_FIVE_COMPONENTS = [
     {
-        0: np.array([0., 0.4, 0.2]),
-        1: np.array([0., 0.2, 0.6]),
-        2: np.array([0., 0.4, 0.]),
-        3: np.array([0., 0., 0.]),
-        4: np.array([0., 0., 0.2])
+        0: np.array([0.0, 0.4, 0.2]),
+        1: np.array([0.0, 0.2, 0.6]),
+        2: np.array([0.0, 0.4, 0.0]),
+        3: np.array([0.0, 0.0, 0.0]),
+        4: np.array([0.0, 0.0, 0.2]),
     },
     {
-        0: np.array([0., 0.8, 0., 0.4, 0.6]),
-        1: np.array([0., 0., 0., 0.2, 0.4]),
-        2: np.array([0., 0., 0., 0., 0.]),
-        3: np.array([0., 0., 0., 0.2, 0.]),
-        4: np.array([0., 0.2, 0., 0.2, 0.])
+        0: np.array([0.0, 0.8, 0.0, 0.4, 0.6]),
+        1: np.array([0.0, 0.0, 0.0, 0.2, 0.4]),
+        2: np.array([0.0, 0.0, 0.0, 0.0, 0.0]),
+        3: np.array([0.0, 0.0, 0.0, 0.2, 0.0]),
+        4: np.array([0.0, 0.2, 0.0, 0.2, 0.0]),
     },
     {
-        0: np.array([0., 0.4, 0.2, 0., 0., 0.]),
-        1: np.array([0., 0.2, 0.6, 0., 0., 0.6]),
-        2: np.array([0., 0.4, 0.2, 0., 0., 0.4]),
-        3: np.array([0., 0., 0., 0., 0., 0.]),
-        4: np.array([0., 0., 0., 0., 0., 0.])
+        0: np.array([0.0, 0.4, 0.2, 0.0, 0.0, 0.0]),
+        1: np.array([0.0, 0.2, 0.6, 0.0, 0.0, 0.6]),
+        2: np.array([0.0, 0.4, 0.2, 0.0, 0.0, 0.4]),
+        3: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+        4: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
     },
     {
-        0: np.array([0., 0.2, 0., 0.4, 0., 0.]),
-        1: np.array([0., 0.2, 0., 0.2, 0., 0.]),
-        2: np.array([0., 0.4, 0., 0.2, 0., 0.]),
-        3: np.array([0., 0.2, 0., 0.2, 0., 0.]),
-        4: np.array([0., 0., 0., 0., 0., 0.])
+        0: np.array([0.0, 0.2, 0.0, 0.4, 0.0, 0.0]),
+        1: np.array([0.0, 0.2, 0.0, 0.2, 0.0, 0.0]),
+        2: np.array([0.0, 0.4, 0.0, 0.2, 0.0, 0.0]),
+        3: np.array([0.0, 0.2, 0.0, 0.2, 0.0, 0.0]),
+        4: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
     },
     {
-        0: np.array([0., 0., 0.2, 0., 0., 0., 0.2]),
-        1: np.array([0., 0., 0., 0., 0., 0., 0.]),
-        2: np.array([0., 0.8, 0.8, 0., 0., 0., 0.6]),
-        3: np.array([0., 0.2, 0., 0., 0., 0., 0.2]),
-        4: np.array([0., 0., 0., 0., 0., 0., 0.])
-    }
+        0: np.array([0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.2]),
+        1: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+        2: np.array([0.0, 0.8, 0.8, 0.0, 0.0, 0.0, 0.6]),
+        3: np.array([0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.2]),
+        4: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+    },
 ]
 
 REFERENCE_FIVE_COMPONENTS = [
@@ -88,7 +88,6 @@ REFERENCE_FIVE_COMPONENTS = [
     np.array([0.5, 0.5, 3.5, 0.5, 0.5]),
     np.array([0.5, 0.5, 0.5, 2.5, 0.5]),
     np.array([2.5, 0.5, 0.5, 1.5, 0.5]),
-
 ]
 
 REFERENCE_COMPONENTS_WITH_PRUNNING = [
@@ -120,13 +119,11 @@ def test_extraction_words_ids():
 
     for doc in DOC_SET:
 
-        words = doc.split(' ')
+        words = doc.split(" ")
 
         lda._update_indexes(word_list=words)
 
-        word_indexes_list.append(
-            [lda.word_to_index[word] for word in words]
-        )
+        word_indexes_list.append([lda.word_to_index[word] for word in words])
 
     assert word_indexes_list == [
         [1, 2],
@@ -149,7 +146,7 @@ def test_statistics_two_components():
 
     for doc in DOC_SET:
 
-        word_list = doc.split(' ')
+        word_list = doc.split(" ")
 
         lda._update_indexes(word_list=word_list)
 
@@ -161,9 +158,7 @@ def test_statistics_two_components():
 
         statistics_list.append(statistics)
 
-        lda._update_weights(
-            statistics=statistics
-        )
+        lda._update_weights(statistics=statistics)
 
     for index, statistics in enumerate(statistics_list):
         for component in range(n_components):
@@ -186,14 +181,14 @@ def test_statistics_five_components():
         maximum_size_vocabulary=100,
         alpha_beta=100,
         alpha_theta=0.5,
-        seed=42
+        seed=42,
     )
 
     statistics_list = []
 
     for doc in DOC_SET:
 
-        word_list = doc.split(' ')
+        word_list = doc.split(" ")
 
         lda._update_indexes(word_list=word_list)
 
@@ -205,9 +200,7 @@ def test_statistics_five_components():
 
         statistics_list.append(statistics)
 
-        lda._update_weights(
-            statistics=statistics
-        )
+        lda._update_weights(statistics=statistics)
 
     for index, statistics in enumerate(statistics_list):
         for component in range(n_components):
@@ -230,13 +223,13 @@ def test_five_components():
         maximum_size_vocabulary=100,
         alpha_beta=100,
         alpha_theta=0.5,
-        seed=42
+        seed=42,
     )
 
     components_list = []
 
     for document in DOC_SET:
-        tokens = {token: 1 for token in document.split(' ')}
+        tokens = {token: 1 for token in document.split(" ")}
         components_list.append(lda.learn_transform_one(tokens))
 
     for index, component in enumerate(components_list):
@@ -258,19 +251,18 @@ def test_prunning_vocabulary():
         number_of_documents=60,
         vocab_prune_interval=2,
         maximum_size_vocabulary=3,
-        seed=42
+        seed=42,
     )
 
     components_list = []
 
     for document in DOC_SET:
-        tokens = {token: 1 for token in document.split(' ')}
+        tokens = {token: 1 for token in document.split(" ")}
         components_list.append(lda.learn_transform_one(tokens))
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
-            a1=list(component.values()),
-            a2=REFERENCE_COMPONENTS_WITH_PRUNNING[index]
+            a1=list(component.values()), a2=REFERENCE_COMPONENTS_WITH_PRUNNING[index]
         )
 
 
@@ -284,18 +276,17 @@ def test_learn_transform():
         number_of_documents=60,
         vocab_prune_interval=2,
         maximum_size_vocabulary=3,
-        seed=42
+        seed=42,
     )
     components_list = []
 
     for document in DOC_SET:
-        tokens = {token: 1 for token in document.split(' ')}
+        tokens = {token: 1 for token in document.split(" ")}
         lda = lda.learn_one(x=tokens)
 
         components_list.append(lda.transform_one(x=tokens))
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
-            a1=list(component.values()),
-            a2=REFERENCE_LEARN_ONE_PREDICT_ONE[index]
+            a1=list(component.values()), a2=REFERENCE_LEARN_ONE_PREDICT_ONE[index]
         )

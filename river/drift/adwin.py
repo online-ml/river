@@ -5,7 +5,7 @@ from .adwin_c import ADWINC
 
 
 class ADWIN(DriftDetector):
-    """ Adaptive Windowing method for concept drift detection.
+    r"""Adaptive Windowing method for concept drift detection.
 
     ADWIN (ADaptive WINdowing) is a popular drift detection method with
     mathematical guarantees. ADWIN efficiently keeps a variable-length window
@@ -59,7 +59,7 @@ class ADWIN(DriftDetector):
 
     """
 
-    def __init__(self, delta=.002):
+    def __init__(self, delta=0.002):
         super().__init__()
         self.helper = ADWINC(delta)
 

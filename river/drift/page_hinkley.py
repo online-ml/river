@@ -59,8 +59,7 @@ class PageHinkley(DriftDetector):
         self.reset()
 
     def reset(self):
-        """Reset the change detector.
-        """
+        """Reset the change detector."""
         super().reset()
         self.sample_count = 1
         self.x_mean = 0.0
@@ -83,7 +82,7 @@ class PageHinkley(DriftDetector):
             self.reset()
 
         self.x_mean = self.x_mean + (value - self.x_mean) / float(self.sample_count)
-        self.sum = max(0., self.alpha * self.sum + (value - self.x_mean - self.delta))
+        self.sum = max(0.0, self.alpha * self.sum + (value - self.x_mean - self.delta))
 
         self.sample_count += 1
 

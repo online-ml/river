@@ -8,13 +8,18 @@ import pytest
 from river import optim
 
 
-@pytest.mark.parametrize('loss', [
-    pytest.param(loss(), id=name)
-    for name, loss in inspect.getmembers(
-        importlib.import_module('river.optim.losses'),
-        lambda x: inspect.isclass(x) and not inspect.isabstract(x) and not issubclass(x, optim.losses.CrossEntropy)
-    )
-])
+@pytest.mark.parametrize(
+    "loss",
+    [
+        pytest.param(loss(), id=name)
+        for name, loss in inspect.getmembers(
+            importlib.import_module("river.optim.losses"),
+            lambda x: inspect.isclass(x)
+            and not inspect.isabstract(x)
+            and not issubclass(x, optim.losses.CrossEntropy),
+        )
+    ],
+)
 def test_batch_online_equivalence(loss):
 
     y_true = np.random.randint(2, size=30)

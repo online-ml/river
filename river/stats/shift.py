@@ -104,4 +104,4 @@ class Shift(stats.Univariate):
 
     @property
     def name(self):
-        return f'shift_{self.amount}'
+        return f"shift_{self.amount}"

@@ -6,7 +6,7 @@ from river import base
 from river import linear_model
 
 
-__all__ = ['OneVsOneClassifier']
+__all__ = ["OneVsOneClassifier"]
 
 
 class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
@@ -70,8 +70,8 @@ class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
         return True
 
     @classmethod
-    def _default_params(cls):
-        return {'classifier': linear_model.LogisticRegression()}
+    def _unit_test_params(cls):
+        return {"classifier": linear_model.LogisticRegression()}
 
     def learn_one(self, x, y):
 

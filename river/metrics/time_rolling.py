@@ -5,7 +5,7 @@ import typing
 from . import base
 
 
-__all__ = ['TimeRolling']
+__all__ = ["TimeRolling"]
 
 
 class TimeRolling(base.WrapperMetric):

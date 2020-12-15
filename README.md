@@ -5,17 +5,17 @@
 </br>
 
 <p align="center">
-  <!-- Travis -->
-  <a href="https://travis-ci.org/online-ml/river">
-    <img src="https://img.shields.io/travis/online-ml/river/master.svg?style=flat-square" alt="travis">
-  </a>
-  <!-- Codecov -->
-  <a href="https://codecov.io/gh/online-ml/river">
-    <img src="https://img.shields.io/codecov/c/gh/online-ml/river.svg?style=flat-square" alt="codecov">
+  <!-- Tests -->
+  <a href="https://github.com/online-ml/river/actions?query=workflow%3Atests+branch%3Amaster">
+    <img src="https://github.com/online-ml/river/workflows/tests/badge.svg?branch=master" alt="tests">
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
     <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
+  </a>
+  <!-- Black -->
+  <a href="https://github.com/psf/black">
+    <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
@@ -163,7 +163,21 @@ Feel free to contribute in any way you like, we're always open to new ideas and 
 
 ## 💬 Citation
 
-We're in the process of publishing a paper, stay tuned!
+If `river` has been useful for your research and you would like to cite it in an scientific publication, please refer to this [paper](https://arxiv.org/abs/2012.04740):
+
+```bibtex
+@misc{2020river,
+      title={River: machine learning for streaming data in Python},
+      author={Jacob Montiel and Max Halford and Saulo Martiello Mastelini
+              and Geoffrey Bolmier and Raphael Sourty and Robin Vaysse
+              and Adil Zouitine and Heitor Murilo Gomes and Jesse Read
+              and Talel Abdessalem and Albert Bifet},
+      year={2020},
+      eprint={2012.04740},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```
 
 ## 📝 License
 

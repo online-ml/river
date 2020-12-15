@@ -1,12 +1,11 @@
-cimport river.stats.base
-cimport river.stats.mean
+import copy
 
 from . import base
 from . import mean
 
 
-cdef class Var(river.stats.base.Univariate):
-    """Running variance using Welford's algorithm.
+class Var(base.Univariate):
+    r"""Running variance using Welford's algorithm.
 
     Parameters
     ----------
@@ -18,8 +17,8 @@ cdef class Var(river.stats.base.Univariate):
     ----------
     mean : stats.Mean
         The running mean.
-    sos : float
-        The running sum of squares.
+    sigma : float
+        The running variance.
 
     Notes
     -----
@@ -50,97 +49,74 @@ cdef class Var(river.stats.base.Univariate):
 
     """
 
-    cdef readonly long ddof
-    cdef readonly river.stats.mean.Mean mean
-    cdef readonly double sigma
-
     def __init__(self, ddof=1):
         self.ddof = ddof
         self.mean = mean.Mean()
+        self.sigma = 0.0
 
-    cpdef Var update(self, double x, double w=1.):
+    def update(self, x, w=1.0):
         mean = self.mean.get()
         self.mean.update(x, w)
         if self.mean.n > self.ddof:
-            self.sigma += w * ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
+            self.sigma += (
+                w * ((x - mean) * (x - self.mean.get()) - self.sigma) / (self.mean.n - self.ddof)
+            )
         return self
 
-    cpdef double get(self):
+    def get(self):
         return self.sigma
 
-    def __add__(self, Var other):
-        result = Var(ddof=self.ddof)
-
-        if other.mean.n <= self.ddof:
-            result.mean.n = self.mean.n
-            result.mean.mean = self.mean.mean
-            result.sigma = self.sigma
-
-            return result
-
-        cdef double delta = 0.
-        result.mean = self.mean + other.mean
-        delta = other.mean.get() - self.mean.get()
-
-        # scale and merge both sigma
-        result.sigma = (self.mean.n - self.ddof) * self.sigma + (other.mean.n - other.ddof) * other.sigma
-        # apply correction
-        result.sigma = (result.sigma + (delta * delta) * (self.mean.n * other.mean.n)
-                        / result.mean.n) / (result.mean.n - result.ddof)
-
-        return result
-
-    def __iadd__(self, Var other):
+    def __iadd__(self, other):
         if other.mean.n <= self.ddof:
             return self
 
-        cdef double old_n = self.mean.n
-        cdef double delta = other.mean.get() - self.mean.get()
+        old_n = self.mean.n
+        delta = other.mean.get() - self.mean.get()
 
         self.mean += other.mean
         # scale and merge sigma
         self.sigma = (old_n - self.ddof) * self.sigma + (other.mean.n - other.ddof) * other.sigma
         # apply correction
-        self.sigma = (self.sigma + (delta * delta) * (old_n * other.mean.n)
-                      / self.mean.n) / (self.mean.n - self.ddof)
+        self.sigma = (self.sigma + (delta * delta) * (old_n * other.mean.n) / self.mean.n) / (
+            self.mean.n - self.ddof
+        )
 
         return self
 
-    def __sub__(self, Var other):
-        cdef double delta = 0.
-        result = Var(ddof=self.ddof)
-        result.mean = self.mean - other.mean
-
-        if result.mean.n > 0 and result.mean.n > result.ddof:
-            delta = other.mean.get() - result.mean.get()
-            # scale both sigma and take the difference
-            result.sigma = (self.mean.n - self.ddof) * self.sigma - (other.mean.n - other.ddof) * other.sigma
-            # apply the correction
-            result.sigma = (result.sigma - (delta * delta) * (result.mean.n * other.mean.n)
-                            / self.mean.n) / (result.mean.n - result.ddof)
-        else:
-            result.sigma = 0.
+    def __add__(self, other):
+        result = copy.deepcopy(self)
+        result += other
 
         return result
 
-    def __isub__(self, Var other):
-        cdef double old_n = self.mean.n
-        cdef double delta = 0.
+    def __isub__(self, other):
+        old_n = self.mean.n
+        delta = 0.0
 
         self.mean -= other.mean
 
         if self.mean.n > 0 and self.mean.n > self.ddof:
             delta = other.mean.get() - self.mean.get()
             # scale both sigma and take the difference
-            self.sigma = (old_n - self.ddof) * self.sigma - (other.mean.n - other.ddof) * other.sigma
+            self.sigma = (old_n - self.ddof) * self.sigma - (
+                other.mean.n - other.ddof
+            ) * other.sigma
             # apply the correction
-            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n)
-                            / old_n) / (self.mean.n - self.ddof)
+            self.sigma = (self.sigma - (delta * delta) * (self.mean.n * other.mean.n) / old_n) / (
+                self.mean.n - self.ddof
+            )
 
         else:
-            self.sigma = 0.
+            self.sigma = 0.0
 
         return self
+
+    def __sub__(self, other):
+        result = copy.deepcopy(self)
+        result -= other
+
+        return result
+
 
 class RollingVar(base.RollingUnivariate):
     """Running variance over a window.
@@ -216,4 +192,4 @@ class RollingVar(base.RollingUnivariate):
             var = (self.sos / len(self.rolling_mean)) - self.rolling_mean.get() ** 2
             return self.correction_factor * var
         except ZeroDivisionError:
-            return 0.
+            return 0.0

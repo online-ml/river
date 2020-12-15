@@ -8,9 +8,9 @@ from .random import RandomSampler
 
 
 __all__ = [
-    'HardSamplingClassifier',
-    'HardSamplingRegressor',
-    'RandomOverSampler',
-    'RandomUnderSampler',
-    'RandomSampler'
+    "HardSamplingClassifier",
+    "HardSamplingRegressor",
+    "RandomOverSampler",
+    "RandomUnderSampler",
+    "RandomSampler",
 ]

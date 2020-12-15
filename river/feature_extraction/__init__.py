@@ -15,10 +15,10 @@ from .vectorize import TFIDF
 
 
 __all__ = [
-    'Agg',
-    'BagOfWords',
-    'PolynomialExtender',
-    'RBFSampler',
-    'TargetAgg',
-    'TFIDF'
+    "Agg",
+    "BagOfWords",
+    "PolynomialExtender",
+    "RBFSampler",
+    "TargetAgg",
+    "TFIDF",
 ]

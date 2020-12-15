@@ -39,7 +39,7 @@ class PeakToPeak(base.Univariate):
 
     @property
     def name(self):
-        return 'ptp'
+        return "ptp"
 
     def update(self, x):
         self.max.update(x)

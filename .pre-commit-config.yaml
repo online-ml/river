@@ -1,0 +1,14 @@
+files: river
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        language: system
+        types: [python]
+        entry: black river --config .black --check
+      - id: flake8
+        name: flake8
+        language: system
+        types: [python]
+        entry: flake8 --config .flake8

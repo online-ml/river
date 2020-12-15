@@ -3,7 +3,7 @@ import collections
 from river import base
 
 
-__all__ = ['OneHotEncoder']
+__all__ = ["OneHotEncoder"]
 
 
 class OneHotEncoder(base.Transformer):
@@ -108,10 +108,10 @@ class OneHotEncoder(base.Transformer):
 
         # Add 0s
         if not self.sparse:
-            oh = {f'{i}_{v}': 0 for i, values in self.values.items() for v in values}
+            oh = {f"{i}_{v}": 0 for i, values in self.values.items() for v in values}
 
         # Add 1s
         for i, xi in x.items():
-            oh[f'{i}_{xi}'] = 1
+            oh[f"{i}_{xi}"] = 1
 
         return oh

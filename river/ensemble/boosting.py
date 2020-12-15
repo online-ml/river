@@ -8,7 +8,7 @@ from river import base
 from river import linear_model
 
 
-__all__ = ['AdaBoostClassifier']
+__all__ = ["AdaBoostClassifier"]
 
 
 class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
@@ -88,8 +88,8 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
         return self.model
 
     @classmethod
-    def _default_params(cls):
-        return {'model': linear_model.LogisticRegression()}
+    def _unit_test_params(cls):
+        return {"model": linear_model.LogisticRegression()}
 
     def learn_one(self, x, y):
         lambda_poisson = 1
@@ -100,14 +100,14 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
 
             if model.predict_one(x) == y:
                 self.correct_weight[i] += lambda_poisson
-                lambda_poisson *= (
-                    (self.correct_weight[i] + self.wrong_weight[i]) / (2 * self.correct_weight[i])
+                lambda_poisson *= (self.correct_weight[i] + self.wrong_weight[i]) / (
+                    2 * self.correct_weight[i]
                 )
 
             else:
                 self.wrong_weight[i] += lambda_poisson
-                lambda_poisson *= (
-                    (self.correct_weight[i] + self.wrong_weight[i]) / (2 * self.wrong_weight[i])
+                lambda_poisson *= (self.correct_weight[i] + self.wrong_weight[i]) / (
+                    2 * self.wrong_weight[i]
                 )
         return self
 
@@ -117,7 +117,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
 
         for i, model in enumerate(self):
             epsilon = self.correct_weight[i] + 1e-16
-            epsilon /= (self.wrong_weight[i] + 1e-16)
+            epsilon /= self.wrong_weight[i] + 1e-16
             weight = math.log(epsilon)
             model_weights[i] += weight
             predictions[i] = model.predict_proba_one(x)

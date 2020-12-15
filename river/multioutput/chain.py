@@ -1,20 +1,21 @@
 import collections
 import copy
 
-import numpy as np
-
 from river import base
 from river import linear_model
 from river.utils.math import prod
 from river.utils.skmultiflow_utils import check_random_state
 
 
-__all__ = ['ClassifierChain', 'RegressorChain',
-           'ProbabilisticClassifierChain', 'MonteCarloClassifierChain']
+__all__ = [
+    "ClassifierChain",
+    "RegressorChain",
+    "ProbabilisticClassifierChain",
+    "MonteCarloClassifierChain",
+]
 
 
 class BaseChain(base.WrapperMixin, collections.UserDict):
-
     def __init__(self, model, order=None, seed=None):
         super().__init__()
         self.model = model
@@ -39,7 +40,7 @@ class BaseChain(base.WrapperMixin, collections.UserDict):
         if self.order is None:
             self.order = list(y.keys())
             self._init_models()
-        elif self.order == 'random':
+        elif self.order == "random":
             self.order = list(y.keys())
             self._rng.shuffle(self.order)
             self._init_models()
@@ -111,8 +112,8 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
         super().__init__(model, order, seed)
 
     @classmethod
-    def _default_params(cls):
-        return {'model': linear_model.LogisticRegression()}
+    def _unit_test_params(cls):
+        return {"model": linear_model.LogisticRegression()}
 
     def _multiclass(self):
         return self.model._multiclass
@@ -134,7 +135,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
             # The predictions are stored as features for the next label
             if clf._multiclass:
                 for label, proba in y_pred.items():
-                    x[f'{o}_{label}'] = proba
+                    x[f"{o}_{label}"] = proba
             else:
                 x[o] = y_pred[True]
 
@@ -156,7 +157,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
             # The predictions are stored as features for the next label
             if clf._multiclass:
                 for label, proba in y_pred.items():
-                    x[f'{o}_{label}'] = proba
+                    x[f"{o}_{label}"] = proba
             else:
                 x[o] = y_pred[o][True]
 
@@ -164,10 +165,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     def predict_one(self, x):
         y_pred = self.predict_proba_one(x)
-        return {
-            c: max(y_pred[c], key=y_pred[c].get)
-            for c in y_pred
-        }
+        return {c: max(y_pred[c], key=y_pred[c].get) for c in y_pred}
 
 
 class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
@@ -225,8 +223,8 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
         super().__init__(model, order, seed)
 
     @classmethod
-    def _default_params(cls):
-        return {'model': linear_model.LinearRegression()}
+    def _unit_test_params(cls):
+        return {"model": linear_model.LinearRegression()}
 
     def learn_one(self, x, y):
 
@@ -314,6 +312,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
           machine learning (ICML-10) (pp. 279-286).
 
     """
+
     def __init__(self, model: base.Classifier):
         super().__init__(model)
 
@@ -323,7 +322,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
         if not isinstance(self.order, list):
             return y_pred
 
-        max_payoff = 0.
+        max_payoff = 0.0
         n_labels = len(self.order)
         # for each and every possible label combination
         for label in range(2 ** n_labels):
@@ -406,6 +405,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
           Pattern Recognition, 47(3), 1535-1546.
 
     """
+
     def __init__(self, model: base.Classifier, m: int = 10, seed: int = None):
         ClassifierChain.__init__(self, model=model, order=None, seed=seed)
         self.m = m

@@ -9,9 +9,24 @@ from .. import utils
 class BaseFM:
     """Factorization Machines base class."""
 
-    def __init__(self, n_factors, weight_optimizer, latent_optimizer, loss, sample_normalization,
-                 l1_weight, l2_weight, l1_latent, l2_latent, intercept, intercept_lr,
-                 weight_initializer, latent_initializer, clip_gradient, seed):
+    def __init__(
+        self,
+        n_factors,
+        weight_optimizer,
+        latent_optimizer,
+        loss,
+        sample_normalization,
+        l1_weight,
+        l2_weight,
+        l1_latent,
+        l2_latent,
+        intercept,
+        intercept_lr,
+        weight_initializer,
+        latent_initializer,
+        clip_gradient,
+        seed,
+    ):
         self.n_factors = n_factors
         self.weight_optimizer = optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
         self.latent_optimizer = optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
@@ -25,8 +40,8 @@ class BaseFM:
 
         self.intercept_lr = (
             optim.schedulers.Constant(intercept_lr)
-            if isinstance(intercept_lr, numbers.Number) else
-            intercept_lr
+            if isinstance(intercept_lr, numbers.Number)
+            else intercept_lr
         )
 
         if weight_initializer is None:
@@ -35,7 +50,7 @@ class BaseFM:
         self.weights = collections.defaultdict(weight_initializer)
 
         if latent_initializer is None:
-            latent_initializer = optim.initializers.Normal(sigma=.1, seed=seed)
+            latent_initializer = optim.initializers.Normal(sigma=0.1, seed=seed)
         self.latent_initializer = latent_initializer
         self.latents = self._init_latents()
 
@@ -46,7 +61,7 @@ class BaseFM:
     def _init_latents(self) -> collections.defaultdict:
         """Initializes latent weights dict."""
 
-    def learn_one(self, x, y, sample_weight=1.):
+    def learn_one(self, x, y, sample_weight=1.0):
         x = self._ohe_cat_features(x)
 
         if self.sample_normalization:
@@ -57,9 +72,9 @@ class BaseFM:
 
     def _ohe_cat_features(self, x):
         """One hot encodes string features considering them as categorical."""
-        return dict((f'{j}_{xj}', 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
+        return dict((f"{j}_{xj}", 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
 
-    def _learn_one(self, x, y, sample_weight=1.):
+    def _learn_one(self, x, y, sample_weight=1.0):
 
         # Calculate the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
@@ -98,7 +113,7 @@ class BaseFM:
 
     def _field(self, j):
         """Infers feature field name."""
-        return j.split('_')[0]
+        return j.split("_")[0]
 
     @abc.abstractmethod
     def _calculate_interactions(self, x: dict) -> float:

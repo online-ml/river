@@ -7,7 +7,7 @@ from river import preprocessing as pp
 from river import optim
 
 
-__all__ = ['EWARegressor']
+__all__ = ["EWARegressor"]
 
 
 class EWARegressor(base.EnsembleMixin, base.Regressor):
@@ -81,19 +81,25 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
 
     """
 
-    def __init__(self, regressors: typing.List[base.Regressor],
-                 loss: optim.losses.RegressionLoss = None, learning_rate=.5):
+    def __init__(
+        self,
+        regressors: typing.List[base.Regressor],
+        loss: optim.losses.RegressionLoss = None,
+        learning_rate=0.5,
+    ):
         super().__init__(regressors)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.learning_rate = learning_rate
-        self.weights = [1.] * len(regressors)
+        self.weights = [1.0] * len(regressors)
 
     @classmethod
-    def _default_params(cls):
-        return {'regressors': [
-            pp.StandardScaler() | lm.LinearRegression(intercept_lr=.1),
-            pp.StandardScaler() | lm.PARegressor(),
-        ]}
+    def _unit_test_params(cls):
+        return {
+            "regressors": [
+                pp.StandardScaler() | lm.LinearRegression(intercept_lr=0.1),
+                pp.StandardScaler() | lm.PARegressor(),
+            ]
+        }
 
     @property
     def regressors(self):
@@ -101,7 +107,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
 
     def learn_predict_one(self, x, y):
 
-        y_pred_mean = 0.
+        y_pred_mean = 0.0
 
         # Make a prediction and update the weights accordingly for each model
         total = 0

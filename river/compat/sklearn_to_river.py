@@ -1,8 +1,6 @@
 import copy
 import functools
-import typing
 
-import numpy as np
 import pandas as pd
 from sklearn import base as sklearn_base
 from sklearn import exceptions
@@ -10,11 +8,7 @@ from sklearn import exceptions
 from river import base
 
 
-__all__ = [
-    'convert_sklearn_to_river',
-    'SKL2RiverClassifier',
-    'SKL2RiverRegressor'
-]
+__all__ = ["convert_sklearn_to_river", "SKL2RiverClassifier", "SKL2RiverRegressor"]
 
 
 def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: list = None):
@@ -28,18 +22,18 @@ def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: lis
 
     """
 
-    if not hasattr(estimator, 'partial_fit'):
-        raise ValueError(f'{estimator} does not have a partial_fit method')
+    if not hasattr(estimator, "partial_fit"):
+        raise ValueError(f"{estimator} does not have a partial_fit method")
 
     if isinstance(estimator, sklearn_base.ClassifierMixin) and classes is None:
-        raise ValueError('classes must be provided to convert a classifier')
+        raise ValueError("classes must be provided to convert a classifier")
 
     wrappers = [
         (sklearn_base.RegressorMixin, SKL2RiverRegressor),
-        (sklearn_base.ClassifierMixin, functools.partial(
-            SKL2RiverClassifier,
-            classes=classes
-        ))
+        (
+            sklearn_base.ClassifierMixin,
+            functools.partial(SKL2RiverClassifier, classes=classes),
+        ),
     ]
 
     for base_type, wrapper in wrappers:
@@ -50,13 +44,12 @@ def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: lis
 
 
 class SKL2RiverBase:
-
     def __init__(self, estimator: sklearn_base.BaseEstimator):
         self.estimator = estimator
 
 
 class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
-    """Converts a `sklearn` regressor to a `river` regressor.
+    """Compatibility layer from scikit-learn to River for regression.
 
     Parameters
     ----------
@@ -110,7 +103,7 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
 
 
 class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
-    """Converts a `sklearn` classifier to `river` classifier.
+    """Compatibility layer from scikit-learn to River for classification.
 
     Parameters
     ----------

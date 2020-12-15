@@ -1,0 +1,48 @@
+name: unit-tests
+
+on: [pull_request]
+
+jobs:
+  ubuntu:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-${{ matrix.python }}-pip-${{ hashFiles('**/setup.py') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python }}-pip-
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install git+git://github.com/psf/black
+        pip install -e ".[compat,dev]" codecov
+
+    - name: Cache datasets
+      uses: actions/cache@v2
+      with:
+        path: ~/river_data
+        key: ${{ runner.os }}
+
+    - name: Download datasets
+      run: python -c "from river import datasets; datasets.CreditCard().download()"
+
+    - name: pytest
+      run: pytest --cov=river -m "not datasets"
+
+    - name: codecov
+      run: codecov

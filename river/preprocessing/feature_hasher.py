@@ -6,7 +6,7 @@ import numpy as np
 from river import base
 
 
-__all__ = ['FeatureHasher']
+__all__ = ["FeatureHasher"]
 
 
 class FeatureHasher(base.Transformer):
@@ -53,7 +53,7 @@ class FeatureHasher(base.Transformer):
         self._salt = np.random.RandomState(seed).bytes(hashlib.blake2s.SALT_SIZE)
 
     def _hash(self, x):
-        hexa = hashlib.blake2s(bytes(x, encoding='utf8'), salt=self._salt).hexdigest()
+        hexa = hashlib.blake2s(bytes(x, encoding="utf8"), salt=self._salt).hexdigest()
         return int(hexa, 16)
 
     def transform_one(self, x):
@@ -63,7 +63,7 @@ class FeatureHasher(base.Transformer):
         for feature, value in x.items():
 
             if isinstance(value, str):
-                feature = f'{feature}={value}'
+                feature = f"{feature}={value}"
                 value = 1
 
             i = self._hash(feature) % self.n_features

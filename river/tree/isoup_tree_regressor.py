@@ -2,7 +2,6 @@ import typing
 from copy import deepcopy
 
 from river import base
-from river import linear_model
 from river.tree import HoeffdingTreeRegressor
 
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
@@ -115,60 +114,68 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     MAE: 0.425929
     """
 
-    def __init__(self,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'model',
-                 leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
-                 model_selector_decay: float = 0.95,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'e-bst',
-                 attr_obs_params: dict = None,
-                 min_samples_split: int = 5,
-                 **kwargs):
-        super().__init__(grace_period=grace_period,
-                         max_depth=max_depth,
-                         split_confidence=split_confidence,
-                         tie_threshold=tie_threshold,
-                         leaf_prediction=leaf_prediction,
-                         leaf_model=leaf_model,
-                         model_selector_decay=model_selector_decay,
-                         nominal_attributes=nominal_attributes,
-                         attr_obs=attr_obs,
-                         attr_obs_params=attr_obs_params,
-                         min_samples_split=min_samples_split,
-                         **kwargs)
+    def __init__(
+        self,
+        grace_period: int = 200,
+        max_depth: int = None,
+        split_confidence: float = 1e-7,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "model",
+        leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
+        model_selector_decay: float = 0.95,
+        nominal_attributes: list = None,
+        attr_obs: str = "e-bst",
+        attr_obs_params: dict = None,
+        min_samples_split: int = 5,
+        **kwargs
+    ):
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            leaf_model=leaf_model,
+            model_selector_decay=model_selector_decay,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            min_samples_split=min_samples_split,
+            **kwargs
+        )
 
-        self.split_criterion: str = 'icvr'   # intra cluster variance reduction
+        self.split_criterion: str = "icvr"  # intra cluster variance reduction
         self.targets: set = set()
 
     @HoeffdingTreeRegressor.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
-            print('Invalid leaf_prediction option "{}", will use default "{}"'.format(
-                leaf_prediction, self._MODEL))
+            print(
+                'Invalid leaf_prediction option "{}", will use default "{}"'.format(
+                    leaf_prediction, self._MODEL
+                )
+            )
             self._leaf_prediction = self._MODEL
         else:
             self._leaf_prediction = leaf_prediction
 
     @HoeffdingTreeRegressor.split_criterion.setter
     def split_criterion(self, split_criterion):
-        if split_criterion == 'vr':
+        if split_criterion == "vr":
             # Corner case due to parent class initialization
-            split_criterion = 'icvr'
-        if split_criterion != 'icvr':   # intra cluster variance reduction
-            print('Invalid split_criterion option "{}", will use default "{}"'
-                  .format(split_criterion, 'icvr'))
-            self._split_criterion = 'icvr'
+            split_criterion = "icvr"
+        if split_criterion != "icvr":  # intra cluster variance reduction
+            print(
+                'Invalid split_criterion option "{}", will use default "{}"'.format(
+                    split_criterion, "icvr"
+                )
+            )
+            self._split_criterion = "icvr"
         else:
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return IntraClusterVarianceReductionSplitCriterion(
-            min_samples_split=self.min_samples_split
-        )
+        return IntraClusterVarianceReductionSplitCriterion(min_samples_split=self.min_samples_split)
 
     def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
@@ -207,8 +214,13 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
             return new_adaptive
 
-    def learn_one(self, x: dict, y: typing.Dict[typing.Hashable, base.typing.RegTarget], *,
-                  sample_weight: float = 1.) -> 'iSOUPTreeRegressor':
+    def learn_one(
+        self,
+        x: dict,
+        y: typing.Dict[typing.Hashable, base.typing.RegTarget],
+        *,
+        sample_weight: float = 1.0
+    ) -> "iSOUPTreeRegressor":
         """Incrementally train the model with one sample.
 
         Training tasks:
@@ -260,13 +272,13 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
                     # The instance sorting ended up in a Split Node, since no branch was found
                     # for some of the instance's features. Use the mean prediction in this case
                     return {
-                        t: node.stats[t].mean.get() if t in node.stats else 0.
+                        t: node.stats[t].mean.get() if t in node.stats else 0.0
                         for t in self.targets
                     }
             else:
                 parent = found_node.parent
                 return {
-                    t: parent.stats[t].mean.get() if t in parent.stats else 0.
+                    t: parent.stats[t].mean.get() if t in parent.stats else 0.0
                     for t in self.targets
                 }
         else:
