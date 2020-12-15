@@ -1,5 +1,3 @@
-import numpy as np
-
 from river.base import DriftDetector
 from .adwin_c import ADWINC
 
