@@ -62,28 +62,30 @@ class ADWIN(DriftDetector):
         self.helper = ADWINC(delta)
 
     @property
+    def delta(self):
+        return self.helper.delta
+
+    @property
     def _bucket_used_bucket(self):
-        return self.helper.bucket_num_max
+        return self.helper._bucket_used_bucket
 
     @property
     def width(self):
         """Window size"""
-        return self.helper._width
+        return self.helper.width
 
     @property
     def n_detections(self):
-        return self.helper._n_detections
+        return self.helper.n_detections
 
     @property
     def variance(self):
-        return self.helper._v
+        return self.helper.variance
 
     @property
     def estimation(self):
         """Error estimation"""
-        if self.helper._width == 0:
-            return 0
-        return self.helper._total / self.helper._width
+        return self.helper.estimation
 
     def update(self, value):
         """Update the change detector with a single data point.

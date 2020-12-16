@@ -58,6 +58,34 @@ cdef class ADWINC:
         """
         self.__init__(delta=self.delta)
 
+    @property
+    def delta(self):
+        return self.delta
+
+    @property
+    def _bucket_used_bucket(self):
+        return self.bucket_num_max
+
+    @property
+    def width(self):
+        """Window size"""
+        return self._width
+
+    @property
+    def n_detections(self):
+        return self._n_detections
+
+    @property
+    def variance(self):
+        return self._v
+
+    @property
+    def estimation(self):
+        """Error estimation"""
+        if self._width == 0:
+            return 0
+        return self._total / self._width
+
     cdef void __init_buckets(self):
         """ Initialize the bucket's List and statistics
 
