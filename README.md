@@ -15,7 +15,7 @@
   </a>
   <!-- Black -->
   <a href="https://github.com/psf/black">
-    <img alt="Code- [⚡️Quickstart](#️quickstart)
+    <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
@@ -46,8 +46,6 @@
 - [👍 Contributing](#-contributing)
 - [❤️ They've used us](#️-theyve-used-us)
 - [🤝 Affiliations](#-affiliations)
-  - [Sponsors](#sponsors)
-  - [Collaborating institutions](#collaborating-institutions)
 - [💬 Citation](#-citation)
 - [📝 License](#-license)
 
@@ -187,13 +185,13 @@ Feel welcome to get in touch if you want us to add your company logo!
 
 ## 🤝 Affiliations
 
-### Sponsors
+**Sponsors**
 
 <p align="center">
   <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vSagEhWAjDsb0c24En_fhWAf9DJZbyh5YjU7lK0sNowD2m9uv9TuFm-U77k6ObqTyN2mP05Avf6TCJc/pub?w=2073&h=1127" alt="sponsors">
 </p>
 
-### Collaborating institutions
+**Collaborating institutions and groups**
 
 <p align="center">
   <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vQB0C8YgnkCt_3C3cp-Csaw8NLZUwishdbJFB3iSbBPUD0AxEVS9AlF-Rs5PJq8UVRzRtFwZIOucuXj/pub?w=1442&h=489" alt="collaborations">
