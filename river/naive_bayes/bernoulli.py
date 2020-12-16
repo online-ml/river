@@ -1,6 +1,8 @@
 import collections
 import math
 
+import pandas as pd
+
 from . import base
 
 
@@ -38,10 +40,12 @@ class BernoulliNB(base.BaseNB):
     ...     ('Chinese Macao', 'yes'),
     ...     ('Tokyo Japan Chinese', 'no')
     ... ]
+
     >>> model = compose.Pipeline(
     ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
     ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
     ... )
+
     >>> for sentence, label in docs:
     ...     model = model.learn_one(sentence, label)
 
@@ -92,6 +96,67 @@ class BernoulliNB(base.BaseNB):
     >>> model.predict_one(new_text)
     'no'
 
+    Mini-batches:
+
+    >>> import pandas as pd
+
+    >>> docs = [
+    ...     ('Chinese Beijing Chinese', 'yes'),
+    ...     ('Chinese Chinese Shanghai', 'yes'),
+    ...     ('Chinese Macao', 'yes'),
+    ...     ('Tokyo Japan Chinese', 'no')
+    ... ]
+
+    >>> X = pd.DataFrame(docs)
+
+    >>> X.columns = ['docs', 'y']
+
+    >>> X, y = X['docs'], X['y']
+
+    >>> model = compose.Pipeline(
+    ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
+    ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
+    ... )
+
+    >>> model = model.learn_many(X, y)
+
+    >>> model['nb'].p_class('yes')
+    0.75
+    >>> model['nb'].p_class('no')
+    0.25
+
+    >>> cp = model['nb'].p_feature_given_class
+
+    >>> cp('Chinese', 'yes') == (3 + 1) / (3 + 2)
+    True
+
+    >>> cp('Japan', 'yes') == (0 + 1) / (3 + 2)
+    True
+    >>> cp('Tokyo', 'yes') == (0 + 1) / (3 + 2)
+    True
+
+    >>> cp('Beijing', 'yes') == (1 + 1) / (3 + 2)
+    True
+    >>> cp('Macao', 'yes') == (1 + 1) / (3 + 2)
+    True
+    >>> cp('Shanghai', 'yes') == (1 + 1) / (3 + 2)
+    True
+
+    >>> cp('Chinese', 'no') == (1 + 1) / (1 + 2)
+    True
+
+    >>> cp('Japan', 'no') == (1 + 1) / (1 + 2)
+    True
+    >>> cp('Tokyo', 'no') == (1 + 1) / (1 + 2)
+    True
+
+    >>> cp('Beijing', 'no') == (0 + 1) / (1 + 2)
+    True
+    >>> cp('Macao', 'no') == (0 + 1) / (1 + 2)
+    True
+    >>> cp('Shanghai', 'no') == (0 + 1) / (1 + 2)
+    True
+
     References
     ----------
     [^1]: [The Bernoulli model](https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html)
@@ -110,6 +175,19 @@ class BernoulliNB(base.BaseNB):
         for i, xi in x.items():
             self.feature_counts[i].update({y: xi > self.true_threshold})
 
+        return self
+
+    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+        X = X > self.true_threshold
+        self.class_counts.update(y.value_counts().to_dict())
+        self.feature_counts.update(
+            (
+                pd.concat([X, y.rename(math.pi)], axis="columns")
+                .groupby(math.pi)
+                .sum()
+                .T
+            ).to_dict(orient="index")
+        )
         return self
 
     def p_feature_given_class(self, f: str, c: str) -> float:

@@ -7,6 +7,8 @@ import re
 import typing
 import unicodedata
 
+import pandas as pd
+
 from river import base
 
 
@@ -59,7 +61,9 @@ def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
     return zip(*[tokens[i:] for i in range(n)])
 
 
-def find_all_ngrams(tokens: typing.List[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
+def find_all_ngrams(
+    tokens: typing.List[str], ngram_range: range
+) -> typing.Iterator[N_GRAM]:
     """Generates all n-grams in a given range.
 
     Examples
@@ -120,7 +124,9 @@ class VectorizerMixin:
         self.strip_accents = strip_accents
         self.lowercase = lowercase
         self.preprocessor = preprocessor
-        self.tokenizer = re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
+        self.tokenizer = (
+            re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
+        )
         self.ngram_range = ngram_range
 
         self.processing_steps = []
@@ -155,6 +161,11 @@ class VectorizerMixin:
         for step in self.processing_steps:
             x = step(x)
         return x
+
+    def process_text_multi(self, X: pd.Series):
+        for step in self.processing_steps:
+            X = X.apply(step)
+        return X
 
     def _more_tags(self):
         if self.on is None:
@@ -258,6 +269,9 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
     def transform_one(self, x):
         return collections.Counter(self.process_text(x))
+
+    def transform_many(self, X: pd.Series):
+        return self.process_text_multi(X).apply(pd.value_counts).fillna(0.0)
 
 
 class TFIDF(BagOfWords):
