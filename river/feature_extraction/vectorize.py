@@ -271,9 +271,8 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         return collections.Counter(self.process_text(x))
 
     def transform_many(self, X: pd.Series):
-        dtype = pd.SparseDtype(int)  # .astype(dtype)
-        return self.process_text_many(X).apply(pd.value_counts).fillna(0)
-
+        dtype = pd.SparseDtype(int)
+        return self.process_text_many(X).apply(pd.value_counts).fillna(0).astype(dtype)
 
 class TFIDF(BagOfWords):
     """Computes TF-IDF values from sentences.
