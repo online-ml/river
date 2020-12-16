@@ -107,4 +107,5 @@ class ADWIN(DriftDetector):
             detected.
 
         """
-        return self.helper.update(value), self._in_warning_zone
+        self._in_concept_change = self.helper.update(value)
+        return self._in_concept_change, self._in_warning_zone

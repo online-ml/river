@@ -21,7 +21,6 @@ cdef class ADWINC:
         double delta, _total, _variance, _v, mdbl_delta, mdbl_width, _width
         int last_bucket_row, bucket_number, mint_min_window_longitude, mint_min_window_length, mint_time, \
             _n_detections, detect_twice, mint_clock, bucket_num_max, detect
-        bint _in_concept_change
 
     MAX_BUCKETS = 5
 
@@ -301,9 +300,8 @@ cdef class ADWINC:
         self.mdbl_width += self._width
         if bln_change:
             self._n_detections += 1
-        self._in_concept_change = bln_change
 
-        return self._in_concept_change
+        return bln_change
 
     cdef double __bln_cut_expression(self, double n0, double n1, double u0, double u1,
                                      double abs_value, double delta):
