@@ -179,16 +179,9 @@ class BernoulliNB(base.BaseNB):
         return self
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        X = X > self.true_threshold
+        X = (X > self.true_threshold) * 1
         self.class_counts.update(y.value_counts().to_dict())
-        self.feature_counts.update(
-            (
-                pd.concat([X, y.rename(math.pi)], axis="columns")
-                .groupby(math.pi)
-                .sum()
-                .T
-            ).to_dict(orient="index")
-        )
+        self.feature_counts.update((X.groupby(y).sum().T).to_dict(orient="index"))
         return self
 
     def p_feature_given_class(self, f: str, c: str) -> float:
