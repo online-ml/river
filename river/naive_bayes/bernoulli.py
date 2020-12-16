@@ -122,6 +122,7 @@ class BernoulliNB(base.BaseNB):
 
     >>> model['nb'].p_class('yes')
     0.75
+
     >>> model['nb'].p_class('no')
     0.25
 

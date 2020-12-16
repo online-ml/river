@@ -162,7 +162,7 @@ class VectorizerMixin:
             x = step(x)
         return x
 
-    def process_text_multi(self, X: pd.Series):
+    def process_text_many(self, X: pd.Series):
         for step in self.processing_steps:
             X = X.apply(step)
         return X
@@ -271,7 +271,8 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         return collections.Counter(self.process_text(x))
 
     def transform_many(self, X: pd.Series):
-        return self.process_text_multi(X).apply(pd.value_counts).fillna(0.0)
+        dtype = pd.SparseDtype(int)  # .astype(dtype)
+        return self.process_text_many(X).apply(pd.value_counts).fillna(0)
 
 
 class TFIDF(BagOfWords):
