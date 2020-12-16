@@ -107,11 +107,9 @@ class BernoulliNB(base.BaseNB):
     ...     ('Tokyo Japan Chinese', 'no')
     ... ]
 
-    >>> X = pd.DataFrame(docs)
+    >>> docs = pd.DataFrame(docs, columns = ['docs', 'y'])
 
-    >>> X.columns = ['docs', 'y']
-
-    >>> X, y = X['docs'], X['y']
+    >>> X, y = docs['docs'], docs['y']
 
     >>> model = compose.Pipeline(
     ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
