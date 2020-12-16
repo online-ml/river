@@ -1,6 +1,8 @@
 import collections
 import math
 
+import pandas as pd
+
 from river.base import tags
 
 from . import base
@@ -45,6 +47,42 @@ class ComplementNB(base.BaseNB):
     >>> for sentence, label in sentences:
     ...     model = model.learn_one(sentence, label)
 
+    #>>> model['nb'].feature_counts
+    #defaultdict(<class 'collections.Counter'>, {'food': Counter({'health': 4, 'butcher': 1}), 'meat': Counter({'health': 2, 'butcher': 1}), 'brain': Counter({'health': 1}), 'kitchen': Counter({'butcher': 9}), 'jobjobjobjobjob': Counter({'butcher': 1}), 'job': Counter({'health': 1})})
+
+    #>>> model['nb'].class_totals
+    #Counter({'butcher': 12, 'health': 8})
+
+    >>> model['nb'].feature_totals
+    Counter({'kitchen': 9, 'food': 5, 'meat': 3, 'brain': 1, 'jobjobjobjobjob': 1, 'job': 1})
+
+    #>>> model['nb'].class_counts
+    Counter({'health': 2, 'butcher': 1})
+
+    >>> model['nb'].p_class('health') == 2 / 3
+    True
+    >>> model['nb'].p_class('butcher') == 1 / 3
+    True
+
+    >>> model.predict_proba_one('food job meat')
+    {'health': 0.779191, 'butcher': 0.220808}
+
+    >>> import pandas as pd
+
+    >>> sentences = [
+    ...     ('food food meat brain', 'health'),
+    ...     ('food meat ' + 'kitchen ' * 9 + 'job' * 5, 'butcher'),
+    ...     ('food food meat job', 'health')
+    ... ]
+
+    >>> docs = pd.DataFrame(sentences, columns = ['docs', 'y'])
+
+    >>> X, y = docs['docs'], docs['y']
+
+    >>> model = feature_extraction.BagOfWords() | ('nb', naive_bayes.ComplementNB)
+
+    >>> model = model.learn_many(X, y)
+
     >>> model['nb'].p_class('health') == 2 / 3
     True
     >>> model['nb'].p_class('butcher') == 1 / 3
@@ -80,6 +118,16 @@ class ComplementNB(base.BaseNB):
 
         return self
 
+    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+        agg = X.groupby(y).sum()
+
+        self.feature_counts.update((agg.T).to_dict(orient="index"))
+        self.feature_totals.update(X.sum(axis="rows").to_dict())
+        self.class_counts.update(y.value_counts().to_dict())
+        self.class_totals.update(agg.sum(axis="columns").to_dict())
+
+        return self
+
     def p_class(self, c):
         return self.class_counts[c] / sum(self.class_counts.values())
 
@@ -89,7 +137,11 @@ class ComplementNB(base.BaseNB):
                 (
                     frequency
                     * -math.log(
-                        (self.feature_totals[f] - self.feature_counts.get(f, {}).get(c, 0.0) + 1)
+                        (
+                            self.feature_totals[f]
+                            - self.feature_counts.get(f, {}).get(c, 0.0)
+                            + 1
+                        )
                         / (self.class_totals[c] + 1 * len(self.feature_counts))
                     )
                     for f, frequency in x.items()
