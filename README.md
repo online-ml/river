@@ -165,7 +165,9 @@ Feel free to contribute in any way you like, we're always open to new ideas and 
 
 These are companies that we know have been using River, be it in production or for prototyping.
 
-![companies](https://docs.google.com/drawings/d/1ytkmrr93LBy3jpHnjrZ4FTufK565uaO1Ze20cB0SCJE/edit?usp=sharing)
+<p align="center">
+  <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vQbCUQkTU74dBf411r4nDl4udmqOEbLqzRtokUC-N7JDJUA7BGTfnMGmiMNqbcSuOaWAmazp1rFGwDC/pub?w=1194&h=567" alt="companies">
+</p>
 
 Feel welcome to get in touch if you want us to add your company logo!
 
