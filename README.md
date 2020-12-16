@@ -15,7 +15,7 @@
   </a>
   <!-- Black -->
   <a href="https://github.com/psf/black">
-    <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square">
+    <img alt="Code- [⚡️Quickstart](#️quickstart)
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
@@ -37,7 +37,21 @@
   River is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. It is the result of a merger between <a href="https://github.com/MaxHalford/creme">creme</a> and <a href="https://github.com/scikit-multiflow/scikit-multiflow">scikit-multiflow</a>. River's ambition is to be the go-to library for doing machine learning on streaming data.
 </p>
 
-## ⚡️Quickstart
+- [⚡️ Quickstart](#️-quickstart)
+- [🛠 Installation](#-installation)
+- [🧠 Philosophy](#-philosophy)
+- [🔥 Features](#-features)
+- [🔗 Useful links](#-useful-links)
+- [👁️ Media](#️-media)
+- [👍 Contributing](#-contributing)
+- [❤️ They've used us](#️-theyve-used-us)
+- [🤝 Affiliations](#-affiliations)
+  - [Sponsors](#sponsors)
+  - [Collaborating institutions](#collaborating-institutions)
+- [💬 Citation](#-citation)
+- [📝 License](#-license)
+
+## ⚡️ Quickstart
 
 As a quick example, we'll train a logistic regression to classify the [website phishing dataset](http://archive.ics.uci.edu/ml/datasets/Website+Phishing). Here's a look at the first observation in the dataset.
 
@@ -170,6 +184,20 @@ These are companies that we know have been using River, be it in production or f
 </p>
 
 Feel welcome to get in touch if you want us to add your company logo!
+
+## 🤝 Affiliations
+
+### Sponsors
+
+<p align="center">
+  <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vSagEhWAjDsb0c24En_fhWAf9DJZbyh5YjU7lK0sNowD2m9uv9TuFm-U77k6ObqTyN2mP05Avf6TCJc/pub?w=2073&h=1127" alt="sponsors">
+</p>
+
+### Collaborating institutions
+
+<p align="center">
+  <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vQB0C8YgnkCt_3C3cp-Csaw8NLZUwishdbJFB3iSbBPUD0AxEVS9AlF-Rs5PJq8UVRzRtFwZIOucuXj/pub?w=1442&h=489" alt="collaborations">
+</p>
 
 ## 💬 Citation
 
