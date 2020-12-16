@@ -161,6 +161,14 @@ Here are some benefits of using River (and online machine learning in general):
 
 Feel free to contribute in any way you like, we're always open to new ideas and approaches. You can also take a look at the [issue tracker](https://github.com/online-ml/river/issues) and the [icebox](https://github.com/online-ml/river/projects/2) to see if anything takes your fancy. Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).
 
+## ❤️ They've used us
+
+These are companies that we know have been using River, be it in production or for prototyping.
+
+![companies](https://docs.google.com/drawings/d/1ytkmrr93LBy3jpHnjrZ4FTufK565uaO1Ze20cB0SCJE/edit?usp=sharing)
+
+Feel welcome to get in touch if you want us to add your company logo!
+
 ## 💬 Citation
 
 If `river` has been useful for your research and you would like to cite it in an scientific publication, please refer to this [paper](https://arxiv.org/abs/2012.04740):
