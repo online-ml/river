@@ -166,7 +166,7 @@ Here are some benefits of using River (and online machine learning in general):
 
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/river-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
 - [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/river-tds/)
-- [Machine learning for streaming data with river](https://towardsdatascience.com/machine-learning-for-streaming-data-with-river-dacf5fb469df)
+- [Machine learning for streaming data with creme](https://towardsdatascience.com/machine-learning-for-streaming-data-with-river-dacf5fb469df)
 - [Hong Kong Data Science Meetup presentation](https://maxhalford.github.io/slides/hkml2020.pdf)
 
 ## 👍 Contributing
@@ -188,13 +188,13 @@ Feel welcome to get in touch if you want us to add your company logo!
 **Sponsors**
 
 <p align="center">
-  <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vSagEhWAjDsb0c24En_fhWAf9DJZbyh5YjU7lK0sNowD2m9uv9TuFm-U77k6ObqTyN2mP05Avf6TCJc/pub?w=2073&h=1127" alt="sponsors">
+  <img width="55%" src="https://docs.google.com/drawings/d/e/2PACX-1vSagEhWAjDsb0c24En_fhWAf9DJZbyh5YjU7lK0sNowD2m9uv9TuFm-U77k6ObqTyN2mP05Avf6TCJc/pub?w=2073&h=1127" alt="sponsors">
 </p>
 
 **Collaborating institutions and groups**
 
 <p align="center">
-  <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vQB0C8YgnkCt_3C3cp-Csaw8NLZUwishdbJFB3iSbBPUD0AxEVS9AlF-Rs5PJq8UVRzRtFwZIOucuXj/pub?w=1442&h=489" alt="collaborations">
+  <img width="55%" src="https://docs.google.com/drawings/d/e/2PACX-1vQB0C8YgnkCt_3C3cp-Csaw8NLZUwishdbJFB3iSbBPUD0AxEVS9AlF-Rs5PJq8UVRzRtFwZIOucuXj/pub?w=1442&h=489" alt="collaborations">
 </p>
 
 ## 💬 Citation
