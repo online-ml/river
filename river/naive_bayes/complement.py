@@ -2,6 +2,7 @@ import collections
 import math
 
 import pandas as pd
+import numpy as np
 
 from river.base import tags
 
@@ -47,18 +48,6 @@ class ComplementNB(base.BaseNB):
     >>> for sentence, label in sentences:
     ...     model = model.learn_one(sentence, label)
 
-    #>>> model['nb'].feature_counts
-    #defaultdict(<class 'collections.Counter'>, {'food': Counter({'health': 4, 'butcher': 1}), 'meat': Counter({'health': 2, 'butcher': 1}), 'brain': Counter({'health': 1}), 'kitchen': Counter({'butcher': 9}), 'jobjobjobjobjob': Counter({'butcher': 1}), 'job': Counter({'health': 1})})
-
-    #>>> model['nb'].class_totals
-    #Counter({'butcher': 12, 'health': 8})
-
-    >>> model['nb'].feature_totals
-    Counter({'kitchen': 9, 'food': 5, 'meat': 3, 'brain': 1, 'jobjobjobjobjob': 1, 'job': 1})
-
-    #>>> model['nb'].class_counts
-    Counter({'health': 2, 'butcher': 1})
-
     >>> model['nb'].p_class('health') == 2 / 3
     True
     >>> model['nb'].p_class('butcher') == 1 / 3
@@ -66,6 +55,8 @@ class ComplementNB(base.BaseNB):
 
     >>> model.predict_proba_one('food job meat')
     {'health': 0.779191, 'butcher': 0.220808}
+
+    Using mini-batches:
 
     >>> import pandas as pd
 
@@ -90,6 +81,19 @@ class ComplementNB(base.BaseNB):
 
     >>> model.predict_proba_one('food job meat')
     {'health': 0.779191, 'butcher': 0.220808}
+
+    >>> unseen_data = pd.Series(['food job meat', 'Taiwanese Taipei'], name = 'docs')
+    >>> unseen_data.index = [4, 5]
+
+    >>> model.predict_proba_many(unseen_data)
+        butcher    health
+    4  0.220809  0.779191
+    5  0.623077  0.376923
+
+    >>> model.predict_many(unseen_data)
+    4     health
+    5    butcher
+    dtype: object
 
     References
     ----------
@@ -119,7 +123,10 @@ class ComplementNB(base.BaseNB):
         return self
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        agg = X.groupby(y).sum()
+        agg = pd.DataFrame(
+            base.Groupby(keys=y).apply(np.sum, X.values), columns=X.columns
+        )
+        agg.index = np.unique(y)
 
         self.feature_counts.update((agg.T).to_dict(orient="index"))
         self.feature_totals.update(X.sum(axis="rows").to_dict())
@@ -149,3 +156,32 @@ class ComplementNB(base.BaseNB):
             )
             for c in self.class_counts
         }
+
+    def joint_log_likelihood_many(self, X):
+
+        divider = pd.DataFrame.from_dict(
+            {
+                c: self.class_totals[c] + 1 * len(self.feature_counts)
+                for c in self.class_counts
+            },
+            orient="index",
+        ).sort_index()
+
+        known = list(set(X.columns) & set(self.feature_counts.keys()))
+        unknown = list(set(X.columns) - set(self.feature_counts.keys()))
+
+        f = (
+            pd.DataFrame.from_dict(self.feature_totals, orient="index")
+            .T[known]
+            .sort_index()
+        )
+        f[unknown] = 0
+
+        fwc = pd.DataFrame(self.feature_counts).fillna(0)[known].sort_index()
+        fwc[unknown] = 0
+        fwc = -1 * np.log((-fwc.subtract(f.values) + 1).divide(divider.values))
+
+        jll = X.dot(fwc.values.T)
+        jll.columns = fwc.index
+
+        return jll

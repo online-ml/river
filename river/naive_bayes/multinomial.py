@@ -1,6 +1,9 @@
 import collections
 import math
 
+import pandas as pd
+import numpy as np
+
 from river.base import tags
 
 from . import base
@@ -101,6 +104,62 @@ class MultinomialNB(base.BaseNB):
     >>> model.predict_one(new_unseen_text)
     'yes'
 
+    >>> import pandas as pd
+
+    >>> docs = [
+    ...     ('Chinese Beijing Chinese', 'yes'),
+    ...     ('Chinese Chinese Shanghai', 'yes'),
+    ...     ('Chinese Macao', 'yes'),
+    ...     ('Tokyo Japan Chinese', 'no')
+    ... ]
+
+    >>> docs = pd.DataFrame(docs, columns = ['docs', 'y'])
+
+    >>> X, y = docs['docs'], docs['y']
+
+    >>> model = compose.Pipeline(
+    ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
+    ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
+    ... )
+
+    >>> model = model.learn_many(X, y)
+
+    >>> model['nb'].p_class('yes')
+    0.75
+
+    >>> model['nb'].p_class('no')
+    0.25
+
+    >>> cp = model['nb'].p_feature_given_class
+
+    >>> cp('Chinese', 'yes') == (5 + 1) / (8 + 6)
+    True
+
+    >>> cp('Tokyo', 'yes') == (0 + 1) / (8 + 6)
+    True
+    >>> cp('Japan', 'yes') == (0 + 1) / (8 + 6)
+    True
+
+    >>> cp('Chinese', 'no') == (1 + 1) / (3 + 6)
+    True
+
+    >>> cp('Tokyo', 'no') == (1 + 1) / (3 + 6)
+    True
+    >>> cp('Japan', 'no') == (1 + 1) / (3 + 6)
+    True
+
+    >>> unseen_data = pd.Series(['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs')
+
+    #>>> model.predict_proba_many(unseen_data)
+    #    yes        no
+    #0  0.553531  0.446469
+    #1  0.881499  0.118501
+
+    #>>> model.predict_many(unseen_data)
+    #0    yes
+    #1    yes
+    #dtype: object
+
     References
     ----------
     [^1]: [Naive Bayes text classification](https://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html)
@@ -125,6 +184,18 @@ class MultinomialNB(base.BaseNB):
 
         return self
 
+    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+        agg = pd.DataFrame(
+            base.Groupby(keys=y).apply(np.sum, X.values), columns=X.columns
+        )
+        agg.index = np.unique(y)
+
+        self.feature_counts.update((agg.T).to_dict(orient="index"))
+        self.class_counts.update(y.value_counts().to_dict())
+        self.class_totals.update(agg.sum(axis="columns").to_dict())
+
+        return self
+
     @property
     def classes_(self):
         return list(self.class_counts.keys())
@@ -145,7 +216,8 @@ class MultinomialNB(base.BaseNB):
         return {
             c: math.log(self.p_class(c))
             + sum(
-                frequency * math.log(self.p_feature_given_class(f, c)) for f, frequency in x.items()
+                frequency * math.log(self.p_feature_given_class(f, c))
+                for f, frequency in x.items()
             )
             for c in self.classes_
         }
