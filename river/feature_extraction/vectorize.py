@@ -162,11 +162,6 @@ class VectorizerMixin:
             x = step(x)
         return x
 
-    def process_text_many(self, X: pd.Series):
-        for step in self.processing_steps:
-            X = X.apply(step)
-        return X
-
     def _more_tags(self):
         if self.on is None:
             return {base.tags.TEXT_INPUT}
@@ -272,7 +267,16 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
     def transform_many(self, X: pd.Series):
         dtype = pd.SparseDtype(int)
-        return self.process_text_many(X).apply(pd.value_counts).fillna(0).astype(dtype)
+        return (
+            pd.DataFrame([self.transform_one(x) for x in X])
+            .fillna(0)
+            .set_index(X.index)
+            .astype(dtype)
+        )
+
+    def learn_many(self, X):
+        pass
+
 
 class TFIDF(BagOfWords):
     """Computes TF-IDF values from sentences.

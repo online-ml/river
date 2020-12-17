@@ -1,6 +1,7 @@
 import collections
 import math
 
+import numpy as np
 import pandas as pd
 
 from . import base
@@ -156,6 +157,19 @@ class BernoulliNB(base.BaseNB):
     >>> cp('Shanghai', 'no') == (0 + 1) / (1 + 2)
     True
 
+    >>> unseen_data = pd.Series(['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs')
+
+    #>>> model.predict_proba_many(unseen_data)
+    #        yes        no
+    #0  0.883154  0.116846
+    #1  0.952731  0.047269
+
+    #>>> model.predict_many(unseen_data)
+    #0    yes
+    #1    yes
+    #dtype: object
+
+
     References
     ----------
     [^1]: [The Bernoulli model](https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html)
@@ -178,8 +192,14 @@ class BernoulliNB(base.BaseNB):
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
         X = (X > self.true_threshold) * 1
+
+        agg = pd.DataFrame(
+            base.Groupby(keys=y).apply(np.sum, X.values), columns=X.columns
+        )
+        agg.index = np.unique(y)
+
         self.class_counts.update(y.value_counts().to_dict())
-        self.feature_counts.update((X.groupby(y).sum().T).to_dict(orient="index"))
+        self.feature_counts.update((agg.T).to_dict(orient="index"))
         return self
 
     def p_feature_given_class(self, f: str, c: str) -> float:
