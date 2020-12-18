@@ -15,7 +15,8 @@ __all__ = ["MultinomialNB"]
 class MultinomialNB(base.BaseNB):
     """Naive Bayes classifier for multinomial models.
 
-    The input vector has to contain positive values, such as counts or TF-IDF values.
+    This estimator supports learning with mini-batches. The input vector has to contain positive
+    values, such as counts or TF-IDF values.
 
     Parameters
     ----------
@@ -251,6 +252,6 @@ class MultinomialNB(base.BaseNB):
     def joint_log_likelihood_many(self, X: pd.DataFrame):
         pfc = self.p_feature_given_class_many(X.columns)
         p_class = np.log(self.p_class_many())[pfc.index]
-        p = X.dot(np.log(pfc).values.T)
+        p = X @ np.log(pfc).values.T
         p.columns = pfc.index
         return p.add(p_class.values, axis="columns")

@@ -13,6 +13,8 @@ __all__ = ["BernoulliNB"]
 class BernoulliNB(base.BaseNB):
     """Bernoulli Naive Bayes.
 
+    This estimator supports learning with mini-batches.
+
     Parameters
     ----------
     alpha
@@ -191,6 +193,31 @@ class BernoulliNB(base.BaseNB):
 
         return self
 
+    def p_feature_given_class(self, f: str, c: str) -> float:
+        num = self.feature_counts.get(f, {}).get(c, 0.0) + self.alpha
+        den = self.class_counts[c] + self.alpha * 2
+        return num / den
+
+    def p_class(self, c: str) -> float:
+        return self.class_counts[c] / sum(self.class_counts.values())
+
+    def joint_log_likelihood(self, x):
+        return {
+            c: math.log(self.p_class(c))
+            + sum(
+                map(
+                    math.log,
+                    (
+                        10e-10 + self.p_feature_given_class(f, c)
+                        if f in x and x[f] > self.true_threshold
+                        else 10e-10 + (1.0 - self.p_feature_given_class(f, c))
+                        for f in self.feature_counts
+                    ),
+                )
+            )
+            for c in self.class_counts
+        }
+
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
         X = (X > self.true_threshold) * 1
 
@@ -200,14 +227,6 @@ class BernoulliNB(base.BaseNB):
         self.class_counts.update(y.value_counts().to_dict())
         self.feature_counts.update((agg.T).to_dict(orient="index"))
         return self
-
-    def p_feature_given_class(self, f: str, c: str) -> float:
-        num = self.feature_counts.get(f, {}).get(c, 0.0) + self.alpha
-        den = self.class_counts[c] + self.alpha * 2
-        return num / den
-
-    def p_class(self, c: str) -> float:
-        return self.class_counts[c] / sum(self.class_counts.values())
 
     def p_class_many(self):
         return pd.DataFrame.from_dict(self.class_counts, orient="index").T / sum(
@@ -234,23 +253,6 @@ class BernoulliNB(base.BaseNB):
         )
         return num.div(div[num.index].T.values)
 
-    def joint_log_likelihood(self, x):
-        return {
-            c: math.log(self.p_class(c))
-            + sum(
-                map(
-                    math.log,
-                    (
-                        10e-10 + self.p_feature_given_class(f, c)
-                        if f in x and x[f] > self.true_threshold
-                        else 10e-10 + (1.0 - self.p_feature_given_class(f, c))
-                        for f in self.feature_counts
-                    ),
-                )
-            )
-            for c in self.class_counts
-        }
-
     def joint_log_likelihood_many(self, X: pd.DataFrame):
         """joint_log_likelihood optimized for mini-batch."""
         index = X.index
@@ -273,9 +275,7 @@ class BernoulliNB(base.BaseNB):
 
         X[[x for x in self.feature_counts.keys() if x not in X.columns]] = False
 
-        X = (X.dot(p_c.T) + (~X).dot(inverse_p_c.T)).add(
-            np.log(self.p_class_many()).values
-        )
+        X = (X @ p_c.T) + ((~X) @ inverse_p_c.T).add(np.log(self.p_class_many()).values)
 
         X.index = index
 
