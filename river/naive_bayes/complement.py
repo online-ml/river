@@ -123,16 +123,13 @@ class ComplementNB(base.BaseNB):
         return self
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        agg = pd.DataFrame(
-            base.Groupby(keys=y).apply(np.sum, X.values), columns=X.columns
-        )
-        agg.index = np.unique(y)
+        agg, index = base.Groupby(keys=y).apply(np.sum, X.values)
+        agg = pd.DataFrame(agg, columns=X.columns, index=index)
 
         self.feature_counts.update((agg.T).to_dict(orient="index"))
         self.feature_totals.update(X.sum(axis="rows").to_dict())
         self.class_counts.update(y.value_counts().to_dict())
         self.class_totals.update(agg.sum(axis="columns").to_dict())
-
         return self
 
     def p_class(self, c):
