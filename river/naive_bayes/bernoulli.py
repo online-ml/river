@@ -157,17 +157,18 @@ class BernoulliNB(base.BaseNB):
     >>> cp('Shanghai', 'no') == (0 + 1) / (1 + 2)
     True
 
-    >>> unseen_data = pd.Series(['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs')
+    >>> unseen_data = pd.Series(
+    ...    ['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs', index=['river', 'rocks'])
 
-    #>>> model.predict_proba_many(unseen_data)
-    #        yes        no
-    #0  0.883154  0.116846
-    #1  0.952731  0.047269
+    >>> model.predict_proba_many(unseen_data)
+            yes        no
+    river  0.883154  0.116846
+    rocks  0.952731  0.047269
 
-    #>>> model.predict_many(unseen_data)
-    #0    yes
-    #1    yes
-    #dtype: object
+    >>> model.predict_many(unseen_data)
+    river    yes
+    rocks    yes
+    dtype: object
 
 
     References
@@ -208,6 +209,31 @@ class BernoulliNB(base.BaseNB):
     def p_class(self, c: str) -> float:
         return self.class_counts[c] / sum(self.class_counts.values())
 
+    def p_class_many(self):
+        return pd.DataFrame.from_dict(self.class_counts, orient="index").T / sum(
+            self.class_counts.values()
+        )
+
+    def p_feature_given_class_many(self, columns):
+        fc = collections.defaultdict(dict)
+        default = {k: 0 for k, _ in self.class_counts.items()}
+
+        for f in columns:
+            for c in self.class_counts:
+                count = self.feature_counts.get(f, default)
+                if c in count:
+                    fc[f][c] = count[c]
+                else:
+                    fc[f][c] = 0
+
+        num = pd.DataFrame(fc, dtype=float).fillna(0) + self.alpha
+
+        div = (
+            pd.DataFrame.from_dict(self.class_counts, orient="index", dtype=float).T
+            + self.alpha * 2
+        )
+        return num.div(div[num.index].T.values)
+
     def joint_log_likelihood(self, x):
         return {
             c: math.log(self.p_class(c))
@@ -224,3 +250,33 @@ class BernoulliNB(base.BaseNB):
             )
             for c in self.class_counts
         }
+
+    def joint_log_likelihood_many(self, X: pd.DataFrame):
+        """joint_log_likelihood optimized for mini-batch."""
+        index = X.index
+
+        unknown = []
+
+        for x in X.columns:
+            if x not in self.feature_counts:
+                unknown.append(x)
+
+        X = X.drop(unknown, axis="columns")
+
+        X = X > self.true_threshold
+
+        p_c = self.p_feature_given_class_many(self.feature_counts.keys())
+
+        inverse_p_c = np.log(10e-10 + (1 - p_c))
+
+        p_c = np.log(10e-10 + p_c)
+
+        X[[x for x in self.feature_counts.keys() if x not in X.columns]] = False
+
+        X = (X.dot(p_c.T) + (~X).dot(inverse_p_c.T)).add(
+            np.log(self.p_class_many()).values
+        )
+
+        X.index = index
+
+        return X

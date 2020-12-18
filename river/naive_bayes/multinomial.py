@@ -148,16 +148,17 @@ class MultinomialNB(base.BaseNB):
     >>> cp('Japan', 'no') == (1 + 1) / (3 + 6)
     True
 
-    >>> unseen_data = pd.Series(['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs')
+    >>> unseen_data = pd.Series(
+    ...    ['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs', index = ['river', 'rocks'])
 
     >>> model.predict_proba_many(unseen_data)
-        no       yes
-    0  0.446469  0.553531
-    1  0.118501  0.881499
+            yes        no
+    river  0.553531  0.446469
+    rocks  0.881499  0.118501
 
     >>> model.predict_many(unseen_data)
-    0    yes
-    1    yes
+    river    yes
+    rocks    yes
     dtype: object
 
     References
@@ -207,24 +208,8 @@ class MultinomialNB(base.BaseNB):
         den = self.class_totals[c] + self.alpha * self.n_terms
         return num / den
 
-    def p_feature_given_class_many(self, columns):
-        fc = {}
-        for f in columns:
-            fc[f] = self.feature_counts.get(f, 0)
-        num = pd.DataFrame(fc).fillna(0) + self.alpha
-        div = (
-            pd.DataFrame.from_dict(self.class_totals, orient="index").T
-            + self.alpha * self.n_terms
-        )
-        return num.div(div[num.index].T.values)
-
     def p_class(self, c):
         return self.class_counts[c] / sum(self.class_counts.values())
-
-    def p_class_many(self):
-        return pd.DataFrame.from_dict(self.class_counts, orient="index").T / sum(
-            self.class_counts.values()
-        )
 
     def joint_log_likelihood(self, x):
         return {
@@ -235,6 +220,33 @@ class MultinomialNB(base.BaseNB):
             )
             for c in self.classes_
         }
+
+    def p_class_many(self):
+        return pd.DataFrame.from_dict(self.class_counts, orient="index").T / sum(
+            self.class_counts.values()
+        )
+
+    def p_feature_given_class_many(self, columns):
+        fc = collections.defaultdict(dict)
+        default = {k: 0 for k, _ in self.class_counts.items()}
+
+        for f in columns:
+            for c in self.class_counts:
+                count = self.feature_counts.get(f, default)
+                if c in count:
+                    fc[f][c] = count[c]
+                else:
+                    fc[f][c] = 0
+
+        for f in columns:
+            fc[f] = self.feature_counts.get(f, default)
+
+        num = pd.DataFrame(fc, dtype=float).fillna(0) + self.alpha
+        div = (
+            pd.DataFrame.from_dict(self.class_totals, orient="index", dtype=float).T
+            + self.alpha * self.n_terms
+        )
+        return num.div(div[num.index].T.values)
 
     def joint_log_likelihood_many(self, X: pd.DataFrame):
         pfc = self.p_feature_given_class_many(X.columns)
