@@ -31,8 +31,7 @@ class BaseNB(base.Classifier):
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Return probabilities using the log-likelihoods in mini-batchs setting."""
         jll = self.joint_log_likelihood_many(X)
-        lse = pd.Series(special.logsumexp(jll, axis=1))
-        return np.exp(jll.subtract(lse.values, axis="rows"))
+        return np.exp(jll.subtract(special.logsumexp(jll, axis=1), axis="rows"))
 
     @property
     def _multiclass(self):
