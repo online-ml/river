@@ -9,7 +9,6 @@ import unicodedata
 
 import numpy as np
 import pandas as pd
-from pandas.core.arrays.integer import Int16Dtype
 
 from river import base
 
