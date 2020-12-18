@@ -20,6 +20,14 @@ class BaseNB(base.Classifier):
 
         """
 
+    @abc.abstractmethod
+    def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Compute the unnormalized posterior log-likelihood of x in mini-batches.
+
+        The log-likelihood is `log P(c) + log P(x|c)`.
+
+        """
+
     def predict_proba_one(self, x):
         """Return probabilities using the log-likelihoods."""
         jll = self.joint_log_likelihood(x)
@@ -31,7 +39,8 @@ class BaseNB(base.Classifier):
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Return probabilities using the log-likelihoods in mini-batchs setting."""
         jll = self.joint_log_likelihood_many(X)
-        return np.exp(jll.subtract(special.logsumexp(jll, axis=1), axis="rows"))
+        lse = pd.Series(special.logsumexp(jll, axis=1))
+        return np.exp(jll.subtract(lse.values, axis="rows"))
 
     @property
     def _multiclass(self):
