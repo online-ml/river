@@ -33,11 +33,27 @@
 
 </br>
 
+**In a nutshell**
+
 <p align="center">
   River is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. It is the result of a merger between <a href="https://github.com/MaxHalford/creme">creme</a> and <a href="https://github.com/scikit-multiflow/scikit-multiflow">scikit-multiflow</a>. River's ambition is to be the go-to library for doing machine learning on streaming data.
 </p>
 
-## ⚡️Quickstart
+**Table of contents**
+
+- [⚡️ Quickstart](#️-quickstart)
+- [🛠 Installation](#-installation)
+- [🧠 Philosophy](#-philosophy)
+- [🔥 Features](#-features)
+- [🔗 Useful links](#-useful-links)
+- [👁️ Media](#️-media)
+- [👍 Contributing](#-contributing)
+- [❤️ They've used us](#️-theyve-used-us)
+- [🤝 Affiliations](#-affiliations)
+- [💬 Citation](#-citation)
+- [📝 License](#-license)
+
+## ⚡️ Quickstart
 
 As a quick example, we'll train a logistic regression to classify the [website phishing dataset](http://archive.ics.uci.edu/ml/datasets/Website+Phishing). Here's a look at the first observation in the dataset.
 
@@ -154,12 +170,36 @@ Here are some benefits of using River (and online machine learning in general):
 
 - PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/river-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
 - [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/river-tds/)
-- [Machine learning for streaming data with river](https://towardsdatascience.com/machine-learning-for-streaming-data-with-river-dacf5fb469df)
+- [Machine learning for streaming data with creme](https://towardsdatascience.com/machine-learning-for-streaming-data-with-river-dacf5fb469df)
 - [Hong Kong Data Science Meetup presentation](https://maxhalford.github.io/slides/hkml2020.pdf)
 
 ## 👍 Contributing
 
 Feel free to contribute in any way you like, we're always open to new ideas and approaches. You can also take a look at the [issue tracker](https://github.com/online-ml/river/issues) and the [icebox](https://github.com/online-ml/river/projects/2) to see if anything takes your fancy. Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).
+
+## ❤️ They've used us
+
+These are companies that we know have been using River, be it in production or for prototyping.
+
+<p align="center">
+  <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vQbCUQkTU74dBf411r4nDl4udmqOEbLqzRtokUC-N7JDJUA7BGTfnMGmiMNqbcSuOaWAmazp1rFGwDC/pub?w=1194&h=567" alt="companies">
+</p>
+
+Feel welcome to get in touch if you want us to add your company logo!
+
+## 🤝 Affiliations
+
+**Sponsors**
+
+<p align="center">
+  <img width="55%" src="https://docs.google.com/drawings/d/e/2PACX-1vSagEhWAjDsb0c24En_fhWAf9DJZbyh5YjU7lK0sNowD2m9uv9TuFm-U77k6ObqTyN2mP05Avf6TCJc/pub?w=2073&h=1127" alt="sponsors">
+</p>
+
+**Collaborating institutions and groups**
+
+<p align="center">
+  <img width="55%" src="https://docs.google.com/drawings/d/e/2PACX-1vQB0C8YgnkCt_3C3cp-Csaw8NLZUwishdbJFB3iSbBPUD0AxEVS9AlF-Rs5PJq8UVRzRtFwZIOucuXj/pub?w=1442&h=489" alt="collaborations">
+</p>
 
 ## 💬 Citation
 
