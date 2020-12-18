@@ -82,17 +82,17 @@ class ComplementNB(base.BaseNB):
     >>> model.predict_proba_one('food job meat')
     {'health': 0.779191, 'butcher': 0.220808}
 
-    >>> unseen_data = pd.Series(['food job meat', 'Taiwanese Taipei'], name = 'docs')
-    >>> unseen_data.index = [4, 5]
+    >>> unseen_data = pd.Series(
+    ...    ['food job meat', 'Taiwanese Taipei'], name = 'docs', index = ['river', 'rocks'])
 
     >>> model.predict_proba_many(unseen_data)
         butcher    health
-    4  0.220809  0.779191
-    5  0.623077  0.376923
+    river  0.220809  0.779191
+    rocks  0.623077  0.376923
 
     >>> model.predict_many(unseen_data)
-    4     health
-    5    butcher
+    river    health
+    rocks    butcher
     dtype: object
 
     References
@@ -156,6 +156,15 @@ class ComplementNB(base.BaseNB):
 
     def joint_log_likelihood_many(self, X):
 
+        known = []
+        unknown = []
+
+        for x in X.columns:
+            if x in self.feature_counts:
+                known.append(x)
+            else:
+                unknown.append(x)
+
         divider = pd.DataFrame.from_dict(
             {
                 c: self.class_totals[c] + 1 * len(self.feature_counts)
@@ -163,10 +172,6 @@ class ComplementNB(base.BaseNB):
             },
             orient="index",
         ).sort_index()
-
-        known = list(set(X.columns) & set(self.feature_counts.keys()))
-        unknown = list(set(X.columns) - set(self.feature_counts.keys()))
-
         f = (
             pd.DataFrame.from_dict(self.feature_totals, orient="index")
             .T[known]
