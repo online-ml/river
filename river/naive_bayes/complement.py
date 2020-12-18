@@ -15,7 +15,8 @@ __all__ = ["ComplementNB"]
 class ComplementNB(base.BaseNB):
     """Naive Bayes classifier for multinomial models.
 
-    The input vector has to contain positive values, such as counts or TF-IDF values.
+    This estimator supports learning with mini-batches. The input vector has to contain positive
+    values, such as counts or TF-IDF values.
 
     Parameters
     ----------
@@ -122,16 +123,6 @@ class ComplementNB(base.BaseNB):
 
         return self
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        agg, index = base.Groupby(keys=y).apply(np.sum, X.values)
-        agg = pd.DataFrame(agg, columns=X.columns, index=index)
-
-        self.feature_counts.update((agg.T).to_dict(orient="index"))
-        self.feature_totals.update(X.sum(axis="rows").to_dict())
-        self.class_counts.update(y.value_counts().to_dict())
-        self.class_totals.update(agg.sum(axis="columns").to_dict())
-        return self
-
     def p_class(self, c):
         return self.class_counts[c] / sum(self.class_counts.values())
 
@@ -153,6 +144,16 @@ class ComplementNB(base.BaseNB):
             )
             for c in self.class_counts
         }
+
+    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+        agg, index = base.Groupby(keys=y).apply(np.sum, X.values)
+        agg = pd.DataFrame(agg, columns=X.columns, index=index)
+
+        self.feature_counts.update((agg.T).to_dict(orient="index"))
+        self.feature_totals.update(X.sum(axis="rows").to_dict())
+        self.class_counts.update(y.value_counts().to_dict())
+        self.class_totals.update(agg.sum(axis="columns").to_dict())
+        return self
 
     def joint_log_likelihood_many(self, X):
 
@@ -183,7 +184,7 @@ class ComplementNB(base.BaseNB):
         fwc[unknown] = 0
         fwc = -1 * np.log((-fwc.subtract(f.values) + 1).divide(divider.values))
 
-        jll = X.dot(fwc.values.T)
+        jll = X @ fwc.values.T
         jll.columns = fwc.index
 
         return jll
