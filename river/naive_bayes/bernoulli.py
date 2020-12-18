@@ -193,10 +193,8 @@ class BernoulliNB(base.BaseNB):
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
         X = (X > self.true_threshold) * 1
 
-        agg = pd.DataFrame(
-            base.Groupby(keys=y).apply(np.sum, X.values), columns=X.columns
-        )
-        agg.index = np.unique(y)
+        agg, index = base.Groupby(keys=y).apply(np.sum, X.values)
+        agg = pd.DataFrame(agg, columns=X.columns, index=index)
 
         self.class_counts.update(y.value_counts().to_dict())
         self.feature_counts.update((agg.T).to_dict(orient="index"))

@@ -7,7 +7,9 @@ import re
 import typing
 import unicodedata
 
+import numpy as np
 import pandas as pd
+from pandas.core.arrays.integer import Int16Dtype
 
 from river import base
 
@@ -162,6 +164,11 @@ class VectorizerMixin:
             x = step(x)
         return x
 
+    def process_text_many(self, X: pd.Series):
+        for step in self.processing_steps:
+            X = X.apply(step)
+        return X
+
     def _more_tags(self):
         if self.on is None:
             return {base.tags.TEXT_INPUT}
@@ -266,13 +273,23 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         return collections.Counter(self.process_text(x))
 
     def transform_many(self, X: pd.Series):
-        dtype = pd.SparseDtype(int)
-        return (
-            pd.DataFrame([self.transform_one(x) for x in X])
-            .fillna(0)
-            .set_index(X.index)
-            .astype(dtype)
-        )
+        """Transform pandas series of string."""
+        X_p = [list(self.process_text(x)) for x in X]
+
+        idx, i = {}, 0
+        for x_p in X_p:
+            for x in x_p:
+                if x not in idx:
+                    idx[x] = i
+                    i += 1
+
+        array = np.zeros((len(X_p), len(idx)), dtype=int)
+
+        for row, x in enumerate(X_p):
+            for col in x:
+                array[row][idx[col]] += 1
+
+        return pd.DataFrame(array, columns=idx.keys(), index=X.index)
 
     def learn_many(self, X):
         pass

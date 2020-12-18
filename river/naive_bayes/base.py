@@ -40,10 +40,15 @@ class BaseNB(base.Classifier):
 
 
 class Groupby:
-    """Fast groupby for mini-batch."""
+    """Fast groupby for mini-batch.
+
+    References:
+
+        1. [Elizabeth Santorella, Fast groupby-apply operations in Python with and without Pandas](http://esantorella.com/2016/06/16/groupby/)
+    """
 
     def __init__(self, keys):
-        _, self.keys_as_int = np.unique(keys, return_inverse=True)
+        self.index, self.keys_as_int = np.unique(keys, return_inverse=True)
         self.n_keys = max(self.keys_as_int) + 1
         self.set_indices()
 
@@ -58,4 +63,4 @@ class Groupby:
         for k, idx in enumerate(self.indices):
             result.append(function(vector[idx], axis=0))
 
-        return result
+        return result, self.index
