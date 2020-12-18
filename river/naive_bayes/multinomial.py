@@ -150,15 +150,15 @@ class MultinomialNB(base.BaseNB):
 
     >>> unseen_data = pd.Series(['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs')
 
-    #>>> model.predict_proba_many(unseen_data)
-    #    yes        no
-    #0  0.553531  0.446469
-    #1  0.881499  0.118501
+    >>> model.predict_proba_many(unseen_data)
+        no       yes
+    0  0.446469  0.553531
+    1  0.118501  0.881499
 
-    #>>> model.predict_many(unseen_data)
-    #0    yes
-    #1    yes
-    #dtype: object
+    >>> model.predict_many(unseen_data)
+    0    yes
+    1    yes
+    dtype: object
 
     References
     ----------
@@ -207,8 +207,24 @@ class MultinomialNB(base.BaseNB):
         den = self.class_totals[c] + self.alpha * self.n_terms
         return num / den
 
+    def p_feature_given_class_many(self, columns):
+        fc = {}
+        for f in columns:
+            fc[f] = self.feature_counts.get(f, 0)
+        num = pd.DataFrame(fc).fillna(0) + self.alpha
+        div = (
+            pd.DataFrame.from_dict(self.class_totals, orient="index").T
+            + self.alpha * self.n_terms
+        )
+        return num.div(div[num.index].T.values)
+
     def p_class(self, c):
         return self.class_counts[c] / sum(self.class_counts.values())
+
+    def p_class_many(self):
+        return pd.DataFrame.from_dict(self.class_counts, orient="index").T / sum(
+            self.class_counts.values()
+        )
 
     def joint_log_likelihood(self, x):
         return {
@@ -219,3 +235,10 @@ class MultinomialNB(base.BaseNB):
             )
             for c in self.classes_
         }
+
+    def joint_log_likelihood_many(self, X: pd.DataFrame):
+        pfc = self.p_feature_given_class_many(X.columns)
+        p_class = np.log(self.p_class_many())[pfc.index]
+        p = X.dot(np.log(pfc).values.T)
+        p.columns = pfc.index
+        return p.add(p_class.values, axis="columns")
