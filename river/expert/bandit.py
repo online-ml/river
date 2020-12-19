@@ -5,8 +5,10 @@ import random
 import typing
 
 from river import base
+from river import compose
 from river import linear_model
 from river import metrics
+from river import optim
 from river import preprocessing
 from river import utils
 
@@ -16,11 +18,10 @@ __all__ = [
     'UCBRegressor',
 ]
 
-# TODO: Docstring, example with pca, crossval on n_components
 
 class Bandit(base.EnsembleMixin):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed: int = None):
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, explore_each_arm: int, start_after: int, seed: int = None):
 
         if len(models) <= 1:
             raise ValueError(f"You supply {len(models)} models. At least 2 models should be supplied.")
@@ -31,18 +32,23 @@ class Bandit(base.EnsembleMixin):
                 raise ValueError(f"{metric.__class__.__name__} metric can't be used to evaluate a " +
                                  f'{model.__class__.__name__}')
         super().__init__(models)
-        self.reward_scaler = copy.deepcopy(reward_scaler)
         self.metric = copy.deepcopy(metric)
+        self._y_scaler = copy.deepcopy(preprocessing.StandardScaler())
 
         # Initializing bandits internals
         self._n_arms = len(models)
         self._n_iter = 0 # number of times learn_one is called
         self._N = [0] * self._n_arms
+        self.explore_each_arm = explore_each_arm
         self._average_reward = [0.0] * self._n_arms
+
+        # Warm up
+        self.start_after = start_after
+        self.warm_up = True
+
+        # Randomization
         self.seed = seed
         self._rng = random.Random(seed)
-
-
 
     def __repr__(self):
         return (
@@ -74,12 +80,16 @@ class Bandit(base.EnsembleMixin):
 
     @property
     def percentage_pulled(self):
-        percentages = [n / sum(self._N) for n in self._N]
+        if not self.warm_up:
+            percentages = [n / sum(self._N) for n in self._N]
+        else:
+            percentages = [0] * self._n_arms
         return percentages
 
     def predict_one(self, x):
-        best_arm = self._pull_arm()
+        best_arm = self._best_model_idx
         y_pred = self._pred_func(self[best_arm])(x)
+
         return y_pred
 
     def learn_one(self, x, y):
@@ -94,47 +104,63 @@ class Bandit(base.EnsembleMixin):
         self._average_reward += [0.0] * length_new_models
 
     def _learn_one(self, x, y):
-        chosen_arm = self._pull_arm()
-        chosen_model = self[chosen_arm]
+        # Explore all arms pulled less than `explore_each_arm` times
+        never_pulled_arm = [i for (i, n) in enumerate(self._N) if n < self.explore_each_arm]
+        if never_pulled_arm:
+            chosen_arm = self._rng.choice(never_pulled_arm)
+        else:
+            chosen_arm = self._pull_arm()
 
+        # Predict and learn with the chosen model
+        chosen_model = self[chosen_arm]
         y_pred = chosen_model.predict_one(x)
         self.metric.update(y_pred=y_pred, y_true=y)
         chosen_model.learn_one(x=x, y=y)
 
-        # Update bandit internals (common to all bandit)
+        # Update bandit internals
+        if self.warm_up and (self._n_iter == self.start_after):
+            self._n_iter = 0 # must be reset to 0 since it is an input to some model
+            self.warm_up = False
+
+        self._n_iter += 1
         reward = self._compute_scaled_reward(y_pred=y_pred, y_true=y)
+        if not self.warm_up:
+            self._update_bandit(chosen_arm=chosen_arm, reward=reward)
+
+        return self.metric._eval(y_pred, y), reward, chosen_arm
+
+    def _update_bandit(self, chosen_arm, reward):
+        # Updates common to all bandits
         self._n_iter += 1
         self._N[chosen_arm] += 1
         self._average_reward[chosen_arm] += (1.0 / self._N[chosen_arm]) * \
                                             (reward - self._average_reward[chosen_arm])
 
-        # Specific update of the arm for certain bandit class
+        # Specific update of the arm for certain bandit model
         self._update_arm(chosen_arm, reward)
 
-        return self.metric._eval(y_pred, y)
 
-    def _compute_scaled_reward(self, y_pred, y_true, update_scaler=True):
+    def _compute_scaled_reward(self, y_pred, y_true, c=1, scale_y=True):
+        if scale_y:
+            y_true = self._y_scaler.learn_one(dict(y=y_true)).transform_one(dict(y=y_true))["y"]
+            y_pred = self._y_scaler.transform_one(dict(y=y_pred))["y"]
+
         metric_value = self.metric._eval(y_pred, y_true)
-        metric_to_reward_dict = {
-            "metric": metric_value if self.metric.bigger_is_better else (-1) * metric_value
-        }
-        if update_scaler:
-            self.reward_scaler.learn_one(metric_to_reward_dict)
-        reward = self.reward_scaler.transform_one(metric_to_reward_dict)["metric"]
+        metric_value = metric_value if self.metric.bigger_is_better else (-1) * metric_value
+        reward = 1 / (1 + math.exp(- c * metric_value)) if c * metric_value > -30 else 0 # to avoid overflow
+
         return reward
 
 
 class EpsilonGreedyBandit(Bandit):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed: int = None,
-                 epsilon=0.1, epsilon_decay=None):
-        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, seed=seed)
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, seed: int = None, start_after=25,
+                 epsilon=0.1, epsilon_decay=None, explore_each_arm=0):
+        super().__init__(models=models, metric=metric, seed=seed, explore_each_arm=explore_each_arm, start_after=25)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         if epsilon_decay:
             self._starting_epsilon = epsilon
-        if not self.reward_scaler:
-            self.reward_scaler = preprocessing.StandardScaler()
 
     def _pull_arm(self):
         if self._rng.random() > self.epsilon:
@@ -157,8 +183,6 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     probability $(1 - \\epsilon)$ and draws a random arm with probability $\\epsilon$. It is also
     called Follow-The-Leader (FTL) algorithm.
 
-    For this bandit, reward are supposed to be 1-subgaussian, hence the use of the StandardScaler
-    and MaxAbsScaler as `reward_scaler`.
 
     Parameters
     ----------
@@ -197,19 +221,11 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     >>> from river import metrics
 
     >>> metric = metrics.MSE()
-    >>> reward_scaler = preprocessing.StandardScaler()
-    >>> bandit = EpsilonGreedyRegressor(models=models, metric=metric, reward_scaler=reward_scaler, seed=1)
+    >>> bandit = EpsilonGreedyRegressor(models=models, metric=metric, seed=1)
 
     We can then train the models in the bandit in an online fashion:
 
-    >>> for x,y in dataset:
-    ...     bandit.learn_one(x=x, y=y)
 
-    We can inspect the number of times (in percentage) each arm has been pulled:
-    >>> bandit.percentage_pulled
-
-    We can also select the best model (the one with the highest average reward)
-    >>> best_model = bandit.best_model
 
 
     References
@@ -222,11 +238,14 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     def _default_params(cls):
         return {
             'models': [
-                linear_model.LinearRegression(intercept_lr=.1),
-                linear_model.LinearRegression(intercept_lr=.01)
+                compose.Pipeline(
+                    preprocessing.StandardScaler(),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.01))),
+                compose.Pipeline(
+                    preprocessing.StandardScaler(),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.1)))
             ],
             'metric': metrics.MSE(),
-            'reward_scaler': preprocessing.StandardScaler(),
         }
 
     def _pred_func(self, model):
@@ -235,33 +254,25 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
 class UCBBandit(Bandit):
 
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, reward_scaler: base.Transformer, seed: int = None,
-                 delta=None, explore_each_arm=1):
-        super().__init__(models=models, metric=metric, reward_scaler=reward_scaler, seed=seed)
+    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, seed: int = None, start_after=25, explore_each_arm=1, delta=None):
+        if explore_each_arm < 1:
+            raise ValueError("Argument 'explore_each_arm' should be >= 1")
+        super().__init__(models=models, metric=metric, seed=seed, explore_each_arm=explore_each_arm, start_after=start_after)
         if delta is not None and (delta >= 1 or delta <= 0):
             raise ValueError("The parameter delta should be comprised in ]0, 1[ (or set to None)")
         self.delta = delta
-        self.explore_each_arm = explore_each_arm
-
-        if not self.reward_scaler:
-            self.reward_scaler = preprocessing.StandardScaler()
 
     def _pull_arm(self):
-        # Explore all arms pulled less than `explore_each_arm` times
-        never_pulled_arm = [i for (i, n) in enumerate(self._N) if n <= self.explore_each_arm]
-        if never_pulled_arm:
-            chosen_arm = self._rng.choice(never_pulled_arm)
+        if self.delta:
+            exploration_bonus = [math.sqrt(2 * math.log(1/self.delta) / n) for n in self._N]
         else:
-            if self.delta:
-                exploration_bonus = [math.sqrt(2 * math.log(1/self.delta) / n) for n in self._N]
-            else:
-                exploration_bonus = [math.sqrt(2 * math.log(self._n_iter) / n) for n in self._N]
-            upper_bound = [
-                avg_reward + exploration
-                for (avg_reward, exploration)
-                in zip(self._average_reward, exploration_bonus)
-            ]
-            chosen_arm = utils.math.argmax(upper_bound)
+            exploration_bonus = [math.sqrt(2 * math.log(self._n_iter) / n) for n in self._N]
+        upper_bound = [
+            avg_reward + exploration
+            for (avg_reward, exploration)
+            in zip(self._average_reward, exploration_bonus)
+        ]
+        chosen_arm = utils.math.argmax(upper_bound)
 
         return chosen_arm
 
@@ -312,25 +323,16 @@ class UCBRegressor(UCBBandit, base.Regressor):
     >>> from river import datasets
     >>> dataset = datasets.TrumpApproval()
 
-    We then define the metric and the scaler for the reward
+    We then define the metric
 
     >>> from river.expert import UCBRegressor
     >>> from river import metrics
 
     >>> metric = metrics.MSE()
-    >>> reward_scaler = preprocessing.StandardScaler()
-    >>> bandit = UCBRegressor(models=models, metric=metric, reward_scaler=reward_scaler, seed=1)
+    >>> bandit = UCBRegressor(models=models, metric=metric, seed=1)
 
     We can then train the models in the bandit in an online fashion:
 
-    >>> for x,y in dataset:
-    ...     bandit.learn_one(x=x, y=y)
-
-    We can inspect the number of times (in percentage) each arm has been pulled:
-    >>> bandit.percentage_pulled
-
-    We can also select the best model (the one with the highest average reward)
-    >>> best_model = bandit.best_model
 
     References
     ----------
@@ -342,11 +344,14 @@ class UCBRegressor(UCBBandit, base.Regressor):
     def _default_params(cls):
         return {
             'models': [
-                linear_model.LinearRegression(intercept_lr=.1),
-                linear_model.LinearRegression(intercept_lr=.01)
+                compose.Pipeline(
+                    preprocessing.StandardScaler(),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.01))),
+                compose.Pipeline(
+                    preprocessing.StandardScaler(),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.1)))
             ],
             'metric': metrics.MSE(),
-            'reward_scaler': preprocessing.StandardScaler(),
         }
 
     def _pred_func(self, model):
