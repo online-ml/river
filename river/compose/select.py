@@ -3,7 +3,7 @@ import typing
 from river import base
 
 
-__all__ = ['Discard', 'Select', 'SelectType']
+__all__ = ["Discard", "Select", "SelectType"]
 
 
 class Discard(base.Transformer):
@@ -50,17 +50,17 @@ class Discard(base.Transformer):
         return {i: xi for i, xi in x.items() if i not in self.blacklist}
 
     def __str__(self):
-        return '~' + str(sorted(self.blacklist))
+        return "~" + str(sorted(self.blacklist))
 
     def __repr__(self):
         if self.blacklist:
-            return 'Discard (\n  ' + '\n  '.join(map(str, sorted(self.blacklist))) + '\n)'
-        return 'Discard ()'
+            return "Discard (\n  " + "\n  ".join(map(str, sorted(self.blacklist))) + "\n)"
+        return "Discard ()"
 
     def _set_params(self, blacklist=None):
         if not blacklist:
             blacklist = self.blacklist
-        return Select(*blacklist)
+        return Discard(*blacklist)
 
 
 class Select(base.Transformer):
@@ -111,8 +111,8 @@ class Select(base.Transformer):
 
     def __repr__(self):
         if self.whitelist:
-            return 'Select (\n  ' + '\n  '.join(map(str, sorted(self.whitelist))) + '\n)'
-        return 'Select ()'
+            return "Select (\n  " + "\n  ".join(map(str, sorted(self.whitelist))) + "\n)"
+        return "Select ()"
 
     def _get_params(self):
         return self.whitelist
@@ -161,8 +161,8 @@ class SelectType(base.Transformer):
 
     def __repr__(self):
         if self.types:
-            return 'Select (\n  ' + '\n  '.join(map(str, sorted(self.types))) + '\n)'
-        return 'Select ()'
+            return "Select (\n  " + "\n  ".join(map(str, sorted(self.types))) + "\n)"
+        return "Select ()"
 
     def _get_params(self):
         return self.types

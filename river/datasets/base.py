@@ -13,19 +13,17 @@ import zipfile
 from river import utils
 
 
-REG = 'Regression'
-BINARY_CLF = 'Binary classification'
-MULTI_CLF = 'Multi-class classification'
-MO_BINARY_CLF = 'Multi-output binary classification'
-MO_REG = 'Multi-output regression'
+REG = "Regression"
+BINARY_CLF = "Binary classification"
+MULTI_CLF = "Multi-class classification"
+MO_BINARY_CLF = "Multi-output binary classification"
+MO_REG = "Multi-output regression"
 
 
 def get_data_home():
-    """Return the location where remote datasets are to be stored.
+    """Return the location where remote datasets are to be stored."""
 
-    """
-
-    data_home = os.environ.get('CREME_DATA', os.path.join('~', 'river_data'))
+    data_home = os.environ.get("RIVER_DATA", os.path.join("~", "river_data"))
     data_home = os.path.expanduser(data_home)
     if not os.path.exists(data_home):
         os.makedirs(data_home)
@@ -39,8 +37,15 @@ class Dataset(abc.ABC):
 
     """
 
-    def __init__(self, task, n_features, n_samples=None, n_classes=None, n_outputs=None,
-                 sparse=False):
+    def __init__(
+        self,
+        task,
+        n_features,
+        n_samples=None,
+        n_classes=None,
+        n_outputs=None,
+        sparse=False,
+    ):
         self.task = task
         self.n_features = n_features
         self.n_samples = n_samples
@@ -59,7 +64,7 @@ class Dataset(abc.ABC):
     @property
     def desc(self):
         """Return the description from the docstring."""
-        desc = re.split(pattern=r'\w+\n\s{4}\-{3,}', string=self.__doc__, maxsplit=0)[0]
+        desc = re.split(pattern=r"\w+\n\s{4}\-{3,}", string=self.__doc__, maxsplit=0)[0]
         return inspect.cleandoc(desc)
 
     @property
@@ -71,19 +76,19 @@ class Dataset(abc.ABC):
         """
 
         content = {}
-        content['Name'] = self.__class__.__name__
-        content['Task'] = self.task
+        content["Name"] = self.__class__.__name__
+        content["Task"] = self.task
         if isinstance(self, SyntheticDataset) and self.n_samples is None:
-            content['Samples'] = '∞'
+            content["Samples"] = "∞"
         elif self.n_samples:
-            content['Samples'] = f'{self.n_samples:,}'
+            content["Samples"] = f"{self.n_samples:,}"
         if self.n_features:
-            content['Features'] = f'{self.n_features:,}'
+            content["Features"] = f"{self.n_features:,}"
         if self.n_outputs:
-            content['Outputs'] = f'{self.n_outputs:,}'
+            content["Outputs"] = f"{self.n_outputs:,}"
         if self.n_classes:
-            content['Classes'] = f'{self.n_classes:,}'
-        content['Sparse'] = str(self.sparse)
+            content["Classes"] = f"{self.n_classes:,}"
+        content["Sparse"] = str(self.sparse)
 
         return content
 
@@ -92,20 +97,16 @@ class Dataset(abc.ABC):
         l_len = max(map(len, self._repr_content.keys()))
         r_len = max(map(len, self._repr_content.values()))
 
-        out = (
-            f'{self.desc}\n\n' +
-            '\n'.join(
-                k.rjust(l_len) + '  ' + v.ljust(r_len)
-                for k, v in self._repr_content.items()
-            )
+        out = f"{self.desc}\n\n" + "\n".join(
+            k.rjust(l_len) + "  " + v.ljust(r_len) for k, v in self._repr_content.items()
         )
 
-        if 'Parameters\n    ----------' in self.__doc__:
+        if "Parameters\n    ----------" in self.__doc__:
             params = re.split(
-                r'\w+\n\s{4}\-{3,}',
-                re.split('Parameters\n    ----------', self.__doc__)[1]
+                r"\w+\n\s{4}\-{3,}",
+                re.split("Parameters\n    ----------", self.__doc__)[1],
             )[0].rstrip()
-            out += f'\n\nParameters\n----------{params}'
+            out += f"\n\nParameters\n----------{params}"
 
         return out
 
@@ -121,16 +122,15 @@ class SyntheticDataset(Dataset):
         r_len_config = max(map(len, map(str, params.values())))
 
         out = (
-                f'Synthetic data generator\n\n' +
-                '\n'.join(
-                    k.rjust(l_len_prop) + '  ' + v.ljust(r_len_prop)
-                    for k, v in self._repr_content.items()
-                ) +
-                '\n\nConfiguration\n-------------\n' +
-                '\n'.join(
-                    k.rjust(l_len_config) + '  ' + str(v).ljust(r_len_config)
-                    for k, v in params.items()
-                )
+            "Synthetic data generator\n\n"
+            + "\n".join(
+                k.rjust(l_len_prop) + "  " + v.ljust(r_len_prop)
+                for k, v in self._repr_content.items()
+            )
+            + "\n\nConfiguration\n-------------\n"
+            + "\n".join(
+                k.rjust(l_len_config) + "  " + str(v).ljust(r_len_config) for k, v in params.items()
+            )
         )
 
         return out
@@ -162,7 +162,7 @@ class FileDataset(Dataset):
     @property
     def _repr_content(self):
         content = super()._repr_content
-        content['Path'] = str(self.path)
+        content["Path"] = str(self.path)
         return content
 
 
@@ -190,7 +190,10 @@ class RemoteDataset(FileDataset):
     def path(self):
         return pathlib.Path(get_data_home(), self.__class__.__name__, self.filename)
 
-    def download(self, verbose=True):
+    def download(self, force=False, verbose=True):
+
+        if not force and self.is_downloaded:
+            return
 
         # Determine where to download the archive
         directory = self.path.parent
@@ -203,34 +206,34 @@ class RemoteDataset(FileDataset):
             if verbose:
                 meta = r.info()
                 try:
-                    n_bytes = int(meta['Content-Length'])
-                    msg = f'Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})'
+                    n_bytes = int(meta["Content-Length"])
+                    msg = f"Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})"
                 except KeyError:
-                    msg = f'Downloading {self.url}'
+                    msg = f"Downloading {self.url}"
                 print(msg)
 
             # Now dump the contents of the requests
-            with open(archive_path, 'wb') as f:
+            with open(archive_path, "wb") as f:
                 shutil.copyfileobj(r, f)
 
         if not self.unpack:
             return
 
         if verbose:
-            print(f'Uncompressing into {directory}')
+            print(f"Uncompressing into {directory}")
 
-        if archive_path.suffix.endswith('zip'):
-            with zipfile.ZipFile(archive_path, 'r') as zf:
+        if archive_path.suffix.endswith("zip"):
+            with zipfile.ZipFile(archive_path, "r") as zf:
                 zf.extractall(directory)
 
-        elif archive_path.suffix.endswith(('gz', 'tar')):
-            mode = 'r:' if archive_path.suffix.endswith('tar') else 'r:gz'
+        elif archive_path.suffix.endswith(("gz", "tar")):
+            mode = "r:" if archive_path.suffix.endswith("tar") else "r:gz"
             tar = tarfile.open(archive_path, mode)
             tar.extractall(directory)
             tar.close()
 
         else:
-            raise RuntimeError(f'Unhandled extension type: {archive_path.suffix}')
+            raise RuntimeError(f"Unhandled extension type: {archive_path.suffix}")
 
         # Delete the archive file now that it has been uncompressed
         archive_path.unlink()
@@ -246,7 +249,7 @@ class RemoteDataset(FileDataset):
 
             if self.path.is_file():
                 return self.path.stat().st_size == self.size
-            return sum(f.stat().st_size for f in self.path.glob('**/*') if f.is_file())
+            return sum(f.stat().st_size for f in self.path.glob("**/*") if f.is_file())
 
         return False
 
@@ -254,13 +257,13 @@ class RemoteDataset(FileDataset):
         if not self.is_downloaded:
             self.download(verbose=True)
         if not self.is_downloaded:
-            raise RuntimeError('Something went wrong during the download')
+            raise RuntimeError("Something went wrong during the download")
         yield from self._iter()
 
     @property
     def _repr_content(self):
         content = super()._repr_content
-        content['URL'] = self.url
-        content['Size'] = utils.pretty.humanize_bytes(self.size)
-        content['Downloaded'] = str(self.is_downloaded)
+        content["URL"] = self.url
+        content["Size"] = utils.pretty.humanize_bytes(self.size)
+        content["Downloaded"] = str(self.is_downloaded)
         return content

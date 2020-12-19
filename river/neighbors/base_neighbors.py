@@ -67,7 +67,7 @@ class KNeighborsBuffer:
 
         return self
 
-    def append(self, x: np.ndarray, y: base.typing.Target) -> 'KNeighborsBuffer':
+    def append(self, x: np.ndarray, y: base.typing.Target) -> "KNeighborsBuffer":
         """Add a (single) sample to the sample window.
 
         x
@@ -92,8 +92,11 @@ class KNeighborsBuffer:
             self._configure()
 
         if self._n_features != get_dimensions(x)[1]:
-            raise ValueError("Inconsistent number of features in X: {}, previously observed {}.".
-                             format(get_dimensions(x)[1], self._n_features))
+            raise ValueError(
+                "Inconsistent number of features in X: {}, previously observed {}.".format(
+                    get_dimensions(x)[1], self._n_features
+                )
+            )
 
         self._X[self._next_insert, :] = x
         self._y[self._next_insert] = y
@@ -102,8 +105,7 @@ class KNeighborsBuffer:
 
         # Update the instance storing logic
         self._imask[self._next_insert] = True  # Mark slot as filled
-        self._next_insert = self._next_insert + 1 if self._next_insert < self.window_size - 1 \
-            else 0
+        self._next_insert = self._next_insert + 1 if self._next_insert < self.window_size - 1 else 0
 
         if slot_replaced:  # The oldest sample was replaced (complete cycle in the buffer)
             self._oldest = self._next_insert
@@ -115,8 +117,9 @@ class KNeighborsBuffer:
     def pop(self) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
         """Remove and return the most recent element added to the buffer. """
         if self.size > 0:
-            self._next_insert = self._next_insert - 1 if self._next_insert > 0 else \
-                self.window_size - 1
+            self._next_insert = (
+                self._next_insert - 1 if self._next_insert > 0 else self.window_size - 1
+            )
             x, y = self._X[self._next_insert], self._y[self._next_insert]
             self._imask[self._next_insert] = False  # Mark slot as free
             self._size -= 1
@@ -125,7 +128,9 @@ class KNeighborsBuffer:
         else:
             return None
 
-    def popleft(self) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
+    def popleft(
+        self,
+    ) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
         """Remove and return the oldest element in the buffer. """
         if self.size > 0:
             x, y = self._X[self._oldest], self._y[self._oldest]
@@ -138,7 +143,7 @@ class KNeighborsBuffer:
 
             return x, y
 
-    def clear(self) -> 'KNeighborsBuffer':
+    def clear(self) -> "KNeighborsBuffer":
         """Clear all stored elements."""
         self._next_insert = 0
         self._oldest = 0
@@ -182,16 +187,25 @@ class KNeighborsBuffer:
 
 class BaseNeighbors:
     """Base class for neighbors-based estimators. """
-    def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
-                 p: float = 2, **kwargs):
+
+    def __init__(
+        self,
+        n_neighbors: int = 5,
+        window_size: int = 1000,
+        leaf_size: int = 30,
+        p: float = 2,
+        **kwargs
+    ):
         self.n_neighbors = n_neighbors
         self.window_size = window_size
         self.leaf_size = leaf_size
         self._kwargs = kwargs
 
         if p < 1:
-            raise ValueError('Invalid Minkowski p-norm value: {}.\n'
-                             'Values must be greater than or equal to 1'.format(p))
+            raise ValueError(
+                "Invalid Minkowski p-norm value: {}.\n"
+                "Values must be greater than or equal to 1".format(p)
+            )
         self.p = p
         self.data_window = KNeighborsBuffer(window_size=window_size)
 
@@ -201,7 +215,7 @@ class BaseNeighbors:
         dist, idx = tree.query(x.reshape(1, -1), k=self.n_neighbors, p=self.p)
         return dist, idx
 
-    def reset(self) -> 'BaseNeighbors':
+    def reset(self) -> "BaseNeighbors":
         """Reset estimator. """
         self.data_window.reset()
 

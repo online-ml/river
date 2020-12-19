@@ -65,21 +65,35 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
     """
 
-    _MEAN = 'mean'
-    _MEDIAN = 'median'
-    _WEIGHTED_MEAN = 'weighted_mean'
+    _MEAN = "mean"
+    _MEDIAN = "median"
+    _WEIGHTED_MEAN = "weighted_mean"
 
-    def __init__(self, n_neighbors: int = 5, window_size: int = 1000, leaf_size: int = 30,
-                 p: float = 2, aggregation_method: str = 'mean', **kwargs):
+    def __init__(
+        self,
+        n_neighbors: int = 5,
+        window_size: int = 1000,
+        leaf_size: int = 30,
+        p: float = 2,
+        aggregation_method: str = "mean",
+        **kwargs
+    ):
 
-        super().__init__(n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size,
-                         p=p, **kwargs)
+        super().__init__(
+            n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size, p=p, **kwargs
+        )
         if aggregation_method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
-            raise ValueError('Invalid aggregation_method: {}.\n'
-                             'Valid options are: {}'.format(aggregation_method,
-                                                            {self._MEAN, self._MEDIAN,
-                                                             self._WEIGHTED_MEAN}))
+            raise ValueError(
+                "Invalid aggregation_method: {}.\n"
+                "Valid options are: {}".format(
+                    aggregation_method, {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}
+                )
+            )
         self.aggregation_method = aggregation_method
+        self.kwargs = kwargs
+
+    def _unit_test_skips(self):
+        return {"check_emerging_features", "check_disappearing_features"}
 
     def learn_one(self, x, y):
         """Update the model with a set of features `x` and a real target value `y`.
@@ -126,7 +140,7 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
 
         if self.data_window.size == 0:
             # Not enough information available, return default prediction
-            return 0.
+            return 0.0
 
         x_arr = dict2numpy(x)
 
@@ -138,8 +152,11 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
             return target_buffer[neighbor_idx[0][0]]
 
         if self.data_window.size < self.n_neighbors:  # Select only the valid neighbors
-            neighbor_vals = [target_buffer[index] for cnt, index in enumerate(neighbor_idx[0])
-                             if cnt < self.data_window.size]
+            neighbor_vals = [
+                target_buffer[index]
+                for cnt, index in enumerate(neighbor_idx[0])
+                if cnt < self.data_window.size
+            ]
             dists = [dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size]
         else:
             neighbor_vals = [target_buffer[index] for index in neighbor_idx[0]]
@@ -150,7 +167,4 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         elif self.aggregation_method == self._MEDIAN:
             return np.median(neighbor_vals)
         else:  # weighted mean
-            return (
-                sum(y / d for y, d in zip(neighbor_vals, dists)) /
-                sum(1 / d for d in dists)
-            )
+            return sum(y / d for y, d in zip(neighbor_vals, dists)) / sum(1 / d for d in dists)

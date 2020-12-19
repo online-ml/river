@@ -134,36 +134,40 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     MAE: 0.78838
     """
 
-    def __init__(self,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'model',
-                 leaf_model: base.Regressor = None,
-                 model_selector_decay: float = 0.95,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'e-bst',
-                 attr_obs_params: dict = None,
-                 min_samples_split: int = 5,
-                 bootstrap_sampling: bool = True,
-                 drift_window_threshold: int = 300,
-                 adwin_confidence: float = 0.002,
-                 seed=None,
-                 **kwargs):
+    def __init__(
+        self,
+        grace_period: int = 200,
+        max_depth: int = None,
+        split_confidence: float = 1e-7,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "model",
+        leaf_model: base.Regressor = None,
+        model_selector_decay: float = 0.95,
+        nominal_attributes: list = None,
+        attr_obs: str = "e-bst",
+        attr_obs_params: dict = None,
+        min_samples_split: int = 5,
+        bootstrap_sampling: bool = True,
+        drift_window_threshold: int = 300,
+        adwin_confidence: float = 0.002,
+        seed=None,
+        **kwargs
+    ):
 
-        super().__init__(grace_period=grace_period,
-                         max_depth=max_depth,
-                         split_confidence=split_confidence,
-                         tie_threshold=tie_threshold,
-                         leaf_prediction=leaf_prediction,
-                         leaf_model=leaf_model,
-                         model_selector_decay=model_selector_decay,
-                         nominal_attributes=nominal_attributes,
-                         attr_obs=attr_obs,
-                         attr_obs_params=attr_obs_params,
-                         min_samples_split=min_samples_split,
-                         **kwargs)
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            leaf_model=leaf_model,
+            model_selector_decay=model_selector_decay,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            min_samples_split=min_samples_split,
+            **kwargs
+        )
 
         self._n_alternate_trees = 0
         self._n_pruned_alternate_trees = 0
@@ -174,14 +178,15 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self.adwin_confidence = adwin_confidence
         self.seed = seed
 
-    def learn_one(self, x, y, *, sample_weight=1.):
+    def learn_one(self, x, y, *, sample_weight=1.0):
         self._train_weight_seen_by_model += sample_weight
 
         if self._tree_root is None:
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
-        self._tree_root.learn_one(x, y, sample_weight=sample_weight, tree=self, parent=None,
-                                  parent_branch=-1)
+        self._tree_root.learn_one(
+            x, y, sample_weight=sample_weight, tree=self, parent=None, parent_branch=-1
+        )
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -192,7 +197,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         if self._tree_root is not None:
             found_nodes = self._filter_instance_to_leaves(x, None, -1)
 
-            pred = 0.
+            pred = 0.0
             for fn in found_nodes:
                 # parent_branch == -999 means that the node is the root of an alternate tree.
                 # In other words, the alternate tree is a single leaf. It is probably not accurate
@@ -207,7 +212,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             # Mean prediction among the reached leaves
             return pred / len(found_nodes)
         else:
-            return 0.
+            return 0.0
 
     def _filter_instance_to_leaves(self, x, split_parent, parent_branch):
         nodes = []
@@ -231,9 +236,13 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             leaf_model = deepcopy(self.leaf_model)
 
         new_ada_leaf = AdaLearningNodeRegressor(
-            stats=initial_stats, depth=depth, attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params, leaf_model=leaf_model,
-            adwin_delta=self.adwin_confidence, seed=self.seed
+            stats=initial_stats,
+            depth=depth,
+            attr_obs=self.attr_obs,
+            attr_obs_params=self.attr_obs_params,
+            leaf_model=leaf_model,
+            adwin_delta=self.adwin_confidence,
+            seed=self.seed,
         )
 
         if parent is not None and parent.is_leaf():
@@ -244,8 +253,12 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     def _new_split_node(self, split_test, target_stats=None, depth=0, **kwargs):
         return AdaSplitNodeRegressor(
-            split_test=split_test, stats=target_stats, depth=depth,
-            adwin_delta=self.adwin_confidence, seed=self.seed)
+            split_test=split_test,
+            stats=target_stats,
+            depth=depth,
+            adwin_delta=self.adwin_confidence,
+            seed=self.seed,
+        )
 
     # Override river.tree.BaseHoeffdingTree to include alternate trees
     def __find_learning_nodes(self, node, parent, parent_branch, found):
@@ -255,12 +268,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             else:
                 split_node = node
                 for i in range(split_node.n_children):
-                    self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found)
+                    self.__find_learning_nodes(split_node.get_child(i), split_node, i, found)
                 if split_node._alternate_tree is not None:
-                    self.__find_learning_nodes(
-                        split_node._alternate_tree, split_node, -999, found)
+                    self.__find_learning_nodes(split_node._alternate_tree, split_node, -999, found)
 
     @classmethod
-    def _default_params(cls):
-        return {'seed': 1}
+    def _unit_test_params(cls):
+        return {"seed": 1}

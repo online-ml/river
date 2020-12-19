@@ -72,10 +72,12 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             # Value was not yet added to the tree
             if is_right:
                 antecedent._right = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight)
+                    att_val, target, sample_weight
+                )
             else:
                 antecedent._left = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight)
+                    att_val, target, sample_weight
+                )
 
     def __init__(self):
         super().__init__()
@@ -86,8 +88,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeRegressionObserver.Node(att_val, target_val,
-                                                                     sample_weight)
+                self._root = NumericAttributeRegressionObserver.Node(
+                    att_val, target_val, sample_weight
+                )
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
@@ -96,8 +99,12 @@ class NumericAttributeRegressionObserver(AttributeObserver):
     def probability_of_attribute_value_given_class(self, att_val, class_val):
         raise NotImplementedError
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx,
-                                        binary_only=True):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only=True):
+        candidate = AttributeSplitSuggestion(None, [{}], -float("inf"))
+
+        if self._root is None:
+            return candidate
+
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
@@ -107,8 +114,6 @@ class NumericAttributeRegressionObserver(AttributeObserver):
             self._aux_estimator = VectorDict(default_factory=functools.partial(Var))
         else:
             self._aux_estimator = Var()
-
-        candidate = AttributeSplitSuggestion(None, [{}], -float('inf'))
 
         best_split = self._find_best_split(self._root, candidate)
 
@@ -149,8 +154,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         return candidate
 
-    def remove_bad_splits(self, criterion, last_check_ratio, last_check_vr, last_check_e,
-                          pre_split_dist):
+    def remove_bad_splits(
+        self, criterion, last_check_ratio, last_check_vr, last_check_e, pre_split_dist
+    ):
         """Remove bad splits.
 
         Based on FIMT-DD's [^1] procedure to remove bad split candidates from the E-BST. This
@@ -189,6 +195,9 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         [^1]: Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving
         data streams. Data mining and knowledge discovery, 23(1), 128-168.
         """
+
+        if self._root is None:
+            return
 
         # Auxiliary variables
         self._criterion = criterion

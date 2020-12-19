@@ -15,12 +15,12 @@ from .streaming_random_patches import SRPClassifier
 
 
 __all__ = [
-    'AdaptiveRandomForestClassifier',
-    'AdaptiveRandomForestRegressor',
-    'AdaBoostClassifier',
-    'ADWINBaggingClassifier',
-    'BaggingClassifier',
-    'BaggingRegressor',
-    'LeveragingBaggingClassifier',
-    'SRPClassifier'
+    "AdaptiveRandomForestClassifier",
+    "AdaptiveRandomForestRegressor",
+    "AdaBoostClassifier",
+    "ADWINBaggingClassifier",
+    "BaggingClassifier",
+    "BaggingRegressor",
+    "LeveragingBaggingClassifier",
+    "SRPClassifier",
 ]

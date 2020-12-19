@@ -25,10 +25,10 @@ from .stacking import StackingClassifier
 
 
 __all__ = [
-    'EpsilonGreedyRegressor',
-    'EWARegressor',
-    'SuccessiveHalvingClassifier',
-    'SuccessiveHalvingRegressor',
-    'StackingClassifier',
-    'UCBRegressor',
+    "EpsilonGreedyRegressor",
+    "EWARegressor",
+    "SuccessiveHalvingClassifier",
+    "SuccessiveHalvingRegressor",
+    "StackingClassifier",
+    "UCBRegressor",
 ]

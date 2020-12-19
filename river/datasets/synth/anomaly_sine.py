@@ -61,22 +61,35 @@ class AnomalySine(base.SyntheticDataset):
 
     """
 
-    def __init__(self, n_samples: int = 10000, n_anomalies: int = 2500, contextual: bool = False,
-                 n_contextual: int = 2500, shift: int = 4, noise: float = 0.5,
-                 replace: bool = True, seed: int or np.random.RandomState = None):
-        super().__init__(n_features=2,
-                         n_classes=1,
-                         n_outputs=1,
-                         n_samples=n_samples,
-                         task=base.BINARY_CLF)
+    def __init__(
+        self,
+        n_samples: int = 10000,
+        n_anomalies: int = 2500,
+        contextual: bool = False,
+        n_contextual: int = 2500,
+        shift: int = 4,
+        noise: float = 0.5,
+        replace: bool = True,
+        seed: int or np.random.RandomState = None,
+    ):
+        super().__init__(
+            n_features=2,
+            n_classes=1,
+            n_outputs=1,
+            n_samples=n_samples,
+            task=base.BINARY_CLF,
+        )
         if n_anomalies > self.n_samples:
-            raise ValueError(f"n_anomalies ({n_anomalies}) can't be larger "
-                             f"than n_samples ({self.n_samples})")
+            raise ValueError(
+                f"n_anomalies ({n_anomalies}) can't be larger " f"than n_samples ({self.n_samples})"
+            )
         self.n_anomalies = n_anomalies
         self.contextual = contextual
         if contextual and n_contextual > self.n_samples:
-            raise ValueError(f"n_contextual ({n_contextual}) can't be larger "
-                             f"than n_samples ({self.n_samples})")
+            raise ValueError(
+                f"n_contextual ({n_contextual}) can't be larger "
+                f"than n_samples ({self.n_samples})"
+            )
         self.n_contextual = n_contextual
         self.shift = abs(shift)
         self.noise = noise
@@ -91,28 +104,33 @@ class AnomalySine(base.SyntheticDataset):
         self._random_state = check_random_state(self.seed)
         self.y = np.zeros(self.n_samples)
         self.X = np.column_stack(
-            [np.sin(np.arange(self.n_samples) / 4.)
-             + self._random_state.randn(self.n_samples) * self.noise,
-             np.cos(np.arange(self.n_samples) / 4.)
-             + self._random_state.randn(self.n_samples) * self.noise]
+            [
+                np.sin(np.arange(self.n_samples) / 4.0)
+                + self._random_state.randn(self.n_samples) * self.noise,
+                np.cos(np.arange(self.n_samples) / 4.0)
+                + self._random_state.randn(self.n_samples) * self.noise,
+            ]
         )
 
         if self.contextual:
             # contextual anomaly indices
-            contextual_anomalies = self._random_state.choice(self.n_samples - self.shift,
-                                                             self.n_contextual,
-                                                             replace=self.replace)
+            contextual_anomalies = self._random_state.choice(
+                self.n_samples - self.shift, self.n_contextual, replace=self.replace
+            )
             # set contextual anomalies
             contextual_idx = contextual_anomalies + self.shift
             contextual_idx[contextual_idx >= self.n_samples] -= self.n_samples
             self.X[contextual_idx, 1] = self.X[contextual_anomalies, 0]
 
         # Anomaly indices
-        anomalies_idx = self._random_state.choice(self.n_samples, self.n_anomalies,
-                                                  replace=self.replace)
-        self.X[anomalies_idx, 1] = np.sin(self._random_state.choice(self.n_anomalies,
-                                                                    replace=self.replace)) \
-                                   + self._random_state.randn(self.n_anomalies) * self.noise + 2.
+        anomalies_idx = self._random_state.choice(
+            self.n_samples, self.n_anomalies, replace=self.replace
+        )
+        self.X[anomalies_idx, 1] = (
+            np.sin(self._random_state.choice(self.n_anomalies, replace=self.replace))
+            + self._random_state.randn(self.n_anomalies) * self.noise
+            + 2.0
+        )
         # Mark sample as anomalous
         self.y[anomalies_idx] = 1
 
@@ -120,5 +138,5 @@ class AnomalySine(base.SyntheticDataset):
 
         self._generate_data()
 
-        for xi, yi in itertools.zip_longest(self.X, self.y if hasattr(self.y, '__iter__') else []):
-            yield dict(zip(['sine', 'cosine'], xi)), yi
+        for xi, yi in itertools.zip_longest(self.X, self.y if hasattr(self.y, "__iter__") else []):
+            yield dict(zip(["sine", "cosine"], xi)), yi

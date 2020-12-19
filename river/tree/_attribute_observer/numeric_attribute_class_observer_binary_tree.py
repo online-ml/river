@@ -14,6 +14,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
     since it ends up storing all the observations between split attempts.
     Used in decision trees to monitor data statistics on leaves.
     """
+
     class Node:
         def __init__(self, val, label, sample_weight):
             self.class_count_left = defaultdict(float)
@@ -30,15 +31,17 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             elif val < self.cut_point:
                 self.class_count_left[label] += sample_weight
                 if self._left is None:
-                    self._left = NumericAttributeClassObserverBinaryTree.\
-                        Node(val, label, sample_weight)
+                    self._left = NumericAttributeClassObserverBinaryTree.Node(
+                        val, label, sample_weight
+                    )
                 else:
                     self._left.insert_value(val, label, sample_weight)
             else:
                 self.class_count_right[label] += sample_weight
                 if self._right is None:
-                    self._right = NumericAttributeClassObserverBinaryTree.\
-                        Node(val, label, sample_weight)
+                    self._right = NumericAttributeClassObserverBinaryTree.Node(
+                        val, label, sample_weight
+                    )
                 else:
                     self._right.insert_value(val, label, sample_weight)
 
@@ -55,8 +58,9 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeClassObserverBinaryTree.\
-                    Node(att_val, class_val, sample_weight)
+                self._root = NumericAttributeClassObserverBinaryTree.Node(
+                    att_val, class_val, sample_weight
+                )
             else:
                 self._root.insert_value(att_val, class_val, sample_weight)
 
@@ -67,23 +71,32 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         return 0.0
 
     def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+        current_best_option = AttributeSplitSuggestion(None, [{}], -float("inf"))
 
         return self._search_for_best_split_option(
             current_node=self._root,
-            current_best_option=None,
+            current_best_option=current_best_option,
             actual_parent_left=None,
             parent_left=None,
             parent_right=None,
             left_child=False,
             criterion=criterion,
             pre_split_dist=pre_split_dist,
-            att_idx=att_idx
+            att_idx=att_idx,
         )
 
-    def _search_for_best_split_option(self, current_node, current_best_option,
-                                      actual_parent_left, parent_left,
-                                      parent_right, left_child, criterion,
-                                      pre_split_dist, att_idx):
+    def _search_for_best_split_option(
+        self,
+        current_node,
+        current_best_option,
+        actual_parent_left,
+        parent_left,
+        parent_right,
+        left_child,
+        criterion,
+        pre_split_dist,
+        att_idx,
+    ):
         if current_node is None:
             return current_best_option
 
@@ -91,19 +104,11 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         right_dist = {}
 
         if parent_left is None:
-            left_dist.update(
-                dict(Counter(left_dist) + Counter(current_node.class_count_left))
-            )
-            right_dist.update(
-                dict(Counter(right_dist) + Counter(current_node.class_count_right))
-            )
+            left_dist.update(dict(Counter(left_dist) + Counter(current_node.class_count_left)))
+            right_dist.update(dict(Counter(right_dist) + Counter(current_node.class_count_right)))
         else:
-            left_dist.update(
-                dict(Counter(left_dist) + Counter(parent_left))
-            )
-            right_dist.update(
-                dict(Counter(right_dist) + Counter(parent_right))
-            )
+            left_dist.update(dict(Counter(left_dist) + Counter(parent_left)))
+            right_dist.update(dict(Counter(right_dist) + Counter(parent_right)))
 
             if left_child:
                 # get the exact statistics of the parent value
@@ -119,24 +124,16 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
                 )
 
                 # move the subtrees
-                left_dist.update(
-                    dict(Counter(left_dist) - Counter(current_node.class_count_right))
-                )
+                left_dist.update(dict(Counter(left_dist) - Counter(current_node.class_count_right)))
                 right_dist.update(
                     dict(Counter(right_dist) + Counter(current_node.class_count_right))
                 )
 
                 # move the exact value from the parent
-                right_dist.update(
-                    dict(Counter(right_dist) + Counter(exact_parent_dist))
-                )
-                left_dist.update(
-                    dict(Counter(left_dist) - Counter(exact_parent_dist))
-                )
+                right_dist.update(dict(Counter(right_dist) + Counter(exact_parent_dist)))
+                left_dist.update(dict(Counter(left_dist) - Counter(exact_parent_dist)))
             else:
-                left_dist.update(
-                    dict(Counter(left_dist) + Counter(current_node.class_count_left))
-                )
+                left_dist.update(dict(Counter(left_dist) + Counter(current_node.class_count_left)))
                 right_dist.update(
                     dict(Counter(right_dist) - Counter(current_node.class_count_left))
                 )
@@ -148,16 +145,16 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             num_att_binary_test = NumericAttributeBinaryTest(
                 att_idx=att_idx,
                 att_value=current_node.cut_point,
-                equal_passes_test=True
+                equal_passes_test=True,
             )
             current_best_option = AttributeSplitSuggestion(
                 split_test=num_att_binary_test,
                 resulting_class_distributions=post_split_dists,
-                merit=merit
+                merit=merit,
             )
 
         current_best_option = self._search_for_best_split_option(
-            current_node=current_node._left,   # noqa
+            current_node=current_node._left,  # noqa
             current_best_option=current_best_option,
             actual_parent_left=current_node.class_count_left,
             parent_left=post_split_dists[0],
@@ -165,11 +162,11 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             left_child=True,
             criterion=criterion,
             pre_split_dist=pre_split_dist,
-            att_idx=att_idx
+            att_idx=att_idx,
         )
 
         current_best_option = self._search_for_best_split_option(
-            current_node=current_node._right,   # noqa
+            current_node=current_node._right,  # noqa
             current_best_option=current_best_option,
             actual_parent_left=current_node.class_count_left,
             parent_left=post_split_dists[0],
@@ -177,7 +174,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             left_child=False,
             criterion=criterion,
             pre_split_dist=pre_split_dist,
-            att_idx=att_idx
+            att_idx=att_idx,
         )
 
         return current_best_option

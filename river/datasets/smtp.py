@@ -20,19 +20,19 @@ class SMTP(base.RemoteDataset):
             n_samples=95_156,
             n_features=3,
             task=base.BINARY_CLF,
-            url='https://maxhalford.github.io/files/datasets/smtp.zip',
+            url="https://maxhalford.github.io/files/datasets/smtp.zip",
             size=5484982,
-            filename='smtp.csv'
+            filename="smtp.csv",
         )
 
     def _iter(self):
         return stream.iter_csv(
             self.path,
-            target='service',
+            target="service",
             converters={
-                'duration': float,
-                'src_bytes': float,
-                'dst_bytes': float,
-                'service': int
-            }
+                "duration": float,
+                "src_bytes": float,
+                "dst_bytes": float,
+                "service": int,
+            },
         )

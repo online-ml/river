@@ -55,7 +55,7 @@ class AutoCorr(base.Univariate):
 
     @property
     def name(self):
-        return f'autocorr_{self.lag}'
+        return f"autocorr_{self.lag}"
 
     def update(self, x):
 

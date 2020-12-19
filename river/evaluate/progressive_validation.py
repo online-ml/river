@@ -8,14 +8,20 @@ from river import utils
 from river import stream
 
 
-__all__ = ['progressive_val_score']
+__all__ = ["progressive_val_score"]
 
 
-def progressive_val_score(dataset: base.typing.Stream, model, metric: metrics.Metric,
-                          moment: typing.Union[str, typing.Callable] = None,
-                          delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
-                          print_every=0, show_time=False, show_memory=False,
-                          **print_kwargs) -> metrics.Metric:
+def progressive_val_score(
+    dataset: base.typing.Stream,
+    model,
+    metric: metrics.Metric,
+    moment: typing.Union[str, typing.Callable] = None,
+    delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
+    print_every=0,
+    show_time=False,
+    show_memory=False,
+    **print_kwargs,
+) -> metrics.Metric:
     """Evaluates the performance of a model on a streaming dataset.
 
     This method is the canonical way to evaluate a model's performance. When used correctly, it
@@ -158,7 +164,7 @@ def progressive_val_score(dataset: base.typing.Stream, model, metric: metrics.Me
 
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
-        raise ValueError(f'{metric.__class__.__name__} metric is not compatible with {model}')
+        raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     pred_func = model.predict_one
@@ -187,12 +193,12 @@ def progressive_val_score(dataset: base.typing.Stream, model, metric: metrics.Me
         # Update the answer counter
         n_total_answers += 1
         if print_every and not n_total_answers % print_every:
-            msg = f'[{n_total_answers:,d}] {metric}'
+            msg = f"[{n_total_answers:,d}] {metric}"
             if show_time:
                 now = time.perf_counter()
-                msg += f' – {dt.timedelta(seconds=int(now - start))}'
+                msg += f" – {dt.timedelta(seconds=int(now - start))}"
             if show_memory:
-                msg += f' – {model._memory_usage}'
+                msg += f" – {model._memory_usage}"
             print(msg, **print_kwargs)
 
     return metric

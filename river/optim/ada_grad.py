@@ -3,7 +3,7 @@ import collections
 from . import base
 
 
-__all__ = ['AdaGrad']
+__all__ = ["AdaGrad"]
 
 
 class AdaGrad(base.Optimizer):
@@ -45,7 +45,7 @@ class AdaGrad(base.Optimizer):
 
     """
 
-    def __init__(self, lr=.1, eps=1e-8):
+    def __init__(self, lr=0.1, eps=1e-8):
         super().__init__(lr)
         self.eps = eps
         self.g2 = collections.defaultdict(float)

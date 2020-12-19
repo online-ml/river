@@ -1,29 +1,31 @@
 import abc
 
+from river import base
 
-cdef class Statistic:
+
+class Statistic(base.Base):
     """A statistic."""
 
     # Define the format specification used for string representation.
-    _fmt = ',.6f'  # Use commas to separate big numbers and show 6 decimals
+    _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
-    cpdef double get(self):
-        """Returns the current value of the statistic."""
+    def get(self):
+        """Return the current value of the statistic."""
         raise NotImplementedError
 
     def __repr__(self):
-        return f'{self.__class__.__name__}: {self.get():{self._fmt}}'.rstrip('0')
+        return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
 
-cdef class Univariate(Statistic):
+class Univariate(base.Base):
     """A univariate statistic measures a property of a variable."""
 
-    cpdef Univariate update(self, double x):
-        """Updates and returns the called instance."""
+    def update(self, x):
+        """Update and return the called instance."""
         raise NotImplementedError
 
-    cpdef Univariate revert(self, double x):
-        """Reverts and returns the called instance."""
+    def revert(self, x):
+        """Revert and return the called instance."""
         raise NotImplementedError
 
     @property
@@ -32,6 +34,7 @@ cdef class Univariate(Statistic):
 
     def __or__(self, other):
         from .link import Link
+
         return Link(left=self, right=other)
 
 
@@ -44,12 +47,12 @@ class RollingUnivariate(Univariate):
 
     @property
     def name(self):
-        return f'{super().name}_{self.window_size}'
+        return f"{super().name}_{self.window_size}"
 
 
-cdef class Bivariate(Statistic):
+class Bivariate(Statistic):
     """A bivariate statistic measures a relationship between two variables."""
 
-    cpdef Bivariate update(self, double x, double y):
-        """Updates and returns the called instance."""
+    def update(self, x, y):
+        """Update and return the called instance."""
         raise NotImplementedError

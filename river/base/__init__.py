@@ -14,6 +14,7 @@ This module also contains utilities for type hinting and tagging estimators.
 from . import tags
 from . import typing
 from .anomaly import AnomalyDetector
+from .base import Base
 from .classifier import Classifier
 from .classifier import MiniBatchClassifier
 from .clusterer import Clusterer
@@ -29,19 +30,20 @@ from .wrapper import WrapperMixin
 
 
 __all__ = [
-    'AnomalyDetector',
-    'Classifier',
-    'Clusterer',
-    'DriftDetector',
-    'EnsembleMixin',
-    'Estimator',
-    'MiniBatchClassifier',
-    'MiniBatchRegressor',
-    'MultiOutputMixin',
-    'Regressor',
-    'SupervisedTransformer',
-    'tags',
-    'Transformer',
-    'typing',
-    'WrapperMixin'
+    "AnomalyDetector",
+    "Base",
+    "Classifier",
+    "Clusterer",
+    "DriftDetector",
+    "EnsembleMixin",
+    "Estimator",
+    "MiniBatchClassifier",
+    "MiniBatchRegressor",
+    "MultiOutputMixin",
+    "Regressor",
+    "SupervisedTransformer",
+    "tags",
+    "Transformer",
+    "typing",
+    "WrapperMixin",
 ]

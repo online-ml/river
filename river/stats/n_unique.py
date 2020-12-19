@@ -63,7 +63,7 @@ class NUnique(base.Univariate):
 
     P32 = 2 ** 32
 
-    def __init__(self, error_rate=.01, seed: int = None):
+    def __init__(self, error_rate=0.01, seed: int = None):
         self.error_rate = error_rate
         self.seed = seed
 
@@ -74,10 +74,10 @@ class NUnique(base.Univariate):
 
     @property
     def name(self):
-        return 'n_unique'
+        return "n_unique"
 
     def _hash(self, x):
-        hexa = hashlib.blake2s(bytes(x, encoding='utf8'), salt=self._salt).hexdigest()
+        hexa = hashlib.blake2s(bytes(x, encoding="utf8"), salt=self._salt).hexdigest()
         return int(hexa, 16)
 
     def update(self, x):
@@ -88,8 +88,11 @@ class NUnique(base.Univariate):
         return self
 
     def get(self):
-        a = ({16: 0.673, 32: 0.697, 64: 0.709}[self.n_buckets]
-             if self.n_buckets <= 64 else 0.7213 / (1 + 1.079 / self.n_buckets))
+        a = (
+            {16: 0.673, 32: 0.697, 64: 0.709}[self.n_buckets]
+            if self.n_buckets <= 64
+            else 0.7213 / (1 + 1.079 / self.n_buckets)
+        )
         e = a * self.n_buckets * self.n_buckets / sum(1.0 / (1 << x) for x in self.buckets)
         if e <= self.n_buckets * 2.5:
             z = len([r for r in self.buckets if not r])

@@ -20,13 +20,15 @@ from .scale import StandardScaler
 
 
 __all__ = [
-    'Binarizer',
-    'FeatureHasher',
-    'LDA',
-    'MaxAbsScaler',
-    'MinMaxScaler',
-    'Normalizer',
-    'OneHotEncoder',
-    'RobustScaler',
-    'StandardScaler'
+    "Binarizer",
+    "FeatureHasher",
+    "LDA",
+    "MaxAbsScaler",
+    "MinMaxScaler",
+    "Normalizer",
+    "OneHotEncoder",
+    "PreviousImputer",
+    "RobustScaler",
+    "StandardScaler",
+    "StatImputer",
 ]

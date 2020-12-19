@@ -24,16 +24,16 @@ class TREC07(base.RemoteDataset):
             n_samples=75_419,
             n_features=5,
             task=base.BINARY_CLF,
-            url='https://maxhalford.github.io/files/datasets/trec07p.zip',
+            url="https://maxhalford.github.io/files/datasets/trec07p.zip",
             size=144504829,
-            filename='trec07p.csv'
+            filename="trec07p.csv",
         )
 
     def _iter(self):
         return stream.iter_csv(
             self.path,
-            target='y',
-            delimiter=',',
+            target="y",
+            delimiter=",",
             quotechar='"',
             field_size_limit=1_000_000,
         )

@@ -50,12 +50,12 @@ class SEA(base.SyntheticDataset):
 
     """
 
-    def __init__(self, variant=0, noise=0., seed: int = None):
+    def __init__(self, variant=0, noise=0.0, seed: int = None):
 
         super().__init__(n_features=3, task=base.BINARY_CLF)
 
         if variant not in (0, 1, 2, 3):
-            raise ValueError('Unknown variant, possible choices are: 0, 1, 2, 3')
+            raise ValueError("Unknown variant, possible choices are: 0, 1, 2, 3")
 
         self.variant = variant
         self.noise = noise
@@ -78,4 +78,4 @@ class SEA(base.SyntheticDataset):
 
     @property
     def _repr_content(self):
-        return {**super()._repr_content, 'Variant': str(self.variant)}
+        return {**super()._repr_content, "Variant": str(self.variant)}

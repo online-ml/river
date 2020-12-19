@@ -70,18 +70,25 @@ class STAGGER(base.SyntheticDataset):
 
     """
 
-    def __init__(self, classification_function: int = 0,
-                 seed: int or np.random.RandomState = None,
-                 balance_classes: bool=False):
+    def __init__(
+        self,
+        classification_function: int = 0,
+        seed: int or np.random.RandomState = None,
+        balance_classes: bool = False,
+    ):
         super().__init__(n_features=3, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
 
         # Classification functions to use
-        self._functions = [self._classification_function_zero,
-                           self._classification_function_one,
-                           self._classification_function_two]
+        self._functions = [
+            self._classification_function_zero,
+            self._classification_function_one,
+            self._classification_function_two,
+        ]
         if classification_function not in range(3):
-            raise ValueError(f"Invalid classification_function {classification_function}. "
-                             "Valid values are: 0, 1, 2.")
+            raise ValueError(
+                f"Invalid classification_function {classification_function}. "
+                "Valid values are: 0, 1, 2."
+            )
         self.classification_function = classification_function
         self.seed = seed
         self.balance_classes = balance_classes
@@ -115,8 +122,9 @@ class STAGGER(base.SyntheticDataset):
                 if not self.balance_classes:
                     desired_class_found = True
                 else:
-                    if (self.next_class_should_be_zero and (y == 0)) or \
-                            ((not self.next_class_should_be_zero) and (y == 1)):
+                    if (self.next_class_should_be_zero and (y == 0)) or (
+                        (not self.next_class_should_be_zero) and (y == 1)
+                    ):
                         desired_class_found = True
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
@@ -125,8 +133,7 @@ class STAGGER(base.SyntheticDataset):
             yield x, y
 
     def generate_drift(self):
-        """Generate drift by switching the classification function at random.
-        """
+        """Generate drift by switching the classification function at random."""
         new_function = self._rng.randint(3)
         while new_function == self.classification_function:
             new_function = self._rng.randint(3)

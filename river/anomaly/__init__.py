@@ -9,4 +9,4 @@ Note that the range of the scores is relative to each estimator.
 from .hst import HalfSpaceTrees
 
 
-__all__ = ['HalfSpaceTrees']
+__all__ = ["HalfSpaceTrees"]

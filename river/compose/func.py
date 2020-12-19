@@ -3,7 +3,7 @@ import typing
 from river import base
 
 
-__all__ = ['FuncTransformer']
+__all__ = ["FuncTransformer"]
 
 
 class FuncTransformer(base.Transformer):

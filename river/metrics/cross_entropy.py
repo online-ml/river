@@ -3,7 +3,7 @@ from river import optim
 from . import base
 
 
-__all__ = ['CrossEntropy']
+__all__ = ["CrossEntropy"]
 
 
 class CrossEntropy(base.MeanMetric, base.MultiClassMetric):

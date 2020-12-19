@@ -12,20 +12,20 @@ import numpy as np
 
 
 __all__ = [
-    'argmax',
-    'chain_dot',
-    'clamp',
-    'dot',
-    'dotvecmat',
-    'matmul2d',
-    'minkowski_distance',
-    'norm',
-    'outer',
-    'prod',
-    'sigmoid',
-    'sign',
-    'sherman_morrison',
-    'softmax'
+    "argmax",
+    "chain_dot",
+    "clamp",
+    "dot",
+    "dotvecmat",
+    "matmul2d",
+    "minkowski_distance",
+    "norm",
+    "outer",
+    "prod",
+    "sigmoid",
+    "sign",
+    "sherman_morrison",
+    "softmax",
 ]
 
 
@@ -93,7 +93,7 @@ def dotvecmat(x, A):
         if i != j:
             continue
 
-        C[k] = C.get(j, 0.) + xi * ai
+        C[k] = C.get(j, 0.0) + xi * ai
 
     return C
 
@@ -140,7 +140,7 @@ def matmul2d(A, B):
     for ((i, k1), x), ((k2, j), y) in itertools.product(A.items(), B.items()):
         if k1 != k2:
             continue
-        C[i, j] = C.get((i, j), 0.) + x * y
+        C[i, j] = C.get((i, j), 0.0) + x * y
 
     return C
 
@@ -175,10 +175,7 @@ def outer(u: dict, v: dict) -> dict:
         (2, 2): 24}
 
     """
-    return {
-        (ki, kj): vi * vj
-        for (ki, vi), (kj, vj) in itertools.product(u.items(), v.items())
-    }
+    return {(ki, kj): vi * vj for (ki, vi), (kj, vj) in itertools.product(u.items(), v.items())}
 
 
 def minkowski_distance(a: dict, b: dict, p: int):
@@ -193,7 +190,7 @@ def minkowski_distance(a: dict, b: dict, p: int):
         Manhattan distance. When `p=2`, this is equivalent to using the Euclidean distance.
 
     """
-    return sum((abs(a.get(k, 0.) - b.get(k, 0.))) ** p for k in set([*a.keys(), *b.keys()]))
+    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in set([*a.keys(), *b.keys()]))
 
 
 def softmax(y_pred: dict):
@@ -209,7 +206,7 @@ def softmax(y_pred: dict):
         return y_pred
 
     maximum = max(y_pred.values())
-    total = 0.
+    total = 0.0
 
     for c, p in y_pred.items():
         y_pred[c] = math.exp(p - maximum)
@@ -297,7 +294,7 @@ def sigmoid(x: float):
     return 1 / (1 + math.exp(-x))
 
 
-def clamp(x: float, minimum=0., maximum=1.):
+def clamp(x: float, minimum=0.0, maximum=1.0):
     """Clamp a number.
 
     This is a synonym of clipping.

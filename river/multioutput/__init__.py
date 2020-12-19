@@ -6,8 +6,8 @@ from .chain import RegressorChain
 
 
 __all__ = [
-    'ClassifierChain',
-    'MonteCarloClassifierChain',
-    'ProbabilisticClassifierChain',
-    'RegressorChain'
+    "ClassifierChain",
+    "MonteCarloClassifierChain",
+    "ProbabilisticClassifierChain",
+    "RegressorChain",
 ]

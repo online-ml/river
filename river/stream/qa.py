@@ -7,17 +7,20 @@ import typing
 from river import base
 
 
-__all__ = ['simulate_qa']
+__all__ = ["simulate_qa"]
 
 
-class Memento(collections.namedtuple('Memento', 'i x y t_expire')):
-
+class Memento(collections.namedtuple("Memento", "i x y t_expire")):
     def __lt__(self, other):
         return self.t_expire < other.t_expire
 
 
-def simulate_qa(dataset: base.typing.Stream, moment: typing.Union[str, typing.Callable],
-                delay: typing.Union[str, int, dt.timedelta, typing.Callable], copy: bool = True):
+def simulate_qa(
+    dataset: base.typing.Stream,
+    moment: typing.Union[str, typing.Callable],
+    delay: typing.Union[str, int, dt.timedelta, typing.Callable],
+    copy: bool = True,
+):
     """Simulate a time-ordered question and answer session.
 
     This method allows looping through a dataset in the order in which it arrived. Indeed, it
@@ -108,25 +111,48 @@ def simulate_qa(dataset: base.typing.Stream, moment: typing.Union[str, typing.Ca
     """
 
     # Determine how to insert mementos into the queue
-    queue = lambda q, el: q.append(el)
     if callable(delay) or isinstance(delay, str):
-        queue = lambda q, el: bisect.insort(q, el)
+
+        def queue(q, el):
+            bisect.insort(q, el)
+
+    else:
+
+        def queue(q, el):
+            q.append(el)
 
     # Coerce moment to a function
-    if moment is None:
-        get_moment = lambda i, _: i
-    elif isinstance(moment, str):
-        get_moment = lambda _, x: x[moment]
+    if isinstance(moment, str):
+
+        def get_moment(_, x):
+            return x[moment]
+
     elif callable(moment):
-        get_moment = lambda _, x: moment(x)
+
+        def get_moment(_, x):
+            return moment(x)
+
+    else:
+
+        def get_moment(i, _):
+            return i
 
     # Coerce delay to a function
     if delay is None:
-        get_delay = lambda _, __: 0
+
+        def get_delay(i, _):
+            return 0
+
     elif isinstance(delay, str):
-        get_delay = lambda x, _: x[delay]
+
+        def get_delay(x, _):
+            return x[delay]
+
     elif not callable(delay):
-        get_delay = lambda _, __: delay
+
+        def get_delay(_, __):
+            return delay
+
     else:
         get_delay = delay
 

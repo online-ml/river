@@ -6,7 +6,7 @@ data is processed at once. Incremental learning is desirable when the data is to
 memory, or simply when it isn't available all at once. river's API is heavily inspired from that of
 scikit-learn, enough so that users who are familiar with scikit-learn should feel right at home.
 """
-from .__version__ import __version__
+from .__version__ import __version__  # noqa: F401
 
 from . import anomaly
 from . import base
@@ -42,36 +42,36 @@ from . import utils
 from .datasets import synth
 
 __all__ = [
-    'anomaly',
-    'base',
-    'cluster',
-    'compat',
-    'compose',
-    'datasets',
-    'dummy',
-    'drift',
-    'ensemble',
-    'evaluate',
-    'expert',
-    'facto',
-    'feature_extraction',
-    'feature_selection',
-    'imblearn',
-    'linear_model',
-    'meta',
-    'metrics',
-    'multiclass',
-    'multioutput',
-    'naive_bayes',
-    'neighbors',
-    'optim',
-    'preprocessing',
-    'proba',
-    'reco',
-    'stats',
-    'stream',
-    'synth',
-    'time_series',
-    'tree',
-    'utils'
+    "anomaly",
+    "base",
+    "cluster",
+    "compat",
+    "compose",
+    "datasets",
+    "dummy",
+    "drift",
+    "ensemble",
+    "evaluate",
+    "expert",
+    "facto",
+    "feature_extraction",
+    "feature_selection",
+    "imblearn",
+    "linear_model",
+    "meta",
+    "metrics",
+    "multiclass",
+    "multioutput",
+    "naive_bayes",
+    "neighbors",
+    "optim",
+    "preprocessing",
+    "proba",
+    "reco",
+    "stats",
+    "stream",
+    "synth",
+    "time_series",
+    "tree",
+    "utils",
 ]
