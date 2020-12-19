@@ -156,7 +156,7 @@ class EpsilonGreedyBandit(Bandit):
 
     def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, seed: int = None, start_after=25,
                  epsilon=0.1, epsilon_decay=None, explore_each_arm=0):
-        super().__init__(models=models, metric=metric, seed=seed, explore_each_arm=explore_each_arm, start_after=25)
+        super().__init__(models=models, metric=metric, seed=seed, explore_each_arm=explore_each_arm, start_after=start_after)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         if epsilon_decay:
@@ -235,7 +235,7 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     [^3]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     """
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {
             'models': [
                 compose.Pipeline(
@@ -341,7 +341,7 @@ class UCBRegressor(UCBBandit, base.Regressor):
     [^3]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
     """
     @classmethod
-    def _default_params(cls):
+    def _unit_test_params(cls):
         return {
             'models': [
                 compose.Pipeline(
