@@ -52,61 +52,61 @@ from .rolling import Rolling
 from .r2 import R2
 from .smape import SMAPE
 from .time_rolling import TimeRolling
-from ._performance_evaluator import _ClassificationReport
-from ._performance_evaluator import _RollingClassificationReport
-from ._performance_evaluator import _MLClassificationReport
-from ._performance_evaluator import _RollingMLClassificationReport
-from ._performance_evaluator import _RegressionReport
-from ._performance_evaluator import _RollingRegressionReport
-from ._performance_evaluator import _MTRegressionReport
-from ._performance_evaluator import _RollingMTRegressionReport
+from ._performance_evaluator import _ClassificationReport  # noqa: F401
+from ._performance_evaluator import _RollingClassificationReport  # noqa: F401
+from ._performance_evaluator import _MLClassificationReport  # noqa: F401
+from ._performance_evaluator import _RollingMLClassificationReport  # noqa: F401
+from ._performance_evaluator import _RegressionReport  # noqa: F401
+from ._performance_evaluator import _RollingRegressionReport  # noqa: F401
+from ._performance_evaluator import _MTRegressionReport  # noqa: F401
+from ._performance_evaluator import _RollingMTRegressionReport  # noqa: F401
 
 __all__ = [
-    'Accuracy',
-    'BalancedAccuracy',
-    'ClassificationReport',
-    'CohenKappa',
-    'ConfusionMatrix',
-    'CrossEntropy',
-    'ExactMatch',
-    'ExamplePrecision',
-    'ExampleRecall',
-    'ExampleF1',
-    'ExampleFBeta',
-    'F1',
-    'FBeta',
-    'GeometricMean',
-    'Hamming',
-    'HammingLoss',
-    'Jaccard',
-    'KappaM',
-    'KappaT',
-    'LogLoss',
-    'MAE',
-    'MacroF1',
-    'MacroFBeta',
-    'MacroPrecision',
-    'MacroRecall',
-    'MCC',
-    'Metric',
-    'MicroF1',
-    'MicroFBeta',
-    'MicroPrecision',
-    'MicroRecall',
-    'MultiFBeta',
-    'MSE',
-    'Precision',
-    'Recall',
-    'RegressionMultiOutput',
-    'RMSE',
-    'RMSLE',
-    'ROCAUC',
-    'Rolling',
-    'R2',
-    'SMAPE',
-    'TimeRolling',
-    'WeightedF1',
-    'WeightedFBeta',
-    'WeightedPrecision',
-    'WeightedRecall'
+    "Accuracy",
+    "BalancedAccuracy",
+    "ClassificationReport",
+    "CohenKappa",
+    "ConfusionMatrix",
+    "CrossEntropy",
+    "ExactMatch",
+    "ExamplePrecision",
+    "ExampleRecall",
+    "ExampleF1",
+    "ExampleFBeta",
+    "F1",
+    "FBeta",
+    "GeometricMean",
+    "Hamming",
+    "HammingLoss",
+    "Jaccard",
+    "KappaM",
+    "KappaT",
+    "LogLoss",
+    "MAE",
+    "MacroF1",
+    "MacroFBeta",
+    "MacroPrecision",
+    "MacroRecall",
+    "MCC",
+    "Metric",
+    "MicroF1",
+    "MicroFBeta",
+    "MicroPrecision",
+    "MicroRecall",
+    "MultiFBeta",
+    "MSE",
+    "Precision",
+    "Recall",
+    "RegressionMultiOutput",
+    "RMSE",
+    "RMSLE",
+    "ROCAUC",
+    "Rolling",
+    "R2",
+    "SMAPE",
+    "TimeRolling",
+    "WeightedF1",
+    "WeightedFBeta",
+    "WeightedPrecision",
+    "WeightedRecall",
 ]

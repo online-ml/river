@@ -3,7 +3,7 @@ import collections
 from . import base
 
 
-__all__ = ['AdaDelta']
+__all__ = ["AdaDelta"]
 
 
 class AdaDelta(base.Optimizer):
@@ -64,7 +64,7 @@ class AdaDelta(base.Optimizer):
             self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi ** 2
 
             # Compute the update
-            step = - self._rms(self.s2[i]) / self._rms(self.g2[i]) * gi
+            step = -self._rms(self.s2[i]) / self._rms(self.g2[i]) * gi
 
             # Accumulate the update
             self.s2[i] = self.rho * self.s2[i] + (1 - self.rho) * step ** 2

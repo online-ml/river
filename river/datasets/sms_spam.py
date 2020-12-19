@@ -18,13 +18,13 @@ class SMSSpam(base.RemoteDataset):
             n_samples=5_574,
             n_features=1,
             task=base.BINARY_CLF,
-            url='https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip',
+            url="https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip",
             size=477907,
-            filename='SMSSpamCollection'
+            filename="SMSSpamCollection",
         )
 
     def _iter(self):
         with open(self.path) as f:
             for row in f:
-                label, body = row.split('\t')
-                yield ({'body': body}, label == 'spam')
+                label, body = row.split("\t")
+                yield ({"body": body}, label == "spam")

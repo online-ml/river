@@ -15,12 +15,12 @@ from .isoup_tree_regressor import iSOUPTreeRegressor
 
 
 __all__ = [
-    'BaseHoeffdingTree',
-    'HoeffdingTreeClassifier',
-    'HoeffdingAdaptiveTreeClassifier',
-    'ExtremelyFastDecisionTreeClassifier',
-    'LabelCombinationHoeffdingTreeClassifier',
-    'HoeffdingTreeRegressor',
-    'HoeffdingAdaptiveTreeRegressor',
-    'iSOUPTreeRegressor'
+    "BaseHoeffdingTree",
+    "HoeffdingTreeClassifier",
+    "HoeffdingAdaptiveTreeClassifier",
+    "ExtremelyFastDecisionTreeClassifier",
+    "LabelCombinationHoeffdingTreeClassifier",
+    "HoeffdingTreeRegressor",
+    "HoeffdingAdaptiveTreeRegressor",
+    "iSOUPTreeRegressor",
 ]

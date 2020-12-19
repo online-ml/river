@@ -1,7 +1,7 @@
 from .. import base
 
 
-__all__ = ['Renamer']
+__all__ = ["Renamer"]
 
 
 class Renamer(base.Transformer):
@@ -24,8 +24,8 @@ class Renamer(base.Transformer):
     """
 
     def __init__(self, prefix=None, suffix=None):
-        self.prefix = prefix or ''
-        self.suffix = suffix or ''
+        self.prefix = prefix or ""
+        self.suffix = suffix or ""
 
     def _rename(self, s):
         return self.prefix + s + self.suffix

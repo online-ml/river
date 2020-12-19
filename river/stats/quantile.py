@@ -52,26 +52,14 @@ class Quantile(base.Univariate):
 
     """
 
-    def __init__(self, q=.5):
+    def __init__(self, q=0.5):
 
         if not 0 < q < 1:
-            raise ValueError('q is not comprised between 0 and 1')
+            raise ValueError("q is not comprised between 0 and 1")
         self.q = q
 
-        self.desired_marker_position = [
-            0,
-            self.q / 2,
-            self.q,
-            (1 + self.q) / 2,
-            1
-        ]
-        self.marker_position = [
-            1,
-            1 + 2 * self.q,
-            1 + 4 * self.q,
-            3 + 2 * self.q,
-            5
-        ]
+        self.desired_marker_position = [0, self.q / 2, self.q, (1 + self.q) / 2, 1]
+        self.marker_position = [1, 1 + 2 * self.q, 1 + 4 * self.q, 3 + 2 * self.q, 5]
         self.position = list(range(1, 6))
         self.heights = []
         self.heights_sorted = False
@@ -115,7 +103,9 @@ class Quantile(base.Univariate):
 
             d = self.marker_position[i] - n
 
-            if (d >= 1 and self.position[i + 1] - n > 1) or (d <= -1 and self.position[i - 1] - n < -1):
+            if (d >= 1 and self.position[i + 1] - n > 1) or (
+                d <= -1 and self.position[i - 1] - n < -1
+            ):
                 d = int(math.copysign(1, d))
 
                 qp1 = self.heights[i + 1]
@@ -128,8 +118,7 @@ class Quantile(base.Univariate):
                 if qm1 < qn and qn < qp1:
                     self.heights[i] = qn
                 else:
-                    self.heights[i] = q + d * \
-                        (self.heights[i + d] - q) / (self.position[i + d] - n)
+                    self.heights[i] = q + d * (self.heights[i + d] - q) / (self.position[i + d] - n)
 
                 self.position[i] = n + d
 
@@ -150,11 +139,9 @@ class Quantile(base.Univariate):
             k = self._find_k(x)
 
             # Inrivernt all positions greater than k
-            self.position = [j if i < k else j +
-                             1 for i, j in enumerate(self.position)]
+            self.position = [j if i < k else j + 1 for i, j in enumerate(self.position)]
             self.marker_position = [
-                x + y
-                for x, y in zip(self.marker_position, self.desired_marker_position)
+                x + y for x, y in zip(self.marker_position, self.desired_marker_position)
             ]
 
             # Adjust heights of markers 2-4 if necessary
@@ -219,7 +206,7 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
     def __init__(self, q, window_size):
         super().__init__(size=window_size)
         self.q = q
-        self.idx = int(round(self.q * self.size + .5)) - 1
+        self.idx = int(round(self.q * self.size + 0.5)) - 1
 
     @property
     def window_size(self):
@@ -231,6 +218,6 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
 
     def get(self):
         if len(self) < self.size:
-            idx = int(round(self.q * len(self) + .5)) - 1
+            idx = int(round(self.q * len(self) + 0.5)) - 1
             return self[idx]
         return self[self.idx]

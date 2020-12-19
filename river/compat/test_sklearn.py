@@ -9,15 +9,18 @@ from river import linear_model
 from river import preprocessing
 
 
-@pytest.mark.parametrize('estimator', [
-    pytest.param(estimator, id=str(estimator))
-    for estimator in [
-        linear_model.LinearRegression(),
-        linear_model.LogisticRegression(),
-        preprocessing.StandardScaler(),
-        cluster.KMeans(seed=42)
-    ]
-])
+@pytest.mark.parametrize(
+    "estimator",
+    [
+        pytest.param(estimator, id=str(estimator))
+        for estimator in [
+            linear_model.LinearRegression(),
+            linear_model.LogisticRegression(),
+            preprocessing.StandardScaler(),
+            cluster.KMeans(seed=42),
+        ]
+    ],
+)
 def test_river_to_sklearn_check_estimator(estimator: base.Estimator):
     skl_estimator = compat.convert_river_to_sklearn(estimator)
     estimator_checks.check_estimator(skl_estimator)

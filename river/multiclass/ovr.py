@@ -6,7 +6,7 @@ from river import base
 from river import linear_model
 
 
-__all__ = ['OneVsRestClassifier']
+__all__ = ["OneVsRestClassifier"]
 
 
 class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
@@ -77,8 +77,8 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
         return True
 
     @classmethod
-    def _default_params(cls):
-        return {'classifier': linear_model.LogisticRegression()}
+    def _unit_test_params(cls):
+        return {"classifier": linear_model.LogisticRegression()}
 
     def learn_one(self, x, y):
 
@@ -95,7 +95,7 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
     def predict_proba_one(self, x):
 
         y_pred = {}
-        total = 0.
+        total = 0.0
 
         for label, model in self.classifiers.items():
             yp = model.predict_proba_one(x)[True]
@@ -103,10 +103,8 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
             total += yp
 
         if total:
-            for label in y_pred:
-                y_pred[label] /= total
-
-        return y_pred
+            return {label: votes / total for label, votes in y_pred.items()}
+        return {label: 1 / len(y_pred) for label in y_pred}
 
     def learn_many(self, X, y, **params):
 
@@ -130,9 +128,9 @@ class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
         for label, clf in self.classifiers.items():
             y_pred[label] = clf.predict_proba_many(X)[True]
 
-        return y_pred.div(y_pred.sum(axis='columns'), axis='rows')
+        return y_pred.div(y_pred.sum(axis="columns"), axis="rows")
 
     def predict_many(self, X):
         if not self.classifiers:
-            return pd.Series([None] * len(X), index=X.index, dtype='object')
-        return self.predict_proba_many(X).idxmax(axis='columns').rename(self._y_name)
+            return pd.Series([None] * len(X), index=X.index, dtype="object")
+        return self.predict_proba_many(X).idxmax(axis="columns").rename(self._y_name)

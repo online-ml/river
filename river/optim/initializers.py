@@ -3,19 +3,14 @@ import abc
 
 import numpy as np
 
-
-__all__ = [
-    'Constant',
-    'Normal',
-    'Zeros'
-]
+from river import base
 
 
-class Initializer(abc.ABC):
+__all__ = ["Constant", "Normal", "Zeros"]
+
+
+class Initializer(base.Base, abc.ABC):
     """An initializer is used to set initial weights in a model."""
-
-    def __str__(self):
-        return self.__class__.__name__
 
     @abc.abstractmethod
     def __call__(self, shape=1):
@@ -78,7 +73,7 @@ class Zeros(Constant):
     """
 
     def __init__(self):
-        super().__init__(value=0.)
+        super().__init__(value=0.0)
 
 
 class Normal(Initializer):
@@ -108,7 +103,7 @@ class Normal(Initializer):
 
     """
 
-    def __init__(self, mu=0., sigma=1., seed=None):
+    def __init__(self, mu=0.0, sigma=1.0, seed=None):
         self.mu = mu
         self.sigma = sigma
         self.seed = seed

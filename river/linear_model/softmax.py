@@ -7,7 +7,7 @@ from river import optim
 from river import utils
 
 
-__all__ = ['SoftmaxRegression']
+__all__ = ["SoftmaxRegression"]
 
 
 class SoftmaxRegression(base.Classifier):
@@ -58,8 +58,12 @@ class SoftmaxRegression(base.Classifier):
 
     """
 
-    def __init__(self, optimizer: optim.Optimizer = None, loss: optim.losses.MultiClassLoss = None,
-                 l2=0):
+    def __init__(
+        self,
+        optimizer: optim.Optimizer = None,
+        loss: optim.losses.MultiClassLoss = None,
+        l2=0,
+    ):
         if optimizer is None:
             optimizer = optim.SGD(0.01)
         new_optimizer = functools.partial(copy.deepcopy, optimizer)
@@ -94,7 +98,6 @@ class SoftmaxRegression(base.Classifier):
         return self
 
     def predict_proba_one(self, x):
-        return utils.math.softmax({
-            label: utils.math.dot(weights, x)
-            for label, weights in self.weights.items()
-        })
+        return utils.math.softmax(
+            {label: utils.math.dot(weights, x) for label, weights in self.weights.items()}
+        )

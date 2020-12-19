@@ -104,38 +104,43 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Hamming: 0.154104
     """
-    def __init__(self,
-                 grace_period: int = 200,
-                 max_depth: int = None,
-                 split_criterion: str = 'info_gain',
-                 split_confidence: float = 1e-7,
-                 tie_threshold: float = 0.05,
-                 leaf_prediction: str = 'nba',
-                 nb_threshold: int = 0,
-                 nominal_attributes: list = None,
-                 attr_obs: str = 'gaussian',
-                 attr_obs_params: dict = None,
-                 **kwargs):
 
-        super().__init__(grace_period=grace_period,
-                         max_depth=max_depth,
-                         split_criterion=split_criterion,
-                         split_confidence=split_confidence,
-                         tie_threshold=tie_threshold,
-                         leaf_prediction=leaf_prediction,
-                         nb_threshold=nb_threshold,
-                         nominal_attributes=nominal_attributes,
-                         attr_obs=attr_obs,
-                         attr_obs_params=attr_obs_params,
-                         **kwargs)
+    def __init__(
+        self,
+        grace_period: int = 200,
+        max_depth: int = None,
+        split_criterion: str = "info_gain",
+        split_confidence: float = 1e-7,
+        tie_threshold: float = 0.05,
+        leaf_prediction: str = "nba",
+        nb_threshold: int = 0,
+        nominal_attributes: list = None,
+        attr_obs: str = "gaussian",
+        attr_obs_params: dict = None,
+        **kwargs
+    ):
+
+        super().__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            split_criterion=split_criterion,
+            split_confidence=split_confidence,
+            tie_threshold=tie_threshold,
+            leaf_prediction=leaf_prediction,
+            nb_threshold=nb_threshold,
+            nominal_attributes=nominal_attributes,
+            attr_obs=attr_obs,
+            attr_obs_params=attr_obs_params,
+            **kwargs
+        )
 
         self._next_label_code: int = 0
         self._label_map: typing.Dict[typing.Tuple, int] = {}
         self._r_label_map: typing.Dict[int, typing.Tuple] = {}
         self._labels: typing.Set[typing.Hashable] = set()
 
-    def learn_one(self, x, y, *, sample_weight=1.):
-        """ Update the Multi-label Hoeffding Tree Classifier.
+    def learn_one(self, x, y, *, sample_weight=1.0):
+        """Update the Multi-label Hoeffding Tree Classifier.
 
         Parameters
         ----------
@@ -172,7 +177,7 @@ class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.Mult
 
         result = {}
         for lbl in self._labels:
-            result[lbl] = {False: 0., True: 0.}
+            result[lbl] = {False: 0.0, True: 0.0}
 
         for label_id, label_val in self._r_label_map[enc_class]:
             result[label_id][label_val] = enc_probas[enc_class]

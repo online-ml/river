@@ -2,7 +2,6 @@ import abc
 
 
 class Distribution(abc.ABC):
-
     @abc.abstractmethod
     def update(self, x):
         """Updates the parameters of the distribution given a new observation."""

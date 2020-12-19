@@ -11,7 +11,7 @@ from river import utils
 from . import base
 
 
-__all__ = ['FunkMF']
+__all__ = ["FunkMF"]
 
 
 class FunkMF(base.Recommender):
@@ -91,10 +91,16 @@ class FunkMF(base.Recommender):
 
     """
 
-    def __init__(self, n_factors=10, optimizer: optim.Optimizer = None,
-                 loss: optim.losses.Loss = None, l2=0.,
-                 initializer: optim.initializers.Initializer = None,
-                 clip_gradient=1e12, seed: int = None):
+    def __init__(
+        self,
+        n_factors=10,
+        optimizer: optim.Optimizer = None,
+        loss: optim.losses.Loss = None,
+        l2=0.0,
+        initializer: optim.initializers.Initializer = None,
+        clip_gradient=1e12,
+        seed: int = None,
+    ):
 
         self.n_factors = n_factors
         self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
@@ -103,18 +109,19 @@ class FunkMF(base.Recommender):
         self.l2 = l2
 
         if initializer is None:
-            initializer = optim.initializers.Normal(mu=0., sigma=.1, seed=seed)
+            initializer = optim.initializers.Normal(mu=0.0, sigma=0.1, seed=seed)
         self.initializer = initializer
 
         self.clip_gradient = clip_gradient
         self.seed = seed
 
-        random_latents = functools.partial(
-            self.initializer,
-            shape=self.n_factors
-        )
-        self.u_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
-        self.i_latents: typing.DefaultDict[int, optim.initializers.Initializer] = collections.defaultdict(random_latents)
+        random_latents = functools.partial(self.initializer, shape=self.n_factors)
+        self.u_latents: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(random_latents)
+        self.i_latents: typing.DefaultDict[
+            int, optim.initializers.Initializer
+        ] = collections.defaultdict(random_latents)
 
     def _predict_one(self, user, item):
         return np.dot(self.u_latents[user], self.i_latents[item])

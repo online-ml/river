@@ -40,16 +40,16 @@ class EWMean(base.Univariate):
 
     """
 
-    def __init__(self, alpha=.5):
+    def __init__(self, alpha=0.5):
         self.alpha = alpha
         self.mean = 0
 
     @property
     def name(self):
-        return f'ewm_{self.alpha}'
+        return f"ewm_{self.alpha}"
 
     def update(self, x):
-        self.mean = self.alpha * x + (1. - self.alpha) * self.mean if self.mean else x
+        self.mean = self.alpha * x + (1.0 - self.alpha) * self.mean if self.mean else x
         return self
 
     def get(self):

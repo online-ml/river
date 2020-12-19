@@ -51,7 +51,7 @@ class EWVar(base.Univariate):
 
     @property
     def name(self):
-        return f'ewv_{self.alpha}'
+        return f"ewv_{self.alpha}"
 
     def update(self, x):
         self.mean.update(x)

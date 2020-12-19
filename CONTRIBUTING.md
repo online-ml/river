@@ -1,33 +1,47 @@
 # Contribution guidelines
 
-## Installation
+## Fork/clone/pull
 
-First, create a virtual environment. You'll want to activate it every time you want to work on `river`.
+The typical workflow for contributing to `river` is:
+
+1. Fork the `master` branch from the [GitHub repository](https://github.com/online-ml/river/).
+2. Clone your fork locally.
+3. Commit changes.
+4. Push the changes to your fork.
+5. Send a pull request from your fork back to the original `master` branch.
+
+## Local setup
+
+We encourage you to use a virtual environment. You'll want to activate it every time you want to work on `river`.
 
 ```sh
 $ python -m venv .venv
 $ source .venv/bin/activate
 ```
 
-Note that you can also create a virtual environment via `conda`:
+You can also create a virtual environment via `conda`:
 
 ```sh
 $ conda create -n river -y python
 $ conda activate river
 ```
 
-You can also use a `conda` environment, as explained [here](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/).
-
-You then want to fork the `master` branch of the repository, which you can do from GitHub's interface. Once you've forked the repository, clone it to your work station. Then, navigate to the cloned directory and install the required dependencies:
+Then, navigate to your cloned fork and install the required dependencies:
 
 ```sh
 $ pip install -e ".[dev]"
 ```
 
-Finally, install `river` in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
+Next, install `river` in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
 
 ```sh
 $ python setup.py develop
+```
+
+Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will run some code quality checks every time you push to GitHub.
+
+```sh
+$ pre-commit install --hook-type pre-push
 ```
 
 ## Making changes
@@ -56,7 +70,7 @@ model = linear_model.LinearRegression()
    1. Stateless transformers do not require a `learn_one` method.
    2. In case of a classifier, the `predict_one` is implemented by default, but can be overridden.
 4. Add type hints to the parameters of the `__init__` method.
-5. If possible provide a default value for each parameter. If, for whatever reason, no good default exists, then implement the `_default_params` method. This is a private method that is meant to be used for testing.
+5. If possible provide a default value for each parameter. If, for whatever reason, no good default exists, then implement the `_unit_test_params` method. This is a private method that is meant to be used for testing.
 6. Write a comprehensive docstring with example usage. Try to have empathy for new users when you do this.
 7. Check that the class you have implemented is imported in the `__init__.py` file of the module it belongs to.
 8. When you're done, run the `utils.check_estimator` function on your class and check that no exceptions are raised.
@@ -116,7 +130,3 @@ You don't have to worry too much about these, as we only check them before each 
 ```sh
 $ make execute-notebooks
 ```
-
-## Making a pull request
-
-Once you're happy with your changes, you can push them to your remote fork. By the way do not hesitate to make small commits rather than one big one, it makes things easier to review. You can create a pull request to `river`'s `master` branch.

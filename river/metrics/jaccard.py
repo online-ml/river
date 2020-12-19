@@ -1,7 +1,7 @@
 from . import base
 
 
-__all__ = ['Jaccard']
+__all__ = ["Jaccard"]
 
 
 class Jaccard(base.MultiOutputClassificationMetric):
@@ -62,4 +62,4 @@ class Jaccard(base.MultiOutputClassificationMetric):
         try:
             return self.cm.jaccard_sum / self.cm.n_samples
         except ZeroDivisionError:
-            return 0.
+            return 0.0

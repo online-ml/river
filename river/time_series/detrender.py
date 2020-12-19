@@ -56,8 +56,7 @@ class GroupDetrender(base.Regressor, base.WrapperMixin):
         self.regressor = regressor
         self.by = by
         self.means: typing.DefaultDict[typing.Any, stats.Univariate] = collections.defaultdict(
-            stats.Mean if window_size is None else
-            functools.partial(stats.RollingMean, window_size)
+            stats.Mean if window_size is None else functools.partial(stats.RollingMean, window_size)
         )
 
     @property

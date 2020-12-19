@@ -10,7 +10,7 @@ import river.base
 from . import base
 
 
-__all__ = ['SNARIMAX']
+__all__ = ["SNARIMAX"]
 
 
 def make_coeffs(d, m):
@@ -38,10 +38,7 @@ def make_coeffs(d, m):
         return f(n) // f(k) // f(n - k)
 
     return dict(
-        (
-            k * m - 1,
-            int(math.copysign(1, (k + 1) % 2 - 1)) * n_choose_k(n=d, k=k)
-        )
+        (k * m - 1, int(math.copysign(1, (k + 1) % 2 - 1)) * n_choose_k(n=d, k=k))
         for k in range(1, d + 1)
     )
 
@@ -70,10 +67,10 @@ class Differencer:
     def __init__(self, d, m=1):
 
         if d < 0:
-            raise ValueError('d must be greater than or equal to 0')
+            raise ValueError("d must be greater than or equal to 0")
 
         if m < 1:
-            raise ValueError('m must be greater than or equal to 1')
+            raise ValueError("m must be greater than or equal to 1")
 
         self.coeffs = make_coeffs(d=d, m=m)
 
@@ -127,11 +124,7 @@ class Differencer:
             value.
 
         """
-        return y + sum(
-            c * y_previous[t]
-            for t, c in self.coeffs.items()
-            if t < len(y_previous)
-        )
+        return y + sum(c * y_previous[t] for t, c in self.coeffs.items() if t < len(y_previous))
 
     def undiff(self, y: float, y_previous: typing.List[float]):
         """Undifferentiates a value.
@@ -143,11 +136,7 @@ class Differencer:
             value.
 
         """
-        return y - sum(
-            c * y_previous[t]
-            for t, c in self.coeffs.items()
-            if t < len(y_previous)
-        )
+        return y - sum(c * y_previous[t] for t, c in self.coeffs.items() if t < len(y_previous))
 
 
 class SNARIMAX(base.Forecaster):
@@ -252,7 +241,7 @@ class SNARIMAX(base.Forecaster):
     ...         regressor=(
     ...             preprocessing.StandardScaler() |
     ...             linear_model.LinearRegression(
-    ...                 intercept=110,
+    ...                 intercept_init=110,
     ...                 optimizer=optim.SGD(0.01),
     ...                 intercept_lr=0.3
     ...             )
@@ -300,8 +289,17 @@ class SNARIMAX(base.Forecaster):
 
     """
 
-    def __init__(self, p: int, d: int, q: int, m: int = 1, sp: int = 0, sd: int = 0, sq: int = 0,
-                 regressor: river.base.Regressor = None):
+    def __init__(
+        self,
+        p: int,
+        d: int,
+        q: int,
+        m: int = 1,
+        sp: int = 0,
+        sd: int = 0,
+        sq: int = 0,
+        regressor: river.base.Regressor = None,
+    ):
 
         self.p = p
         self.d = d
@@ -311,8 +309,9 @@ class SNARIMAX(base.Forecaster):
         self.sd = sd
         self.sq = sq
         self.regressor = (
-            regressor if regressor is not None else
-            preprocessing.StandardScaler() | linear_model.LinearRegression()
+            regressor
+            if regressor is not None
+            else preprocessing.StandardScaler() | linear_model.LinearRegression()
         )
         self.differencer = Differencer(d=d, m=1) + Differencer(d=sd, m=1)
         self.y_trues = collections.deque(maxlen=max(p, m * sp))
@@ -326,28 +325,28 @@ class SNARIMAX(base.Forecaster):
         # AR
         for t in range(self.p):
             try:
-                x[f'y-{t+1}'] = y_trues[t]
+                x[f"y-{t+1}"] = y_trues[t]
             except IndexError:
                 break
 
         # Seasonal AR
         for t in range(self.m - 1, (self.m - 1) * self.sp, self.m):
             try:
-                x[f'sy-{t+1}'] = y_trues[t]
+                x[f"sy-{t+1}"] = y_trues[t]
             except IndexError:
                 break
 
         # MA
         for t in range(self.q):
             try:
-                x[f'e-{t+1}'] = errors[t]
+                x[f"e-{t+1}"] = errors[t]
             except IndexError:
                 break
 
         # Seasonal MA
         for t in range(self.m - 1, (self.m - 1) * self.sq, self.m):
             try:
-                x[f'se-{t+1}'] = errors[t]
+                x[f"se-{t+1}"] = errors[t]
             except IndexError:
                 break
 
@@ -387,7 +386,7 @@ class SNARIMAX(base.Forecaster):
             xs = [{}] * horizon
 
         if len(xs) != horizon:
-            raise ValueError('the length of xs should be equal to the specified horizon')
+            raise ValueError("the length of xs should be equal to the specified horizon")
 
         y_trues = collections.deque(self.y_trues)
         errors = collections.deque(self.errors)

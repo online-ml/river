@@ -4,7 +4,6 @@ from vowpalwabbit import pyvw
 
 
 class PyTorchModel:
-
     def __init__(self, network, loss_fn, optimizer):
         self.network = network
         self.loss_fn = loss_fn
@@ -24,26 +23,23 @@ class PyTorchModel:
 
 
 class PyTorchBinaryClassifier(PyTorchModel, base.Classifier):
-
     def predict_proba_one(self, x):
 
         x = torch.FloatTensor(list(x.values()))
         p = self.network(x).item()
 
-        return {True: p, False: 1. - p}
+        return {True: p, False: 1.0 - p}
 
 
 class VW2CremeBase:
-
     def __init__(self, *args, **kwargs):
         self.vw = pyvw.vw(*args, **kwargs)
 
     def _format_x(self, x):
-        return self.vw.example(' '.join(map(lambda x: ':' + str(x), x.values())))
+        return self.vw.example(" ".join(map(lambda x: ":" + str(x), x.values())))
 
 
 class VW2CremeClassifier(VW2CremeBase, base.Classifier):
-
     def learn_one(self, x, y):
 
         # Convert {False, True} to {-1, 1}
@@ -58,11 +54,10 @@ class VW2CremeClassifier(VW2CremeBase, base.Classifier):
     def predict_proba(self, x):
         ex = self._format_x(x)
         y_pred = self.vw.predict(ex)
-        return {True: y_pred, False: 1. - y_pred}
+        return {True: y_pred, False: 1.0 - y_pred}
 
 
 class VW2RiverRegressor(VW2RiverBase, base.Regressor):
-
     def predict_one(self, x):
         ex = self._format_x(x)
         y_pred = self.vw.predict(ex)
@@ -70,7 +65,7 @@ class VW2RiverRegressor(VW2RiverBase, base.Regressor):
         return y_pred
 
     def learn_one(self, x):
-        ex = f'{y} | {self._format_x(x)}'
+        ex = f"{y} | {self._format_x(x)}"
         self.vw.learn(ex)
         self.vw.finish_example(ex)
         return self

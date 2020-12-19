@@ -33,16 +33,16 @@ def iter_perturbations(keys, n=10):
 
 
 @pytest.mark.parametrize(
-    'lm, dataset',
+    "lm, dataset",
     [
         pytest.param(
             lm(optimizer=copy.deepcopy(optimizer), initializer=initializer, l2=0),
             dataset,
-            id=f'{lm.__name__} - {optimizer} - {initializer}'
+            id=f"{lm.__name__} - {optimizer} - {initializer}",
         )
         for lm, dataset in [
             (lm.LinearRegression, datasets.TrumpApproval()),
-            (lm.LogisticRegression, datasets.Bananas())
+            (lm.LogisticRegression, datasets.Bananas()),
         ]
         for optimizer, initializer in itertools.product(
             [
@@ -56,14 +56,14 @@ def iter_perturbations(keys, n=10):
                 # optim.Momentum(),
                 # optim.NesterovMomentum(),
                 optim.RMSProp(),
-                optim.SGD()
+                optim.SGD(),
             ],
             [
                 optim.initializers.Zeros(),
-                optim.initializers.Normal(mu=0, sigma=1, seed=42)
-            ]
+                optim.initializers.Normal(mu=0, sigma=1, seed=42),
+            ],
         )
-    ]
+    ],
 )
 @pytest.mark.slow
 def test_finite_differences(lm, dataset):
@@ -102,7 +102,7 @@ def test_finite_differences(lm, dataset):
 
             # Compare signs
             # TODO: reactivate this check
-            #assert np.sign(g) == np.sign(h)
+            # assert np.sign(g) == np.sign(h)
 
             # Check absolute difference
             # TODO: decrease the tolerance
@@ -118,7 +118,7 @@ def test_one_many_consistent():
     """Checks that using learn_one or learn_many produces the same result."""
 
     X = pd.read_csv(datasets.TrumpApproval().path)
-    Y = X.pop('five_thirty_eight')
+    Y = X.pop("five_thirty_eight")
 
     one = lm.LinearRegression()
     for x, y in stream.iter_pandas(X, Y):
@@ -136,7 +136,7 @@ def test_shuffle_columns():
     """Checks that learn_many works identically whether columns are shuffled or not."""
 
     X = pd.read_csv(datasets.TrumpApproval().path)
-    Y = X.pop('five_thirty_eight')
+    Y = X.pop("five_thirty_eight")
 
     normal = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
@@ -155,7 +155,7 @@ def test_add_remove_columns():
     """Checks that no exceptions are raised whenever columns are dropped and/or added."""
 
     X = pd.read_csv(datasets.TrumpApproval().path)
-    Y = X.pop('five_thirty_eight')
+    Y = X.pop("five_thirty_eight")
 
     lin_reg = lm.LinearRegression()
     for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
@@ -174,8 +174,8 @@ def test_lin_reg_sklearn_coherence():
             return y_pred - y_true
 
     ss = preprocessing.StandardScaler()
-    cr = lm.LinearRegression(optimizer=optim.SGD(.01), loss=SquaredLoss())
-    sk = sklm.SGDRegressor(learning_rate='constant', eta0=.01, alpha=.0)
+    cr = lm.LinearRegression(optimizer=optim.SGD(0.01), loss=SquaredLoss())
+    sk = sklm.SGDRegressor(learning_rate="constant", eta0=0.01, alpha=0.0)
 
     for x, y in datasets.TrumpApproval():
         x = ss.learn_one(x).transform_one(x)
@@ -192,8 +192,8 @@ def test_log_reg_sklearn_coherence():
     """Checks that the sklearn and river implementations produce the same results."""
 
     ss = preprocessing.StandardScaler()
-    cr = lm.LogisticRegression(optimizer=optim.SGD(.01))
-    sk = sklm.SGDClassifier(learning_rate='constant', eta0=.01, alpha=.0, loss='log')
+    cr = lm.LogisticRegression(optimizer=optim.SGD(0.01))
+    sk = sklm.SGDClassifier(learning_rate="constant", eta0=0.01, alpha=0.0, loss="log")
 
     for x, y in datasets.Bananas():
         x = ss.learn_one(x).transform_one(x)

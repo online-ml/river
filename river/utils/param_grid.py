@@ -6,7 +6,7 @@ import numpy as np
 from river import base
 
 
-__all__ = ['expand_param_grid']
+__all__ = ["expand_param_grid"]
 
 
 def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Estimator]:
@@ -48,19 +48,19 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
 
     >>> models[0]
     LinearRegression (
-        optimizer=SGD (
+      optimizer=SGD (
         lr=Constant (
-            learning_rate=0.1
+          learning_rate=0.1
         )
-        )
-        loss=Squared ()
-        l2=0.
-        intercept=0.
-        intercept_lr=Constant (
+      )
+      loss=Squared ()
+      l2=0.
+      intercept_init=0.
+      intercept_lr=Constant (
         learning_rate=0.01
-        )
-        clip_gradient=1e+12
-        initializer=Zeros ()
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
     )
 
     You can expand parameters for multiple choices like so:
@@ -106,16 +106,15 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
 
 
 def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
-
     def expand_tuple(t):
 
         klass, params = t
 
         if not isinstance(klass, type):
-            raise ValueError(f'Expected first element to be a class, got {klass}')
+            raise ValueError(f"Expected first element to be a class, got {klass}")
 
         if not isinstance(params, dict):
-            raise ValueError(f'Expected second element to be a dict, got {params}')
+            raise ValueError(f"Expected second element to be a dict, got {params}")
 
         return (klass(**combo) for combo in _expand_param_grid(params))
 
@@ -156,11 +155,11 @@ def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
             # }
             return ((k, el) for el in _expand_param_grid(v))
 
-        raise ValueError(f'unsupported type: {type(v)}')
+        raise ValueError(f"unsupported type: {type(v)}")
 
     for key in grid:
         if not isinstance(key, str):
-            raise ValueError(f'Expected a key of type str; got {key}')
+            raise ValueError(f"Expected a key of type str; got {key}")
 
     # Example:
     # grid = {

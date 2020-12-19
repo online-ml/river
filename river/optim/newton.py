@@ -3,7 +3,7 @@ from .. import utils
 from . import base
 
 
-__all__ = ['Newton']
+__all__ = ["Newton"]
 
 
 class Newton(base.Optimizer):
@@ -23,7 +23,7 @@ class Newton(base.Optimizer):
 
     """
 
-    def __init__(self, lr=.1, eps=1e-5):
+    def __init__(self, lr=0.1, eps=1e-5):
         super().__init__(lr)
         self.eps = eps
         self.H_inv = {}

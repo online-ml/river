@@ -14,7 +14,7 @@ from . import func
 from . import union
 
 
-__all__ = ['Pipeline']
+__all__ = ["Pipeline"]
 
 
 class Pipeline(base.Estimator):
@@ -58,41 +58,41 @@ class Pipeline(base.Estimator):
 
     >>> model
     Pipeline (
-        StandardScaler (),
-        LinearRegression (
+      StandardScaler (),
+      LinearRegression (
         optimizer=SGD (
-            lr=Constant (
+          lr=Constant (
             learning_rate=0.01
-            )
+          )
         )
         loss=Squared ()
         l2=0.
-        intercept=0.
+        intercept_init=0.
         intercept_lr=Constant (
-        learning_rate=0.01
+          learning_rate=0.01
         )
         clip_gradient=1e+12
         initializer=Zeros ()
-        )
+      )
     )
 
     You can access parts of a pipeline in the same manner as a dictionary:
 
     >>> model['LinearRegression']
     LinearRegression (
-        optimizer=SGD (
+      optimizer=SGD (
         lr=Constant (
-            learning_rate=0.01
+          learning_rate=0.01
         )
-        )
-        loss=Squared ()
-        l2=0.
-        intercept=0.
-        intercept_lr=Constant (
+      )
+      loss=Squared ()
+      l2=0.
+      intercept_init=0.
+      intercept_lr=Constant (
         learning_rate=0.01
-        )
-        clip_gradient=1e+12
-        initializer=Zeros ()
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
     )
 
     Note that you can also declare a pipeline by using the `compose.Pipeline` constructor
@@ -207,13 +207,13 @@ class Pipeline(base.Estimator):
         return union.TransformerUnion(self, other)
 
     def __str__(self):
-        return ' | '.join(map(str, self.steps.values()))
+        return " | ".join(map(str, self.steps.values()))
 
     def __repr__(self):
         return (
-            'Pipeline (\n\t' +
-            '\t'.join(',\n'.join(map(repr, self.steps.values())).splitlines(True)) +
-            '\n)'
+            "Pipeline (\n\t"
+            + "\t".join(",\n".join(map(repr, self.steps.values())).splitlines(True))
+            + "\n)"
         ).expandtabs(2)
 
     def _get_params(self):
@@ -222,12 +222,14 @@ class Pipeline(base.Estimator):
     def _set_params(self, new_params=None):
         if new_params is None:
             new_params = {}
-        return Pipeline(*[
-            (name, new_params[name])
-            if isinstance(new_params.get(name), base.Estimator) else
-            (name, step._set_params(new_params.get(name, {})))
-            for name, step in self.steps.items()
-        ])
+        return Pipeline(
+            *[
+                (name, new_params[name])
+                if isinstance(new_params.get(name), base.Estimator)
+                else (name, step._set_params(new_params.get(name, {})))
+                for name, step in self.steps.items()
+            ]
+        )
 
     @property
     def _supervised(self):
@@ -258,7 +260,7 @@ class Pipeline(base.Estimator):
                 return infer_name(estimator.func)
             elif isinstance(estimator, (types.FunctionType, types.LambdaType)):
                 return estimator.__name__
-            elif hasattr(estimator, '__class__'):
+            elif hasattr(estimator, "__class__"):
                 return estimator.__class__.__name__
             return str(estimator)
 
@@ -268,9 +270,9 @@ class Pipeline(base.Estimator):
 
         if name in self.steps:
             counter = 1
-            while f'{name}{counter}' in self.steps:
+            while f"{name}{counter}" in self.steps:
                 counter += 1
-            name = f'{name}{counter}'
+            name = f"{name}{counter}"
 
         # Instantiate the estimator if it hasn't been done
         if isinstance(estimator, type):
@@ -409,7 +411,7 @@ class Pipeline(base.Estimator):
 
         """
 
-        tab = ' ' * 4
+        tab = " " * 4
 
         # We'll redirect all the print statement to a buffer, we'll return the content of the
         # buffer at the end
@@ -418,7 +420,7 @@ class Pipeline(base.Estimator):
 
         def format_value(x):
             if isinstance(x, float):
-                return '{:,.{prec}f}'.format(x, prec=n_decimals)
+                return "{:,.{prec}f}".format(x, prec=n_decimals)
             return x
 
         def print_dict(x, show_types, indent=False, space_after=True):
@@ -428,17 +430,17 @@ class Pipeline(base.Estimator):
                 _print(x)
             else:
                 for k, v in sorted(x.items()):
-                    type_str = f' ({type(v).__name__})' if show_types else ''
-                    _print((tab if indent else '') + f'{k}: {format_value(v)}' + type_str)
+                    type_str = f" ({type(v).__name__})" if show_types else ""
+                    _print((tab if indent else "") + f"{k}: {format_value(v)}" + type_str)
             if space_after:
                 _print()
 
         def print_title(title, indent=False):
-            _print((tab if indent else '') + title)
-            _print((tab if indent else '') + '-' * len(title))
+            _print((tab if indent else "") + title)
+            _print((tab if indent else "") + "-" * len(title))
 
         # Print the initial state of the features
-        print_title('0. Input')
+        print_title("0. Input")
         print_dict(x, show_types=show_types)
 
         # Print the state of x at each step
@@ -446,27 +448,27 @@ class Pipeline(base.Estimator):
         for i, t in enumerate(itertools.islice(steps, len(self.steps) - 1)):
 
             if isinstance(t, union.TransformerUnion):
-                print_title(f'{i+1}. Transformer union')
+                print_title(f"{i+1}. Transformer union")
                 for j, (name, sub_t) in enumerate(t.transformers.items()):
                     if isinstance(sub_t, Pipeline):
                         name = str(sub_t)
-                    print_title(f'{i+1}.{j} {name}', indent=True)
+                    print_title(f"{i+1}.{j} {name}", indent=True)
                     print_dict(sub_t.transform_one(x), show_types=show_types, indent=True)
                 x = t.transform_one(x)
                 print_dict(x, show_types=show_types)
 
             else:
-                print_title(f'{i+1}. {t}')
+                print_title(f"{i+1}. {t}")
                 x = t.transform_one(x)
                 print_dict(x, show_types=show_types)
 
         # Print the predicted output from the final estimator
         final = next(steps)
         if not utils.inspect.istransformer(final):
-            print_title(f'{len(self)}. {final}')
+            print_title(f"{len(self)}. {final}")
 
             # If the last estimator has a debug_one method then call it
-            if hasattr(final, 'debug_one'):
+            if hasattr(final, "debug_one"):
                 _print(final.debug_one(x))
 
             # Display the prediction
@@ -474,7 +476,7 @@ class Pipeline(base.Estimator):
             if utils.inspect.isclassifier(final):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             else:
-                _print(f'Prediction: {format_value(final.predict_one(x))}')
+                _print(f"Prediction: {format_value(final.predict_one(x))}")
 
         return buffer.getvalue().rstrip()
 
@@ -577,7 +579,7 @@ class Pipeline(base.Estimator):
                 return Network(
                     nodes=map(networkify, step.transformers.values()),
                     edges=[],
-                    directed=False
+                    directed=False,
                 )
 
             # Pipelines are converted to a directed network
@@ -586,9 +588,9 @@ class Pipeline(base.Estimator):
                     nodes=[],
                     edges=zip(
                         map(networkify, list(step.steps.values())[:-1]),
-                        map(networkify, list(step.steps.values())[1:])
+                        map(networkify, list(step.steps.values())[1:]),
                     ),
-                    directed=True
+                    directed=True,
                 )
 
             # Wrapper models are handled recursively
@@ -598,15 +600,15 @@ class Pipeline(base.Estimator):
                     edges=[],
                     directed=True,
                     name=type(step).__name__,
-                    labelloc=step._labelloc
+                    labelloc=step._labelloc,
                 )
 
             # Other steps are treated as strings
             return str(step)
 
         # Draw input
-        net = Network(nodes=['x'], edges=[], directed=True)
-        previous = 'x'
+        net = Network(nodes=["x"], edges=[], directed=True)
+        previous = "x"
 
         # Draw each step
         for step in self.steps.values():
@@ -615,7 +617,7 @@ class Pipeline(base.Estimator):
             previous = current
 
         # Draw output
-        net.link(previous, 'y')
+        net.link(previous, "y")
 
         return net.draw()
 
@@ -685,7 +687,7 @@ class Network(collections.UserList):
                         # If the graph has a name, then we treat is as a cluster
                         if b.name is not None:
                             sub.attr(label=b.name, labelloc=b.labelloc)
-                            sub.name = f'cluster_{b.name}'
+                            sub.name = f"cluster_{b.name}"
 
                         G.subgraph(sub)
 

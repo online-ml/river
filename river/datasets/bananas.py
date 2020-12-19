@@ -16,7 +16,7 @@ class Bananas(base.FileDataset):
     """
 
     def __init__(self):
-        super().__init__(filename='banana.zip', n_samples=5300, n_features=2, task=base.BINARY_CLF)
+        super().__init__(filename="banana.zip", n_samples=5300, n_features=2, task=base.BINARY_CLF)
 
     def __iter__(self):
-        return stream.iter_libsvm(self.path, target_type=lambda x: x == '1')
+        return stream.iter_libsvm(self.path, target_type=lambda x: x == "1")

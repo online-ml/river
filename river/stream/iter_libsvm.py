@@ -3,7 +3,9 @@ from river import base
 from . import utils
 
 
-def iter_libsvm(filepath_or_buffer: str, target_type=float, compression='infer') -> base.typing.Stream:
+def iter_libsvm(
+    filepath_or_buffer: str, target_type=float, compression="infer"
+) -> base.typing.Stream:
     """Iterates over a dataset in LIBSVM format.
 
     The LIBSVM format is a popular way in the machine learning community to store sparse datasets.
@@ -46,11 +48,11 @@ def iter_libsvm(filepath_or_buffer: str, target_type=float, compression='infer')
 
     # If a file is not opened, then we open it
     buffer = filepath_or_buffer
-    if not hasattr(buffer, 'read'):
+    if not hasattr(buffer, "read"):
         buffer = utils.open_filepath(buffer, compression)
 
     def split_pair(pair):
-        name, value = pair.split(':')
+        name, value = pair.split(":")
         value = float(value)
         return name, value
 
@@ -59,11 +61,11 @@ def iter_libsvm(filepath_or_buffer: str, target_type=float, compression='infer')
         # Remove carriage return and whitespace
         line = line.rstrip()
         # Remove potential end of line comments
-        line = line.split('#')[0]
+        line = line.split("#")[0]
 
-        y, x = line.split(' ', maxsplit=1)
+        y, x = line.split(" ", maxsplit=1)
         y = target_type(y)
-        x = dict([split_pair(pair) for pair in x.split(' ')])
+        x = dict([split_pair(pair) for pair in x.split(" ")])
         yield x, y
 
     # Close the file if we opened it

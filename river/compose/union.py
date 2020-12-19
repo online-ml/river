@@ -1,18 +1,12 @@
 import collections
 import types
 
-try:
-    import graphviz
-    GRAPHVIZ_INSTALLED = True
-except ImportError:
-    GRAPHVIZ_INSTALLED = False
-
 from river import base
 
 from . import func
 
 
-__all__ = ['TransformerUnion']
+__all__ = ["TransformerUnion"]
 
 
 class TransformerUnion(base.Transformer):
@@ -141,13 +135,13 @@ class TransformerUnion(base.Transformer):
         return len(self.transformers)
 
     def __str__(self):
-        return ' + '.join(map(str, self.transformers.values()))
+        return " + ".join(map(str, self.transformers.values()))
 
     def __repr__(self):
         return (
-            'TransformerUnion (\n\t' +
-            '\t'.join(',\n'.join(map(repr, self.transformers.values())).splitlines(True)) +
-            '\n)'
+            "TransformerUnion (\n\t"
+            + "\t".join(",\n".join(map(repr, self.transformers.values())).splitlines(True))
+            + "\n)"
         ).expandtabs(2)
 
     def _get_params(self):
@@ -156,12 +150,14 @@ class TransformerUnion(base.Transformer):
     def _set_params(self, new_params=None):
         if new_params is None:
             new_params = {}
-        return TransformerUnion(*[
-            (name, new_params[name])
-            if isinstance(new_params.get(name), base.Estimator) else
-            (name, step._set_params(new_params.get(name, {})))
-            for name, step in self.transformers.items()
-        ])
+        return TransformerUnion(
+            *[
+                (name, new_params[name])
+                if isinstance(new_params.get(name), base.Estimator)
+                else (name, step._set_params(new_params.get(name, {})))
+                for name, step in self.transformers.items()
+            ]
+        )
 
     @property
     def _supervised(self):
@@ -183,7 +179,7 @@ class TransformerUnion(base.Transformer):
                 return infer_name(transformer.func)
             elif isinstance(transformer, (types.FunctionType, types.LambdaType)):
                 return transformer.__name__
-            elif hasattr(transformer, '__class__'):
+            elif hasattr(transformer, "__class__"):
                 return transformer.__class__.__name__
             return str(transformer)
 
@@ -193,9 +189,9 @@ class TransformerUnion(base.Transformer):
 
         if name in self.transformers:
             counter = 1
-            while f'{name}{counter}' in self.transformers:
+            while f"{name}{counter}" in self.transformers:
                 counter += 1
-            name = f'{name}{counter}'
+            name = f"{name}{counter}"
 
         # Store the transformer
         self.transformers[name] = transformer
@@ -226,7 +222,4 @@ class TransformerUnion(base.Transformer):
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
-        return dict(collections.ChainMap(*(
-            t.transform_one(x)
-            for t in self.transformers.values()
-        )))
+        return dict(collections.ChainMap(*(t.transform_one(x) for t in self.transformers.values())))

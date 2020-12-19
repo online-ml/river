@@ -1,2 +1,2 @@
-TEXT_INPUT = 'text input'
-POSITIVE_INPUT = 'positive input'
+TEXT_INPUT = "text input"
+POSITIVE_INPUT = "positive input"

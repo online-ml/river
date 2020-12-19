@@ -14,7 +14,7 @@ class AttributeObserver(metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def update(self, att_val, target_val, sample_weight) -> 'AttributeObserver':
+    def update(self, att_val, target_val, sample_weight) -> "AttributeObserver":
         """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
 
@@ -45,8 +45,9 @@ class AttributeObserver(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx,
-                                        binary_only) -> AttributeSplitSuggestion:
+    def best_evaluated_split_suggestion(
+        self, criterion, pre_split_dist, att_idx, binary_only
+    ) -> AttributeSplitSuggestion:
         """Get the best split suggestion given a criterion and the target's statistics.
 
         Parameters
