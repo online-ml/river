@@ -22,7 +22,7 @@ $ source .venv/bin/activate
 You can also create a virtual environment via `conda`:
 
 ```sh
-$ conda create -n river -y python
+$ conda create -n river -y python=3.8 anaconda
 $ conda activate river
 ```
 

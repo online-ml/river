@@ -111,6 +111,17 @@ def check_predict_proba_one_binary(classifier, dataset):
         assert set(y_pred.keys()) == {False, True}
 
 
+def assert_predictions_are_close(y1, y2):
+
+    if isinstance(y1, dict):
+        for k in y1:
+            assert_predictions_are_close(y1[k], y2[k])
+    elif isinstance(y1, float):
+        assert math.isclose(y1, y2, rel_tol=1e-06)
+    else:
+        assert y1 == y2
+
+
 def check_shuffle_features_no_impact(model, dataset):
     """Changing the order of the features between calls should have no effect on a model."""
 
@@ -127,16 +138,18 @@ def check_shuffle_features_no_impact(model, dataset):
 
         assert x == x_shuffled  # order doesn't matter for dicts
 
-        y_pred = model.predict_one(x)
-        y_pred_shuffled = shuffled.predict_one(x_shuffled)
-
-        if utils.inspect.ismoregressor(model):
-            for o in y_pred:
-                assert math.isclose(y_pred[o], y_pred_shuffled[o])
-        elif utils.inspect.isregressor(model):
-            assert math.isclose(y_pred, y_pred_shuffled)
+        if utils.inspect.isclassifier(model):
+            try:
+                y_pred = model.predict_proba_one(x)
+                y_pred_shuffled = shuffled.predict_proba_one(x_shuffled)
+            except NotImplementedError:
+                y_pred = model.predict_one(x)
+                y_pred_shuffled = shuffled.predict_one(x_shuffled)
         else:
-            assert y_pred == y_pred_shuffled
+            y_pred = model.predict_one(x)
+            y_pred_shuffled = shuffled.predict_one(x_shuffled)
+
+        assert_predictions_are_close(y_pred, y_pred_shuffled)
 
         model.learn_one(x, y)
         shuffled.learn_one(x_shuffled, y)
