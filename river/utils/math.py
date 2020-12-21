@@ -332,7 +332,7 @@ def sign(x: float):
     return -1 if x < 0 else (1 if x > 0 else 0)
 
 
-def argmax(l: list):
+def argmax(lst: list):
     """Argmax function.
 
     Parameters
@@ -340,4 +340,4 @@ def argmax(l: list):
     l
 
     """
-    return max(range(len(l)), key=l.__getitem__)
+    return max(range(len(lst)), key=lst.__getitem__)
