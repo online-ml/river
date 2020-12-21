@@ -11,33 +11,43 @@ from river import metrics
 from river import optim
 from river import preprocessing
 from river import utils
-
+from river.utils.math import sigmoid
 
 __all__ = [
-    'EpsilonGreedyRegressor',
-    'UCBRegressor',
+    "EpsilonGreedyRegressor",
+    "UCBRegressor",
 ]
 
 
 class Bandit(base.EnsembleMixin):
-
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, explore_each_arm: int, start_after: int, seed: int = None):
+    def __init__(
+        self,
+        models: typing.List[base.Estimator],
+        metric: metrics.Metric,
+        explore_each_arm: int,
+        start_after: int,
+        seed: int = None,
+    ):
 
         if len(models) <= 1:
-            raise ValueError(f"You supply {len(models)} models. At least 2 models should be supplied.")
+            raise ValueError(
+                f"You supplied {len(models)} models. At least 2 models should be supplied."
+            )
 
         # Check that the model and the metric are in accordance
         for model in models:
             if not metric.works_with(model):
-                raise ValueError(f"{metric.__class__.__name__} metric can't be used to evaluate a " +
-                                 f'{model.__class__.__name__}')
+                raise ValueError(
+                    f"{metric.__class__.__name__} metric can't be used to evaluate a "
+                    + f"{model.__class__.__name__}"
+                )
         super().__init__(models)
         self.metric = copy.deepcopy(metric)
         self._y_scaler = copy.deepcopy(preprocessing.StandardScaler())
 
         # Initializing bandits internals
         self._n_arms = len(models)
-        self._n_iter = 0 # number of times learn_one is called
+        self._n_iter = 0  # number of times learn_one is called
         self._N = [0] * self._n_arms
         self.explore_each_arm = explore_each_arm
         self._average_reward = [0.0] * self._n_arms
@@ -52,9 +62,9 @@ class Bandit(base.EnsembleMixin):
 
     def __repr__(self):
         return (
-            f"{self.__class__.__name__}" +
-            f"\n\t{str(self.metric)}" +
-            f"\n\t{'Best model id: ' + str(self._best_model_idx)}"
+            f"{self.__class__.__name__}"
+            + f"\n\t{str(self.metric)}"
+            + f"\n\t{'Best model id: ' + str(self._best_model_idx)}"
         ).expandtabs(2)
 
     @abc.abstractmethod
@@ -119,44 +129,58 @@ class Bandit(base.EnsembleMixin):
 
         # Update bandit internals
         if self.warm_up and (self._n_iter == self.start_after):
-            self._n_iter = 0 # must be reset to 0 since it is an input to some model
+            self._n_iter = 0  # must be reset to 0 since it is an input to some model (UCB)
             self.warm_up = False
 
         self._n_iter += 1
+
         reward = self._compute_scaled_reward(y_pred=y_pred, y_true=y)
         if not self.warm_up:
             self._update_bandit(chosen_arm=chosen_arm, reward=reward)
 
-        return self.metric._eval(y_pred, y), reward, chosen_arm
+        return reward, self.metric._eval(y_pred, y), chosen_arm
 
     def _update_bandit(self, chosen_arm, reward):
         # Updates common to all bandits
         self._n_iter += 1
         self._N[chosen_arm] += 1
-        self._average_reward[chosen_arm] += (1.0 / self._N[chosen_arm]) * \
-                                            (reward - self._average_reward[chosen_arm])
+        self._average_reward[chosen_arm] += (1.0 / self._N[chosen_arm]) * (
+            reward - self._average_reward[chosen_arm]
+        )
 
         # Specific update of the arm for certain bandit model
         self._update_arm(chosen_arm, reward)
 
-
-    def _compute_scaled_reward(self, y_pred, y_true, c=1, scale_y=True):
-        if scale_y:
-            y_true = self._y_scaler.learn_one(dict(y=y_true)).transform_one(dict(y=y_true))["y"]
-            y_pred = self._y_scaler.transform_one(dict(y=y_pred))["y"]
+    def _compute_scaled_reward(self, y_pred, y_true, c=1):
+        # Scaling y so the reward distribution doesn't depend on the scale of y
+        y_true = self._y_scaler.learn_one(dict(y=y_true)).transform_one(dict(y=y_true))["y"]
+        y_pred = self._y_scaler.transform_one(dict(y=y_pred))["y"]
 
         metric_value = self.metric._eval(y_pred, y_true)
         metric_value = metric_value if self.metric.bigger_is_better else (-1) * metric_value
-        reward = 1 / (1 + math.exp(- c * metric_value)) if c * metric_value > -30 else 0 # to avoid overflow
+        reward = 2 * sigmoid(metric_value)  # multiply per 2 to have reward in [0, 1]
 
         return reward
 
 
 class EpsilonGreedyBandit(Bandit):
-
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, seed: int = None, start_after=25,
-                 epsilon=0.1, epsilon_decay=None, explore_each_arm=0):
-        super().__init__(models=models, metric=metric, seed=seed, explore_each_arm=explore_each_arm, start_after=start_after)
+    def __init__(
+        self,
+        models: typing.List[base.Estimator],
+        metric: metrics.Metric,
+        seed: int = None,
+        start_after=20,
+        epsilon=0.1,
+        epsilon_decay=None,
+        explore_each_arm=1,
+    ):
+        super().__init__(
+            models=models,
+            metric=metric,
+            seed=seed,
+            explore_each_arm=explore_each_arm,
+            start_after=start_after,
+        )
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         if epsilon_decay:
@@ -173,7 +197,7 @@ class EpsilonGreedyBandit(Bandit):
     def _update_arm(self, arm, reward):
         # The arm internals are already updated in the `learn_one` phase of class `Bandit`.
         if self.epsilon_decay:
-            self.epsilon = self._starting_epsilon * math.exp(-self._n_iter*self.epsilon_decay)
+            self.epsilon = self._starting_epsilon * math.exp(-self._n_iter * self.epsilon_decay)
 
 
 class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
@@ -234,18 +258,21 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     [^2]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
     [^3]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     """
+
     @classmethod
     def _unit_test_params(cls):
         return {
-            'models': [
+            "models": [
                 compose.Pipeline(
                     preprocessing.StandardScaler(),
-                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.01))),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.01)),
+                ),
                 compose.Pipeline(
                     preprocessing.StandardScaler(),
-                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.1)))
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.1)),
+                ),
             ],
-            'metric': metrics.MSE(),
+            "metric": metrics.MSE(),
         }
 
     def _pred_func(self, model):
@@ -253,24 +280,36 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
 
 class UCBBandit(Bandit):
-
-    def __init__(self, models: typing.List[base.Estimator], metric: metrics.Metric, seed: int = None, start_after=25, explore_each_arm=1, delta=None):
+    def __init__(
+        self,
+        models: typing.List[base.Estimator],
+        metric: metrics.Metric,
+        seed: int = None,
+        start_after=20,
+        explore_each_arm=1,
+        delta=None,
+    ):
         if explore_each_arm < 1:
             raise ValueError("Argument 'explore_each_arm' should be >= 1")
-        super().__init__(models=models, metric=metric, seed=seed, explore_each_arm=explore_each_arm, start_after=start_after)
+        super().__init__(
+            models=models,
+            metric=metric,
+            seed=seed,
+            explore_each_arm=explore_each_arm,
+            start_after=start_after,
+        )
         if delta is not None and (delta >= 1 or delta <= 0):
             raise ValueError("The parameter delta should be comprised in ]0, 1[ (or set to None)")
         self.delta = delta
 
     def _pull_arm(self):
         if self.delta:
-            exploration_bonus = [math.sqrt(2 * math.log(1/self.delta) / n) for n in self._N]
+            exploration_bonus = [math.sqrt(2 * math.log(1 / self.delta) / n) for n in self._N]
         else:
             exploration_bonus = [math.sqrt(2 * math.log(self._n_iter) / n) for n in self._N]
         upper_bound = [
             avg_reward + exploration
-            for (avg_reward, exploration)
-            in zip(self._average_reward, exploration_bonus)
+            for (avg_reward, exploration) in zip(self._average_reward, exploration_bonus)
         ]
         chosen_arm = utils.math.argmax(upper_bound)
 
@@ -340,18 +379,21 @@ class UCBRegressor(UCBBandit, base.Regressor):
     [^2]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     [^3]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
     """
+
     @classmethod
     def _unit_test_params(cls):
         return {
-            'models': [
+            "models": [
                 compose.Pipeline(
                     preprocessing.StandardScaler(),
-                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.01))),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.01)),
+                ),
                 compose.Pipeline(
                     preprocessing.StandardScaler(),
-                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.1)))
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.1)),
+                ),
             ],
-            'metric': metrics.MSE(),
+            "metric": metrics.MSE(),
         }
 
     def _pred_func(self, model):
