@@ -461,6 +461,17 @@ class Normalizer(base.Transformer):
 class AdaptiveStandardScaler(base.Transformer):
     """Scales data using exponentially weighted moving average and variance.
 
+    Under the hood, a exponentially weighted running mean and variance are maintained for each
+    feature. This can potentially provide better results for drifting data in comparison to
+    `preprocessing.StandardScaler`. Indeed, the latter computes a global mean and variance for each
+    feature, whereas this scaler weights data in proportion to their recency.
+
+    Parameters
+    ----------
+    alpha
+        This parameter is passed to `stats.EWVar`. It is expected to be in [0, 1]. More weight is
+        assigned to recent samples the closer `alpha` is to 1.
+
     Examples
     --------
 
