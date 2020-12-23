@@ -161,7 +161,7 @@ class StandardScaler(base.Transformer):
         return self
 
     def transform_one(self, x):
-        return {i: safe_div(xi - self.means[i], self.vars[i] ** .5) for i, xi in x.items()}
+        return {i: safe_div(xi - self.means[i], self.vars[i] ** 0.5) for i, xi in x.items()}
 
     def learn_many(self, X: pd.DataFrame):
         """Update with a mini-batch of features.
@@ -216,7 +216,7 @@ class StandardScaler(base.Transformer):
         """
 
         means = np.array([self.means[c] for c in X.columns])
-        stds = np.array([self.vars[c] ** .5 for c in X.columns])
+        stds = np.array([self.vars[c] ** 0.5 for c in X.columns])
 
         Xt = X.values - means
         np.divide(Xt, stds, where=stds > 0, out=Xt)
@@ -389,12 +389,12 @@ class RobustScaler(base.Transformer):
 
     """
 
-    def __init__(self, with_centering=True, with_scaling=True, q_inf=.25, q_sup=.75):
+    def __init__(self, with_centering=True, with_scaling=True, q_inf=0.25, q_sup=0.75):
         self.with_centering = with_centering
         self.with_scaling = with_scaling
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.median = collections.defaultdict(functools.partial(stats.Quantile, .5))
+        self.median = collections.defaultdict(functools.partial(stats.Quantile, 0.5))
         self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
 
     def learn_one(self, x):
@@ -515,7 +515,7 @@ class AdaptiveStandardScaler(base.Transformer):
 
     """
 
-    def __init__(self, alpha=.3):
+    def __init__(self, alpha=0.3):
         self.alpha = alpha
         self.vars = collections.defaultdict(functools.partial(stats.EWVar, self.alpha))
 
@@ -526,6 +526,6 @@ class AdaptiveStandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(xi - self.vars[i].mean.get(), self.vars[i].get() ** .5)
+            i: safe_div(xi - self.vars[i].mean.get(), self.vars[i].get() ** 0.5)
             for i, xi in x.items()
         }
