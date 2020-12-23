@@ -44,7 +44,7 @@ class EWVar(base.Univariate):
 
     """
 
-    def __init__(self, alpha=0.5):
+    def __init__(self, alpha=.5):
         self.alpha = alpha
         self.mean = ewmean.EWMean(alpha=alpha)
         self.sq_mean = ewmean.EWMean(alpha=alpha)
