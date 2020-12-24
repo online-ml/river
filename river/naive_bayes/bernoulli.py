@@ -4,6 +4,8 @@ import math
 import numpy as np
 import pandas as pd
 
+from scipy import sparse
+
 from . import base
 
 
@@ -99,6 +101,9 @@ class BernoulliNB(base.BaseNB):
     >>> model.predict_one(new_text)
     'no'
 
+    >>> model.predict_proba_one('test')['yes']
+    0.8831539823829913
+
     Mini-batches:
 
     >>> import pandas as pd
@@ -163,14 +168,24 @@ class BernoulliNB(base.BaseNB):
     ...    ['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs', index=['river', 'rocks'])
 
     >>> model.predict_proba_many(unseen_data)
-            yes        no
-    river  0.883154  0.116846
-    rocks  0.952731  0.047269
+                 no       yes
+    river  0.116846  0.883154
+    rocks  0.047269  0.952731
 
     >>> model.predict_many(unseen_data)
     river    yes
     rocks    yes
     dtype: object
+
+    >>> unseen_data = pd.Series(
+    ...    ['test'], name = 'docs')
+
+    >>> model.predict_proba_many(unseen_data)
+            no       yes
+    0  0.116846  0.883154
+
+    >>> model.predict_proba_one('test')
+    {'no': 0.116846017617009, 'yes': 0.8831539823829913}
 
 
     References
@@ -219,64 +234,84 @@ class BernoulliNB(base.BaseNB):
         }
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        X = (X > self.true_threshold) * 1
+        # One hot encode y and convert it into sparse matrix
+        y = base.one_hot_encode(y)
+        columns, classes = X.columns, y.columns
+        y = sparse.csc_matrix(y.sparse.to_coo()).T
 
-        agg, index = base.Groupby(keys=y).apply(np.sum, X.values)
-        agg = pd.DataFrame(agg, columns=X.columns, index=index)
+        self.class_counts.update(
+            {c: count.item() for c, count in zip(classes, y.sum(axis=1))}
+        )
 
-        self.class_counts.update(y.value_counts().to_dict())
-        self.feature_counts.update((agg.T).to_dict(orient="index"))
+        if hasattr(X, "sparse"):
+            X = sparse.csr_matrix(X.sparse.to_coo())
+            X.data = X.data > self.true_threshold
+        else:
+            X = X > self.true_threshold
+
+        fc = y @ X
+
+        for c, i in zip(classes, range(fc.shape[0])):
+            counts = {
+                c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}
+            }
+            # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
+            # [{token_1: {classe_i: f_1}},.. {token_n: {class_i: f_n}}]
+            for dict_count in [
+                {token: {c: f} for token, f in frequencies.items()}
+                for c, frequencies in counts.items()
+            ]:
+
+                for f, count in dict_count.items():
+                    self.feature_counts[f].update(count)
+
+            # HANDLE CASE WHERE X IS NOT A SPARSE DATAFRAME
+
         return self
 
     def p_class_many(self):
-        return pd.DataFrame.from_dict(self.class_counts, orient="index").T / sum(
+        return base.from_dict(self.class_counts).T[self.class_counts] / sum(
             self.class_counts.values()
         )
 
-    def p_feature_given_class_many(self, columns):
-        fc = collections.defaultdict(dict)
-        default = {k: 0 for k, _ in self.class_counts.items()}
+    def feature_log_prob(self, columns):
+        smooth_fc = np.log(
+            base.from_dict(self.feature_counts)[self.class_counts].T.fillna(0)
+            + self.alpha
+        )[columns]
+        smooth_cc = np.log(base.from_dict(self.class_counts) + self.alpha * 2)
 
-        for f in columns:
-            for c in self.class_counts:
-                count = self.feature_counts.get(f, default)
-                if c in count:
-                    fc[f][c] = count[c]
-                else:
-                    fc[f][c] = 0
-
-        num = pd.DataFrame(fc, dtype=float).fillna(0) + self.alpha
-
-        div = (
-            pd.DataFrame.from_dict(self.class_counts, orient="index", dtype=float).T
-            + self.alpha * 2
-        )
-        return num.div(div[num.index].T.values)
+        return smooth_fc.subtract(smooth_cc.values)
 
     def joint_log_likelihood_many(self, X: pd.DataFrame):
-        """joint_log_likelihood optimized for mini-batch."""
+        """Calculate the posterior log probability of the samples X"""
         index = X.index
 
-        unknown = []
+        unknown = [x for x in X.columns if x not in self.feature_counts]
+        missing = [x for x in self.feature_counts if x not in X.columns]
 
-        for x in X.columns:
-            if x not in self.feature_counts:
-                unknown.append(x)
+        if unknown:
+            X = X.drop(unknown, axis="columns")
 
-        X = X.drop(unknown, axis="columns")
+        if missing:
+            X[missing] = False
 
-        X = X > self.true_threshold
+        columns = X.columns
 
-        p_c = self.p_feature_given_class_many(self.feature_counts.keys())
+        if hasattr(X, "sparse"):
+            X = sparse.csr_matrix(X.sparse.to_coo())
+            X.data = X.data > self.true_threshold
+        else:
+            X = X > self.true_threshold
 
-        inverse_p_c = np.log(10e-10 + (1 - p_c))
+        flp = self.feature_log_prob(columns)
 
-        p_c = np.log(10e-10 + p_c)
+        neg_p = np.log(1 - np.exp(flp))
 
-        X[[x for x in self.feature_counts.keys() if x not in X.columns]] = False
+        jll = X @ (flp - neg_p).T
 
-        X = (X @ p_c.T) + ((~X) @ inverse_p_c.T).add(np.log(self.p_class_many()).values)
+        pcm = self.p_class_many()
 
-        X.index = index
+        jll += (np.log(pcm) + neg_p.sum(axis=1).T).values
 
-        return X
+        return pd.DataFrame(jll, index=index, columns=self.class_counts.keys())
