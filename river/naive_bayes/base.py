@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 
 from scipy import special
+from scipy import sparse
 
 from river import base
 
@@ -72,3 +73,24 @@ class Groupby:
             result.append(function(vector[idx], axis=0))
 
         return result, self.index
+
+
+def from_dict(data: dict) -> pd.DataFrame:
+    data, index = list(data.values()), list(data.keys())
+    return pd.DataFrame(data=data, index=index, dtype="float32")
+
+
+def one_hot_encode(y: pd.Series) -> pd.DataFrame:
+    """One hot encode input pandas series into sparse pandas DataFrame."""
+    classes = np.unique(y)
+    indices = np.searchsorted(classes, y)
+    indptr = np.hstack((0, np.cumsum(np.in1d(y, classes))))
+    data = np.empty_like(indices)
+    data.fill(1)
+    return pd.DataFrame.sparse.from_spmatrix(
+        sparse.csr_matrix(
+            (data, indices, indptr), shape=(y.shape[0], classes.shape[0])
+        ),
+        index=y.index,
+        columns=[str(c) for c in classes],
+    )
