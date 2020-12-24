@@ -187,6 +187,28 @@ class BernoulliNB(base.BaseNB):
     >>> model.predict_proba_one('test')
     {'no': 0.116846017617009, 'yes': 0.8831539823829913}
 
+    # Learn and predict many using dataframe:
+
+    >>> bag = feature_extraction.BagOfWords(lowercase=False)
+
+    >>> model = naive_bayes.BernoulliNB(alpha=1)
+
+    >>> X, y = docs['docs'], docs['y']
+
+    >>> X = bag.transform_many(X)
+
+    >>> X = pd.DataFrame(X.values, columns=X.columns, dtype=int)
+
+    >>> model = model.learn_many(X, y)
+
+    >>> unseen_data = bag.transform_many(unseen_data)
+
+    >>> unseen_data = pd.DataFrame(unseen_data.values, columns=unseen_data.columns, dtype=int)
+
+    >>> model.predict_proba_many(unseen_data)
+             no       yes
+    0  0.116846  0.883154
+
 
     References
     ----------
@@ -251,10 +273,17 @@ class BernoulliNB(base.BaseNB):
 
         fc = y @ X
 
+        # Update feature counts by slicing the sparse matrix per column.
+        # Each column correspond to a class.
         for c, i in zip(classes, range(fc.shape[0])):
-            counts = {
-                c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}
-            }
+            if sparse.issparse(fc):
+                counts = {
+                    c: {
+                        columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)
+                    }
+                }
+            else:
+                counts = {c: {f: count for f, count in zip(columns, fc[i])}}
             # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
             # [{token_1: {classe_i: f_1}},.. {token_n: {class_i: f_n}}]
             for dict_count in [
@@ -264,8 +293,6 @@ class BernoulliNB(base.BaseNB):
 
                 for f, count in dict_count.items():
                     self.feature_counts[f].update(count)
-
-            # HANDLE CASE WHERE X IS NOT A SPARSE DATAFRAME
 
         return self
 
