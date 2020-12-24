@@ -12,6 +12,8 @@ import pandas as pd
 
 from river import base
 
+from scipy import sparse
+
 
 __all__ = ["BagOfWords", "TFIDF"]
 
@@ -273,25 +275,28 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
     def transform_many(self, X: pd.Series):
         """Transform pandas series of string."""
-        X_p = [list(self.process_text(x)) for x in X]
+        indptr, indices, data = [0], [], []
 
-        idx, i = {}, 0
-        for x_p in X_p:
-            for x in x_p:
-                if x not in idx:
-                    idx[x] = i
-                    i += 1
+        index = {}
 
-        array = np.zeros((len(X_p), len(idx)), dtype=int)
+        for d in X:
 
-        for row, x in enumerate(X_p):
-            for col in x:
-                array[row][idx[col]] += 1
+            for t, f in collections.Counter(self.process_text(d)).items():
 
-        return pd.DataFrame(array, columns=idx.keys(), index=X.index)
+                indices.append(index.setdefault(t, len(index)))
+
+                data.append(f)
+
+            indptr.append(len(data))
+
+        return pd.DataFrame.sparse.from_spmatrix(
+            sparse.csr_matrix((data, indices, indptr)),
+            index=X.index,
+            columns=index.keys(),
+        )
 
     def learn_many(self, X):
-        pass
+        return self
 
 
 class TFIDF(BagOfWords):
