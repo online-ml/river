@@ -18,7 +18,7 @@ __all__ = [
 ]
 
 
-def argmax(lst: list):
+def argmax(lst: list, rng=None):
     """Argmax function that randomize the returned index in case multiple maxima.
     Mainly used for bandit to avoid exploration bias towards the 1st model in the first iterations.
 
@@ -29,7 +29,8 @@ def argmax(lst: list):
     """
     max_value = max(lst)
     args_max = [i for (i, x) in enumerate(lst) if x == max_value]
-    arg_max = random.choice(args_max) if len(args_max) > 0 else args_max[0]
+    random_fun = rng.choice if rng else random.choice
+    arg_max = random_fun(args_max) if len(args_max) > 0 else args_max[0]
 
     return arg_max
 
@@ -97,7 +98,7 @@ class Bandit(base.EnsembleMixin):
     @property
     def _best_model_idx(self):
         # average reward instead of cumulated (otherwise favors arms which are pulled often)
-        return argmax(self.average_reward)
+        return argmax(self.average_reward, self._rng)
 
     @property
     def best_model(self):
@@ -202,7 +203,7 @@ class EpsilonGreedyBandit(Bandit):
 
     def _pull_arm(self):
         if self._rng.random() > self.epsilon:
-            chosen_arm = argmax(self.average_reward)
+            chosen_arm = argmax(self.average_reward, self._rng)
         else:
             chosen_arm = self._rng.choice(range(self._n_arms))
 
@@ -369,7 +370,7 @@ class UCBBandit(Bandit):
             avg_reward + exploration
             for (avg_reward, exploration) in zip(self.average_reward, exploration_bonus)
         ]
-        chosen_arm = argmax(upper_bound)
+        chosen_arm = argmax(upper_bound, self._rng)
 
         return chosen_arm
 
