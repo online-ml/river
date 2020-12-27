@@ -21,11 +21,13 @@ from river import preprocessing
         ]
     ],
 )
+@pytest.mark.filterwarnings("ignore::sklearn.utils.estimator_checks.SkipTestWarning")
 def test_river_to_sklearn_check_estimator(estimator: base.Estimator):
     skl_estimator = compat.convert_river_to_sklearn(estimator)
     estimator_checks.check_estimator(skl_estimator)
 
 
+@pytest.mark.filterwarnings("ignore::sklearn.utils.estimator_checks.SkipTestWarning")
 def test_sklearn_check_twoway():
     estimator = sk_linear_model.SGDRegressor()
     river_estimator = compat.convert_sklearn_to_river(estimator)

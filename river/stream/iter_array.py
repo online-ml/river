@@ -56,7 +56,6 @@ def iter_array(
 
     """
     feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
-
     multioutput = y is not None and not np.isscalar(y[0])
     if multioutput and target_names is None:
         target_names = list(range(len(y[0])))
