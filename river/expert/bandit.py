@@ -274,12 +274,12 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     We can inspect the number of times (in percentage) each arm has been pulled.
 
     >>> bandit.percentage_pulled
-    [0.027522935779816515, 0.0254841997961264, 0.7349643221202854, 0.21202854230377166]
+    [0.034658511722731905, 0.02854230377166157, 0.4475025484199796, 0.4892966360856269]
 
     The average reward of each model can be accessed via:
 
     >>> bandit.average_reward
-    [2.8153927334803295e-06, 4.673374306165936e-06, 0.6299465512339506, 0.03253475340048009]
+    [7.717552705944691e-06, 6.027654303880663e-06, 0.5605319512391046, 0.014080005697957983]
 
     We can also select the best model (the one with the highest average reward).
 
@@ -444,7 +444,7 @@ class UCBRegressor(UCBBandit, base.Regressor):
     The average reward of each model can be accessed via:
 
     >>> bandit.average_reward
-    [7.090543811683273e-06, 0.00015523002082988514, 0.7396877134951908, 0.04955919506031605]
+    [6.7341093388411285e-06, 0.00015362069542226522, 0.7389630522422052, 0.04955919506031605]
 
     We can also select the best model (the one with the highest average reward).
 
