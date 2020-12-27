@@ -78,7 +78,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     >>> from sklearn import datasets
 
     >>> dataset = stream.iter_sklearn_dataset(
-    ...     dataset=datasets.fetch_openml('yeast', version=4),
+    ...     dataset=datasets.fetch_openml('yeast', version=4, as_frame=False),
     ...     shuffle=True,
     ...     seed=42
     ... )
