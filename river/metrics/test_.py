@@ -87,8 +87,14 @@ def partial(f, **kwargs):
 TEST_CASES = [
     (metrics.Accuracy(), sk_metrics.accuracy_score),
     (metrics.Precision(), partial(sk_metrics.precision_score, zero_division=0)),
-    (metrics.MacroPrecision(), partial(sk_metrics.precision_score, average="macro", zero_division=0)),
-    (metrics.MicroPrecision(), partial(sk_metrics.precision_score, average="micro", zero_division=0)),
+    (
+        metrics.MacroPrecision(),
+        partial(sk_metrics.precision_score, average="macro", zero_division=0),
+    ),
+    (
+        metrics.MicroPrecision(),
+        partial(sk_metrics.precision_score, average="micro", zero_division=0),
+    ),
     (
         metrics.WeightedPrecision(),
         partial(sk_metrics.precision_score, average="weighted", zero_division=0),
@@ -96,7 +102,10 @@ TEST_CASES = [
     (metrics.Recall(), partial(sk_metrics.recall_score, zero_division=0)),
     (metrics.MacroRecall(), partial(sk_metrics.recall_score, average="macro", zero_division=0)),
     (metrics.MicroRecall(), partial(sk_metrics.recall_score, average="micro", zero_division=0)),
-    (metrics.WeightedRecall(), partial(sk_metrics.recall_score, average="weighted", zero_division=0)),
+    (
+        metrics.WeightedRecall(),
+        partial(sk_metrics.recall_score, average="weighted", zero_division=0),
+    ),
     (metrics.FBeta(beta=0.5), partial(sk_metrics.fbeta_score, beta=0.5, zero_division=0)),
     (
         metrics.MacroFBeta(beta=0.5),
