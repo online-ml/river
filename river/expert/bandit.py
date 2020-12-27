@@ -18,13 +18,16 @@ __all__ = [
 ]
 
 
-def argmax(lst: list, rng=None):
+def argmax(lst: list, rng: random.Random = None):
     """Argmax function that randomize the returned index in case multiple maxima.
     Mainly used for bandit to avoid exploration bias towards the 1st model in the first iterations.
 
     Parameters
     ----------
     lst
+        The list where the arg max has to be found.
+    rng
+        The pseudo-random number generator to use.
 
     """
     max_value = max(lst)
@@ -238,7 +241,7 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     start_after
         The number of iteration after which the bandit mechanism should begin.
     seed
-        The seed for the algorithm (since not deterministic)
+        The seed for the algorithm (since not deterministic).
 
     Examples
     --------
@@ -402,7 +405,7 @@ class UCBRegressor(UCBBandit, base.Regressor):
     start_after
         The number of iteration after which the bandit mechanism should begin.
     seed
-        The seed for the algorithm (since not deterministic)
+        The seed for the algorithm (since not deterministic).
 
 
     Examples
