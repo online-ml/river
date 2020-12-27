@@ -110,10 +110,9 @@ class Bandit(base.EnsembleMixin):
     @property
     def percentage_pulled(self):
         if not self.warm_up:
-            percentages = [n / sum(self._N) for n in self._N]
-        else:
-            percentages = [0] * self._n_arms
-        return percentages
+            return [n / sum(self._N) for n in self._N]
+
+        return [0] * self._n_arms
 
     def predict_one(self, x):
         best_arm = self._best_model_idx
@@ -135,10 +134,7 @@ class Bandit(base.EnsembleMixin):
     def _learn_one(self, x, y):
         # Explore all arms pulled less than `explore_each_arm` times
         never_pulled_arm = [i for (i, n) in enumerate(self._N) if n < self.explore_each_arm]
-        if never_pulled_arm:
-            chosen_arm = self._rng.choice(never_pulled_arm)
-        else:
-            chosen_arm = self._pull_arm()
+        chosen_arm = self._rng.choice(never_pulled_arm) if never_pulled_arm else self._pull_arm()
 
         # Predict and learn with the chosen model
         chosen_model = self[chosen_arm]
@@ -205,10 +201,11 @@ class EpsilonGreedyBandit(Bandit):
             self._starting_epsilon = epsilon
 
     def _pull_arm(self):
-        if self._rng.random() > self.epsilon:
-            chosen_arm = argmax(self.average_reward, self._rng)
-        else:
-            chosen_arm = self._rng.choice(range(self._n_arms))
+        chosen_arm = (
+            argmax(self.average_reward, self._rng)
+            if (self._rng.random() > self.epsilon)
+            else self._rng.choice(range(self._n_arms))
+        )
 
         return chosen_arm
 
