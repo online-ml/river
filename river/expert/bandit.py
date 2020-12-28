@@ -39,6 +39,26 @@ def argmax(lst: list, rng: random.Random = None):
 
 
 class Bandit(base.EnsembleMixin):
+    """Bandit class.
+
+    The bandit implementations must inherit from this class and override the abstract method `_pull_arm`, `_update_arm` and `_pred_func`.
+    Usually a first subclass inherit from the Bandit class to implements the bandit logic (`_pull_arm` and `_update_arm`). Then the concrete
+    implementation should inherit from this subclass and implement `_pred_func`, according to whether this concrete implementation is a regressor or
+    a classifier.
+
+    Parameters
+    ----------
+    models
+        The models to compare.
+    metric
+        Metric used for comparing models with.
+    explore_each_arm
+        The number of times each arm should explored first.
+    start_after
+        The number of iteration after which the bandit mechanism should begin.
+    seed
+        The seed for the algorithm (since not deterministic)."""
+
     def __init__(
         self,
         models: typing.List[base.Estimator],
@@ -88,10 +108,19 @@ class Bandit(base.EnsembleMixin):
 
     @abc.abstractmethod
     def _pull_arm(self):
+        """Returns the chosen arm.
+
+        It must be overrides in the class that inherits from the Bandit class.
+        The way to choose the arm depends on each bandit subclass and expresses the dilemna between exploitation and exploration.
+        """
         pass
 
     @abc.abstractmethod
     def _update_arm(self, arm, reward):
+        """Update the internals of the chosen arm, based on the value of the reward.
+
+        It must be overrides in the class that inherits from the Bandit class.
+        """
         pass
 
     @abc.abstractmethod
@@ -100,27 +129,32 @@ class Bandit(base.EnsembleMixin):
 
     @property
     def _best_model_idx(self):
+        """Returns the index of the best model (defined as the one who maximises average reward)."""
         # average reward instead of cumulated (otherwise favors arms which are pulled often)
         return argmax(self.average_reward, self._rng)
 
     @property
     def best_model(self):
+        """Returns the best model, defined as the one who maximises average reward."""
         return self[self._best_model_idx]
 
     @property
     def percentage_pulled(self):
+        """Returns the number of times (in %) each arm has been pulled."""
         if not self.warm_up:
             return [n / sum(self._N) for n in self._N]
 
         return [0] * self._n_arms
 
     def predict_one(self, x):
+        """Return the prediction of the best model (defined as the one who maximises average reward)."""
         best_arm = self._best_model_idx
         y_pred = self._pred_func(self[best_arm])(x)
 
         return y_pred
 
     def learn_one(self, x, y):
+        """Updates the chosen model and the arm internals (the actual implementation is in Bandit._learn_one)."""
         self._learn_one(x, y)
         return self
 
@@ -132,6 +166,10 @@ class Bandit(base.EnsembleMixin):
         self.average_reward += [0.0] * length_new_models
 
     def _learn_one(self, x, y):
+        """Updates the chosen model and the arm internals.
+
+        It returns the reward value, the instantaneous metric value and the chosen_arm.
+        """
         # Explore all arms pulled less than `explore_each_arm` times
         never_pulled_arm = [i for (i, n) in enumerate(self._N) if n < self.explore_each_arm]
         chosen_arm = self._rng.choice(never_pulled_arm) if never_pulled_arm else self._pull_arm()
@@ -142,7 +180,7 @@ class Bandit(base.EnsembleMixin):
         self.metric.update(y_pred=y_pred, y_true=y)
         chosen_model.learn_one(x=x, y=y)
 
-        # Update bandit internals
+        # If warm up, do nothing (no updates of bandit internals).
         if self.warm_up and (self._n_iter == self.start_after):
             self._n_iter = 0  # must be reset to 0 since it is an input to some model (UCB)
             self.warm_up = False
@@ -150,6 +188,8 @@ class Bandit(base.EnsembleMixin):
         self._n_iter += 1
 
         reward = self._compute_scaled_reward(y_pred=y_pred, y_true=y)
+
+        # If not in warm up mode, update bandit internals for the pulled arm
         if not self.warm_up:
             self._update_bandit(chosen_arm=chosen_arm, reward=reward)
 
@@ -162,10 +202,14 @@ class Bandit(base.EnsembleMixin):
             reward - self.average_reward[chosen_arm]
         )
 
-        # Specific update of the arm for certain bandit model
+        # Specific updates of the arm (for certain bandit model)
         self._update_arm(chosen_arm, reward)
 
-    def _compute_scaled_reward(self, y_pred, y_true, c=1):
+    def _compute_scaled_reward(self, y_pred, y_true):
+        """Compute the reward defined as the sigmoid of the metric chosen by the user.
+
+        For regression, the target (y_true) and the prediction (y_pred) are standardized so that the reward is invariant to the scale of the problem.
+        """
         # Scaling y so the reward distribution doesn't depend on the scale of y
         y_true = self._y_scaler.learn_one(dict(y=y_true)).transform_one(dict(y=y_true))["y"]
         y_pred = self._y_scaler.transform_one(dict(y=y_pred))["y"]
