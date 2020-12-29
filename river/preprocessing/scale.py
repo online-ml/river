@@ -11,6 +11,7 @@ from river import utils
 
 
 __all__ = [
+    "AdaptiveStandardScaler",
     "Binarizer",
     "MaxAbsScaler",
     "MinMaxScaler",
@@ -91,19 +92,19 @@ class StandardScaler(base.Transformer):
     Examples
     --------
 
-    >>> from pprint import pprint
     >>> import random
     >>> from river import preprocessing
 
     >>> random.seed(42)
     >>> X = [{'x': random.uniform(8, 12), 'y': random.uniform(8, 12)} for _ in range(6)]
-    >>> pprint(X)
-    [{'x': 10.557, 'y': 8.100},
-        {'x': 9.100, 'y': 8.892},
-        {'x': 10.945, 'y': 10.706},
-        {'x': 11.568, 'y': 8.347},
-        {'x': 9.687, 'y': 8.119},
-        {'x': 8.874, 'y': 10.021}]
+    >>> for x in X:
+    ...     print(x)
+    {'x': 10.557, 'y': 8.100}
+    {'x': 9.100, 'y': 8.892}
+    {'x': 10.945, 'y': 10.706}
+    {'x': 11.568, 'y': 8.347}
+    {'x': 9.687, 'y': 8.119}
+    {'x': 8.874, 'y': 10.021}
 
     >>> scaler = preprocessing.StandardScaler()
 
@@ -238,18 +239,18 @@ class MinMaxScaler(base.Transformer):
     Examples
     --------
 
-    >>> from pprint import pprint
     >>> import random
     >>> from river import preprocessing
 
     >>> random.seed(42)
     >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
-    >>> pprint(X)
-    [{'x': 10.557707},
-        {'x': 8.100043},
-        {'x': 9.100117},
-        {'x': 8.892842},
-        {'x': 10.945884}]
+    >>> for x in X:
+    ...     print(x)
+    {'x': 10.557707}
+    {'x': 8.100043}
+    {'x': 9.100117}
+    {'x': 8.892842}
+    {'x': 10.945884}
 
     >>> scaler = preprocessing.MinMaxScaler()
 
@@ -297,18 +298,18 @@ class MaxAbsScaler(base.Transformer):
     Examples
     --------
 
-    >>> from pprint import pprint
     >>> import random
     >>> from river import preprocessing
 
     >>> random.seed(42)
     >>> X = [{'x': random.uniform(8, 12)} for _ in range(5)]
-    >>> pprint(X)
-    [{'x': 10.557707},
-        {'x': 8.100043},
-        {'x': 9.100117},
-        {'x': 8.892842},
-        {'x': 10.945884}]
+    >>> for x in X:
+    ...     print(x)
+    {'x': 10.557707}
+    {'x': 8.100043}
+    {'x': 9.100117}
+    {'x': 8.892842}
+    {'x': 10.945884}
 
     >>> scaler = preprocessing.MaxAbsScaler()
 
@@ -455,3 +456,76 @@ class Normalizer(base.Transformer):
     def transform_one(self, x):
         norm = utils.math.norm(x, order=self.order)
         return {i: xi / norm for i, xi in x.items()}
+
+
+class AdaptiveStandardScaler(base.Transformer):
+    """Scales data using exponentially weighted moving average and variance.
+
+    Under the hood, a exponentially weighted running mean and variance are maintained for each
+    feature. This can potentially provide better results for drifting data in comparison to
+    `preprocessing.StandardScaler`. Indeed, the latter computes a global mean and variance for each
+    feature, whereas this scaler weights data in proportion to their recency.
+
+    Parameters
+    ----------
+    alpha
+        This parameter is passed to `stats.EWVar`. It is expected to be in [0, 1]. More weight is
+        assigned to recent samples the closer `alpha` is to 1.
+
+    Examples
+    --------
+
+    Consider the following series which contains a positive trend.
+
+    >>> import random
+
+    >>> random.seed(42)
+    >>> X = [
+    ...     {'x': random.uniform(4 + i, 6 + i)}
+    ...     for i in range(8)
+    ... ]
+    >>> for x in X:
+    ...     print(x)
+    {'x': 5.278}
+    {'x': 5.050}
+    {'x': 6.550}
+    {'x': 7.446}
+    {'x': 9.472}
+    {'x': 10.353}
+    {'x': 11.784}
+    {'x': 11.173}
+
+    This scaler works well with this kind of data because it uses statistics that assign higher
+    weight to more recent data.
+
+    >>> from river import preprocessing
+
+    >>> scaler = preprocessing.AdaptiveStandardScaler(alpha=.6)
+
+    >>> for x in X:
+    ...     print(scaler.learn_one(x).transform_one(x))
+    {'x': 0.0}
+    {'x': -0.816}
+    {'x': 0.812}
+    {'x': 0.695}
+    {'x': 0.754}
+    {'x': 0.598}
+    {'x': 0.651}
+    {'x': 0.124}
+
+    """
+
+    def __init__(self, alpha=0.3):
+        self.alpha = alpha
+        self.vars = collections.defaultdict(functools.partial(stats.EWVar, self.alpha))
+
+    def learn_one(self, x):
+        for i, xi in x.items():
+            self.vars[i].update(xi)
+        return self
+
+    def transform_one(self, x):
+        return {
+            i: safe_div(xi - self.vars[i].mean.get(), self.vars[i].get() ** 0.5)
+            for i, xi in x.items()
+        }
