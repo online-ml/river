@@ -11,6 +11,7 @@ from .impute import PreviousImputer
 from .impute import StatImputer
 from .lda import LDA
 from .one_hot import OneHotEncoder
+from .scale import AdaptiveStandardScaler
 from .scale import Binarizer
 from .scale import MaxAbsScaler
 from .scale import MinMaxScaler
@@ -20,6 +21,7 @@ from .scale import StandardScaler
 
 
 __all__ = [
+    "AdaptiveStandardScaler",
     "Binarizer",
     "FeatureHasher",
     "LDA",
