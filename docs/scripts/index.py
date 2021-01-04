@@ -393,7 +393,7 @@ def print_module(mod, path, overview, is_submodule=False):
     # Classes
 
     if classes and funcs:
-        print("**Classes**", file=overview)
+        print("\n**Classes**\n", file=overview)
 
     for _, c in classes:
         print(f"{mod_name}.{c.__name__}")
@@ -409,7 +409,7 @@ def print_module(mod, path, overview, is_submodule=False):
     # Functions
 
     if classes and funcs:
-        print("**Functions**", file=overview)
+        print("\n**Functions**\n", file=overview)
 
     for _, f in funcs:
         print(f"{mod_name}.{f.__name__}")
