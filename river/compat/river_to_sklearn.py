@@ -208,7 +208,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
 
     Parameters
     ----------
-    estimator
+    river_estimator
 
     """
 
@@ -393,7 +393,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
 
     Parameters
     ----------
-    estimator
+    river_estimator
 
     """
 
@@ -511,7 +511,7 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
 
     Parameters
     ----------
-    estimator
+    river_estimator
 
     """
 
