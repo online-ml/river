@@ -12,6 +12,7 @@ from river import optim
 from river import preprocessing
 from river.utils.math import sigmoid
 
+
 __all__ = [
     "EpsilonGreedyRegressor",
     "UCBRegressor",
@@ -20,6 +21,7 @@ __all__ = [
 
 def argmax(lst: list, rng: random.Random = None):
     """Argmax function that randomize the returned index in case multiple maxima.
+
     Mainly used for bandit to avoid exploration bias towards the 1st model in the first iterations.
 
     Parameters
@@ -39,12 +41,15 @@ def argmax(lst: list, rng: random.Random = None):
 
 
 class Bandit(base.EnsembleMixin):
-    """Bandit class.
+    """Bandit base class.
 
-    The bandit implementations must inherit from this class and override the abstract method `_pull_arm`, `_update_arm` and `_pred_func`.
-    Usually a first subclass inherit from the Bandit class to implements the bandit logic (`_pull_arm` and `_update_arm`). Then the concrete
-    implementation should inherit from this subclass and implement `_pred_func`, according to whether this concrete implementation is a regressor or
-    a classifier.
+    The bandit implementations must inherit from this class and override the abstract method
+    `_pull_arm`, `_update_arm` and `_pred_func`.
+
+    Usually, a first subclass inherits from the Bandit class to implement the bandit logic that is
+    contained in `_pull_arm` and `_update_arm`. Then, the concrete implementation should inherit
+    from said subclass and implement `_pred_func`, according to whether this concrete
+    implementation is a regressor or a classifier.
 
     Parameters
     ----------
@@ -110,8 +115,11 @@ class Bandit(base.EnsembleMixin):
     def _pull_arm(self):
         """Returns the chosen arm.
 
-        It must be overrides in the class that inherits from the Bandit class.
-        The way to choose the arm depends on each bandit subclass and expresses the dilemna between exploitation and exploration.
+        It must be overriden in the class that inherits from the Bandit class.
+
+        The way to choose the arm depends on each bandit subclass and expresses the dilemna between
+        exploitation and exploration.
+
         """
         pass
 
@@ -119,7 +127,8 @@ class Bandit(base.EnsembleMixin):
     def _update_arm(self, arm, reward):
         """Update the internals of the chosen arm, based on the value of the reward.
 
-        It must be overrides in the class that inherits from the Bandit class.
+        It must be overriden in the class that inherits from the Bandit class.
+
         """
         pass
 
@@ -169,7 +178,9 @@ class Bandit(base.EnsembleMixin):
         """Updates the chosen model and the arm internals.
 
         It returns the reward value, the instantaneous metric value and the chosen_arm.
+
         """
+
         # Explore all arms pulled less than `explore_each_arm` times
         never_pulled_arm = [i for (i, n) in enumerate(self._N) if n < self.explore_each_arm]
         chosen_arm = self._rng.choice(never_pulled_arm) if never_pulled_arm else self._pull_arm()
@@ -210,7 +221,9 @@ class Bandit(base.EnsembleMixin):
         """Compute the reward defined as the sigmoid of the metric chosen by the user.
 
         For regression, the target (y_true) and the prediction (y_pred) are standardized so that the reward is invariant to the scale of the problem.
+
         """
+
         # Scaling y so the reward distribution doesn't depend on the scale of y
         y_true = self._y_scaler.learn_one(dict(y=y_true)).transform_one(dict(y=y_true))["y"]
         y_pred = self._y_scaler.transform_one(dict(y=y_pred))["y"]
@@ -223,6 +236,7 @@ class Bandit(base.EnsembleMixin):
 
 
 class EpsilonGreedyBandit(Bandit):
+
     def __init__(
         self,
         models: typing.List[base.Estimator],
@@ -261,12 +275,11 @@ class EpsilonGreedyBandit(Bandit):
 
 
 class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
-    """Epsilon-greedy bandit algorithm for regression.
+    r"""Epsilon-greedy bandit algorithm for regression.
 
     This bandit selects the best arm (defined as the one with the highest average reward) with
-    probability $(1 - \\epsilon)$ and draws a random arm with probability $\\epsilon$. It is also
+    probability $(1 - \epsilon)$ and draws a random arm with probability $\epsilon$. It is also
     called Follow-The-Leader (FTL) algorithm.
-
 
     Parameters
     ----------
@@ -287,7 +300,8 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
     Examples
     --------
-    Let's use `UCBRegressor` to select the best learning rate for a linear regression model. First, we define the grid of models:
+    Let's use `UCBRegressor` to select the best learning rate for a linear regression model. First,
+    we define the grid of models:
 
     >>> from river import compose
     >>> from river import linear_model
@@ -296,9 +310,10 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
     >>> models = [
     ...     compose.Pipeline(
-    ...     preprocessing.StandardScaler(),
+    ...         preprocessing.StandardScaler(),
     ...         linear_model.LinearRegression(optimizer=optim.SGD(lr=lr))
-    ...         ) for lr in [1e-4, 1e-3, 1e-2, 1e-1]
+    ...     )
+    ...     for lr in [1e-4, 1e-3, 1e-2, 1e-1]
     ... ]
 
     We decide to use TrumpApproval dataset:
@@ -318,13 +333,23 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
     We can inspect the number of times (in percentage) each arm has been pulled.
 
-    >>> bandit.percentage_pulled
-    [0.034658511722731905, 0.02854230377166157, 0.4475025484199796, 0.4892966360856269]
+    >>> for model, pct in zip(bandit.models, bandit.percentage_pulled):
+    ...     lr = model["LinearRegression"].optimizer.learning_rate
+    ...     print(f"{lr:.1e} — {pct:.2%}")
+    1.0e-04 — 3.47%
+    1.0e-03 — 2.85%
+    1.0e-02 — 44.75%
+    1.0e-01 — 48.93%
 
-    The average reward of each model can be accessed via:
+    The average reward of each model is also available:
 
-    >>> bandit.average_reward
-    [7.717552705944691e-06, 6.027654303880663e-06, 0.5605319512391046, 0.014080005697957983]
+    >>> for model, avg in zip(bandit.models, bandit.average_reward):
+    ...     lr = model["LinearRegression"].optimizer.learning_rate
+    ...     print(f"{lr:.1e} — {avg:.2f}")
+    1.0e-04 — 0.00
+    1.0e-03 — 0.00
+    1.0e-02 — 0.56
+    1.0e-01 — 0.01
 
     We can also select the best model (the one with the highest average reward).
 
@@ -335,12 +360,12 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     >>> best_model["LinearRegression"].intercept_lr.learning_rate
     0.01
 
-
     References
     ----------
     [^1]: [Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction. MIT press.](http://incompleteideas.net/book/RLbook2020.pdf)
     [^2]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
     [^3]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
+
     """
 
     def __init__(
@@ -428,6 +453,7 @@ class UCBRegressor(UCBBandit, base.Regressor):
     """Upper Confidence Bound bandit for regression.
 
     The class offers 2 implementations of UCB:
+
     - UCB1 from [^1], when the parameter delta has value None
     - UCB(delta) from [^2], when the parameter delta is in (0, 1)
 
@@ -449,10 +475,10 @@ class UCBRegressor(UCBBandit, base.Regressor):
     seed
         The seed for the algorithm (since not deterministic).
 
-
     Examples
     --------
-    Let's use `UCBRegressor` to select the best learning rate for a linear regression model. First, we define the grid of models:
+    Let's use `UCBRegressor` to select the best learning rate for a linear regression model. First,
+    we define the grid of models:
 
     >>> from river import compose
     >>> from river import linear_model
@@ -461,9 +487,10 @@ class UCBRegressor(UCBBandit, base.Regressor):
 
     >>> models = [
     ...     compose.Pipeline(
-    ...     preprocessing.StandardScaler(),
+    ...         preprocessing.StandardScaler(),
     ...         linear_model.LinearRegression(optimizer=optim.SGD(lr=lr))
-    ...         ) for lr in [1e-4, 1e-3, 1e-2, 1e-1]
+    ...     )
+    ...     for lr in [1e-4, 1e-3, 1e-2, 1e-1]
     ... ]
 
     We decide to use TrumpApproval dataset:
@@ -483,13 +510,23 @@ class UCBRegressor(UCBBandit, base.Regressor):
 
     We can inspect the number of times (in percentage) each arm has been pulled.
 
-    >>> bandit.percentage_pulled
-    [0.024464831804281346, 0.024464831804281346, 0.9225280326197758, 0.02854230377166157]
+    >>> for model, pct in zip(bandit.models, bandit.percentage_pulled):
+    ...     lr = model["LinearRegression"].optimizer.learning_rate
+    ...     print(f"{lr:.1e} — {pct:.2%}")
+    1.0e-04 — 2.45%
+    1.0e-03 — 2.45%
+    1.0e-02 — 92.25%
+    1.0e-01 — 2.85%
 
-    The average reward of each model can be accessed via:
+    The average reward of each model is also available:
 
-    >>> bandit.average_reward
-    [6.7341093388411285e-06, 0.00015362069542226522, 0.7389630522422052, 0.04955919506031605]
+    >>> for model, avg in zip(bandit.models, bandit.average_reward):
+    ...     lr = model["LinearRegression"].optimizer.learning_rate
+    ...     print(f"{lr:.1e} — {avg:.2f}")
+    1.0e-04 — 0.00
+    1.0e-03 — 0.00
+    1.0e-02 — 0.74
+    1.0e-01 — 0.05
 
     We can also select the best model (the one with the highest average reward).
 
@@ -500,12 +537,12 @@ class UCBRegressor(UCBBandit, base.Regressor):
     >>> best_model["LinearRegression"].intercept_lr.learning_rate
     0.01
 
-
     References
     ----------
     [^1]: [Auer, P., Cesa-Bianchi, N., & Fischer, P. (2002). Finite-time analysis of the multiarmed bandit problem. Machine learning, 47(2-3), 235-256.](https://link.springer.com/content/pdf/10.1023/A:1013689704352.pdf)
     [^2]: [Lattimore, T., & Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.](https://tor-lattimore.com/downloads/book/book.pdf)
     [^3]: [Rivasplata, O. (2012). Subgaussian random variables: An expository note. Internet publication, PDF.]: (https://sites.ualberta.ca/~omarr/publications/subgaussians.pdf)
+
     """
 
     def __init__(
