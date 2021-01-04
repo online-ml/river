@@ -337,7 +337,7 @@ def argmax(lst: list):
 
     Parameters
     ----------
-    l
+    lst
 
     """
     return max(range(len(lst)), key=lst.__getitem__)
