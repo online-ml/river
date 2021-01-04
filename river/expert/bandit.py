@@ -130,7 +130,7 @@ class Bandit(base.EnsembleMixin):
     @property
     def _best_model_idx(self):
         """Returns the index of the best model (defined as the one who maximises average reward)."""
-        # average reward instead of cumulated (otherwise favors arms which are pulled often)
+        # Average reward instead of cumulated (otherwise favors arms which are pulled often)
         return argmax(self.average_reward, self._rng)
 
     @property
@@ -196,6 +196,7 @@ class Bandit(base.EnsembleMixin):
         return reward, self.metric._eval(y_pred, y), chosen_arm
 
     def _update_bandit(self, chosen_arm, reward):
+        """Updates the bandit's arm internals."""
         # Updates common to all bandits
         self._N[chosen_arm] += 1
         self.average_reward[chosen_arm] += (1.0 / self._N[chosen_arm]) * (
@@ -254,7 +255,7 @@ class EpsilonGreedyBandit(Bandit):
         return chosen_arm
 
     def _update_arm(self, arm, reward):
-        # The arm internals are already updated in the `learn_one` phase of class `Bandit`.
+        # The other arm internals are already updated in the method `Bandit._learn_one`.
         if self.epsilon_decay:
             self.epsilon = self._starting_epsilon * math.exp(-self._n_iter * self.epsilon_decay)
 
@@ -419,7 +420,7 @@ class UCBBandit(Bandit):
         return chosen_arm
 
     def _update_arm(self, arm, reward):
-        # The arm internals are already updated in the `learn_one` phase of class `Bandit`.
+        # The arm internals are already updated in the method `Bandit._learn_one`.
         pass
 
 
