@@ -187,6 +187,37 @@ class Base:
         return self._set_params()
 
     @property
+    def _is_stochastic(self):
+        """Indicates if the model contains an unset seed parameter.
+
+        The convention in River is to control randomness by exposing a seed parameter. This seed
+        typically defaults to `None`. If the seed is set to `None`, then the model is expected to
+        produce non-reproducible results. In other words it is not deterministic and is instead
+        stochastic. This method checks if this is the case by looking for a None `seed` in the
+        model's parameters.
+
+        """
+
+        def is_class_param(param):
+            return (
+                isinstance(param, tuple) and
+                inspect.isclass(param[0]) and
+                isinstance(param[1], dict)
+            )
+
+        def find(params):
+            if not isinstance(params, dict):
+                return False
+            for name, param in params.items():
+                if name == "seed" and param is None:
+                    return True
+                if is_class_param(param) and find(param[1]):
+                    return True
+            return False
+
+        return find(self._get_params())
+
+    @property
     def _memory_usage_raw(self) -> int:
         """Return the memory usage in bytes."""
 

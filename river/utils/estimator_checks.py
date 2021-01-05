@@ -1,6 +1,7 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
+import inspect
 import math
 import pickle
 import random
@@ -227,6 +228,42 @@ def check_clone(model):
     assert dir(clone) == dir(model)
 
 
+def seed_params(params, seed):
+    """Looks for "seed" keys and sets the value."""
+
+    def is_class_param(param):
+        return (
+            isinstance(param, tuple) and
+            inspect.isclass(param[0]) and
+            isinstance(param[1], dict)
+        )
+
+    if is_class_param(params):
+        return params[0], seed_params(params[1], seed)
+
+    if not isinstance(params, dict):
+        return params
+
+    return {
+        name: seed if name == 'seed' else seed_params(param, seed)
+        for name, param in params.items()
+    }
+
+
+def check_seeding_is_idempotent(model, dataset):
+
+    params = model._get_params()
+    seeded_params = seed_params(params, seed=42)
+
+    A = model._set_params(seeded_params)
+    B = model._set_params(seeded_params)
+
+    for x, y in dataset:
+        assert A.predict_one(x) == B.predict_one(x)
+        A.learn_one(x, y)
+        B.learn_one(x, y)
+
+
 def wrapped_partial(func, *args, **kwargs):
     """
 
@@ -279,6 +316,9 @@ def yield_checks(model):
 
     if hasattr(model, "debug_one"):
         checks.append(check_debug_one)
+
+    if model._is_stochastic:
+        checks.append(check_seeding_is_idempotent)
 
     # Classifier checks
     if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
