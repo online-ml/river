@@ -54,7 +54,16 @@ class Metric(abc.ABC):
 
 
 class ClassificationMetric(Metric):
-    """Mother class for all classification metrics."""
+    """Mother class for all classification metrics.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
+    """
 
     def __init__(self, cm: confusion.ConfusionMatrix = None):
         if cm is None:
