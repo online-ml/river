@@ -490,7 +490,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 72.87%
+    Accuracy: 70.47%
 
     References
     ----------
