@@ -175,6 +175,27 @@ class HalfSpaceTrees(base.AnomalyDetector):
         """The largest potential anomaly score."""
         return self.n_trees * self.window_size * (2 ** (self.height + 1) - 1)
 
+    @staticmethod
+    def _iter_tree_path(tree, x):
+        """Same as tree.path(x) but handles missing features.
+
+        Normally we could just use a tree's path function. However, we want to handle the case
+        where a split feature is missing. In that case, we go down the child that has been the most
+        visited in the past.
+
+        """
+        node = tree
+        yield node
+        while isinstance(node, Branch):
+            try:
+                node = node.next(x)
+            except KeyError:
+                if node.right.l_mass > node.left.l_mass:
+                    node = node.right
+                else:
+                    node = node.left
+            yield node
+
     def learn_one(self, x):
 
         # The trees are built when the first observation comes in
@@ -194,7 +215,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
         # Update each tree
         for tree in self.trees:
-            for node in tree.path(x):
+            for node in self._iter_tree_path(tree, x):
                 node.l_mass += 1
 
         # Pivot the masses if necessary
@@ -216,7 +237,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
         score = 0.0
         for tree in self.trees:
-            for depth, node in enumerate(tree.path(x)):
+            for depth, node in enumerate(self._iter_tree_path(tree, x)):
                 score += node.r_mass * 2 ** depth
                 if node.r_mass < self.size_limit:
                     break

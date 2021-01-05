@@ -19,7 +19,7 @@ def load_metrics():
 
     for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
 
-        if name == "Metric":
+        if inspect.isabstract(obj):
             continue
 
         if issubclass(obj, metrics.Rolling):
