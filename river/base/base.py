@@ -6,6 +6,16 @@ import typing
 
 
 class Base:
+    """Base class that is inherited by the majority of classes in River.
+
+    This base class allows us to handle the following tasks in a uniform manner:
+
+    - Getting and setting parameters.
+    - Displaying information.
+    - Cloning.
+
+    """
+
     def __str__(self):
         return self.__class__.__name__
 
