@@ -236,7 +236,6 @@ class Bandit(base.EnsembleMixin):
 
 
 class EpsilonGreedyBandit(Bandit):
-
     def __init__(
         self,
         models: typing.List[base.Estimator],
