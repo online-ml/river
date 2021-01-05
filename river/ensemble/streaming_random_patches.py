@@ -82,7 +82,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 76.88%
+    Accuracy: 76.78%
 
     References
     ----------
@@ -107,18 +107,31 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
 
     def __init__(
         self,
-        model=HoeffdingTreeClassifier(grace_period=50, split_confidence=0.01),
+        model: base.Classifier = None,
         n_models: int = 100,
         subspace_size: typing.Union[int, float, str] = 0.6,
         training_method: str = "patches",
         lam: float = 6.0,
-        drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=1e-5),
-        warning_detector: base.DriftDetector = ADWIN(delta=1e-4),
+        drift_detector: base.DriftDetector = None,
+        warning_detector: base.DriftDetector = None,
         disable_weighted_vote: bool = False,
         nominal_attributes=None,
         seed=None,
-        metric: MultiClassMetric = Accuracy(),
+        metric: MultiClassMetric = None,
     ):
+
+        if model is None:
+            model = HoeffdingTreeClassifier(grace_period=50, split_confidence=0.01)
+
+        if drift_detector is None:
+            drift_detector = ADWIN(delta=1e-5)
+
+        if warning_detector is None:
+            warning_detector = ADWIN(delta=1e-4)
+
+        if metric is None:
+            metric = Accuracy()
+
         super().__init__([None])  # List of models is properly initialized later
         self.models = []
         self.model = model  # Not restricted to a specific base estimator.
