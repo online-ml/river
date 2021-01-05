@@ -7,7 +7,9 @@ predictive methods over time.
 
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
+from .base import ClassificationMetric
 from .base import Metric
+from .base import RegressionMetric
 from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
@@ -64,6 +66,7 @@ from ._performance_evaluator import _RollingMTRegressionReport  # noqa: F401
 __all__ = [
     "Accuracy",
     "BalancedAccuracy",
+    "ClassificationMetric",
     "ClassificationReport",
     "CohenKappa",
     "ConfusionMatrix",
@@ -97,6 +100,7 @@ __all__ = [
     "MSE",
     "Precision",
     "Recall",
+    "RegressionMetric",
     "RegressionMultiOutput",
     "RMSE",
     "RMSLE",

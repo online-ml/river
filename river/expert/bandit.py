@@ -371,13 +371,17 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     def __init__(
         self,
         models: typing.List[base.Estimator],
-        metric: metrics.Metric = metrics.MAE(),
+        metric: metrics.RegressionMetric = None,
         epsilon: float = 0.1,
         epsilon_decay: float = None,
         explore_each_arm: int = 3,
         start_after: int = 20,
         seed: int = None,
     ):
+
+        if metric is None:
+            metric = metrics.MAE()
+
         super().__init__(
             models=models,
             metric=metric,
@@ -418,6 +422,7 @@ class UCBBandit(Bandit):
         start_after: int = 20,
         seed: int = None,
     ):
+
         if explore_each_arm < 1:
             raise ValueError("Argument 'explore_each_arm' should be >= 1")
         super().__init__(
@@ -548,12 +553,16 @@ class UCBRegressor(UCBBandit, base.Regressor):
     def __init__(
         self,
         models: typing.List[base.Estimator],
-        metric: metrics.Metric = metrics.MAE(),
+        metric: metrics.RegressionMetric = None,
         delta: float = None,
         explore_each_arm: int = 1,
         start_after: int = 20,
         seed: int = None,
     ):
+
+        if metric is None:
+            metric = metrics.MAE()
+
         super().__init__(
             models=models,
             metric=metric,
