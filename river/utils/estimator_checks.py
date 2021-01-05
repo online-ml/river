@@ -232,11 +232,7 @@ def seed_params(params, seed):
     """Looks for "seed" keys and sets the value."""
 
     def is_class_param(param):
-        return (
-            isinstance(param, tuple) and
-            inspect.isclass(param[0]) and
-            isinstance(param[1], dict)
-        )
+        return isinstance(param, tuple) and inspect.isclass(param[0]) and isinstance(param[1], dict)
 
     if is_class_param(params):
         return params[0], seed_params(params[1], seed)
@@ -245,8 +241,7 @@ def seed_params(params, seed):
         return params
 
     return {
-        name: seed if name == 'seed' else seed_params(param, seed)
-        for name, param in params.items()
+        name: seed if name == "seed" else seed_params(param, seed) for name, param in params.items()
     }
 
 

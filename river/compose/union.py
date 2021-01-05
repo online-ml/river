@@ -147,7 +147,7 @@ class TransformerUnion(base.Transformer):
     def _get_params(self):
         return {name: transformer._get_params() for name, transformer in self.transformers.items()}
 
-    def _set_params(self, new_params : dict = None):
+    def _set_params(self, new_params: dict = None):
 
         if new_params is None:
             new_params = {}
