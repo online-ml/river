@@ -146,23 +146,25 @@ class Base:
 
         def is_class_param(param):
             return (
-                isinstance(param, tuple) and
-                inspect.isclass(param[0]) and
-                isinstance(param[1], dict)
+                isinstance(param, tuple)
+                and inspect.isclass(param[0])
+                and isinstance(param[1], dict)
             )
 
         def instantiate(klass, params, new_params):
 
             params = {name: new_params.get(name, param) for name, param in params.items()}
 
-            return klass(**{
-                name: (
-                    instantiate(klass=param[0], params=param[1], new_params={})
-                    if is_class_param(param) else
-                    copy.deepcopy(param)
-                )
-                for name, param in params.items()
-            })
+            return klass(
+                **{
+                    name: (
+                        instantiate(klass=param[0], params=param[1], new_params={})
+                        if is_class_param(param)
+                        else copy.deepcopy(param)
+                    )
+                    for name, param in params.items()
+                }
+            )
 
         if new_params is None:
             new_params = {}
@@ -200,9 +202,9 @@ class Base:
 
         def is_class_param(param):
             return (
-                isinstance(param, tuple) and
-                inspect.isclass(param[0]) and
-                isinstance(param[1], dict)
+                isinstance(param, tuple)
+                and inspect.isclass(param[0])
+                and isinstance(param[1], dict)
             )
 
         def find(params):
