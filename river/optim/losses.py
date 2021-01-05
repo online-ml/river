@@ -35,11 +35,11 @@ def clamp_proba(p):
     return max(min(p, 1 - 1e-15), 1e-15)
 
 
-class Loss(abc.ABC):
+class Loss(base.Base, abc.ABC):
     """Base class for all loss functions."""
 
-    def __str__(self):
-        return self.__class__.__name__
+    def __repr__(self):
+        return f"{self.__class__.__name__}({vars(self)})"
 
     @abc.abstractmethod
     def __call__(self, y_true, y_pred):
