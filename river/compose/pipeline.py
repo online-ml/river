@@ -24,7 +24,7 @@ class Pipeline(base.Estimator):
     learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or
     a classifier. It is highly recommended to use pipelines with `river`. Indeed, in an online
     learning setting, it is very practical to have a model defined as a single object. Take a look
-    at the [user guide](/user-guide/the-art-of-using-pipelines) for further information and
+    at the [user guide](../user-guide/the-art-of-using-pipelines.md) for further information and
     practical examples.
 
     One special thing to take notice to is the way transformers are handled. In a typical scenario,
@@ -217,11 +217,13 @@ class Pipeline(base.Estimator):
         ).expandtabs(2)
 
     def _get_params(self):
-        return dict(self.steps.items())
+        return {name: step._get_params() for name, step in self.steps.items()}
 
-    def _set_params(self, new_params=None):
+    def _set_params(self, new_params: dict = None):
+
         if new_params is None:
             new_params = {}
+
         return Pipeline(
             *[
                 (name, new_params[name])

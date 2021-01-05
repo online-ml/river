@@ -145,11 +145,13 @@ class TransformerUnion(base.Transformer):
         ).expandtabs(2)
 
     def _get_params(self):
-        return dict(self.transformers.items())
+        return {name: transformer._get_params() for name, transformer in self.transformers.items()}
 
-    def _set_params(self, new_params=None):
+    def _set_params(self, new_params : dict = None):
+
         if new_params is None:
             new_params = {}
+
         return TransformerUnion(
             *[
                 (name, new_params[name])
