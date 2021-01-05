@@ -91,10 +91,10 @@ class ConceptDriftStream(base.SyntheticDataset):
     ):
 
         if stream is None:
-            stream = Agrawal(seed=112)
+            stream = Agrawal(seed=seed)
 
         if drift_stream is None:
-            drift_stream = Agrawal(seed=112, classification_function=2)
+            drift_stream = Agrawal(seed=seed, classification_function=2)
 
         # Fairly simple check for consistent number of features
         if stream.n_features != drift_stream.n_features:
