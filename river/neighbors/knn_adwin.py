@@ -50,7 +50,7 @@ class KNNADWINClassifier(KNNClassifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 57.36%
+    Accuracy: 56.66%
 
     """
 
