@@ -265,7 +265,7 @@ class Clustream(base.Clusterer):
         closest_kernel_index = -1
         for i, micro_cluster in micro_clusters.items():
         closest_kernel = None
-            distance = ... #TODO
+            distance = _distance(micro_cluster.ger_center(), x)
             if distance < min_distance:
                 min_distance = distance
                 closest_kernel = micro_cluster
