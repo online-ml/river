@@ -239,7 +239,7 @@ class Clustream(base.Clusterer):
         return y
 
     @staticmethod
-    def _get_closest_kernel(x, micro_clusters):
+    def _get_closest_kernel(selƒ, x, micro_clusters):
         """
 
         Parameters
@@ -262,10 +262,10 @@ class Clustream(base.Clusterer):
         """
 
         min_distance = sys.float_info.max
+        closest_kernel = None
         closest_kernel_index = -1
         for i, micro_cluster in micro_clusters.items():
-        closest_kernel = None
-            distance = _distance(micro_cluster.ger_center(), x)
+            distance = self._distance(micro_cluster.ger_center(), x)
             if distance < min_distance:
                 min_distance = distance
                 closest_kernel = micro_cluster
