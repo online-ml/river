@@ -46,11 +46,11 @@ class Clustream(base.Clusterer):
        for stream mining
 
     """
-    def __init__(self, random_state=None,
-                 time_window=1000,
-                 max_kernels=100,
-                 kernel_radius_factor=2,
-                 number_of_clusters=5):
+    def __init__(self, random_state:int=None,
+                 time_window:int=1000,
+                 max_kernels:int=100,
+                 kernel_radius_factor:int=2,
+                 number_of_clusters:int=5):
         super().__init__()
         self.time_window = time_window
         self.time_stamp = -1
@@ -210,7 +210,7 @@ class Clustream(base.Clusterer):
 
         Returns
         -------
-        index
+        y
             Integer
             Cluster label
         """
