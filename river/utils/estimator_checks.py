@@ -213,9 +213,23 @@ def check_set_params_idempotent(model):
     assert len(model.__dict__) == len(model._set_params().__dict__)
 
 
-def check_init(model):
+def check_init_has_default_params_for_tests(model):
     params = model._unit_test_params()
     assert isinstance(model.__class__(**params), model.__class__)
+
+
+def check_init_default_params_are_not_mutable(model):
+    """Mutable parameters in signatures are discouraged, as explained in
+    https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments
+
+    We enforce immutable parameters by only allowing a certain list of basic types.
+
+    """
+
+    allowed = (type(None), float, int, tuple, str, bool, type)
+
+    for param in inspect.signature(model.__class__).parameters.values():
+        assert param.default is inspect._empty or isinstance(param.default, allowed)
 
 
 def check_doc(model):
@@ -296,7 +310,8 @@ def yield_checks(model):
     yield check_str
     yield check_tags
     yield check_set_params_idempotent
-    yield check_init
+    yield check_init_has_default_params_for_tests
+    yield check_init_default_params_are_not_mutable
     yield check_doc
     yield check_clone
 
