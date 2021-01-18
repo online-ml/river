@@ -1,6 +1,7 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
+import inspect
 import math
 import pickle
 import random
@@ -212,9 +213,23 @@ def check_set_params_idempotent(model):
     assert len(model.__dict__) == len(model._set_params().__dict__)
 
 
-def check_init(model):
+def check_init_has_default_params_for_tests(model):
     params = model._unit_test_params()
     assert isinstance(model.__class__(**params), model.__class__)
+
+
+def check_init_default_params_are_not_mutable(model):
+    """Mutable parameters in signatures are discouraged, as explained in
+    https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments
+
+    We enforce immutable parameters by only allowing a certain list of basic types.
+
+    """
+
+    allowed = (type(None), float, int, tuple, str, bool, type)
+
+    for param in inspect.signature(model.__class__).parameters.values():
+        assert param.default is inspect._empty or isinstance(param.default, allowed)
 
 
 def check_doc(model):
@@ -225,6 +240,37 @@ def check_clone(model):
     clone = model.clone()
     assert id(clone) != id(model)
     assert dir(clone) == dir(model)
+
+
+def seed_params(params, seed):
+    """Looks for "seed" keys and sets the value."""
+
+    def is_class_param(param):
+        return isinstance(param, tuple) and inspect.isclass(param[0]) and isinstance(param[1], dict)
+
+    if is_class_param(params):
+        return params[0], seed_params(params[1], seed)
+
+    if not isinstance(params, dict):
+        return params
+
+    return {
+        name: seed if name == "seed" else seed_params(param, seed) for name, param in params.items()
+    }
+
+
+def check_seeding_is_idempotent(model, dataset):
+
+    params = model._get_params()
+    seeded_params = seed_params(params, seed=42)
+
+    A = model._set_params(seeded_params)
+    B = model._set_params(seeded_params)
+
+    for x, y in dataset:
+        assert A.predict_one(x) == B.predict_one(x)
+        A.learn_one(x, y)
+        B.learn_one(x, y)
 
 
 def wrapped_partial(func, *args, **kwargs):
@@ -264,7 +310,8 @@ def yield_checks(model):
     yield check_str
     yield check_tags
     yield check_set_params_idempotent
-    yield check_init
+    yield check_init_has_default_params_for_tests
+    yield check_init_default_params_are_not_mutable
     yield check_doc
     yield check_clone
 
@@ -279,6 +326,9 @@ def yield_checks(model):
 
     if hasattr(model, "debug_one"):
         checks.append(check_debug_one)
+
+    if model._is_stochastic:
+        checks.append(check_seeding_is_idempotent)
 
     # Classifier checks
     if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):

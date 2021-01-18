@@ -43,7 +43,6 @@ dev_packages = base_packages + [
     "pre-commit>=2.9.2",
     "pytest>=4.5.0",
     "pytest-cov>=2.6.1",
-    "pytest-cython>=0.1.0",
     "scikit-learn>=0.22.1",
     "sqlalchemy>=1.3.15",
 ]
@@ -82,7 +81,7 @@ setuptools.setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=setuptools.find_packages(exclude=("tests", "scikit-multiflow")),
+    packages=setuptools.find_packages(exclude=("tests",)),
     install_requires=base_packages,
     extras_require={"dev": dev_packages, "compat": compat_packages, "docs": docs_packages},
     include_package_data=True,
@@ -106,6 +105,7 @@ setuptools.setup(
                 sources=["**/*.pyx"],
                 include_dirs=[get_include()],
                 libraries=[] if platform.system() == "Windows" else ["m"],
+                define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
             )
         ],
         compiler_directives={"language_level": 3, "binding": True, "embedsignature": True},
@@ -120,7 +120,7 @@ setuptools.setup(
             ],
             include_dirs=[get_include()],
             libraries=[] if platform.system() == "Windows" else ["m"],
-            language="c++",
+            language="c++"
         )
     ],
 )

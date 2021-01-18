@@ -1,3 +1,4 @@
+import pandas as pd
 import sklearn.utils
 
 from river import base
@@ -53,4 +54,7 @@ def iter_sklearn_dataset(dataset: "sklearn.utils.Bunch", **kwargs) -> base.typin
     except AttributeError:
         pass
 
-    yield from stream.iter_array(**kwargs)
+    if isinstance(kwargs["X"], pd.DataFrame):
+        yield from stream.iter_pandas(**kwargs)
+    else:
+        yield from stream.iter_array(**kwargs)

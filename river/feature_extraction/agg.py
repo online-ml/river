@@ -125,7 +125,7 @@ class Agg(base.Transformer):
 
     References
     ----------
-    [^1]: [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
+    [^1]: [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/pandas-streaming-groupby/)
 
     """
 

@@ -84,7 +84,7 @@ def _iter_synth_datasets():
     synth = importlib.import_module("river.datasets.synth")
     for name, dataset in inspect.getmembers(synth, inspect.isclass):
         # TODO: test the following synth datasets also
-        if name in ("RandomRBF", "RandomRBFDrift", "RandomTree", "ConceptDriftStream"):
+        if name in ("RandomRBF", "RandomRBFDrift", "RandomTree"):
             continue
         yield dataset
 

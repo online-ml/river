@@ -19,7 +19,7 @@ def load_metrics():
 
     for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
 
-        if name == "Metric":
+        if inspect.isabstract(obj):
             continue
 
         if issubclass(obj, metrics.Rolling):
@@ -86,34 +86,43 @@ def partial(f, **kwargs):
 
 TEST_CASES = [
     (metrics.Accuracy(), sk_metrics.accuracy_score),
-    (metrics.Precision(), sk_metrics.precision_score),
-    (metrics.MacroPrecision(), partial(sk_metrics.precision_score, average="macro")),
-    (metrics.MicroPrecision(), partial(sk_metrics.precision_score, average="micro")),
+    (metrics.Precision(), partial(sk_metrics.precision_score, zero_division=0)),
+    (
+        metrics.MacroPrecision(),
+        partial(sk_metrics.precision_score, average="macro", zero_division=0),
+    ),
+    (
+        metrics.MicroPrecision(),
+        partial(sk_metrics.precision_score, average="micro", zero_division=0),
+    ),
     (
         metrics.WeightedPrecision(),
-        partial(sk_metrics.precision_score, average="weighted"),
+        partial(sk_metrics.precision_score, average="weighted", zero_division=0),
     ),
-    (metrics.Recall(), sk_metrics.recall_score),
-    (metrics.MacroRecall(), partial(sk_metrics.recall_score, average="macro")),
-    (metrics.MicroRecall(), partial(sk_metrics.recall_score, average="micro")),
-    (metrics.WeightedRecall(), partial(sk_metrics.recall_score, average="weighted")),
-    (metrics.FBeta(beta=0.5), partial(sk_metrics.fbeta_score, beta=0.5)),
+    (metrics.Recall(), partial(sk_metrics.recall_score, zero_division=0)),
+    (metrics.MacroRecall(), partial(sk_metrics.recall_score, average="macro", zero_division=0)),
+    (metrics.MicroRecall(), partial(sk_metrics.recall_score, average="micro", zero_division=0)),
+    (
+        metrics.WeightedRecall(),
+        partial(sk_metrics.recall_score, average="weighted", zero_division=0),
+    ),
+    (metrics.FBeta(beta=0.5), partial(sk_metrics.fbeta_score, beta=0.5, zero_division=0)),
     (
         metrics.MacroFBeta(beta=0.5),
-        partial(sk_metrics.fbeta_score, beta=0.5, average="macro"),
+        partial(sk_metrics.fbeta_score, beta=0.5, average="macro", zero_division=0),
     ),
     (
         metrics.MicroFBeta(beta=0.5),
-        partial(sk_metrics.fbeta_score, beta=0.5, average="micro"),
+        partial(sk_metrics.fbeta_score, beta=0.5, average="micro", zero_division=0),
     ),
     (
         metrics.WeightedFBeta(beta=0.5),
-        partial(sk_metrics.fbeta_score, beta=0.5, average="weighted"),
+        partial(sk_metrics.fbeta_score, beta=0.5, average="weighted", zero_division=0),
     ),
-    (metrics.F1(), sk_metrics.f1_score),
-    (metrics.MacroF1(), partial(sk_metrics.f1_score, average="macro")),
-    (metrics.MicroF1(), partial(sk_metrics.f1_score, average="micro")),
-    (metrics.WeightedF1(), partial(sk_metrics.f1_score, average="weighted")),
+    (metrics.F1(), partial(sk_metrics.f1_score, zero_division=0)),
+    (metrics.MacroF1(), partial(sk_metrics.f1_score, average="macro", zero_division=0)),
+    (metrics.MicroF1(), partial(sk_metrics.f1_score, average="micro", zero_division=0)),
+    (metrics.WeightedF1(), partial(sk_metrics.f1_score, average="weighted", zero_division=0)),
     (metrics.MCC(), sk_metrics.matthews_corrcoef),
     (metrics.MAE(), sk_metrics.mean_absolute_error),
     (metrics.MSE(), sk_metrics.mean_squared_error),
@@ -128,7 +137,6 @@ TEST_CASES = [
     ],
 )
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
 def test_metric(metric, sk_metric):
 
     # Check str works
@@ -166,7 +174,6 @@ def test_metric(metric, sk_metric):
     ],
 )
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
 def test_rolling_metric(metric, sk_metric):
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
@@ -242,7 +249,6 @@ def test_cross_entropy():
     assert math.isclose(metric.get(), sk_metrics.log_loss(y_true[:-1], y_pred[:-1]))
 
 
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
 def test_multi_fbeta():
 
     fbeta = metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2})
@@ -265,7 +271,6 @@ def test_multi_fbeta():
             assert math.isclose(fbeta.get(), multi_fbeta)
 
 
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
 def test_rolling_multi_fbeta():
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
@@ -295,7 +300,6 @@ def test_rolling_multi_fbeta():
             assert math.isclose(fbeta.get(), multi_fbeta)
 
 
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
 def test_r2():
 
     r2 = metrics.R2()
@@ -348,7 +352,6 @@ def test_r2():
             )
 
 
-@pytest.mark.filterwarnings("ignore::sklearn.metrics.classification.UndefinedMetricWarning")
 def test_rolling_r2():
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)

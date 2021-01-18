@@ -59,7 +59,7 @@ class SAMKNNClassifier(Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 59.90%
+    Accuracy: 56.70%
 
     Notes
     -----

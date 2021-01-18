@@ -12,6 +12,7 @@ import numpy as np
 
 
 __all__ = [
+    "argmax",
     "chain_dot",
     "clamp",
     "dot",
@@ -329,3 +330,14 @@ def sign(x: float):
 
     """
     return -1 if x < 0 else (1 if x > 0 else 0)
+
+
+def argmax(lst: list):
+    """Argmax function.
+
+    Parameters
+    ----------
+    lst
+
+    """
+    return max(range(len(lst)), key=lst.__getitem__)

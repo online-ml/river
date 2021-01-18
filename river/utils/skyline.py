@@ -19,7 +19,7 @@ class Skyline(collections.UserList):
     Examples
     --------
 
-    Here is an example taken from [this](https://maxhalford.github.io/blog/skyline-queries-in-python) blog post.
+    Here is an example taken from [this](https://maxhalford.github.io/blog/skyline-queries/) blog post.
 
     >>> import random
     >>> from river import utils

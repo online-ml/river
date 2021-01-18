@@ -87,7 +87,9 @@ class River2SKLBase(sklearn_base.BaseEstimator, base.WrapperMixin):
 
     @property
     def _wrapped_model(self):
-        return self.estimator
+        return self.river_estimator
+
+    _required_parameters = ["river_estimator"]
 
 
 class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
@@ -95,17 +97,17 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
 
     Parameters
     ----------
-    estimator
+    river_estimator
 
     """
 
-    def __init__(self, estimator: base.Regressor):
+    def __init__(self, river_estimator: base.Regressor):
 
         # Check the estimator is a Regressor
-        if not isinstance(estimator, base.Regressor):
-            raise ValueError("estimator is not a Regressor")
+        if not isinstance(river_estimator, base.Regressor):
+            raise ValueError("river_estimator is not a Regressor")
 
-        self.estimator = estimator
+        self.river_estimator = river_estimator
 
     def _partial_fit(self, X, y):
 
@@ -120,7 +122,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
         if not hasattr(self, "instance_"):
-            self.instance_ = copy.deepcopy(self.estimator)
+            self.instance_ = copy.deepcopy(self.river_estimator)
 
         # Call learn_one for each observation
         for x, yi in STREAM_METHODS[type(X)](X, y):
@@ -206,20 +208,20 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
 
     Parameters
     ----------
-    estimator
+    river_estimator
 
     """
 
-    def __init__(self, estimator: base.Classifier):
+    def __init__(self, river_estimator: base.Classifier):
 
         # Check the estimator is Classifier
-        if not isinstance(estimator, base.Classifier):
+        if not isinstance(river_estimator, base.Classifier):
             raise ValueError("estimator is not a Classifier")
 
-        self.estimator = estimator
+        self.river_estimator = river_estimator
 
     def _more_tags(self):
-        return {"binary_only": not self.estimator._multiclass}
+        return {"binary_only": not self.river_estimator._multiclass}
 
     def _partial_fit(self, X, y, classes):
 
@@ -231,14 +233,15 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
 
         # Check the number of classes agrees with the type of classifier
-        if len(self.classes_) > 2 and not self.estimator._multiclass:
+        if len(self.classes_) > 2 and not self.river_estimator._multiclass:
             # Only a warning for now so tests can pass, see scikit-learn issue
             # https://github.com/scikit-learn/scikit-learn/issues/16798#issuecomment-651784267
             # TODO: change to a ValueError when fixed
             import warnings
 
             warnings.warn(
-                f"more than 2 classes were given but {self.estimator} is a" " binary classifier"
+                f"more than 2 classes were given but {self.river_estimator} is a"
+                " binary classifier"
             )
 
         # Store the number of features so that future inputs can be checked
@@ -254,10 +257,10 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
         if not hasattr(self, "instance_"):
-            self.instance_ = copy.deepcopy(self.estimator)
+            self.instance_ = copy.deepcopy(self.river_estimator)
 
         # river's binary classifiers expects bools or 0/1 values
-        if not self.estimator._multiclass:
+        if not self.river_estimator._multiclass:
             if not hasattr(self, "label_encoder_"):
                 self.label_encoder_ = preprocessing.LabelEncoder().fit(self.classes_)
             y = self.label_encoder_.transform(y)
@@ -390,17 +393,17 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
 
     Parameters
     ----------
-    estimator
+    river_estimator
 
     """
 
-    def __init__(self, estimator: base.Transformer):
+    def __init__(self, river_estimator: base.Transformer):
 
         # Check the estimator is a Transformer
-        if not isinstance(estimator, base.Transformer):
+        if not isinstance(river_estimator, base.Transformer):
             raise ValueError("estimator is not a Transformer")
 
-        self.estimator = estimator
+        self.river_estimator = river_estimator
 
     def _partial_fit(self, X, y):
 
@@ -418,7 +421,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
         if not hasattr(self, "instance_"):
-            self.instance_ = copy.deepcopy(self.estimator)
+            self.instance_ = copy.deepcopy(self.river_estimator)
 
         # Call learn_one for each observation
         if isinstance(self.instance_, base.SupervisedTransformer):
@@ -508,17 +511,17 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
 
     Parameters
     ----------
-    estimator
+    river_estimator
 
     """
 
-    def __init__(self, estimator: base.Clusterer):
+    def __init__(self, river_estimator: base.Clusterer):
 
         # Check the estimator is a Clusterer
-        if not isinstance(estimator, base.Clusterer):
+        if not isinstance(river_estimator, base.Clusterer):
             raise ValueError("estimator is not a Clusterer")
 
-        self.estimator = estimator
+        self.river_estimator = river_estimator
 
     def _partial_fit(self, X, y):
 
@@ -533,7 +536,7 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
         if not hasattr(self, "instance_"):
-            self.instance_ = copy.deepcopy(self.estimator)
+            self.instance_ = copy.deepcopy(self.river_estimator)
 
         # Call learn_one for each observation
         self.labels_ = np.empty(len(X), dtype=np.int32)

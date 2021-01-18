@@ -6,11 +6,21 @@ import typing
 
 
 class Base:
+    """Base class that is inherited by the majority of classes in River.
+
+    This base class allows us to handle the following tasks in a uniform manner:
+
+    - Getting and setting parameters.
+    - Displaying information.
+    - Cloning.
+
+    """
+
     def __str__(self):
         return self.__class__.__name__
 
     def __repr__(self):
-        return _repr_obj(obj=self, params=self._get_params())
+        return _repr_obj(obj=self)
 
     @classmethod
     def _unit_test_params(cls):
@@ -31,31 +41,76 @@ class Base:
         params = {}
 
         for name, param in inspect.signature(self.__init__).parameters.items():
-            if param.kind == param.VAR_KEYWORD:  # handles **kwargs
-                params.update(getattr(self, name))
+
+            # *args
+            if param.kind == param.VAR_POSITIONAL:
+                continue
+
+            # **kwargs
+            if param.kind == param.VAR_KEYWORD:
+                for k, v in getattr(self, name, {}).items():
+                    if isinstance(v, Base):
+                        params[k] = (v.__class__, v._get_params())
+                    else:
+                        params[k] = v
+                continue
+
+            # Keywords parameters
+            attr = getattr(self, name)
+            if isinstance(attr, Base):
+                params[name] = (attr.__class__, attr._get_params())
             else:
-                params[name] = getattr(self, name)
+                params[name] = attr
 
         return params
 
-    def _set_params(
-        self, new_params: typing.Optional[typing.Dict[str, typing.Any]] = None
-    ) -> "Base":
+    def _set_params(self, new_params: dict = None):
         """Return a new instance with the current parameters as well as new ones.
 
         Calling this without any parameters will essentially clone the estimator.
 
-        The algorithm will be recursively called down `Pipeline`s and `TransformerUnion`s.
+        Parameters
+        ----------
+        new_params
 
         Examples
         --------
 
         >>> from river import linear_model
         >>> from river import optim
+
+        >>> model = linear_model.LinearRegression(
+        ...     optimizer=optim.SGD(lr=0.042),
+        ... )
+
+        >>> new_params = {
+        ...     'optimizer': (optim.SGD, {'lr': .001})
+        ... }
+
+        >>> model._set_params(new_params)
+        LinearRegression (
+          optimizer=SGD (
+            lr=Constant (
+              learning_rate=0.001
+            )
+          )
+          loss=Squared ()
+          l2=0.
+          intercept_init=0.
+          intercept_lr=Constant (
+            learning_rate=0.01
+          )
+          clip_gradient=1e+12
+          initializer=Zeros ()
+        )
+
+        The algorithm will be recursively called down `Pipeline`s and `TransformerUnion`s.
+
+        >>> from river import compose
         >>> from river import preprocessing
 
-        >>> model = (
-        ...     preprocessing.StandardScaler() |
+        >>> model = compose.Pipeline(
+        ...     preprocessing.StandardScaler(),
         ...     linear_model.LinearRegression(
         ...         optimizer=optim.SGD(lr=0.042),
         ...     )
@@ -63,7 +118,7 @@ class Base:
 
         >>> new_params = {
         ...     'LinearRegression': {
-        ...         'l2': .001
+        ...         'optimizer': (optim.SGD, {'lr': .03})
         ...     }
         ... }
 
@@ -73,11 +128,11 @@ class Base:
           LinearRegression (
             optimizer=SGD (
               lr=Constant (
-                learning_rate=0.042
+                learning_rate=0.03
               )
             )
             loss=Squared ()
-            l2=0.001
+            l2=0.
             intercept_init=0.
             intercept_lr=Constant (
               learning_rate=0.01
@@ -89,18 +144,32 @@ class Base:
 
         """
 
+        def is_class_param(param):
+            return (
+                isinstance(param, tuple)
+                and inspect.isclass(param[0])
+                and isinstance(param[1], dict)
+            )
+
+        def instantiate(klass, params, new_params):
+
+            params = {name: new_params.get(name, param) for name, param in params.items()}
+
+            return klass(
+                **{
+                    name: (
+                        instantiate(klass=param[0], params=param[1], new_params={})
+                        if is_class_param(param)
+                        else copy.deepcopy(param)
+                    )
+                    for name, param in params.items()
+                }
+            )
+
         if new_params is None:
             new_params = {}
 
-        params = {**self._get_params(), **new_params}
-
-        for name, param in params.items():
-            if isinstance(param, Base):
-                params[name] = param.clone()
-            else:
-                params[name] = copy.deepcopy(param)
-
-        return self.__class__(**params)  # type: ignore
+        return instantiate(self.__class__, self._get_params(), new_params)
 
     def clone(self):
         """Return a fresh estimator with the same parameters.
@@ -118,6 +187,37 @@ class Base:
 
         """
         return self._set_params()
+
+    @property
+    def _is_stochastic(self):
+        """Indicates if the model contains an unset seed parameter.
+
+        The convention in River is to control randomness by exposing a seed parameter. This seed
+        typically defaults to `None`. If the seed is set to `None`, then the model is expected to
+        produce non-reproducible results. In other words it is not deterministic and is instead
+        stochastic. This method checks if this is the case by looking for a None `seed` in the
+        model's parameters.
+
+        """
+
+        def is_class_param(param):
+            return (
+                isinstance(param, tuple)
+                and inspect.isclass(param[0])
+                and isinstance(param[1], dict)
+            )
+
+        def find(params):
+            if not isinstance(params, dict):
+                return False
+            for name, param in params.items():
+                if name == "seed" and param is None:
+                    return True
+                if is_class_param(param) and find(param[1]):
+                    return True
+            return False
+
+        return find(self._get_params())
 
     @property
     def _memory_usage_raw(self) -> int:
@@ -153,7 +253,7 @@ class Base:
         return utils.pretty.humanize_bytes(self._memory_usage_raw)
 
 
-def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> str:
+def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:
     """Return a pretty representation of an object."""
 
     rep = f"{obj.__class__.__name__} ("
@@ -161,17 +261,16 @@ def _repr_obj(obj, params=None, show_modules: bool = False, depth: int = 0) -> s
         rep = f"{obj.__class__.__module__}.{rep}"
     tab = "\t"
 
-    if params is None:
-        params = {
-            name: getattr(obj, name)
-            for name, param in inspect.signature(obj.__init__).parameters.items()  # type: ignore
-            if not (
-                param.name == "args"
-                and param.kind == param.VAR_POSITIONAL
-                or param.name == "kwargs"
-                and param.kind == param.VAR_KEYWORD
-            )
-        }
+    params = {
+        name: getattr(obj, name)
+        for name, param in inspect.signature(obj.__init__).parameters.items()  # type: ignore
+        if not (
+            param.name == "args"
+            and param.kind == param.VAR_POSITIONAL
+            or param.name == "kwargs"
+            and param.kind == param.VAR_KEYWORD
+        )
+    }
 
     n_params = 0
 
