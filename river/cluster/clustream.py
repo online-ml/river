@@ -1,6 +1,6 @@
 from river import base
 import math
-from river.cluster.clustream.clustream_kernel import ClustreamKernel
+from river.cluster.clustream_kernel import ClustreamKernel
 import sys
 from sklearn.cluster import KMeans
 import numpy as np
@@ -46,11 +46,11 @@ class Clustream(base.Clusterer):
        for stream mining
 
     """
-    def __init__(self, random_state:int=None,
-                 time_window:int=1000,
-                 max_kernels:int=100,
-                 kernel_radius_factor:int=2,
-                 number_of_clusters:int=5):
+    def __init__(self, random_state:int = None,
+                 time_window:int = 1000,
+                 max_kernels:int = 100,
+                 kernel_radius_factor:int = 2,
+                 number_of_clusters:int = 5):
         super().__init__()
         self.time_window = time_window
         self.time_stamp = -1
@@ -98,7 +98,8 @@ class Clustream(base.Clusterer):
 
         if not self.initialized:
             if len(self.buffer) < self.buffer_size:
-                self.buffer.append(ClustreamKernel(x=x, weight=weight, dimensions=1, timestamp=self.time_stamp, T=self.T, M=self.M))
+                self.buffer[len(self.buffer) + 1] = ClustreamKernel(x=x, weight=weight, dimensions=1, timestamp=self.time_stamp, T=self.T, M=self.M)
+                "self.buffer.append(ClustreamKernel(x=x, weight=weight, dimensions=1, timestamp=self.time_stamp, T=self.T, M=self.M))"
                 return
             else:
                 for i in range(self.buffer_size):

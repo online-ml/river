@@ -15,10 +15,10 @@ class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
 
         self.T = T
         self.M = M
-
+        # check if the new instance has the same length
         if x is None and weight is None and cluster is None and dimensions is not None:
             self.N = 0
-            self.LS = {n: 0.0 for n in range(dimensions)}
+            self.LS = {n: 0.0 for n in range(len(x))}
             self.SS = {n: 0.0 for n in range(dimensions)}
         elif x is not None and weight is not None and dimensions is not None:
             super().__init__(x=x, weight=weight, dimensions=dimensions)
