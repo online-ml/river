@@ -161,7 +161,7 @@ Here are some benefits of using River (and online machine learning in general):
 
 ## 🔗 Useful links
 
-- [Documentation](https://online-ml.github.io/)
+- [Documentation](https://riverml.xyz)
 - [Benchmarks](https://github.com/online-ml/river/tree/master/benchmarks)
 - [Issue tracker](https://github.com/online-ml/river/issues)
 - [Package releases](https://pypi.org/project/river/#history)
