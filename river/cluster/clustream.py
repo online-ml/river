@@ -169,7 +169,7 @@ class Clustream(base.Clusterer):
         radius = 0.0
         if closest_kernel.weight == 1:
             radius = sys.float_info.max
-            center = claddosest_kernel.center
+            center = closest_kernel.center
             for i in range(len(self.kernels)):
                 if self.kernels[i] == closest_kernel:
                     continue

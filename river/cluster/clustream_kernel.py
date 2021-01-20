@@ -1,5 +1,3 @@
-import collections
-
 from river import base
 from abc import ABCMeta, abstractmethod
 import math
@@ -9,7 +7,8 @@ MIN_VARIANCE = 1e-50
 
 # from file clustream_kernel.py in scikit-multiflow/clustering
 
-class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
+
+class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
 
     def __init__(self, x=None, sample_weight=None, cluster=None, timestamp=None, T=None, M=None):
         super().__init__()
@@ -20,7 +19,7 @@ class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
         # check if the new instance has the same length
         # remove the case that x is None, because it would be impossible to get len(x)
         if x is not None and sample_weight is not None:
-            super().__init__(x=x, weight=sample_weight)
+            super().__init__(x=x, sample_weight=sample_weight)
             self.N = 1
             self.LS = {}
             self.SS = {}
@@ -36,7 +35,6 @@ class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
             self.SS = cluster.SS.copy()
             self.LST = cluster.LST
             self.SST = cluster.SST
-
 
     @property
     def center(self):
@@ -156,4 +154,3 @@ class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
     @abstractmethod
     def get_CF(self):
         return self
-
