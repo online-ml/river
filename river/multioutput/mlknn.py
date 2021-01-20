@@ -20,22 +20,50 @@ def jensen_shannon(p, q, base=None):
     return js
 
 class MLKNN(base.Classifier, base.MultiOutputMixin):
+    """A multi-output model that selects labels based on neighbors in an
+    induced, dense vector space using Bayesian inference. See original
+    publication_.
+
+    .. _publication: https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/pr07.pdf
+    
+    Parameters
+    ----------
+    distance_metric
+        One of the strings 'l2', 'cos', 'js', or a callable which takes two
+        vectors and produces a measure of their distance. 'L2' will use
+        Euclidean distance, 'cos' will use cosine distance, and 'js' will use
+        the Jensen–Shannon divergence for discrete probability distributions.
+    smoothing
+        A parameter selected to prevent overfitting. Reasonable values tend to
+        lie between 0 and 1.
+    n_neighbors
+        The maximum number of neighbors to be used in the selection of
+        candidate labels.
+    window_size
+        The number of samples and labels stored will never exceed window_size.
+        If a value of None is given, the search space will grow arbitrarily
+        large, but also be unbounded. Useful to prevent search in the induced
+        vector space from becoming intractable and for prioritization of the
+        most recent instances encountered during training during prediction.
+    """
+
     __metrics = {
         'l2': lambda u, v: norm(u-v),
         'cos': lambda u, v: u.dot(v) / np.linalg.norm(u) / np.linalg.norm(v),
         'js': jensen_shannon
     }
 
-    def __init__(self, dim=None, distance_metric='l2', smoothing=1.0, n_neighbors=10, window_size=1000):
+    def __init__(self, distance_metric='l2', smoothing=1.0, n_neighbors=10, window_size=1000):
         self.n_neighbors = n_neighbors
         if not callable(distance_metric):
             space = distance_metric.lower()
             if space not in self.__metrics:
                 error = ('''
-                         unrecognized metric for induced vector space:
-                         please provide one of Callable[[dict, dict], float],
-                         'cos', 'l2', or 'js'
-                         ''')
+                         unrecognized metric '{}' for induced vector space:
+                         please provide a function with two vector arguments
+                         for distance computations, or one of 'cos', 'l2', or
+                         'js'
+                         ''').format(space)
                 raise ValueError(' '.join(error.split()))
             distance_metric = self.__metrics[space]
         self.distance_metric = distance_metric
