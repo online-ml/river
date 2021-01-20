@@ -44,7 +44,7 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
         If a value of None is given, the search space will grow arbitrarily
         large, but also be unbounded. Useful to prevent search in the induced
         vector space from becoming intractable and for prioritization of the
-        most recent instances encountered during training during prediction.
+        most recent instances encountered during prediction.
     """
 
     __metrics = {
