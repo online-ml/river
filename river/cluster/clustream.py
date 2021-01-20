@@ -91,11 +91,11 @@ class Clustream(base.Clusterer):
        for stream mining
 
     """
-    def __init__(self, random_state:int = None,
-                 time_window:int = 1000,
-                 max_kernels:int = 100,
-                 kernel_radius_factor:int = 2,
-                 number_of_clusters:int = 5):
+    def __init__(self, random_state: int = None,
+                 time_window: int = 1000,
+                 max_kernels: int = 100,
+                 kernel_radius_factor: int = 2,
+                 number_of_clusters: int = 5):
         super().__init__()
         self.time_window = time_window
         self.time_stamp = -1
@@ -103,7 +103,7 @@ class Clustream(base.Clusterer):
         self.initialized = False
         self.buffer = {}
         self.buffer_size = max_kernels
-        self.centers = {} # add this to retrieve centers later for the evaluation of models through
+        self.centers = {}  # add this to retrieve centers later for the evaluation of models through
         self.T = kernel_radius_factor
         self.M = max_kernels
         self.k = number_of_clusters
@@ -130,6 +130,10 @@ class Clustream(base.Clusterer):
         ----------
         x
             A dictionary of features
+
+        sample_weight
+            Float or dictionary-like
+            Instance weights. If not provided, uniform weights are assumed
 
         """
         if sample_weight is None:
@@ -239,7 +243,7 @@ class Clustream(base.Clusterer):
 
         return kmeans
 
-    def learn_predict_one(self, x, weight = None):
+    def learn_predict_one(self, x, sample_weight=None):
         """
         Compute cluster centers and predict cluster index for each sample.
 
@@ -251,7 +255,7 @@ class Clustream(base.Clusterer):
             A dictionary with n items
             Instance attributes
 
-        weight
+        sample_weight
             Float or dictionary-like
             Instance weights. If not provided, uniform weights are assumed
 
@@ -261,11 +265,11 @@ class Clustream(base.Clusterer):
             Integer
             Cluster label
         """
-        if weight is None:
-            weight = 1.0
-        if weight != 0.0:
-            self._train_weight_seen_by_model += weight
-            self._partial_fit(x, weight)
+        if sample_weight is None:
+            sample_weight = 1.0
+        if sample_weight != 0.0:
+            self._train_weight_seen_by_model += sample_weight
+            self._learn_one(x, sample_weight)
 
         micro_cluster_centers = {}
         for i in len(self.get_micro_clustering_result()):

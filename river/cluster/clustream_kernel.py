@@ -68,9 +68,9 @@ class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
         for i in range(len(self.LS)):
             ls = self.LS[i]
             ss = self.SS[i]
-            ls_div_n = ls / self._weight
+            ls_div_n = ls / self.weight
             ls_div_n_squared = ls_div_n * ls_div_n
-            ss_div_n = ss / self._weight
+            ss_div_n = ss / self.weight
             res[i] = ss_div_n - ls_div_n_squared
 
             if res[i] <= 0.0:
@@ -144,6 +144,7 @@ class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
         self.add_vectors(self.SS, cluster.SS)
 
     # implemented from cluster_feature.py
+    @staticmethod
     def add_vectors(v1, v2):
         assert v1 is not None
         assert v2 is not None
