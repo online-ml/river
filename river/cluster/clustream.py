@@ -5,6 +5,7 @@ import sys
 from sklearn.cluster import KMeans
 import numpy as np
 
+
 class Clustream(base.Clusterer):
     """Clustream
 
@@ -40,6 +41,50 @@ class Clustream(base.Clusterer):
     number_of_clusters: int (Default : 5)
         the clusters returned by the Kmeans algorithm using the summaries statistics
 
+    Attributes
+    ----------
+    centers : dict
+        Central positions of each cluster.
+
+    Examples
+    --------
+
+    In the following implementation, only parameter `number_of_clusters` are modified,
+    while all the remainings are set as default.
+    However, changing other attributes can also significantly affect the result.
+
+    >>> from river import cluster
+    >>> from river import stream
+
+    >>> X = [
+    ...     [1, 2],
+    ...     [1, 4],
+    ...     [1, 0],
+    ...     [4, 2],
+    ...     [4, 4],
+    ...     [4, 0]
+    ... ]
+
+    >>> clustream_test = cluster.Clustream(number_of_clusters = 2)
+
+    >>> for i, (x, _) in enumerate(stream.iter_array(X)):
+    ...     clustream_test = clustream_test.learn_one(x)
+    ...     print(f'{X[i]} is assigned to cluster {clustream_test.predict_one(x)}')
+    [1, 2] is assigned to cluster 1
+    [1, 4] is assigned to cluster 1
+    [1, 0] is assigned to cluster 0
+    [4, 2] is assigned to cluster 0
+    [4, 4] is assigned to cluster 0
+    [4, 0] is assigned to cluster 0
+
+    >>> clustream_test.predict_one({0: 0, 1: 0})
+    1
+
+    >>> clustream_test.predict_one({0: 4, 1: 4})
+    0
+
+    >>> clustream_test.centers #make sure that clustream can return centers under the correct format
+
     References
     ----------
     .. [1] A. Kumar , A. Singh, and R. Singh. An efficient hybrid-clustream algorithm
@@ -58,13 +103,14 @@ class Clustream(base.Clusterer):
         self.initialized = False
         self.buffer = {}
         self.buffer_size = max_kernels
+        self.centers = {} # add this to retrieve centers later for the evaluation of models through
         self.T = kernel_radius_factor
         self.M = max_kernels
         self.k = number_of_clusters
         self._train_weight_seen_by_model = 0.0
         self.random_state = random_state
 
-    def learn_one(self, x, weight=None):
+    def learn_one(self, x, sample_weight=None):
         """Incrementally trains the model. Train samples (instances) are composed of x attributes.
 
         Tasks performed before training:
@@ -86,55 +132,54 @@ class Clustream(base.Clusterer):
             A dictionary of features
 
         """
-        if weight is None:
-            weight = 1.0
-        if weight != 0.0:
-            self._train_weight_seen_by_model = weight
-            self._learn_one(x, weight)
+        if sample_weight is None:
+            sample_weight = 1.0
+        if sample_weight != 0.0:
+            self._train_weight_seen_by_model = sample_weight
+            self._learn_one(x, sample_weight)
 
-    def _learn_one(self, x, weight):
+    def _learn_one(self, x, sample_weight):
 
         self.time_stamp += 1
 
         if not self.initialized:
             if len(self.buffer) < self.buffer_size:
-                self.buffer[len(self.buffer) + 1] = ClustreamKernel(x=x, weight=weight, dimensions=1, timestamp=self.time_stamp, T=self.T, M=self.M)
-                "self.buffer.append(ClustreamKernel(x=x, weight=weight, dimensions=1, timestamp=self.time_stamp, T=self.T, M=self.M))"
+                self.buffer[len(self.buffer) + 1] = ClustreamKernel(x=x, sample_weight=sample_weight,
+                                                                    timestamp=self.time_stamp, T=self.T, M=self.M)
                 return
             else:
                 for i in range(self.buffer_size):
-                    self.kernels[i] = ClustreamKernel(x=self.buffer[i].get_center(), weight=1.0, dimensions=1,
+                    self.kernels[i] = ClustreamKernel(x=self.buffer[i].center, sample_weight=1.0,
                                                       timestamp=self.time_stamp, T=self.T, M=self.M)
             self.buffer.clear()
             self.initialized = True
 
             return
 
-
         """determine closest kernel"""
         closest_kernel = None
         min_distance = sys.float_info.max
         for i in range(len(self.kernels)):
-            distance = self._distance(x, self.kernels[i].get_center())
+            distance = self._distance(x, self.kernels[i].center)
             if distance < min_distance:
                 closest_kernel = self.kernels[i]
                 min_distance = distance
 
         """check whether the instance fits into closest kernel"""
         radius = 0.0
-        if closest_kernel.get_weight() == 1:
+        if closest_kernel.weight == 1:
             radius = sys.float_info.max
-            center = closest_kernel.get_center()
+            center = claddosest_kernel.center
             for i in range(len(self.kernels)):
                 if self.kernels[i] == closest_kernel:
                     continue
-                distance = self._distance(self.kernels[i].get_center(), center)
+                distance = self._distance(self.kernels[i].center, center)
                 radius = min(distance, radius)
         else:
-            radius = closest_kernel.get_radius()
+            radius = closest_kernel.radius
 
         if min_distance < radius:
-            closest_kernel.insert(x, weight, self.time_stamp)
+            closest_kernel.insert(x, sample_weight, self.time_stamp)
 
         """Data does not fit, we need to free some space in order to insert a new kernel"""
 
@@ -142,28 +187,29 @@ class Clustream(base.Clusterer):
 
         """try to delete old kernel"""
         for i in range(len(self.kernels)):
-            if self.kernels[i].get_relevance_stamp() < threshold:
+            if self.kernels[i].relevance_stamp < threshold:
 
-                self.kernels[i] = ClustreamKernel(X=X, weight=weight, dimensions=dim, timestamp=self.time_stamp,
-                                                  T=self.T, M=self.M)
+                self.kernels[i] = ClustreamKernel(x=x, sample_weight=sample_weight,
+                                                  timestamp=self.time_stamp, T=self.T, M=self.M)
 
                 return
 
         """try to merge closest two kernels"""
         closest_a = 0
         closest_b = 0
+        min_distance = sys.float_info.max
         for i in range(len(self.kernels)):
-            center_a = self.kernels[i].get_centers()
-            for j in range(i+1, len(self.kernels())):
-                dist = self._distance(center_a, self.kernels[j].get_center())
+            center_a = self.kernels[i].center
+            for j in range(i+1, len(self.kernels)):
+                dist = self._distance(center_a, self.kernels[j].center)
                 if dist < min_distance:
                     min_distance = dist
                     closest_a = i
                     closest_b = j
         assert closest_a != closest_b
         self.kernels[closest_a].add(self.kernels[closest_b])
-        self.kernels[closest_b] = ClustreamKernel(x=x, weight=weight, dimensions=dim, timestamp=self.time_stamp,
-                                                  T=self.T, M=self.M)
+        self.kernels[closest_b] = ClustreamKernel(x=x, sample_weight=sample_weight,
+                                                  timestamp=self.time_stamp, T=self.T, M=self.M)
 
     def get_micro_clustering_result(self):
 
@@ -179,8 +225,8 @@ class Clustream(base.Clusterer):
         if not self.initialized:
             return {}
         micro_cluster_centers = {}
-        for i in len(self.get_micro_clustering_results()):
-            micro_cluster_centers[i] = self.get_micro_clustering_results()[i].get_center()
+        for i in len(self.get_micro_clustering_result()):
+            micro_cluster_centers[i] = self.get_micro_clustering_result()[i].center
 
         # turn micro_cluster_centers to numpy array to use kmeans
         micro_cluster_centers_np = []
@@ -191,7 +237,7 @@ class Clustream(base.Clusterer):
         # apply kmeans on np.array
         kmeans = KMeans(n_clusters=self.k, random_state=self.random_state).fit(micro_cluster_centers_np)
 
-        return dict(enumerate(kmeans.flatten(), 1)) # convert an numpy array to a dictionary
+        return kmeans
 
     def learn_predict_one(self, x, weight = None):
         """
@@ -222,8 +268,8 @@ class Clustream(base.Clusterer):
             self._partial_fit(x, weight)
 
         micro_cluster_centers = {}
-        for i in len(self.get_micro_clustering_results()):
-            micro_cluster_centers[i] = self.get_micro_clustering_results()[i].get_center()
+        for i in len(self.get_micro_clustering_result()):
+            micro_cluster_centers[i] = self.get_micro_clustering_result()[i].get_center()
 
         # turn micro_cluster_centers to numpy array to use kmeans
         micro_cluster_centers_np = []
@@ -237,10 +283,16 @@ class Clustream(base.Clusterer):
         index, _ = self._get_closest_kernel(x, micro_cluster_centers)
         y = kmeans.labels_[index]
 
+        # modify clusters of numpy type to dict and add in self.centers
+        centers_np = kmeans.cluster_centers_
+        dim = len(x)
+        for i in len(centers_np):
+            self.centers[i] = {j: centers_np[i][j] for j in range(dim)}
+
         return y
 
     @staticmethod
-    def _get_closest_kernel(selƒ, x, micro_clusters):
+    def _get_closest_kernel(x, micro_clusters):
         """
 
         Parameters
@@ -266,7 +318,10 @@ class Clustream(base.Clusterer):
         closest_kernel = None
         closest_kernel_index = -1
         for i, micro_cluster in micro_clusters.items():
-            distance = self._distance(micro_cluster.ger_center(), x)
+            distance = 0
+            for j in range(len(x)):
+                distance += (micro_cluster.center[j] - x[j])**2
+            distance = math.sqrt(distance)
             if distance < min_distance:
                 min_distance = distance
                 closest_kernel = micro_cluster
@@ -277,7 +332,8 @@ class Clustream(base.Clusterer):
     def implements_micro_clustering():
         return True
 
-    def get_name(self):
+    @property
+    def name(self):
         return "clustream" + str(self.time_window)
 
     @staticmethod
@@ -309,8 +365,8 @@ class Clustream(base.Clusterer):
         """
 
         micro_cluster_centers = {}
-        for i in len(self.get_micro_clustering_results()):
-            micro_cluster_centers[i] = self.get_micro_clustering_results()[i].get_center()
+        for i in len(self.get_micro_clustering_result()):
+            micro_cluster_centers[i] = self.get_micro_clustering_result()[i].get_center()
 
         # turn micro_cluster_centers to numpy array to use kmeans
         micro_cluster_centers_np = []
@@ -324,19 +380,10 @@ class Clustream(base.Clusterer):
         index, _ = self._get_closest_kernel(x, micro_cluster_centers)
         y = kmeans.labels_[index]
 
+        # modify clusters of numpy type to dict and add in self.centers
+        centers_np = kmeans.cluster_centers_
+        dim = len(x)
+        for i in len(centers_np):
+            self.centers[i] = {j: centers_np[i][j] for j in range(dim)}
+
         return y
-
-    def predict_proba(self, x):
-        raise NotImplementedError
-
-    def reset(self):
-        raise NotImplementedError
-
-    def score(self, x, y):
-        raise NotImplementedError
-
-    def fit(self, x, y, classes = None, weight = None):
-        raise NotImplementedError
-
-    def get_info(self):
-        raise NotImplementedError

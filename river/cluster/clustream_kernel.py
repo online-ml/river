@@ -2,6 +2,7 @@ import collections
 
 from river import base
 from abc import ABCMeta, abstractmethod
+import math
 
 EPSILON = 0.00005
 MIN_VARIANCE = 1e-50
@@ -10,26 +11,24 @@ MIN_VARIANCE = 1e-50
 
 class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
 
-    def __init__(self, x=None, weight=None, cluster=None, dimensions=None, timestamp=None, T=None, M=None):
+    def __init__(self, x=None, sample_weight=None, cluster=None, timestamp=None, T=None, M=None):
         super().__init__()
 
         self.T = T
         self.M = M
+
         # check if the new instance has the same length
-        if x is None and weight is None and cluster is None and dimensions is not None:
-            self.N = 0
-            self.LS = {n: 0.0 for n in range(len(x))}
-            self.SS = {n: 0.0 for n in range(dimensions)}
-        elif x is not None and weight is not None and dimensions is not None:
-            super().__init__(x=x, weight=weight, dimensions=dimensions)
+        # remove the case that x is None, because it would be impossible to get len(x)
+        if x is not None and sample_weight is not None:
+            super().__init__(x=x, weight=sample_weight)
             self.N = 1
             self.LS = {}
             self.SS = {}
             for i in range(len(x)):
-                self.LS[i] = x[i] * weight
-                self.SS[i] = x[i] * x[i] * weight
-            self.LST = timestamp * weight
-            self.SST = timestamp * timestamp * weight
+                self.LS[i] = x[i] * sample_weight
+                self.SS[i] = x[i] * x[i] * sample_weight
+            self.LST = timestamp * sample_weight
+            self.SST = timestamp * timestamp * sample_weight
         elif cluster is not None:
             super().__init__(cluster=cluster)
             self.N = cluster.N
@@ -38,7 +37,9 @@ class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
             self.LST = cluster.LST
             self.SST = cluster.SST
 
-    def get_center(self):
+
+    @property
+    def center(self):
         assert not self.is_empty()
         res = {n: 0.0 for n in range(len(self.LS))}
         for i in range(len(res)):
@@ -48,27 +49,30 @@ class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
     def is_empty(self):
         return self.N == 0
 
-    def get_radius(self):
+    @property
+    def radius(self):
         if self.N == 1:
             return 0
-        return self.get_deviation() * self.T
+        return self._deviation * self.T
 
-    def get_deviation(self):
-        variance = self.get_variance_vector()
+    @property
+    def _deviation(self):
+        variance = self._variance_vector
         sum_of_deviation = 0
         for i in range(len(variance)):
             d = math.sqrt(variance[i])
             sum_of_deviation += d
         return sum_of_deviation / len(variance)
 
-    def get_variance_vector(self):
+    @property
+    def _variance_vector(self):
         res = {n: 0.0 for n in range(len(self.LS))}
         for i in range(len(self.LS)):
             ls = self.LS[i]
             ss = self.SS[i]
-            ls_div_n = ls / self.get_weight()
+            ls_div_n = ls / self._weight
             ls_div_n_squared = ls_div_n * ls_div_n
-            ss_div_n = ss / self.get_weight()
+            ss_div_n = ss / self._weight
             res[i] = ss_div_n - ls_div_n_squared
 
             if res[i] <= 0.0:
@@ -77,29 +81,33 @@ class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
         return res
 
     # implemented from cluster_feature.py
-    def get_weight(self):
+    @property
+    def weight(self):
         return self.N
 
-    def insert(self, x, weight, timestamp):
-        self.N += weight
-        self.LST += timestamp * weight
-        self.SST += timestamp * weight
+    def insert(self, x, sample_weight, timestamp):
+        self.N += sample_weight
+        self.LST += timestamp * sample_weight
+        self.SST += timestamp * sample_weight
         for i in range(len(x)):
-            self.LS[i] += x[i] * weight
-            self.SS[i] += x[i] * x[i] * weight
+            self.LS[i] += x[i] * sample_weight
+            self.SS[i] += x[i] * x[i] * sample_weight
 
-    def get_relevance_stamp(self):
+    @property
+    def relevance_stamp(self):
         if self.N < 2 * self.M:
-            return self.get_mu_time()
-        return self.get_mu_time() + self.get_sigma_time() * self.get_quantile(float(self.M)/(2 * self.N))
+            return self._mu_time
+        return self._mu_time + self._sigma_time * self._quantile(float(self.M)/(2 * self.N))
 
-    def get_mu_time(self):
+    @property
+    def _mu_time(self):
         return self.LST / self.N
 
-    def get_sigma_time(self):
+    @property
+    def _sigma_time(self):
         return math.sqrt(self.SST/self.N - (self.LST/self.N) * (self.LST/self.N))
 
-    def get_quantile(self, z):
+    def _quantile(self, z):
         assert (z >= 0 and z <= 1)
         return math.sqrt(2) * self.inverse_error(2 * z - 1)
 
@@ -148,7 +156,4 @@ class ClustreamKernel(base.Clusterer, metaclass = ABCMeta):
     @abstractmethod
     def get_CF(self):
         return self
-
-    def sample(self, random_state):
-        raise NotImplementedError
 
