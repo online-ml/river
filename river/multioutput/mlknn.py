@@ -9,8 +9,8 @@ __all__ = [
 ]
 
 def jensen_shannon(p, q, base=None):
-    p = p / norm(p, ord=1)
-    q = q / norm(q, ord=1)
+    p = p / np.linalg.norm(p, ord=1)
+    q = q / np.linalg.norm(q, ord=1)
     m = (p+q) / 2
     rel_entr_p_m = np.log(p/m).sum(axis=0)
     rel_entr_q_m = np.log(q/m).sum(axis=0)
@@ -48,7 +48,7 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
     """
 
     __metrics = {
-        'l2': lambda u, v: norm(u-v),
+        'l2': lambda u, v: np.linalg.norm(u-v),
         'cos': lambda u, v: u.dot(v) / np.linalg.norm(u) / np.linalg.norm(v),
         'js': jensen_shannon
     }
