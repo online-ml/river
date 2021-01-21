@@ -107,7 +107,7 @@ class Clustream(base.Clusterer):
         self.centers = {}  # add this to retrieve centers later for the evaluation of models through
         self.kernel_radius_factor = kernel_radius_factor
         self.max_kernels = max_kernels
-        self.number_of_cluster = number_of_clusters
+        self.number_of_clusters = number_of_clusters
         self._train_weight_seen_by_model = 0.0
         self.seed = seed
 
@@ -239,7 +239,7 @@ class Clustream(base.Clusterer):
         micro_cluster_centers_np = np.array(micro_cluster_centers_np)
 
         # apply kmeans on np.array
-        kmeans = KMeans(n_clusters=self.number_of_cluster, random_state=self.seed).fit(micro_cluster_centers_np)
+        kmeans = KMeans(n_clusters=self.number_of_clusters, random_state=self.seed).fit(micro_cluster_centers_np)
 
         return kmeans
 
@@ -344,7 +344,7 @@ class Clustream(base.Clusterer):
         micro_cluster_centers_np = np.array(micro_cluster_centers_np)
 
         # apply kmeans on np.array
-        kmeans = KMeans(n_clusters=self.number_of_cluster, random_state=self.seed).fit(micro_cluster_centers_np)
+        kmeans = KMeans(n_clusters=self.number_of_clusters, random_state=self.seed).fit(micro_cluster_centers_np)
 
         index, _ = self._get_closest_kernel(x, micro_cluster_centers)
         y = kmeans.labels_[index]
