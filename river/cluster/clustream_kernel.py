@@ -1,5 +1,4 @@
-from river import base
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 import math
 
 EPSILON = 0.00005
@@ -8,7 +7,7 @@ MIN_VARIANCE = 1e-50
 # from file clustream_kernel.py in scikit-multiflow/clustering
 
 
-class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
+class ClustreamKernel(metaclass=ABCMeta):
 
     def __init__(self, x=None, sample_weight=None, cluster=None, timestamp=None, T=None, M=None):
         super().__init__()
@@ -38,7 +37,6 @@ class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
 
     @property
     def center(self):
-        assert not self.is_empty()
         res = {n: 0.0 for n in range(len(self.LS))}
         for i in range(len(res)):
             res[i] = self.LS[i] / self.N
@@ -64,7 +62,7 @@ class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
 
     @property
     def _variance_vector(self):
-        res = {n: 0.0 for n in range(len(self.LS))}
+        res = {}
         for i in range(len(self.LS)):
             ls = self.LS[i]
             ss = self.SS[i]
@@ -78,7 +76,6 @@ class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
                     res[i] = MIN_VARIANCE
         return res
 
-    # implemented from cluster_feature.py
     @property
     def weight(self):
         return self.N
@@ -106,7 +103,7 @@ class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
         return math.sqrt(self.SST/self.N - (self.LST/self.N) * (self.LST/self.N))
 
     def _quantile(self, z):
-        assert (z >= 0 and z <= 1)
+        assert 0 <= z <= 1
         return math.sqrt(2) * self.inverse_error(2 * z - 1)
 
     @staticmethod
@@ -143,7 +140,6 @@ class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
         self.add_vectors(self.LS, cluster.LS)
         self.add_vectors(self.SS, cluster.SS)
 
-    # implemented from cluster_feature.py
     @staticmethod
     def add_vectors(v1, v2):
         assert v1 is not None
@@ -151,7 +147,3 @@ class ClustreamKernel(base.Clusterer, metaclass=ABCMeta):
         assert len(v1) == len(v2)
         for i in range(len(v1)):
             v1[i] += v2[i]
-
-    @abstractmethod
-    def get_CF(self):
-        return self
