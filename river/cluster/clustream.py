@@ -93,7 +93,7 @@ class Clustream(base.Clusterer):
 
     """
     def __init__(self, seed: int = None,
-                 time_window: int = 1000, 
+                 time_window: int = 1000,
                  max_kernels: int = 100,
                  kernel_radius_factor: int = 2,
                  number_of_clusters: int = 5):
@@ -216,6 +216,8 @@ class Clustream(base.Clusterer):
         self.kernels[closest_b] = ClustreamKernel(x=x, sample_weight=sample_weight,
                                                   timestamp=self.time_stamp,
                                                   T=self.kernel_radius_factor, M=self.max_kernels)
+
+        return self
 
     def get_micro_clustering_result(self):
 
