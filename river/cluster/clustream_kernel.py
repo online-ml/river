@@ -10,7 +10,6 @@ MIN_VARIANCE = 1e-50
 class ClustreamKernel(metaclass=ABCMeta):
 
     def __init__(self, x=None, sample_weight=None, cluster=None, timestamp=None, T=None, M=None):
-        # super().__init__()
 
         self.T = T
         self.M = M
@@ -18,7 +17,6 @@ class ClustreamKernel(metaclass=ABCMeta):
         # check if the new instance has the same length
         # remove the case that x is None, because it would be impossible to get len(x)
         if x is not None and sample_weight is not None:
-            # super().__init__(x=x, sample_weight=sample_weight)
             self.N = 1
             self.LS = {}
             self.SS = {}
@@ -28,7 +26,6 @@ class ClustreamKernel(metaclass=ABCMeta):
             self.LST = timestamp * sample_weight
             self.SST = timestamp * timestamp * sample_weight
         elif cluster is not None:
-            # super().__init__(cluster=cluster)
             self.N = cluster.N
             self.LS = cluster.LS.copy()
             self.SS = cluster.SS.copy()
