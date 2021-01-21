@@ -34,9 +34,7 @@ class ClustreamKernel(metaclass=ABCMeta):
 
     @property
     def center(self):
-        res = {n: 0.0 for n in range(len(self.LS))}
-        for i in range(len(res)):
-            res[i] = self.LS[i] / self.N
+        res = {i: self.LS[i] / self.N for i in range(len(self.LS))}
         return res
 
     def is_empty(self):

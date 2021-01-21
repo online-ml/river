@@ -93,7 +93,7 @@ class Clustream(base.Clusterer):
 
     """
     def __init__(self, seed: int = None,
-                 time_window: int = 1000,
+                 time_window: int = 1000, 
                  max_kernels: int = 100,
                  kernel_radius_factor: int = 2,
                  number_of_clusters: int = 5):
@@ -185,6 +185,7 @@ class Clustream(base.Clusterer):
 
         if min_distance < radius:
             closest_kernel.insert(x, sample_weight, self.time_stamp)
+            return
 
         """Data does not fit, we need to free some space in order to insert a new kernel"""
 
@@ -193,7 +194,6 @@ class Clustream(base.Clusterer):
         """try to delete old kernel"""
         for i, kernel in self.kernels.items():
             if kernel.relevance_stamp < threshold:
-
                 self.kernels[i] = ClustreamKernel(x=x, sample_weight=sample_weight,
                                                   timestamp=self.time_stamp,
                                                   T=self.kernel_radius_factor, M=self.max_kernels)
@@ -205,9 +205,9 @@ class Clustream(base.Clusterer):
         closest_b = 0
         min_distance = sys.float_info.max
         for i, kernel_i in self.kernels.items():
-            center_a = self.kernels[i].center
+            center_a = kernel_i.center
             for j, kernel_j in self.kernels.items():
-                dist = self._distance(center_a, self.kernels[j].center)
+                dist = self._distance(center_a, kernel_j.center)
                 if dist < min_distance and j > i:
                     min_distance = dist
                     closest_a = i
