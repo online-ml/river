@@ -8,16 +8,18 @@ __all__ = [
     "MLKNN",
 ]
 
+
 def jensen_shannon(p, q, base=None):
     p = p / np.linalg.norm(p, ord=1)
     q = q / np.linalg.norm(q, ord=1)
-    m = (p+q) / 2
-    rel_entr_p_m = np.log(p/m).sum(axis=0)
-    rel_entr_q_m = np.log(q/m).sum(axis=0)
+    m = (p + q) / 2
+    rel_entr_p_m = np.log(p / m).sum(axis=0)
+    rel_entr_q_m = np.log(q / m).sum(axis=0)
     js = (rel_entr_p_m + rel_entr_q_m) / 2
     if base is not None:
         js /= np.log(base)
     return js
+
 
 class MLKNN(base.Classifier, base.MultiOutputMixin):
     """A multi-output model that selects labels based on neighbors in an
@@ -25,7 +27,7 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
     publication_.
 
     .. _publication: https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/pr07.pdf
-    
+
     Parameters
     ----------
     distance_metric
@@ -48,23 +50,27 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
     """
 
     __metrics = {
-        'l2': lambda u, v: np.linalg.norm(u-v),
-        'cos': lambda u, v: u.dot(v) / np.linalg.norm(u) / np.linalg.norm(v),
-        'js': jensen_shannon
+        "l2": lambda u, v: np.linalg.norm(u - v),
+        "cos": lambda u, v: u.dot(v) / np.linalg.norm(u) / np.linalg.norm(v),
+        "js": jensen_shannon,
     }
 
-    def __init__(self, distance_metric='l2', smoothing=1.0, n_neighbors=10, window_size=1000):
+    def __init__(
+        self, distance_metric="l2", smoothing=1.0, n_neighbors=10, window_size=1000
+    ):
         self.n_neighbors = n_neighbors
         if not callable(distance_metric):
             space = distance_metric.lower()
             if space not in self.__metrics:
-                error = ('''
+                error = (
+                    """
                          unrecognized metric '{}' for induced vector space:
                          please provide a function with two vector arguments
                          for distance computations, or one of 'cos', 'l2', or
                          'js'
-                         ''').format(space)
-                raise ValueError(' '.join(error.split()))
+                         """
+                ).format(space)
+                raise ValueError(" ".join(error.split()))
             distance_metric = self.__metrics[space]
         self.distance_metric = distance_metric
         self.smoothing = smoothing
@@ -93,9 +99,9 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
         n = len(self.Y)
         for l in labels:
             k = positives[l]
-            p = (s+k) / (s*2+n)
+            p = (s + k) / (s * 2 + n)
             positive_priors[l] = p
-            negative_priors[l] = 1-p
+            negative_priors[l] = 1 - p
         return positive_priors, negative_priors
 
     def _knn_query(self, x, k=None):
@@ -136,8 +142,8 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
         neighbor_distances += neighbor_distances.min()
         neighbor_distances /= np.linalg.norm(neighbor_distances)
         for l, ci in deltas.items():
-            c0 = np.zeros(k+1)
-            c1 = np.zeros(k+1)
+            c0 = np.zeros(k + 1)
+            c1 = np.zeros(k + 1)
             for yi, yd in zip(neighbor_ids, neighbor_distances):
                 y = Y[yi]
                 c = c1 if l in y and y[l] else c0
@@ -145,11 +151,11 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
                 # always incremented by one. instead of being a true "count,"
                 # this implementation adds 2 for very similar entries, and
                 # adds 1/2 for less similar entries.
-                c[ci] += 2 * (1-yd)
-            n0 = s*k + np.sum(c0)
-            n1 = s*k + np.sum(c1)
-            p0 = (s+c0) / n0
-            p1 = (s+c1) / n1
+                c[ci] += 2 * (1 - yd)
+            n0 = s * k + np.sum(c0)
+            n1 = s * k + np.sum(c1)
+            p0 = (s + c0) / n0
+            p1 = (s + c1) / n1
             positive_posteriors[l] = p1
             negative_posteriors[l] = p0
         return positive_posteriors, negative_posteriors
@@ -202,8 +208,9 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
             distance_metric=self.distance_metric,
             smoothing=self.smoothing,
             n_neighbors=self.n_neighbors,
-            window_size=self.window_size
+            window_size=self.window_size,
         )
+
 
 def crossvalidate():
     from sklearn import datasets
@@ -213,18 +220,18 @@ def crossvalidate():
     from river.stream import iter_sklearn_dataset
     from river.metrics import HammingLoss
 
-    print('retrieve dataset...')
-    samples = datasets.fetch_openml('yeast', version=4)
-    print('initialize candidates...')
+    print("retrieve dataset...")
+    samples = datasets.fetch_openml("yeast", version=4)
+    print("initialize candidates...")
     logreg = LogisticRegression()
     baseline = ClassifierChain(model=logreg, order=list(range(14)))
-    mlknn = MLKNN(distance_metric='cos', window_size=len(samples))
+    mlknn = MLKNN(distance_metric="cos", window_size=len(samples))
     dataset = iter_sklearn_dataset(dataset=samples, shuffle=True, seed=42)
     mlknn_performance = HammingLoss()
     baseline_performance = HammingLoss()
-    print('evaluate ML-KNN vs baseline...')
+    print("evaluate ML-KNN vs baseline...")
     for x, y in tqdm(dataset, total=len(samples.data)):
-        y = {i: p == 'TRUE' for i, (t, p) in enumerate(y.items())}
+        y = {i: p == "TRUE" for i, (t, p) in enumerate(y.items())}
         baseline.learn_one(x, y)
         # evaluate/train baseline
         y_hat_baseline = baseline.predict_one(x)
@@ -235,10 +242,9 @@ def crossvalidate():
         y_hat_mlknn.update({t: False for t in y.keys() if t not in y_hat_mlknn})
         mlknn_performance.update(y, y_hat_mlknn)
 
-    print(f'ClassifierChain: {baseline_performance}')
-    print(f'MLKNN: {mlknn_performance}')
+    print(f"ClassifierChain: {baseline_performance}")
+    print(f"MLKNN: {mlknn_performance}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     crossvalidate()
-
-
