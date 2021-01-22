@@ -10,5 +10,5 @@ __all__ = [
     "MonteCarloClassifierChain",
     "ProbabilisticClassifierChain",
     "RegressorChain",
-    "MLKNN"
+    "MLKNN",
 ]
