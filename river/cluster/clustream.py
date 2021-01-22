@@ -65,25 +65,23 @@ class Clustream(base.Clusterer):
     ...     [4, 0]
     ... ]
 
-    >>> clustream_test = cluster.Clustream(number_of_clusters = 2)
+    >>> clustream_test = cluster.Clustream(time_window = 1, max_kernels = 3, number_of_clusters = 2)
 
     >>> for i, (x, _) in enumerate(stream.iter_array(X)):
-    ...     clustream_test = clustream_test.learn_one(x)
-    ...     print(f'{X[i]} is assigned to cluster {clustream_test.predict_one(x)}')
-    [1, 2] is assigned to cluster 1
-    [1, 4] is assigned to cluster 1
-    [1, 0] is assigned to cluster 0
-    [4, 2] is assigned to cluster 0
-    [4, 4] is assigned to cluster 0
-    [4, 0] is assigned to cluster 0
+    ...     clustream_test.learn_one(x)
+    Clustream (
+      seed=None
+      time_window=1
+      max_kernels=3
+      kernel_radius_factor=2
+      number_of_clusters=2
+    )
 
-    >>> clustream_test.predict_one({0: 0, 1: 0})
-    1
-
-    >>> clustream_test.predict_one({0: 4, 1: 4})
+    >>> clustream_test.predict_one({0: 1, 1: 1})
     0
 
-    >>> clustream_test.centers #make sure that clustream can return centers under the correct format
+    >>> clustream_test.predict_one({0: 4, 1: 3})
+    1
 
     References
     ----------
@@ -148,8 +146,8 @@ class Clustream(base.Clusterer):
         if not self.initialized:
             if len(self.buffer) < self.buffer_size:
                 self.buffer[len(self.buffer)] = ClustreamKernel(x=x, sample_weight=sample_weight,
-                                                                    timestamp=self.time_stamp,
-                                                                    T=self.kernel_radius_factor, M=self.max_kernels)
+                                                                timestamp=self.time_stamp,
+                                                                T=self.kernel_radius_factor, M=self.max_kernels)
                 return
             else:
                 for i in range(self.buffer_size):
