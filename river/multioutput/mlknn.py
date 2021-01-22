@@ -76,8 +76,6 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
         self.dim = None
 
         self._priors = None
-        self._posteriors = None
-        self._deltas = None
 
     def labels(self):
         positives = self.positive_frequencies
@@ -173,30 +171,17 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
         self.Y.append(y)
 
         self._priors = None
-        self._posteriors = None
-        self._deltas = None
 
     def predict_proba_one(self, x):
         # memoize and retrieve deltas, priors, and posteriors if no training
         # has occurred since last prediction
-        if self._deltas is None:
-            deltas = self._compute_membership_counts(x)
-            self._deltas = deltas
-        else:
-            deltas = self._deltas
-
-        if self._posteriors is None:
-            pe1s, pe0s = self._compute_posteriors(x, deltas)
-            self._posteriors = pe1s, pe0s
-        else:
-            pe1s, pe0s = self._posteriors
- 
+        deltas = self._compute_membership_counts(x)
+        pe1s, pe0s = self._compute_posteriors(x, deltas)
         if self._priors is None:
             ph1s, ph0s = self._compute_priors()
             self._priors = ph1s, ph0s
         else:
             ph1s, ph0s = self._priors
-
         conclusions = dict()
         for l, ci in deltas.items():
             pe1 = pe1s[l][ci]
