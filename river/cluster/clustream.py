@@ -348,7 +348,7 @@ class Clustream(base.Clusterer):
         # apply kmeans on np.array
         kmeans = KMeans(n_clusters=self.number_of_clusters, random_state=self.seed).fit(micro_cluster_centers_np)
 
-        index, _ = self._get_closest_kernel(x, micro_cluster_centers)
+        index, _ = self._get_closest_kernel(x, self.get_micro_clustering_result())
         y = kmeans.labels_[index]
 
         # modify clusters of numpy type to dict and add in self.centers
