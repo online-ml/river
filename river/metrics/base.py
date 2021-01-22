@@ -31,9 +31,7 @@ class Metric(abc.ABC):
     @abc.abstractmethod
     def update(self, y_true, y_pred, sample_weight) -> "Metric":
         """Update the metric."""
-        center = self.centers[y_pred]
-        # calculate distance * weight
-        # update with a sum f
+
     @abc.abstractmethod
     def revert(self, y_true, y_pred, sample_weight) -> "Metric":
         """Revert the metric."""

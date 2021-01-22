@@ -1,9 +1,9 @@
-from river import base
-import math
-from river.cluster.clustream_kernel import ClustreamKernel
 import sys
-from sklearn.cluster import KMeans
+import math
 import numpy as np
+from sklearn.cluster import KMeans
+from river import base
+from river.cluster.clustream_kernel import ClustreamKernel
 
 
 class Clustream(base.Clusterer):
