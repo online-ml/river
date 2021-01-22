@@ -46,11 +46,15 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     lam
         Lambda value for resampling.
     drift_detector
-        Drift detector. If `None`, disables concept drift detection and the
-        background learner.
+        Drift detector.
     warning_detector
-        Warning detector. If `None`, disables the background learner and
-        ensemble members are reset if drift is detected.
+        Warning detector.
+    disable_detector:
+        Option to disable drift detectors:<br/>
+        * If `'off'`, detectors are enabled.<br/>
+        * If `'drift'`, disables concept drift detection and the background learner.<br/>
+        * If `'warning'`, disables the background learner and ensemble members are
+         reset if drift is detected.<br/>
     disable_weighted_vote
         If True, disables weighted voting.
     nominal_attributes
@@ -114,6 +118,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         lam: float = 6.0,
         drift_detector: base.DriftDetector = None,
         warning_detector: base.DriftDetector = None,
+        disable_detector: str = "off",
         disable_weighted_vote: bool = False,
         nominal_attributes=None,
         seed=None,
@@ -128,6 +133,17 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
 
         if warning_detector is None:
             warning_detector = ADWIN(delta=1e-4)
+
+        if disable_detector == 'off':
+            pass
+        elif disable_detector == "drift":
+            drift_detector = None
+            warning_detector = None
+        elif disable_detector == "warning":
+            warning_detector = None
+        else:
+            raise AttributeError(f"{disable_detector} is not a valid value for disable_detector.\n"
+                                 f"Valid options are: 'off', 'drift', 'warning'")
 
         if metric is None:
             metric = Accuracy()
@@ -184,7 +200,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             # i.e. all instances are used for training.
             if self.training_method == self._TRAIN_RANDOM_SUBSPACES:
                 model.learn_one(
-                    X=x,
+                    x=x,
                     y=y,
                     sample_weight=1.0,
                     n_samples_seen=self._n_samples_seen,
