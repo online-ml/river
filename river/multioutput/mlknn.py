@@ -91,7 +91,6 @@ class MLKNN(base.Classifier, base.MultiOutputMixin):
 
     def _compute_priors(self):
         positives = self.positive_frequencies
-        negatives = self.negative_frequencies
         labels = self.labels()
         positive_priors = dict()
         negative_priors = dict()
