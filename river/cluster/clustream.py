@@ -147,7 +147,7 @@ class Clustream(base.Clusterer):
 
         if not self.initialized:
             if len(self.buffer) < self.buffer_size:
-                self.buffer[len(self.buffer) + 1] = ClustreamKernel(x=x, sample_weight=sample_weight,
+                self.buffer[len(self.buffer)] = ClustreamKernel(x=x, sample_weight=sample_weight,
                                                                     timestamp=self.time_stamp,
                                                                     T=self.kernel_radius_factor, M=self.max_kernels)
                 return
@@ -156,7 +156,7 @@ class Clustream(base.Clusterer):
                     self.kernels[i] = ClustreamKernel(x=self.buffer[i].center, sample_weight=1.0,
                                                       timestamp=self.time_stamp,
                                                       T=self.kernel_radius_factor, M=self.max_kernels)
-                self.buffer.clear()
+            self.buffer.clear()
             self.initialized = True
 
             return
