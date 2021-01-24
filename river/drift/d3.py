@@ -20,38 +20,43 @@ class D3(DriftDetector):
     Parameters
     ----------
     old_data_window_size
-        The size of the old data window.
-    new_data_fraction
+        The size of the old data window. (int)
+    new_data_percentage
         Determines the size of the new data window. It is calculated as
         a fraction of the old data window. The new data window has size
-        new data fraction * old data window size.
+        new data percentage * old data window size. (float)
+        From 0.0 to 1.0
     auc_threshold
-        Required AUC score to signal a drift.
+        Required AUC score to signal a drift. (float)
+        From 0.5 to 1.0
     discriminative_classifier
-        Classifier to be used to distinguish old data from the new. If it
-        is set to None, by default Logistic Regression with default
-        parameters will be used.
+        Classifier to be used to distinguish old data from the new data.
+        If None, Logistic Regression with default parameters will be used.
+        It is advised to use a simple model as the goal of this classifier
+        is to determine if the old data and the new data are seperable,
+        not to classify them. (sklearn classifier)
+    seed
+        Is used as as random state for StratifiedKFold. If None, a randomly
+        generated value by StratifiedKFold will be used while shuffling
+        data.
+
 
     Examples
     --------
-    >>> import numpy as np
+    >>> from river import synth
     >>> from river.drift import D3
-    >>> np.random.seed(12345)
 
     >>> d3 = D3()
 
-    >>> # Simulate a data stream as a normal distribution of 1's and 0's
-    >>> data_stream = np.random.randint(2, size=2000)
-    >>> # Change the data distribution from index 999 to 1500, simulating an
-    >>> # increase in error rate (1 indicates error)
-    >>> data_stream[999:1500] = 1
+    >>> # Simulate a data stream
+    >>> data_stream = synth.Hyperplane(seed=42, n_features=10, mag_change=0.5)
 
     >>> # Update drift detector and verify if change is detected
-    >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = ddm.update(val)
+    >>> for x, y in data_stream.take(500):
+    ...     in_drift, in_warning = d3.update(list(x.values()))
     ...     if in_drift:
-    ...         print(f"Change detected at index {i}, input value: {val}")
-    Change detected at index 1077, input value: 1
+    ...         print(f"Change detected at index {i}")
+    Change detected at index 352
 
     References
     ----------
@@ -61,18 +66,20 @@ class D3(DriftDetector):
 
     def __init__(
         self,
-        old_data_window_size=250,
-        new_data_fraction=0.3,
+        old_data_window_size=100,
+        new_data_percentage=0.1,
         auc_threshold=0.7,
         discriminative_classifier=None,
+        seed=None,
     ):
         super().__init__()
         self.old_data_window_size = old_data_window_size
-        self.new_data_fraction = new_data_fraction
+        self.new_data_percentage = new_data_percentage
         self.auc_threshold = auc_threshold
         self.discriminative_classifier = discriminative_classifier
+        self.seed = seed
         self.new_data_window_size = int(
-            self.old_data_window_size * self.new_data_fraction
+            self.old_data_window_size * self.new_data_percentage
         )
         self.full_window_size = self.old_data_window_size + self.new_data_window_size
         self.data_sliding_window = None
@@ -95,7 +102,7 @@ class D3(DriftDetector):
         if self.discriminative_classifier is None:
             self.discriminative_classifier = LogisticRegression(solver="liblinear")
         predictions = np.zeros(slack_labels.shape)
-        skf = StratifiedKFold(n_splits=2, shuffle=True)
+        skf = StratifiedKFold(n_splits=2, shuffle=True, random_state=self.seed)
         for train_index, test_index in skf.split(combined_data, slack_labels):
             X_train, X_test = combined_data[train_index], combined_data[test_index]
             y_train = slack_labels[train_index]
@@ -103,7 +110,7 @@ class D3(DriftDetector):
             probs = self.discriminative_classifier.predict_proba(X_test)[:, 1]
             predictions[test_index] = probs
         auc_score = roc_auc_score(slack_labels, predictions)
-        if auc_score > self.auc_threshold:
+        if (auc_score > self.auc_threshold) or (auc_score < self.auc_threshold - 0.5):
             return True
         return False
 
