@@ -12,6 +12,8 @@ from .label_combination_hoeffding_tree import LabelCombinationHoeffdingTreeClass
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .hoeffding_adaptive_tree_regressor import HoeffdingAdaptiveTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
+from .streaming_gradient_tree import StreamingGradientTreeClassifier
+from .streaming_gradient_tree import StreamingGradientTreeRegressor
 
 
 __all__ = [
@@ -23,4 +25,6 @@ __all__ = [
     "HoeffdingTreeRegressor",
     "HoeffdingAdaptiveTreeRegressor",
     "iSOUPTreeRegressor",
+    "StreamingGradientTreeClassifier",
+    "StreamingGradientTreeRegressor",
 ]

@@ -49,6 +49,9 @@ from .isouptr_nodes import LearningNodeMeanMultiTarget
 from .isouptr_nodes import LearningNodeModelMultiTarget
 from .isouptr_nodes import LearningNodeAdaptiveMultiTarget
 
+# Stochastic Gradient Tree node
+from .sgt_nodes import SGTNode
+
 
 __all__ = [
     "FoundNode",
@@ -82,4 +85,5 @@ __all__ = [
     "LearningNodeMeanMultiTarget",
     "LearningNodeModelMultiTarget",
     "LearningNodeAdaptiveMultiTarget",
+    "SGTNode"
 ]
