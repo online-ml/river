@@ -2,6 +2,7 @@ import abc
 import collections
 import functools
 import math
+import numbers
 import typing
 
 from scipy.stats import f as FTest
@@ -103,7 +104,7 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
         self.lambda_value = lambda_value
         self.gamma = gamma
-        self.nominal_attributes = nominal_attributes
+        self.nominal_attributes = set(nominal_attributes) if nominal_attributes else set()
 
         if quantization_strategy not in self._VALID_QUANTIZATION_POLICIES:
             raise ValueError('Invalid "quantization_strategy": {}'.format(quantization_strategy))
@@ -144,7 +145,8 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
         for feat_id, x_val in x.items():
             # Skip nominal attributes
-            if self.nominal_attributes is not None and feat_id in self.nominal_attributes:
+            if not isinstance(x_val, numbers.Number) or feat_id in self.nominal_attributes:
+                self.nominal_attributes.add(feat_id)
                 continue
             self._features_mean_var[feat_id].update(x_val)
 

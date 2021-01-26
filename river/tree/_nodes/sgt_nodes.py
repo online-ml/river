@@ -68,17 +68,16 @@ class SGTNode:
 
     def update(self, x: dict, grad_hess: GradHess, sgt, w: float = 1.):
         for idx, x_val in x.items():
-            if not isinstance(x_val, numbers.Number) or (
-                sgt.nominal_attributes is not None
-                and idx in sgt.nominal_attributes
-            ):
+            if not isinstance(x_val, numbers.Number) or idx in sgt.nominal_attributes:
+                sgt.nominal_attributes.add(idx)
                 try:
                     self._split_stats[idx][x_val].update(grad_hess, w=w)
                 except KeyError:
-                    # Categorical features are treated with a simple dict structure
-                    self._split_stats[idx] = {}
-                    self._split_stats[idx][x] = GradHessStats()
-                    self._split_stats[idx][x].update(grad_hess, w=w)
+                    if idx not in self._split_stats:
+                        # Categorical features are treated with a simple dict structure
+                        self._split_stats[idx] = {}
+                    self._split_stats[idx][x_val] = GradHessStats()
+                    self._split_stats[idx][x_val].update(grad_hess, w=w)
             else:
                 ghs = GradHessStats()
                 ghs.update(grad_hess, x_val, w)
@@ -108,7 +107,7 @@ class SGTNode:
             candidate = SGTSplit()
             candidate.feature_idx = feature_idx
 
-            if sgt.nominal_attributes is not None and feature_idx in sgt.nominal_attributes:
+            if feature_idx in sgt.nominal_attributes:
                 # Nominal attribute has been already used in a previous split
                 if feature_idx in sgt._split_features:
                     continue
