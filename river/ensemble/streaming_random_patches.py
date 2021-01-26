@@ -423,7 +423,6 @@ class StreamingRandomPatchesBaseLearner:
         n_samples_seen: int,
         rng: np.random.Generator,
     ):
-        # print(sample_weight)
         all_features = [feature for feature in x.keys()]
         if self.features is not None:
             # Select the subset of features to use
