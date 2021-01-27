@@ -31,6 +31,7 @@ class SGTNode:
     def __init__(self, prediction=0.0, depth=0):
         self._prediction = prediction
         self.depth = depth
+        self.last_split_attempt_at = 0
 
         # Split test
         self._split: Optional[SGTSplit] = None

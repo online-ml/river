@@ -172,9 +172,12 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         leaf = self._root.sort_instance(x)
         leaf.update(x, grad_hess, self, w)
 
-        if leaf.total_weight % self.grace_period != 0 or leaf.depth >= self.max_depth:
+        if (leaf.total_weight - leaf.last_split_attempt_at < self.grace_period
+                or leaf.depth >= self.max_depth):
             return
 
+        # Update split attempt data
+        leaf.last_split_attempt_at = leaf.total_weight
         best_split = leaf.find_best_split(self)
 
         p = self._compute_p_value(best_split, leaf.total_weight)

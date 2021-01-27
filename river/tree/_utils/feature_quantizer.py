@@ -1,5 +1,6 @@
 import math
 
+from .gradient_hessian import GradHessStats
 
 class FeatureQuantizer:
     """ Adapted version of the Quantizer Observer (QO) that is applied to SGTs [^1].
@@ -24,7 +25,7 @@ class FeatureQuantizer:
     def __len__(self):
         return len(self.hash)
 
-    def update(self, ghs):
+    def update(self, ghs: GradHessStats):
         x = ghs.get_x()
         index = math.floor(x / self.radius)
         if index in self.hash:
