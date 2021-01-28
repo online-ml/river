@@ -1,9 +1,9 @@
 from copy import deepcopy
 
 from river import base
-from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 
 from ._nodes import AdaLearningNodeRegressor, AdaSplitNodeRegressor, FoundNode
+from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 
 
 class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):

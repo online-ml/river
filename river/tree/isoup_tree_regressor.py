@@ -1,8 +1,7 @@
 import typing
 from copy import deepcopy
 
-from river import base
-from river import tree
+from river import base, tree
 
 from ._nodes import (
     LearningNodeAdaptiveMultiTarget,

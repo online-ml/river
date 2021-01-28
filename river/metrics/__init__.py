@@ -15,7 +15,17 @@ from ._performance_evaluator import _RollingMTRegressionReport  # noqa: F401
 from ._performance_evaluator import _RollingRegressionReport  # noqa: F401
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
-from .base import BinaryMetric, ClassificationMetric, Metric, Metrics, MultiClassMetric, MultiOutputClassificationMetric, MultiOutputRegressionMetric, RegressionMetric, WrapperMetric
+from .base import (
+    BinaryMetric,
+    ClassificationMetric,
+    Metric,
+    Metrics,
+    MultiClassMetric,
+    MultiOutputClassificationMetric,
+    MultiOutputRegressionMetric,
+    RegressionMetric,
+    WrapperMetric,
+)
 from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
@@ -59,6 +69,7 @@ from .time_rolling import TimeRolling
 __all__ = [
     "Accuracy",
     "BalancedAccuracy",
+    "BinaryMetric",
     "ClassificationMetric",
     "ClassificationReport",
     "CohenKappa",
@@ -85,12 +96,16 @@ __all__ = [
     "MacroRecall",
     "MCC",
     "Metric",
+    "Metrics",
     "MicroF1",
     "MicroFBeta",
     "MicroPrecision",
     "MicroRecall",
+    "MultiClassMetric",
     "MultiFBeta",
     "MultiLabelConfusionMatrix",
+    "MultiOutputClassificationMetric",
+    "MultiOutputRegressionMetric",
     "MSE",
     "Precision",
     "Recall",
@@ -107,4 +122,5 @@ __all__ = [
     "WeightedFBeta",
     "WeightedPrecision",
     "WeightedRecall",
+    "WrapperMetric",
 ]
