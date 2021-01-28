@@ -6,7 +6,6 @@ from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
 from .label_combination_hoeffding_tree import LabelCombinationHoeffdingTreeClassifier
 
-
 __all__ = [
     "ExtremelyFastDecisionTreeClassifier",
     "HoeffdingAdaptiveTreeClassifier",
@@ -14,5 +13,5 @@ __all__ = [
     "HoeffdingTreeClassifier",
     "HoeffdingTreeRegressor",
     "iSOUPTreeRegressor",
-    "LabelCombinationHoeffdingTreeClassifier"
+    "LabelCombinationHoeffdingTreeClassifier",
 ]

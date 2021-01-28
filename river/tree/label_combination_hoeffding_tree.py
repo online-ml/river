@@ -1,7 +1,6 @@
 import typing
 
-from river import base
-from river import tree
+from river import base, tree
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 

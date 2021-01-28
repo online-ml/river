@@ -6,11 +6,8 @@ import typing
 
 import numpy as np
 
-from river import base
+from river import base, metrics, stats, tree
 from river.drift import ADWIN
-from river import metrics
-from river import stats
-from river import tree
 from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
 from river.tree._nodes import RandomLearningNodeMC  # noqa
 from river.tree._nodes import RandomLearningNodeMean  # noqa

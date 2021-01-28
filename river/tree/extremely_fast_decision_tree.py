@@ -1,7 +1,5 @@
 from operator import attrgetter
 
-from .hoeffding_tree_classifier import HoeffdingTreeClassifier
-
 from ._nodes import (
     EFDTLearningNodeMC,
     EFDTLearningNodeNB,
@@ -13,6 +11,7 @@ from ._split_criterion import (
     HellingerDistanceCriterion,
     InfoGainSplitCriterion,
 )
+from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):

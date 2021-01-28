@@ -55,7 +55,7 @@ class _ClassificationReport:
     # Define the format specification used for string representation.
     _fmt = ">10.4f"
 
-    def __init__(self, cm: 'metrics.ConfusionMatrix' = None):
+    def __init__(self, cm: "metrics.ConfusionMatrix" = None):
 
         self.cm = metrics.ConfusionMatrix() if cm is None else cm
         self.accuracy = metrics.Accuracy(cm=self.cm)
@@ -201,10 +201,11 @@ class _RollingClassificationReport(_ClassificationReport):
 
     """
 
-    def __init__(self, cm: 'metrics.ConfusionMatrix' = None, window_size=200):
+    def __init__(self, cm: "metrics.ConfusionMatrix" = None, window_size=200):
         self.window_size = window_size
         self._rolling_cm = metrics.Rolling(
-            metrics.ConfusionMatrix() if cm is None else cm, window_size=self.window_size
+            metrics.ConfusionMatrix() if cm is None else cm,
+            window_size=self.window_size,
         )
         super().__init__(cm=self._rolling_cm.metric)
 
@@ -271,7 +272,7 @@ class _MLClassificationReport:
     # Define the format specification used for string representation.
     _fmt = ">10.4f"
 
-    def __init__(self, cm: 'metrics.MultiLabelConfusionMatrix' = None):
+    def __init__(self, cm: "metrics.MultiLabelConfusionMatrix" = None):
         self.cm = metrics.MultiLabelConfusionMatrix() if cm is None else cm
         self.hamming = metrics.Hamming(cm=self.cm)
         self.hamming_loss = metrics.HammingLoss(cm=self.cm)
@@ -378,7 +379,7 @@ class _RollingMLClassificationReport(_MLClassificationReport):
 
     """
 
-    def __init__(self, cm: 'metrics.ConfusionMatrix' = None, window_size=200):
+    def __init__(self, cm: "metrics.ConfusionMatrix" = None, window_size=200):
         self.window_size = window_size
         self._rolling_cm = metrics.Rolling(
             metrics.MultiLabelConfusionMatrix() if cm is None else cm,

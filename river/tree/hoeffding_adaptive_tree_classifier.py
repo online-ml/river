@@ -1,4 +1,3 @@
-from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
 
 from ._nodes import (
@@ -8,6 +7,7 @@ from ._nodes import (
     LearningNode,
     SplitNode,
 )
+from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 
 
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
