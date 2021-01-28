@@ -48,7 +48,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         Drift detector.
     warning_detector
         Warning detector.
-    disable_detector:
+    disable_detector
         Option to disable drift detectors:<br/>
         * If `'off'`, detectors are enabled.<br/>
         * If `'drift'`, disables concept drift detection and the background learner.<br/>
