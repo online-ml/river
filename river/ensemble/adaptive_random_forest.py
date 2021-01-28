@@ -8,10 +8,9 @@ import numpy as np
 
 from river import base
 from river.drift import ADWIN
-from river.metrics import MSE, Accuracy
-from river.metrics.base import MultiClassMetric, RegressionMetric
-from river.stats import Var
-from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
+from river import metrics
+from river import stats
+from river import tree
 from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
 from river.tree._nodes import RandomLearningNodeMC  # noqa
 from river.tree._nodes import RandomLearningNodeMean  # noqa
@@ -33,7 +32,7 @@ class BaseForest(base.EnsembleMixin):
         lambda_value: int,
         drift_detector: typing.Union[base.DriftDetector, None],
         warning_detector: typing.Union[base.DriftDetector, None],
-        metric: typing.Union[MultiClassMetric, RegressionMetric],
+        metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
         disable_weighted_vote,
         seed,
     ):
@@ -137,7 +136,7 @@ class BaseForest(base.EnsembleMixin):
         self._rng = check_random_state(self.seed)
 
 
-class BaseTreeClassifier(HoeffdingTreeClassifier):
+class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
     """Adaptive Random Forest Hoeffding Tree Classifier.
 
     This is the base-estimator of the Adaptive Random Forest classifier.
@@ -242,7 +241,7 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
         return new_instance
 
 
-class BaseTreeRegressor(HoeffdingTreeRegressor):
+class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
     """ARF Hoeffding Tree regressor.
 
     This is the base-estimator of the Adaptive Random Forest regressor.
@@ -505,7 +504,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         n_models: int = 10,
         max_features: typing.Union[bool, str, int] = "sqrt",
         lambda_value: int = 6,
-        metric: MultiClassMetric = Accuracy(),
+        metric: metrics.MultiClassMetric = metrics.Accuracy(),
         disable_weighted_vote=False,
         drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
         warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
@@ -769,7 +768,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         max_features="sqrt",
         aggregation_method: str = "median",
         lambda_value: int = 6,
-        metric: RegressionMetric = MSE(),
+        metric: metrics.RegressionMetric = metrics.MSE(),
         disable_weighted_vote=False,
         drift_detector: base.DriftDetector = ADWIN(0.001),
         warning_detector: base.DriftDetector = ADWIN(0.01),
@@ -932,7 +931,7 @@ class BaseForestMember:
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: typing.Union[MultiClassMetric, RegressionMetric],
+        metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
     ):
         self.index_original = index_original
         self.model = model.clone()
@@ -940,7 +939,7 @@ class BaseForestMember:
         self.is_background_learner = is_background_learner
         self.metric = copy.deepcopy(metric)
         # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.metric, MultiClassMetric):
+        if isinstance(self.metric, metrics.MultiClassMetric):
             self.metric.cm.reset()
         # Keep a copy of the original metric for background learners or reset
         self._original_metric = copy.deepcopy(metric)
@@ -984,7 +983,7 @@ class BaseForestMember:
             self.created_on = n_samples_seen
             self.drift_detector = self.drift_detector.clone()
         # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.metric, MultiClassMetric):
+        if isinstance(self.metric, metrics.MultiClassMetric):
             self.metric.cm.reset()
 
     def learn_one(
@@ -1053,7 +1052,7 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: MultiClassMetric,
+        metric: metrics.MultiClassMetric,
     ):
         super().__init__(
             index_original=index_original,
@@ -1088,7 +1087,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: RegressionMetric,
+        metric: metrics.RegressionMetric,
     ):
         super().__init__(
             index_original=index_original,
@@ -1099,7 +1098,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
             is_background_learner=is_background_learner,
             metric=metric,
         )
-        self._var = Var()  # Used to track drift
+        self._var = stats.Var()  # Used to track drift
 
     def _drift_detector_input(self, y_true: float, y_pred: float):
         drift_input = y_true - y_pred
@@ -1119,7 +1118,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
     def reset(self, n_samples_seen):
         super().reset(n_samples_seen)
         # Reset the stats for the drift detector
-        self._var = Var()
+        self._var = stats.Var()
 
     def predict_one(self, x):
         return self.model.predict_one(x)

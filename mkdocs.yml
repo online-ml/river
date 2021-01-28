@@ -48,7 +48,8 @@ markdown_extensions:
         permalink: true
         toc_depth: "1-3"
   - pymdownx.details
-  - pymdownx.arithmatex
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.highlight
   - pymdownx.superfences
 
@@ -57,9 +58,11 @@ plugins:
   - awesome-pages
 
 extra_javascript:
-  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
-
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - js/version-select.js
+
 extra_css:
   - stylesheets/extra.css
   - css/version-select.css

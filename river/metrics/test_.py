@@ -22,6 +22,9 @@ def load_metrics():
         importlib.import_module("river.metrics"), inspect.isclass
     ):
 
+        if name == "Metrics":
+            continue
+
         if inspect.isabstract(obj):
             continue
 

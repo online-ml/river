@@ -15,8 +15,8 @@ from ._performance_evaluator import _RollingMTRegressionReport  # noqa: F401
 from ._performance_evaluator import _RollingRegressionReport  # noqa: F401
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
-from .base import ClassificationMetric, Metric, RegressionMetric
-from .confusion import ConfusionMatrix
+from .base import BinaryMetric, ClassificationMetric, Metric, Metrics, MultiClassMetric, MultiOutputClassificationMetric, MultiOutputRegressionMetric, RegressionMetric, WrapperMetric
+from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
 from .fbeta import (
@@ -90,6 +90,7 @@ __all__ = [
     "MicroPrecision",
     "MicroRecall",
     "MultiFBeta",
+    "MultiLabelConfusionMatrix",
     "MSE",
     "Precision",
     "Recall",
