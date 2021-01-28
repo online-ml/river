@@ -30,10 +30,7 @@ def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: lis
 
     wrappers = [
         (sklearn_base.RegressorMixin, SKL2RiverRegressor),
-        (
-            sklearn_base.ClassifierMixin,
-            functools.partial(SKL2RiverClassifier, classes=classes),
-        ),
+        (sklearn_base.ClassifierMixin, functools.partial(SKL2RiverClassifier, classes=classes),),
     ]
 
     for base_type, wrapper in wrappers:

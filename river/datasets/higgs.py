@@ -64,8 +64,5 @@ class Higgs(base.RemoteDataset):
             self.path,
             fieldnames=["is_signal", *features],
             target="is_signal",
-            converters={
-                "is_signal": lambda x: x.startswith("1"),
-                **{f: float for f in features},
-            },
+            converters={"is_signal": lambda x: x.startswith("1"), **{f: float for f in features},},
         )

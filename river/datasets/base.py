@@ -38,13 +38,7 @@ class Dataset(abc.ABC):
     """
 
     def __init__(
-        self,
-        task,
-        n_features,
-        n_samples=None,
-        n_classes=None,
-        n_outputs=None,
-        sparse=False,
+        self, task, n_features, n_samples=None, n_classes=None, n_outputs=None, sparse=False,
     ):
         self.task = task
         self.n_features = n_features
@@ -103,8 +97,7 @@ class Dataset(abc.ABC):
 
         if "Parameters\n    ----------" in self.__doc__:
             params = re.split(
-                r"\w+\n\s{4}\-{3,}",
-                re.split("Parameters\n    ----------", self.__doc__)[1],
+                r"\w+\n\s{4}\-{3,}", re.split("Parameters\n    ----------", self.__doc__)[1],
             )[0].rstrip()
             out += f"\n\nParameters\n----------{params}"
 

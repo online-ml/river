@@ -74,10 +74,7 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=
         # Can not normalize, return gracefully
         return dictionary
 
-    for (
-        key,
-        value,
-    ) in dictionary.items():  # loop over the keys, values in the dictionary
+    for (key, value,) in dictionary.items():  # loop over the keys, values in the dictionary
         dictionary[key] = value / factor
 
     return dictionary

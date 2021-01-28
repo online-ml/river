@@ -181,10 +181,9 @@ class LDA(base.Transformer):
         words_indexes_list = [self.word_to_index[word] for word in word_list]
 
         # Sample empirical topic assignment:
-        (
-            statistics,
-            batch_document_topic_distribution,
-        ) = self._compute_statistics_components(words_indexes_list)
+        (statistics, batch_document_topic_distribution,) = self._compute_statistics_components(
+            words_indexes_list
+        )
 
         # Online variational inference
         self._update_weights(statistics=statistics)
@@ -340,9 +339,7 @@ class LDA(base.Transformer):
         statistics = defaultdict(lambda: np.zeros(self.truncation_size_prime))
 
         exp_weights, exp_oov_weights = self._compute_weights(
-            n_components=self.n_components,
-            nu_1=self.nu_1,
-            nu_2=self.nu_2,
+            n_components=self.n_components, nu_1=self.nu_1, nu_2=self.nu_2,
         )
 
         size_vocab = len(words_indexes_list)

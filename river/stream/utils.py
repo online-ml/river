@@ -20,11 +20,9 @@ def open_filepath(filepath_or_buffer, compression):
             return f
 
     # Determine the file opening method from the compression
-    open_func = {
-        None: open,
-        "gzip": functools.partial(gzip.open, mode="rt"),
-        "zip": open_zipfile,
-    }[compression]
+    open_func = {None: open, "gzip": functools.partial(gzip.open, mode="rt"), "zip": open_zipfile,}[
+        compression
+    ]
 
     # Open the file using the opening method
     return open_func(filepath_or_buffer)

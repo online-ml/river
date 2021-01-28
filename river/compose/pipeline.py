@@ -579,9 +579,7 @@ class Pipeline(base.Estimator):
             # Unions are converted to an undirected network
             if isinstance(step, union.TransformerUnion):
                 return Network(
-                    nodes=map(networkify, step.transformers.values()),
-                    edges=[],
-                    directed=False,
+                    nodes=map(networkify, step.transformers.values()), edges=[], directed=False,
                 )
 
             # Pipelines are converted to a directed network

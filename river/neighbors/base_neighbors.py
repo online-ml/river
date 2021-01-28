@@ -128,9 +128,7 @@ class KNeighborsBuffer:
         else:
             return None
 
-    def popleft(
-        self,
-    ) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
+    def popleft(self,) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
         """Remove and return the oldest element in the buffer. """
         if self.size > 0:
             x, y = self._X[self._oldest], self._y[self._oldest]

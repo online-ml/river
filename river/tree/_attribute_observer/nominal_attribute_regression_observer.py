@@ -54,9 +54,7 @@ class NominalAttributeRegressionObserver(AttributeObserver):
                 attr_val: branch_id for branch_id, attr_val in enumerate(ordered_feature_values)
             }
             current_best = AttributeSplitSuggestion(
-                NominalAttributeMultiwayTest(att_idx, branch_mapping),
-                post_split_dist,
-                merit,
+                NominalAttributeMultiwayTest(att_idx, branch_mapping), post_split_dist, merit,
             )
 
         for att_val in ordered_feature_values:

@@ -326,12 +326,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                     tree._n_active_leaves += 1
 
                 leaf_node.learn_one(
-                    x,
-                    y,
-                    sample_weight=sample_weight,
-                    tree=tree,
-                    parent=self,
-                    parent_branch=path,
+                    x, y, sample_weight=sample_weight, tree=tree, parent=self, parent_branch=path,
                 )
 
     def leaf_prediction(self, x, *, tree=None):

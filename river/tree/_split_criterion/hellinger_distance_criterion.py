@@ -41,12 +41,17 @@ class HellingerDistanceCriterion(SplitCriterion):
         total_positive = left_branch_positive + right_branch_positive
 
         hellinger = (
-            math.sqrt(left_branch_negative / total_negative)
-            - math.sqrt(left_branch_positive / total_positive)
-        ) ** 2 + (
-            math.sqrt(right_branch_negative / total_negative)
-            - math.sqrt(right_branch_positive / total_positive)
-        ) ** 2
+            (
+                math.sqrt(left_branch_negative / total_negative)
+                - math.sqrt(left_branch_positive / total_positive)
+            )
+            ** 2
+            + (
+                math.sqrt(right_branch_negative / total_negative)
+                - math.sqrt(right_branch_positive / total_positive)
+            )
+            ** 2
+        )
 
         return math.sqrt(hellinger)
 

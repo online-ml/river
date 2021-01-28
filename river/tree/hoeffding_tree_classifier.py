@@ -302,8 +302,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
 
                     for i in range(split_decision.num_splits()):
                         new_child = self._new_learning_node(
-                            split_decision.resulting_stats_from_split(i),
-                            parent=new_split,
+                            split_decision.resulting_stats_from_split(i), parent=new_split,
                         )
                         new_split.set_child(i, new_child)
                     self._n_active_leaves -= 1

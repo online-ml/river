@@ -190,10 +190,7 @@ class BaseHoeffdingTree(ABC):
             return description
 
     def _new_split_node(
-        self,
-        split_test: InstanceConditionalTest,
-        target_stats: dict = None,
-        depth: int = 0,
+        self, split_test: InstanceConditionalTest, target_stats: dict = None, depth: int = 0,
     ) -> SplitNode:
         """Create a new split node."""
         return SplitNode(split_test, target_stats, depth)
@@ -498,13 +495,7 @@ class BaseHoeffdingTree(ABC):
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
         palette = collections.defaultdict(new_color)
 
-        for (
-            parent_no,
-            child_no,
-            parent,
-            child,
-            branch_id,
-        ) in self._tree_root.iter_edges():
+        for (parent_no, child_no, parent, child, branch_id,) in self._tree_root.iter_edges():
 
             if child.depth > max_depth:
                 continue

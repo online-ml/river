@@ -202,7 +202,7 @@ class FriedmanDrift(Friedman):
         self.position = position
 
         if self.drift_type == self._LOCAL_EXPANDING_ABRUPT:
-            self._change_point1, self._change_point2, self._change_point3 = self.position
+            (self._change_point1, self._change_point2, self._change_point3,) = self.position
         else:
             self._change_point1, self._change_point2 = self.position
             self._change_point3 = math.inf

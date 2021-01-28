@@ -99,10 +99,7 @@ class PolynomialExtender(base.Transformer):
 
     def _enumerate(self, keys):
         return powerset(
-            keys,
-            min_size=1,
-            max_size=self.degree,
-            with_replacement=not self.interaction_only,
+            keys, min_size=1, max_size=self.degree, with_replacement=not self.interaction_only,
         )
 
     def transform_one(self, x):

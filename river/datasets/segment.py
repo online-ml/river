@@ -17,10 +17,7 @@ class ImageSegments(base.FileDataset):
 
     def __init__(self):
         super().__init__(
-            n_samples=2310,
-            n_features=18,
-            task=base.MULTI_CLF,
-            filename="segment.csv.zip",
+            n_samples=2310, n_features=18, task=base.MULTI_CLF, filename="segment.csv.zip",
         )
 
     def __iter__(self):

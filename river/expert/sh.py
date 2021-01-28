@@ -11,13 +11,7 @@ __all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
 class SuccessiveHalving:
     def __init__(
-        self,
-        models,
-        metric: metrics.Metric,
-        budget: int,
-        eta=2,
-        verbose=False,
-        **print_kwargs,
+        self, models, metric: metrics.Metric, budget: int, eta=2, verbose=False, **print_kwargs,
     ):
 
         # Check that the model and the metric are in accordance

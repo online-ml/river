@@ -150,11 +150,7 @@ class RandomSampler(ClassificationSampler):
     """
 
     def __init__(
-        self,
-        classifier: base.Classifier,
-        desired_dist: dict,
-        sampling_rate=1.0,
-        seed: int = None,
+        self, classifier: base.Classifier, desired_dist: dict, sampling_rate=1.0, seed: int = None,
     ):
         super().__init__(classifier=classifier, seed=seed)
         self.sampling_rate = sampling_rate

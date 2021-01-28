@@ -16,10 +16,7 @@ class Phishing(base.FileDataset):
 
     def __init__(self):
         super().__init__(
-            n_samples=1250,
-            n_features=9,
-            task=base.BINARY_CLF,
-            filename="phishing.csv.gz",
+            n_samples=1250, n_features=9, task=base.BINARY_CLF, filename="phishing.csv.gz",
         )
 
     def __iter__(self):

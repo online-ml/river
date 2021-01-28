@@ -61,9 +61,7 @@ class NominalAttributeClassObserver(AttributeObserver):
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             branch_mapping = {attr_val: branch_id for branch_id, attr_val in enumerate(att_values)}
             best_suggestion = AttributeSplitSuggestion(
-                NominalAttributeMultiwayTest(att_idx, branch_mapping),
-                post_split_dist,
-                merit,
+                NominalAttributeMultiwayTest(att_idx, branch_mapping), post_split_dist, merit,
             )
         for att_val in att_values:
             post_split_dist = self.class_dist_from_binary_split(att_val)

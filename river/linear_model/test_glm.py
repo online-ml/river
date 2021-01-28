@@ -58,10 +58,7 @@ def iter_perturbations(keys, n=10):
                 optim.RMSProp(),
                 optim.SGD(),
             ],
-            [
-                optim.initializers.Zeros(),
-                optim.initializers.Normal(mu=0, sigma=1, seed=42),
-            ],
+            [optim.initializers.Zeros(), optim.initializers.Normal(mu=0, sigma=1, seed=42),],
         )
     ],
 )

@@ -181,9 +181,7 @@ class LEDDrift(LED):
         n_drift_features: int = 0,
     ):
         super().__init__(
-            seed=seed,
-            noise_percentage=noise_percentage,
-            irrelevant_features=irrelevant_features,
+            seed=seed, noise_percentage=noise_percentage, irrelevant_features=irrelevant_features,
         )
         self.n_drift_features = n_drift_features
 

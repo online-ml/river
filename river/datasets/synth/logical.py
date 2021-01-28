@@ -44,10 +44,7 @@ class Logical(base.SyntheticDataset):
     """
 
     def __init__(
-        self,
-        n_tiles: int = 1,
-        shuffle: bool = True,
-        seed: int or np.random.RandomState = None,
+        self, n_tiles: int = 1, shuffle: bool = True, seed: int or np.random.RandomState = None,
     ):
         super().__init__(n_features=2, n_outputs=3, n_samples=4 * n_tiles, task=base.MO_BINARY_CLF)
         self.n_tiles = n_tiles
@@ -65,9 +62,7 @@ class Logical(base.SyntheticDataset):
 
     @staticmethod
     def _make_logical(
-        n_tiles: int = 1,
-        shuffle: bool = True,
-        random_state: np.random.RandomState = None,
+        n_tiles: int = 1, shuffle: bool = True, random_state: np.random.RandomState = None,
     ):
         """Make toy dataset"""
         base_pattern = np.array(
@@ -92,4 +87,7 @@ class Logical(base.SyntheticDataset):
         if shuffle:
             random_state.shuffle(pattern)
         # return X, Y
-        return np.array(pattern[:, L:E], dtype=int), np.array(pattern[:, 0:L], dtype=int)
+        return (
+            np.array(pattern[:, L:E], dtype=int),
+            np.array(pattern[:, 0:L], dtype=int),
+        )
