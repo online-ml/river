@@ -184,11 +184,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             # i.e. all instances are used for training.
             if self.training_method == self._TRAIN_RANDOM_SUBSPACES:
                 model.learn_one(
-                    X=x,
-                    y=y,
-                    sample_weight=1.0,
-                    n_samples_seen=self._n_samples_seen,
-                    rng=self._rng,
+                    X=x, y=y, sample_weight=1.0, n_samples_seen=self._n_samples_seen, rng=self._rng,
                 )
             # Train using random patches or resampling,
             # thus we simulate online bagging with Poisson(lambda=...)
@@ -423,11 +419,7 @@ class StreamingRandomPatchesBaseLearner:
             # Note: Pass the original instance x so features are correctly
             # selected based on the corresponding subspace
             self._background_learner.learn_one(
-                x=x,
-                y=y,
-                sample_weight=sample_weight,
-                n_samples_seen=n_samples_seen,
-                rng=rng,
+                x=x, y=y, sample_weight=sample_weight, n_samples_seen=n_samples_seen, rng=rng,
             )
 
         if not self.disable_drift_detector and not self.is_background_learner:
@@ -440,9 +432,7 @@ class StreamingRandomPatchesBaseLearner:
                 if self.warning_detector.change_detected:
                     self.n_warnings_detected += 1
                     self._trigger_warning(
-                        all_features=all_features,
-                        n_samples_seen=n_samples_seen,
-                        rng=rng,
+                        all_features=all_features, n_samples_seen=n_samples_seen, rng=rng,
                     )
 
             # ===== Drift detection =====

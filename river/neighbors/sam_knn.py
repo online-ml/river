@@ -628,12 +628,7 @@ class STMSizer:
 
     @staticmethod
     def _get_max_acc_window_size(
-        labels,
-        n_neighbours,
-        get_labels_fct,
-        prediction_histories,
-        distances_stm,
-        min_size=50,
+        labels, n_neighbours, get_labels_fct, prediction_histories, distances_stm, min_size=50,
     ):
         """
         Returns the window size with the minimum interleaved
@@ -672,10 +667,7 @@ class STMSizer:
                     )
                 else:
                     accuracy, predHistory = STMSizer._get_interleaved_test_train_acc(
-                        labels[idx:],
-                        n_neighbours,
-                        get_labels_fct,
-                        distances_stm[idx:, idx:],
+                        labels[idx:], n_neighbours, get_labels_fct, distances_stm[idx:, idx:],
                     )
                 prediction_histories[idx] = predHistory
                 accuracies.append(accuracy)
@@ -691,12 +683,7 @@ class STMSizer:
 
     @staticmethod
     def _get_max_acc_approx_window_size(
-        labels,
-        n_neighbours,
-        get_labels_fct,
-        prediction_histories,
-        distances_stm,
-        min_size=50,
+        labels, n_neighbours, get_labels_fct, prediction_histories, distances_stm, min_size=50,
     ):
         """
         Returns the window size with the minimum interleaved
@@ -742,10 +729,7 @@ class STMSizer:
                     )
                 else:
                     accuracy, predHistory = STMSizer._get_interleaved_test_train_acc(
-                        labels[idx:],
-                        n_neighbours,
-                        get_labels_fct,
-                        distances_stm[idx:, idx:],
+                        labels[idx:], n_neighbours, get_labels_fct, distances_stm[idx:, idx:],
                     )
                 prediction_histories[idx] = predHistory
                 accuracies.append(accuracy)
@@ -756,10 +740,7 @@ class STMSizer:
                 for i in moreAccurateIndices:
                     idx = int(n_samples - n_samples_range[i])
                     accuracy, predHistory = STMSizer._get_interleaved_test_train_acc(
-                        labels[idx:],
-                        n_neighbours,
-                        get_labels_fct,
-                        distances_stm[idx:, idx:],
+                        labels[idx:], n_neighbours, get_labels_fct, distances_stm[idx:, idx:],
                     )
                     prediction_histories[idx] = predHistory
                     accuracies[i] = accuracy

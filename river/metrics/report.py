@@ -122,11 +122,7 @@ class ClassificationReport(base.MultiClassMetric):
                 "",
                 *map(
                     fmt_float,
-                    [
-                        self._macro_f1.get(),
-                        self._micro_f1.get(),
-                        self._weighted_f1.get(),
-                    ],
+                    [self._macro_f1.get(), self._micro_f1.get(), self._weighted_f1.get(),],
                 ),
             ],
             # Support

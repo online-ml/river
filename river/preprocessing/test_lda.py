@@ -24,19 +24,10 @@ DOC_SET = [
 ]
 
 REFERENCE_STATISTICS_TWO_COMPONENTS = [
-    {
-        0: np.array([0.0, 0.0, 0.0]),
-        1: np.array([0.0, 1.0, 1.0]),
-    },
+    {0: np.array([0.0, 0.0, 0.0]), 1: np.array([0.0, 1.0, 1.0]),},
     {0: np.array([0.0, 0.6, 0.0, 0.8, 0.6]), 1: np.array([0.0, 0.4, 0.0, 0.2, 0.4])},
-    {
-        0: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
-        1: np.array([0.0, 1.0, 1.0, 0.0, 0.0, 1.0]),
-    },
-    {
-        0: np.array([0.0, 0.2, 0.0, 0.6, 0.0, 0.0]),
-        1: np.array([0.0, 0.8, 0.0, 0.4, 0.0, 0.0]),
-    },
+    {0: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), 1: np.array([0.0, 1.0, 1.0, 0.0, 0.0, 1.0]),},
+    {0: np.array([0.0, 0.2, 0.0, 0.6, 0.0, 0.0]), 1: np.array([0.0, 0.8, 0.0, 0.4, 0.0, 0.0]),},
     {
         0: np.array([0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.2]),
         1: np.array([0.0, 1.0, 0.8, 0.0, 0.0, 0.0, 0.8]),
@@ -152,9 +143,7 @@ def test_statistics_two_components():
 
         word_indexes = [lda.word_to_index[word] for word in word_list]
 
-        statistics, _ = lda._compute_statistics_components(
-            words_indexes_list=word_indexes,
-        )
+        statistics, _ = lda._compute_statistics_components(words_indexes_list=word_indexes,)
 
         statistics_list.append(statistics)
 
@@ -163,8 +152,7 @@ def test_statistics_two_components():
     for index, statistics in enumerate(statistics_list):
         for component in range(n_components):
             assert np.array_equal(
-                a1=statistics[component],
-                a2=REFERENCE_STATISTICS_TWO_COMPONENTS[index][component],
+                a1=statistics[component], a2=REFERENCE_STATISTICS_TWO_COMPONENTS[index][component],
             )
 
 
@@ -194,9 +182,7 @@ def test_statistics_five_components():
 
         word_indexes = [lda.word_to_index[word] for word in word_list]
 
-        statistics, _ = lda._compute_statistics_components(
-            words_indexes_list=word_indexes,
-        )
+        statistics, _ = lda._compute_statistics_components(words_indexes_list=word_indexes,)
 
         statistics_list.append(statistics)
 
@@ -205,8 +191,7 @@ def test_statistics_five_components():
     for index, statistics in enumerate(statistics_list):
         for component in range(n_components):
             assert np.array_equal(
-                a1=statistics[component],
-                a2=REFERENCE_STATISTICS_FIVE_COMPONENTS[index][component],
+                a1=statistics[component], a2=REFERENCE_STATISTICS_FIVE_COMPONENTS[index][component],
             )
 
 
@@ -233,10 +218,7 @@ def test_five_components():
         components_list.append(lda.learn_transform_one(tokens))
 
     for index, component in enumerate(components_list):
-        assert np.array_equal(
-            a1=list(component.values()),
-            a2=REFERENCE_FIVE_COMPONENTS[index],
-        )
+        assert np.array_equal(a1=list(component.values()), a2=REFERENCE_FIVE_COMPONENTS[index],)
 
 
 def test_prunning_vocabulary():

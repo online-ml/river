@@ -43,8 +43,7 @@ def load_metrics():
 
 
 @pytest.mark.parametrize(
-    "metric",
-    [pytest.param(metric, id=type(metric).__name__) for metric in load_metrics()],
+    "metric", [pytest.param(metric, id=type(metric).__name__) for metric in load_metrics()],
 )
 def test_pickling(metric):
     assert isinstance(pickle.loads(pickle.dumps(metric)), metric.__class__)
@@ -100,13 +99,13 @@ TEST_CASES = [
         partial(sk_metrics.precision_score, average="weighted", zero_division=0),
     ),
     (metrics.Recall(), partial(sk_metrics.recall_score, zero_division=0)),
-    (metrics.MacroRecall(), partial(sk_metrics.recall_score, average="macro", zero_division=0)),
-    (metrics.MicroRecall(), partial(sk_metrics.recall_score, average="micro", zero_division=0)),
+    (metrics.MacroRecall(), partial(sk_metrics.recall_score, average="macro", zero_division=0),),
+    (metrics.MicroRecall(), partial(sk_metrics.recall_score, average="micro", zero_division=0),),
     (
         metrics.WeightedRecall(),
         partial(sk_metrics.recall_score, average="weighted", zero_division=0),
     ),
-    (metrics.FBeta(beta=0.5), partial(sk_metrics.fbeta_score, beta=0.5, zero_division=0)),
+    (metrics.FBeta(beta=0.5), partial(sk_metrics.fbeta_score, beta=0.5, zero_division=0),),
     (
         metrics.MacroFBeta(beta=0.5),
         partial(sk_metrics.fbeta_score, beta=0.5, average="macro", zero_division=0),
@@ -122,7 +121,7 @@ TEST_CASES = [
     (metrics.F1(), partial(sk_metrics.f1_score, zero_division=0)),
     (metrics.MacroF1(), partial(sk_metrics.f1_score, average="macro", zero_division=0)),
     (metrics.MicroF1(), partial(sk_metrics.f1_score, average="micro", zero_division=0)),
-    (metrics.WeightedF1(), partial(sk_metrics.f1_score, average="weighted", zero_division=0)),
+    (metrics.WeightedF1(), partial(sk_metrics.f1_score, average="weighted", zero_division=0),),
     (metrics.MCC(), sk_metrics.matthews_corrcoef),
     (metrics.MAE(), sk_metrics.mean_absolute_error),
     (metrics.MSE(), sk_metrics.mean_squared_error),
@@ -198,8 +197,7 @@ def test_rolling_metric(metric, sk_metric):
                         abs(
                             m.get()
                             - sk_metric(
-                                y_true=tail(y_true[: i + 1], n),
-                                y_pred=tail(y_pred[: i + 1], n),
+                                y_true=tail(y_true[: i + 1], n), y_pred=tail(y_pred[: i + 1], n),
                             )
                         )
                         < 1e-10
@@ -347,8 +345,7 @@ def test_r2():
 
         if i >= 1:
             assert math.isclose(
-                r2.get(),
-                sk_r2(y_true[: i + 1], y_pred[: i + 1], sample_weight=weights[: i + 1]),
+                r2.get(), sk_r2(y_true[: i + 1], y_pred[: i + 1], sample_weight=weights[: i + 1]),
             )
 
 

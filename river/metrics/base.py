@@ -157,19 +157,13 @@ class RegressionMetric(Metric):
 
     @abc.abstractmethod
     def update(
-        self,
-        y_true: numbers.Number,
-        y_pred: numbers.Number,
-        sample_weight: numbers.Number,
+        self, y_true: numbers.Number, y_pred: numbers.Number, sample_weight: numbers.Number,
     ) -> "RegressionMetric":
         """Update the metric."""
 
     @abc.abstractmethod
     def revert(
-        self,
-        y_true: numbers.Number,
-        y_pred: numbers.Number,
-        sample_weight: numbers.Number,
+        self, y_true: numbers.Number, y_pred: numbers.Number, sample_weight: numbers.Number,
     ) -> "RegressionMetric":
         """Revert the metric."""
 

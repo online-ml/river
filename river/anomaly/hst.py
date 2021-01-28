@@ -19,8 +19,7 @@ def make_padded_tree(limits, height, padding, rng=random, **node_params):
     # Randomly pick a feature
     # We weight each feature by the gap between each feature's limits
     on = rng.choices(
-        population=list(limits.keys()),
-        weights=[limits[i][1] - limits[i][0] for i in limits],
+        population=list(limits.keys()), weights=[limits[i][1] - limits[i][0] for i in limits],
     )[0]
 
     # Pick a split point; use padding to avoid too narrow a split
