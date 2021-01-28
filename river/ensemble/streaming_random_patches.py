@@ -11,7 +11,6 @@ from river.drift import ADWIN
 from river.metrics import Accuracy
 from river.metrics.base import MultiClassMetric
 from river.tree import HoeffdingTreeClassifier
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
@@ -46,11 +45,15 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     lam
         Lambda value for resampling.
     drift_detector
-        Drift detector. If `None`, disables concept drift detection and the
-        background learner.
+        Drift detector.
     warning_detector
-        Warning detector. If `None`, disables the background learner and
-        ensemble members are reset if drift is detected.
+        Warning detector.
+    disable_detector
+        Option to disable drift detectors:<br/>
+        * If `'off'`, detectors are enabled.<br/>
+        * If `'drift'`, disables concept drift detection and the background learner.<br/>
+        * If `'warning'`, disables the background learner and ensemble members are
+         reset if drift is detected.<br/>
     disable_weighted_vote
         If True, disables weighted voting.
     nominal_attributes
@@ -58,10 +61,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         attributes are numerical. Note: Only applies if the base model
         allows to define the nominal attributes.
     seed
-        If `int`, `seed` is used to seed the random number generator;
-        If `RandomState`, `seed` is the random number generator;
-        If `None`, the random number generator is the `RandomState` instance
-        used by `np.random`.
+        Random number generator seed for reproducibility.
     metric
         Metric to track members performance within the ensemble.
 
@@ -69,20 +69,23 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     --------
     >>> from river import synth
     >>> from river import ensemble
+    >>> from river import tree
     >>> from river import evaluate
     >>> from river import metrics
 
     >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
-    ...                                    width=40).take(1000)
-    >>> model = ensemble.SRPClassifier(
-    ...     n_models=3,
-    ...     seed=42
+    ...                                    width=50).take(1000)
+    >>> base_model = tree.HoeffdingTreeClassifier(
+    ...     grace_period=50, split_confidence=0.01,
+    ...     nominal_attributes=['age', 'car', 'zipcode']
     ... )
-
+    >>> model = ensemble.SRPClassifier(
+    ...     model=base_model, n_models=3, seed=42,
+    ... )
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 76.78%
+    Accuracy: 71.17%
 
     References
     ----------
@@ -114,6 +117,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         lam: float = 6.0,
         drift_detector: base.DriftDetector = None,
         warning_detector: base.DriftDetector = None,
+        disable_detector: str = "off",
         disable_weighted_vote: bool = False,
         nominal_attributes=None,
         seed=None,
@@ -128,6 +132,20 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
 
         if warning_detector is None:
             warning_detector = ADWIN(delta=1e-4)
+
+        if disable_detector == "off":
+            pass
+        elif disable_detector == "drift":
+            drift_detector = None
+            warning_detector = None
+        elif disable_detector == "warning":
+            warning_detector = None
+        else:
+            raise AttributeError(
+                f"{disable_detector} is not a valid value for disable_detector.\n"
+                f"Valid options are: 'off', 'drift', 'warning'"
+            )
+        self.disable_detector = disable_detector
 
         if metric is None:
             metric = Accuracy()
@@ -145,7 +163,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
         self.metric = metric
         self.nominal_attributes = nominal_attributes if nominal_attributes else []
         self.seed = seed
-        self._rng = check_random_state(self.seed)
+        self._rng = np.random.default_rng(self.seed)
 
         self._n_samples_seen = 0
         self._subspaces = None
@@ -321,16 +339,16 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
                     drift_detector=self.drift_detector,
                     warning_detector=self.warning_detector,
                     is_background_learner=False,
+                    rng=self._rng,
                     features=subspace,
                     nominal_attributes=self.nominal_attributes,
-                    rng=self._rng,
                 )
             )
 
     def reset(self):
         self.models = []
         self._n_samples_seen = 0
-        self._rng = check_random_state(self.seed)
+        self._rng = np.random.default_rng(self.seed)
 
 
 class StreamingRandomPatchesBaseLearner:
@@ -347,9 +365,9 @@ class StreamingRandomPatchesBaseLearner:
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
+        rng: np.random.Generator,
         features=None,
         nominal_attributes=None,
-        rng=None,
     ):
         self.idx_original = idx_original
         self.created_on = created_on
@@ -381,9 +399,7 @@ class StreamingRandomPatchesBaseLearner:
 
         # Statistics
         self.n_drifts_detected = 0
-        self.n_drifts_induced = 0
         self.n_warnings_detected = 0
-        self.n_warnings_induced = 0
 
         # Background learner
         self._background_learner = (
@@ -396,7 +412,7 @@ class StreamingRandomPatchesBaseLearner:
         self._set_nominal_attributes = self._can_set_nominal_attributes()
 
         # Random number generator (initialized)
-        self._rng = rng
+        self.rng = rng
 
     def learn_one(
         self,
@@ -405,7 +421,7 @@ class StreamingRandomPatchesBaseLearner:
         *,
         sample_weight: int,
         n_samples_seen: int,
-        rng: np.random.RandomState,
+        rng: np.random.Generator,
     ):
         all_features = [feature for feature in x.keys()]
         if self.features is not None:
@@ -471,7 +487,7 @@ class StreamingRandomPatchesBaseLearner:
         return self.model.predict_proba_one(x_subset)
 
     def _trigger_warning(
-        self, all_features, n_samples_seen: int, rng: np.random.RandomState
+        self, all_features, n_samples_seen: int, rng: rng: np.random.Generator
     ):
         # Randomly generate a new subspace from all the original features
         subspace = (
@@ -491,15 +507,15 @@ class StreamingRandomPatchesBaseLearner:
             drift_detector=self.drift_detector,
             warning_detector=self.warning_detector,
             is_background_learner=True,
+            rng=self.rng,
             features=subspace,
             nominal_attributes=self.nominal_attributes,
-            rng=self._rng,
         )
         # Hard-reset the warning method
         self.warning_detector = self.warning_detector.clone()
 
     def reset(
-        self, all_features: list, n_samples_seen: int, rng: np.random.RandomState
+        self, all_features: list, n_samples_seen: int, rng: np.random.Generator
     ):
         # Randomly generate a new subspace from all the original features
         subspace = (
@@ -521,6 +537,12 @@ class StreamingRandomPatchesBaseLearner:
             self.features = self._background_learner.features
             self._background_learner = None
         else:
+            # Randomly generate a new subspace from all the original features
+            subspace = (
+                None
+                if self.features is None
+                else random_subspace(all_features=all_features, k=len(self.features), rng=rng)
+            )
             # Reset model
             self.model = self.model.clone()
             self.metric.cm.reset()
@@ -533,7 +555,7 @@ class StreamingRandomPatchesBaseLearner:
         return self.nominal_attributes is not None and len(self.nominal_attributes) > 0
 
 
-def random_subspace(all_features: list, k: int, rng: np.random.RandomState):
+def random_subspace(all_features: list, k: int, rng: np.random.Generator):
     """Utility function to generate a random feature subspace of length k
 
     Parameters
