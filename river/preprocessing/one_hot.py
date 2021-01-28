@@ -2,7 +2,6 @@ import collections
 
 from river import base
 
-
 __all__ = ["OneHotEncoder"]
 
 

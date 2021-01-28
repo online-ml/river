@@ -1,6 +1,4 @@
-from . import base
-from . import precision
-
+from . import base, precision
 
 __all__ = ["MacroRecall", "MicroRecall", "Recall", "WeightedRecall", "ExampleRecall"]
 

@@ -1,7 +1,8 @@
 import numpy as np
 
-from .. import base
 from river.utils.skmultiflow_utils import check_random_state
+
+from .. import base
 
 
 class LED(base.SyntheticDataset):
@@ -99,7 +100,8 @@ class LED(base.SyntheticDataset):
         self._rng = None  # This is the actual random_state object used internally
         if not (0.0 <= noise_percentage <= 1.0):
             raise ValueError(
-                f"Invalid noise_percentage ({noise_percentage}). " "Valid range is [0.0, 1.0]"
+                f"Invalid noise_percentage ({noise_percentage}). "
+                "Valid range is [0.0, 1.0]"
             )
         self.noise_percentage = noise_percentage
         self.irrelevant_features = irrelevant_features
@@ -120,7 +122,9 @@ class LED(base.SyntheticDataset):
                     x[i] = self._ORIGINAL_INSTANCES[y, i]
 
             if self.irrelevant_features:
-                for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
+                for i in range(
+                    self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE
+                ):
                     x[i] = self._rng.randint(2)
 
             yield x, y
@@ -181,7 +185,9 @@ class LEDDrift(LED):
         n_drift_features: int = 0,
     ):
         super().__init__(
-            seed=seed, noise_percentage=noise_percentage, irrelevant_features=irrelevant_features,
+            seed=seed,
+            noise_percentage=noise_percentage,
+            irrelevant_features=irrelevant_features,
         )
         self.n_drift_features = n_drift_features
 
@@ -200,7 +206,9 @@ class LEDDrift(LED):
                 self._attr_idx[value_2] = value_1
 
         while True:
-            x = {i: -1 for i in range(self.n_features)}  # Initialize to keep order in dictionary
+            x = {
+                i: -1 for i in range(self.n_features)
+            }  # Initialize to keep order in dictionary
             y = self._rng.randint(self.n_classes)
 
             for i in range(self._N_RELEVANT_FEATURES):
@@ -209,7 +217,9 @@ class LEDDrift(LED):
                 else:
                     x[self._attr_idx[i]] = self._ORIGINAL_INSTANCES[y, i]
             if self.irrelevant_features:
-                for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
+                for i in range(
+                    self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE
+                ):
                     x[self._attr_idx[i]] = self._rng.randint(2)
 
             yield x, y

@@ -2,9 +2,10 @@ import textwrap
 
 import numpy as np
 
+from river.utils.skmultiflow_utils import check_random_state
+
 from .. import base
 from ..synth import Agrawal
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class ConceptDriftStream(base.SyntheticDataset):
@@ -120,7 +121,8 @@ class ConceptDriftStream(base.SyntheticDataset):
                 self.width = w if w > 0 else 1
             else:
                 raise ValueError(
-                    f"Invalid alpha value: {alpha}. " f"Valid values are in the range (0.0, 90.0]"
+                    f"Invalid alpha value: {alpha}. "
+                    f"Valid values are in the range (0.0, 90.0]"
                 )
         else:
             self.width = width

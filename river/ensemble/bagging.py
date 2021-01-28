@@ -4,10 +4,8 @@ import statistics
 
 import numpy as np
 
-from river import base
-from river import linear_model
+from river import base, linear_model
 from river.drift import ADWIN
-
 
 __all__ = [
     "BaggingClassifier",

@@ -1,12 +1,13 @@
 from river.tree import HoeffdingTreeClassifier
-from river.utils.skmultiflow_utils import add_dict_values
-from river.utils.skmultiflow_utils import normalize_values_in_dict
+from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
 
-from ._nodes import FoundNode
-from ._nodes import SplitNode
-from ._nodes import LearningNode
-from ._nodes import AdaLearningNodeClassifier
-from ._nodes import AdaSplitNodeClassifier
+from ._nodes import (
+    AdaLearningNodeClassifier,
+    AdaSplitNodeClassifier,
+    FoundNode,
+    LearningNode,
+    SplitNode,
+)
 
 
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
@@ -260,9 +261,13 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             if isinstance(node, SplitNode):
                 split_node = node
                 for i in range(split_node.n_children):
-                    self.__find_learning_nodes(split_node.get_child(i), split_node, i, found)
+                    self.__find_learning_nodes(
+                        split_node.get_child(i), split_node, i, found
+                    )
                 if split_node._alternate_tree is not None:
-                    self.__find_learning_nodes(split_node._alternate_tree, split_node, -999, found)
+                    self.__find_learning_nodes(
+                        split_node._alternate_tree, split_node, -999, found
+                    )
 
     @classmethod
     def _unit_test_params(cls):

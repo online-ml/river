@@ -1,7 +1,8 @@
 import numpy as np
 
-from .. import base
 from river.utils.skmultiflow_utils import check_random_state
+
+from .. import base
 
 
 class Waveform(base.SyntheticDataset):
@@ -74,9 +75,13 @@ class Waveform(base.SyntheticDataset):
         ]
     )
 
-    def __init__(self, seed: int or np.random.RandomState = None, has_noise: bool = False):
+    def __init__(
+        self, seed: int or np.random.RandomState = None, has_noise: bool = False
+    ):
         super().__init__(
-            n_features=self._N_BASE_FEATURES if not has_noise else self._N_FEATURES_INCLUDING_NOISE,
+            n_features=self._N_BASE_FEATURES
+            if not has_noise
+            else self._N_FEATURES_INCLUDING_NOISE,
             n_classes=self._N_CLASSES,
             n_outputs=1,
             task=base.MULTI_CLF,

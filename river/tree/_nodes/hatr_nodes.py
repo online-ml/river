@@ -1,11 +1,10 @@
 import math
 
-from river.stats import Var
 from river.drift.adwin import ADWIN
+from river.stats import Var
 from river.utils.skmultiflow_utils import check_random_state
 
-from .base import FoundNode
-from .base import SplitNode
+from .base import FoundNode, SplitNode
 from .hatc_nodes import AdaNode
 from .htr_nodes import LearningNodeAdaptive
 
@@ -30,7 +29,9 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
         Seed to control the generation of random numbers and support reproducibility.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_model, adwin_delta, seed):
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, leaf_model, adwin_delta, seed
+    ):
         super().__init__(stats, depth, attr_obs, attr_obs_params, leaf_model)
 
         self.adwin_delta = adwin_delta
@@ -59,7 +60,9 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
     def kill_tree_children(self, hatr):
         pass
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1):
+    def learn_one(
+        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
+    ):
         y_pred = self.leaf_prediction(x, tree=tree)
         normalized_error = normalize_error(y, y_pred, self)
 
@@ -198,7 +201,10 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
             tree._n_alternate_trees += 1
 
         # Condition to replace alternate tree
-        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
+        elif (
+            self._alternate_tree is not None
+            and not self._alternate_tree.error_is_null()
+        ):
             if (
                 self.error_width > tree.drift_window_threshold
                 and self._alternate_tree.error_width > tree.drift_window_threshold
@@ -279,7 +285,9 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
             else:
                 path = max(
                     self._children,
-                    key=lambda c: self._children[c].total_weight if self._children[c] else 0.0,
+                    key=lambda c: self._children[c].total_weight
+                    if self._children[c]
+                    else 0.0,
                 )
                 leaf_node = self.get_child(path)
                 # Pass instance to the most traversed path
@@ -289,7 +297,12 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                     tree._n_active_leaves += 1
 
                 leaf_node.learn_one(
-                    x, y, sample_weight=sample_weight, tree=tree, parent=self, parent_branch=path,
+                    x,
+                    y,
+                    sample_weight=sample_weight,
+                    tree=tree,
+                    parent=self,
+                    parent_branch=path,
                 )
 
     def leaf_prediction(self, x, *, tree=None):

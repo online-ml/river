@@ -1,13 +1,11 @@
-from collections import defaultdict
 import functools
 import typing
+from collections import defaultdict
 
 import numpy as np
-from scipy import special
-from scipy import ndimage
+from scipy import ndimage, special
 
 from river import base
-
 
 __all__ = ["LDA"]
 
@@ -181,9 +179,10 @@ class LDA(base.Transformer):
         words_indexes_list = [self.word_to_index[word] for word in word_list]
 
         # Sample empirical topic assignment:
-        (statistics, batch_document_topic_distribution,) = self._compute_statistics_components(
-            words_indexes_list
-        )
+        (
+            statistics,
+            batch_document_topic_distribution,
+        ) = self._compute_statistics_components(words_indexes_list)
 
         # Online variational inference
         self._update_weights(statistics=statistics)
@@ -272,7 +271,9 @@ class LDA(base.Transformer):
                 input=psi_nu_1_nu_2_minus_psi_nu_2[0], shift=1, cval=0
             )
 
-            exp_weights[topic] = np.exp(psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2)
+            exp_weights[topic] = np.exp(
+                psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2
+            )
 
         return exp_weights, exp_oov_weights
 
@@ -305,7 +306,9 @@ class LDA(base.Transformer):
 
             if self.truncation_size < self.truncation_size_prime:
 
-                difference_truncation = self.truncation_size_prime - self.truncation_size
+                difference_truncation = (
+                    self.truncation_size_prime - self.truncation_size
+                )
 
                 self.nu_1[k] = np.append(self.nu_1[k], np.ones(difference_truncation))
                 self.nu_2[k] = np.append(self.nu_2[k], np.ones(difference_truncation))
@@ -323,7 +326,9 @@ class LDA(base.Transformer):
 
         self.truncation_size = self.truncation_size_prime
 
-    def _compute_statistics_components(self, words_indexes_list: list) -> typing.Tuple[dict, dict]:
+    def _compute_statistics_components(
+        self, words_indexes_list: list
+    ) -> typing.Tuple[dict, dict]:
         """Extract latent variables from the document and words.
 
         Parameters
@@ -339,7 +344,7 @@ class LDA(base.Transformer):
         statistics = defaultdict(lambda: np.zeros(self.truncation_size_prime))
 
         exp_weights, exp_oov_weights = self._compute_weights(
-            n_components=self.n_components, nu_1=self.nu_1, nu_2=self.nu_2,
+            n_components=self.n_components, nu_1=self.nu_1, nu_2=self.nu_2
         )
 
         size_vocab = len(words_indexes_list)

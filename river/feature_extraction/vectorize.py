@@ -9,7 +9,6 @@ import unicodedata
 
 from river import base
 
-
 __all__ = ["BagOfWords", "TFIDF"]
 
 
@@ -59,7 +58,9 @@ def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
     return zip(*[tokens[i:] for i in range(n)])
 
 
-def find_all_ngrams(tokens: typing.List[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
+def find_all_ngrams(
+    tokens: typing.List[str], ngram_range: range
+) -> typing.Iterator[N_GRAM]:
     """Generates all n-grams in a given range.
 
     Examples
@@ -120,7 +121,9 @@ class VectorizerMixin:
         self.strip_accents = strip_accents
         self.lowercase = lowercase
         self.preprocessor = preprocessor
-        self.tokenizer = re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
+        self.tokenizer = (
+            re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
+        )
         self.ngram_range = ngram_range
 
         self.processing_steps = []
@@ -146,7 +149,8 @@ class VectorizerMixin:
         if ngram_range[1] > 1:
             self.processing_steps.append(
                 functools.partial(
-                    find_all_ngrams, ngram_range=range(ngram_range[0], ngram_range[1] + 1),
+                    find_all_ngrams,
+                    ngram_range=range(ngram_range[0], ngram_range[1] + 1),
                 )
             )
 

@@ -16,8 +16,8 @@ from .higgs import Higgs
 from .http import HTTP
 from .insects import Insects
 from .malicious_url import MaliciousURL
-from .music import Music
 from .movielens100k import MovieLens100K
+from .music import Music
 from .phishing import Phishing
 from .restaurants import Restaurants
 from .segment import ImageSegments
@@ -27,7 +27,6 @@ from .solar_flare import SolarFlare
 from .taxis import Taxis
 from .trec07 import TREC07
 from .trump_approval import TrumpApproval
-
 
 __all__ = [
     "AirlinePassengers",
