@@ -1,11 +1,10 @@
 import bisect
 import collections
-from copy import deepcopy
 import datetime as dt
 import typing
+from copy import deepcopy
 
 from river import base
-
 
 __all__ = ["simulate_qa"]
 

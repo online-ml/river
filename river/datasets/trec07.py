@@ -31,5 +31,9 @@ class TREC07(base.RemoteDataset):
 
     def _iter(self):
         return stream.iter_csv(
-            self.path, target="y", delimiter=",", quotechar='"', field_size_limit=1_000_000,
+            self.path,
+            target="y",
+            delimiter=",",
+            quotechar='"',
+            field_size_limit=1_000_000,
         )

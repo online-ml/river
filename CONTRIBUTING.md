@@ -44,6 +44,12 @@ Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will
 $ pre-commit install --hook-type pre-push
 ```
 
+You can optionally run `pre-commit` at any time as so:
+
+```sh
+$ pre-commit run --all-files
+```
+
 ## Making changes
 
 You're now ready to make some changes. We strongly recommend that you to check out `river`'s source code for inspiration before getting into the thick of it. How you make the changes is up to you of course. However we can give you some pointers as to how to test your changes. Here is an example workflow that works for most cases:

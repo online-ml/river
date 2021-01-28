@@ -11,23 +11,18 @@ non-mixin base class.
 This module also contains utilities for type hinting and tagging estimators.
 
 """
-from . import tags
-from . import typing
+from . import tags, typing
 from .anomaly import AnomalyDetector
 from .base import Base
-from .classifier import Classifier
-from .classifier import MiniBatchClassifier
+from .classifier import Classifier, MiniBatchClassifier
 from .clusterer import Clusterer
 from .drift_detector import DriftDetector
 from .ensemble import EnsembleMixin
 from .estimator import Estimator
 from .multi_output import MultiOutputMixin
-from .regressor import Regressor
-from .regressor import MiniBatchRegressor
-from .transformer import SupervisedTransformer
-from .transformer import Transformer
+from .regressor import MiniBatchRegressor, Regressor
+from .transformer import SupervisedTransformer, Transformer
 from .wrapper import WrapperMixin
-
 
 __all__ = [
     "AnomalyDetector",

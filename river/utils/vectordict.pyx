@@ -1,6 +1,7 @@
 cimport cython
 
 import itertools
+
 import numpy as np
 
 missing = object()

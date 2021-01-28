@@ -1,9 +1,9 @@
 import json
 import os
+import zipfile
 
 import pytest
 import sqlalchemy as sql
-import zipfile
 
 from river import stream
 

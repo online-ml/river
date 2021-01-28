@@ -1,11 +1,6 @@
 """Sampling methods."""
-from .hard_sampling import HardSamplingClassifier
-from .hard_sampling import HardSamplingRegressor
-
-from .random import RandomOverSampler
-from .random import RandomUnderSampler
-from .random import RandomSampler
-
+from .hard_sampling import HardSamplingClassifier, HardSamplingRegressor
+from .random import RandomOverSampler, RandomSampler, RandomUnderSampler
 
 __all__ = [
     "HardSamplingClassifier",

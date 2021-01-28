@@ -1,11 +1,9 @@
 import math
 
-from river import datasets
-from river import preprocessing
-from river import stream
-
 import numpy as np
 import pandas as pd
+
+from river import datasets, preprocessing, stream
 
 
 def test_standard_scaler_one_many_consistent():

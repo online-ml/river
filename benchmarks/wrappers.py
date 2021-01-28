@@ -1,6 +1,7 @@
-from river import base
 import torch
 from vowpalwabbit import pyvw
+
+from river import base
 
 
 class PyTorchModel:

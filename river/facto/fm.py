@@ -5,12 +5,9 @@ import typing
 
 import numpy as np
 
-from river import base
-from river import optim
-from river import utils
+from river import base, optim, utils
 
 from .base import BaseFM
-
 
 __all__ = ["FMClassifier", "FMRegressor"]
 
@@ -55,7 +52,9 @@ class FM(BaseFM):
         )
 
     def _init_latents(self):
-        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
+        random_latents = functools.partial(
+            self.latent_initializer, shape=self.n_factors
+        )
         return collections.defaultdict(random_latents)
 
     def _calculate_interactions(self, x):
@@ -94,7 +93,9 @@ class FM(BaseFM):
 
         # Finally update the latent weights
         for j in x.keys():
-            self.latents[j] = self.latent_optimizer.update_after_pred(w=v[j], g=gradients[j])
+            self.latents[j] = self.latent_optimizer.update_after_pred(
+                w=v[j], g=gradients[j]
+            )
 
 
 class FMRegressor(FM, base.Regressor):

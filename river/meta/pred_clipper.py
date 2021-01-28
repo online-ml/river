@@ -1,6 +1,4 @@
-from river import base
-from river import utils
-
+from river import base, utils
 
 __all__ = ["PredClipper"]
 

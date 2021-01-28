@@ -4,19 +4,10 @@ import math
 import random
 import typing
 
-from river import base
-from river import compose
-from river import linear_model
-from river import metrics
-from river import optim
-from river import preprocessing
+from river import base, compose, linear_model, metrics, optim, preprocessing
 from river.utils.math import sigmoid
 
-
-__all__ = [
-    "EpsilonGreedyRegressor",
-    "UCBRegressor",
-]
+__all__ = ["EpsilonGreedyRegressor", "UCBRegressor"]
 
 
 def argmax(lst: list, rng: random.Random = None):
@@ -182,8 +173,12 @@ class Bandit(base.EnsembleMixin):
         """
 
         # Explore all arms pulled less than `explore_each_arm` times
-        never_pulled_arm = [i for (i, n) in enumerate(self._N) if n < self.explore_each_arm]
-        chosen_arm = self._rng.choice(never_pulled_arm) if never_pulled_arm else self._pull_arm()
+        never_pulled_arm = [
+            i for (i, n) in enumerate(self._N) if n < self.explore_each_arm
+        ]
+        chosen_arm = (
+            self._rng.choice(never_pulled_arm) if never_pulled_arm else self._pull_arm()
+        )
 
         # Predict and learn with the chosen model
         chosen_model = self[chosen_arm]
@@ -193,7 +188,9 @@ class Bandit(base.EnsembleMixin):
 
         # If warm up, do nothing (no updates of bandit internals).
         if self.warm_up and (self._n_iter == self.start_after):
-            self._n_iter = 0  # must be reset to 0 since it is an input to some model (UCB)
+            self._n_iter = (
+                0  # must be reset to 0 since it is an input to some model (UCB)
+            )
             self.warm_up = False
 
         self._n_iter += 1
@@ -225,11 +222,15 @@ class Bandit(base.EnsembleMixin):
         """
 
         # Scaling y so the reward distribution doesn't depend on the scale of y
-        y_true = self._y_scaler.learn_one(dict(y=y_true)).transform_one(dict(y=y_true))["y"]
+        y_true = self._y_scaler.learn_one(dict(y=y_true)).transform_one(dict(y=y_true))[
+            "y"
+        ]
         y_pred = self._y_scaler.transform_one(dict(y=y_pred))["y"]
 
         metric_value = self.metric._eval(y_pred, y_true)
-        metric_value = metric_value if self.metric.bigger_is_better else (-1) * metric_value
+        metric_value = (
+            metric_value if self.metric.bigger_is_better else (-1) * metric_value
+        )
         reward = 2 * sigmoid(metric_value)  # multiply per 2 to have reward in [0, 1]
 
         return reward
@@ -270,7 +271,9 @@ class EpsilonGreedyBandit(Bandit):
     def _update_arm(self, arm, reward):
         # The other arm internals are already updated in the method `Bandit._learn_one`.
         if self.epsilon_decay:
-            self.epsilon = self._starting_epsilon * math.exp(-self._n_iter * self.epsilon_decay)
+            self.epsilon = self._starting_epsilon * math.exp(
+                -self._n_iter * self.epsilon_decay
+            )
 
 
 class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
@@ -432,14 +435,20 @@ class UCBBandit(Bandit):
             seed=seed,
         )
         if delta is not None and (delta >= 1 or delta <= 0):
-            raise ValueError("The parameter delta should be comprised in ]0, 1[ (or set to None)")
+            raise ValueError(
+                "The parameter delta should be comprised in ]0, 1[ (or set to None)"
+            )
         self.delta = delta
 
     def _pull_arm(self):
         if self.delta:
-            exploration_bonus = [math.sqrt(2 * math.log(1 / self.delta) / n) for n in self._N]
+            exploration_bonus = [
+                math.sqrt(2 * math.log(1 / self.delta) / n) for n in self._N
+            ]
         else:
-            exploration_bonus = [math.sqrt(2 * math.log(self._n_iter) / n) for n in self._N]
+            exploration_bonus = [
+                math.sqrt(2 * math.log(self._n_iter) / n) for n in self._N
+            ]
         upper_bound = [
             avg_reward + exploration
             for (avg_reward, exploration) in zip(self.average_reward, exploration_bonus)

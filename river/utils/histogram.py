@@ -3,7 +3,6 @@ import heapq
 import itertools
 import math
 
-
 __all__ = ["Histogram"]
 
 
@@ -184,7 +183,9 @@ class Histogram(collections.UserList):
         def bin_distance(i):
             return self[i + 1].right - self[i].right
 
-        for i in sorted(heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True):
+        for i in sorted(
+            heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True
+        ):
             self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
 
     def iter_cdf(self, X, verbose=False):

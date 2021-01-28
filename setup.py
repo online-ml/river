@@ -1,6 +1,6 @@
 import io
-import platform
 import os
+import platform
 import subprocess
 import sys
 
@@ -35,8 +35,6 @@ compat_packages = base_packages + ["scikit-learn", "scikit-surprise", "sqlalchem
 
 dev_packages = base_packages + [
     "asv",
-    "black>=20.8b1",
-    "flake8>=3.7.9",
     "graphviz>=0.10.1",
     "matplotlib>=3.0.2",
     "mypy>=0.761",
