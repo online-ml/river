@@ -233,9 +233,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
-                y_proba_temp = {
-                    k: val * metric_value for k, val in y_proba_temp.items()
-                }
+                y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
             y_pred.update(y_proba_temp)
 
         total = sum(y_pred.values())
@@ -316,9 +314,7 @@ class SRPClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
     def _init_ensemble(self, features: list):
         self._generate_subspaces(features=features)
 
-        subspace_indexes = np.arange(
-            self.n_models
-        )  # For matching subspaces with ensemble members
+        subspace_indexes = np.arange(self.n_models)  # For matching subspaces with ensemble members
         if (
             self.training_method == self._TRAIN_RANDOM_PATCHES
             or self.training_method == self._TRAIN_RANDOM_SUBSPACES
@@ -402,9 +398,7 @@ class StreamingRandomPatchesBaseLearner:
         self.n_warnings_detected = 0
 
         # Background learner
-        self._background_learner = (
-            None
-        )  # type: typing.Optional[StreamingRandomPatchesBaseLearner]
+        self._background_learner = None  # type: typing.Optional[StreamingRandomPatchesBaseLearner]
         self._background_learner_class = StreamingRandomPatchesBaseLearner
 
         # Nominal attributes
@@ -427,9 +421,7 @@ class StreamingRandomPatchesBaseLearner:
         if self.features is not None:
             # Select the subset of features to use
             x_subset = {k: x[k] for k in self.features}
-            if self._set_nominal_attributes and hasattr(
-                self.model, "nominal_attributes"
-            ):
+            if self._set_nominal_attributes and hasattr(self.model, "nominal_attributes"):
                 self.model.nominal_attributes = list(
                     set(self.features).intersection(set(self.nominal_attributes))
                 )
@@ -476,9 +468,7 @@ class StreamingRandomPatchesBaseLearner:
             if self.drift_detector.change_detected:
                 self.n_drifts_detected += 1
                 # There was a change, reset the model
-                self.reset(
-                    all_features=all_features, n_samples_seen=n_samples_seen, rng=rng
-                )
+                self.reset(all_features=all_features, n_samples_seen=n_samples_seen, rng=rng)
 
     def predict_proba_one(self, x):
         # Select the features to use
@@ -486,16 +476,12 @@ class StreamingRandomPatchesBaseLearner:
 
         return self.model.predict_proba_one(x_subset)
 
-    def _trigger_warning(
-        self, all_features, n_samples_seen: int, rng: np.random.Generator
-    ):
+    def _trigger_warning(self, all_features, n_samples_seen: int, rng: np.random.Generator):
         # Randomly generate a new subspace from all the original features
         subspace = (
             None
             if self.features is None
-            else random_subspace(
-                all_features=all_features, k=len(self.features), rng=rng
-            )
+            else random_subspace(all_features=all_features, k=len(self.features), rng=rng)
         )
 
         # Initialize the background learner
@@ -531,9 +517,7 @@ class StreamingRandomPatchesBaseLearner:
             subspace = (
                 None
                 if self.features is None
-                else random_subspace(
-                    all_features=all_features, k=len(self.features), rng=rng
-                )
+                else random_subspace(all_features=all_features, k=len(self.features), rng=rng)
             )
             # Reset model
             self.model = self.model.clone()
