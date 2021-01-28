@@ -1,5 +1,4 @@
-from . import base
-from . import ewmean
+from . import base, ewmean
 
 
 class EWVar(base.Univariate):

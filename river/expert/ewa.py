@@ -3,9 +3,8 @@ import typing
 
 from river import base
 from river import linear_model as lm
-from river import preprocessing as pp
 from river import optim
-
+from river import preprocessing as pp
 
 __all__ = ["EWARegressor"]
 
@@ -131,4 +130,6 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
         return self
 
     def predict_one(self, x):
-        return sum(model.predict_one(x) * weight for model, weight in zip(self, self.weights))
+        return sum(
+            model.predict_one(x) * weight for model, weight in zip(self, self.weights)
+        )

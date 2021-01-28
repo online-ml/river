@@ -1,16 +1,17 @@
-from operator import attrgetter
 from copy import deepcopy
+from operator import attrgetter
 
-from river import base
-from river import linear_model
+from river import base, linear_model
 
 from ._base_tree import BaseHoeffdingTree
+from ._nodes import (
+    LearningNode,
+    LearningNodeAdaptive,
+    LearningNodeMean,
+    LearningNodeModel,
+    SplitNode,
+)
 from ._split_criterion import VarianceReductionSplitCriterion
-from ._nodes import SplitNode
-from ._nodes import LearningNode
-from ._nodes import LearningNodeMean
-from ._nodes import LearningNodeModel
-from ._nodes import LearningNodeAdaptive
 
 
 class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
@@ -138,7 +139,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.min_samples_split = min_samples_split
 
         if attr_obs not in self._VALID_AO:
-            raise AttributeError(f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}')
+            raise AttributeError(
+                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
+            )
         self.attr_obs = attr_obs
         self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
         self.kwargs = kwargs
@@ -190,7 +193,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                     leaf_model = deepcopy(self.leaf_model)
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMean(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return LearningNodeMean(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
+            )
         elif self.leaf_prediction == self._MODEL:
             return LearningNodeModel(
                 initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
@@ -271,7 +276,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 while not nd.is_leaf():
                     path = max(
                         nd._children,
-                        key=lambda c: nd._children[c].total_weight if nd._children[c] else 0.0,
+                        key=lambda c: nd._children[c].total_weight
+                        if nd._children[c]
+                        else 0.0,
                     )
                     most_traversed = nd.get_child(path)
                     # Pass instance to the most traversed path
@@ -368,7 +375,8 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
             if best_suggestion.merit > 0.0 and (
-                second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
+                second_best_suggestion.merit / best_suggestion.merit
+                < 1 - hoeffding_bound
                 or hoeffding_bound < self.tie_threshold
             ):
                 should_split = True
@@ -379,7 +387,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 # Add any poor attribute to set
                 for i in range(len(best_split_suggestions)):
                     if best_split_suggestions[i].split_test is not None:
-                        split_attrs = best_split_suggestions[i].split_test.attrs_test_depends_on()
+                        split_attrs = best_split_suggestions[
+                            i
+                        ].split_test.attrs_test_depends_on()
                         if len(split_attrs) == 1:
                             if (
                                 best_split_suggestions[i].merit / best_suggestion.merit
@@ -396,7 +406,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 self._n_inactive_leaves += 1
                 self._n_active_leaves -= 1
             else:
-                new_split = self._new_split_node(split_decision.split_test, node.stats, node.depth)
+                new_split = self._new_split_node(
+                    split_decision.split_test, node.stats, node.depth
+                )
                 for i in range(split_decision.num_splits()):
                     new_child = self._new_learning_node(
                         split_decision.resulting_stats_from_split(i), node
@@ -417,7 +429,11 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             and best_split_suggestions[-1].merit > 0
             and best_split_suggestions[-2].merit > 0
         ):
-            last_check_ratio = best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
+            last_check_ratio = (
+                best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
+            )
             last_check_vr = best_split_suggestions[-1].merit
 
-            node.manage_memory(split_criterion, last_check_ratio, last_check_vr, hoeffding_bound)
+            node.manage_memory(
+                split_criterion, last_check_ratio, last_check_vr, hoeffding_bound
+            )

@@ -7,17 +7,23 @@ import math
 import pickle
 import random
 
-from river import metrics
-from river.metrics import base
 import numpy as np
 import pytest
 from sklearn import metrics as sk_metrics
+
+from river import metrics
+from river.metrics import base
 
 
 def load_metrics():
     """Yields all the metrics."""
 
-    for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
+    for name, obj in inspect.getmembers(
+        importlib.import_module("river.metrics"), inspect.isclass
+    ):
+
+        if name == "Metrics":
+            continue
 
         if inspect.isabstract(obj):
             continue
@@ -100,13 +106,22 @@ TEST_CASES = [
         partial(sk_metrics.precision_score, average="weighted", zero_division=0),
     ),
     (metrics.Recall(), partial(sk_metrics.recall_score, zero_division=0)),
-    (metrics.MacroRecall(), partial(sk_metrics.recall_score, average="macro", zero_division=0)),
-    (metrics.MicroRecall(), partial(sk_metrics.recall_score, average="micro", zero_division=0)),
+    (
+        metrics.MacroRecall(),
+        partial(sk_metrics.recall_score, average="macro", zero_division=0),
+    ),
+    (
+        metrics.MicroRecall(),
+        partial(sk_metrics.recall_score, average="micro", zero_division=0),
+    ),
     (
         metrics.WeightedRecall(),
         partial(sk_metrics.recall_score, average="weighted", zero_division=0),
     ),
-    (metrics.FBeta(beta=0.5), partial(sk_metrics.fbeta_score, beta=0.5, zero_division=0)),
+    (
+        metrics.FBeta(beta=0.5),
+        partial(sk_metrics.fbeta_score, beta=0.5, zero_division=0),
+    ),
     (
         metrics.MacroFBeta(beta=0.5),
         partial(sk_metrics.fbeta_score, beta=0.5, average="macro", zero_division=0),
@@ -122,7 +137,10 @@ TEST_CASES = [
     (metrics.F1(), partial(sk_metrics.f1_score, zero_division=0)),
     (metrics.MacroF1(), partial(sk_metrics.f1_score, average="macro", zero_division=0)),
     (metrics.MicroF1(), partial(sk_metrics.f1_score, average="micro", zero_division=0)),
-    (metrics.WeightedF1(), partial(sk_metrics.f1_score, average="weighted", zero_division=0)),
+    (
+        metrics.WeightedF1(),
+        partial(sk_metrics.f1_score, average="weighted", zero_division=0),
+    ),
     (metrics.MCC(), sk_metrics.matthews_corrcoef),
     (metrics.MAE(), sk_metrics.mean_absolute_error),
     (metrics.MSE(), sk_metrics.mean_squared_error),
@@ -217,7 +235,9 @@ def test_log_loss():
         metric.update(yt, yp)
 
         if i >= 1:
-            assert math.isclose(metric.get(), sk_metrics.log_loss(y_true[: i + 1], y_pred[: i + 1]))
+            assert math.isclose(
+                metric.get(), sk_metrics.log_loss(y_true[: i + 1], y_pred[: i + 1])
+            )
 
     metric.revert(y_true[-1], y_pred[-1])
     assert math.isclose(metric.get(), sk_metrics.log_loss(y_true[:-1], y_pred[:-1]))
@@ -261,9 +281,15 @@ def test_multi_fbeta():
         fbeta.update(yt, yp)
 
         if i >= 2:
-            fbeta_0, _, _ = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=0.25, average=None)
-            _, fbeta_1, _ = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=1, average=None)
-            _, _, fbeta_2 = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=4, average=None)
+            fbeta_0, _, _ = sk_fbeta(
+                y_true[: i + 1], y_pred[: i + 1], beta=0.25, average=None
+            )
+            _, fbeta_1, _ = sk_fbeta(
+                y_true[: i + 1], y_pred[: i + 1], beta=1, average=None
+            )
+            _, _, fbeta_2 = sk_fbeta(
+                y_true[: i + 1], y_pred[: i + 1], beta=4, average=None
+            )
 
             multi_fbeta = fbeta_0 * 1 + fbeta_1 * 1 + fbeta_2 * 2
             multi_fbeta /= 1 + 1 + 2
@@ -276,7 +302,9 @@ def test_rolling_multi_fbeta():
         return collections.deque(iterable, maxlen=n)
 
     fbeta = metrics.Rolling(
-        metric=metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}),
+        metric=metrics.MultiFBeta(
+            betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}
+        ),
         window_size=3,
     )
     n = fbeta.window_size
@@ -379,7 +407,9 @@ def test_rolling_r2():
         r2.update(yt, yp)
 
         if i >= 2:
-            assert math.isclose(r2.get(), sk_r2(tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n)))
+            assert math.isclose(
+                r2.get(), sk_r2(tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n))
+            )
 
 
 def test_compose():

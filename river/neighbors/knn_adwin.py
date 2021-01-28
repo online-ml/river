@@ -1,6 +1,7 @@
-from .knn_classifier import KNNClassifier
 from river.drift import ADWIN
 from river.utils import dict2numpy
+
+from .knn_classifier import KNNClassifier
 
 
 class KNNADWINClassifier(KNNClassifier):
@@ -55,7 +56,9 @@ class KNNADWINClassifier(KNNClassifier):
     """
 
     def __init__(self, n_neighbors=5, window_size=1000, leaf_size=30, p=2):
-        super().__init__(n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size, p=p)
+        super().__init__(
+            n_neighbors=n_neighbors, window_size=window_size, leaf_size=leaf_size, p=p
+        )
         self.adwin = ADWIN()
 
     def _unit_test_skips(self):

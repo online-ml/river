@@ -1,8 +1,7 @@
-import math
-import sys
-import numbers
 import copy
-
+import math
+import numbers
+import sys
 from collections import deque
 
 import numpy as np
@@ -279,7 +278,9 @@ def check_random_state(seed):
         return np.random.RandomState(seed)
     if isinstance(seed, np.random.RandomState):
         return seed
-    raise ValueError(f"{seed} cannot be used to seed a numpy.random.RandomState instance")
+    raise ValueError(
+        f"{seed} cannot be used to seed a numpy.random.RandomState instance"
+    )
 
 
 def round_sig_fig(x, significant_digits=2) -> float:

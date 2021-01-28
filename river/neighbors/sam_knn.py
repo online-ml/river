@@ -1,13 +1,13 @@
-import logging
 import copy as cp
+import logging
 from collections import deque
 
 import numpy as np
-
 from sklearn.cluster import KMeans
 
 from river.base import Classifier
 from river.utils import dict2numpy
+
 from . import libNearestNeighbor
 
 
@@ -58,7 +58,7 @@ class SAMKNNClassifier(Classifier):
 
     >>> metric = metrics.Accuracy()
 
-    >>> evaluate.progressive_val_score(dataset, model, metric)
+    >>> evaluate.progressive_val_score(dataset, model, metric)  # doctest: +SKIP
     Accuracy: 56.70%
 
     Notes
@@ -157,7 +157,9 @@ class SAMKNNClassifier(Classifier):
             clustering = KMeans(n_clusters=newLength, n_init=1, random_state=0)
             clustering.fit(tmpSamples)
             newSamples = np.vstack([newSamples, clustering.cluster_centers_])
-            newLabels = np.append(newLabels, label * np.ones(shape=newLength, dtype=np.int32))
+            newLabels = np.append(
+                newLabels, label * np.ones(shape=newLength, dtype=np.int32)
+            )
         return newSamples, newLabels
 
     def _size_check_fade_out(self):
@@ -172,7 +174,9 @@ class SAMKNNClassifier(Classifier):
             self._stm_labels = np.delete(self._stm_labels, 0, 0)
             self.stm_distances[
                 : len(self._stm_labels), : len(self._stm_labels)
-            ] = self.stm_distances[1 : len(self._stm_labels) + 1, 1 : len(self._stm_labels) + 1]
+            ] = self.stm_distances[
+                1 : len(self._stm_labels) + 1, 1 : len(self._stm_labels) + 1
+            ]
 
             if self.stm_aprox_adaption:
                 key_set = list(self.interleaved_pred_histories.keys())
@@ -198,7 +202,10 @@ class SAMKNNClassifier(Classifier):
         Only used when use_ltm=True.
         """
         stm_shortened = False
-        if len(self._stm_labels) + len(self._ltm_labels) > self.max_stm_size + self.max_ltm_size:
+        if (
+            len(self._stm_labels) + len(self._ltm_labels)
+            > self.max_stm_size + self.max_ltm_size
+        ):
             if len(self._ltm_labels) > self.max_ltm_size:
                 self._ltm_samples, self._ltm_labels = self._cluster_down(
                     self._ltm_samples, self._ltm_labels
@@ -214,7 +221,9 @@ class SAMKNNClassifier(Classifier):
                     self._ltm_samples = np.vstack(
                         [self._ltm_samples, self._stm_samples[:n_shifts, :]]
                     )
-                    self._ltm_labels = np.append(self._ltm_labels, self._stm_labels[:n_shifts])
+                    self._ltm_labels = np.append(
+                        self._ltm_labels, self._stm_labels[:n_shifts]
+                    )
                     self._ltm_samples, self._ltm_labels = self._cluster_down(
                         self._ltm_samples, self._ltm_labels
                     )
@@ -251,8 +260,12 @@ class SAMKNNClassifier(Classifier):
                 distances_stm = SAMKNNClassifier._get_distances(
                     self._stm_samples[i, :], samples_shortened
                 )
-                nn_indices_stm = libNearestNeighbor.nArgMin(self.n_neighbors, distances_stm)[0]
-                distances_ltm = SAMKNNClassifier._get_distances(self._stm_samples[i, :], samples_cl)
+                nn_indices_stm = libNearestNeighbor.nArgMin(
+                    self.n_neighbors, distances_stm
+                )[0]
+                distances_ltm = SAMKNNClassifier._get_distances(
+                    self._stm_samples[i, :], samples_cl
+                )
                 nn_indices_ltm = libNearestNeighbor.nArgMin(
                     min(len(distances_ltm), self.n_neighbors), distances_ltm
                 )[0]
@@ -264,8 +277,12 @@ class SAMKNNClassifier(Classifier):
                     wrong_indices_ltm = nn_indices_ltm[
                         labels_cl[nn_indices_ltm] != self._stm_labels[i]
                     ]
-                    del_indices = np.where(distances_ltm[wrong_indices_ltm] <= dist_threshold)[0]
-                    samples_cl = np.delete(samples_cl, wrong_indices_ltm[del_indices], 0)
+                    del_indices = np.where(
+                        distances_ltm[wrong_indices_ltm] <= dist_threshold
+                    )[0]
+                    samples_cl = np.delete(
+                        samples_cl, wrong_indices_ltm[del_indices], 0
+                    )
                     labels_cl = np.delete(labels_cl, wrong_indices_ltm[del_indices], 0)
         return samples_cl, labels_cl
 
@@ -288,13 +305,18 @@ class SAMKNNClassifier(Classifier):
 
         if self.stm_aprox_adaption is not None:
             if stm_shortened:
-                distances_stm = SAMKNNClassifier._get_distances(x, self._stm_samples[:-1, :])
+                distances_stm = SAMKNNClassifier._get_distances(
+                    x, self._stm_samples[:-1, :]
+                )
 
             self.stm_distances[
                 len(self._stm_labels) - 1, : len(self._stm_labels) - 1
             ] = distances_stm
             old_window_size = len(self._stm_labels)
-            (new_window_size, self.interleaved_pred_histories,) = STMSizer.get_new_stm_size(
+            (
+                new_window_size,
+                self.interleaved_pred_histories,
+            ) = STMSizer.get_new_stm_size(
                 self.stm_aprox_adaption,
                 self._stm_labels,
                 self.n_neighbors,
@@ -354,7 +376,9 @@ class SAMKNNClassifier(Classifier):
                 )[0]
                 predicted_label = predicted_label_stm
             else:
-                distances_ltm = SAMKNNClassifier._get_distances(sample, self._ltm_samples)
+                distances_ltm = SAMKNNClassifier._get_distances(
+                    sample, self._ltm_samples
+                )
                 predicted_label_stm = self.get_labels_fct(
                     distances_stm, self._stm_labels, self.n_neighbors
                 )[0]
@@ -376,7 +400,9 @@ class SAMKNNClassifier(Classifier):
                         predicted_label_ltm,
                         predicted_label_both,
                     ]
-                    classifier_choice = np.argmax([correct_stm, correct_ltm, correct_both])
+                    classifier_choice = np.argmax(
+                        [correct_stm, correct_ltm, correct_both]
+                    )
                     predicted_label = labels[classifier_choice]  # noqa
                 else:
                     predicted_label = predicted_label_stm
@@ -407,7 +433,9 @@ class SAMKNNClassifier(Classifier):
                 )[0]
                 predicted_label = predicted_label_stm
             else:
-                distances_ltm = SAMKNNClassifier._get_distances(sample, self._ltm_samples)
+                distances_ltm = SAMKNNClassifier._get_distances(
+                    sample, self._ltm_samples
+                )
                 predicted_label_stm = self.get_labels_fct(
                     distances_stm, self._stm_labels, self.n_neighbors
                 )[0]
@@ -430,7 +458,9 @@ class SAMKNNClassifier(Classifier):
                         predicted_label_ltm,
                         predicted_label_both,
                     ]
-                    classifier_choice = np.argmax([correct_stm, correct_ltm, correct_both])
+                    classifier_choice = np.argmax(
+                        [correct_stm, correct_ltm, correct_both]
+                    )
                     predicted_label = labels[classifier_choice]  # noqa
                 else:
                     predicted_label = predicted_label_stm
@@ -512,7 +542,9 @@ class SAMKNNClassifier(Classifier):
         else:
             labels = np.int8(labels)
 
-        predLabels = libNearestNeighbor.getLinearWeightedLabels(labels[nn_indices], sqrtDistances)
+        predLabels = libNearestNeighbor.getLinearWeightedLabels(
+            labels[nn_indices], sqrtDistances
+        )
         return predLabels
 
     @property
@@ -582,7 +614,9 @@ class STMSizer:
         return np.sum(y_pred == y_true) / float(len(y_pred))
 
     @staticmethod
-    def _get_interleaved_test_train_acc(labels, n_neighbours, get_labels_fct, distances_stm):
+    def _get_interleaved_test_train_acc(
+        labels, n_neighbours, get_labels_fct, distances_stm
+    ):
         """Calculates the interleaved test train accuracy from the scratch."""
         predLabels = []
         for i in range(n_neighbours, len(labels)):

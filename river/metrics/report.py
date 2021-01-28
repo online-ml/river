@@ -1,10 +1,5 @@
 from .. import utils
-
-from . import base
-from . import accuracy
-from . import fbeta
-from . import precision
-from . import recall
+from . import accuracy, base, fbeta, precision, recall
 
 
 class ClassificationReport(base.MultiClassMetric):

@@ -1,7 +1,7 @@
 import typing
 
 import vaex
-from vaex.utils import _ensure_strings_from_expressions, _ensure_list
+from vaex.utils import _ensure_list, _ensure_strings_from_expressions
 
 from river import base
 

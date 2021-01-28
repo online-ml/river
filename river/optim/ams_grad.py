@@ -1,9 +1,7 @@
 import collections
 import typing
 
-from . import base
-from . import schedulers
-
+from . import base, schedulers
 
 __all__ = ["AMSGrad"]
 

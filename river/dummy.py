@@ -5,9 +5,7 @@ This module is here for testing purposes, as well as providing baseline performa
 """
 import collections
 
-from river import base
-from river import stats
-
+from river import base, stats
 
 __all__ = ["NoChangeClassifier", "PriorClassifier", "StatisticRegressor"]
 

@@ -7,12 +7,8 @@ import typing
 
 import pandas as pd
 
-from .. import base
-from .. import utils
-
-from . import func
-from . import union
-
+from .. import base, utils
+from . import func, union
 
 __all__ = ["Pipeline"]
 
@@ -24,7 +20,7 @@ class Pipeline(base.Estimator):
     learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or
     a classifier. It is highly recommended to use pipelines with `river`. Indeed, in an online
     learning setting, it is very practical to have a model defined as a single object. Take a look
-    at the [user guide](../user-guide/the-art-of-using-pipelines.md) for further information and
+    at the [user guide](../../user-guide/pipelines.md) for further information and
     practical examples.
 
     One special thing to take notice to is the way transformers are handled. In a typical scenario,
@@ -433,7 +429,9 @@ class Pipeline(base.Estimator):
             else:
                 for k, v in sorted(x.items()):
                     type_str = f" ({type(v).__name__})" if show_types else ""
-                    _print((tab if indent else "") + f"{k}: {format_value(v)}" + type_str)
+                    _print(
+                        (tab if indent else "") + f"{k}: {format_value(v)}" + type_str
+                    )
             if space_after:
                 _print()
 
@@ -455,7 +453,9 @@ class Pipeline(base.Estimator):
                     if isinstance(sub_t, Pipeline):
                         name = str(sub_t)
                     print_title(f"{i+1}.{j} {name}", indent=True)
-                    print_dict(sub_t.transform_one(x), show_types=show_types, indent=True)
+                    print_dict(
+                        sub_t.transform_one(x), show_types=show_types, indent=True
+                    )
                 x = t.transform_one(x)
                 print_dict(x, show_types=show_types)
 
@@ -476,7 +476,9 @@ class Pipeline(base.Estimator):
             # Display the prediction
             _print()
             if utils.inspect.isclassifier(final):
-                print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
+                print_dict(
+                    final.predict_proba_one(x), show_types=False, space_after=False
+                )
             else:
                 _print(f"Prediction: {format_value(final.predict_one(x))}")
 
