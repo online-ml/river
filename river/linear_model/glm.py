@@ -21,14 +21,7 @@ class GLM:
     """
 
     def __init__(
-        self,
-        optimizer,
-        loss,
-        l2,
-        intercept_init,
-        intercept_lr,
-        clip_gradient,
-        initializer,
+        self, optimizer, loss, l2, intercept_init, intercept_lr, clip_gradient, initializer,
     ):
         self.optimizer = optimizer
         self.loss = loss
@@ -421,10 +414,7 @@ class Perceptron(LogisticRegression):
     """
 
     def __init__(
-        self,
-        l2=0.0,
-        clip_gradient=1e12,
-        initializer: optim.initializers.Initializer = None,
+        self, l2=0.0, clip_gradient=1e12, initializer: optim.initializers.Initializer = None,
     ):
         super().__init__(
             optimizer=optim.SGD(1),

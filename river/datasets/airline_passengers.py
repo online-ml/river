@@ -18,10 +18,7 @@ class AirlinePassengers(base.FileDataset):
 
     def __init__(self):
         super().__init__(
-            filename="airline-passengers.csv",
-            task=base.REG,
-            n_features=1,
-            n_samples=144,
+            filename="airline-passengers.csv", task=base.REG, n_features=1, n_samples=144,
         )
 
     def __iter__(self):

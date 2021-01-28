@@ -7,8 +7,7 @@ from river import naive_bayes
 
 def test_predict_class_given_unseen_features():
     model = compose.Pipeline(
-        ("tokenize", feature_extraction.BagOfWords()),
-        ("nb", naive_bayes.MultinomialNB(alpha=1)),
+        ("tokenize", feature_extraction.BagOfWords()), ("nb", naive_bayes.MultinomialNB(alpha=1)),
     )
 
     docs = [

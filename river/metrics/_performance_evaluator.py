@@ -393,8 +393,7 @@ class _RollingMLClassificationReport(_MLClassificationReport):
     def __init__(self, cm: ConfusionMatrix = None, window_size=200):
         self.window_size = window_size
         self._rolling_cm = Rolling(
-            MultiLabelConfusionMatrix() if cm is None else cm,
-            window_size=self.window_size,
+            MultiLabelConfusionMatrix() if cm is None else cm, window_size=self.window_size,
         )
         super().__init__(cm=self._rolling_cm.metric)
 
@@ -486,12 +485,7 @@ class _RegressionReport(object):
 
     def __repr__(self):
         return "".join(
-            [
-                "Regression report\n\n",
-                f"n_samples:\t\t{self.n_samples:>10}\n",
-                "\n",
-                self._info(),
-            ]
+            ["Regression report\n\n", f"n_samples:\t\t{self.n_samples:>10}\n", "\n", self._info(),]
         )
 
     def _info(self):

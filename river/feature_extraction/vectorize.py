@@ -146,8 +146,7 @@ class VectorizerMixin:
         if ngram_range[1] > 1:
             self.processing_steps.append(
                 functools.partial(
-                    find_all_ngrams,
-                    ngram_range=range(ngram_range[0], ngram_range[1] + 1),
+                    find_all_ngrams, ngram_range=range(ngram_range[0], ngram_range[1] + 1),
                 )
             )
 

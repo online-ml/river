@@ -73,11 +73,7 @@ class AnomalySine(base.SyntheticDataset):
         seed: int or np.random.RandomState = None,
     ):
         super().__init__(
-            n_features=2,
-            n_classes=1,
-            n_outputs=1,
-            n_samples=n_samples,
-            task=base.BINARY_CLF,
+            n_features=2, n_classes=1, n_outputs=1, n_samples=n_samples, task=base.BINARY_CLF,
         )
         if n_anomalies > self.n_samples:
             raise ValueError(

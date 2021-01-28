@@ -143,9 +143,7 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
 
         if current_best_option is None or merit > current_best_option.merit:
             num_att_binary_test = NumericAttributeBinaryTest(
-                att_idx=att_idx,
-                att_value=current_node.cut_point,
-                equal_passes_test=True,
+                att_idx=att_idx, att_value=current_node.cut_point, equal_passes_test=True,
             )
             current_best_option = AttributeSplitSuggestion(
                 split_test=num_att_binary_test,

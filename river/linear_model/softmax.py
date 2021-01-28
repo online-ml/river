@@ -59,10 +59,7 @@ class SoftmaxRegression(base.Classifier):
     """
 
     def __init__(
-        self,
-        optimizer: optim.Optimizer = None,
-        loss: optim.losses.MultiClassLoss = None,
-        l2=0,
+        self, optimizer: optim.Optimizer = None, loss: optim.losses.MultiClassLoss = None, l2=0,
     ):
         if optimizer is None:
             optimizer = optim.SGD(0.01)

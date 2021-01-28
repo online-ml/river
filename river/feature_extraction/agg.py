@@ -248,10 +248,7 @@ class TargetAgg(base.SupervisedTransformer):
     """
 
     def __init__(
-        self,
-        by: typing.Union[str, typing.List[str]],
-        how: stats.Univariate,
-        target_name="target",
+        self, by: typing.Union[str, typing.List[str]], how: stats.Univariate, target_name="target",
     ):
         self.by = by if isinstance(by, list) else [by]
         self.how = how
