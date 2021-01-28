@@ -147,7 +147,16 @@ class BinaryMetric(ClassificationMetric):
 
 
 class MultiClassMetric(ClassificationMetric):
-    """Mother class for all multi-class classification metrics."""
+    """Mother class for all multi-class classification metrics.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
+    """
 
 
 class RegressionMetric(Metric):
@@ -188,9 +197,18 @@ class RegressionMetric(Metric):
 
 
 class MultiOutputClassificationMetric(Metric):
-    """Mother class for all multi-output classification metrics."""
+    """Mother class for all multi-output classification metrics.
 
-    def __init__(self, cm=None):
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
+    """
+
+    def __init__(self, cm: confusion.MultiLabelConfusionMatrix = None):
         if cm is None:
             cm = confusion.MultiLabelConfusionMatrix()
         self.cm = cm
@@ -258,7 +276,14 @@ class MultiOutputRegressionMetric(Metric):
 
 
 class Metrics(Metric, collections.UserList):
-    """A container class for handling multiple metrics at once."""
+    """A container class for handling multiple metrics at once.
+
+    Parameters
+    ----------
+    metrics
+    str_sep
+
+    """
 
     def __init__(self, metrics, str_sep=", "):
         super().__init__(metrics)
