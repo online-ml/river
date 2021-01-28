@@ -487,7 +487,7 @@ class StreamingRandomPatchesBaseLearner:
         return self.model.predict_proba_one(x_subset)
 
     def _trigger_warning(
-        self, all_features, n_samples_seen: int, rng: rng: np.random.Generator
+        self, all_features, n_samples_seen: int, rng: np.random.Generator
     ):
         # Randomly generate a new subspace from all the original features
         subspace = (
@@ -514,9 +514,7 @@ class StreamingRandomPatchesBaseLearner:
         # Hard-reset the warning method
         self.warning_detector = self.warning_detector.clone()
 
-    def reset(
-        self, all_features: list, n_samples_seen: int, rng: np.random.Generator
-    ):
+    def reset(self, all_features: list, n_samples_seen: int, rng: np.random.Generator):
         # Randomly generate a new subspace from all the original features
         subspace = (
             None
@@ -541,7 +539,9 @@ class StreamingRandomPatchesBaseLearner:
             subspace = (
                 None
                 if self.features is None
-                else random_subspace(all_features=all_features, k=len(self.features), rng=rng)
+                else random_subspace(
+                    all_features=all_features, k=len(self.features), rng=rng
+                )
             )
             # Reset model
             self.model = self.model.clone()
