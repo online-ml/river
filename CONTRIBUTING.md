@@ -44,26 +44,11 @@ Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will
 $ pre-commit install --hook-type pre-push
 ```
 
+You can optionally run `pre-commit` at any time as so:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```sh
+$ pre-commit run --all-files
+```
 
 ## Making changes
 

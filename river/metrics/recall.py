@@ -1,9 +1,9 @@
-from . import base, precision
+from river import metrics
 
 __all__ = ["MacroRecall", "MicroRecall", "Recall", "WeightedRecall", "ExampleRecall"]
 
 
-class Recall(base.BinaryMetric):
+class Recall(metrics.BinaryMetric):
     """Binary recall score.
 
     Parameters
@@ -43,7 +43,7 @@ class Recall(base.BinaryMetric):
             return 0.0
 
 
-class MacroRecall(base.MultiClassMetric):
+class MacroRecall(metrics.MultiClassMetric):
     """Macro-average recall score.
 
     Parameters
@@ -85,7 +85,7 @@ class MacroRecall(base.MultiClassMetric):
             return 0.0
 
 
-class MicroRecall(precision.MicroPrecision):
+class MicroRecall(metrics.MicroPrecision):
     """Micro-average recall score.
 
     The micro-average recall is exactly equivalent to the micro-average precision as well as the
@@ -122,7 +122,7 @@ class MicroRecall(precision.MicroPrecision):
     """
 
 
-class WeightedRecall(base.MultiClassMetric):
+class WeightedRecall(metrics.MultiClassMetric):
     """Weighted-average recall score.
 
     This uses the support of each label to compute an average score, whereas `MacroRecall`
@@ -167,7 +167,7 @@ class WeightedRecall(base.MultiClassMetric):
             return 0.0
 
 
-class ExampleRecall(base.MultiOutputClassificationMetric):
+class ExampleRecall(metrics.MultiOutputClassificationMetric):
     """Example-based recall score for multilabel classification.
 
     Parameters

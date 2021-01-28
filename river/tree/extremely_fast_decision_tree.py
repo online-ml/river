@@ -1,6 +1,6 @@
 from operator import attrgetter
 
-from river.tree import HoeffdingTreeClassifier
+from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 
 from ._nodes import (
     EFDTLearningNodeMC,

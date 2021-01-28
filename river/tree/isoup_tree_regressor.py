@@ -2,7 +2,7 @@ import typing
 from copy import deepcopy
 
 from river import base
-from river.tree import HoeffdingTreeRegressor
+from river import tree
 
 from ._nodes import (
     LearningNodeAdaptiveMultiTarget,
@@ -12,7 +12,7 @@ from ._nodes import (
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
 
 
-class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
+class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
     """Incremental Structured Output Prediction Tree (iSOUP-Tree) for multi-target regression.
 
     This is an implementation of the iSOUP-Tree proposed by A. Osojnik, P. Panov, and
@@ -149,7 +149,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         self.split_criterion: str = "icvr"  # intra cluster variance reduction
         self.targets: set = set()
 
-    @HoeffdingTreeRegressor.leaf_prediction.setter
+    @tree.HoeffdingTreeRegressor.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
             print(
@@ -161,7 +161,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @HoeffdingTreeRegressor.split_criterion.setter
+    @tree.HoeffdingTreeRegressor.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion == "vr":
             # Corner case due to parent class initialization
