@@ -8,13 +8,13 @@ import setuptools
 
 try:
     from numpy import get_include
-except ModuleNotFoundError:
+except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
     from numpy import get_include
 
 try:
     from Cython.Build import cythonize
-except ModuleNotFoundError:
+except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "Cython"])
     from Cython.Build import cythonize
 
