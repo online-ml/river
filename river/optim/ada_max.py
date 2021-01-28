@@ -2,7 +2,6 @@ import collections
 
 from . import base
 
-
 __all__ = ["AdaMax"]
 
 
@@ -60,7 +59,9 @@ class AdaMax(base.Optimizer):
     def _update_after_pred(self, w, g):
 
         # Correct bias for `m`
-        learning_rate = self.learning_rate / (1 - self.beta_1 ** (self.n_iterations + 1))
+        learning_rate = self.learning_rate / (
+            1 - self.beta_1 ** (self.n_iterations + 1)
+        )
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi

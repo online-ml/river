@@ -3,12 +3,10 @@ import itertools
 import math
 import typing
 
-from river import linear_model
-from river import preprocessing
 import river.base
+from river import linear_model, preprocessing
 
 from . import base
-
 
 __all__ = ["SNARIMAX"]
 
@@ -100,7 +98,9 @@ class Differencer:
         coeffs.update(self.coeffs)
         coeffs.update(other.coeffs)
 
-        for (t1, c1), (t2, c2) in itertools.product(self.coeffs.items(), other.coeffs.items()):
+        for (t1, c1), (t2, c2) in itertools.product(
+            self.coeffs.items(), other.coeffs.items()
+        ):
             coeffs[t1 + t2 + 1] += c1 * c2
 
         # Remove 0 coefficients
@@ -124,7 +124,9 @@ class Differencer:
             value.
 
         """
-        return y + sum(c * y_previous[t] for t, c in self.coeffs.items() if t < len(y_previous))
+        return y + sum(
+            c * y_previous[t] for t, c in self.coeffs.items() if t < len(y_previous)
+        )
 
     def undiff(self, y: float, y_previous: typing.List[float]):
         """Undifferentiates a value.
@@ -136,7 +138,9 @@ class Differencer:
             value.
 
         """
-        return y - sum(c * y_previous[t] for t, c in self.coeffs.items() if t < len(y_previous))
+        return y - sum(
+            c * y_previous[t] for t, c in self.coeffs.items() if t < len(y_previous)
+        )
 
 
 class SNARIMAX(base.Forecaster):
@@ -386,7 +390,9 @@ class SNARIMAX(base.Forecaster):
             xs = [{}] * horizon
 
         if len(xs) != horizon:
-            raise ValueError("the length of xs should be equal to the specified horizon")
+            raise ValueError(
+                "the length of xs should be equal to the specified horizon"
+            )
 
         y_trues = collections.deque(self.y_trues)
         errors = collections.deque(self.errors)

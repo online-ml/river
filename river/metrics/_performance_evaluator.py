@@ -1,23 +1,34 @@
-from . import Accuracy
-from . import CohenKappa, KappaM, KappaT
-from . import Recall, MicroRecall, MacroRecall
-from . import Precision, MicroPrecision, MacroPrecision
-from . import F1, MicroF1, MacroF1
-from . import GeometricMean
-from . import Hamming, HammingLoss
-from . import Jaccard
-from . import ExactMatch
-from . import Rolling
-from . import ConfusionMatrix
-from . import MSE
-from . import MAE
-from . import R2
-from .confusion import MultiLabelConfusionMatrix
-
 from collections import deque
 from timeit import default_timer as timer
 
 import numpy as np
+
+from . import (
+    F1,
+    MAE,
+    MSE,
+    R2,
+    Accuracy,
+    CohenKappa,
+    ConfusionMatrix,
+    ExactMatch,
+    GeometricMean,
+    Hamming,
+    HammingLoss,
+    Jaccard,
+    KappaM,
+    KappaT,
+    MacroF1,
+    MacroPrecision,
+    MacroRecall,
+    MicroF1,
+    MicroPrecision,
+    MicroRecall,
+    Precision,
+    Recall,
+    Rolling,
+)
+from .confusion import MultiLabelConfusionMatrix
 
 
 class _ClassificationReport:
@@ -223,7 +234,9 @@ class _RollingClassificationReport(_ClassificationReport):
         super().__init__(cm=self._rolling_cm.metric)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
-        self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
 
     def __repr__(self):
         return "".join(
@@ -393,12 +406,15 @@ class _RollingMLClassificationReport(_MLClassificationReport):
     def __init__(self, cm: ConfusionMatrix = None, window_size=200):
         self.window_size = window_size
         self._rolling_cm = Rolling(
-            MultiLabelConfusionMatrix() if cm is None else cm, window_size=self.window_size,
+            MultiLabelConfusionMatrix() if cm is None else cm,
+            window_size=self.window_size,
         )
         super().__init__(cm=self._rolling_cm.metric)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
-        self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
 
     def __repr__(self):
         return "".join(
@@ -485,7 +501,12 @@ class _RegressionReport(object):
 
     def __repr__(self):
         return "".join(
-            ["Regression report\n\n", f"n_samples:\t\t{self.n_samples:>10}\n", "\n", self._info(),]
+            [
+                "Regression report\n\n",
+                f"n_samples:\t\t{self.n_samples:>10}\n",
+                "\n",
+                self._info(),
+            ]
         )
 
     def _info(self):
@@ -638,7 +659,10 @@ class _MTRegressionReport(object):
     def get_average_root_mean_square_error(self):
         try:
             mse = self.total_square_error / self.n_samples
-            return np.sum(np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0)) / self.n_targets
+            return (
+                np.sum(np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0))
+                / self.n_targets
+            )
         except ZeroDivisionError:
             return 0.0
 
@@ -733,7 +757,9 @@ class _RollingMTRegressionReport(_MTRegressionReport):
             if len(self.total_square_error_correction) == self.window_size
             else None
         )
-        self.total_square_error_correction.append(-1 * (y_true - y_pred) * (y_true - y_pred))
+        self.total_square_error_correction.append(
+            -1 * (y_true - y_pred) * (y_true - y_pred)
+        )
         old_average = (
             self.average_error_correction[0]
             if len(self.average_error_correction) == self.window_size

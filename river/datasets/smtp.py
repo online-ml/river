@@ -29,5 +29,10 @@ class SMTP(base.RemoteDataset):
         return stream.iter_csv(
             self.path,
             target="service",
-            converters={"duration": float, "src_bytes": float, "dst_bytes": float, "service": int,},
+            converters={
+                "duration": float,
+                "src_bytes": float,
+                "dst_bytes": float,
+                "service": int,
+            },
         )

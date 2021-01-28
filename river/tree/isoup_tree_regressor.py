@@ -4,10 +4,12 @@ from copy import deepcopy
 from river import base
 from river.tree import HoeffdingTreeRegressor
 
+from ._nodes import (
+    LearningNodeAdaptiveMultiTarget,
+    LearningNodeMeanMultiTarget,
+    LearningNodeModelMultiTarget,
+)
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
-from ._nodes import LearningNodeMeanMultiTarget
-from ._nodes import LearningNodeModelMultiTarget
-from ._nodes import LearningNodeAdaptiveMultiTarget
 
 
 class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
@@ -175,7 +177,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return IntraClusterVarianceReductionSplitCriterion(min_samples_split=self.min_samples_split)
+        return IntraClusterVarianceReductionSplitCriterion(
+            min_samples_split=self.min_samples_split
+        )
 
     def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
@@ -248,7 +252,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
         return self
 
-    def predict_one(self, x: dict) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
+    def predict_one(
+        self, x: dict
+    ) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
         """Predict the target values for a given instance.
 
         Parameters

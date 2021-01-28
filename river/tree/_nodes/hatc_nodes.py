@@ -1,12 +1,11 @@
-from abc import ABCMeta, abstractmethod
 import math
+from abc import ABCMeta, abstractmethod
 
 from river.drift import ADWIN
 from river.utils.skmultiflow_utils import check_random_state, normalize_values_in_dict
-from .._tree_utils import do_naive_bayes_prediction
 
-from .base import FoundNode
-from .base import SplitNode
+from .._tree_utils import do_naive_bayes_prediction
+from .base import FoundNode, SplitNode
 from .htc_nodes import LearningNodeNBA
 
 
@@ -87,7 +86,9 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
     def kill_tree_children(self, hat):
         pass
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1):
+    def learn_one(
+        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
+    ):
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
             k = self._rng.poisson(1.0)
@@ -136,7 +137,9 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             dist = normalize_values_in_dict(self.stats, inplace=False)
         elif prediction_option == tree._NAIVE_BAYES:
             if self.total_weight >= tree.nb_threshold:
-                dist = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
+                dist = do_naive_bayes_prediction(
+                    x, self.stats, self.attribute_observers
+                )
             else:  # Use majority class
                 dist = normalize_values_in_dict(self.stats, inplace=False)
         else:  # Naive Bayes Adaptive
@@ -207,7 +210,9 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
     def error_is_null(self):
         return self._adwin is None
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1):
+    def learn_one(
+        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=-1
+    ):
         class_prediction = None
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
@@ -242,7 +247,10 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
         # Condition to replace alternate tree
-        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
+        elif (
+            self._alternate_tree is not None
+            and not self._alternate_tree.error_is_null()
+        ):
             if (
                 self.error_width > tree.drift_window_threshold
                 and self._alternate_tree.error_width > tree.drift_window_threshold
@@ -253,7 +261,11 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                 f_n = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
 
                 bound = math.sqrt(
-                    2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / f_delta) * f_n
+                    2.0
+                    * old_error_rate
+                    * (1.0 - old_error_rate)
+                    * math.log(2.0 / f_delta)
+                    * f_n
                 )
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves
@@ -316,7 +328,9 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             else:
                 path = max(
                     self._children,
-                    key=lambda c: self._children[c].total_weight if self._children[c] else 0.0,
+                    key=lambda c: self._children[c].total_weight
+                    if self._children[c]
+                    else 0.0,
                 )
                 leaf_node = self.get_child(path)
                 # Pass instance to the most traversed path
@@ -326,7 +340,12 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                     tree._n_active_leaves += 1
 
                 leaf_node.learn_one(
-                    x, y, sample_weight=sample_weight, tree=tree, parent=self, parent_branch=path,
+                    x,
+                    y,
+                    sample_weight=sample_weight,
+                    tree=tree,
+                    parent=self,
+                    parent_branch=path,
                 )
 
     def leaf_prediction(self, x, *, tree=None):

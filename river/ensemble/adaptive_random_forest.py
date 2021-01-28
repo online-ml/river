@@ -1,26 +1,23 @@
 import abc
 import collections
+import copy
 import math
 import typing
-import copy
 
 import numpy as np
 
 from river import base
 from river.drift import ADWIN
-from river.metrics import Accuracy
-from river.metrics import MSE
-from river.metrics.base import MultiClassMetric
-from river.metrics.base import RegressionMetric
-from river.tree import HoeffdingTreeClassifier
-from river.tree import HoeffdingTreeRegressor
+from river.metrics import MSE, Accuracy
+from river.metrics.base import MultiClassMetric, RegressionMetric
+from river.stats import Var
+from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
+from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
 from river.tree._nodes import RandomLearningNodeMC  # noqa
-from river.tree._nodes import RandomLearningNodeNB  # noqa
-from river.tree._nodes import RandomLearningNodeNBA  # noqa
 from river.tree._nodes import RandomLearningNodeMean  # noqa
 from river.tree._nodes import RandomLearningNodeModel  # noqa
-from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
-from river.stats import Var
+from river.tree._nodes import RandomLearningNodeNB  # noqa
+from river.tree._nodes import RandomLearningNodeNBA  # noqa
 from river.utils.skmultiflow_utils import check_random_state
 
 
@@ -72,7 +69,9 @@ class BaseForest(base.EnsembleMixin):
             k = self._rng.poisson(lam=self.lambda_value)
             if k > 0:
                 # print(self._n_samples_seen)
-                model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
+                model.learn_one(
+                    x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen
+                )
 
         return self
 
@@ -210,15 +209,30 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLearningNodeMC(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, self.max_features, seed,
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return RandomLearningNodeNB(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, self.max_features, seed,
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return RandomLearningNodeNBA(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, self.max_features, seed,
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
             )
 
     def new_instance(self):
@@ -296,7 +310,12 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
 
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLearningNodeMean(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, self.max_features, seed,
+                initial_stats,
+                depth,
+                self.attr_obs,
+                self.attr_obs_params,
+                self.max_features,
+                seed,
             )
         elif self.leaf_prediction == self._MODEL:
             return RandomLearningNodeModel(
@@ -557,7 +576,9 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
-                y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
+                y_proba_temp = {
+                    k: val * metric_value for k, val in y_proba_temp.items()
+                }
             y_pred.update(y_proba_temp)
 
         total = sum(y_pred.values())
@@ -966,13 +987,17 @@ class BaseForestMember:
         if isinstance(self.metric, MultiClassMetric):
             self.metric.cm.reset()
 
-    def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int):
+    def learn_one(
+        self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int
+    ):
 
         self.model.learn_one(x, y, sample_weight=sample_weight)
 
         if self.background_learner:
             # Train the background learner
-            self.background_learner.model.learn_one(x=x, y=y, sample_weight=sample_weight)
+            self.background_learner.model.learn_one(
+                x=x, y=y, sample_weight=sample_weight
+            )
 
         if self._use_drift_detector and not self.is_background_learner:
             drift_detector_input = self._drift_detector_input(
@@ -1040,7 +1065,9 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
             metric=metric,
         )
 
-    def _drift_detector_input(self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget):
+    def _drift_detector_input(
+        self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget
+    ):
         return int(not y_true == y_pred)  # Not correctly_classifies
 
     def predict_one(self, x):

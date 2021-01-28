@@ -2,7 +2,6 @@ import typing
 
 from river import base
 
-
 __all__ = ["StackingClassifier"]
 
 

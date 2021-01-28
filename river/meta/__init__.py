@@ -1,7 +1,5 @@
 """Meta-models."""
 from .pred_clipper import PredClipper
-from .target_transform import BoxCoxRegressor
-from .target_transform import TransformedTargetRegressor
-
+from .target_transform import BoxCoxRegressor, TransformedTargetRegressor
 
 __all__ = ["BoxCoxRegressor", "PredClipper", "TransformedTargetRegressor"]

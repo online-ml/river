@@ -84,7 +84,8 @@ class Cache:
 
         if directory is None:
             raise ValueError(
-                "There is no default directory defined for {systems} systems, " "please provide one"
+                "There is no default directory defined for {systems} systems, "
+                "please provide one"
             )
 
         self.directory = directory
@@ -107,7 +108,8 @@ class Cache:
 
         if key is None:
             raise ValueError(
-                "No default key could be guessed for the given stream, " "please provide one"
+                "No default key could be guessed for the given stream, "
+                "please provide one"
             )
 
         path = self._get_path(key)

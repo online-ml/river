@@ -1,11 +1,12 @@
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
+from .._attribute_observer import (
+    NominalAttributeClassObserver,
+    NumericAttributeClassObserverBinaryTree,
+    NumericAttributeClassObserverGaussian,
+    NumericAttributeClassObserverHistogram,
+)
 from .._tree_utils import do_naive_bayes_prediction
-from .._attribute_observer import NominalAttributeClassObserver
-from .._attribute_observer import NumericAttributeClassObserverBinaryTree
-from .._attribute_observer import NumericAttributeClassObserverGaussian
-from .._attribute_observer import NumericAttributeClassObserverHistogram
-
 from .base import LearningNode
 
 

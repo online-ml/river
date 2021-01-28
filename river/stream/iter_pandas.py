@@ -2,8 +2,7 @@ import typing
 
 import pandas as pd
 
-from river import base
-from river import stream
+from river import base, stream
 
 
 def iter_pandas(
@@ -46,4 +45,6 @@ def iter_pandas(
     if isinstance(y, pd.DataFrame):
         kwargs["target_names"] = y.columns
 
-    yield from stream.iter_array(X=X.to_numpy(), y=y if y is None else y.to_numpy(), **kwargs)
+    yield from stream.iter_array(
+        X=X.to_numpy(), y=y if y is None else y.to_numpy(), **kwargs
+    )

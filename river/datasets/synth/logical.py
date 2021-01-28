@@ -1,8 +1,10 @@
-import numpy as np
 import itertools
 
-from .. import base
+import numpy as np
+
 from river.utils.skmultiflow_utils import check_random_state
+
+from .. import base
 
 
 class Logical(base.SyntheticDataset):
@@ -44,9 +46,14 @@ class Logical(base.SyntheticDataset):
     """
 
     def __init__(
-        self, n_tiles: int = 1, shuffle: bool = True, seed: int or np.random.RandomState = None,
+        self,
+        n_tiles: int = 1,
+        shuffle: bool = True,
+        seed: int or np.random.RandomState = None,
     ):
-        super().__init__(n_features=2, n_outputs=3, n_samples=4 * n_tiles, task=base.MO_BINARY_CLF)
+        super().__init__(
+            n_features=2, n_outputs=3, n_samples=4 * n_tiles, task=base.MO_BINARY_CLF
+        )
         self.n_tiles = n_tiles
         self.shuffle = shuffle
         self.seed = seed
@@ -55,14 +62,18 @@ class Logical(base.SyntheticDataset):
 
     def __iter__(self):
         rng = check_random_state(self.seed)
-        X, Y = self._make_logical(n_tiles=self.n_tiles, shuffle=self.shuffle, random_state=rng)
+        X, Y = self._make_logical(
+            n_tiles=self.n_tiles, shuffle=self.shuffle, random_state=rng
+        )
 
         for xi, yi in itertools.zip_longest(X, Y if hasattr(Y, "__iter__") else []):
             yield dict(zip(self.feature_names, xi)), dict(zip(self.target_names, yi))
 
     @staticmethod
     def _make_logical(
-        n_tiles: int = 1, shuffle: bool = True, random_state: np.random.RandomState = None,
+        n_tiles: int = 1,
+        shuffle: bool = True,
+        random_state: np.random.RandomState = None,
     ):
         """Make toy dataset"""
         base_pattern = np.array(

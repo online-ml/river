@@ -2,7 +2,6 @@ from river import utils
 
 from . import base
 
-
 __all__ = ["SGD"]
 
 

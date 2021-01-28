@@ -1,7 +1,8 @@
 import numpy as np
 
-from .. import base
 from river.utils.skmultiflow_utils import check_random_state
+
+from .. import base
 
 
 class RandomTree(base.SyntheticDataset):
@@ -182,7 +183,11 @@ class RandomTree(base.SyntheticDataset):
             new_max_value[chosen_feature] = split_node.split_feature_val
             split_node.children.append(
                 self._generate_random_tree_node(
-                    current_depth + 1, candidate_features, min_numeric_value, new_max_value, rng,
+                    current_depth + 1,
+                    candidate_features,
+                    min_numeric_value,
+                    new_max_value,
+                    rng,
                 )
             )
             # Right node
@@ -190,7 +195,11 @@ class RandomTree(base.SyntheticDataset):
             new_min_value[chosen_feature] = split_node.split_feature_val
             split_node.children.append(
                 self._generate_random_tree_node(
-                    current_depth + 1, candidate_features, new_min_value, max_numeric_value, rng,
+                    current_depth + 1,
+                    candidate_features,
+                    new_min_value,
+                    max_numeric_value,
+                    rng,
                 )
             )
         else:
@@ -198,7 +207,8 @@ class RandomTree(base.SyntheticDataset):
             split_node.split_feature_idx = candidate_features[chosen_feature]
             # Remove chosen features from candidates
             new_candidates = np.delete(
-                candidate_features, np.argwhere(candidate_features == split_node.split_feature_idx),
+                candidate_features,
+                np.argwhere(candidate_features == split_node.split_feature_idx),
             )
             # Generate children per category
             for i in range(self.n_categories_per_feature):

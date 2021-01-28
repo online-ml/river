@@ -4,9 +4,7 @@ import random
 import typing
 
 from .. import base
-
 from . import utils
-
 
 __all__ = ["iter_csv"]
 
