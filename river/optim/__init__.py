@@ -1,7 +1,6 @@
 """Stochastic optimization."""
-from . import initializers
 from . import losses  # type: ignore
-from . import schedulers
+from . import initializers, schedulers
 from .ada_bound import AdaBound
 from .ada_delta import AdaDelta
 from .ada_grad import AdaGrad
@@ -12,11 +11,10 @@ from .average import Averager
 from .base import Optimizer
 from .ftrl import FTRLProximal
 from .momentum import Momentum
-from .nesterov import NesterovMomentum
 from .nadam import Nadam
+from .nesterov import NesterovMomentum
 from .rms_prop import RMSProp
 from .sgd import SGD
-
 
 __all__ = [
     "AdaBound",

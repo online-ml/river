@@ -1,7 +1,5 @@
 from .. import utils
-
 from . import base
-
 
 __all__ = ["Newton"]
 

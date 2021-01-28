@@ -1,7 +1,5 @@
 from .arf_htc_nodes import BaseRandomLearningNode
-from .htr_nodes import LearningNodeMean
-from .htr_nodes import LearningNodeModel
-from .htr_nodes import LearningNodeAdaptive
+from .htr_nodes import LearningNodeAdaptive, LearningNodeMean, LearningNodeModel
 
 
 class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
@@ -61,9 +59,17 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         responses.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model):
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model
+    ):
         super().__init__(
-            stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model=leaf_model,
+            stats,
+            depth,
+            attr_obs,
+            attr_obs_params,
+            max_features,
+            seed,
+            leaf_model=leaf_model,
         )
 
 
@@ -95,7 +101,15 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
         responses.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model):
+    def __init__(
+        self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model
+    ):
         super().__init__(
-            stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model=leaf_model,
+            stats,
+            depth,
+            attr_obs,
+            attr_obs_params,
+            max_features,
+            seed,
+            leaf_model=leaf_model,
         )

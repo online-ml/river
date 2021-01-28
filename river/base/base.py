@@ -153,7 +153,9 @@ class Base:
 
         def instantiate(klass, params, new_params):
 
-            params = {name: new_params.get(name, param) for name, param in params.items()}
+            params = {
+                name: new_params.get(name, param) for name, param in params.items()
+            }
 
             return klass(
                 **{
@@ -239,7 +241,9 @@ class Base:
                 size += sum([get_size(k, seen) for k in obj.keys()])
             elif hasattr(obj, "__dict__"):
                 size += get_size(vars(obj), seen)
-            elif hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes, bytearray)):
+            elif hasattr(obj, "__iter__") and not isinstance(
+                obj, (str, bytes, bytearray)
+            ):
                 size += sum([get_size(i, seen) for i in obj])
             return size
 

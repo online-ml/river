@@ -11,8 +11,7 @@ import pathlib
 import re
 import shutil
 
-from numpydoc.docscrape import ClassDoc
-from numpydoc.docscrape import FunctionDoc
+from numpydoc.docscrape import ClassDoc, FunctionDoc
 
 
 def paragraph(text):

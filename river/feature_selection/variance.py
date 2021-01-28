@@ -1,7 +1,6 @@
 import collections
 
-from river import base
-from river import stats
+from river import base, stats
 
 
 class VarianceThreshold(base.Transformer):

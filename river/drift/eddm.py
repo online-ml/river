@@ -138,9 +138,13 @@ class EDDM(DriftDetector):
             self.m_d = self.m_n - 1
             distance = self.m_d - self.m_lastd
             old_mean = self.m_mean
-            self.m_mean = self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
+            self.m_mean = (
+                self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
+            )
             self.estimation = self.m_mean
-            self.m_std_temp = self.m_std_temp + (distance - self.m_mean) * (distance - old_mean)
+            self.m_std_temp = self.m_std_temp + (distance - self.m_mean) * (
+                distance - old_mean
+            )
             std = np.sqrt(self.m_std_temp / self.m_num_errors)
             m2s = self.m_mean + 2 * std
 
@@ -151,10 +155,14 @@ class EDDM(DriftDetector):
                 self.m_m2s_max = m2s
             else:
                 p = m2s / self.m_m2s_max
-                if (self.m_num_errors > self.m_min_num_errors) and (p < self.FDDM_OUTCONTROL):
+                if (self.m_num_errors > self.m_min_num_errors) and (
+                    p < self.FDDM_OUTCONTROL
+                ):
                     self._in_concept_change = True
 
-                elif (self.m_num_errors > self.m_min_num_errors) and (p < self.FDDM_WARNING):
+                elif (self.m_num_errors > self.m_min_num_errors) and (
+                    p < self.FDDM_WARNING
+                ):
                     self._in_warning_zone = True
 
                 else:

@@ -2,7 +2,6 @@ import random
 
 from river import base
 
-
 __all__ = ["PoissonInclusion"]
 
 

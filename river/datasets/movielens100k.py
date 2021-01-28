@@ -32,6 +32,11 @@ class MovieLens100K(base.RemoteDataset):
         return stream.iter_csv(
             self.path,
             target="rating",
-            converters={"timestamp": int, "release_date": int, "age": float, "rating": float,},
+            converters={
+                "timestamp": int,
+                "release_date": int,
+                "age": float,
+                "rating": float,
+            },
             delimiter="\t",
         )

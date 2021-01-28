@@ -6,7 +6,6 @@ from river import proba
 
 from . import base
 
-
 __all__ = ["GaussianNB"]
 
 

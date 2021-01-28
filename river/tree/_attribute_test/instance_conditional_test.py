@@ -1,5 +1,5 @@
-from abc import ABCMeta, abstractmethod
 import typing
+from abc import ABCMeta, abstractmethod
 
 
 class InstanceConditionalTest(metaclass=ABCMeta):

@@ -1,12 +1,8 @@
 import pytest
-from sklearn.utils import estimator_checks
 from sklearn import linear_model as sk_linear_model
+from sklearn.utils import estimator_checks
 
-from river import base
-from river import cluster
-from river import compat
-from river import linear_model
-from river import preprocessing
+from river import base, cluster, compat, linear_model, preprocessing
 
 
 @pytest.mark.parametrize(

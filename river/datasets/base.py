@@ -1,17 +1,16 @@
 import abc
 import inspect
 import itertools
-import pathlib
 import os
+import pathlib
 import re
 import shutil
 import tarfile
 import typing
-from urllib import request
 import zipfile
+from urllib import request
 
 from river import utils
-
 
 REG = "Regression"
 BINARY_CLF = "Binary classification"
@@ -38,7 +37,13 @@ class Dataset(abc.ABC):
     """
 
     def __init__(
-        self, task, n_features, n_samples=None, n_classes=None, n_outputs=None, sparse=False,
+        self,
+        task,
+        n_features,
+        n_samples=None,
+        n_classes=None,
+        n_outputs=None,
+        sparse=False,
     ):
         self.task = task
         self.n_features = n_features
@@ -92,12 +97,14 @@ class Dataset(abc.ABC):
         r_len = max(map(len, self._repr_content.values()))
 
         out = f"{self.desc}\n\n" + "\n".join(
-            k.rjust(l_len) + "  " + v.ljust(r_len) for k, v in self._repr_content.items()
+            k.rjust(l_len) + "  " + v.ljust(r_len)
+            for k, v in self._repr_content.items()
         )
 
         if "Parameters\n    ----------" in self.__doc__:
             params = re.split(
-                r"\w+\n\s{4}\-{3,}", re.split("Parameters\n    ----------", self.__doc__)[1],
+                r"\w+\n\s{4}\-{3,}",
+                re.split("Parameters\n    ----------", self.__doc__)[1],
             )[0].rstrip()
             out += f"\n\nParameters\n----------{params}"
 
@@ -122,7 +129,8 @@ class SyntheticDataset(Dataset):
             )
             + "\n\nConfiguration\n-------------\n"
             + "\n".join(
-                k.rjust(l_len_config) + "  " + str(v).ljust(r_len_config) for k, v in params.items()
+                k.rjust(l_len_config) + "  " + str(v).ljust(r_len_config)
+                for k, v in params.items()
             )
         )
 

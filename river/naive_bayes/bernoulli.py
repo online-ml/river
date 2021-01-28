@@ -3,7 +3,6 @@ import math
 
 from . import base
 
-
 __all__ = ["BernoulliNB"]
 
 
