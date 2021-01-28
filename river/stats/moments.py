@@ -1,5 +1,4 @@
-from . import base
-from . import count
+from . import base, count
 
 
 class CentralMoments(base.Univariate):
@@ -54,7 +53,9 @@ class CentralMoments(base.Univariate):
         return self
 
     def _update_m3(self):
-        self.M3 += self.M1 * self.delta * (self.count.get() - 2) - 3 * self.delta * self.M2
+        self.M3 += (
+            self.M1 * self.delta * (self.count.get() - 2) - 3 * self.delta * self.M2
+        )
         return self
 
     def _update_m4(self):

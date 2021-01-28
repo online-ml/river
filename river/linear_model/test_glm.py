@@ -5,15 +5,12 @@ import random
 
 import numpy as np
 import pandas as pd
-from sklearn import linear_model as sklm
 import pytest
+from sklearn import linear_model as sklm
 
 from river import datasets
 from river import linear_model as lm
-from river import optim
-from river import preprocessing
-from river import stream
-from river import utils
+from river import optim, preprocessing, stream, utils
 
 
 def iter_perturbations(keys, n=10):
@@ -58,7 +55,10 @@ def iter_perturbations(keys, n=10):
                 optim.RMSProp(),
                 optim.SGD(),
             ],
-            [optim.initializers.Zeros(), optim.initializers.Normal(mu=0, sigma=1, seed=42),],
+            [
+                optim.initializers.Zeros(),
+                optim.initializers.Normal(mu=0, sigma=1, seed=42),
+            ],
         )
     ],
 )
@@ -88,9 +88,13 @@ def test_finite_differences(lm, dataset):
         for d in iter_perturbations(weights.keys()):
 
             # Pertubate the weights and obtain the loss with the new weights
-            lm._weights = utils.VectorDict({i: weights[i] + eps * di for i, di in d.items()})
+            lm._weights = utils.VectorDict(
+                {i: weights[i] + eps * di for i, di in d.items()}
+            )
             forward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
-            lm._weights = utils.VectorDict({i: weights[i] - eps * di for i, di in d.items()})
+            lm._weights = utils.VectorDict(
+                {i: weights[i] - eps * di for i, di in d.items()}
+            )
             backward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
 
             # We expect g and h to be equal

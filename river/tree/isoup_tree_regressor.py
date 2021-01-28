@@ -1,16 +1,17 @@
 import typing
 from copy import deepcopy
 
-from river import base
-from river.tree import HoeffdingTreeRegressor
+from river import base, tree
 
+from ._nodes import (
+    LearningNodeAdaptiveMultiTarget,
+    LearningNodeMeanMultiTarget,
+    LearningNodeModelMultiTarget,
+)
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
-from ._nodes import LearningNodeMeanMultiTarget
-from ._nodes import LearningNodeModelMultiTarget
-from ._nodes import LearningNodeAdaptiveMultiTarget
 
 
-class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
+class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
     """Incremental Structured Output Prediction Tree (iSOUP-Tree) for multi-target regression.
 
     This is an implementation of the iSOUP-Tree proposed by A. Osojnik, P. Panov, and
@@ -147,7 +148,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         self.split_criterion: str = "icvr"  # intra cluster variance reduction
         self.targets: set = set()
 
-    @HoeffdingTreeRegressor.leaf_prediction.setter
+    @tree.HoeffdingTreeRegressor.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
             print(
@@ -159,7 +160,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @HoeffdingTreeRegressor.split_criterion.setter
+    @tree.HoeffdingTreeRegressor.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion == "vr":
             # Corner case due to parent class initialization
@@ -175,7 +176,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return IntraClusterVarianceReductionSplitCriterion(min_samples_split=self.min_samples_split)
+        return IntraClusterVarianceReductionSplitCriterion(
+            min_samples_split=self.min_samples_split
+        )
 
     def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
@@ -248,7 +251,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
 
         return self
 
-    def predict_one(self, x: dict) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
+    def predict_one(
+        self, x: dict
+    ) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
         """Predict the target values for a given instance.
 
         Parameters

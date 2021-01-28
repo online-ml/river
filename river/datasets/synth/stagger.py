@@ -1,7 +1,8 @@
 import numpy as np
 
-from .. import base
 from river.utils.skmultiflow_utils import check_random_state
+
+from .. import base
 
 
 class STAGGER(base.SyntheticDataset):
@@ -126,7 +127,9 @@ class STAGGER(base.SyntheticDataset):
                         (not self.next_class_should_be_zero) and (y == 1)
                     ):
                         desired_class_found = True
-                        self.next_class_should_be_zero = not self.next_class_should_be_zero
+                        self.next_class_should_be_zero = (
+                            not self.next_class_should_be_zero
+                        )
 
             x = {"size": size, "color": color, "shape": shape}
 

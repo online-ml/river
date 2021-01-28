@@ -7,11 +7,12 @@ from sklearn import exceptions
 
 from river import base
 
-
 __all__ = ["convert_sklearn_to_river", "SKL2RiverClassifier", "SKL2RiverRegressor"]
 
 
-def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: list = None):
+def convert_sklearn_to_river(
+    estimator: sklearn_base.BaseEstimator, classes: list = None
+):
     """Wraps a scikit-learn estimator to make it compatible with river.
 
     Parameters
@@ -30,7 +31,10 @@ def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: lis
 
     wrappers = [
         (sklearn_base.RegressorMixin, SKL2RiverRegressor),
-        (sklearn_base.ClassifierMixin, functools.partial(SKL2RiverClassifier, classes=classes),),
+        (
+            sklearn_base.ClassifierMixin,
+            functools.partial(SKL2RiverClassifier, classes=classes),
+        ),
     ]
 
     for base_type, wrapper in wrappers:

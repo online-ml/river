@@ -3,11 +3,9 @@ import collections
 import numbers
 import typing
 
-from river import base
-from river import utils
-from river import stats
-from . import confusion
+from river import base, stats, utils
 
+from . import confusion
 
 __all__ = [
     "BinaryMetric",
@@ -157,13 +155,19 @@ class RegressionMetric(Metric):
 
     @abc.abstractmethod
     def update(
-        self, y_true: numbers.Number, y_pred: numbers.Number, sample_weight: numbers.Number,
+        self,
+        y_true: numbers.Number,
+        y_pred: numbers.Number,
+        sample_weight: numbers.Number,
     ) -> "RegressionMetric":
         """Update the metric."""
 
     @abc.abstractmethod
     def revert(
-        self, y_true: numbers.Number, y_pred: numbers.Number, sample_weight: numbers.Number,
+        self,
+        y_true: numbers.Number,
+        y_pred: numbers.Number,
+        sample_weight: numbers.Number,
     ) -> "RegressionMetric":
         """Revert the metric."""
 
@@ -196,7 +200,9 @@ class MultiOutputClassificationMetric(Metric):
         y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
         y_pred: typing.Union[
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]],
+            typing.Dict[
+                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]
+            ],
         ],
         sample_weight: numbers.Number = 1.0,
     ) -> "MultiOutputClassificationMetric":
@@ -209,7 +215,9 @@ class MultiOutputClassificationMetric(Metric):
         y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
         y_pred: typing.Union[
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]],
+            typing.Dict[
+                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]
+            ],
         ],
         sample_weight: numbers.Number = 1.0,
         correction=None,

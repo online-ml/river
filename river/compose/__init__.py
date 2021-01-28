@@ -8,11 +8,8 @@ from .func import FuncTransformer
 from .grouper import Grouper
 from .pipeline import Pipeline
 from .rename import Renamer
+from .select import Discard, Select, SelectType
 from .union import TransformerUnion
-from .select import Discard
-from .select import Select
-from .select import SelectType
-
 
 __all__ = [
     "Discard",

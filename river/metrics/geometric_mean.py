@@ -1,9 +1,7 @@
-from . import base
-
 import numpy as np
-
 from scipy import stats
 
+from . import base
 
 __all__ = ["GeometricMean"]
 

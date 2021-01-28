@@ -1,11 +1,6 @@
 import pytest
 
-from river import compose
-from river import linear_model
-from river import optim
-from river import preprocessing
-from river import tree
-from river import utils
+from river import compose, linear_model, optim, preprocessing, tree, utils
 
 
 @pytest.mark.parametrize(
@@ -18,7 +13,10 @@ from river import utils
                     (optim.SGD, {"lr": [1, 2]}),
                     (
                         optim.Adam,
-                        {"beta_1": [0.1, 0.01, 0.001], "lr": [0.1, 0.01, 0.001, 0.0001],},
+                        {
+                            "beta_1": [0.1, 0.01, 0.001],
+                            "lr": [0.1, 0.01, 0.001, 0.0001],
+                        },
                     ),
                 ]
             },
@@ -32,7 +30,10 @@ from river import utils
                         (optim.SGD, {"lr": [1, 2]}),
                         (
                             optim.Adam,
-                            {"beta_1": [0.1, 0.01, 0.001], "lr": [0.1, 0.01, 0.001, 0.0001],},
+                            {
+                                "beta_1": [0.1, 0.01, 0.001],
+                                "lr": [0.1, 0.01, 0.001, 0.0001],
+                            },
                         ),
                     ]
                 }

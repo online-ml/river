@@ -1,8 +1,5 @@
 from .. import utils
-
-from . import base
-from . import report
-
+from . import base, report
 
 __all__ = ["Rolling"]
 

@@ -1,6 +1,4 @@
-from river import compose
-from river import linear_model
-from river import preprocessing
+from river import compose, linear_model, preprocessing
 
 
 def test_pipeline_funcs():

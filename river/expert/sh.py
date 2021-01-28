@@ -2,16 +2,20 @@ import copy
 import math
 import operator
 
-from river import base
-from river import metrics
-
+from river import base, metrics
 
 __all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
 
 class SuccessiveHalving:
     def __init__(
-        self, models, metric: metrics.Metric, budget: int, eta=2, verbose=False, **print_kwargs,
+        self,
+        models,
+        metric: metrics.Metric,
+        budget: int,
+        eta=2,
+        verbose=False,
+        **print_kwargs,
     ):
 
         # Check that the model and the metric are in accordance
@@ -61,7 +65,9 @@ class SuccessiveHalving:
             # Check for a new best model
             if i != self._best_model_idx:
                 op = operator.gt if self.metric.bigger_is_better else operator.lt
-                if op(self._metrics[i].get(), self._metrics[self._best_model_idx].get()):
+                if op(
+                    self._metrics[i].get(), self._metrics[self._best_model_idx].get()
+                ):
                     self._best_model_idx = i
 
         self._n_iterations += 1
@@ -99,7 +105,9 @@ class SuccessiveHalving:
 
             # Determine where the next rung is located
             self._s = cutoff
-            self._r = math.floor(self.budget / (self._s * math.ceil(math.log(self._n, self.eta))))
+            self._r = math.floor(
+                self.budget / (self._s * math.ceil(math.log(self._n, self.eta)))
+            )
 
         return self
 

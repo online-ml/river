@@ -6,9 +6,7 @@ some models the model's type is only known at runtime. For instance, we can't do
 thus provides utilities for determining an arbitrary model's type.
 
 """
-from river import base
-from river import compose
-
+from river import base, compose
 
 # TODO: maybe all of this could be done by monkeypatching isintance for pipelines?
 
@@ -42,7 +40,9 @@ def isclassifier(model):
 
 
 def ismoclassifier(model):
-    return isclassifier(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
+    return isclassifier(model) and isinstance(
+        extract_relevant(model), base.MultiOutputMixin
+    )
 
 
 def isregressor(model):
@@ -54,7 +54,9 @@ def istransformer(model):
 
 
 def ismoregressor(model):
-    return isregressor(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
+    return isregressor(model) and isinstance(
+        extract_relevant(model), base.MultiOutputMixin
+    )
 
 
 def isdriftdetector(model):

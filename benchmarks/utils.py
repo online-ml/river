@@ -1,11 +1,11 @@
-import river
-
 import collections
 import time
 
-from river import base
 import pandas as pd
 import tqdm
+
+import river
+from river import base
 
 
 def format_ns(d):
