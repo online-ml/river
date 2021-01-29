@@ -1,11 +1,12 @@
 import math
 
-from .base_objective import BaseObjective
 from .._utils import GradHess
+from .base_objective import BaseObjective
 
 
 class BinaryCrossEntropyObjective(BaseObjective):
     """ Loss function used in binary classification tasks. """
+
     def compute_derivatives(self, y, y_pred):
         pred = self.transfer(y_pred)
 
