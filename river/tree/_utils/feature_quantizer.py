@@ -16,6 +16,7 @@ class FeatureQuantizer:
     [^1]: Mastelini, S.M. and de Carvalho, A.C.P.D.L.F., 2020. Using dynamical quantization to
     perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
     """
+
     def __init__(self, radius):
         self.radius = radius
         self.hash = {}

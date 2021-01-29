@@ -5,9 +5,10 @@ from river import stats
 
 class GradHess:
     """ The most basic inner structure of the Streaming Gradient Trees. """
-    __slots__ = ['gradient', 'hessian']
 
-    def __init__(self, gradient: float = 0., hessian: float = 0., *, grad_hess=None):
+    __slots__ = ["gradient", "hessian"]
+
+    def __init__(self, gradient: float = 0.0, hessian: float = 0.0, *, grad_hess=None):
         if grad_hess:
             self.gradient = grad_hess.gradient
             self.hessian = grad_hess.hessian
@@ -45,6 +46,7 @@ class GradHessStats:
     Represents the aggregated gradient/hessian data in a node (global node statistics), category,
     or numerical feature's discretized bin.
     """
+
     def __init__(self):
         self.x_m = stats.Mean()
         self.g_var = stats.Var()
@@ -83,7 +85,7 @@ class GradHessStats:
 
         return new
 
-    def update(self, gh: GradHess, x=None, w: float = 1.):
+    def update(self, gh: GradHess, x=None, w: float = 1.0):
         # Update x values in the case of numerical features (binning strategy)
         if x is not None:
             self.x_m.update(x, w)
@@ -113,12 +115,16 @@ class GradHessStats:
         m = self.mean()
         dlms = stats.Var()
         dlms.mean.n = self.total_weight
-        dlms.mean.mean = delta_pred * m.gradient + 0.5 * m.hessian * delta_pred * delta_pred
+        dlms.mean.mean = (
+            delta_pred * m.gradient + 0.5 * m.hessian * delta_pred * delta_pred
+        )
 
         variance = self.variance()
         covariance = self.covariance()
 
         grad_term_var = delta_pred * delta_pred * variance.gradient
         hess_term_var = 0.25 * variance.hessian * (delta_pred ** 4.0)
-        dlms.sigma = max(0.0, grad_term_var + hess_term_var + (delta_pred ** 3) * covariance)
+        dlms.sigma = max(
+            0.0, grad_term_var + hess_term_var + (delta_pred ** 3) * covariance
+        )
         return dlms

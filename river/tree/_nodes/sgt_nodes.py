@@ -3,10 +3,10 @@ import numbers
 import sys
 from typing import Dict, Hashable, Optional, Union
 
-from .._utils import FeatureQuantizer, GradHess, GradHessStats
-
-from river.base.typing import FeatureName, Target
 from river import stats
+from river.base.typing import FeatureName, Target
+
+from .._utils import FeatureQuantizer, GradHess, GradHessStats
 
 
 class SGTSplit:
@@ -15,8 +15,13 @@ class SGTSplit:
     SGTs only have one type of node. Their nodes, however, can carry a split object that indicates
     they have been split and are not leaves anymore.
     """
-    def __init__(self, feature_idx: FeatureName = None, feature_val: Target = None,
-                 is_nominal=False):
+
+    def __init__(
+        self,
+        feature_idx: FeatureName = None,
+        feature_val: Target = None,
+        is_nominal=False,
+    ):
         # loss_mean and loss_var are actually statistics that approximate the *change* in loss.
         self.loss_mean = 0.0
         self.loss_var = 0.0
@@ -35,7 +40,7 @@ class SGTNode:
 
         # Split test
         self._split: Optional[SGTSplit] = None
-        self._children: Optional[Dict[Hashable, 'SGTNode']] = None
+        self._children: Optional[Dict[Hashable, "SGTNode"]] = None
         self._split_stats: Optional[
             Dict[FeatureName, Union[Dict[Hashable, GradHessStats], FeatureQuantizer]]
         ] = {}
@@ -45,7 +50,7 @@ class SGTNode:
         self._split_stats = {}
         self._update_stats = GradHessStats()
 
-    def sort_instance(self, x) -> 'SGTNode':
+    def sort_instance(self, x) -> "SGTNode":
         if self._split is None:
             return self
 
@@ -60,16 +65,21 @@ class SGTNode:
                 node = self._children[x[self._split.feature_idx]]
         else:
             try:
-                node = self._children[0] if x[self._split.feature_idx] <= self._split.feature_val \
+                node = (
+                    self._children[0]
+                    if x[self._split.feature_idx] <= self._split.feature_val
                     else self._children[1]
+                )
             except KeyError:  # Numerical split feature is missing from instance
                 # Select the most traversed branch
-                branch = max(self._children, key=lambda k: self._children[k].total_weight)
+                branch = max(
+                    self._children, key=lambda k: self._children[k].total_weight
+                )
                 node = self._children[branch]
 
         return node.sort_instance(x)
 
-    def update(self, x: dict, gh: GradHess, sgt, w: float = 1.):
+    def update(self, x: dict, gh: GradHess, sgt, w: float = 1.0):
         for idx, x_val in x.items():
             if not isinstance(x_val, numbers.Number) or idx in sgt.nominal_attributes:
                 # Update the set of nominal features
@@ -88,7 +98,9 @@ class SGTNode:
                 except KeyError:
                     # Create a new quantizer
                     quantization_radius = sgt._get_quantization_radius(idx)
-                    self._split_stats[idx] = FeatureQuantizer(radius=quantization_radius)
+                    self._split_stats[idx] = FeatureQuantizer(
+                        radius=quantization_radius
+                    )
                     self._split_stats[idx].update(x_val, gh, w)
 
         self._update_stats.update(gh, w=w)
@@ -120,7 +132,9 @@ class SGTNode:
 
                 cat_collection = self._split_stats[feature_idx]
                 for category in cat_collection:
-                    dp = delta_prediction(cat_collection[category].mean(), sgt.lambda_value)
+                    dp = delta_prediction(
+                        cat_collection[category].mean(), sgt.lambda_value
+                    )
 
                     dlms = cat_collection[category].delta_loss_mean_var(dp)
                     candidate.delta_pred[category] = dp
@@ -128,12 +142,13 @@ class SGTNode:
                     all_dlms += dlms
 
                 candidate.loss_mean = (
-                    all_dlms.mean.get() + len(cat_collection) * sgt.gamma / self.total_weight
+                    all_dlms.mean.get()
+                    + len(cat_collection) * sgt.gamma / self.total_weight
                 )
                 candidate.loss_var = all_dlms.get()
             else:  # Numerical features
                 quantizer = self._split_stats[feature_idx]
-                half_radius = quantizer.radius / 2.
+                half_radius = quantizer.radius / 2.0
                 n_bins = len(quantizer)
                 if n_bins == 1:  # Insufficient number of bins to perform splits
                     continue
@@ -146,11 +161,15 @@ class SGTNode:
                 left_dlms = stats.Var()
                 for i, ghs in enumerate(quantizer):
                     left_ghs += ghs
-                    left_delta_pred = delta_prediction(left_ghs.mean(), sgt.lambda_value)
+                    left_delta_pred = delta_prediction(
+                        left_ghs.mean(), sgt.lambda_value
+                    )
                     left_dlms += left_ghs.delta_loss_mean_var(left_delta_pred)
 
                     right_ghs = self._update_stats - left_ghs
-                    right_delta_pred = delta_prediction(right_ghs.mean(), sgt.lambda_value)
+                    right_delta_pred = delta_prediction(
+                        right_ghs.mean(), sgt.lambda_value
+                    )
                     right_dlms = right_ghs.delta_loss_mean_var(right_delta_pred)
 
                     all_dlms = left_dlms + right_dlms
@@ -193,8 +212,7 @@ class SGTNode:
         self._children = {}
         for child_idx, delta_pred in split.delta_pred.items():
             self._children[child_idx] = SGTNode(
-                prediction=self._prediction + delta_pred,
-                depth=self.depth + 1
+                prediction=self._prediction + delta_pred, depth=self.depth + 1
             )
         # Free memory used to monitor splits
         self._split_stats = None
@@ -207,7 +225,7 @@ class SGTNode:
         return self._children is None
 
     @property
-    def children(self) -> Dict[FeatureName, 'SGTNode']:
+    def children(self) -> Dict[FeatureName, "SGTNode"]:
         return self._children
 
     @property
