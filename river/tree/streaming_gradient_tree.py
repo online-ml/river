@@ -7,11 +7,14 @@ import typing
 
 from scipy.stats import f as FTest
 
-from river import base
-from river import stats
+from river import base, stats
 
 from ._nodes import SGTNode
-from ._objective import BaseObjective, BinaryCrossEntropyObjective, SquaredErrorObjective
+from ._objective import (
+    BaseObjective,
+    BinaryCrossEntropyObjective,
+    SquaredErrorObjective,
+)
 from ._utils import GradHess
 
 
@@ -79,17 +82,24 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
     perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
     """
 
-    _STD_DIV = 'stddiv'
-    _CONSTANT_RAD = 'constant'
+    _STD_DIV = "stddiv"
+    _CONSTANT_RAD = "constant"
 
-    _VALID_QUANTIZATION_POLICIES = [
-        _STD_DIV,
-        _CONSTANT_RAD
-    ]
+    _VALID_QUANTIZATION_POLICIES = [_STD_DIV, _CONSTANT_RAD]
 
-    def __init__(self, delta, grace_period, init_pred, max_depth, lambda_value, gamma,
-                 nominal_attributes, quantization_strategy, quantization_radius_div,
-                 default_radius):
+    def __init__(
+        self,
+        delta,
+        grace_period,
+        init_pred,
+        max_depth,
+        lambda_value,
+        gamma,
+        nominal_attributes,
+        quantization_strategy,
+        quantization_radius_div,
+        default_radius,
+    ):
 
         self.delta = delta
         self.grace_period = grace_period
@@ -104,10 +114,14 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
         self.lambda_value = lambda_value
         self.gamma = gamma
-        self.nominal_attributes = set(nominal_attributes) if nominal_attributes else set()
+        self.nominal_attributes = (
+            set(nominal_attributes) if nominal_attributes else set()
+        )
 
         if quantization_strategy not in self._VALID_QUANTIZATION_POLICIES:
-            raise ValueError('Invalid "quantization_strategy": {}'.format(quantization_strategy))
+            raise ValueError(
+                'Invalid "quantization_strategy": {}'.format(quantization_strategy)
+            )
         self.quantization_strategy = quantization_strategy
         self.quantization_radius_div = quantization_radius_div
         self.default_radius = default_radius
@@ -145,7 +159,10 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
         for feat_id, x_val in x.items():
             # Skip nominal attributes
-            if not isinstance(x_val, numbers.Number) or feat_id in self.nominal_attributes:
+            if (
+                not isinstance(x_val, numbers.Number)
+                or feat_id in self.nominal_attributes
+            ):
                 self.nominal_attributes.add(feat_id)
                 continue
             self._features_mean_var[feat_id].update(x_val)
@@ -172,8 +189,10 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         leaf = self._root.sort_instance(x)
         leaf.update(x, grad_hess, self, w)
 
-        if (leaf.total_weight - leaf.last_split_attempt_at < self.grace_period
-                or leaf.depth >= self.max_depth):
+        if (
+            leaf.total_weight - leaf.last_split_attempt_at < self.grace_period
+            or leaf.depth >= self.max_depth
+        ):
             return
 
         # Update split attempt data
@@ -190,8 +209,11 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         # Null hypothesis: expected loss is zero
         # Alternative hypothesis: expected loss is not zero
 
-        F = n_observations * (split.loss_mean * split.loss_mean) / split.loss_var \
-            if split.loss_var > 0.0 else None
+        F = (
+            n_observations * (split.loss_mean * split.loss_mean) / split.loss_var
+            if split.loss_var > 0.0
+            else None
+        )
 
         if F is None:
             return 1.0
@@ -204,7 +226,7 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         raw_pred = self._raw_prediction(x)
         label = self._target_transform(y)
 
-        grad_hess = self._objective.compute_derivatives(label, raw_pred)   # noqa
+        grad_hess = self._objective.compute_derivatives(label, raw_pred)  # noqa
 
         # Update the tree with the gradient/hessian info
         self._update_tree(x, grad_hess, w)
@@ -213,7 +235,7 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         """ Obtain a raw prediction for a single instance. """
 
         pred = self._root.sort_instance(x).leaf_prediction()
-        return self._objective.transfer(pred)    # noqa
+        return self._objective.transfer(pred)  # noqa
 
     @property
     def n_nodes(self):
@@ -246,11 +268,19 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
 
 class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier):
-    def __init__(self, delta: float = 1e-7, grace_period: int = 200, init_pred: float = 0.0,
-                 max_depth: typing.Optional[int] = None, lambda_value: float = 0.1,
-                 gamma: float = 1.0, nominal_attributes: typing.Optional[typing.List] = None,
-                 quantization_strategy: str = 'stddiv', quantization_radius_div: float = 2.0,
-                 default_radius: float = 0.01):
+    def __init__(
+        self,
+        delta: float = 1e-7,
+        grace_period: int = 200,
+        init_pred: float = 0.0,
+        max_depth: typing.Optional[int] = None,
+        lambda_value: float = 0.1,
+        gamma: float = 1.0,
+        nominal_attributes: typing.Optional[typing.List] = None,
+        quantization_strategy: str = "stddiv",
+        quantization_radius_div: float = 2.0,
+        default_radius: float = 0.01,
+    ):
 
         super().__init__(
             delta=delta,
@@ -262,7 +292,7 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
             nominal_attributes=nominal_attributes,
             quantization_strategy=quantization_strategy,
             quantization_radius_div=quantization_radius_div,
-            default_radius=default_radius
+            default_radius=default_radius,
         )
 
         self._objective = BinaryCrossEntropyObjective()
@@ -271,17 +301,27 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
         return float(y)
 
     def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
-        t_proba = self._objective.transfer(self._root.sort_instance(x).leaf_prediction())
+        t_proba = self._objective.transfer(
+            self._root.sort_instance(x).leaf_prediction()
+        )
 
         return {True: t_proba, False: 1 - t_proba}
 
 
 class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
-    def __init__(self, delta: float = 1e-7, grace_period: int = 200, init_pred: float = 0.0,
-                 max_depth: typing.Optional[int] = None, lambda_value: float = 0.1,
-                 gamma: float = 1.0, nominal_attributes: typing.Optional[typing.List] = None,
-                 quantization_strategy: str = 'stddiv', quantization_radius_div: float = 2.0,
-                 default_radius: float = 0.01):
+    def __init__(
+        self,
+        delta: float = 1e-7,
+        grace_period: int = 200,
+        init_pred: float = 0.0,
+        max_depth: typing.Optional[int] = None,
+        lambda_value: float = 0.1,
+        gamma: float = 1.0,
+        nominal_attributes: typing.Optional[typing.List] = None,
+        quantization_strategy: str = "stddiv",
+        quantization_radius_div: float = 2.0,
+        default_radius: float = 0.01,
+    ):
 
         super().__init__(
             delta=delta,
@@ -293,7 +333,7 @@ class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
             nominal_attributes=nominal_attributes,
             quantization_strategy=quantization_strategy,
             quantization_radius_div=quantization_radius_div,
-            default_radius=default_radius
+            default_radius=default_radius,
         )
 
         self._objective = SquaredErrorObjective()
