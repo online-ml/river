@@ -5,7 +5,7 @@ from .._utils import GradHess
 
 
 class BinaryCrossEntropyObjective(BaseObjective):
-    """ Loss function used in multi-label classification tasks. """
+    """ Loss function used in binary classification tasks. """
     def compute_derivatives(self, y, y_pred):
         pred = self.transfer(y_pred)
 

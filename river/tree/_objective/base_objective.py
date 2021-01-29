@@ -20,7 +20,7 @@ class BaseObjective(metaclass=ABCMeta):
 
     def transfer(self, y: float) -> float:
         """ Optionally apply some transformation to the value predicted by the tree before
-        returning them.
+        returning it.
 
         For instance, in classification, the softmax operation might be applied.
 
