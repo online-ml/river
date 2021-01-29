@@ -31,7 +31,6 @@ from .isouptr_nodes import (
 )
 from .sgt_nodes import SGTNode
 
-
 __all__ = [
     "FoundNode",
     "Node",
