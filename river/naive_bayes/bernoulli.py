@@ -203,11 +203,11 @@ class BernoulliNB(base.BaseNB):
 
     >>> unseen_data = bag.transform_many(unseen_data)
 
-    >>> unseen_data = pd.DataFrame(unseen_data.values, columns=unseen_data.columns, dtype=int)
+    >>> unseen_data = pd.DataFrame(unseen_data.values, columns=unseen_data.columns, index=['river'])
 
     >>> model.predict_proba_many(unseen_data)
-             no       yes
-    0  0.116846  0.883154
+                 no       yes
+    river  0.116846  0.883154
 
 
     References
@@ -256,6 +256,7 @@ class BernoulliNB(base.BaseNB):
         }
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
+        """Update model using mini-batches."""
         # One hot encode y and convert it into sparse matrix
         y = base.one_hot_encode(y)
         columns, classes = X.columns, y.columns
@@ -273,17 +274,20 @@ class BernoulliNB(base.BaseNB):
 
         fc = y @ X
 
-        # Update feature counts by slicing the sparse matrix per column.
-        # Each column correspond to a class.
+        # Update the defaultdict feature counts by slicing the sparse matrix per row.
+        # Each row of y @ X correspond to a class and each column to a token.
         for c, i in zip(classes, range(fc.shape[0])):
+
             if sparse.issparse(fc):
                 counts = {
                     c: {
                         columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)
                     }
                 }
+
             else:
                 counts = {c: {f: count for f, count in zip(columns, fc[i])}}
+
             # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
             # [{token_1: {classe_i: f_1}},.. {token_n: {class_i: f_n}}]
             for dict_count in [
@@ -301,19 +305,18 @@ class BernoulliNB(base.BaseNB):
             self.class_counts.values()
         )
 
-    def feature_log_prob(self, columns):
+    def _feature_log_prob(self, columns: list) -> pd.DataFrame:
         smooth_fc = np.log(
             base.from_dict(self.feature_counts)[self.class_counts].T.fillna(0)
             + self.alpha
         )[columns]
+
         smooth_cc = np.log(base.from_dict(self.class_counts) + self.alpha * 2)
 
         return smooth_fc.subtract(smooth_cc.values)
 
-    def joint_log_likelihood_many(self, X: pd.DataFrame):
+    def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Calculate the posterior log probability of the samples X"""
-        index = X.index
-
         unknown = [x for x in X.columns if x not in self.feature_counts]
         missing = [x for x in self.feature_counts if x not in X.columns]
 
@@ -323,7 +326,7 @@ class BernoulliNB(base.BaseNB):
         if missing:
             X[missing] = False
 
-        columns = X.columns
+        index, columns = X.index, X.columns
 
         if hasattr(X, "sparse"):
             X = sparse.csr_matrix(X.sparse.to_coo())
@@ -331,14 +334,13 @@ class BernoulliNB(base.BaseNB):
         else:
             X = X > self.true_threshold
 
-        flp = self.feature_log_prob(columns)
+        flp = self._feature_log_prob(columns)
 
         neg_p = np.log(1 - np.exp(flp))
 
-        jll = X @ (flp - neg_p).T
-
-        pcm = self.p_class_many()
-
-        jll += (np.log(pcm) + neg_p.sum(axis=1).T).values
-
-        return pd.DataFrame(jll, index=index, columns=self.class_counts.keys())
+        return pd.DataFrame(
+            X @ (flp - neg_p).T
+            + (np.log(self.p_class_many()) + neg_p.sum(axis=1).T).values,
+            index=index,
+            columns=self.class_counts.keys(),
+        )

@@ -4,6 +4,8 @@ import math
 import pandas as pd
 import numpy as np
 
+from scipy import sparse
+
 from river.base import tags
 
 from . import base
@@ -55,6 +57,7 @@ class MultinomialNB(base.BaseNB):
 
     >>> model['nb'].p_class('yes')
     0.75
+
     >>> model['nb'].p_class('no')
     0.25
 
@@ -65,6 +68,7 @@ class MultinomialNB(base.BaseNB):
 
     >>> cp('Tokyo', 'yes') == (0 + 1) / (8 + 6)
     True
+
     >>> cp('Japan', 'yes') == (0 + 1) / (8 + 6)
     True
 
@@ -73,6 +77,7 @@ class MultinomialNB(base.BaseNB):
 
     >>> cp('Tokyo', 'no') == (1 + 1) / (3 + 6)
     True
+
     >>> cp('Japan', 'no') == (1 + 1) / (3 + 6)
     True
 
@@ -83,6 +88,7 @@ class MultinomialNB(base.BaseNB):
     0.000301
     >>> math.exp(jlh['no'])
     0.000135
+
     >>> model.predict_one(new_text)
     'yes'
 
@@ -125,6 +131,9 @@ class MultinomialNB(base.BaseNB):
 
     >>> model = model.learn_many(X, y)
 
+    >>> model['nb'].feature_counts
+    defaultdict(<class 'collections.Counter'>, {'Japan': Counter({'no': 1}), 'Tokyo': Counter({'no': 1}), 'Chinese': Counter({'yes': 5, 'no': 1}), 'Macao': Counter({'yes': 1}), 'Shanghai': Counter({'yes': 1}), 'Beijing': Counter({'yes': 1})})
+
     >>> model['nb'].p_class('yes')
     0.75
 
@@ -153,9 +162,9 @@ class MultinomialNB(base.BaseNB):
     ...    ['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs', index = ['river', 'rocks'])
 
     >>> model.predict_proba_many(unseen_data)
-            yes        no
-    river  0.553531  0.446469
-    rocks  0.881499  0.118501
+                 no       yes
+    river  0.446469  0.553531
+    rocks  0.118501  0.881499
 
     >>> model.predict_many(unseen_data)
     river    yes
@@ -186,16 +195,6 @@ class MultinomialNB(base.BaseNB):
 
         return self
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        agg, index = base.Groupby(keys=y).apply(np.sum, X.values)
-        agg = pd.DataFrame(agg, columns=X.columns, index=index)
-
-        self.feature_counts.update((agg.T).to_dict(orient="index"))
-        self.class_counts.update(y.value_counts().to_dict())
-        self.class_totals.update(agg.sum(axis="columns").to_dict())
-
-        return self
-
     @property
     def classes_(self):
         return list(self.class_counts.keys())
@@ -222,36 +221,93 @@ class MultinomialNB(base.BaseNB):
             for c in self.classes_
         }
 
-    def p_class_many(self):
-        return pd.DataFrame.from_dict(self.class_counts, orient="index").T / sum(
+    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+        y = base.one_hot_encode(y)
+        columns, classes = X.columns, y.columns
+        y = sparse.csc_matrix(y.sparse.to_coo()).T
+
+        self.class_counts.update(
+            {c: count.item() for c, count in zip(classes, y.sum(axis=1))}
+        )
+
+        if hasattr(X, "sparse"):
+            X = sparse.csr_matrix(X.sparse.to_coo())
+
+        fc = y @ X
+
+        self.class_totals.update(
+            {c: count.item() for c, count in zip(classes, fc.sum(axis=1))}
+        )
+
+        # Update feature counts by slicing the sparse matrix per column.
+        # Each column correspond to a class.
+        for c, i in zip(classes, range(fc.shape[0])):
+            if sparse.issparse(fc):
+                counts = {
+                    c: {
+                        columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)
+                    }
+                }
+            else:
+                counts = {c: {f: count for f, count in zip(columns, fc[i])}}
+            # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
+            # [{token_1: {classe_i: f_1}},.. {token_n: {class_i: f_n}}]
+            for dict_count in [
+                {token: {c: f} for token, f in frequencies.items()}
+                for c, frequencies in counts.items()
+            ]:
+
+                for f, count in dict_count.items():
+                    self.feature_counts[f].update(count)
+
+        return self
+
+    def p_class_many(self) -> pd.DataFrame:
+        return base.from_dict(self.class_counts).T[self.class_counts] / sum(
             self.class_counts.values()
         )
 
-    def p_feature_given_class_many(self, columns):
-        fc = collections.defaultdict(dict)
-        default = {k: 0 for k, _ in self.class_counts.items()}
+    def _feature_log_prob(self, known: list, unknown: list) -> pd.DataFrame:
+        if known:
+            smooth_fc = (
+                base.from_dict(
+                    {
+                        f: {c: count[c] if c in count else 0 for c in self.class_totals}
+                        for f, count in self.feature_counts.items()
+                        if f in known
+                    }
+                )[self.class_totals].T
+                + self.alpha
+            )
+        else:
+            smooth_fc = pd.DataFrame(index=self.class_totals)
 
-        for f in columns:
-            for c in self.class_counts:
-                count = self.feature_counts.get(f, default)
-                if c in count:
-                    fc[f][c] = count[c]
-                else:
-                    fc[f][c] = 0
+        if unknown:
+            smooth_fc[unknown] = self.alpha
 
-        for f in columns:
-            fc[f] = self.feature_counts.get(f, default)
+        smooth_fc = np.log(smooth_fc)
 
-        num = pd.DataFrame(fc, dtype=float).fillna(0) + self.alpha
-        div = (
-            pd.DataFrame.from_dict(self.class_totals, orient="index", dtype=float).T
-            + self.alpha * self.n_terms
+        smooth_cc = np.log(
+            base.from_dict(self.class_totals) + self.alpha * self.n_terms
         )
-        return num.div(div[num.index].T.values)
 
-    def joint_log_likelihood_many(self, X: pd.DataFrame):
-        pfc = self.p_feature_given_class_many(X.columns)
-        p_class = np.log(self.p_class_many())[pfc.index]
-        p = X @ np.log(pfc).values.T
-        p.columns = pfc.index
-        return p.add(p_class.values, axis="columns")
+        return smooth_fc.subtract(smooth_cc.values, axis="rows")
+
+    def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        columns = X.columns
+        index = X.index
+
+        known, unknown = [], []
+        for f in columns:
+            if f in self.feature_counts:
+                known.append(f)
+            else:
+                unknown.append(f)
+
+        if hasattr(X, "sparse"):
+            X = sparse.csr_matrix(X.sparse.to_coo())
+
+        jll = X @ self._feature_log_prob(known, unknown)[columns].T
+        jll += np.log(self.p_class_many()).values
+
+        return pd.DataFrame(jll, index=index, columns=self.class_totals.keys())
