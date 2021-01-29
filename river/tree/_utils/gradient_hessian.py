@@ -51,7 +51,7 @@ class GradHessStats:
         self.h_var = stats.Var()
         self.gh_cov = stats.Cov()
 
-    def get_x(self):
+    def get_x(self) -> float:
         """ Get the centroid x data that represents all the observations inside a bin. """
         return self.x_m.get()
 
@@ -92,17 +92,17 @@ class GradHessStats:
         self.h_var.update(gh.hessian, w)
         self.gh_cov.update(gh.gradient, gh.hessian, w)
 
-    def mean(self):
+    def mean(self) -> GradHess:
         return GradHess(self.g_var.mean.get(), self.h_var.mean.get())
 
-    def variance(self):
+    def variance(self) -> GradHess:
         return GradHess(self.g_var.get(), self.h_var.get())
 
-    def covariance(self):
+    def covariance(self) -> float:
         return self.gh_cov.get()
 
     @property
-    def total_weight(self):
+    def total_weight(self) -> float:
         return self.g_var.mean.n
 
     # This method ignores correlations between delta_pred and the gradients/hessians! Considering

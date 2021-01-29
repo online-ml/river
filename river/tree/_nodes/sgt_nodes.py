@@ -36,14 +36,16 @@ class SGTNode:
         # Split test
         self._split: Optional[SGTSplit] = None
         self._children: Optional[Dict[Hashable, 'SGTNode']] = None
-        self._split_stats: Optional[Dict[FeatureName, Union[GradHessStats, FeatureQuantizer]]] = {}
+        self._split_stats: Optional[
+            Dict[FeatureName, Union[Dict[Hashable, GradHessStats], FeatureQuantizer]]
+        ] = {}
         self._update_stats = GradHessStats()
 
     def reset(self):
         self._split_stats = {}
         self._update_stats = GradHessStats()
 
-    def sort_instance(self, x):
+    def sort_instance(self, x) -> 'SGTNode':
         if self._split is None:
             return self
 
@@ -67,35 +69,34 @@ class SGTNode:
 
         return node.sort_instance(x)
 
-    def update(self, x: dict, grad_hess: GradHess, sgt, w: float = 1.):
+    def update(self, x: dict, gh: GradHess, sgt, w: float = 1.):
         for idx, x_val in x.items():
             if not isinstance(x_val, numbers.Number) or idx in sgt.nominal_attributes:
+                # Update the set of nominal features
                 sgt.nominal_attributes.add(idx)
                 try:
-                    self._split_stats[idx][x_val].update(grad_hess, w=w)
+                    self._split_stats[idx][x_val].update(gh, w=w)
                 except KeyError:
                     if idx not in self._split_stats:
                         # Categorical features are treated with a simple dict structure
                         self._split_stats[idx] = {}
                     self._split_stats[idx][x_val] = GradHessStats()
-                    self._split_stats[idx][x_val].update(grad_hess, w=w)
+                    self._split_stats[idx][x_val].update(gh, w=w)
             else:
-                ghs = GradHessStats()
-                ghs.update(grad_hess, x_val, w)
                 try:
-                    self._split_stats[idx].update(ghs)
+                    self._split_stats[idx].update(x_val, gh, w)
                 except KeyError:
                     # Create a new quantizer
                     quantization_radius = sgt._get_quantization_radius(idx)
                     self._split_stats[idx] = FeatureQuantizer(radius=quantization_radius)
-                    self._split_stats[idx].update(ghs)
+                    self._split_stats[idx].update(x_val, gh, w)
 
-        self._update_stats.update(grad_hess, w=w)
+        self._update_stats.update(gh, w=w)
 
-    def leaf_prediction(self):
+    def leaf_prediction(self) -> float:
         return self._prediction
 
-    def find_best_split(self, sgt):
+    def find_best_split(self, sgt) -> SGTSplit:
         best = SGTSplit()
 
         # Null split: update the prediction using the new gradient information
@@ -202,18 +203,18 @@ class SGTNode:
         if self.depth + 1 > sgt._depth:
             sgt._depth = self.depth + 1
 
-    def is_leaf(self):
+    def is_leaf(self) -> bool:
         return self._children is None
 
     @property
-    def children(self):
+    def children(self) -> Dict[FeatureName, 'SGTNode']:
         return self._children
 
     @property
-    def total_weight(self):
+    def total_weight(self) -> float:
         return self._update_stats.total_weight
 
 
-def delta_prediction(grad_hess, lambda_value):
+def delta_prediction(gh: GradHess, lambda_value: float):
     # Add small constant value to avoid division by zero
-    return -grad_hess.gradient / (grad_hess.hessian + sys.float_info.min + lambda_value)
+    return -gh.gradient / (gh.hessian + sys.float_info.min + lambda_value)
