@@ -1,9 +1,9 @@
 import numpy as np
 
-from sklearn.model_selection import StratifiedKFold
+from river.base import DriftDetector
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
-from river.base import DriftDetector
+from sklearn.model_selection import StratifiedKFold
 
 
 class D3(DriftDetector):
