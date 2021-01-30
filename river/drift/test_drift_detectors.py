@@ -41,8 +41,8 @@ def test_adwin():
 
 
 def test_d3():
-    detected_indices = perform_test(D3(seed=12345), data_stream_4)
-    expected_indices = [242]
+    detected_indices = perform_test(D3(), data_stream_4)
+    expected_indices = [110]
 
     assert detected_indices == expected_indices
 

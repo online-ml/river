@@ -33,18 +33,15 @@ class D3(DriftDetector):
         It is advised to use a simple model as the goal of this classifier
         is to determine if the old data and the new data are seperable,
         not to classify them. (sklearn classifier)
-    seed
-        Is used as as random state for StratifiedKFold. If None, a randomly
-        generated value by StratifiedKFold will be used while shuffling
-        data.
 
 
     Examples
     --------
     >>> from river import synth
     >>> from river.drift import D3
+    >>> np.random.seed(12345)
 
-    >>> d3 = D3(seed=12345)
+    >>> d3 = D3()
 
     >>> # Simulate a data stream
     >>> data_stream = synth.Hyperplane(seed=42, n_features=10, mag_change=0.5)
@@ -72,7 +69,6 @@ class D3(DriftDetector):
         new_data_percentage=0.1,
         auc_threshold=0.7,
         discriminative_classifier=None,
-        seed=None,
     ):
         super().__init__()
         self.auc_threshold = auc_threshold
@@ -86,7 +82,6 @@ class D3(DriftDetector):
             self.old_data_window_size * self.new_data_percentage
         )
         self.full_window_size = self.old_data_window_size + self.new_data_window_size
-        np.random.seed(seed)
         super().reset()
 
     def _is_sliding_window_full(self):
