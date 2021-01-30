@@ -7,19 +7,21 @@ the latter extracts new information from the data
 
 """
 from .feature_hasher import FeatureHasher
-from .impute import PreviousImputer
-from .impute import StatImputer
+from .impute import PreviousImputer, StatImputer
 from .lda import LDA
 from .one_hot import OneHotEncoder
-from .scale import Binarizer
-from .scale import MaxAbsScaler
-from .scale import MinMaxScaler
-from .scale import Normalizer
-from .scale import RobustScaler
-from .scale import StandardScaler
-
+from .scale import (
+    AdaptiveStandardScaler,
+    Binarizer,
+    MaxAbsScaler,
+    MinMaxScaler,
+    Normalizer,
+    RobustScaler,
+    StandardScaler,
+)
 
 __all__ = [
+    "AdaptiveStandardScaler",
     "Binarizer",
     "FeatureHasher",
     "LDA",

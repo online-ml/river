@@ -1,16 +1,13 @@
-from abc import ABCMeta, abstractmethod
 import collections
 import numbers
 import textwrap
-
+from abc import ABCMeta, abstractmethod
 from typing import Dict, Iterator, List, Union
-
 
 from river import base
 from river.stats import Var
-from river.tree._attribute_test import InstanceConditionalTest  # noqa
 from river.tree._attribute_test import AttributeSplitSuggestion  # noqa
-
+from river.tree._attribute_test import InstanceConditionalTest  # noqa
 
 # Helper structure to manage nodes
 FoundNode = collections.namedtuple("FoundNode", ["node", "parent", "parent_branch"])
@@ -44,7 +41,9 @@ class Node(metaclass=ABCMeta):
         """
         return True
 
-    def filter_instance_to_leaf(self, x: dict, parent: "Node", parent_branch: int) -> FoundNode:
+    def filter_instance_to_leaf(
+        self, x: dict, parent: "Node", parent_branch: int
+    ) -> FoundNode:
         """Traverse down the tree to locate the corresponding leaf for an instance.
 
         Parameters
@@ -218,7 +217,9 @@ class SplitNode(Node):
         node
             The node to insert.
         """
-        if (self._split_test.max_branches() >= 0) and (index >= self._split_test.max_branches()):
+        if (self._split_test.max_branches() >= 0) and (
+            index >= self._split_test.max_branches()
+        ):
             raise IndexError
         self._children[index] = node
 
@@ -509,7 +510,9 @@ class LearningNode(Node, metaclass=ABCMeta):
         """
         self.update_stats(y, sample_weight)
         if self.is_active():
-            self.update_attribute_observers(x, y, sample_weight, tree.nominal_attributes)
+            self.update_attribute_observers(
+                x, y, sample_weight, tree.nominal_attributes
+            )
 
     @abstractmethod
     def leaf_prediction(self, x, *, tree=None) -> dict:

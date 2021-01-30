@@ -2,7 +2,6 @@ import typing
 
 from river import base
 
-
 __all__ = ["Discard", "Select", "SelectType"]
 
 
@@ -54,7 +53,9 @@ class Discard(base.Transformer):
 
     def __repr__(self):
         if self.blacklist:
-            return "Discard (\n  " + "\n  ".join(map(str, sorted(self.blacklist))) + "\n)"
+            return (
+                "Discard (\n  " + "\n  ".join(map(str, sorted(self.blacklist))) + "\n)"
+            )
         return "Discard ()"
 
     def _set_params(self, blacklist=None):
@@ -111,7 +112,9 @@ class Select(base.Transformer):
 
     def __repr__(self):
         if self.whitelist:
-            return "Select (\n  " + "\n  ".join(map(str, sorted(self.whitelist))) + "\n)"
+            return (
+                "Select (\n  " + "\n  ".join(map(str, sorted(self.whitelist))) + "\n)"
+            )
         return "Select ()"
 
     def _get_params(self):

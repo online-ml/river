@@ -31,7 +31,9 @@ class Recommender(base.Regressor):
         """
 
     @abc.abstractmethod
-    def _predict_one(self, user: typing.Union[str, int], item: typing.Union[str, int]) -> float:
+    def _predict_one(
+        self, user: typing.Union[str, int], item: typing.Union[str, int]
+    ) -> float:
         """Predicts the target value of a set of features `x`.
 
         Parameters

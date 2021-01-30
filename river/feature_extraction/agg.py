@@ -3,9 +3,7 @@ import copy
 import functools
 import typing
 
-from river import base
-from river import stats
-
+from river import base, stats
 
 __all__ = ["Agg", "TargetAgg"]
 
@@ -125,11 +123,13 @@ class Agg(base.Transformer):
 
     References
     ----------
-    [^1]: [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
+    [^1]: [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/pandas-streaming-groupby/)
 
     """
 
-    def __init__(self, on: str, by: typing.Union[str, typing.List[str]], how: stats.Univariate):
+    def __init__(
+        self, on: str, by: typing.Union[str, typing.List[str]], how: stats.Univariate
+    ):
         self.on = on
         self.by = by if isinstance(by, list) else [by]
         self.how = how

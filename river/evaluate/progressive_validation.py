@@ -2,11 +2,7 @@ import datetime as dt
 import time
 import typing
 
-from river import base
-from river import metrics
-from river import utils
-from river import stream
-
+from river import base, metrics, stream, utils
 
 __all__ = ["progressive_val_score"]
 
@@ -164,7 +160,9 @@ def progressive_val_score(
 
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
-        raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
+        raise ValueError(
+            f"{metric.__class__.__name__} metric is not compatible with {model}"
+        )
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     pred_func = model.predict_one

@@ -5,7 +5,6 @@ import numpy as np
 
 from river import base
 
-
 __all__ = ["expand_param_grid"]
 
 

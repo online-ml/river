@@ -1,8 +1,7 @@
 import collections
 import typing
 
-from . import base
-from . import pearson
+from . import base, pearson
 
 
 class AutoCorr(base.Univariate):

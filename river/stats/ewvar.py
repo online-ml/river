@@ -1,5 +1,4 @@
-from . import base
-from . import ewmean
+from . import base, ewmean
 
 
 class EWVar(base.Univariate):
@@ -39,7 +38,7 @@ class EWVar(base.Univariate):
 
     References
     ----------
-    [^1]: [Finch, T., 2009. Incremental calculation of weighted mean and variance. University of Cambridge, 4(11-5), pp.41-42.](http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf)
+    [^1]: [Finch, T., 2009. Incremental calculation of weighted mean and variance. University of Cambridge, 4(11-5), pp.41-42.](https://fanf2.user.srcf.net/hermes/doc/antiforgery/stats.pdf)
     [^2]: [Exponential Moving Average on Streaming Data](https://dev.to/nestedsoftware/exponential-moving-average-on-streaming-data-4hhl)
 
     """

@@ -3,11 +3,9 @@ import collections
 import numbers
 import typing
 
-from river import base
-from river import utils
-from river import stats
-from . import confusion
+from river import base, stats, utils
 
+from . import confusion
 
 __all__ = [
     "BinaryMetric",
@@ -54,7 +52,16 @@ class Metric(abc.ABC):
 
 
 class ClassificationMetric(Metric):
-    """Mother class for all classification metrics."""
+    """Mother class for all classification metrics.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
+    """
 
     def __init__(self, cm: confusion.ConfusionMatrix = None):
         if cm is None:
@@ -140,7 +147,16 @@ class BinaryMetric(ClassificationMetric):
 
 
 class MultiClassMetric(ClassificationMetric):
-    """Mother class for all multi-class classification metrics."""
+    """Mother class for all multi-class classification metrics.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
+    """
 
 
 class RegressionMetric(Metric):
@@ -181,9 +197,18 @@ class RegressionMetric(Metric):
 
 
 class MultiOutputClassificationMetric(Metric):
-    """Mother class for all multi-output classification metrics."""
+    """Mother class for all multi-output classification metrics.
 
-    def __init__(self, cm=None):
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
+    """
+
+    def __init__(self, cm: confusion.MultiLabelConfusionMatrix = None):
         if cm is None:
             cm = confusion.MultiLabelConfusionMatrix()
         self.cm = cm
@@ -193,7 +218,9 @@ class MultiOutputClassificationMetric(Metric):
         y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
         y_pred: typing.Union[
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]],
+            typing.Dict[
+                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]
+            ],
         ],
         sample_weight: numbers.Number = 1.0,
     ) -> "MultiOutputClassificationMetric":
@@ -206,7 +233,9 @@ class MultiOutputClassificationMetric(Metric):
         y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
         y_pred: typing.Union[
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]],
+            typing.Dict[
+                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]
+            ],
         ],
         sample_weight: numbers.Number = 1.0,
         correction=None,
@@ -247,7 +276,14 @@ class MultiOutputRegressionMetric(Metric):
 
 
 class Metrics(Metric, collections.UserList):
-    """A container class for handling multiple metrics at once."""
+    """A container class for handling multiple metrics at once.
+
+    Parameters
+    ----------
+    metrics
+    str_sep
+
+    """
 
     def __init__(self, metrics, str_sep=", "):
         super().__init__(metrics)

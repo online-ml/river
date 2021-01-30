@@ -5,25 +5,27 @@ import inspect
 
 import pytest
 
-from river import base
-from river import cluster
-from river import compat
-from river import compose
-from river import ensemble
-from river import expert
-from river import facto
-from river import feature_extraction
-from river import feature_selection
-from river import imblearn
-from river import linear_model
-from river import meta
-from river import multiclass
-from river import naive_bayes
-from river import preprocessing
-from river import reco
-from river import stats
-from river import time_series
-from river import utils
+from river import (
+    base,
+    cluster,
+    compat,
+    compose,
+    ensemble,
+    expert,
+    facto,
+    feature_extraction,
+    feature_selection,
+    imblearn,
+    linear_model,
+    meta,
+    multiclass,
+    naive_bayes,
+    preprocessing,
+    reco,
+    stats,
+    time_series,
+    utils,
+)
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
 
@@ -91,7 +93,9 @@ def get_all_estimators():
 
         submodule = f"river.{submodule}"
 
-        for _, obj in inspect.getmembers(importlib.import_module(submodule), is_estimator):
+        for _, obj in inspect.getmembers(
+            importlib.import_module(submodule), is_estimator
+        ):
             if issubclass(obj, ignored):
                 continue
             params = obj._unit_test_params()

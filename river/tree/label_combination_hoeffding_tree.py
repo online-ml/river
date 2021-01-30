@@ -1,11 +1,12 @@
 import typing
 
-from river import base
-from river.tree import HoeffdingTreeClassifier
+from river import base, tree
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 
-class LabelCombinationHoeffdingTreeClassifier(HoeffdingTreeClassifier, base.MultiOutputMixin):
+class LabelCombinationHoeffdingTreeClassifier(
+    tree.HoeffdingTreeClassifier, base.MultiOutputMixin
+):
     """Label Combination Hoeffding Tree for multi-label classification.
 
     Label combination transforms the problem from multi-label to multi-class.

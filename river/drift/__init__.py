@@ -8,12 +8,12 @@ the true positives while keeping the number of false positives to a minimum.
 """
 
 from .adwin import ADWIN
+from .d3 import D3
 from .ddm import DDM
 from .eddm import EDDM
-from .page_hinkley import PageHinkley
 from .hddm_a import HDDM_A
 from .hddm_w import HDDM_W
 from .kswin import KSWIN
-from .d3 import D3
+from .page_hinkley import PageHinkley
 
 __all__ = ["ADWIN", "DDM", "EDDM", "PageHinkley", "HDDM_A", "HDDM_W", "KSWIN", "D3"]

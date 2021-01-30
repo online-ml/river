@@ -1,8 +1,6 @@
 from scipy import integrate
 
-from . import base
-from . import confusion
-
+from . import base, confusion
 
 __all__ = ["ROCAUC"]
 

@@ -2,15 +2,7 @@ import numpy as np
 import pytest
 
 from river import synth
-from river.drift import ADWIN
-from river.drift import DDM
-from river.drift import EDDM
-from river.drift import HDDM_A
-from river.drift import HDDM_W
-from river.drift import KSWIN
-from river.drift import PageHinkley
-from river.drift import D3
-
+from river.drift import ADWIN, D3, DDM, EDDM, HDDM_A, HDDM_W, KSWIN, PageHinkley
 
 np.random.seed(12345)
 data_stream_1 = np.concatenate(

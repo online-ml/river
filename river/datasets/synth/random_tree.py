@@ -1,7 +1,8 @@
 import numpy as np
 
-from .. import base
 from river.utils.skmultiflow_utils import check_random_state
+
+from .. import base
 
 
 class RandomTree(base.SyntheticDataset):

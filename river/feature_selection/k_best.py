@@ -2,8 +2,7 @@ import collections
 import copy
 import functools
 
-from river import base
-from river import stats
+from river import base, stats
 
 
 class SelectKBest(base.SupervisedTransformer):
@@ -66,7 +65,9 @@ class SelectKBest(base.SupervisedTransformer):
     def __init__(self, similarity: stats.Bivariate, k=10):
         self.k = k
         self.similarity = similarity
-        self.similarities = collections.defaultdict(functools.partial(copy.deepcopy, similarity))
+        self.similarities = collections.defaultdict(
+            functools.partial(copy.deepcopy, similarity)
+        )
         self.leaderboard = collections.Counter()
 
     @classmethod
