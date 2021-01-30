@@ -15,21 +15,23 @@ __all__ = ["BernoulliNB"]
 class BernoulliNB(base.BaseNB):
     """Bernoulli Naive Bayes.
 
-    This estimator supports learning with mini-batches.
+    Bernouilli Naive Bayes model learns from occurrences between features such as word counting
+    and discrete classes. The input vector must contain positive values, such as
+    counts or TF-IDF values.
 
     Parameters
     ----------
     alpha
-        Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+    Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
     true_threshold
-        Threshold for binarizing (mapping to booleans) features.
+    Threshold for binarizing (mapping to booleans) features.
 
     Attributes
     ----------
     class_counts : collections.Counter
-        Number of times each class has been seen.
+    Number of times each class has been seen.
     feature_counts : collections.defaultdict
-        Total frequencies per feature and class.
+    Total frequencies per feature and class.
 
     Examples
     --------
@@ -165,10 +167,13 @@ class BernoulliNB(base.BaseNB):
     True
 
     >>> unseen_data = pd.Series(
-    ...    ['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs', index=['river', 'rocks'])
+    ...    ['Taiwanese Taipei', 'Chinese Shanghai'],
+    ...    name = 'docs',
+    ...    index=['river', 'rocks']
+    ... )
 
     >>> model.predict_proba_many(unseen_data)
-                 no       yes
+            no       yes
     river  0.116846  0.883154
     rocks  0.047269  0.952731
 
@@ -181,7 +186,7 @@ class BernoulliNB(base.BaseNB):
     ...    ['test'], name = 'docs')
 
     >>> model.predict_proba_many(unseen_data)
-            no       yes
+        no       yes
     0  0.116846  0.883154
 
     >>> model.predict_proba_one('test')
@@ -206,7 +211,7 @@ class BernoulliNB(base.BaseNB):
     >>> unseen_data = pd.DataFrame(unseen_data.values, columns=unseen_data.columns, index=['river'])
 
     >>> model.predict_proba_many(unseen_data)
-                 no       yes
+            no       yes
     river  0.116846  0.883154
 
 
@@ -223,6 +228,16 @@ class BernoulliNB(base.BaseNB):
         self.feature_counts = collections.defaultdict(collections.Counter)
 
     def learn_one(self, x, y):
+        """Updates the model with a single observation.
+
+        Args:
+            x: Dictionary of term frequencies.
+            y: Target class.
+
+        Returns:
+            self
+
+        """
         self.class_counts.update((y,))
 
         for i, xi in x.items():
@@ -238,7 +253,21 @@ class BernoulliNB(base.BaseNB):
     def p_class(self, c: str) -> float:
         return self.class_counts[c] / sum(self.class_counts.values())
 
+    def p_class_many(self) -> pd.DataFrame:
+        return base.from_dict(self.class_counts).T[self.class_counts] / sum(
+            self.class_counts.values()
+        )
+
     def joint_log_likelihood(self, x):
+        """Computes the joint log likelihood of input features.
+
+        Args:
+            x: Dictionary of term frequencies.
+
+        Returns:
+            Mapping between classes and joint log likelihood.
+
+        """
         return {
             c: math.log(self.p_class(c))
             + sum(
@@ -256,7 +285,13 @@ class BernoulliNB(base.BaseNB):
         }
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        """Update model using mini-batches."""
+        """Updates the model with a term-frequency or TF-IDF pandas dataframe.
+
+        Args:
+            X: Term-frequency or TF-IDF pandas dataframe.
+            y: Target classes.
+
+        """
         # One hot encode y and convert it into sparse matrix
         y = base.one_hot_encode(y)
         columns, classes = X.columns, y.columns
@@ -279,6 +314,7 @@ class BernoulliNB(base.BaseNB):
         for c, i in zip(classes, range(fc.shape[0])):
 
             if sparse.issparse(fc):
+
                 counts = {
                     c: {
                         columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)
@@ -286,6 +322,7 @@ class BernoulliNB(base.BaseNB):
                 }
 
             else:
+
                 counts = {c: {f: count for f, count in zip(columns, fc[i])}}
 
             # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
@@ -300,12 +337,16 @@ class BernoulliNB(base.BaseNB):
 
         return self
 
-    def p_class_many(self):
-        return base.from_dict(self.class_counts).T[self.class_counts] / sum(
-            self.class_counts.values()
-        )
-
     def _feature_log_prob(self, columns: list) -> pd.DataFrame:
+        """Compute log probabilities of input features.
+
+        Args:
+            columns: List of input features.
+
+        Returns:
+            Log probabilities of input features.
+
+        """
         smooth_fc = np.log(
             base.from_dict(self.feature_counts)[self.class_counts].T.fillna(0)
             + self.alpha
@@ -316,7 +357,15 @@ class BernoulliNB(base.BaseNB):
         return smooth_fc.subtract(smooth_cc.values)
 
     def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        """Calculate the posterior log probability of the samples X"""
+        """Computes the joint log likelihood of input features.
+
+        Args:
+            X: Term-frequency or TF-IDF pandas dataframe.
+
+        Returns:
+            Input samples joint log likelihood.
+
+        """
         unknown = [x for x in X.columns if x not in self.feature_counts]
         missing = [x for x in self.feature_counts if x not in X.columns]
 
@@ -335,7 +384,6 @@ class BernoulliNB(base.BaseNB):
             X = X > self.true_threshold
 
         flp = self._feature_log_prob(columns)
-
         neg_p = np.log(1 - np.exp(flp))
 
         return pd.DataFrame(

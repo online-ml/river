@@ -50,11 +50,11 @@ class BaseNB(base.Classifier):
 
 def from_dict(data: dict) -> pd.DataFrame:
     """Convert a dict into a pandas dataframe."""
-    data, index = list(data.values()), list(data.keys())
-    return pd.DataFrame(data=data, index=index, dtype="float32")
+    dict_data, index = list(data.values()), list(data.keys())
+    return pd.DataFrame(data=dict_data, index=index, dtype="float32")
 
 
-def one_hot_encode(y: pd.Series) -> pd.DataFrame:
+def one_hot_encode(y: pd.Series) -> pd.SparseDataFrame:
     """One hot encode input pandas series into sparse pandas DataFrame."""
     classes = np.unique(y)
     indices = np.searchsorted(classes, y)
