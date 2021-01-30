@@ -157,11 +157,11 @@ Here are some benefits of using River (and online machine learning in general):
 - Feature extraction and selection
 - Online statistics and metrics
 - Built-in datasets
-- And [much more](https://online-ml.github.io/content/api.html)
+- And [much more](https://riverml.xyz/latest/api/overview/)
 
 ## 🔗 Useful links
 
-- [Documentation](https://online-ml.github.io/)
+- [Documentation](https://riverml.xyz)
 - [Benchmarks](https://github.com/online-ml/river/tree/master/benchmarks)
 - [Issue tracker](https://github.com/online-ml/river/issues)
 - [Package releases](https://pypi.org/project/river/#history)

@@ -1,9 +1,9 @@
 import math
 
-from river.utils.skmultiflow_utils import normalize_values_in_dict
 
-
-def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_observers: dict):
+def do_naive_bayes_prediction(
+    x, observed_class_distribution: dict, attribute_observers: dict
+):
     """Perform Naive Bayes prediction
 
     Parameters
@@ -26,24 +26,39 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, attribute_ob
     -----
     This method is not intended to be used as a stand-alone method.
     """
-    total_weight_sum = sum(observed_class_distribution.values())
-    if not observed_class_distribution or total_weight_sum == 0:
+    total_weight = sum(observed_class_distribution.values())
+    if not observed_class_distribution or total_weight == 0:
         # No observed class distributions, all classes equal
         return None
+
     votes = {}
-    for class_index, class_weight_sum in observed_class_distribution.items():
+    for class_index, class_weight in observed_class_distribution.items():
         # Prior
-        votes[class_index] = (
-            math.log(class_weight_sum / total_weight_sum) if class_weight_sum > 0 else 0.0
-        )
+        if class_weight > 0:
+            votes[class_index] = math.log(class_weight / total_weight)
+        else:
+            votes[class_index] = 0.0
+            continue
+
         if attribute_observers:
             for att_idx in attribute_observers:
                 if att_idx not in x:
                     continue
                 obs = attribute_observers[att_idx]
                 # Prior plus the log likelihood
-                tmp = obs.probability_of_attribute_value_given_class(x[att_idx], class_index)
+                tmp = obs.probability_of_attribute_value_given_class(
+                    x[att_idx], class_index
+                )
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.0
-        # Revert log likelihood
-        votes[class_index] = math.exp(votes[class_index])
-    return normalize_values_in_dict(votes)
+
+    # Max log-likelihood
+    max_ll = max(votes.values())
+    # Apply the log-sum-exp trick (https://stats.stackexchange.com/a/253319)
+    lse = max_ll + math.log(
+        sum(math.exp(log_proba - max_ll) for log_proba in votes.values())
+    )
+
+    for class_index in votes:
+        votes[class_index] = math.exp(votes[class_index] - lse)
+
+    return votes

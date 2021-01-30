@@ -4,14 +4,18 @@ from river import base
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from ._base_tree import BaseHoeffdingTree
-from ._split_criterion import GiniSplitCriterion
-from ._split_criterion import InfoGainSplitCriterion
-from ._split_criterion import HellingerDistanceCriterion
-from ._nodes import SplitNode
-from ._nodes import LearningNode
-from ._nodes import LearningNodeMC
-from ._nodes import LearningNodeNB
-from ._nodes import LearningNodeNBA
+from ._nodes import (
+    LearningNode,
+    LearningNodeMC,
+    LearningNodeNB,
+    LearningNodeNBA,
+    SplitNode,
+)
+from ._split_criterion import (
+    GiniSplitCriterion,
+    HellingerDistanceCriterion,
+    InfoGainSplitCriterion,
+)
 
 
 class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
@@ -167,7 +171,9 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         self.nominal_attributes = nominal_attributes
 
         if attr_obs not in self._VALID_AO:
-            raise AttributeError(f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}')
+            raise AttributeError(
+                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
+            )
         self.attr_obs = attr_obs
         self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
         self.kwargs = kwargs
@@ -216,11 +222,17 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return LearningNodeMC(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return LearningNodeMC(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
+            )
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return LearningNodeNB(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return LearningNodeNB(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
+            )
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return LearningNodeNBA(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return LearningNodeNBA(
+                initial_stats, depth, self.attr_obs, self.attr_obs_params
+            )
 
     def _attempt_to_split(self, node: LearningNode, parent: SplitNode, parent_idx: int):
         """Attempt to split a node.
@@ -268,7 +280,8 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
                 if (
-                    best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
+                    best_suggestion.merit - second_best_suggestion.merit
+                    > hoeffding_bound
                     or hoeffding_bound < self.tie_threshold
                 ):
                     should_split = True
@@ -282,7 +295,8 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                             ].split_test.attrs_test_depends_on()
                             if len(split_atts) == 1:
                                 if (
-                                    best_suggestion.merit - best_split_suggestions[i].merit
+                                    best_suggestion.merit
+                                    - best_split_suggestions[i].merit
                                     > hoeffding_bound
                                 ):
                                     poor_atts.add(split_atts[0])
@@ -396,7 +410,9 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 while not nd.is_leaf():
                     path = max(
                         nd._children,
-                        key=lambda c: nd._children[c].total_weight if nd._children[c] else 0.0,
+                        key=lambda c: nd._children[c].total_weight
+                        if nd._children[c]
+                        else 0.0,
                     )
                     most_traversed = nd.get_child(path)
                     # Pass instance to the most traversed path

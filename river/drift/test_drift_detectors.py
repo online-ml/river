@@ -1,17 +1,12 @@
 import numpy as np
 import pytest
 
-from river.drift import ADWIN
-from river.drift import DDM
-from river.drift import EDDM
-from river.drift import HDDM_A
-from river.drift import HDDM_W
-from river.drift import KSWIN
-from river.drift import PageHinkley
-
+from river.drift import ADWIN, DDM, EDDM, HDDM_A, HDDM_W, KSWIN, PageHinkley
 
 np.random.seed(12345)
-data_stream_1 = np.concatenate((np.random.randint(2, size=1000), np.random.randint(8, size=1000)))
+data_stream_1 = np.concatenate(
+    (np.random.randint(2, size=1000), np.random.randint(8, size=1000))
+)
 
 np.random.seed(12345)
 data_stream_2 = np.concatenate(

@@ -1,11 +1,6 @@
 import pytest
 
-from river import compose
-from river import linear_model
-from river import optim
-from river import preprocessing
-from river import tree
-from river import utils
+from river import compose, linear_model, optim, preprocessing, tree, utils
 
 
 @pytest.mark.parametrize(

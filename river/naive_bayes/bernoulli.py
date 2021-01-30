@@ -8,7 +8,6 @@ from scipy import sparse
 
 from . import base
 
-
 __all__ = ["BernoulliNB"]
 
 

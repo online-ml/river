@@ -22,7 +22,7 @@ $ source .venv/bin/activate
 You can also create a virtual environment via `conda`:
 
 ```sh
-$ conda create -n river -y python
+$ conda create -n river -y python=3.8 anaconda
 $ conda activate river
 ```
 
@@ -42,6 +42,12 @@ Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will
 
 ```sh
 $ pre-commit install --hook-type pre-push
+```
+
+You can optionally run `pre-commit` at any time as so:
+
+```sh
+$ pre-commit run --all-files
 ```
 
 ## Making changes

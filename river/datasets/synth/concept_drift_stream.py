@@ -2,9 +2,10 @@ import textwrap
 
 import numpy as np
 
+from river.utils.skmultiflow_utils import check_random_state
+
 from .. import base
 from ..synth import Agrawal
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class ConceptDriftStream(base.SyntheticDataset):
@@ -82,13 +83,20 @@ class ConceptDriftStream(base.SyntheticDataset):
 
     def __init__(
         self,
-        stream: base.SyntheticDataset = Agrawal(seed=112),
-        drift_stream: base.SyntheticDataset = Agrawal(seed=112, classification_function=2),
+        stream: base.SyntheticDataset = None,
+        drift_stream: base.SyntheticDataset = None,
         position: int = 5000,
         width: int = 1000,
         seed: int = None,
         alpha: float = None,
     ):
+
+        if stream is None:
+            stream = Agrawal(seed=seed)
+
+        if drift_stream is None:
+            drift_stream = Agrawal(seed=seed, classification_function=2)
+
         # Fairly simple check for consistent number of features
         if stream.n_features != drift_stream.n_features:
             raise AttributeError(
@@ -113,7 +121,8 @@ class ConceptDriftStream(base.SyntheticDataset):
                 self.width = w if w > 0 else 1
             else:
                 raise ValueError(
-                    f"Invalid alpha value: {alpha}. " f"Valid values are in the range (0.0, 90.0]"
+                    f"Invalid alpha value: {alpha}. "
+                    f"Valid values are in the range (0.0, 90.0]"
                 )
         else:
             self.width = width

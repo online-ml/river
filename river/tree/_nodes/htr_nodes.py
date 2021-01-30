@@ -1,8 +1,11 @@
 import inspect
 
 from river.stats import Var
-from .._attribute_observer import NominalAttributeRegressionObserver
-from .._attribute_observer import NumericAttributeRegressionObserver
+
+from .._attribute_observer import (
+    NominalAttributeRegressionObserver,
+    NumericAttributeRegressionObserver,
+)
 from .base import LearningNode
 
 
@@ -176,8 +179,12 @@ class LearningNodeAdaptive(LearningNodeModel):
         pred_mean = self.stats.mean.get()
         pred_model = self._leaf_model.predict_one(x)
 
-        self._fmse_mean = tree.model_selector_decay * self._fmse_mean + (y - pred_mean) ** 2
-        self._fmse_model = tree.model_selector_decay * self._fmse_model + (y - pred_model) ** 2
+        self._fmse_mean = (
+            tree.model_selector_decay * self._fmse_mean + (y - pred_mean) ** 2
+        )
+        self._fmse_model = (
+            tree.model_selector_decay * self._fmse_model + (y - pred_model) ** 2
+        )
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 

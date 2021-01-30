@@ -6,13 +6,10 @@ the `processing` module in that the latter's purpose is rather to clean the data
 be processed by a particular machine learning algorithm.
 
 """
-from .agg import Agg
-from .agg import TargetAgg
+from .agg import Agg, TargetAgg
 from .kernel_approx import RBFSampler
 from .poly import PolynomialExtender
-from .vectorize import BagOfWords
-from .vectorize import TFIDF
-
+from .vectorize import TFIDF, BagOfWords
 
 __all__ = [
     "Agg",

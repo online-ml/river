@@ -1,5 +1,6 @@
-from . import base
 from river import stats
+
+from . import base
 
 __all__ = ["R2"]
 

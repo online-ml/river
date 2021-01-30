@@ -73,7 +73,10 @@ def test_dimensions(dataset):
 
 @pytest.mark.parametrize(
     "dataset",
-    [pytest.param(dataset, id=dataset.__class__.__name__) for dataset in _iter_datasets()],
+    [
+        pytest.param(dataset, id=dataset.__class__.__name__)
+        for dataset in _iter_datasets()
+    ],
 )
 def test_repr(dataset):
     assert repr(dataset)
@@ -84,14 +87,17 @@ def _iter_synth_datasets():
     synth = importlib.import_module("river.datasets.synth")
     for name, dataset in inspect.getmembers(synth, inspect.isclass):
         # TODO: test the following synth datasets also
-        if name in ("RandomRBF", "RandomRBFDrift", "RandomTree", "ConceptDriftStream"):
+        if name in ("RandomRBF", "RandomRBFDrift", "RandomTree"):
             continue
         yield dataset
 
 
 @pytest.mark.parametrize(
     "dataset",
-    [pytest.param(dataset(seed=42), id=dataset.__name__) for dataset in _iter_synth_datasets()],
+    [
+        pytest.param(dataset(seed=42), id=dataset.__name__)
+        for dataset in _iter_synth_datasets()
+    ],
 )
 def test_synth_idempotent(dataset):
     """Checks that a synthetic dataset produces identical results when seeded."""
@@ -100,7 +106,10 @@ def test_synth_idempotent(dataset):
 
 @pytest.mark.parametrize(
     "dataset",
-    [pytest.param(dataset(seed=None), id=dataset.__name__) for dataset in _iter_synth_datasets()],
+    [
+        pytest.param(dataset(seed=None), id=dataset.__name__)
+        for dataset in _iter_synth_datasets()
+    ],
 )
 def test_synth_non_idempotent(dataset):
     """Checks that a synthetic dataset produces different results when not seeded."""
@@ -109,7 +118,10 @@ def test_synth_non_idempotent(dataset):
 
 @pytest.mark.parametrize(
     "dataset",
-    [pytest.param(dataset(seed=42), id=dataset.__name__) for dataset in _iter_synth_datasets()],
+    [
+        pytest.param(dataset(seed=42), id=dataset.__name__)
+        for dataset in _iter_synth_datasets()
+    ],
 )
 def test_synth_pausable(dataset):
     stream = iter(dataset)

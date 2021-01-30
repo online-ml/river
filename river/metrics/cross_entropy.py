@@ -2,7 +2,6 @@ from river import optim
 
 from . import base
 
-
 __all__ = ["CrossEntropy"]
 
 

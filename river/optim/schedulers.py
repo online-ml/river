@@ -2,9 +2,7 @@
 import abc
 import math
 
-from river import base
-from river import optim
-
+from river import base, optim
 
 __all__ = ["Constant", "InverseScaling", "Optimal", "Scheduler"]
 

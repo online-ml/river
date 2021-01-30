@@ -1,25 +1,21 @@
 """Utilities for unit testing and sanity checking estimators."""
 import copy
 import functools
+import inspect
 import math
 import pickle
 import random
 
 import numpy as np
 
-
 __all__ = ["check_estimator"]
 
 
 def yield_datasets(model):
 
-    from river import base
-    from river import compose
-    from river import datasets
-    from river import preprocessing
-    from river import stream
-    from river import utils
     from sklearn import datasets as sk_datasets
+
+    from river import base, compose, datasets, preprocessing, stream, utils
 
     # Multi-output regression
     if utils.inspect.ismoregressor(model):
@@ -32,9 +28,9 @@ def yield_datasets(model):
             """One-hot encoded version of `datasets.SolarFlare"""
 
             def __iter__(self):
-                oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(
-                    int
-                )
+                oh = (
+                    compose.SelectType(str) | preprocessing.OneHotEncoder()
+                ) + compose.SelectType(int)
                 for x, y in datasets.SolarFlare().take(200):
                     yield oh.transform_one(x), y
 
@@ -111,6 +107,17 @@ def check_predict_proba_one_binary(classifier, dataset):
         assert set(y_pred.keys()) == {False, True}
 
 
+def assert_predictions_are_close(y1, y2):
+
+    if isinstance(y1, dict):
+        for k in y1:
+            assert_predictions_are_close(y1[k], y2[k])
+    elif isinstance(y1, float):
+        assert math.isclose(y1, y2, rel_tol=1e-06)
+    else:
+        assert y1 == y2
+
+
 def check_shuffle_features_no_impact(model, dataset):
     """Changing the order of the features between calls should have no effect on a model."""
 
@@ -127,16 +134,18 @@ def check_shuffle_features_no_impact(model, dataset):
 
         assert x == x_shuffled  # order doesn't matter for dicts
 
-        y_pred = model.predict_one(x)
-        y_pred_shuffled = shuffled.predict_one(x_shuffled)
-
-        if utils.inspect.ismoregressor(model):
-            for o in y_pred:
-                assert math.isclose(y_pred[o], y_pred_shuffled[o])
-        elif utils.inspect.isregressor(model):
-            assert math.isclose(y_pred, y_pred_shuffled)
+        if utils.inspect.isclassifier(model):
+            try:
+                y_pred = model.predict_proba_one(x)
+                y_pred_shuffled = shuffled.predict_proba_one(x_shuffled)
+            except NotImplementedError:
+                y_pred = model.predict_one(x)
+                y_pred_shuffled = shuffled.predict_one(x_shuffled)
         else:
-            assert y_pred == y_pred_shuffled
+            y_pred = model.predict_one(x)
+            y_pred_shuffled = shuffled.predict_one(x_shuffled)
+
+        assert_predictions_are_close(y_pred, y_pred_shuffled)
 
         model.learn_one(x, y)
         shuffled.learn_one(x_shuffled, y)
@@ -149,7 +158,9 @@ def check_emerging_features(model, dataset):
         features = list(x.keys())
         random.shuffle(features)
         model.predict_one(x)
-        model.learn_one({i: x[i] for i in features[:-3]}, y)  # drop 3 features at random
+        model.learn_one(
+            {i: x[i] for i in features[:-3]}, y
+        )  # drop 3 features at random
 
 
 def check_disappearing_features(model, dataset):
@@ -199,9 +210,23 @@ def check_set_params_idempotent(model):
     assert len(model.__dict__) == len(model._set_params().__dict__)
 
 
-def check_init(model):
+def check_init_has_default_params_for_tests(model):
     params = model._unit_test_params()
     assert isinstance(model.__class__(**params), model.__class__)
+
+
+def check_init_default_params_are_not_mutable(model):
+    """Mutable parameters in signatures are discouraged, as explained in
+    https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments
+
+    We enforce immutable parameters by only allowing a certain list of basic types.
+
+    """
+
+    allowed = (type(None), float, int, tuple, str, bool, type)
+
+    for param in inspect.signature(model.__class__).parameters.values():
+        assert param.default is inspect._empty or isinstance(param.default, allowed)
 
 
 def check_doc(model):
@@ -212,6 +237,42 @@ def check_clone(model):
     clone = model.clone()
     assert id(clone) != id(model)
     assert dir(clone) == dir(model)
+
+
+def seed_params(params, seed):
+    """Looks for "seed" keys and sets the value."""
+
+    def is_class_param(param):
+        return (
+            isinstance(param, tuple)
+            and inspect.isclass(param[0])
+            and isinstance(param[1], dict)
+        )
+
+    if is_class_param(params):
+        return params[0], seed_params(params[1], seed)
+
+    if not isinstance(params, dict):
+        return params
+
+    return {
+        name: seed if name == "seed" else seed_params(param, seed)
+        for name, param in params.items()
+    }
+
+
+def check_seeding_is_idempotent(model, dataset):
+
+    params = model._get_params()
+    seeded_params = seed_params(params, seed=42)
+
+    A = model._set_params(seeded_params)
+    B = model._set_params(seeded_params)
+
+    for x, y in dataset:
+        assert A.predict_one(x) == B.predict_one(x)
+        A.learn_one(x, y)
+        B.learn_one(x, y)
 
 
 def wrapped_partial(func, *args, **kwargs):
@@ -251,7 +312,8 @@ def yield_checks(model):
     yield check_str
     yield check_tags
     yield check_set_params_idempotent
-    yield check_init
+    yield check_init_has_default_params_for_tests
+    yield check_init_default_params_are_not_mutable
     yield check_doc
     yield check_clone
 
@@ -267,12 +329,17 @@ def yield_checks(model):
     if hasattr(model, "debug_one"):
         checks.append(check_debug_one)
 
+    if model._is_stochastic:
+        checks.append(check_seeding_is_idempotent)
+
     # Classifier checks
     if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
         checks.append(allow_exception(check_predict_proba_one, NotImplementedError))
         # Specific checks for binary classifiers
         if not model._multiclass:
-            checks.append(allow_exception(check_predict_proba_one_binary, NotImplementedError))
+            checks.append(
+                allow_exception(check_predict_proba_one_binary, NotImplementedError)
+            )
 
     for check in checks:
         for dataset in yield_datasets(model):

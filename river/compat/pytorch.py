@@ -2,7 +2,6 @@ import torch
 
 from .. import base
 
-
 __all__ = ["PyTorch2RiverRegressor"]
 
 
