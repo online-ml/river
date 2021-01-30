@@ -135,15 +135,21 @@ def test_inc_vs_batch(inc_model, batch_model, bag, sk_model):
         inc_model.predict_proba_many(X).values,
     ):
         for sk_pred, river_pred in zip(sk_preds, river_preds):
-            assert river_pred == pytest.approx(1 - sk_pred) or river_pred == pytest.approx(sk_pred)
+            assert river_pred == pytest.approx(
+                1 - sk_pred
+            ) or river_pred == pytest.approx(sk_pred)
 
     # Assert river produce same results as sklearn using dense dataframe:
     for sk_preds, river_preds in zip(
         sk_model.predict_proba(bag.transform_many(X).sparse.to_dense()),
-        inc_model["model"].predict_proba_many(bag.transform_many(X).sparse.to_dense()).values,
+        inc_model["model"]
+        .predict_proba_many(bag.transform_many(X).sparse.to_dense())
+        .values,
     ):
         for sk_pred, river_pred in zip(sk_preds, river_preds):
-            assert river_pred == pytest.approx(1 - sk_pred) or river_pred == pytest.approx(sk_pred)
+            assert river_pred == pytest.approx(
+                1 - sk_pred
+            ) or river_pred == pytest.approx(sk_pred)
 
     # Test class methods
     if isinstance(sk_model, sk_naive_bayes.ComplementNB) or isinstance(

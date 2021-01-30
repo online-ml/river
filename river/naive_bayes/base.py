@@ -62,7 +62,9 @@ def one_hot_encode(y: pd.Series) -> pd.SparseDataFrame:
     data = np.empty_like(indices)
     data.fill(1)
     return pd.DataFrame.sparse.from_spmatrix(
-        sparse.csr_matrix((data, indices, indptr), shape=(y.shape[0], classes.shape[0])),
+        sparse.csr_matrix(
+            (data, indices, indptr), shape=(y.shape[0], classes.shape[0])
+        ),
         index=y.index,
         columns=[str(c) for c in classes],
     )
