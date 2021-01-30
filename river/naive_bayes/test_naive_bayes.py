@@ -1,12 +1,8 @@
-from river import naive_bayes
-from river import feature_extraction
-from river import compose
-
+import pandas as pd
+import pytest
 from sklearn import naive_bayes as sk_naive_bayes
 
-import pytest
-
-import pandas as pd
+from river import compose, feature_extraction, naive_bayes
 
 
 def yield_dataset():

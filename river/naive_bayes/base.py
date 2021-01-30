@@ -1,11 +1,9 @@
 import abc
 import math
 
-import pandas as pd
 import numpy as np
-
-from scipy import special
-from scipy import sparse
+import pandas as pd
+from scipy import sparse, special
 
 from river import base
 
