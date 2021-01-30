@@ -10,9 +10,7 @@ import typing
 import numpy as np
 from scipy import special
 
-from river import base
-from river import utils
-
+from river import base, utils
 
 __all__ = [
     "Absolute",
@@ -35,11 +33,11 @@ def clamp_proba(p):
     return max(min(p, 1 - 1e-15), 1e-15)
 
 
-class Loss(abc.ABC):
+class Loss(base.Base, abc.ABC):
     """Base class for all loss functions."""
 
-    def __str__(self):
-        return self.__class__.__name__
+    def __repr__(self):
+        return f"{self.__class__.__name__}({vars(self)})"
 
     @abc.abstractmethod
     def __call__(self, y_true, y_pred):
@@ -248,7 +246,9 @@ class CrossEntropy(MultiClassLoss):
 
         for label, proba in y_pred.items():
             if y_true == label:
-                total += self.class_weight.get(label, 1.0) * math.log(clamp_proba(proba))
+                total += self.class_weight.get(label, 1.0) * math.log(
+                    clamp_proba(proba)
+                )
 
         return -total
 

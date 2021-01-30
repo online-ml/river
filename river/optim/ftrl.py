@@ -4,7 +4,6 @@ import numpy as np
 
 from . import base
 
-
 __all__ = ["FTRLProximal"]
 
 
@@ -71,7 +70,9 @@ class FTRLProximal(base.Optimizer):
 
         for i in g:
             if abs(z[i]) > l1:
-                w[i] = -(((beta + n[i] ** 0.5) / alpha + l2) ** -1) * (z[i] - np.sign(z[i]) * l1)
+                w[i] = -(((beta + n[i] ** 0.5) / alpha + l2) ** -1) * (
+                    z[i] - np.sign(z[i]) * l1
+                )
 
         for i, gi in g.items():
             s = ((self.n[i] + gi ** 2) ** 0.5 - self.n[i] ** 0.5) / self.alpha

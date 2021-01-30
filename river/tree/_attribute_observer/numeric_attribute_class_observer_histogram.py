@@ -5,8 +5,7 @@ import functools
 from river import utils
 from river.utils.histogram import Bin  # noqa
 
-from .._attribute_test import NumericAttributeBinaryTest
-from .._attribute_test import AttributeSplitSuggestion
+from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
 from .attribute_observer import AttributeObserver
 
 
@@ -28,7 +27,9 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
         super().__init__()
         self.n_bins = n_bins
         self.n_splits = n_splits
-        self.hists = collections.defaultdict(functools.partial(utils.Histogram, max_bins=n_bins))
+        self.hists = collections.defaultdict(
+            functools.partial(utils.Histogram, max_bins=n_bins)
+        )
 
     def update(self, att_val, class_val, sample_weight):
         for _ in range(int(sample_weight)):
@@ -58,7 +59,9 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
         else:
             return (b.count * (att_val - b.left) / (b.right - b.left)) / total_weight
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(
+        self, criterion, pre_split_dist, att_idx, binary_only
+    ):
         best_suggestion = None
 
         low = min(h[0].right for h in self.hists.values())

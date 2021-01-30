@@ -1,7 +1,4 @@
-from river import datasets
-from river import linear_model
-from river import optim
-from river import preprocessing
+from river import datasets, linear_model, optim, preprocessing
 
 
 def test_set_params():

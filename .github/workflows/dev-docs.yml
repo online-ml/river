@@ -3,7 +3,7 @@ name: dev-docs
 on:
   push:
     branches:
-      - origin/master
+      - master
 
 jobs:
   ubuntu:

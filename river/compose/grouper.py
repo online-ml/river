@@ -5,7 +5,6 @@ import typing
 
 from river import base
 
-
 __all__ = ["Grouper"]
 
 
@@ -34,7 +33,9 @@ class Grouper(base.Transformer):
 
         self.transformer = transformer
         self.by = by if isinstance(by, list) else [by]
-        self.transformers = collections.defaultdict(functools.partial(copy.deepcopy, transformer))
+        self.transformers = collections.defaultdict(
+            functools.partial(copy.deepcopy, transformer)
+        )
 
     def _get_key(self, x):
         return "_".join(str(x[k]) for k in self.by)

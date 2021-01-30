@@ -2,9 +2,7 @@ import collections
 import copy
 import functools
 
-from river import base
-from river import linear_model
-
+from river import base, linear_model
 
 __all__ = ["OneVsOneClassifier"]
 

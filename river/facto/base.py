@@ -2,8 +2,7 @@ import abc
 import collections
 import numbers
 
-from .. import optim
-from .. import utils
+from .. import optim, utils
 
 
 class BaseFM:
@@ -28,8 +27,12 @@ class BaseFM:
         seed,
     ):
         self.n_factors = n_factors
-        self.weight_optimizer = optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
-        self.latent_optimizer = optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
+        self.weight_optimizer = (
+            optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
+        )
+        self.latent_optimizer = (
+            optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
+        )
         self.loss = loss
         self.sample_normalization = sample_normalization
         self.l1_weight = l1_weight
@@ -72,7 +75,9 @@ class BaseFM:
 
     def _ohe_cat_features(self, x):
         """One hot encodes string features considering them as categorical."""
-        return dict((f"{j}_{xj}", 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
+        return dict(
+            (f"{j}_{xj}", 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items()
+        )
 
     def _learn_one(self, x, y, sample_weight=1.0):
 
@@ -80,7 +85,9 @@ class BaseFM:
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
+        g_loss = utils.math.clamp(
+            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
+        )
 
         # Apply the sample weight
         g_loss *= sample_weight
@@ -91,7 +98,9 @@ class BaseFM:
 
         # Update the weights
         weights_gradient = self._calculate_weights_gradients(x, g_loss)
-        self.weights = self.weight_optimizer.update_after_pred(w=self.weights, g=weights_gradient)
+        self.weights = self.weight_optimizer.update_after_pred(
+            w=self.weights, g=weights_gradient
+        )
 
         # Update the latent weights
         self._update_latents(x, g_loss)

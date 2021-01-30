@@ -11,14 +11,18 @@ import typing
 __all__: typing.List[str] = []
 
 try:
-    from .river_to_sklearn import convert_river_to_sklearn
-    from .river_to_sklearn import River2SKLRegressor
-    from .river_to_sklearn import River2SKLClassifier
-    from .river_to_sklearn import River2SKLClusterer
-    from .river_to_sklearn import River2SKLTransformer
-    from .sklearn_to_river import convert_sklearn_to_river
-    from .sklearn_to_river import SKL2RiverClassifier
-    from .sklearn_to_river import SKL2RiverRegressor
+    from .river_to_sklearn import (
+        River2SKLClassifier,
+        River2SKLClusterer,
+        River2SKLRegressor,
+        River2SKLTransformer,
+        convert_river_to_sklearn,
+    )
+    from .sklearn_to_river import (
+        SKL2RiverClassifier,
+        SKL2RiverRegressor,
+        convert_sklearn_to_river,
+    )
 
     __all__ += [
         "convert_river_to_sklearn",
