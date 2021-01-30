@@ -41,9 +41,8 @@ class D3(DriftDetector):
     --------
     >>> from river import synth
     >>> from river.drift import D3
-    >>> np.random.seed(12345)
 
-    >>> d3 = D3()
+    >>> d3 = D3(seed=12345)
 
     >>> # Simulate a data stream
     >>> data_stream = synth.Hyperplane(seed=42, n_features=10, mag_change=0.5)
