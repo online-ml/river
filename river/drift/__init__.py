@@ -16,4 +16,4 @@ from .hddm_w import HDDM_W
 from .kswin import KSWIN
 from .page_hinkley import PageHinkley
 
-__all__ = ["ADWIN", "DDM", "EDDM", "PageHinkley", "HDDM_A", "HDDM_W", "KSWIN", "D3"]
+__all__ = ["ADWIN", "D3", "DDM", "EDDM", "PageHinkley", "HDDM_A", "HDDM_W", "KSWIN"]
