@@ -56,6 +56,7 @@ class D3(DriftDetector):
     ...     in_drift, in_warning = d3.update(list(x.values()))
     ...     if in_drift:
     ...         print(f"Change detected at index {i}")
+    ...     i += 1
     Change detected at index 352
 
     References
