@@ -51,6 +51,7 @@ class D3(DriftDetector):
     >>> data_stream = synth.Hyperplane(seed=42, n_features=10, mag_change=0.5)
 
     >>> # Update drift detector and verify if change is detected
+    >>> i = 0
     >>> for x, y in data_stream.take(500):
     ...     in_drift, in_warning = d3.update(list(x.values()))
     ...     if in_drift:
