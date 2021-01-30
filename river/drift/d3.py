@@ -1,8 +1,7 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import StratifiedKFold
 
+from river import metrics
 from river.base import DriftDetector
 
 
@@ -52,18 +51,20 @@ class D3(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> i = 0
-    >>> for x, y in data_stream.take(500):
-    ...     in_drift, in_warning = d3.update(list(x.values()))
+    >>> for x, y in data_stream.take(250):
+    ...     in_drift, in_warning = d3.update(x)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}")
     ...     i += 1
-    Change detected at index 352
+    Change detected at index 242
 
     References
     ----------
     [^1]: Ömer Gözüaçık, Alican Büyükçakır, Hamed Bonab, Fazli Can: Unsupervised concept drift detection with a discriminative classifier. CIKM 2019: 2365-2368
 
     """
+
+    _DISC_CLF_TRAINING_DATA_PERCENTAGE = 0.7
 
     def __init__(
         self,
@@ -74,17 +75,18 @@ class D3(DriftDetector):
         seed=None,
     ):
         super().__init__()
-        self.old_data_window_size = old_data_window_size
-        self.new_data_percentage = new_data_percentage
         self.auc_threshold = auc_threshold
+        self.data_sliding_window = None
         self.discriminative_classifier = discriminative_classifier
-        self.seed = seed
+        self.new_data_percentage = new_data_percentage
+        self.feature_names = None
+        self.old_data_window_size = old_data_window_size
+        self.sliding_window_index = 0
         self.new_data_window_size = int(
             self.old_data_window_size * self.new_data_percentage
         )
         self.full_window_size = self.old_data_window_size + self.new_data_window_size
-        self.data_sliding_window = None
-        self.sliding_window_index = 0
+        np.random.seed(seed)
         super().reset()
 
     def _is_sliding_window_full(self):
@@ -95,22 +97,45 @@ class D3(DriftDetector):
 
     def _discriminative_drift_detection(self, old_data, new_data):
         """Check if old and new data are seperable"""
-        slack_labels = np.concatenate(
-            (np.zeros(self.new_data_window_size), np.ones(self.old_data_window_size)),
+        new_train_data_size = int(
+            D3._DISC_CLF_TRAINING_DATA_PERCENTAGE * self.new_data_window_size
+        )
+        old_train_data_size = int(
+            D3._DISC_CLF_TRAINING_DATA_PERCENTAGE * self.old_data_window_size
+        )
+        new_data_train_idx = np.random.randint(
+            self.new_data_window_size, size=new_train_data_size
+        )
+        old_data_train_idx = np.random.randint(
+            self.old_data_window_size, size=old_train_data_size
+        )
+        new_data_labels = np.zeros(self.new_data_window_size)
+        old_data_labels = np.ones(self.old_data_window_size)
+        train_data = np.concatenate(
+            (new_data[new_data_train_idx], old_data[old_data_train_idx]), axis=0
+        )
+        test_data = np.concatenate(
+            (new_data[~new_data_train_idx], old_data[~old_data_train_idx]), axis=0
+        )
+        train_labels = np.concatenate(
+            (new_data_labels[new_data_train_idx], old_data_labels[old_data_train_idx]),
             axis=0,
         )
-        combined_data = np.concatenate((new_data, old_data), axis=0)
+        test_labels = np.concatenate(
+            (
+                new_data_labels[~new_data_train_idx],
+                old_data_labels[~old_data_train_idx],
+            ),
+            axis=0,
+        )
         if self.discriminative_classifier is None:
             self.discriminative_classifier = LogisticRegression(solver="liblinear")
-        predictions = np.zeros(slack_labels.shape)
-        skf = StratifiedKFold(n_splits=2, shuffle=True, random_state=self.seed)
-        for train_index, test_index in skf.split(combined_data, slack_labels):
-            X_train, X_test = combined_data[train_index], combined_data[test_index]
-            y_train = slack_labels[train_index]
-            self.discriminative_classifier.fit(X_train, y_train)
-            probs = self.discriminative_classifier.predict_proba(X_test)[:, 1]
-            predictions[test_index] = probs
-        auc_score = roc_auc_score(slack_labels, predictions)
+        self.discriminative_classifier.fit(train_data, train_labels)
+        predictions = self.discriminative_classifier.predict_proba(test_data)[:, 1]
+        auc = metrics.ROCAUC()
+        for yt, yp in zip(test_labels, predictions):
+            auc.update(bool(yt), yp)
+        auc_score = auc.get()
         if (auc_score > self.auc_threshold) or (auc_score < self.auc_threshold - 0.5):
             return True
         return False
@@ -127,14 +152,21 @@ class D3(DriftDetector):
         Parameters
         ----------
         sample
-            An instance (N,1) from the data stream where N is the number of features.
+            An instance from the data stream (dict) having N items (number of features).
 
         """
         if self._in_concept_change:
             self._in_concept_change = False
 
+        if not self.feature_names:
+            self.feature_names = sample.keys()
+
+        sample = [sample[feature] for feature in sorted(self.feature_names)]
+
         if self.data_sliding_window is None:
-            self.data_sliding_window = np.zeros((self.full_window_size, len(sample)))
+            self.data_sliding_window = np.zeros(
+                (self.full_window_size, len(self.feature_names))
+            )
 
         if not self._is_sliding_window_full():
             self.data_sliding_window[self.sliding_window_index] = sample

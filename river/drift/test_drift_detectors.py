@@ -30,7 +30,7 @@ data_stream_3 = np.concatenate(
 ).astype(int)
 
 stream_generator = synth.Hyperplane(seed=42, n_features=10, mag_change=0.5)
-data_stream_4 = [list(sample[0].values()) for sample in stream_generator.take(500)]
+data_stream_4 = [x for x, _ in stream_generator.take(250)]
 
 
 def test_adwin():
@@ -42,7 +42,7 @@ def test_adwin():
 
 def test_d3():
     detected_indices = perform_test(D3(seed=12345), data_stream_4)
-    expected_indices = [352]
+    expected_indices = [242]
 
     assert detected_indices == expected_indices
 
