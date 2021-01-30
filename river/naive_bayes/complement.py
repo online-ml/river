@@ -1,12 +1,11 @@
 import collections
 import math
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+from scipy import sparse
 
 from river.base import tags
-
-from scipy import sparse
 
 from . import base
 

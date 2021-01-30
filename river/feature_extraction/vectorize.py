@@ -8,11 +8,9 @@ import typing
 import unicodedata
 
 import pandas as pd
-
-from river import base
-
 from scipy import sparse
 
+from river import base
 
 __all__ = ["BagOfWords", "TFIDF"]
 
