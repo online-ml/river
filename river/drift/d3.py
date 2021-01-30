@@ -1,9 +1,9 @@
 import numpy as np
-
-from river.base import DriftDetector
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
+
+from river.base import DriftDetector
 
 
 class D3(DriftDetector):
@@ -45,7 +45,7 @@ class D3(DriftDetector):
     >>> from river import synth
     >>> from river.drift import D3
 
-    >>> d3 = D3()
+    >>> d3 = D3(seed=12345)
 
     >>> # Simulate a data stream
     >>> data_stream = synth.Hyperplane(seed=42, n_features=10, mag_change=0.5)
