@@ -7,7 +7,6 @@ import re
 import typing
 import unicodedata
 
-import numpy as np
 import pandas as pd
 
 from river import base
