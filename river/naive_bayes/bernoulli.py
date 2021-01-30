@@ -297,9 +297,7 @@ class BernoulliNB(base.BaseNB):
         columns, classes = X.columns, y.columns
         y = sparse.csc_matrix(y.sparse.to_coo()).T
 
-        self.class_counts.update(
-            {c: count.item() for c, count in zip(classes, y.sum(axis=1))}
-        )
+        self.class_counts.update({c: count.item() for c, count in zip(classes, y.sum(axis=1))})
 
         if hasattr(X, "sparse"):
             X = sparse.csr_matrix(X.sparse.to_coo())
@@ -315,11 +313,7 @@ class BernoulliNB(base.BaseNB):
 
             if sparse.issparse(fc):
 
-                counts = {
-                    c: {
-                        columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)
-                    }
-                }
+                counts = {c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}}
 
             else:
 
@@ -348,8 +342,7 @@ class BernoulliNB(base.BaseNB):
 
         """
         smooth_fc = np.log(
-            base.from_dict(self.feature_counts)[self.class_counts].T.fillna(0)
-            + self.alpha
+            base.from_dict(self.feature_counts)[self.class_counts].T.fillna(0) + self.alpha
         )[columns]
 
         smooth_cc = np.log(base.from_dict(self.class_counts) + self.alpha * 2)
@@ -387,8 +380,7 @@ class BernoulliNB(base.BaseNB):
         neg_p = np.log(1 - np.exp(flp))
 
         return pd.DataFrame(
-            X @ (flp - neg_p).T
-            + (np.log(self.p_class_many()) + neg_p.sum(axis=1).T).values,
+            X @ (flp - neg_p).T + (np.log(self.p_class_many()) + neg_p.sum(axis=1).T).values,
             index=index,
             columns=self.class_counts.keys(),
         )
