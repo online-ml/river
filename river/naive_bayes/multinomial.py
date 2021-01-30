@@ -17,8 +17,10 @@ __all__ = ["MultinomialNB"]
 class MultinomialNB(base.BaseNB):
     """Naive Bayes classifier for multinomial models.
 
-    This estimator supports learning with mini-batches. The input vector has to contain positive
-    values, such as counts or TF-IDF values.
+    Multinomial Naive Bayes model learns from occurrences between features such as word counting
+    and discrete classes. The input vector must contain positive values, such as
+    counts or TF-IDF values.
+
 
     Parameters
     ----------
@@ -48,10 +50,12 @@ class MultinomialNB(base.BaseNB):
     ...     ('Chinese Macao', 'yes'),
     ...     ('Tokyo Japan Chinese', 'no')
     ... ]
+
     >>> model = compose.Pipeline(
     ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
     ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
     ... )
+
     >>> for sentence, label in docs:
     ...     model = model.learn_one(sentence, label)
 
@@ -187,6 +191,13 @@ class MultinomialNB(base.BaseNB):
         return {tags.POSITIVE_INPUT}
 
     def learn_one(self, x, y):
+        """Updates the model with a single observation.
+
+        Args:
+            x: Dictionary of term frequencies.
+            y: Target class.
+
+        """
         self.class_counts.update((y,))
 
         for f, frequency in x.items():
@@ -208,10 +219,24 @@ class MultinomialNB(base.BaseNB):
         den = self.class_totals[c] + self.alpha * self.n_terms
         return num / den
 
-    def p_class(self, c):
+    def p_class(self, c) -> float:
         return self.class_counts[c] / sum(self.class_counts.values())
 
+    def p_class_many(self) -> pd.DataFrame:
+        return base.from_dict(self.class_counts).T[self.class_counts] / sum(
+            self.class_counts.values()
+        )
+
     def joint_log_likelihood(self, x):
+        """Computes the joint log likelihood of input features.
+
+        Args:
+            x: Dictionary of term frequencies.
+
+        Returns:
+            Mapping between classes and joint log likelihood.
+
+        """
         return {
             c: math.log(self.p_class(c))
             + sum(
@@ -222,6 +247,13 @@ class MultinomialNB(base.BaseNB):
         }
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
+        """Updates the model with a term-frequency or TF-IDF pandas dataframe.
+
+        Args:
+            X: Term-frequency or TF-IDF pandas dataframe.
+            y: Target classes.
+
+        """
         y = base.one_hot_encode(y)
         columns, classes = X.columns, y.columns
         y = sparse.csc_matrix(y.sparse.to_coo()).T
@@ -242,14 +274,11 @@ class MultinomialNB(base.BaseNB):
         # Update feature counts by slicing the sparse matrix per column.
         # Each column correspond to a class.
         for c, i in zip(classes, range(fc.shape[0])):
-            if sparse.issparse(fc):
-                counts = {
-                    c: {
-                        columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)
-                    }
-                }
-            else:
-                counts = {c: {f: count for f, count in zip(columns, fc[i])}}
+
+            counts = {
+                c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}
+            }
+
             # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
             # [{token_1: {classe_i: f_1}},.. {token_n: {class_i: f_n}}]
             for dict_count in [
@@ -262,42 +291,44 @@ class MultinomialNB(base.BaseNB):
 
         return self
 
-    def p_class_many(self) -> pd.DataFrame:
-        return base.from_dict(self.class_counts).T[self.class_counts] / sum(
-            self.class_counts.values()
+    def _feature_log_prob(
+        self, columns: list, known: list, unknown: list
+    ) -> pd.DataFrame:
+        """Compute log probabilities of input features.
+
+        Args:
+            columns: List of input features.
+            known: List of input features that are part of the vocabulary.
+            unknown: List of input features that are not part the vocabulary.
+
+        Returns:
+            Log probabilities of input features.
+
+        """
+        smooth_fc = np.log(
+            base.from_dict(self.feature_counts).fillna(0).T[known] + self.alpha
         )
-
-    def _feature_log_prob(self, known: list, unknown: list) -> pd.DataFrame:
-        if known:
-            smooth_fc = (
-                base.from_dict(
-                    {
-                        f: {c: count[c] if c in count else 0 for c in self.class_totals}
-                        for f, count in self.feature_counts.items()
-                        if f in known
-                    }
-                )[self.class_totals].T
-                + self.alpha
-            )
-        else:
-            smooth_fc = pd.DataFrame(index=self.class_totals)
-
-        if unknown:
-            smooth_fc[unknown] = self.alpha
-
-        smooth_fc = np.log(smooth_fc)
+        smooth_fc[unknown] = np.log(self.alpha)
 
         smooth_cc = np.log(
             base.from_dict(self.class_totals) + self.alpha * self.n_terms
         )
 
-        return smooth_fc.subtract(smooth_cc.values, axis="rows")
+        return smooth_fc.subtract(smooth_cc.values, axis="rows")[columns].T
 
     def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        columns = X.columns
-        index = X.index
+        """Computes the joint log likelihood of input features.
 
+        Args:
+            X: Term-frequency or TF-IDF pandas dataframe.
+
+        Returns:
+            Input samples joint log likelihood.
+
+        """
+        index, columns = X.index, X.columns
         known, unknown = [], []
+
         for f in columns:
             if f in self.feature_counts:
                 known.append(f)
@@ -307,7 +338,9 @@ class MultinomialNB(base.BaseNB):
         if hasattr(X, "sparse"):
             X = sparse.csr_matrix(X.sparse.to_coo())
 
-        jll = X @ self._feature_log_prob(known, unknown)[columns].T
-        jll += np.log(self.p_class_many()).values
-
-        return pd.DataFrame(jll, index=index, columns=self.class_totals.keys())
+        return pd.DataFrame(
+            X @ self._feature_log_prob(columns=columns, known=known, unknown=unknown)
+            + np.log(self.p_class_many()).values,
+            index=index,
+            columns=self.class_totals.keys(),
+        )

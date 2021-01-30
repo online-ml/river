@@ -165,11 +165,6 @@ class VectorizerMixin:
             x = step(x)
         return x
 
-    def process_text_many(self, X: pd.Series):
-        for step in self.processing_steps:
-            X = X.apply(step)
-        return X
-
     def _more_tags(self):
         if self.on is None:
             return {base.tags.TEXT_INPUT}
@@ -180,7 +175,8 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     """Counts tokens in sentences.
 
     This transformer can be used to counts tokens in a given piece of text. It takes care of
-    normalizing the text before tokenizing it.
+    normalizing the text before tokenizing it. In mini-batch settings, this transformers
+    allows to convert a series of pandas of text into sparse dataframe.
 
     Note that the parameters are identical to those of `feature_extraction.TFIDF`.
 
@@ -268,23 +264,29 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     ('in', 'the') 1
     ('the', 'morning') 1
 
+    `BagOfWord` allows to build a term-frequency pandas sparse dataframe with the `transform_many' method.
+
+    >>> import pandas as pd
+    >>> X = pd.Series(['Hello world', 'Hello River'], index = ['river', 'rocks'])
+    >>> bow = fx.BagOfWords()
+    >>> bow.transform_many(X=X)
+           hello  world  river
+    river      1      1      0
+    rocks      1      0      1
+
     """
 
     def transform_one(self, x):
         return collections.Counter(self.process_text(x))
 
-    def transform_many(self, X: pd.Series):
-        """Transform pandas series of string."""
+    def transform_many(self, X: pd.Series) -> pd.SparseDataFrame:
+        """Transform pandas series of string into term-frequency pandas sparse dataframe."""
         indptr, indices, data = [0], [], []
-
         index = {}
 
         for d in X:
-
             for t, f in collections.Counter(self.process_text(d)).items():
-
                 indices.append(index.setdefault(t, len(index)))
-
                 data.append(f)
 
             indptr.append(len(data))

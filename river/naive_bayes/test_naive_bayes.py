@@ -76,6 +76,7 @@ def test_inc_vs_batch(inc_model, batch_model, bag, sk_model):
     Assert river's naive_bayes module produce the same results as sklearn's naive_bayes module.
 
     """
+    assert inc_model.predict_proba_one("not fitted yet") == {}
 
     for x, y in yield_dataset():
         inc_model = inc_model.learn_one(x, y)
@@ -117,6 +118,7 @@ def test_inc_vs_batch(inc_model, batch_model, bag, sk_model):
     if isinstance(sk_model, sk_naive_bayes.ComplementNB):
         assert inc_model["model"].feature_totals == batch_model["model"].feature_totals
 
+    # Assert batch and incremental models give same results
     for x, x_batch in zip(yield_unseen_data(), yield_batch_unseen_data()):
 
         assert inc_model.predict_proba_one(x)["yes"] == pytest.approx(
@@ -127,7 +129,7 @@ def test_inc_vs_batch(inc_model, batch_model, bag, sk_model):
             batch_model.predict_proba_many(x_batch)["no"][0]
         )
 
-    # Assert river produce same results as sklearn:
+    # Assert river produce same results as sklearn using sparse dataframe:
     for sk_preds, river_preds in zip(
         sk_model.predict_proba(bag.transform_many(X)),
         inc_model.predict_proba_many(X).values,
@@ -136,3 +138,23 @@ def test_inc_vs_batch(inc_model, batch_model, bag, sk_model):
             assert river_pred == pytest.approx(
                 1 - sk_pred
             ) or river_pred == pytest.approx(sk_pred)
+
+    # Assert river produce same results as sklearn using dense dataframe:
+    for sk_preds, river_preds in zip(
+        sk_model.predict_proba(bag.transform_many(X).sparse.to_dense()),
+        inc_model["model"]
+        .predict_proba_many(bag.transform_many(X).sparse.to_dense())
+        .values,
+    ):
+        for sk_pred, river_pred in zip(sk_preds, river_preds):
+            assert river_pred == pytest.approx(
+                1 - sk_pred
+            ) or river_pred == pytest.approx(sk_pred)
+
+    # Test class methods
+    if isinstance(sk_model, sk_naive_bayes.ComplementNB) or isinstance(
+        sk_model, sk_naive_bayes.MultinomialNB
+    ):
+        assert inc_model["model"]._more_tags() == {"positive input"}
+
+    assert inc_model["model"]._multiclass

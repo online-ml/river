@@ -17,8 +17,9 @@ __all__ = ["ComplementNB"]
 class ComplementNB(base.BaseNB):
     """Naive Bayes classifier for multinomial models.
 
-    This estimator supports learning with mini-batches. The input vector has to contain positive
-    values, such as counts or TF-IDF values.
+    Complement Naive Bayes model learns from occurrences between features such as word counting
+    and discrete classes. ComplementNB is suitable for imbalance dataset.
+    The input vector must contain positive values, such as counts or TF-IDF values.
 
     Parameters
     ----------
@@ -81,6 +82,10 @@ class ComplementNB(base.BaseNB):
     >>> model['nb'].p_class('butcher') == 1 / 3
     True
 
+    >>> model['nb'].p_class_many()
+        butcher    health
+    0  0.333333  0.666667
+
     >>> model.predict_proba_one('food job meat')
     {'butcher': 0.05903106445228467, 'health': 0.9409689355477155}
 
@@ -118,6 +123,16 @@ class ComplementNB(base.BaseNB):
         return {tags.POSITIVE_INPUT}
 
     def learn_one(self, x, y):
+        """Updates the model with a single observation.
+
+        Args:
+            x: Dictionary of term frequencies.
+            y: Target class.
+
+        Returns:
+            self
+
+        """
         self.class_counts.update((y,))
 
         for f, frequency in x.items():
@@ -130,13 +145,21 @@ class ComplementNB(base.BaseNB):
     def p_class(self, c):
         return self.class_counts[c] / sum(self.class_counts.values())
 
-    def p_class_many(self):
+    def p_class_many(self) -> pd.DataFrame:
         return base.from_dict(self.class_counts).T[self.class_counts] / sum(
             self.class_counts.values()
         )
 
     def joint_log_likelihood(self, x):
-        """"""
+        """Computes the joint log likelihood of input features.
+
+        Args:
+            x: Dictionary of term frequencies.
+
+        Returns:
+            Mapping between classes and joint log likelihood.
+
+        """
         cc = {
             c: {
                 f: self.feature_totals[f] + self.alpha - frequency.get(c, 0)
@@ -157,7 +180,13 @@ class ComplementNB(base.BaseNB):
         }
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        """Update model using mini-batches."""
+        """Updates the model with a term-frequency or TF-IDF pandas dataframe.
+
+        Args:
+            X: Term-frequency or TF-IDF pandas dataframe.
+            y: Target classes.
+
+        """
         y = base.one_hot_encode(y)
         columns, classes = X.columns, y.columns
         y = sparse.csc_matrix(y.sparse.to_coo()).T
@@ -186,14 +215,9 @@ class ComplementNB(base.BaseNB):
         # Each column correspond to a class.
         for c, i in zip(classes, range(fc.shape[0])):
 
-            if sparse.issparse(fc):
-                counts = {
-                    c: {
-                        columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)
-                    }
-                }
-            else:
-                counts = {c: {f: count for f, count in zip(columns, fc[i])}}
+            counts = {
+                c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}
+            }
 
             # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
             # [{token_1: {classe_i: f_1}},.. {token_n: {class_i: f_n}}]
@@ -207,8 +231,17 @@ class ComplementNB(base.BaseNB):
 
         return self
 
-    def _feature_log_prob(self, unknown: list, columns: list):
-        """"""
+    def _feature_log_prob(self, unknown: list, columns: list) -> pd.DataFrame:
+        """Compute log probabilities of input features.
+
+        Args:
+            unknown: List of features that are not part the vocabulary.
+            columns: List of input features.
+
+        Returns:
+            Log probabilities of input features.
+
+        """
         cc = (
             base.from_dict(self.feature_totals).squeeze().T
             + self.alpha
@@ -221,8 +254,16 @@ class ComplementNB(base.BaseNB):
 
         return -np.log(cc[columns].T / sum_cc)
 
-    def joint_log_likelihood_many(self, X: pd.DataFrame):
-        """Test"""
+    def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Computes the joint log likelihood of input features.
+
+        Args:
+            X: Term-frequency or TF-IDF pandas dataframe.
+
+        Returns:
+            Input samples joint log likelihood.
+
+        """
         index, columns = X.index, X.columns
         unknown = [x for x in columns if x not in self.feature_counts]
 
