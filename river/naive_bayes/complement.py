@@ -15,23 +15,23 @@ __all__ = ["ComplementNB"]
 class ComplementNB(base.BaseNB):
     """Naive Bayes classifier for multinomial models.
 
-    Complement Naive Bayes model learns from occurrences between features such as word counting
+    Complement Naive Bayes model learns from occurrences between features such as word counts
     and discrete classes. ComplementNB is suitable for imbalance dataset.
     The input vector must contain positive values, such as counts or TF-IDF values.
 
     Parameters
     ----------
-    alpha
-        Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+        alpha
+            Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
 
     Attributes
     ----------
-    class_dist : proba.Multinomial
-        Class prior probability distribution.
-    feature_counts : collections.defaultdict
-        Total frequencies per feature and class.
-    class_totals : collections.Counter
-        Total frequencies per class.
+        class_dist : proba.Multinomial
+            Class prior probability distribution.
+        feature_counts : collections.defaultdict
+            Total frequencies per feature and class.
+        class_totals : collections.Counter
+            Total frequencies per class.
 
     Examples
     --------
@@ -123,11 +123,15 @@ class ComplementNB(base.BaseNB):
     def learn_one(self, x, y):
         """Updates the model with a single observation.
 
-        Args:
-            x: Dictionary of term frequencies.
-            y: Target class.
+        Parameters
+        ----------
+            x
+                Dictionary of term frequencies.
+            y
+                Target class.
 
-        Returns:
+        Returns
+        --------
             self
 
         """
@@ -151,10 +155,13 @@ class ComplementNB(base.BaseNB):
     def joint_log_likelihood(self, x):
         """Computes the joint log likelihood of input features.
 
-        Args:
-            x: Dictionary of term frequencies.
+        Parameters
+        ----------
+            x
+                Dictionary of term frequencies.
 
-        Returns:
+        Returns
+        --------
             Mapping between classes and joint log likelihood.
 
         """
@@ -180,9 +187,16 @@ class ComplementNB(base.BaseNB):
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
         """Updates the model with a term-frequency or TF-IDF pandas dataframe.
 
-        Args:
-            X: Term-frequency or TF-IDF pandas dataframe.
-            y: Target classes.
+        Parameters
+        ----------
+            X
+                Term-frequency or TF-IDF pandas dataframe.
+            y
+                Target classes.
+
+        Returns
+        --------
+            self
 
         """
         y = base.one_hot_encode(y)
@@ -232,11 +246,15 @@ class ComplementNB(base.BaseNB):
     def _feature_log_prob(self, unknown: list, columns: list) -> pd.DataFrame:
         """Compute log probabilities of input features.
 
-        Args:
-            unknown: List of features that are not part the vocabulary.
-            columns: List of input features.
+        Parameters
+        ----------
+            unknown
+                List of features that are not part the vocabulary.
+            columns
+                List of input features.
 
-        Returns:
+        Returns
+        --------
             Log probabilities of input features.
 
         """
@@ -255,15 +273,21 @@ class ComplementNB(base.BaseNB):
     def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Computes the joint log likelihood of input features.
 
-        Args:
-            X: Term-frequency or TF-IDF pandas dataframe.
+        Parameters
+        ----------
+            X
+                Term-frequency or TF-IDF pandas dataframe.
 
-        Returns:
+        Returns
+        --------
             Input samples joint log likelihood.
 
         """
         index, columns = X.index, X.columns
         unknown = [x for x in columns if x not in self.feature_counts]
+
+        if not self.class_counts or not self.feature_counts:
+            return pd.DataFrame(index=index)
 
         if hasattr(X, "sparse"):
             X = sparse.csr_matrix(X.sparse.to_coo())

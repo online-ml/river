@@ -73,6 +73,15 @@ def test_inc_vs_batch(inc_model, batch_model, bag, sk_model):
 
     """
     assert inc_model.predict_proba_one("not fitted yet") == {}
+    assert inc_model.predict_one("not fitted yet") is None
+
+    assert batch_model.predict_proba_many(
+        pd.Series(["new", "unseen"], index=["river", "rocks"])
+    ).equals(pd.DataFrame(index=["river", "rocks"]))
+
+    assert batch_model.predict_many(
+        pd.Series(["new", "unseen"], index=["river", "rocks"])
+    ).equals(pd.DataFrame(index=["river", "rocks"]))
 
     for x, y in yield_dataset():
         inc_model = inc_model.learn_one(x, y)
