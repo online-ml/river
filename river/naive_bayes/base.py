@@ -50,11 +50,12 @@ class BaseNB(base.Classifier):
 
 def from_dict(data: dict) -> pd.DataFrame:
     """Convert a dict into a pandas dataframe.
+    This function is faster than pd.from_dict (01/02/2021).
 
     Parameters
     ----------
-        data
-            Input data as dict.
+    data
+        Input data as dict.
 
     Returns
     --------
