@@ -188,13 +188,16 @@ class MultinomialNB(base.BaseNB):
     def learn_one(self, x, y):
         """Updates the model with a single observation.
 
-        Args:
-            x: Dictionary of term frequencies.
-            y: Target class.
+        Parameters
+        ----------
+        x
+            Dictionary of term frequencies.
+        y
+            Target class.
 
         Returns
         --------
-            self
+        self
 
         """
         self.class_counts.update((y,))
@@ -229,12 +232,14 @@ class MultinomialNB(base.BaseNB):
     def joint_log_likelihood(self, x):
         """Computes the joint log likelihood of input features.
 
-        Args:
-            x: Dictionary of term frequencies.
+        Parameters
+        ----------
+        x
+            Dictionary of term frequencies.
 
         Returns
         --------
-            Mapping between classes and joint log likelihood.
+        Mapping between classes and joint log likelihood.
 
         """
         return {
@@ -249,15 +254,16 @@ class MultinomialNB(base.BaseNB):
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
         """Updates the model with a term-frequency or TF-IDF pandas dataframe.
 
-        Args:
-            X
-                Term-frequency or TF-IDF pandas dataframe.
-            y
-                Target classes.
+        Parameters
+        ----------
+        X
+            Term-frequency or TF-IDF pandas dataframe.
+        y
+            Target classes.
 
         Returns
         --------
-            self
+        self
 
         """
         y = base.one_hot_encode(y)
@@ -302,14 +308,18 @@ class MultinomialNB(base.BaseNB):
     ) -> pd.DataFrame:
         """Compute log probabilities of input features.
 
-        Args:
-            columns: List of input features.
-            known: List of input features that are part of the vocabulary.
-            unknown: List of input features that are not part the vocabulary.
+        Parameters
+        ----------
+        columns
+            List of input features.
+        known
+            List of input features that are part of the vocabulary.
+        unknown
+            List of input features that are not part the vocabulary.
 
         Returns
         --------
-            Log probabilities of input features.
+        Log probabilities of input features.
 
         """
         smooth_fc = np.log(
@@ -326,13 +336,14 @@ class MultinomialNB(base.BaseNB):
     def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Computes the joint log likelihood of input features.
 
-        Args:
-            X
-                Term-frequency or TF-IDF pandas dataframe.
+        Parameters
+        ----------
+        X
+            Term-frequency or TF-IDF pandas dataframe.
 
         Returns
         --------
-            Input samples joint log likelihood.
+        Input samples joint log likelihood.
 
         """
         index, columns = X.index, X.columns

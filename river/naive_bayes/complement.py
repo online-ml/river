@@ -21,17 +21,17 @@ class ComplementNB(base.BaseNB):
 
     Parameters
     ----------
-        alpha
-            Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+    alpha
+        Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
 
     Attributes
     ----------
-        class_dist : proba.Multinomial
-            Class prior probability distribution.
-        feature_counts : collections.defaultdict
-            Total frequencies per feature and class.
-        class_totals : collections.Counter
-            Total frequencies per class.
+    class_dist : proba.Multinomial
+        Class prior probability distribution.
+    feature_counts : collections.defaultdict
+        Total frequencies per feature and class.
+    class_totals : collections.Counter
+        Total frequencies per class.
 
     Examples
     --------
@@ -125,14 +125,14 @@ class ComplementNB(base.BaseNB):
 
         Parameters
         ----------
-            x
-                Dictionary of term frequencies.
-            y
-                Target class.
+        x
+            Dictionary of term frequencies.
+        y
+            Target class.
 
         Returns
         --------
-            self
+        self
 
         """
         self.class_counts.update((y,))
@@ -157,12 +157,12 @@ class ComplementNB(base.BaseNB):
 
         Parameters
         ----------
-            x
-                Dictionary of term frequencies.
+        x
+            Dictionary of term frequencies.
 
         Returns
         --------
-            Mapping between classes and joint log likelihood.
+        Mapping between classes and joint log likelihood.
 
         """
         cc = {
@@ -189,14 +189,14 @@ class ComplementNB(base.BaseNB):
 
         Parameters
         ----------
-            X
-                Term-frequency or TF-IDF pandas dataframe.
-            y
-                Target classes.
+        X
+            Term-frequency or TF-IDF pandas dataframe.
+        y
+            Target classes.
 
         Returns
         --------
-            self
+        self
 
         """
         y = base.one_hot_encode(y)
@@ -248,14 +248,14 @@ class ComplementNB(base.BaseNB):
 
         Parameters
         ----------
-            unknown
-                List of features that are not part the vocabulary.
-            columns
-                List of input features.
+        unknown
+            List of features that are not part the vocabulary.
+        columns
+            List of input features.
 
         Returns
         --------
-            Log probabilities of input features.
+        Log probabilities of input features.
 
         """
         cc = (
@@ -275,12 +275,12 @@ class ComplementNB(base.BaseNB):
 
         Parameters
         ----------
-            X
-                Term-frequency or TF-IDF pandas dataframe.
+        X
+            Term-frequency or TF-IDF pandas dataframe.
 
         Returns
         --------
-            Input samples joint log likelihood.
+        Input samples joint log likelihood.
 
         """
         index, columns = X.index, X.columns
