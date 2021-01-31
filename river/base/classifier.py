@@ -91,7 +91,7 @@ class Classifier(estimator.Estimator):
 
         Parameters
         ----------
-        x
+        X
             A DataFrame of features.
 
         Returns
@@ -99,7 +99,10 @@ class Classifier(estimator.Estimator):
         Series of predicted labels.
 
         """
-        return self.predict_proba_many(X).idxmax(axis="columns")
+        y_pred = self.predict_proba_many(X)
+        if y_pred.empty:
+            return y_pred
+        return y_pred.idxmax(axis="columns")
 
     @property
     def _multiclass(self):

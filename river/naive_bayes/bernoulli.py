@@ -13,23 +13,23 @@ __all__ = ["BernoulliNB"]
 class BernoulliNB(base.BaseNB):
     """Bernoulli Naive Bayes.
 
-    Bernouilli Naive Bayes model learns from occurrences between features such as word counting
-    and discrete classes. The input vector must contain positive values, such as
+    Bernoulli Naive Bayes model learns from occurrences between features such as word
+    counts and discrete classes. The input vector must contain positive values, such as
     counts or TF-IDF values.
 
     Parameters
     ----------
     alpha
-    Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+        Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
     true_threshold
-    Threshold for binarizing (mapping to booleans) features.
+        Threshold for binarizing (mapping to booleans) features.
 
     Attributes
     ----------
     class_counts : collections.Counter
-    Number of times each class has been seen.
+        Number of times each class has been seen.
     feature_counts : collections.defaultdict
-    Total frequencies per feature and class.
+        Total frequencies per feature and class.
 
     Examples
     --------
@@ -228,11 +228,15 @@ class BernoulliNB(base.BaseNB):
     def learn_one(self, x, y):
         """Updates the model with a single observation.
 
-        Args:
-            x: Dictionary of term frequencies.
-            y: Target class.
+        Parameters
+        ----------
+            x
+                Dictionary of term frequencies.
+            y
+                Target class.
 
-        Returns:
+        Returns
+        --------
             self
 
         """
@@ -259,10 +263,13 @@ class BernoulliNB(base.BaseNB):
     def joint_log_likelihood(self, x):
         """Computes the joint log likelihood of input features.
 
-        Args:
-            x: Dictionary of term frequencies.
+        Parameters
+        ----------
+            x
+                Dictionary of term frequencies.
 
-        Returns:
+        Returns
+        --------
             Mapping between classes and joint log likelihood.
 
         """
@@ -285,9 +292,16 @@ class BernoulliNB(base.BaseNB):
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
         """Updates the model with a term-frequency or TF-IDF pandas dataframe.
 
-        Args:
-            X: Term-frequency or TF-IDF pandas dataframe.
-            y: Target classes.
+        Parameters
+        ----------
+            X
+                Term-frequency or TF-IDF pandas dataframe.
+            y
+                Target classes.
+
+        Returns
+        --------
+            self
 
         """
         # One hot encode y and convert it into sparse matrix
@@ -338,10 +352,13 @@ class BernoulliNB(base.BaseNB):
     def _feature_log_prob(self, columns: list) -> pd.DataFrame:
         """Compute log probabilities of input features.
 
-        Args:
-            columns: List of input features.
+        Parameters
+        ----------
+            columns
+                List of input features.
 
-        Returns:
+        Returns
+        --------
             Log probabilities of input features.
 
         """
@@ -357,10 +374,13 @@ class BernoulliNB(base.BaseNB):
     def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Computes the joint log likelihood of input features.
 
-        Args:
-            X: Term-frequency or TF-IDF pandas dataframe.
+        Parameters
+        ----------
+            X
+                Term-frequency or TF-IDF pandas dataframe.
 
-        Returns:
+        Returns
+        --------
             Input samples joint log likelihood.
 
         """
@@ -374,6 +394,9 @@ class BernoulliNB(base.BaseNB):
             X[missing] = False
 
         index, columns = X.index, X.columns
+
+        if not self.class_counts or not self.feature_counts:
+            return pd.DataFrame(index=index)
 
         if hasattr(X, "sparse"):
             X = sparse.csr_matrix(X.sparse.to_coo())

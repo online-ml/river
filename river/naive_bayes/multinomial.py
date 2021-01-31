@@ -15,7 +15,7 @@ __all__ = ["MultinomialNB"]
 class MultinomialNB(base.BaseNB):
     """Naive Bayes classifier for multinomial models.
 
-    Multinomial Naive Bayes model learns from occurrences between features such as word counting
+    Multinomial Naive Bayes model learns from occurrences between features such as word counts
     and discrete classes. The input vector must contain positive values, such as
     counts or TF-IDF values.
 
@@ -133,9 +133,6 @@ class MultinomialNB(base.BaseNB):
 
     >>> model = model.learn_many(X, y)
 
-    >>> model['nb'].feature_counts
-    defaultdict(<class 'collections.Counter'>, {'Japan': Counter({'no': 1}), 'Tokyo': Counter({'no': 1}), 'Chinese': Counter({'yes': 5, 'no': 1}), 'Macao': Counter({'yes': 1}), 'Shanghai': Counter({'yes': 1}), 'Beijing': Counter({'yes': 1})})
-
     >>> model['nb'].p_class('yes')
     0.75
 
@@ -195,6 +192,10 @@ class MultinomialNB(base.BaseNB):
             x: Dictionary of term frequencies.
             y: Target class.
 
+        Returns
+        --------
+            self
+
         """
         self.class_counts.update((y,))
 
@@ -231,7 +232,8 @@ class MultinomialNB(base.BaseNB):
         Args:
             x: Dictionary of term frequencies.
 
-        Returns:
+        Returns
+        --------
             Mapping between classes and joint log likelihood.
 
         """
@@ -248,8 +250,14 @@ class MultinomialNB(base.BaseNB):
         """Updates the model with a term-frequency or TF-IDF pandas dataframe.
 
         Args:
-            X: Term-frequency or TF-IDF pandas dataframe.
-            y: Target classes.
+            X
+                Term-frequency or TF-IDF pandas dataframe.
+            y
+                Target classes.
+
+        Returns
+        --------
+            self
 
         """
         y = base.one_hot_encode(y)
@@ -299,7 +307,8 @@ class MultinomialNB(base.BaseNB):
             known: List of input features that are part of the vocabulary.
             unknown: List of input features that are not part the vocabulary.
 
-        Returns:
+        Returns
+        --------
             Log probabilities of input features.
 
         """
@@ -318,14 +327,19 @@ class MultinomialNB(base.BaseNB):
         """Computes the joint log likelihood of input features.
 
         Args:
-            X: Term-frequency or TF-IDF pandas dataframe.
+            X
+                Term-frequency or TF-IDF pandas dataframe.
 
-        Returns:
+        Returns
+        --------
             Input samples joint log likelihood.
 
         """
         index, columns = X.index, X.columns
         known, unknown = [], []
+
+        if not self.class_counts or not self.feature_counts:
+            return pd.DataFrame(index=index)
 
         for f in columns:
             if f in self.feature_counts:

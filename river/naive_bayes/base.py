@@ -38,6 +38,8 @@ class BaseNB(base.Classifier):
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Return probabilities using the log-likelihoods in mini-batchs setting."""
         jll = self.joint_log_likelihood_many(X)
+        if jll.empty:
+            return jll
         lse = pd.Series(special.logsumexp(jll, axis=1))
         return np.exp(jll.subtract(lse.values, axis="rows"))
 
@@ -47,13 +49,35 @@ class BaseNB(base.Classifier):
 
 
 def from_dict(data: dict) -> pd.DataFrame:
-    """Convert a dict into a pandas dataframe."""
+    """Convert a dict into a pandas dataframe.
+
+    Parameters
+    ----------
+        data
+            Input data as dict.
+
+    Returns
+    --------
+        Dict to pandas dataframe.
+
+    """
     dict_data, index = list(data.values()), list(data.keys())
     return pd.DataFrame(data=dict_data, index=index, dtype="float32")
 
 
-def one_hot_encode(y: pd.Series) -> pd.SparseDataFrame:
-    """One hot encode input pandas series into sparse pandas DataFrame."""
+def one_hot_encode(y: pd.Series) -> pd.DataFrame:
+    """One hot encode input pandas series into sparse pandas DataFrame.
+
+    Parameters
+    ----------
+        y
+            Pandas Series of strings.
+
+    Returns
+    --------
+        One hot encoded sparse dataframe.
+
+    """
     classes = np.unique(y)
     indices = np.searchsorted(classes, y)
     indptr = np.hstack((0, np.cumsum(np.in1d(y, classes))))

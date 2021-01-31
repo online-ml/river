@@ -276,7 +276,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     def transform_one(self, x):
         return collections.Counter(self.process_text(x))
 
-    def transform_many(self, X: pd.Series) -> pd.SparseDataFrame:
+    def transform_many(self, X: pd.Series) -> pd.DataFrame:
         """Transform pandas series of string into term-frequency pandas sparse dataframe."""
         indptr, indices, data = [0], [], []
         index = {}
