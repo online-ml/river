@@ -70,12 +70,12 @@ def one_hot_encode(y: pd.Series) -> pd.DataFrame:
 
     Parameters
     ----------
-        y
-            Pandas Series of strings.
+    y
+        Pandas Series of strings.
 
     Returns
     --------
-        One hot encoded sparse dataframe.
+    One hot encoded sparse dataframe.
 
     """
     classes = np.unique(y)

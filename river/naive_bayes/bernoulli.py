@@ -230,14 +230,14 @@ class BernoulliNB(base.BaseNB):
 
         Parameters
         ----------
-            x
-                Dictionary of term frequencies.
-            y
-                Target class.
+        x
+            Dictionary of term frequencies.
+        y
+            Target class.
 
         Returns
         --------
-            self
+        self
 
         """
         self.class_counts.update((y,))
@@ -265,12 +265,12 @@ class BernoulliNB(base.BaseNB):
 
         Parameters
         ----------
-            x
-                Dictionary of term frequencies.
+        x
+            Dictionary of term frequencies.
 
         Returns
         --------
-            Mapping between classes and joint log likelihood.
+        Mapping between classes and joint log likelihood.
 
         """
         return {
@@ -294,14 +294,14 @@ class BernoulliNB(base.BaseNB):
 
         Parameters
         ----------
-            X
-                Term-frequency or TF-IDF pandas dataframe.
-            y
-                Target classes.
+        X
+            Term-frequency or TF-IDF pandas dataframe.
+        y
+            Target classes.
 
         Returns
         --------
-            self
+        self
 
         """
         # One hot encode y and convert it into sparse matrix
@@ -354,8 +354,8 @@ class BernoulliNB(base.BaseNB):
 
         Parameters
         ----------
-            columns
-                List of input features.
+        columns
+            List of input features.
 
         Returns
         --------
@@ -376,12 +376,12 @@ class BernoulliNB(base.BaseNB):
 
         Parameters
         ----------
-            X
-                Term-frequency or TF-IDF pandas dataframe.
+        X
+            Term-frequency or TF-IDF pandas dataframe.
 
         Returns
         --------
-            Input samples joint log likelihood.
+        Input samples joint log likelihood.
 
         """
         unknown = [x for x in X.columns if x not in self.feature_counts]
