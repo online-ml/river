@@ -113,6 +113,8 @@ class MultinomialNB(base.BaseNB):
     >>> model.predict_one(new_unseen_text)
     'yes'
 
+    You can train the model and make predictions in mini-batch mode using the class methods `learn_many` and `predict_many`.
+
     >>> import pandas as pd
 
     >>> docs = [

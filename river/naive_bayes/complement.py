@@ -58,6 +58,8 @@ class ComplementNB(base.BaseNB):
     >>> model.predict_proba_one('food job meat')
     {'health': 0.9409689355477155, 'butcher': 0.05903106445228467}
 
+    You can train the model and make predictions in mini-batch mode using the class methods `learn_many` and `predict_many`.
+
     >>> import pandas as pd
 
     >>> docs = [
