@@ -8,19 +8,14 @@ import random
 
 import numpy as np
 
-
 __all__ = ["check_estimator"]
 
 
 def yield_datasets(model):
 
-    from river import base
-    from river import compose
-    from river import datasets
-    from river import preprocessing
-    from river import stream
-    from river import utils
     from sklearn import datasets as sk_datasets
+
+    from river import base, compose, datasets, preprocessing, stream, utils
 
     # Multi-output regression
     if utils.inspect.ismoregressor(model):
@@ -33,9 +28,9 @@ def yield_datasets(model):
             """One-hot encoded version of `datasets.SolarFlare"""
 
             def __iter__(self):
-                oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(
-                    int
-                )
+                oh = (
+                    compose.SelectType(str) | preprocessing.OneHotEncoder()
+                ) + compose.SelectType(int)
                 for x, y in datasets.SolarFlare().take(200):
                     yield oh.transform_one(x), y
 
@@ -163,7 +158,9 @@ def check_emerging_features(model, dataset):
         features = list(x.keys())
         random.shuffle(features)
         model.predict_one(x)
-        model.learn_one({i: x[i] for i in features[:-3]}, y)  # drop 3 features at random
+        model.learn_one(
+            {i: x[i] for i in features[:-3]}, y
+        )  # drop 3 features at random
 
 
 def check_disappearing_features(model, dataset):
@@ -213,9 +210,23 @@ def check_set_params_idempotent(model):
     assert len(model.__dict__) == len(model._set_params().__dict__)
 
 
-def check_init(model):
+def check_init_has_default_params_for_tests(model):
     params = model._unit_test_params()
     assert isinstance(model.__class__(**params), model.__class__)
+
+
+def check_init_default_params_are_not_mutable(model):
+    """Mutable parameters in signatures are discouraged, as explained in
+    https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments
+
+    We enforce immutable parameters by only allowing a certain list of basic types.
+
+    """
+
+    allowed = (type(None), float, int, tuple, str, bool, type)
+
+    for param in inspect.signature(model.__class__).parameters.values():
+        assert param.default is inspect._empty or isinstance(param.default, allowed)
 
 
 def check_doc(model):
@@ -232,7 +243,11 @@ def seed_params(params, seed):
     """Looks for "seed" keys and sets the value."""
 
     def is_class_param(param):
-        return isinstance(param, tuple) and inspect.isclass(param[0]) and isinstance(param[1], dict)
+        return (
+            isinstance(param, tuple)
+            and inspect.isclass(param[0])
+            and isinstance(param[1], dict)
+        )
 
     if is_class_param(params):
         return params[0], seed_params(params[1], seed)
@@ -241,7 +256,8 @@ def seed_params(params, seed):
         return params
 
     return {
-        name: seed if name == "seed" else seed_params(param, seed) for name, param in params.items()
+        name: seed if name == "seed" else seed_params(param, seed)
+        for name, param in params.items()
     }
 
 
@@ -296,7 +312,8 @@ def yield_checks(model):
     yield check_str
     yield check_tags
     yield check_set_params_idempotent
-    yield check_init
+    yield check_init_has_default_params_for_tests
+    yield check_init_default_params_are_not_mutable
     yield check_doc
     yield check_clone
 
@@ -320,7 +337,9 @@ def yield_checks(model):
         checks.append(allow_exception(check_predict_proba_one, NotImplementedError))
         # Specific checks for binary classifiers
         if not model._multiclass:
-            checks.append(allow_exception(check_predict_proba_one_binary, NotImplementedError))
+            checks.append(
+                allow_exception(check_predict_proba_one_binary, NotImplementedError)
+            )
 
     for check in checks:
         for dataset in yield_datasets(model):

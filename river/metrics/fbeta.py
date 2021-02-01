@@ -1,10 +1,7 @@
 import collections
 import functools
 
-from . import base
-from . import precision
-from . import recall
-
+from river import metrics
 
 __all__ = [
     "F1",
@@ -21,7 +18,7 @@ __all__ = [
 ]
 
 
-class FBeta(base.BinaryMetric):
+class FBeta(metrics.BinaryMetric):
     """Binary F-Beta score.
 
     The FBeta score is a weighted harmonic mean between precision and recall. The higher the
@@ -65,8 +62,8 @@ class FBeta(base.BinaryMetric):
     def __init__(self, beta: float, cm=None, pos_val=True):
         super().__init__(cm, pos_val)
         self.beta = beta
-        self.precision = precision.Precision(self.cm, self.pos_val)
-        self.recall = recall.Recall(self.cm, self.pos_val)
+        self.precision = metrics.Precision(self.cm, self.pos_val)
+        self.recall = metrics.Recall(self.cm, self.pos_val)
 
     def get(self):
         p = self.precision.get()
@@ -78,7 +75,7 @@ class FBeta(base.BinaryMetric):
             return 0.0
 
 
-class MacroFBeta(base.MultiClassMetric):
+class MacroFBeta(metrics.MultiClassMetric):
     """Macro-average F-Beta score.
 
     This works by computing the F-Beta score per class, and then performs a global average.
@@ -143,7 +140,7 @@ class MacroFBeta(base.MultiClassMetric):
             return 0.0
 
 
-class MicroFBeta(base.MultiClassMetric):
+class MicroFBeta(metrics.MultiClassMetric):
     """Micro-average F-Beta score.
 
     This computes the F-Beta score by merging all the predictions and true labels, and then
@@ -182,8 +179,8 @@ class MicroFBeta(base.MultiClassMetric):
     def __init__(self, beta: float, cm=None):
         super().__init__(cm)
         self.beta = beta
-        self.precision = precision.MicroPrecision(self.cm)
-        self.recall = recall.MicroRecall(self.cm)
+        self.precision = metrics.MicroPrecision(self.cm)
+        self.recall = metrics.MicroRecall(self.cm)
 
     def get(self):
         p = self.precision.get()
@@ -195,7 +192,7 @@ class MicroFBeta(base.MultiClassMetric):
             return 0.0
 
 
-class WeightedFBeta(base.MultiClassMetric):
+class WeightedFBeta(metrics.MultiClassMetric):
     """Weighted-average F-Beta score.
 
     This works by computing the F-Beta score per class, and then performs a global weighted average
@@ -261,7 +258,7 @@ class WeightedFBeta(base.MultiClassMetric):
             return 0.0
 
 
-class MultiFBeta(base.MultiClassMetric):
+class MultiFBeta(metrics.MultiClassMetric):
     """Multi-class F-Beta score with different betas per class.
 
     The multiclass F-Beta score is the arithmetic average of the binary F-Beta scores of each class.
@@ -305,7 +302,9 @@ class MultiFBeta(base.MultiClassMetric):
         super().__init__(cm)
         self.betas = betas
         self.weights = (
-            collections.defaultdict(functools.partial(int, 1)) if weights is None else weights
+            collections.defaultdict(functools.partial(int, 1))
+            if weights is None
+            else weights
         )
 
     def get(self):
@@ -336,7 +335,7 @@ class MultiFBeta(base.MultiClassMetric):
             return 0.0
 
 
-class ExampleFBeta(base.MultiOutputClassificationMetric):
+class ExampleFBeta(metrics.MultiOutputClassificationMetric):
     """Example-based F-Beta score.
 
     Parameters
@@ -389,8 +388,8 @@ class ExampleFBeta(base.MultiOutputClassificationMetric):
     def __init__(self, beta: float, cm=None):
         super().__init__(cm)
         self.beta = beta
-        self.precision = precision.ExamplePrecision(self.cm)
-        self.recall = recall.ExampleRecall(self.cm)
+        self.precision = metrics.ExamplePrecision(self.cm)
+        self.recall = metrics.ExampleRecall(self.cm)
 
     def get(self):
         p = self.precision.get()

@@ -1,6 +1,6 @@
 import math
-from . import base
 
+from . import base
 
 __all__ = ["LogLoss"]
 

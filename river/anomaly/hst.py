@@ -5,8 +5,8 @@ import random
 import typing
 
 from river import base
-from .base import Leaf, Branch, Split
 
+from .base import Branch, Leaf, Split
 
 __all__ = ["HalfSpaceTrees"]
 

@@ -2,10 +2,7 @@ import collections
 import copy
 import functools
 
-from river import base
-from river import optim
-from river import utils
-
+from river import base, optim, utils
 
 __all__ = ["SoftmaxRegression"]
 
@@ -70,7 +67,9 @@ class SoftmaxRegression(base.Classifier):
         self.optimizers = collections.defaultdict(new_optimizer)  # type: ignore
         self.loss = optim.losses.CrossEntropy() if loss is None else loss
         self.l2 = l2
-        self.weights = collections.defaultdict(functools.partial(collections.defaultdict, float))  # type: ignore
+        self.weights = collections.defaultdict(
+            functools.partial(collections.defaultdict, float)
+        )  # type: ignore
 
     @property
     def _multiclass(self):
@@ -92,12 +91,19 @@ class SoftmaxRegression(base.Classifier):
 
             # Compute the gradient w.r.t. each feature
             weights = self.weights[label]
-            gradient = {i: xi * loss + self.l2 * weights.get(i, 0) for i, xi in x.items()}
-            self.weights[label] = self.optimizers[label].update_after_pred(w=weights, g=gradient)
+            gradient = {
+                i: xi * loss + self.l2 * weights.get(i, 0) for i, xi in x.items()
+            }
+            self.weights[label] = self.optimizers[label].update_after_pred(
+                w=weights, g=gradient
+            )
 
         return self
 
     def predict_proba_one(self, x):
         return utils.math.softmax(
-            {label: utils.math.dot(weights, x) for label, weights in self.weights.items()}
+            {
+                label: utils.math.dot(weights, x)
+                for label, weights in self.weights.items()
+            }
         )

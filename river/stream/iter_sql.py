@@ -1,8 +1,8 @@
-import sqlalchemy
 import typing
 
-from river import base
+import sqlalchemy
 
+from river import base
 
 __all__ = ["iter_sql"]
 

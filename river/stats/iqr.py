@@ -1,7 +1,5 @@
 from .. import utils
-
-from . import base
-from . import quantile
+from . import base, quantile
 
 
 class IQR(base.Univariate):
@@ -106,8 +104,12 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
             raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.quantile_inf = quantile.RollingQuantile(q=self.q_inf, window_size=window_size)
-        self.quantile_sup = quantile.RollingQuantile(q=self.q_sup, window_size=window_size)
+        self.quantile_inf = quantile.RollingQuantile(
+            q=self.q_inf, window_size=window_size
+        )
+        self.quantile_sup = quantile.RollingQuantile(
+            q=self.q_sup, window_size=window_size
+        )
 
     @property
     def name(self):

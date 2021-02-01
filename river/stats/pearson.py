@@ -1,6 +1,4 @@
-from . import base
-from . import cov
-from . import var
+from . import base, cov, var
 
 
 class PearsonCorr(base.Bivariate):

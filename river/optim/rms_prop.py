@@ -2,7 +2,6 @@ import collections
 
 from . import base
 
-
 __all__ = ["RMSProp"]
 
 

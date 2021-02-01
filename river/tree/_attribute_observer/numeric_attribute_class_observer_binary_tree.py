@@ -1,8 +1,6 @@
-from collections import Counter
-from collections import defaultdict
+from collections import Counter, defaultdict
 
-from .._attribute_test import NumericAttributeBinaryTest
-from .._attribute_test import AttributeSplitSuggestion
+from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
 from .attribute_observer import AttributeObserver
 
 
@@ -70,7 +68,9 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         # Cannot determine the probability of a single attribute observation
         return 0.0
 
-    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
+    def best_evaluated_split_suggestion(
+        self, criterion, pre_split_dist, att_idx, binary_only
+    ):
         current_best_option = AttributeSplitSuggestion(None, [{}], -float("inf"))
 
         return self._search_for_best_split_option(
@@ -104,8 +104,12 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         right_dist = {}
 
         if parent_left is None:
-            left_dist.update(dict(Counter(left_dist) + Counter(current_node.class_count_left)))
-            right_dist.update(dict(Counter(right_dist) + Counter(current_node.class_count_right)))
+            left_dist.update(
+                dict(Counter(left_dist) + Counter(current_node.class_count_left))
+            )
+            right_dist.update(
+                dict(Counter(right_dist) + Counter(current_node.class_count_right))
+            )
         else:
             left_dist.update(dict(Counter(left_dist) + Counter(parent_left)))
             right_dist.update(dict(Counter(right_dist) + Counter(parent_right)))
@@ -117,23 +121,35 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
                     dict(Counter(exact_parent_dist) + Counter(actual_parent_left))
                 )
                 exact_parent_dist.update(
-                    dict(Counter(exact_parent_dist) - Counter(current_node.class_count_left))
+                    dict(
+                        Counter(exact_parent_dist)
+                        - Counter(current_node.class_count_left)
+                    )
                 )
                 exact_parent_dist.update(
-                    dict(Counter(exact_parent_dist) - Counter(current_node.class_count_right))
+                    dict(
+                        Counter(exact_parent_dist)
+                        - Counter(current_node.class_count_right)
+                    )
                 )
 
                 # move the subtrees
-                left_dist.update(dict(Counter(left_dist) - Counter(current_node.class_count_right)))
+                left_dist.update(
+                    dict(Counter(left_dist) - Counter(current_node.class_count_right))
+                )
                 right_dist.update(
                     dict(Counter(right_dist) + Counter(current_node.class_count_right))
                 )
 
                 # move the exact value from the parent
-                right_dist.update(dict(Counter(right_dist) + Counter(exact_parent_dist)))
+                right_dist.update(
+                    dict(Counter(right_dist) + Counter(exact_parent_dist))
+                )
                 left_dist.update(dict(Counter(left_dist) - Counter(exact_parent_dist)))
             else:
-                left_dist.update(dict(Counter(left_dist) + Counter(current_node.class_count_left)))
+                left_dist.update(
+                    dict(Counter(left_dist) + Counter(current_node.class_count_left))
+                )
                 right_dist.update(
                     dict(Counter(right_dist) - Counter(current_node.class_count_left))
                 )

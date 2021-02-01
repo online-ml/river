@@ -1,7 +1,6 @@
 import copy
 
-from . import base
-from . import summing
+from . import base, summing
 
 
 class Mean(base.Univariate):

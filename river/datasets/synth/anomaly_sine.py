@@ -1,9 +1,10 @@
-from .. import base
-from river.utils.skmultiflow_utils import check_random_state
+import itertools
 
 import numpy as np
 
-import itertools
+from river.utils.skmultiflow_utils import check_random_state
+
+from .. import base
 
 
 class AnomalySine(base.SyntheticDataset):
@@ -81,7 +82,8 @@ class AnomalySine(base.SyntheticDataset):
         )
         if n_anomalies > self.n_samples:
             raise ValueError(
-                f"n_anomalies ({n_anomalies}) can't be larger " f"than n_samples ({self.n_samples})"
+                f"n_anomalies ({n_anomalies}) can't be larger "
+                f"than n_samples ({self.n_samples})"
             )
         self.n_anomalies = n_anomalies
         self.contextual = contextual
@@ -138,5 +140,7 @@ class AnomalySine(base.SyntheticDataset):
 
         self._generate_data()
 
-        for xi, yi in itertools.zip_longest(self.X, self.y if hasattr(self.y, "__iter__") else []):
+        for xi, yi in itertools.zip_longest(
+            self.X, self.y if hasattr(self.y, "__iter__") else []
+        ):
             yield dict(zip(["sine", "cosine"], xi)), yi
