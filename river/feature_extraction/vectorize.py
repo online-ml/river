@@ -261,7 +261,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     ('in', 'the') 1
     ('the', 'morning') 1
 
-    `BagOfWord` allows to build a term-frequency pandas sparse dataframe with the `transform_many' method.
+    `BagOfWord` allows to build a term-frequency pandas sparse dataframe with the `transform_many` method.
 
     >>> import pandas as pd
     >>> X = pd.Series(['Hello world', 'Hello River'], index = ['river', 'rocks'])

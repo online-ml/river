@@ -104,7 +104,7 @@ class BernoulliNB(base.BaseNB):
     >>> model.predict_proba_one('test')['yes']
     0.8831539823829913
 
-    Mini-batches:
+    You can train the model and make predictions in mini-batch mode using the class methods `learn_many` and `predict_many`.
 
     >>> import pandas as pd
 
@@ -189,8 +189,6 @@ class BernoulliNB(base.BaseNB):
 
     >>> model.predict_proba_one('test')
     {'no': 0.116846017617009, 'yes': 0.8831539823829913}
-
-    # Learn and predict many using dataframe:
 
     >>> bag = feature_extraction.BagOfWords(lowercase=False)
 
