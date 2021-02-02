@@ -426,6 +426,7 @@ class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
     perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
 
     """
+
     def __init__(
         self,
         delta: float = 1e-7,
