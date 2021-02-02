@@ -19,6 +19,10 @@ class NominalAttributeClassObserver(AttributeObserver):
         self._missing_weight_observed = 0.0
         self._att_val_dist_per_class = {}
 
+    @property
+    def is_numeric(self):
+        return False
+
     def update(self, att_val, class_val, sample_weight):
         if att_val is None:
             self._missing_weight_observed += sample_weight
