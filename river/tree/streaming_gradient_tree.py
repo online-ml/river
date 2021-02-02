@@ -19,67 +19,11 @@ from ._utils import GradHess
 
 
 class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
-    """ Streaming Gradient Tree for classification.
+    """ Base Streaming Gradient Tree (SGT) class.
 
-    This implementation enhances the original proposal [^1] by using an incremental strategy to
-    discretize numerical features dynamically, rather than relying on a calibration set and
-    parameterized number of bins. The strategy used is an adaptation of the Quantile Observer
-    (QO) [^2]. Different bin size setting policies are available for selection.
-    They directly related to number of split candidates the tree is going to explore, and thus,
-    how accurate its split decisions are going to be. Besides, the number of stored bins per
-    feature is directly related to the tree's memory usage and runtime.
+    This class defines the main characteristics that are shared by the different SGT
+    implementations.
 
-    Parameters
-    ----------
-    delta
-        Define the significance level of the F-tests performed to decide upon creating splits
-        or updating predictions.
-    grace_period
-        Interval between split attempts or prediction updates.
-    init_pred
-        Initial value predicted by the tree.
-    max_depth
-        The maximum depth the tree might reach. If set to `None`, the trees will grow
-        indefinitely.
-    lambda_value
-        Positive float value used to impose a penalty over the tree's predictions and force
-        them become smaller. The greater the lambda value, the more constrained are the
-        predictions.
-    gamma
-        Positive float value used to impose a penalty over the tree's splits and force them to
-        be avoided when possible. The greater the gamma value, the smaller the chance of a
-        split occurring.
-    nominal_attributes
-        List with identifiers of the nominal attributes. If None, all features containing
-        numbers are assumed to be numeric.
-    quantization_strategy
-        Defines the policy used to define the quantization radius applied on numerical
-        attributes' discretization. Each time a new leaf is created, a radius, or
-        discretization interval, is assigned to each feature in order to quantize it.
-        The smaller the interval used, the more points are going to be stored by the tree
-        between splits. Although using more points ought to increase the memory footprint and
-        runtime, the split candidates potentially are going to be better. When the trees are
-        created and no data was observed, the initial radius is defined by the parameter
-        `default_radius`. The next nodes are going to use the policy define by this
-        parameter.</br>
-        Valid values are:
-        - 'stddiv': use the standard deviation of the feature divided by `quantization_radius_div`
-        as the radius.</br>
-        - 'constant': use the value defined in 'default_radius' as the static quantization
-        interval.
-    quantization_radius_div
-        Value by which the standard deviation of numeric features is going to be divided to define
-        the quantization radius. Only used when `quantization_strategy='stddiv'`.
-    default_radius
-        Quantization radius used when the tree is created and no data is observed or when
-        `quantization_strategy='constant'`.
-
-    References
-    ---------
-    [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
-    In Asian Conference on Machine Learning (pp. 1094-1109).
-    [^2]: Mastelini, S.M. and de Carvalho, A.C.P.D.L.F., 2020. Using dynamical quantization to
-    perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
     """
 
     _STD_DIV = "stddiv"
@@ -231,6 +175,8 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         # Update the tree with the gradient/hessian info
         self._update_tree(x, grad_hess, w)
 
+        return self
+
     def _raw_prediction(self, x):
         """ Obtain a raw prediction for a single instance. """
 
@@ -268,6 +214,92 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
 
 class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier):
+    """Streaming Gradient Tree for classification.
+
+    Binary decision tree classifier that minimizes the binary cross-entropy to guide its growth.
+
+    Streaming Gradient Trees (SGT) directly minimize a loss function to guide tree growth and
+    update their predictions. Thus, they differ from other incrementally tree learners that do
+    not directly optimize the loss, but a data impurity-related heuristic.
+
+    Parameters
+    ----------
+    delta
+        Define the significance level of the F-tests performed to decide upon creating splits
+        or updating predictions.
+    grace_period
+        Interval between split attempts or prediction updates.
+    init_pred
+        Initial value predicted by the tree.
+    max_depth
+        The maximum depth the tree might reach. If set to `None`, the trees will grow
+        indefinitely.
+    lambda_value
+        Positive float value used to impose a penalty over the tree's predictions and force
+        them to become smaller. The greater the lambda value, the more constrained are the
+        predictions.
+    gamma
+        Positive float value used to impose a penalty over the tree's splits and force them to
+        be avoided when possible. The greater the gamma value, the smaller the chance of a
+        split occurring.
+    nominal_attributes
+        List with identifiers of the nominal attributes. If None, all features containing
+        numbers are assumed to be numeric.
+    quantization_strategy
+        Defines the policy used to define the quantization radius applied on numerical
+        attributes' discretization. Each time a new leaf is created, a radius, or
+        discretization interval, is assigned to each feature in order to quantize it.
+        The smaller the interval used, the more points are going to be stored by the tree
+        between splits. Although using more points ought to increase the memory footprint and
+        runtime, the split candidates potentially are going to be better. When the trees are
+        created and no data was observed, the initial radius is defined by the parameter
+        `default_radius`. The next nodes are going to use the policy define by this
+        parameter.</br>
+        Valid values are:
+        - 'stddiv': use the standard deviation of the feature divided by `quantization_radius_div`
+        as the radius.</br>
+        - 'constant': use the value defined in 'default_radius' as the static quantization
+        interval.
+    quantization_radius_div
+        Value by which the standard deviation of numeric features is going to be divided to define
+        the quantization radius. Only used when `quantization_strategy='stddiv'`.
+    default_radius
+        Quantization radius used when the tree is created and no data is observed or when
+        `quantization_strategy='constant'`.
+
+    Examples
+    --------
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import tree
+
+    >>> dataset = datasets.Phishing()
+    >>> model = tree.StreamingGradientTreeClassifier()
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 82.32%
+
+    Notes
+    -----
+    This implementation enhances the original proposal [^1] by using an incremental strategy to
+    discretize numerical features dynamically, rather than relying on a calibration set and
+    parameterized number of bins. The strategy used is an adaptation of the Quantile Observer
+    (QO) [^2]. Different bin size setting policies are available for selection.
+    They directly related to number of split candidates the tree is going to explore, and thus,
+    how accurate its split decisions are going to be. Besides, the number of stored bins per
+    feature is directly related to the tree's memory usage and runtime.
+
+    References
+    ---------
+    [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
+    In Asian Conference on Machine Learning (pp. 1094-1109).
+    [^2]: Mastelini, S.M. and de Carvalho, A.C.P.D.L.F., 2020. Using dynamical quantization to
+    perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
+
+    """
+
     def __init__(
         self,
         delta: float = 1e-7,
@@ -309,6 +341,91 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
 
 
 class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
+    """Streaming Gradient Tree for regression.
+
+    Incremental decision tree regressor that minimizes the mean square error to guide its growth.
+
+    Streaming Gradient Trees (SGT) directly minimize a loss function to guide tree growth and
+    update their predictions. Thus, they differ from other incrementally tree learners that do
+    not directly optimize the loss, but a data impurity-related heuristic.
+
+    Parameters
+    ----------
+    delta
+        Define the significance level of the F-tests performed to decide upon creating splits
+        or updating predictions.
+    grace_period
+        Interval between split attempts or prediction updates.
+    init_pred
+        Initial value predicted by the tree.
+    max_depth
+        The maximum depth the tree might reach. If set to `None`, the trees will grow
+        indefinitely.
+    lambda_value
+        Positive float value used to impose a penalty over the tree's predictions and force
+        them to become smaller. The greater the lambda value, the more constrained are the
+        predictions.
+    gamma
+        Positive float value used to impose a penalty over the tree's splits and force them to
+        be avoided when possible. The greater the gamma value, the smaller the chance of a
+        split occurring.
+    nominal_attributes
+        List with identifiers of the nominal attributes. If None, all features containing
+        numbers are assumed to be numeric.
+    quantization_strategy
+        Defines the policy used to define the quantization radius applied on numerical
+        attributes' discretization. Each time a new leaf is created, a radius, or
+        discretization interval, is assigned to each feature in order to quantize it.
+        The smaller the interval used, the more points are going to be stored by the tree
+        between splits. Although using more points ought to increase the memory footprint and
+        runtime, the split candidates potentially are going to be better. When the trees are
+        created and no data was observed, the initial radius is defined by the parameter
+        `default_radius`. The next nodes are going to use the policy define by this
+        parameter.</br>
+        Valid values are:
+        - 'stddiv': use the standard deviation of the feature divided by `quantization_radius_div`
+        as the radius.</br>
+        - 'constant': use the value defined in 'default_radius' as the static quantization
+        interval.
+    quantization_radius_div
+        Value by which the standard deviation of numeric features is going to be divided to define
+        the quantization radius. Only used when `quantization_strategy='stddiv'`.
+    default_radius
+        Quantization radius used when the tree is created and no data is observed or when
+        `quantization_strategy='constant'`.
+
+    Examples
+    --------
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import tree
+
+    >>> dataset = datasets.TrumpApproval()
+    >>> model = tree.StreamingGradientTreeRegressor(grace_period=20)
+    >>> metric = metrics.MAE()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 1.828504
+
+    Notes
+    -----
+    This implementation enhances the original proposal [^1] by using an incremental strategy to
+    discretize numerical features dynamically, rather than relying on a calibration set and
+    parameterized number of bins. The strategy used is an adaptation of the Quantile Observer
+    (QO) [^2]. Different bin size setting policies are available for selection.
+    They directly related to number of split candidates the tree is going to explore, and thus,
+    how accurate its split decisions are going to be. Besides, the number of stored bins per
+    feature is directly related to the tree's memory usage and runtime.
+
+    References
+    ---------
+    [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
+    In Asian Conference on Machine Learning (pp. 1094-1109).
+    [^2]: Mastelini, S.M. and de Carvalho, A.C.P.D.L.F., 2020. Using dynamical quantization to
+    perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
+
+    """
     def __init__(
         self,
         delta: float = 1e-7,
