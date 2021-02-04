@@ -20,7 +20,7 @@ class Clustream(base.Clusterer):
        If RandomState instance, seed is the random number generator;
        If None, the random number generator is the RandomState instance used
        by `np.random`.
-       It is used in the kmeans algorithm for the offline clustering
+       It is used in the `KMeans` algorithm for the offline clustering, which is the native `KMneans` implemented in `River`.
 
     time_window
       The rang of the window
@@ -130,7 +130,7 @@ class Clustream(base.Clusterer):
 
         Returns
         ----------
-            self
+        self
 
         """
         if sample_weight == 0:
@@ -276,7 +276,6 @@ class Clustream(base.Clusterer):
         """
 
         min_distance = sys.float_info.max
-        closest_kernel = None
         closest_kernel_index = -1
         for i, micro_cluster in micro_clusters.items():
             distance = 0
@@ -285,7 +284,6 @@ class Clustream(base.Clusterer):
             distance = math.sqrt(distance)
             if distance < min_distance:
                 min_distance = distance
-                closest_kernel = micro_cluster
                 closest_kernel_index = i
         return closest_kernel_index, min_distance
 
@@ -300,7 +298,7 @@ class Clustream(base.Clusterer):
     def predict_one(self, x):
         """ Predict cluster index for each sample.
 
-        Convenience method; equivalent to calling partial_fit(X) followed by predict(X).
+        Convenience method; equivalent to calling partial_fit(x) followed by predict(x).
 
         Parameters
         ----------
