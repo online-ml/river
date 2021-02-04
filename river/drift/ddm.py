@@ -143,13 +143,13 @@ class DDM(DriftDetector):
 
         if (
             self.miss_prob + self.miss_std
-            > self.miss_prob_min + self.out_control_level * self.miss_sd_min
+            >= self.miss_prob_min + self.out_control_level * self.miss_sd_min
         ):
             self._in_concept_change = True
 
         elif (
             self.miss_prob + self.miss_std
-            > self.miss_prob_min + self.warning_level * self.miss_sd_min
+            >= self.miss_prob_min + self.warning_level * self.miss_sd_min
         ):
             self._in_warning_zone = True
 
