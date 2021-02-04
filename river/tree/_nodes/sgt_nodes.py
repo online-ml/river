@@ -32,7 +32,7 @@ class SGTSplit:
         self.is_nominal = is_nominal
 
 
-class SGTNode:
+class SGTLearningNode:
     def __init__(self, prediction=0.0, depth=0):
         self._prediction = prediction
         self.depth = depth
@@ -40,7 +40,7 @@ class SGTNode:
 
         # Split test
         self._split: Optional[SGTSplit] = None
-        self._children: Optional[Dict[Hashable, "SGTNode"]] = None
+        self._children: Optional[Dict[Hashable, "SGTLearningNode"]] = None
         self._split_stats: Optional[
             Dict[FeatureName, Union[Dict[Hashable, GradHessStats], FeatureQuantizer]]
         ] = {}
@@ -50,16 +50,16 @@ class SGTNode:
         self._split_stats = {}
         self._update_stats = GradHessStats()
 
-    def sort_instance(self, x) -> "SGTNode":
+    def sort_instance_to_leaf(self, x) -> "SGTLearningNode":
         if self._split is None:
             return self
 
         if self._split.is_nominal:
             try:
                 node = self._children[x[self._split.feature_idx]]
-            except KeyError:
+            except KeyError:  # Nominal value was not observed previously
                 # Create new node to encompass the emerging category
-                self._children[x[self._split.feature_idx]] = SGTNode(
+                self._children[x[self._split.feature_idx]] = SGTLearningNode(
                     prediction=self._prediction, depth=self.depth + 1
                 )
                 node = self._children[x[self._split.feature_idx]]
@@ -77,7 +77,7 @@ class SGTNode:
                 )
                 node = self._children[branch]
 
-        return node.sort_instance(x)
+        return node.sort_instance_to_leaf(x)
 
     def update(self, x: dict, gh: GradHess, sgt, w: float = 1.0):
         for idx, x_val in x.items():
@@ -109,13 +109,15 @@ class SGTNode:
         return self._prediction
 
     def find_best_split(self, sgt) -> SGTSplit:
-        best = SGTSplit()
+        best_split = SGTSplit()
 
         # Null split: update the prediction using the new gradient information
-        best.delta_pred = delta_prediction(self._update_stats.mean(), sgt.lambda_value)
-        dlms = self._update_stats.delta_loss_mean_var(best.delta_pred)
-        best.loss_mean = dlms.mean.get()
-        best.loss_var = dlms.get()
+        best_split.delta_pred = delta_prediction(
+            self._update_stats.mean, sgt.lambda_value
+        )
+        dlms = self._update_stats.delta_loss_mean_var(best_split.delta_pred)
+        best_split.loss_mean = dlms.mean.get()
+        best_split.loss_var = dlms.get()
 
         for feature_idx in self._split_stats:
             candidate = SGTSplit()
@@ -133,7 +135,7 @@ class SGTNode:
                 cat_collection = self._split_stats[feature_idx]
                 for category in cat_collection:
                     dp = delta_prediction(
-                        cat_collection[category].mean(), sgt.lambda_value
+                        cat_collection[category].mean, sgt.lambda_value
                     )
 
                     dlms = cat_collection[category].delta_loss_mean_var(dp)
@@ -161,14 +163,12 @@ class SGTNode:
                 left_dlms = stats.Var()
                 for i, ghs in enumerate(quantizer):
                     left_ghs += ghs
-                    left_delta_pred = delta_prediction(
-                        left_ghs.mean(), sgt.lambda_value
-                    )
+                    left_delta_pred = delta_prediction(left_ghs.mean, sgt.lambda_value)
                     left_dlms += left_ghs.delta_loss_mean_var(left_delta_pred)
 
                     right_ghs = self._update_stats - left_ghs
                     right_delta_pred = delta_prediction(
-                        right_ghs.mean(), sgt.lambda_value
+                        right_ghs.mean, sgt.lambda_value
                     )
                     right_dlms = right_ghs.delta_loss_mean_var(right_delta_pred)
 
@@ -187,14 +187,14 @@ class SGTNode:
 
                         # Define split point
                         if i == n_bins - 1:  # Last bin
-                            candidate.feature_val = ghs.get_x()
+                            candidate.feature_val = ghs.centroid_x
                         else:  # Use middle point between bins
-                            candidate.feature_val = ghs.get_x() + half_radius
+                            candidate.feature_val = ghs.centroid_x + half_radius
 
-            if candidate.loss_mean < best.loss_mean:
-                best = candidate
+            if candidate.loss_mean < best_split.loss_mean:
+                best_split = candidate
 
-        return best
+        return best_split
 
     def apply_split(self, split, sgt):
         # Null split: update tree prediction and reset learning node
@@ -211,7 +211,7 @@ class SGTNode:
         # Create children
         self._children = {}
         for child_idx, delta_pred in split.delta_pred.items():
-            self._children[child_idx] = SGTNode(
+            self._children[child_idx] = SGTLearningNode(
                 prediction=self._prediction + delta_pred, depth=self.depth + 1
             )
         # Free memory used to monitor splits
@@ -225,7 +225,7 @@ class SGTNode:
         return self._children is None
 
     @property
-    def children(self) -> Dict[FeatureName, "SGTNode"]:
+    def children(self) -> Dict[FeatureName, "SGTLearningNode"]:
         return self._children
 
     @property

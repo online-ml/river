@@ -1,4 +1,5 @@
 import math
+import typing
 
 from .gradient_hessian import GradHess, GradHessStats
 
@@ -36,6 +37,6 @@ class FeatureQuantizer:
             ghs.update(gh=gh, x=x_val, w=w)
             self.hash[index] = ghs
 
-    def __iter__(self):
+    def __iter__(self) -> typing.Iterator[GradHessStats]:
         for k in sorted(self.hash):
             yield self.hash[k]

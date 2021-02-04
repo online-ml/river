@@ -9,7 +9,7 @@ from scipy.stats import f as FTest
 
 from river import base, stats
 
-from ._nodes import SGTNode
+from ._nodes import SGTLearningNode
 from ._objective import (
     BaseObjective,
     BinaryCrossEntropyObjective,
@@ -70,7 +70,7 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         self.quantization_radius_div = quantization_radius_div
         self.default_radius = default_radius
 
-        self._root = SGTNode(prediction=self.init_pred)
+        self._root = SGTLearningNode(prediction=self.init_pred)
 
         # set used to check whether categorical feature has been already split
         self._split_features = set()
@@ -130,7 +130,7 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
     def _update_tree(self, x: dict, grad_hess: GradHess, w: float):
         """ Update Streaming Gradient Tree with a single instance. """
 
-        leaf = self._root.sort_instance(x)
+        leaf = self._root.sort_instance_to_leaf(x)
         leaf.update(x, grad_hess, self, w)
 
         if (
@@ -153,24 +153,24 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         # Null hypothesis: expected loss is zero
         # Alternative hypothesis: expected loss is not zero
 
-        F = (
+        f_value = (
             n_observations * (split.loss_mean * split.loss_mean) / split.loss_var
             if split.loss_var > 0.0
             else None
         )
 
-        if F is None:
+        if f_value is None:
             return 1.0
 
-        return 1 - FTest.cdf(F, 1, n_observations - 1)
+        return 1 - FTest.cdf(f_value, 1, n_observations - 1)
 
     def learn_one(self, x, y, *, w=1.0):
         self._update_features_stats(x)
 
-        raw_pred = self._raw_prediction(x)
-        label = self._target_transform(y)
+        y_pred_raw = self._raw_prediction(x)
+        y_true_trs = self._target_transform(y)
 
-        grad_hess = self._objective.compute_derivatives(label, raw_pred)  # noqa
+        grad_hess = self._objective.compute_derivatives(y_true_trs, y_pred_raw)  # noqa
 
         # Update the tree with the gradient/hessian info
         self._update_tree(x, grad_hess, w)
@@ -180,8 +180,8 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
     def _raw_prediction(self, x):
         """ Obtain a raw prediction for a single instance. """
 
-        pred = self._root.sort_instance(x).leaf_prediction()
-        return self._objective.transfer(pred)  # noqa
+        y_pred_raw = self._root.sort_instance_to_leaf(x).leaf_prediction()
+        return self._objective.transfer(y_pred_raw)  # noqa
 
     @property
     def n_nodes(self):
@@ -334,7 +334,7 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
 
     def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
         t_proba = self._objective.transfer(
-            self._root.sort_instance(x).leaf_prediction()
+            self._root.sort_instance_to_leaf(x).leaf_prediction()
         )
 
         return {True: t_proba, False: 1 - t_proba}
@@ -457,4 +457,4 @@ class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
         self._objective = SquaredErrorObjective()
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
-        return self._root.sort_instance(x).leaf_prediction()
+        return self._root.sort_instance_to_leaf(x).leaf_prediction()
