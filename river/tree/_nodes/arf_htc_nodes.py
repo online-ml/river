@@ -59,7 +59,8 @@ class BaseRandomLearningNode(LearningNode):
                     try:
                         # Try to select hyperparameters specially designed for the given feature
                         obs = self.new_numeric_attribute_observer(
-                            attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params[idx]
+                            attr_obs=self.attr_obs,
+                            attr_obs_params=self.attr_obs_params[idx],
                         )
                     except KeyError:
                         obs = self.new_numeric_attribute_observer(

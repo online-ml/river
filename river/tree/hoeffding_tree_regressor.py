@@ -1,6 +1,6 @@
+import math
 from collections import defaultdict
 from copy import deepcopy
-import math
 from operator import attrgetter
 
 from river import base, linear_model
@@ -172,15 +172,15 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
 
         if self.attr_obs == self._QO:
             self._qo_std_div = 3
-            if 'std_div' in self.attr_obs_params:
-                self._qo_std_div = self.attr_obs_params['std_div']
+            if "std_div" in self.attr_obs_params:
+                self._qo_std_div = self.attr_obs_params["std_div"]
 
             if self._qo_std_div:  # Dynamically evolving radii will be used
                 self._feat_var = {}
                 self._qo_radii = defaultdict(dict)
             else:  # Static values will be used
-                if 'radius' in self.attr_obs_params:
-                    self._qo_radii = {'radius': self.attr_obs_params['radius']}
+                if "radius" in self.attr_obs_params:
+                    self._qo_radii = {"radius": self.attr_obs_params["radius"]}
                 else:
                     self._qo_radii = {}
 
@@ -463,7 +463,8 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
 
                         self._qo_radii[feat_id] = {
                             # Update radii estimates
-                            'radius': math.sqrt(self._feat_var[feat_id].get()) / self._qo_std_div
+                            "radius": math.sqrt(self._feat_var[feat_id].get())
+                            / self._qo_std_div
                         }
 
                 new_split = self._new_split_node(
