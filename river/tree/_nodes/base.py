@@ -419,7 +419,7 @@ class LearningNode(Node, metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def new_numeric_attribute_observer(attr_obs, attr_obs_params):
+    def new_numeric_attribute_observer(attr_obs, attr_obs_params, **kwargs):
         pass
 
     @abstractmethod
@@ -439,9 +439,15 @@ class LearningNode(Node, metaclass=ABCMeta):
                 ) or not isinstance(attr_val, numbers.Number):
                     obs = self.new_nominal_attribute_observer()
                 else:
-                    obs = self.new_numeric_attribute_observer(
-                        attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params
-                    )
+                    try:
+                        # Try to select hyperparameters specially designed for the given feature
+                        obs = self.new_numeric_attribute_observer(
+                            attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params[attr_idx]
+                        )
+                    except KeyError:
+                        obs = self.new_numeric_attribute_observer(
+                            attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params
+                        )
                 self.attribute_observers[attr_idx] = obs
             obs.update(attr_val, y, sample_weight)
 

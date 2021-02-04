@@ -1,4 +1,6 @@
+from collections import defaultdict
 from copy import deepcopy
+import math
 from operator import attrgetter
 
 from river import base, linear_model
@@ -169,7 +171,18 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.kwargs = kwargs
 
         if self.attr_obs == self._QO:
-            self._feat_var = {}
+            self._qo_std_div = 3
+            if 'std_div' in self.attr_obs_params:
+                self._qo_std_div = self.attr_obs_params['std_div']
+
+            if self._qo_std_div:  # Dynamically evolving radii will be used
+                self._feat_var = {}
+                self._qo_radii = defaultdict(dict)
+            else:  # Static values will be used
+                if 'radius' in self.attr_obs_params:
+                    self._qo_radii = {'radius': self.attr_obs_params['radius']}
+                else:
+                    self._qo_radii = {}
 
     @BaseHoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
@@ -217,17 +230,22 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 except AttributeError:
                     leaf_model = deepcopy(self.leaf_model)
 
+        if self.attr_obs == self._QO:
+            attr_obs_params = self._qo_radii
+        else:
+            attr_obs_params = self.attr_obs_params
+
         if self.leaf_prediction == self._TARGET_MEAN:
             return LearningNodeMean(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params
+                initial_stats, depth, self.attr_obs, attr_obs_params
             )
         elif self.leaf_prediction == self._MODEL:
             return LearningNodeModel(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
+                initial_stats, depth, self.attr_obs, attr_obs_params, leaf_model
             )
         else:  # adaptive learning node
             new_adaptive = LearningNodeAdaptive(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
+                initial_stats, depth, self.attr_obs, attr_obs_params, leaf_model
             )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean
@@ -432,14 +450,21 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 self._n_active_leaves -= 1
             else:
                 # Update the features' variance estimators if QO is used
-                if self.attr_obs == self._QO:
+                if self.attr_obs == self._QO and self._qo_std_div:
                     for feat_id, ao in node.attribute_observers.items():
                         if not ao.is_numeric:
                             continue
+
+                        # Update the var estimates using the estimators carried by the QO instances
                         if feat_id in self._feat_var:
                             self._feat_var[feat_id] += ao.x_var
                         else:
                             self._feat_var[feat_id] = ao.x_var
+
+                        self._qo_radii[feat_id] = {
+                            # Update radii estimates
+                            'radius': math.sqrt(self._feat_var[feat_id].get()) / self._qo_std_div
+                        }
 
                 new_split = self._new_split_node(
                     split_decision.split_test, node.stats, node.depth

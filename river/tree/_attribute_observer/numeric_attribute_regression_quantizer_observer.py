@@ -22,11 +22,6 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
     ----------
     radius
         The quantization radius.
-    std_div
-        The value to divide the feature's standard deviation by when estimating new radius values
-        for future learning nodes originated from the leaves that rely on QO. The new radius
-        is given by $\\frac{\\sigma}{\\text{std\\_div}}$, where $\\sigma$ is the input feature's
-        standard deviation.
 
     References
     ----------
@@ -35,10 +30,9 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
 
     """
 
-    def __init__(self, radius: float = 0.01, std_div: float = 3.0):
+    def __init__(self, radius: float = 0.01):
         super().__init__()
         self.radius = radius
-        self.std_div = std_div
         self._x_var = Var()
         self._quantizer = FeatureQuantizer(radius=self.radius)
 
@@ -79,6 +73,10 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
 
             p_x = x
         return candidate
+
+    @property
+    def x_var(self):
+        return self._x_var
 
     @staticmethod
     def _update_candidate(split_point, att_idx, post_split_dists, merit):

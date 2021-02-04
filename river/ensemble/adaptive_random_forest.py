@@ -304,12 +304,17 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
             else:
                 leaf_model = copy.deepcopy(parent._leaf_model)  # noqa
 
+        if self.attr_obs == self._QO:
+            attr_obs_params = self._qo_radii
+        else:
+            attr_obs_params = self.attr_obs_params
+
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLearningNodeMean(
                 initial_stats,
                 depth,
                 self.attr_obs,
-                self.attr_obs_params,
+                attr_obs_params,
                 self.max_features,
                 seed,
             )
@@ -318,7 +323,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 initial_stats,
                 depth,
                 self.attr_obs,
-                self.attr_obs_params,
+                attr_obs_params,
                 self.max_features,
                 seed,
                 leaf_model=leaf_model,
@@ -328,7 +333,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 initial_stats,
                 depth,
                 self.attr_obs,
-                self.attr_obs_params,
+                attr_obs_params,
                 self.max_features,
                 seed,
                 leaf_model=leaf_model,
@@ -676,8 +681,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         `river.linear_model.LinearRegression` with the default hyperparameters
          is used.
     model_selector_decay
-        The exponential decaying factor applied to the learning models' squared
-        errors, that are monitored if `leaf_prediction='adaptive'`. Must be
+        [*Tree parameter*] The exponential decaying factor applied to the learning models'
+        squared errors, that are monitored if `leaf_prediction='adaptive'`. Must be
         between `0` and `1`. The closer to `1`, the more importance is going to
         be given to past observations. On the other hand, if its value
         approaches `0`, the recent observed errors are going to have more
