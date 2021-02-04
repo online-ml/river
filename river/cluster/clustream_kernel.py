@@ -1,5 +1,5 @@
-from abc import ABCMeta
 import math
+from abc import ABCMeta
 
 EPSILON = 0.00005
 MIN_VARIANCE = 1e-50
@@ -8,8 +8,9 @@ MIN_VARIANCE = 1e-50
 
 
 class ClustreamKernel(metaclass=ABCMeta):
-
-    def __init__(self, x=None, sample_weight=None, cluster=None, timestamp=None, T=None, M=None):
+    def __init__(
+        self, x=None, sample_weight=None, cluster=None, timestamp=None, T=None, M=None
+    ):
 
         self.T = T
         self.M = M
@@ -67,7 +68,7 @@ class ClustreamKernel(metaclass=ABCMeta):
             res[i] = ss_div_n - ls_div_n_squared
 
             if res[i] <= 0.0:
-                if res[i] > - EPSILON:
+                if res[i] > -EPSILON:
                     res[i] = MIN_VARIANCE
         return res
 
@@ -87,7 +88,9 @@ class ClustreamKernel(metaclass=ABCMeta):
     def relevance_stamp(self):
         if self.N < 2 * self.M:
             return self._mu_time
-        return self._mu_time + self._sigma_time * self._quantile(float(self.M)/(2 * self.N))
+        return self._mu_time + self._sigma_time * self._quantile(
+            float(self.M) / (2 * self.N)
+        )
 
     @property
     def _mu_time(self):
@@ -95,7 +98,7 @@ class ClustreamKernel(metaclass=ABCMeta):
 
     @property
     def _sigma_time(self):
-        return math.sqrt(self.SST/self.N - (self.LST/self.N) * (self.LST/self.N))
+        return math.sqrt(self.SST / self.N - (self.LST / self.N) * (self.LST / self.N))
 
     def _quantile(self, z):
         assert 0 <= z <= 1

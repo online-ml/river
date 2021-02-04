@@ -1,5 +1,6 @@
-import sys
 import math
+import sys
+
 from river import base, cluster
 from river.cluster.clustream_kernel import ClustreamKernel
 
@@ -84,12 +85,16 @@ class Clustream(base.Clusterer):
        DOI: 10.1109/SITIS.2017.77
 
     """
-    def __init__(self, seed: int = None,
-                 time_window: int = 1000,
-                 max_kernels: int = 100,
-                 kernel_radius_factor: int = 2,
-                 number_of_clusters: int = 5,
-                 **kwargs):
+
+    def __init__(
+        self,
+        seed: int = None,
+        time_window: int = 1000,
+        max_kernels: int = 100,
+        kernel_radius_factor: int = 2,
+        number_of_clusters: int = 5,
+        **kwargs
+    ):
         super().__init__()
         self.time_window = time_window
         self.time_stamp = -1
@@ -97,7 +102,9 @@ class Clustream(base.Clusterer):
         self.initialized = False
         self.buffer = {}
         self.buffer_size = max_kernels
-        self.centers = {}  # add this to retrieve centers later for the evaluation of models through
+        self.centers = (
+            {}
+        )  # add this to retrieve centers later for the evaluation of models through
         self.kernel_radius_factor = kernel_radius_factor
         self.max_kernels = max_kernels
         self.number_of_clusters = number_of_clusters
@@ -145,15 +152,23 @@ class Clustream(base.Clusterer):
 
         if not self.initialized:
             if len(self.buffer) < self.buffer_size:
-                self.buffer[len(self.buffer)] = ClustreamKernel(x=x, sample_weight=sample_weight,
-                                                                timestamp=self.time_stamp,
-                                                                T=self.kernel_radius_factor, M=self.max_kernels)
+                self.buffer[len(self.buffer)] = ClustreamKernel(
+                    x=x,
+                    sample_weight=sample_weight,
+                    timestamp=self.time_stamp,
+                    T=self.kernel_radius_factor,
+                    M=self.max_kernels,
+                )
                 return self
             else:
                 for i in range(self.buffer_size):
-                    self.kernels[i] = ClustreamKernel(x=self.buffer[i].center, sample_weight=1.0,
-                                                      timestamp=self.time_stamp,
-                                                      T=self.kernel_radius_factor, M=self.max_kernels)
+                    self.kernels[i] = ClustreamKernel(
+                        x=self.buffer[i].center,
+                        sample_weight=1.0,
+                        timestamp=self.time_stamp,
+                        T=self.kernel_radius_factor,
+                        M=self.max_kernels,
+                    )
             self.buffer.clear()
             self.initialized = True
 
@@ -192,9 +207,13 @@ class Clustream(base.Clusterer):
         """try to delete old kernel"""
         for i, kernel in self.kernels.items():
             if kernel.relevance_stamp < threshold:
-                self.kernels[i] = ClustreamKernel(x=x, sample_weight=sample_weight,
-                                                  timestamp=self.time_stamp,
-                                                  T=self.kernel_radius_factor, M=self.max_kernels)
+                self.kernels[i] = ClustreamKernel(
+                    x=x,
+                    sample_weight=sample_weight,
+                    timestamp=self.time_stamp,
+                    T=self.kernel_radius_factor,
+                    M=self.max_kernels,
+                )
 
                 return self
 
@@ -211,9 +230,13 @@ class Clustream(base.Clusterer):
                     closest_a = i
                     closest_b = j
         self.kernels[closest_a].add(self.kernels[closest_b])
-        self.kernels[closest_b] = ClustreamKernel(x=x, sample_weight=sample_weight,
-                                                  timestamp=self.time_stamp,
-                                                  T=self.kernel_radius_factor, M=self.max_kernels)
+        self.kernels[closest_b] = ClustreamKernel(
+            x=x,
+            sample_weight=sample_weight,
+            timestamp=self.time_stamp,
+            T=self.kernel_radius_factor,
+            M=self.max_kernels,
+        )
 
         return self
 
@@ -221,8 +244,12 @@ class Clustream(base.Clusterer):
 
         if not self.initialized:
             return {}
-        res = {i: ClustreamKernel(cluster=self.kernels[i], T=self.kernel_radius_factor, M=self.max_kernels)
-               for i in range(len(self.kernels))}
+        res = {
+            i: ClustreamKernel(
+                cluster=self.kernels[i], T=self.kernel_radius_factor, M=self.max_kernels
+            )
+            for i in range(len(self.kernels))
+        }
         return res
 
     def learn_predict_one(self, x, sample_weight=None):
@@ -280,7 +307,9 @@ class Clustream(base.Clusterer):
         for i, micro_cluster in micro_clusters.items():
             distance = 0
             for j in range(len(x)):
-                distance += (micro_cluster.center[j] - x[j]) * (micro_cluster.center[j] - x[j])
+                distance += (micro_cluster.center[j] - x[j]) * (
+                    micro_cluster.center[j] - x[j]
+                )
             distance = math.sqrt(distance)
             if distance < min_distance:
                 min_distance = distance
@@ -296,7 +325,7 @@ class Clustream(base.Clusterer):
         return math.sqrt(distance)
 
     def predict_one(self, x):
-        """ Predict cluster index for each sample.
+        """Predict cluster index for each sample.
 
         Convenience method; equivalent to calling partial_fit(x) followed by predict(x).
 
@@ -314,16 +343,20 @@ class Clustream(base.Clusterer):
 
         """
 
-        micro_cluster_centers = {i: self.get_micro_clustering_result()[i].center
-                                 for i in range(len(self.get_micro_clustering_result()))}
+        micro_cluster_centers = {
+            i: self.get_micro_clustering_result()[i].center
+            for i in range(len(self.get_micro_clustering_result()))
+        }
 
         # implementing the incremental KMeans in River to generate clusters from micro cluster centers
-        kmeans = cluster.KMeans(n_clusters=self.number_of_clusters, seed=self.seed, **self.kwargs)
+        kmeans = cluster.KMeans(
+            n_clusters=self.number_of_clusters, seed=self.seed, **self.kwargs
+        )
         for center in micro_cluster_centers.values():
             kmeans = kmeans.learn_one(center)
 
         self.centers = kmeans.centers
-            
+
         index, _ = self._get_closest_kernel(x, self.get_micro_clustering_result())
         y = kmeans.predict_one(micro_cluster_centers[index])
 
