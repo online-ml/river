@@ -5,7 +5,7 @@ import math
 import numbers
 import typing
 
-from scipy.stats import f as FTest
+from scipy.stats import f as f_dist
 
 from river import base, stats
 
@@ -41,8 +41,6 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         gamma,
         nominal_attributes,
         quantization_strategy,
-        quantization_radius_div,
-        default_radius,
     ):
 
         self.delta = delta
@@ -62,13 +60,21 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
             set(nominal_attributes) if nominal_attributes else set()
         )
 
-        if quantization_strategy not in self._VALID_QUANTIZATION_POLICIES:
+        if 2 <= len(quantization_strategy) <= 3:
+            if len(quantization_strategy) == 2:
+                self.quantization_strategy = (*quantization_strategy, 0.01)
+            else:
+                self.quantization_strategy = quantization_strategy
+        else:
             raise ValueError(
-                'Invalid "quantization_strategy": {}'.format(quantization_strategy)
+                'Invalid number of parameters passed to "quantization_strategy".'
+                "Two or three values must be passed."
             )
-        self.quantization_strategy = quantization_strategy
-        self.quantization_radius_div = quantization_radius_div
-        self.default_radius = default_radius
+
+        if self.quantization_strategy[0] not in self._VALID_QUANTIZATION_POLICIES:
+            raise ValueError(
+                f'Invalid "quantization_strategy": {self.quantization_strategy[0]}'
+            )
 
         self._root = SGTLearningNode(prediction=self.init_pred)
 
@@ -113,19 +119,19 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
     def _get_quantization_radius(self, feat_id: typing.Hashable):
         """ Get the quantization radius for a given input feature. """
-        if self.quantization_strategy == self._CONSTANT_RAD:
-            return self.default_radius
+        if self.quantization_strategy[0] == self._CONSTANT_RAD:
+            return self.quantization_strategy[1]
 
         if self._n_observations < 2:
             # Default radius for quantization: might create too many bins at first
-            return self.default_radius
+            return self.quantization_strategy[2]
 
         std_ = math.sqrt(self._features_mean_var[feat_id].get())
 
         if math.isclose(std_, 0):
-            return self.default_radius
+            return self.quantization_strategy[2]
 
-        return std_ / self.quantization_radius_div
+        return std_ / self.quantization_strategy[1]
 
     def _update_tree(self, x: dict, grad_hess: GradHess, w: float):
         """ Update Streaming Gradient Tree with a single instance. """
@@ -162,7 +168,7 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         if f_value is None:
             return 1.0
 
-        return 1 - FTest.cdf(f_value, 1, n_observations - 1)
+        return 1 - f_dist.cdf(f_value, 1, n_observations - 1)
 
     def learn_one(self, x, y, *, w=1.0):
         self._update_features_stats(x)
@@ -252,20 +258,24 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
         The smaller the interval used, the more points are going to be stored by the tree
         between splits. Although using more points ought to increase the memory footprint and
         runtime, the split candidates potentially are going to be better. When the trees are
-        created and no data was observed, the initial radius is defined by the parameter
-        `default_radius`. The next nodes are going to use the policy define by this
-        parameter.</br>
-        Valid values are:
-        - 'stddiv': use the standard deviation of the feature divided by `quantization_radius_div`
-        as the radius.</br>
-        - 'constant': use the value defined in 'default_radius' as the static quantization
-        interval.
-    quantization_radius_div
-        Value by which the standard deviation of numeric features is going to be divided to define
-        the quantization radius. Only used when `quantization_strategy='stddiv'`.
-    default_radius
-        Quantization radius used when the tree is created and no data is observed or when
-        `quantization_strategy='constant'`.
+        created and no data quantization_strategy
+        Defines the policy used to define the quantization radius applied on numerical
+        attributes' discretization. Each time a new leaf is created, a radius, or
+        discretization interval, is assigned to each feature in order to quantize it.
+        The smaller the interval used, the more points are going to be stored by the tree
+        between splits. Although using more points ought to increase the memory footprint and
+        runtime, the split candidates potentially are going to be better. When the trees are
+        created and no data was observed, an initial radius must be applied to quantize the
+        incoming features. The feature quantization is controlled by a tuple containing two or
+        three positions, in the following order:</br>
+        1. Quantization policy: can be either `'stddiv'` or `'constant'`. The former uses a
+        proportion of the features' standard deviation as radius, while the latter uses a constant
+        value.</br>
+        2. The standard deviation proportion (value by which the standard deviation will be
+        divided) or a constant radius value, as defined in the first position of the tuple.</br>
+        3. [Optional] If the quantization policy is `'stddiv'`, an inicial radius value must be
+        passed to be used as a cold-start for the feature quantization. If not provided, `0.01`
+        is assumed as default.
 
     Examples
     --------
@@ -309,9 +319,10 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
         lambda_value: float = 0.1,
         gamma: float = 1.0,
         nominal_attributes: typing.Optional[typing.List] = None,
-        quantization_strategy: str = "stddiv",
-        quantization_radius_div: float = 2.0,
-        default_radius: float = 0.01,
+        quantization_strategy: typing.Tuple[str, float, typing.Optional[float]] = (
+            "stddiv",
+            3.0,
+        ),
     ):
 
         super().__init__(
@@ -323,8 +334,6 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
             gamma=gamma,
             nominal_attributes=nominal_attributes,
             quantization_strategy=quantization_strategy,
-            quantization_radius_div=quantization_radius_div,
-            default_radius=default_radius,
         )
 
         self._objective = BinaryCrossEntropyObjective()
@@ -379,20 +388,24 @@ class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
         The smaller the interval used, the more points are going to be stored by the tree
         between splits. Although using more points ought to increase the memory footprint and
         runtime, the split candidates potentially are going to be better. When the trees are
-        created and no data was observed, the initial radius is defined by the parameter
-        `default_radius`. The next nodes are going to use the policy define by this
-        parameter.</br>
-        Valid values are:
-        - 'stddiv': use the standard deviation of the feature divided by `quantization_radius_div`
-        as the radius.</br>
-        - 'constant': use the value defined in 'default_radius' as the static quantization
-        interval.
-    quantization_radius_div
-        Value by which the standard deviation of numeric features is going to be divided to define
-        the quantization radius. Only used when `quantization_strategy='stddiv'`.
-    default_radius
-        Quantization radius used when the tree is created and no data is observed or when
-        `quantization_strategy='constant'`.
+        created and no data quantization_strategy
+        Defines the policy used to define the quantization radius applied on numerical
+        attributes' discretization. Each time a new leaf is created, a radius, or
+        discretization interval, is assigned to each feature in order to quantize it.
+        The smaller the interval used, the more points are going to be stored by the tree
+        between splits. Although using more points ought to increase the memory footprint and
+        runtime, the split candidates potentially are going to be better. When the trees are
+        created and no data was observed, an initial radius must be applied to quantize the
+        incoming features. The feature quantization is controlled by a tuple containing two or
+        three positions, in the following order:</br>
+        1. Quantization policy: can be either `'stddiv'` or `'constant'`. The former uses a
+        proportion of the features' standard deviation as radius, while the latter uses a constant
+        value.</br>
+        2. The standard deviation proportion (value by which the standard deviation will be
+        divided) or a constant radius value, as defined in the first position of the tuple.</br>
+        3. [Optional] If the quantization policy is `'stddiv'`, an inicial radius value must be
+        passed to be used as a cold-start for the feature quantization. If not provided, `0.01`
+        is assumed as default.
 
     Examples
     --------
@@ -436,9 +449,10 @@ class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
         lambda_value: float = 0.1,
         gamma: float = 1.0,
         nominal_attributes: typing.Optional[typing.List] = None,
-        quantization_strategy: str = "stddiv",
-        quantization_radius_div: float = 2.0,
-        default_radius: float = 0.01,
+        quantization_strategy: typing.Tuple[str, float, typing.Optional[float]] = (
+            "stddiv",
+            3.0,
+        ),
     ):
 
         super().__init__(
@@ -450,8 +464,6 @@ class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
             gamma=gamma,
             nominal_attributes=nominal_attributes,
             quantization_strategy=quantization_strategy,
-            quantization_radius_div=quantization_radius_div,
-            default_radius=default_radius,
         )
 
         self._objective = SquaredErrorObjective()
