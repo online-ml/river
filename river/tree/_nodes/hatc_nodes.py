@@ -2,9 +2,9 @@ import math
 from abc import ABCMeta, abstractmethod
 
 from river.drift import ADWIN
+from river.tree._utils import do_naive_bayes_prediction
 from river.utils.skmultiflow_utils import check_random_state, normalize_values_in_dict
 
-from .._tree_utils import do_naive_bayes_prediction
 from .base import FoundNode, SplitNode
 from .htc_nodes import LearningNodeNBA
 
