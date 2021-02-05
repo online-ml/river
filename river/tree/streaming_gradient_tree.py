@@ -258,13 +258,6 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
         The smaller the interval used, the more points are going to be stored by the tree
         between splits. Although using more points ought to increase the memory footprint and
         runtime, the split candidates potentially are going to be better. When the trees are
-        created and no data quantization_strategy
-        Defines the policy used to define the quantization radius applied on numerical
-        attributes' discretization. Each time a new leaf is created, a radius, or
-        discretization interval, is assigned to each feature in order to quantize it.
-        The smaller the interval used, the more points are going to be stored by the tree
-        between splits. Although using more points ought to increase the memory footprint and
-        runtime, the split candidates potentially are going to be better. When the trees are
         created and no data was observed, an initial radius must be applied to quantize the
         incoming features. The feature quantization is controlled by a tuple containing two or
         three positions, in the following order:</br>
@@ -382,13 +375,6 @@ class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
         List with identifiers of the nominal attributes. If None, all features containing
         numbers are assumed to be numeric.
     quantization_strategy
-        Defines the policy used to define the quantization radius applied on numerical
-        attributes' discretization. Each time a new leaf is created, a radius, or
-        discretization interval, is assigned to each feature in order to quantize it.
-        The smaller the interval used, the more points are going to be stored by the tree
-        between splits. Although using more points ought to increase the memory footprint and
-        runtime, the split candidates potentially are going to be better. When the trees are
-        created and no data quantization_strategy
         Defines the policy used to define the quantization radius applied on numerical
         attributes' discretization. Each time a new leaf is created, a radius, or
         discretization interval, is assigned to each feature in order to quantize it.
