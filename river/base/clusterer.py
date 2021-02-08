@@ -19,10 +19,6 @@ class Clusterer(estimator.Estimator):
         x
             A dictionary of features.
 
-        sample_weight
-            Integer, optional (default=None)
-            Instance weight. If not provided, uniform weights are assumed. Applicability varies depending on the algorithm.
-
         Returns
         -------
         self
