@@ -11,7 +11,7 @@ class Clusterer(estimator.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, sample_weight: int = None) -> "Clusterer":
+    def learn_one(self, x: dict) -> "Clusterer":
         """Update the model with a set of features `x`.
 
         Parameters
