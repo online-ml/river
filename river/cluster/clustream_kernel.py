@@ -4,8 +4,6 @@ from abc import ABCMeta
 EPSILON = 0.00005
 MIN_VARIANCE = 1e-50
 
-# from file clustream_kernel.py in scikit-multiflow/clustering
-
 
 class ClustreamKernel(metaclass=ABCMeta):
     def __init__(
@@ -18,32 +16,34 @@ class ClustreamKernel(metaclass=ABCMeta):
         # check if the new instance has the same length
         # remove the case that x is None, because it would be impossible to get len(x)
         if x is not None and sample_weight is not None:
-            self.N = 1
-            self.LS = {}
-            self.SS = {}
+            self.n_samples = 1
+            self.linear_sum = {}
+            self.squared_sum = {}
             for i in range(len(x)):
-                self.LS[i] = x[i] * sample_weight
-                self.SS[i] = x[i] * x[i] * sample_weight
-            self.LST = timestamp * sample_weight
-            self.SST = timestamp * timestamp * sample_weight
+                self.linear_sum[i] = x[i] * sample_weight
+                self.squared_sum[i] = x[i] * x[i] * sample_weight
+            self.linear_sum_timestamp = timestamp * sample_weight
+            self.squared_sum_timestamp = timestamp * timestamp * sample_weight
         elif cluster is not None:
-            self.N = cluster.N
-            self.LS = cluster.LS.copy()
-            self.SS = cluster.SS.copy()
-            self.LST = cluster.LST
-            self.SST = cluster.SST
+            self.n_samples = cluster.n_samples
+            self.linear_sum = cluster.linear_sum.copy()
+            self.squared_sum = cluster.squared_sum.copy()
+            self.linear_sum_timestamp = cluster.linear_sum_timestamp
+            self.squared_sum_timestamp = cluster.squared_sum_timestamp
 
     @property
     def center(self):
-        res = {i: self.LS[i] / self.N for i in range(len(self.LS))}
+        res = {
+            i: self.linear_sum[i] / self.n_samples for i in range(len(self.linear_sum))
+        }
         return res
 
     def is_empty(self):
-        return self.N == 0
+        return self.n_samples == 0
 
     @property
     def radius(self):
-        if self.N == 1:
+        if self.n_samples == 1:
             return 0
         return self._deviation * self.T
 
@@ -59,9 +59,9 @@ class ClustreamKernel(metaclass=ABCMeta):
     @property
     def _variance_vector(self):
         res = {}
-        for i in range(len(self.LS)):
-            ls = self.LS[i]
-            ss = self.SS[i]
+        for i in range(len(self.linear_sum)):
+            ls = self.linear_sum[i]
+            ss = self.squared_sum[i]
             ls_div_n = ls / self.weight
             ls_div_n_squared = ls_div_n * ls_div_n
             ss_div_n = ss / self.weight
@@ -74,31 +74,35 @@ class ClustreamKernel(metaclass=ABCMeta):
 
     @property
     def weight(self):
-        return self.N
+        return self.n_samples
 
     def insert(self, x, sample_weight, timestamp):
-        self.N += sample_weight
-        self.LST += timestamp * sample_weight
-        self.SST += timestamp * sample_weight
+        self.n_samples += sample_weight
+        self.linear_sum_timestamp += timestamp * sample_weight
+        self.squared_sum_timestamp += timestamp * sample_weight
         for i in range(len(x)):
-            self.LS[i] += x[i] * sample_weight
-            self.SS[i] += x[i] * x[i] * sample_weight
+            self.linear_sum[i] += x[i] * sample_weight
+            self.squared_sum[i] += x[i] * x[i] * sample_weight
 
     @property
     def relevance_stamp(self):
-        if self.N < 2 * self.M:
+        if self.n_samples < 2 * self.M:
             return self._mu_time
         return self._mu_time + self._sigma_time * self._quantile(
-            float(self.M) / (2 * self.N)
+            float(self.M) / (2 * self.n_samples)
         )
 
     @property
     def _mu_time(self):
-        return self.LST / self.N
+        return self.linear_sum_timestamp / self.n_samples
 
     @property
     def _sigma_time(self):
-        return math.sqrt(self.SST / self.N - (self.LST / self.N) * (self.LST / self.N))
+        return math.sqrt(
+            self.squared_sum_timestamp / self.n_samples
+            - (self.linear_sum_timestamp / self.n_samples)
+            * (self.linear_sum_timestamp / self.n_samples)
+        )
 
     def _quantile(self, z):
         assert 0 <= z <= 1
@@ -131,12 +135,12 @@ class ClustreamKernel(metaclass=ABCMeta):
         return res
 
     def add(self, cluster):
-        assert len(cluster.LS) == len(self.LS)
-        self.N += cluster.N
-        self.LST += cluster.LST
-        self.SST += cluster.SST
-        self.add_vectors(self.LS, cluster.LS)
-        self.add_vectors(self.SS, cluster.SS)
+        assert len(cluster.linear_sum) == len(self.linear_sum)
+        self.n_samples += cluster.n_samples
+        self.linear_sum_timestamp += cluster.linear_sum_timestamp
+        self.squared_sum_timestamp += cluster.squared_sum_timestamp
+        self.add_vectors(self.linear_sum, cluster.linear_sum)
+        self.add_vectors(self.squared_sum, cluster.squared_sum)
 
     @staticmethod
     def add_vectors(v1, v2):
