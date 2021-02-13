@@ -231,7 +231,7 @@ def progressive_val_score(
 
     for checkpoint in checkpoints:
 
-        msg = f"[{checkpoint['Training samples']:,d}] {metric}"
+        msg = f"[{checkpoint['Step']:,d}] {metric}"
         if show_time:
             msg += f" – {checkpoint['Time']}"
         if show_memory:
