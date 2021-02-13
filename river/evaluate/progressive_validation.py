@@ -1,7 +1,7 @@
 import datetime as dt
-import itertools
 import time
 import typing
+from itertools import accumulate, cycle
 
 from river import base, metrics, stream, utils
 
@@ -222,7 +222,7 @@ def progressive_val_score(
         dataset,
         model,
         metric,
-        checkpoints=itertools.cycle([print_every]) if print_every else iter([]),
+        checkpoints=accumulate(cycle([print_every])) if print_every else iter([]),
         moment=moment,
         delay=delay,
         measure_time=show_time,
