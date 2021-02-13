@@ -57,12 +57,12 @@ def _progressive_validation(
                 results = {m.__class__.__name__: m.get() for m in metric}
             else:
                 results = {metric.__class__.__name__: metric.get()}
-            results['Step'] = n_total_answers
+            results["Step"] = n_total_answers
             if measure_time:
                 now = time.perf_counter()
-                results['Time'] = dt.timedelta(seconds=now - start)
+                results["Time"] = dt.timedelta(seconds=now - start)
             if measure_memory:
-                results['Memory'] = model._memory_usage
+                results["Memory"] = model._memory_usage
             yield results
             next_checkpoint = next(checkpoints, None)
 
