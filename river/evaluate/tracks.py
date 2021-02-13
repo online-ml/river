@@ -1,11 +1,7 @@
 import typing
 
-from river import base
-from river import datasets
-from river import metrics
-
+from river import datasets, metrics
 from river.evaluate.progressive_validation import _progressive_validation
-
 
 __all__ = ["load_binary_clf_tracks"]
 
@@ -59,13 +55,13 @@ def load_binary_clf_tracks() -> typing.List[Track]:
 
     return [
         Track(
-            name='Phishing',
+            name="Phishing",
             dataset=datasets.Phishing(),
             metric=metrics.Accuracy() + metrics.F1(),
         ),
         Track(
-            name='Bananas',
+            name="Bananas",
             dataset=datasets.Bananas(),
             metric=metrics.Accuracy() + metrics.F1(),
-        )
+        ),
     ]
