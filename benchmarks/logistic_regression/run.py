@@ -66,7 +66,7 @@ class PyTorchBinaryClassifier(PyTorchModel, Classifier):
         p = self.network(x).item()
         return {True: p, False: 1.0 - p}
 
-class VW2CremeBase:
+class VW2RiverBase:
 
     def __init__(self, *args, **kwargs):
         self.vw = pyvw.vw(*args, **kwargs)
@@ -75,7 +75,7 @@ class VW2CremeBase:
         return ' '.join(f'{k}:{v}' for k, v in x.items())
 
 
-class VW2CremeClassifier(VW2CremeBase, Classifier):
+class VW2RiverClassifier(VW2RiverBase, Classifier):
 
     def learn_one(self, x, y):
 
@@ -115,7 +115,7 @@ MODELS = {
         loss=torch.nn.BCELoss(),
         optimizer_func=lambda params: torch.optim.SGD(params, lr=LEARNING_RATE)
     ),
-    'Vowpal Wabbit': VW2CremeClassifier(
+    'Vowpal Wabbit': VW2RiverClassifier(
         sgd=True,
         learning_rate=LEARNING_RATE,
         loss_function='logistic',
