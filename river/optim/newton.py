@@ -26,7 +26,7 @@ class Newton(base.Optimizer):
         self.eps = eps
         self.H_inv = {}
 
-    def _update_after_pred(self, w, g):
+    def _step(self, w, g):
 
         for i in g:
             if (i, i) not in self.H_inv:

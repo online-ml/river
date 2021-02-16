@@ -131,7 +131,7 @@ class Baseline(base.Recommender):
         i_grad_bias = {item: g_loss + self.l2 * self.i_biases[item]}
 
         # Update biases
-        self.u_biases = self.u_optimizer.update_after_pred(self.u_biases, u_grad_bias)
-        self.i_biases = self.i_optimizer.update_after_pred(self.i_biases, i_grad_bias)
+        self.u_biases = self.u_optimizer.step(self.u_biases, u_grad_bias)
+        self.i_biases = self.i_optimizer.step(self.i_biases, i_grad_bias)
 
         return self

@@ -93,7 +93,7 @@ class FM(BaseFM):
 
         # Finally update the latent weights
         for j in x.keys():
-            self.latents[j] = self.latent_optimizer.update_after_pred(
+            self.latents[j] = self.latent_optimizer.step(
                 w=v[j], g=gradients[j]
             )
 
