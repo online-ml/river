@@ -147,11 +147,7 @@ class FunkMF(base.Recommender):
         }
 
         # Update latent weights
-        self.u_latents = self.u_optimizer.update_after_pred(
-            self.u_latents, u_latent_grad
-        )
-        self.i_latents = self.i_optimizer.update_after_pred(
-            self.i_latents, i_latent_grad
-        )
+        self.u_latents = self.u_optimizer.step(self.u_latents, u_latent_grad)
+        self.i_latents = self.i_optimizer.step(self.i_latents, i_latent_grad)
 
         return self
