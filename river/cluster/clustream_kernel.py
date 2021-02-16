@@ -7,7 +7,13 @@ MIN_VARIANCE = 1e-50
 
 class CluStreamKernel(metaclass=ABCMeta):
     def __init__(
-        self, x=None, sample_weight=None, cluster=None, timestamp=None, kernel_radius_factor=None, max_kernels=None
+        self,
+        x=None,
+        sample_weight=None,
+        cluster=None,
+        timestamp=None,
+        kernel_radius_factor=None,
+        max_kernels=None,
     ):
 
         self.kernel_radius_factor = kernel_radius_factor

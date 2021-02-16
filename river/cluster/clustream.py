@@ -175,7 +175,9 @@ class CluStream(base.Clusterer):
             return {}
         res = {
             i: CluStreamKernel(
-                cluster=self.kernels[i], kernel_radius_factor=self.kernel_radius_factor, max_kernels=self.max_kernels
+                cluster=self.kernels[i],
+                kernel_radius_factor=self.kernel_radius_factor,
+                max_kernels=self.max_kernels,
             )
             for i in range(len(self.kernels))
         }
