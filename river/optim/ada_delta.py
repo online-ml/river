@@ -55,7 +55,7 @@ class AdaDelta(base.Optimizer):
     def _rms(self, x):
         return (x + self.eps) ** 0.5
 
-    def _update_after_pred(self, w, g):
+    def _step(self, w, g):
 
         for i, gi in g.items():
 

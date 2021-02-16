@@ -98,7 +98,7 @@ class BaseFM:
 
         # Update the weights
         weights_gradient = self._calculate_weights_gradients(x, g_loss)
-        self.weights = self.weight_optimizer.update_after_pred(
+        self.weights = self.weight_optimizer.step(
             w=self.weights, g=weights_gradient
         )
 
