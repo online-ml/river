@@ -94,9 +94,7 @@ class SoftmaxRegression(base.Classifier):
             gradient = {
                 i: xi * loss + self.l2 * weights.get(i, 0) for i, xi in x.items()
             }
-            self.weights[label] = self.optimizers[label].step(
-                w=weights, g=gradient
-            )
+            self.weights[label] = self.optimizers[label].step(w=weights, g=gradient)
 
         return self
 

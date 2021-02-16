@@ -2,12 +2,7 @@ import abc
 
 import numpy as np
 
-
-__all__ = [
-    'ReLU',
-    'Sigmoid',
-    'Identity'
-]
+__all__ = ["ReLU", "Sigmoid", "Identity"]
 
 
 class Activation:

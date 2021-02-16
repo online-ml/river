@@ -121,13 +121,9 @@ class FwFM(BaseFM):
 
         # Finally update the latent and interaction weights
         for j in x.keys():
-            self.latents[j] = self.latent_optimizer.step(
-                w=v[j], g=latent_gradients[j]
-            )
+            self.latents[j] = self.latent_optimizer.step(w=v[j], g=latent_gradients[j])
 
-        self.int_weights = self.int_weight_optimizer.step(
-            w=w_int, g=int_gradients
-        )
+        self.int_weights = self.int_weight_optimizer.step(w=w_int, g=int_gradients)
 
 
 class FwFMRegressor(FwFM, base.Regressor):
