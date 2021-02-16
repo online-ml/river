@@ -1,12 +1,11 @@
 import math
-import sys
 
 from river import base, cluster
-from river.cluster.clustream_kernel import ClustreamKernel
+from river.cluster.clustream_kernel import CluStreamKernel
 
 
-class Clustream(base.Clusterer):
-    """Clustream
+class CluStream(base.Clusterer):
+    """CluStream
 
     It maintains statistical information about the data using micro-clusters.
     These micro-clusters are temporal extensions of cluster feature vectors.
@@ -21,27 +20,28 @@ class Clustream(base.Clusterer):
        If RandomState instance, seed is the random number generator;
        If None, the random number generator is the RandomState instance used
        by `np.random`.
-       It is used in the `KMeans` algorithm for the offline clustering, which is the native `KMneans` implemented in `River`.
+       It is used in the `KMeans` algorithm for the offline clustering,
+       which is the native `KMneans` implemented in `River`.
 
     time_window
-      The rang of the window
-      if the current time is T and the time window is h, we should only consider
-      about the data that arrived within the period (T-h,T)
+        The rang of the window
+        if the current time is T and the time window is h, we should only consider
+        about the data that arrived within the period (T-h,T).
 
     max_kernels
-      The Maximum number of micro kernels to use
+        The maximum number of micro kernels to use.
 
     kernel_radius_factor
-      Multiplier for the kernel radius
-      When deciding to add a new data point to a micro-cluster, the maximum boundary
-      is defined as a factor of the kernel_radius_factor of the RMS deviation of the
-      data points in the micro-cluster from the centroid
+        Multiplier for the kernel radius.
+        When deciding to add a new data point to a micro-cluster, the maximum boundary
+        is defined as a factor of the kernel_radius_factor of the RMS deviation of the
+        data points in the micro-cluster from the centroid.
 
     number_of_clusters
-        the clusters returned by the Kmeans algorithm using the summaries statistics
+        The clusters returned by the Kmeans algorithm using the summaries statistics.
 
     kwargs
-        Other parameters passed to the incremental kmeans at `river.cluster.KMeans`
+        Other parameters passed to the incremental kmeans at `cluster.KMeans`.
 
     Attributes
     ----------
@@ -67,7 +67,11 @@ class Clustream(base.Clusterer):
     ...     [4, 0]
     ... ]
 
-    >>> clustream_test = cluster.Clustream(time_window = 1, max_kernels = 3, number_of_clusters = 2, seed = 0, halflife = 0.4)
+    >>> clustream_test = cluster.CluStream(time_window=1,
+    ...                                    max_kernels=3,
+    ...                                    number_of_clusters=2,
+    ...                                    seed=0,
+    ...                                    halflife=0.4)
 
     >>> for i, (x, _) in enumerate(stream.iter_array(X)):
     ...     clustream_test = clustream_test.learn_one(x)
@@ -81,8 +85,8 @@ class Clustream(base.Clusterer):
     References
     ----------
     .. [1] A. Kumar, A. Singh, and R. Singh, 2017. An efficient hybrid-clustream algorithm
-       for stream mining. In Proceedings of the 13th International Conference on Signal-Image Technology & Internet-Based System (SITIS).
-       DOI: 10.1109/SITIS.2017.77
+       for stream mining. In Proceedings of the 13th International Conference on
+       Signal-Image Technology & Internet-Based System (SITIS). DOI: 10.1109/SITIS.2017.77
 
     """
 
@@ -112,18 +116,131 @@ class Clustream(base.Clusterer):
         self.seed = seed
         self.kwargs = kwargs
 
+    def _initialize_learn_one(self, x, sample_weight):
+        """
+        Used to initialise the `learn_one()` function when the first instance is passed.
+        When this function is called, it will generate a kernel from that instance, add it to the kernel
+        set, and set `initialized` to True to indicate that this algorithm has been started.
+        """
+
+        if len(self.buffer) < self.buffer_size:
+            self.buffer[len(self.buffer)] = CluStreamKernel(
+                x=x,
+                sample_weight=sample_weight,
+                timestamp=self.time_stamp,
+                kernel_radius_factor=self.kernel_radius_factor,
+                max_kernels=self.max_kernels,
+            )
+        else:
+            for i in range(self.buffer_size):
+                self.kernels[i] = CluStreamKernel(
+                    x=self.buffer[i].center,
+                    sample_weight=1.0,
+                    timestamp=self.time_stamp,
+                    kernel_radius_factor=self.kernel_radius_factor,
+                    max_kernels=self.max_kernels,
+                )
+            self.buffer.clear()
+            self.initialized = True
+
+    def _merge_closest_kernels(self, x, sample_weight):
+        """
+        When the point instance can not fit with the kernel, after the step of deleting kernels whose relevant
+        stamps are less than the threshold, the next step will be to merge closest kernels with each other.
+        """
+
+        closest_a = 0
+        closest_b = 0
+        min_distance = math.inf
+        for i, kernel_i in self.kernels.items():
+            center_a = kernel_i.center
+            for j, kernel_j in self.kernels.items():
+                dist = self._distance(center_a, kernel_j.center)
+                if dist < min_distance and j > i:
+                    min_distance = dist
+                    closest_a = i
+                    closest_b = j
+        self.kernels[closest_a].add(self.kernels[closest_b])
+        self.kernels[closest_b] = CluStreamKernel(
+            x=x,
+            sample_weight=sample_weight,
+            timestamp=self.time_stamp,
+            kernel_radius_factor=self.kernel_radius_factor,
+            max_kernels=self.max_kernels,
+        )
+
+    def _get_micro_clustering_result(self):
+
+        if not self.initialized:
+            return {}
+        res = {
+            i: CluStreamKernel(
+                cluster=self.kernels[i], kernel_radius_factor=self.kernel_radius_factor, max_kernels=self.max_kernels
+            )
+            for i in range(len(self.kernels))
+        }
+        return res
+
+    @staticmethod
+    def _get_closest_kernel(x, micro_clusters):
+        """
+
+        Parameters
+        ----------
+        x
+            A dictionary with n items (features).
+            Instance attributes. Due to the limitations of the dictionary, x on default is considered as one instance
+
+        micro_clusters
+            Dictionary like
+            Instance weight. If not provided, uniform weights are assumed
+
+        Returns
+        -------
+        closest_kernel_index : int
+            Index of closest kernel to the given instance
+
+        min_distance: float
+            distance between closest kernel to the given instance
+        """
+
+        min_distance = math.inf
+        closest_kernel_index = -1
+        for i, micro_cluster in micro_clusters.items():
+            distance = 0
+            for j in range(len(x)):
+                distance += (micro_cluster.center[j] - x[j]) * (
+                    micro_cluster.center[j] - x[j]
+                )
+            distance = math.sqrt(distance)
+            if distance < min_distance:
+                min_distance = distance
+                closest_kernel_index = i
+        return closest_kernel_index, min_distance
+
+    @staticmethod
+    def _distance(point_a, point_b):
+        distance = 0.0
+        for i in range(len(point_a)):
+            d = point_a[i] - point_b[i]
+            distance += d * d
+        return math.sqrt(distance)
+
     def learn_one(self, x, sample_weight=None):
         """Incrementally trains the model.
 
         Tasks performed before training:
+
         * Verify instance weight. if not provided, uniform weights (1.0) are assumed.
         * Update weight seen by model.
 
         Training tasks:
+
         * determinate closest kernel
         * Check whether instance fits into closest Kernel:
-            1- if data fits, put into kernel
-            2- if data does not fit, we need to free some space to insert a new kernel
+
+            * if data fits, put into kernel
+            * if data does not fit, we need to free some space to insert a new kernel
             and this can be done in two ways, delete an old kernel or merge two kernels
             which are close to each other
 
@@ -151,42 +268,22 @@ class Clustream(base.Clusterer):
         self.time_stamp += 1
 
         if not self.initialized:
-            if len(self.buffer) < self.buffer_size:
-                self.buffer[len(self.buffer)] = ClustreamKernel(
-                    x=x,
-                    sample_weight=sample_weight,
-                    timestamp=self.time_stamp,
-                    T=self.kernel_radius_factor,
-                    M=self.max_kernels,
-                )
-                return self
-            else:
-                for i in range(self.buffer_size):
-                    self.kernels[i] = ClustreamKernel(
-                        x=self.buffer[i].center,
-                        sample_weight=1.0,
-                        timestamp=self.time_stamp,
-                        T=self.kernel_radius_factor,
-                        M=self.max_kernels,
-                    )
-            self.buffer.clear()
-            self.initialized = True
-
+            self._initialize_learn_one(x=x, sample_weight=sample_weight)
             return self
 
-        """determine closest kernel"""
+        # determine the closest kernel with respect to the new point instance
         closest_kernel = None
-        min_distance = sys.float_info.max
+        min_distance = math.inf
         for kernel in self.kernels.values():
             distance = self._distance(x, kernel.center)
             if distance < min_distance:
                 closest_kernel = kernel
                 min_distance = distance
 
-        """check whether the instance fits into closest kernel"""
+        # check whether the new instance fits into the closest kernel
         radius = 0.0
         if closest_kernel.weight == 1:
-            radius = sys.float_info.max
+            radius = math.inf
             center = closest_kernel.center
             for kernel in self.kernels.values():
                 if kernel == closest_kernel:
@@ -200,129 +297,29 @@ class Clustream(base.Clusterer):
             closest_kernel.insert(x, sample_weight, self.time_stamp)
             return self
 
-        """Data does not fit, we need to free some space in order to insert a new kernel"""
+        # In the case the new instance does not fit, some space will be freed up in order to insert a new kernel.
+        # Next, old kernels will be deleted, and the two closest kernels will be merged.
 
+        # calculate the threshold to delete old kernels
         threshold = self.time_stamp - self.time_window
 
-        """try to delete old kernel"""
+        # try to delete old kernels when its relevant stamp is smaller than the threshold
         for i, kernel in self.kernels.items():
             if kernel.relevance_stamp < threshold:
-                self.kernels[i] = ClustreamKernel(
+                self.kernels[i] = CluStreamKernel(
                     x=x,
                     sample_weight=sample_weight,
                     timestamp=self.time_stamp,
-                    T=self.kernel_radius_factor,
-                    M=self.max_kernels,
+                    kernel_radius_factor=self.kernel_radius_factor,
+                    max_kernels=self.max_kernels,
                 )
 
                 return self
 
-        """try to merge closest two kernels"""
-        closest_a = 0
-        closest_b = 0
-        min_distance = sys.float_info.max
-        for i, kernel_i in self.kernels.items():
-            center_a = kernel_i.center
-            for j, kernel_j in self.kernels.items():
-                dist = self._distance(center_a, kernel_j.center)
-                if dist < min_distance and j > i:
-                    min_distance = dist
-                    closest_a = i
-                    closest_b = j
-        self.kernels[closest_a].add(self.kernels[closest_b])
-        self.kernels[closest_b] = ClustreamKernel(
-            x=x,
-            sample_weight=sample_weight,
-            timestamp=self.time_stamp,
-            T=self.kernel_radius_factor,
-            M=self.max_kernels,
-        )
+        # try to merge two closest kernels
+        self._merge_closest_kernels(x=x, sample_weight=sample_weight)
 
         return self
-
-    def get_micro_clustering_result(self):
-
-        if not self.initialized:
-            return {}
-        res = {
-            i: ClustreamKernel(
-                cluster=self.kernels[i], T=self.kernel_radius_factor, M=self.max_kernels
-            )
-            for i in range(len(self.kernels))
-        }
-        return res
-
-    def learn_predict_one(self, x, sample_weight=None):
-        """
-        Compute cluster centers and predict cluster index for each sample.
-
-        Convenience method; equivalent to calling learn_one(x) followed by predict_one(x).
-
-        Parameters
-        ----------
-        x
-            Instance attributes
-
-        sample_weight
-            Instance weights. If not provided, uniform weights are assumed
-
-        Returns
-        -------
-        y
-            Integer
-            Cluster label
-        """
-
-        self.learn_one(x, sample_weight)
-
-        y = self.predict_one(x)
-
-        return y
-
-    @staticmethod
-    def _get_closest_kernel(x, micro_clusters):
-        """
-
-        Parameters
-        ----------
-        x
-            A dictionary with n items (features).
-            Instance attributes. Due to the limitations of the dictionary, x on default is considered as one instance
-
-        micro_clusters
-            Dictionary like
-            Instance weight. If not provided, uniform weights are assumed
-
-        Returns
-        -------
-        closest_kernel_index : int
-            Index of closest kernel to the given instance
-
-        min_distance: float
-            distance between closest kernel to the given instance
-        """
-
-        min_distance = sys.float_info.max
-        closest_kernel_index = -1
-        for i, micro_cluster in micro_clusters.items():
-            distance = 0
-            for j in range(len(x)):
-                distance += (micro_cluster.center[j] - x[j]) * (
-                    micro_cluster.center[j] - x[j]
-                )
-            distance = math.sqrt(distance)
-            if distance < min_distance:
-                min_distance = distance
-                closest_kernel_index = i
-        return closest_kernel_index, min_distance
-
-    @staticmethod
-    def _distance(point_a, point_b):
-        distance = 0.0
-        for i in range(len(point_a)):
-            d = point_a[i] - point_b[i]
-            distance += d * d
-        return math.sqrt(distance)
 
     def predict_one(self, x):
         """Predict cluster index for each sample.
@@ -332,20 +329,18 @@ class Clustream(base.Clusterer):
         Parameters
         ----------
         x
-            A dictionary with n items
             Instance attributes
 
         Returns
         -------
         label
-            Integer
-            Cluster label
+            Cluster label generated from passing the point instance
 
         """
 
         micro_cluster_centers = {
-            i: self.get_micro_clustering_result()[i].center
-            for i in range(len(self.get_micro_clustering_result()))
+            i: self._get_micro_clustering_result()[i].center
+            for i in range(len(self._get_micro_clustering_result()))
         }
 
         # implementing the incremental KMeans in River to generate clusters from micro cluster centers
@@ -357,7 +352,7 @@ class Clustream(base.Clusterer):
 
         self.centers = kmeans.centers
 
-        index, _ = self._get_closest_kernel(x, self.get_micro_clustering_result())
+        index, _ = self._get_closest_kernel(x, self._get_micro_clustering_result())
         y = kmeans.predict_one(micro_cluster_centers[index])
 
         return y

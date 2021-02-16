@@ -11,7 +11,7 @@ class Clusterer(estimator.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, sample_weight: int = None) -> "Clusterer":
+    def learn_one(self, x: dict, sample_weight: int) -> "Clusterer":
         """Update the model with a set of features `x`.
 
         Parameters
@@ -20,8 +20,8 @@ class Clusterer(estimator.Estimator):
             A dictionary of features.
 
         sample_weight
-            Integer, optional (default=None)
-            Instance weight. If not provided, uniform weights are assumed. Applicability varies depending on the algorithm.
+            Instance weight. If not provided, uniform weights are assumed.
+            Applicability varies depending on the algorithm.
 
         Returns
         -------

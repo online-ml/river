@@ -5,13 +5,13 @@ EPSILON = 0.00005
 MIN_VARIANCE = 1e-50
 
 
-class ClustreamKernel(metaclass=ABCMeta):
+class CluStreamKernel(metaclass=ABCMeta):
     def __init__(
-        self, x=None, sample_weight=None, cluster=None, timestamp=None, T=None, M=None
+        self, x=None, sample_weight=None, cluster=None, timestamp=None, kernel_radius_factor=None, max_kernels=None
     ):
 
-        self.T = T
-        self.M = M
+        self.kernel_radius_factor = kernel_radius_factor
+        self.max_kernels = max_kernels
 
         # check if the new instance has the same length
         # remove the case that x is None, because it would be impossible to get len(x)
@@ -135,12 +135,12 @@ class ClustreamKernel(metaclass=ABCMeta):
         return res
 
     def add(self, cluster):
-        assert len(cluster.linear_sum) == len(self.linear_sum)
-        self.n_samples += cluster.n_samples
-        self.linear_sum_timestamp += cluster.linear_sum_timestamp
-        self.squared_sum_timestamp += cluster.squared_sum_timestamp
-        self.add_vectors(self.linear_sum, cluster.linear_sum)
-        self.add_vectors(self.squared_sum, cluster.squared_sum)
+        if len(cluster.linear_sum) == len(self.linear_sum):
+            self.n_samples += cluster.n_samples
+            self.linear_sum_timestamp += cluster.linear_sum_timestamp
+            self.squared_sum_timestamp += cluster.squared_sum_timestamp
+            self.add_vectors(self.linear_sum, cluster.linear_sum)
+            self.add_vectors(self.squared_sum, cluster.squared_sum)
 
     @staticmethod
     def add_vectors(v1, v2):
