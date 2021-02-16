@@ -211,17 +211,9 @@ class BiasedMF(base.Recommender):
         }
 
         # Update weights
-        self.u_biases = self.u_bias_optimizer.step(
-            self.u_biases, u_grad_bias
-        )
-        self.i_biases = self.i_bias_optimizer.step(
-            self.i_biases, i_grad_bias
-        )
-        self.u_latents = self.u_latent_optimizer.step(
-            self.u_latents, u_latent_grad
-        )
-        self.i_latents = self.i_latent_optimizer.step(
-            self.i_latents, i_latent_grad
-        )
+        self.u_biases = self.u_bias_optimizer.step(self.u_biases, u_grad_bias)
+        self.i_biases = self.i_bias_optimizer.step(self.i_biases, i_grad_bias)
+        self.u_latents = self.u_latent_optimizer.step(self.u_latents, u_latent_grad)
+        self.i_latents = self.i_latent_optimizer.step(self.i_latents, i_latent_grad)
 
         return self

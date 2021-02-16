@@ -3,13 +3,9 @@ import typing
 import numpy as np
 import pandas as pd
 
-from river import base
-from river import optim
+from river import base, optim
 
-
-__all__ = [
-    'MLPRegressor'
-]
+__all__ = ["MLPRegressor"]
 
 
 def xavier_init(dims: typing.Tuple[int], seed: int = None):
@@ -44,8 +40,14 @@ class MLP:
 
     """
 
-    def __init__(self, hidden_dims: typing.Tuple[int], activations, loss: optim.losses.Loss,
-                 optimizer: optim.Optimizer, seed: int = None):
+    def __init__(
+        self,
+        hidden_dims: typing.Tuple[int],
+        activations,
+        loss: optim.losses.Loss,
+        optimizer: optim.Optimizer,
+        seed: int = None,
+    ):
 
         self.activations = activations
         self.hidden_dims = hidden_dims
@@ -113,13 +115,13 @@ class MLP:
         delta = self.loss.gradient(y, y_pred) * final_activation.gradient(y_pred)
         dw = np.dot(a[self.n_layers - 1].T, delta)
 
-        update_params = {
-            self.n_layers - 1: (dw, delta)
-        }
+        update_params = {self.n_layers - 1: (dw, delta)}
 
         # Go through the layers in reverse order
         for i in range(self.n_layers - 2, 0, -1):
-            delta = np.dot(delta, self.w[i + 1].T) * self.activations[i - 1].gradient(z[i + 1])
+            delta = np.dot(delta, self.w[i + 1].T) * self.activations[i - 1].gradient(
+                z[i + 1]
+            )
             dw = np.dot(a[i].T, delta)
             update_params[i] = (dw, delta)
 
@@ -145,10 +147,9 @@ class MLP:
             y = y.to_frame()
 
         # The weights need initializing during the first call to partial_fit
-        if not hasattr(self, 'w'):
+        if not hasattr(self, "w"):
             self.w, self.b = xavier_init(
-                dims=(X.shape[1], *self.hidden_dims, y.shape[1]),
-                seed=self.seed
+                dims=(X.shape[1], *self.hidden_dims, y.shape[1]), seed=self.seed
             )
             self.features = X.columns.to_numpy()
             self.features.sort()
@@ -272,30 +273,33 @@ class MLPRegressor(base.Regressor, MLP):
 
     """
 
-    def __init__(self, hidden_dims, activations, loss: optim.losses.Loss = None,
-                 optimizer: optim.Optimizer = None, seed: int = None):
+    def __init__(
+        self,
+        hidden_dims,
+        activations,
+        loss: optim.losses.Loss = None,
+        optimizer: optim.Optimizer = None,
+        seed: int = None,
+    ):
         super().__init__(
             hidden_dims=hidden_dims,
             activations=activations,
             loss=loss or optim.losses.Squared(),
-            optimizer=optimizer or optim.SGD(.01),
-            seed=seed
+            optimizer=optimizer or optim.SGD(0.01),
+            seed=seed,
         )
 
     @classmethod
     def _default_params(self):
         from . import activations
+
         return {
-            'hidden_dims': (20,),
-            'activations': (
-                activations.ReLU,
-                activations.ReLU,
-                activations.Identity
-            )
+            "hidden_dims": (20,),
+            "activations": (activations.ReLU, activations.ReLU, activations.Identity),
         }
 
     def predict_many(self, X):
-        if not hasattr(self, 'w'):
+        if not hasattr(self, "w"):
             return pd.DataFrame({0: 0}, index=X.index)
         return self(X)
 
