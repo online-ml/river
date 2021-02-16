@@ -51,7 +51,7 @@ class CluStreamKernel(metaclass=ABCMeta):
     def radius(self):
         if self.n_samples == 1:
             return 0
-        return self._deviation * self.T
+        return self._deviation * self.kernel_radius_factor
 
     @property
     def _deviation(self):
@@ -92,10 +92,10 @@ class CluStreamKernel(metaclass=ABCMeta):
 
     @property
     def relevance_stamp(self):
-        if self.n_samples < 2 * self.M:
+        if self.n_samples < 2 * self.max_kernels:
             return self._mu_time
         return self._mu_time + self._sigma_time * self._quantile(
-            float(self.M) / (2 * self.n_samples)
+            float(self.max_kernels) / (2 * self.n_samples)
         )
 
     @property
