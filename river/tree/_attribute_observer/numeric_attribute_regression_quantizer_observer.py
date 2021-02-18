@@ -25,14 +25,14 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
 
     References
     ----------
-    Mastelini, S.M. and de Carvalho, A.C.P.D.L.F., 2020. Using dynamical quantization to perform
-    split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
+    [^1]: Mastelini, S.M. and de Leon Ferreira, A.C.P., 2021. Using dynamical quantization to
+    perform split attempts in online tree regressors. Pattern Recognition Letters.
 
     """
 
     def __init__(self, radius: float = 0.01):
         super().__init__()
-        self.radius = radius
+        self.radius = radius if radius > 0 else 0.01
         self._x_var = Var()
         self._quantizer = FeatureQuantizer(radius=self.radius)
 
@@ -106,7 +106,7 @@ class Slot:
         self._update_estimator(y, weight)
 
     def _init_estimator(self, y):
-        if isinstance(y, VectorDict):
+        if isinstance(y, dict):
             self.is_single_target = False
             self.y_stats = VectorDict(default_factory=functools.partial(Var))
             self._update_estimator = self._update_estimator_multivariate

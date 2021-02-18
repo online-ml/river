@@ -691,10 +691,18 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
     attr_obs
-        [*Tree parameter*] The attribute observer (AO) used to monitor the target
-        statistics of numeric features and perform splits. Parameters can be passed to the
-        AOs (when supported) by using `attr_obs_params`. Valid options are:</br>
+        [*Tree parameter*] The attribute observer (AO) used to monitor the target statistics of
+        numeric features and perform splits. Parameters can be passed to the AOs (when supported)
+        by using `attr_obs_params`. Valid options are:</br>
         - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
+        - `'qo'`: Quantizer Observer. This AO uses `radius` (defaults to `0.01`) to define a
+        cold-start for the quantization radius. As new leaves are created, new QO instances will
+        use the standard deviation of the input features divided by `std_div` (defaults to `3`)
+        as radius values. If `std_div` is `None`, the initially passed `radius` value will be
+        replicated to all QO instances.</br>
+        - `'te-bst'`: Truncated E-BST. This extension of E-BST first truncates the input values
+        before passing them to the binary search tree. The number of decimal places to consider
+        is given by `digits` (defaults to `3` digits).</br>
         See notes for more information about the supported AOs.
     attr_obs_params
         [*Tree parameter*] Parameters passed to the numeric AOs. See `attr_obs`
@@ -725,7 +733,28 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     candidates, similarly to batch decision tree algorithms. It ends up storing all
     observations between split attempts. However, E-BST automatically removes bad split
     points periodically from its structure and, thus, alleviates the memory and time
+    costs involved in its usage.Hoeffding trees rely on Attribute Observer (AO) algorithms to
+    monitor input features and perform splits. Nominal features can be easily dealt with, since
+    the partitions are well-defined. Numerical features, however, require more sophisticated
+    solutions. Currently, three AO algorithms are supported in `river` for regression trees:
+
+    - Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
+    candidates, similarly to batch decision tree algorithms. It ends up storing all
+    observations between split attempts. It has a $O(\\log n)$ cost per insertion in average,
+    where $n$ is the number of observations. In the worst case, i.e., when input features
+    values are passed in an ordered fashion, the insertion cost becomes $O(n)$. A naive E-BST
+    implementation has a $O(n)$ cost to evaluate split candidates since all stored points must
+    be evaluated. However, the implementation of E-BST in river automatically removes bad split
+    points periodically from its structure and, thus, alleviates the memory and time
     costs involved in its usage.
+    - Quantizer Observer (QO) uses a dynamical hash-based algorithm to discretize the numerical
+    input features and perform split attempts. QO has $O(1)$, $O(H)$, and $O(H\\log H)$ costs
+    of insertion, memory, and split candidate query, respectively, where $H$ is the number of
+    slots in QO's hash structure. Typically, $H \\ll n$.
+    - Truncated E-BST extends E-BST by rouding the input feature values before inserting them in
+    the binary search tree (BST). Hence, similar inputs will be mapped to the nodes in the BST
+    structure. This strategy might result in memory and processing time savings when compared to
+    the vanilla E-BST.
 
     References
     ----------
