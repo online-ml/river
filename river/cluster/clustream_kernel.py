@@ -1,48 +1,52 @@
 import math
 from abc import ABCMeta
 
+from river.utils.skmultiflow_utils import add_dict_values
+
 EPSILON = 0.00005
 MIN_VARIANCE = 1e-50
 
 
-class CluStreamKernel(metaclass=ABCMeta):
+class MicroCluster(metaclass=ABCMeta):
+    """ Micro-cluster class """
+
     def __init__(
         self,
-        x=None,
-        sample_weight=None,
-        cluster=None,
-        timestamp=None,
-        kernel_radius_factor=None,
-        max_kernels=None,
+        x: dict = None,
+        sample_weight: float = None,
+        micro_cluster=None,
+        timestamp: int = None,
+        micro_cluster_r_factor: int = None,
+        max_micro_clusters: int = None,
     ):
 
-        self.kernel_radius_factor = kernel_radius_factor
-        self.max_kernels = max_kernels
+        self.micro_cluster_r_factor = micro_cluster_r_factor
+        self.max_micro_clusters = max_micro_clusters
 
-        # check if the new instance has the same length
-        # remove the case that x is None, because it would be impossible to get len(x)
         if x is not None and sample_weight is not None:
+            # Initialize with sample x
             self.n_samples = 1
             self.linear_sum = {}
             self.squared_sum = {}
-            for i in range(len(x)):
-                self.linear_sum[i] = x[i] * sample_weight
-                self.squared_sum[i] = x[i] * x[i] * sample_weight
+            for key in x.keys():
+                self.linear_sum[key] = x[key] * sample_weight
+                self.squared_sum[key] = x[key] * x[key] * sample_weight
             self.linear_sum_timestamp = timestamp * sample_weight
             self.squared_sum_timestamp = timestamp * timestamp * sample_weight
-        elif cluster is not None:
-            self.n_samples = cluster.n_samples
-            self.linear_sum = cluster.linear_sum.copy()
-            self.squared_sum = cluster.squared_sum.copy()
-            self.linear_sum_timestamp = cluster.linear_sum_timestamp
-            self.squared_sum_timestamp = cluster.squared_sum_timestamp
+        elif micro_cluster is not None:
+            # Initialize with micro-cluster
+            self.n_samples = micro_cluster.n_samples
+            self.linear_sum = micro_cluster.linear_sum.copy()
+            self.squared_sum = micro_cluster.squared_sum.copy()
+            self.linear_sum_timestamp = micro_cluster.linear_sum_timestamp
+            self.squared_sum_timestamp = micro_cluster.squared_sum_timestamp
 
     @property
     def center(self):
-        res = {
-            i: self.linear_sum[i] / self.n_samples for i in range(len(self.linear_sum))
+        return {
+            i: linear_sum_i / self.n_samples
+            for i, linear_sum_i in self.linear_sum.items()
         }
-        return res
 
     def is_empty(self):
         return self.n_samples == 0
@@ -51,7 +55,7 @@ class CluStreamKernel(metaclass=ABCMeta):
     def radius(self):
         if self.n_samples == 1:
             return 0
-        return self._deviation * self.kernel_radius_factor
+        return self._deviation * self.micro_cluster_r_factor
 
     @property
     def _deviation(self):
@@ -65,17 +69,17 @@ class CluStreamKernel(metaclass=ABCMeta):
     @property
     def _variance_vector(self):
         res = {}
-        for i in range(len(self.linear_sum)):
-            ls = self.linear_sum[i]
-            ss = self.squared_sum[i]
+        for key in self.linear_sum.keys():
+            ls = self.linear_sum[key]
+            ss = self.squared_sum[key]
             ls_div_n = ls / self.weight
             ls_div_n_squared = ls_div_n * ls_div_n
             ss_div_n = ss / self.weight
-            res[i] = ss_div_n - ls_div_n_squared
+            res[key] = ss_div_n - ls_div_n_squared
 
-            if res[i] <= 0.0:
-                if res[i] > -EPSILON:
-                    res[i] = MIN_VARIANCE
+            if res[key] <= 0.0:
+                if res[key] > -EPSILON:
+                    res[key] = MIN_VARIANCE
         return res
 
     @property
@@ -83,7 +87,7 @@ class CluStreamKernel(metaclass=ABCMeta):
         return self.n_samples
 
     def insert(self, x, sample_weight, timestamp):
-        self.n_samples += sample_weight
+        self.n_samples += 1
         self.linear_sum_timestamp += timestamp * sample_weight
         self.squared_sum_timestamp += timestamp * sample_weight
         for i in range(len(x)):
@@ -92,10 +96,10 @@ class CluStreamKernel(metaclass=ABCMeta):
 
     @property
     def relevance_stamp(self):
-        if self.n_samples < 2 * self.max_kernels:
+        if self.n_samples < 2 * self.max_micro_clusters:
             return self._mu_time
         return self._mu_time + self._sigma_time * self._quantile(
-            float(self.max_kernels) / (2 * self.n_samples)
+            float(self.max_micro_clusters) / (2 * self.n_samples)
         )
 
     @property
@@ -145,13 +149,5 @@ class CluStreamKernel(metaclass=ABCMeta):
             self.n_samples += cluster.n_samples
             self.linear_sum_timestamp += cluster.linear_sum_timestamp
             self.squared_sum_timestamp += cluster.squared_sum_timestamp
-            self.add_vectors(self.linear_sum, cluster.linear_sum)
-            self.add_vectors(self.squared_sum, cluster.squared_sum)
-
-    @staticmethod
-    def add_vectors(v1, v2):
-        assert v1 is not None
-        assert v2 is not None
-        assert len(v1) == len(v2)
-        for i in range(len(v1)):
-            v1[i] += v2[i]
+            add_dict_values(self.linear_sum, cluster.linear_sum, inplace=True)
+            add_dict_values(self.squared_sum, cluster.squared_sum, inplace=True)

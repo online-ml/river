@@ -1,44 +1,51 @@
 import math
 
 from river import base, cluster
-from river.cluster.clustream_kernel import CluStreamKernel
+from river.cluster.clustream_kernel import MicroCluster
 
 
 class CluStream(base.Clusterer):
     """CluStream
 
-    It maintains statistical information about the data using micro-clusters.
-    These micro-clusters are temporal extensions of cluster feature vectors.
-    The micro-clusters are stored at snapshots in time following a pyramidal
-    pattern. This pattern allows to recall summary statistics from different
-    time horizons in [1]_.
+    The CluStream algorithm [^1] maintains statistical information about the
+    data using micro-clusters. These micro-clusters are temporal extensions of
+    cluster feature vectors. The micro-clusters are stored at snapshots in time
+    following a pyramidal pattern. This pattern allows to recall summary
+    statistics from different time horizons.
+
+    Training with a new point `p` is performed in two main tasks:
+
+    * Determinate closest micro-cluster to `p`
+
+    * Check whether `p` fits (memory) into the closest micro-cluster:
+
+        - if `p` fits, put into micro-cluster
+
+        - if `p` does not fit, free some space to insert a new micro-cluster.
+          This is done in two ways, delete an old micro-cluster or merge the
+          two micro-clusters closest to each other.
 
     Parameters
     ----------
     seed
-       If int, seed is the seed used by the random number generator;
-       If RandomState instance, seed is the random number generator;
-       If None, the random number generator is the RandomState instance used
-       by `np.random`.
-       It is used in the `KMeans` algorithm for the offline clustering,
-       which is the native `KMneans` implemented in `River`.
+       Random seed used for generating initial centroid positions.
 
     time_window
-        The rang of the window
-        if the current time is T and the time window is h, we should only consider
-        about the data that arrived within the period (T-h,T).
+        If the current time is `T` and the time window is `h`, we only consider
+        the data that arrived within the period `(T-h,T)`.
 
-    max_kernels
-        The maximum number of micro kernels to use.
+    max_micro_clusters
+        The maximum number of micro-clusters to use.
 
-    kernel_radius_factor
-        Multiplier for the kernel radius.
-        When deciding to add a new data point to a micro-cluster, the maximum boundary
-        is defined as a factor of the kernel_radius_factor of the RMS deviation of the
-        data points in the micro-cluster from the centroid.
+    micro_cluster_r_factor
+        Multiplier for the micro-cluster radius.
+        When deciding to add a new data point to a micro-cluster, the maximum
+        boundary is defined as a factor of the `micro_cluster_r_factor` of
+        the RMS deviation of the data points in the micro-cluster from the
+        centroid.
 
-    number_of_clusters
-        The clusters returned by the Kmeans algorithm using the summaries statistics.
+    n_macro_clusters
+        The number of clusters (k) for the k-means algorithm.
 
     kwargs
         Other parameters passed to the incremental kmeans at `cluster.KMeans`.
@@ -48,12 +55,20 @@ class CluStream(base.Clusterer):
     centers : dict
         Central positions of each cluster.
 
+    References
+    ----------
+    [^1]: Aggarwal, C.C., Philip, S.Y., Han, J. and Wang, J., 2003,
+          A framework for clustering evolving data streams.
+          In Proceedings 2003 VLDB conference (pp. 81-92). Morgan Kaufmann.
+
     Examples
     --------
 
-    In the following implementation, due to the limited number of points passed through the model,
-    max_kernels and time_window are set relatively low. Moreover, all points are learnt before any predictions are made.
-    The halflife are set at 0.4, passing from cluster.KMeans, to test the functionality of keyword arguments.
+    In the following example, `max_micro_clusters` and `time_window` are set
+    relatively low due to the limited number of training points.
+    Moreover, all points are learnt before any predictions are made.
+    The `halflife` is set at 0.4, to show that you can pass `cluster.KMeans`
+    parameters via keyword arguments.
 
     >>> from river import cluster
     >>> from river import stream
@@ -67,26 +82,20 @@ class CluStream(base.Clusterer):
     ...     [4, 0]
     ... ]
 
-    >>> clustream_test = cluster.CluStream(time_window=1,
-    ...                                    max_kernels=3,
-    ...                                    number_of_clusters=2,
-    ...                                    seed=0,
-    ...                                    halflife=0.4)
+    >>> clustream = cluster.CluStream(time_window=1,
+    ...                               max_micro_clusters=3,
+    ...                               n_macro_clusters=2,
+    ...                               seed=0,
+    ...                               halflife=0.4)
 
     >>> for i, (x, _) in enumerate(stream.iter_array(X)):
-    ...     clustream_test = clustream_test.learn_one(x)
+    ...     clustream = clustream.learn_one(x)
 
-    >>> clustream_test.predict_one({0: 1, 1: 1})
+    >>> clustream.predict_one({0: 1, 1: 1})
     1
 
-    >>> clustream_test.predict_one({0: 4, 1: 3})
+    >>> clustream.predict_one({0: 4, 1: 3})
     0
-
-    References
-    ----------
-    .. [1] A. Kumar, A. Singh, and R. Singh, 2017. An efficient hybrid-clustream algorithm
-       for stream mining. In Proceedings of the 13th International Conference on
-       Signal-Image Technology & Internet-Based System (SITIS). DOI: 10.1109/SITIS.2017.77
 
     """
 
@@ -94,171 +103,125 @@ class CluStream(base.Clusterer):
         self,
         seed: int = None,
         time_window: int = 1000,
-        max_kernels: int = 100,
-        kernel_radius_factor: int = 2,
-        number_of_clusters: int = 5,
+        max_micro_clusters: int = 100,
+        micro_cluster_r_factor: int = 2,
+        n_macro_clusters: int = 5,
         **kwargs
     ):
         super().__init__()
         self.time_window = time_window
         self.time_stamp = -1
-        self.kernels = {n: None for n in range(max_kernels)}
+        self.micro_clusters = {n: None for n in range(max_micro_clusters)}
         self.initialized = False
         self.buffer = {}
-        self.buffer_size = max_kernels
-        self.centers = (
-            {}
-        )  # add this to retrieve centers later for the evaluation of models through
-        self.kernel_radius_factor = kernel_radius_factor
-        self.max_kernels = max_kernels
-        self.number_of_clusters = number_of_clusters
+        self.max_micro_clusters = max_micro_clusters
+        self.centers = {}
+        self.micro_cluster_r_factor = micro_cluster_r_factor
+        self.max_micro_clusters = max_micro_clusters
+        self.n_macro_clusters = n_macro_clusters
         self._train_weight_seen_by_model = 0.0
         self.seed = seed
         self.kwargs = kwargs
 
-    def _initialize_learn_one(self, x, sample_weight):
-        """
-        Used to initialise the `learn_one()` function when the first instance is passed.
-        When this function is called, it will generate a kernel from that instance, add it to the kernel
-        set, and set `initialized` to True to indicate that this algorithm has been started.
-        """
+    def _initialize(self, x, sample_weight):
 
-        if len(self.buffer) < self.buffer_size:
-            self.buffer[len(self.buffer)] = CluStreamKernel(
+        # Create a micro-cluster with the new point
+        if len(self.buffer) < self.max_micro_clusters:
+            self.buffer[len(self.buffer)] = MicroCluster(
                 x=x,
                 sample_weight=sample_weight,
                 timestamp=self.time_stamp,
-                kernel_radius_factor=self.kernel_radius_factor,
-                max_kernels=self.max_kernels,
+                micro_cluster_r_factor=self.micro_cluster_r_factor,
+                max_micro_clusters=self.max_micro_clusters,
             )
         else:
-            for i in range(self.buffer_size):
-                self.kernels[i] = CluStreamKernel(
+            # The buffer is full. Use the micro-clusters centers to create the
+            # micro-clusters set.
+            for i in range(self.max_micro_clusters):
+                self.micro_clusters[i] = MicroCluster(
                     x=self.buffer[i].center,
                     sample_weight=1.0,
                     timestamp=self.time_stamp,
-                    kernel_radius_factor=self.kernel_radius_factor,
-                    max_kernels=self.max_kernels,
+                    micro_cluster_r_factor=self.micro_cluster_r_factor,
+                    max_micro_clusters=self.max_micro_clusters,
                 )
             self.buffer.clear()
             self.initialized = True
 
-    def _merge_closest_kernels(self, x, sample_weight):
-        """
-        When the point instance can not fit with the kernel, after the step of deleting kernels whose relevant
-        stamps are less than the threshold, the next step will be to merge closest kernels with each other.
-        """
+    def _maintain_micro_clusters(self, x, sample_weight):
+        # Calculate the threshold to delete old micro-clusters
+        threshold = self.time_stamp - self.time_window
 
+        # Delete old micro-clusters if its relevance stamp is smaller than the threshold
+        for i, micro_cluster_a in self.micro_clusters.items():
+            if micro_cluster_a.relevance_stamp < threshold:
+                self.micro_clusters[i] = MicroCluster(
+                    x=x,
+                    sample_weight=sample_weight,
+                    timestamp=self.time_stamp,
+                    micro_cluster_r_factor=self.micro_cluster_r_factor,
+                    max_micro_clusters=self.max_micro_clusters,
+                )
+                return self
+
+        # Merge the two closest micro-clusters
         closest_a = 0
         closest_b = 0
         min_distance = math.inf
-        for i, kernel_i in self.kernels.items():
-            center_a = kernel_i.center
-            for j, kernel_j in self.kernels.items():
-                dist = self._distance(center_a, kernel_j.center)
+        for i, micro_cluster_a in self.micro_clusters.items():
+            for j, micro_cluster_b in self.micro_clusters.items():
+                dist = self._distance(micro_cluster_a.center, micro_cluster_b.center)
                 if dist < min_distance and j > i:
                     min_distance = dist
                     closest_a = i
                     closest_b = j
-        self.kernels[closest_a].add(self.kernels[closest_b])
-        self.kernels[closest_b] = CluStreamKernel(
+        self.micro_clusters[closest_a].add(self.micro_clusters[closest_b])
+        self.micro_clusters[closest_b] = MicroCluster(
             x=x,
             sample_weight=sample_weight,
             timestamp=self.time_stamp,
-            kernel_radius_factor=self.kernel_radius_factor,
-            max_kernels=self.max_kernels,
+            micro_cluster_r_factor=self.micro_cluster_r_factor,
+            max_micro_clusters=self.max_micro_clusters,
         )
 
     def _get_micro_clustering_result(self):
-
         if not self.initialized:
             return {}
         res = {
-            i: CluStreamKernel(
-                cluster=self.kernels[i],
-                kernel_radius_factor=self.kernel_radius_factor,
-                max_kernels=self.max_kernels,
+            i: MicroCluster(
+                micro_cluster=micro_cluster,
+                micro_cluster_r_factor=self.micro_cluster_r_factor,
+                max_micro_clusters=self.max_micro_clusters,
             )
-            for i in range(len(self.kernels))
+            for i, micro_cluster in self.micro_clusters.items()
         }
         return res
 
-    @staticmethod
-    def _get_closest_kernel(x, micro_clusters):
-        """
-
-        Parameters
-        ----------
-        x
-            A dictionary with n items (features).
-            Instance attributes. Due to the limitations of the dictionary, x on default is considered as one instance
-
-        micro_clusters
-            Dictionary like
-            Instance weight. If not provided, uniform weights are assumed
-
-        Returns
-        -------
-        closest_kernel_index : int
-            Index of closest kernel to the given instance
-
-        min_distance: float
-            distance between closest kernel to the given instance
-        """
-
+    def _get_closest_micro_cluster(self, x, micro_clusters):
         min_distance = math.inf
-        closest_kernel_index = -1
+        closest_micro_cluster_idx = -1
         for i, micro_cluster in micro_clusters.items():
-            distance = 0
-            for j in range(len(x)):
-                distance += (micro_cluster.center[j] - x[j]) * (
-                    micro_cluster.center[j] - x[j]
-                )
-            distance = math.sqrt(distance)
+            distance = self._distance(micro_cluster.center, x)
             if distance < min_distance:
                 min_distance = distance
-                closest_kernel_index = i
-        return closest_kernel_index, min_distance
+                closest_micro_cluster_idx = i
+        return closest_micro_cluster_idx, min_distance
 
     @staticmethod
     def _distance(point_a, point_b):
         distance = 0.0
-        for i in range(len(point_a)):
-            d = point_a[i] - point_b[i]
-            distance += d * d
+        for key_a in point_a.keys():
+            try:
+                distance += (point_a[key_a] - point_b[key_a]) * (
+                    point_a[key_a] - point_b[key_a]
+                )
+            except KeyError:
+                # Keys do not match, return inf as the distance is undefined.
+                return math.inf
         return math.sqrt(distance)
 
     def learn_one(self, x, sample_weight=None):
-        """Incrementally trains the model.
 
-        Tasks performed before training:
-
-        * Verify instance weight. if not provided, uniform weights (1.0) are assumed.
-        * Update weight seen by model.
-
-        Training tasks:
-
-        * determinate closest kernel
-        * Check whether instance fits into closest Kernel:
-
-            * if data fits, put into kernel
-            * if data does not fit, we need to free some space to insert a new kernel
-            and this can be done in two ways, delete an old kernel or merge two kernels
-            which are close to each other
-
-        Parameters
-        ----------
-        x
-            A dictionary of features
-
-        sample_weight
-            Instance weights. If not provided, uniform weights are assumed
-
-        Returns
-        ----------
-        self
-
-        """
         if sample_weight == 0:
             return
         elif sample_weight is None:
@@ -270,91 +233,59 @@ class CluStream(base.Clusterer):
         self.time_stamp += 1
 
         if not self.initialized:
-            self._initialize_learn_one(x=x, sample_weight=sample_weight)
+            self._initialize(x=x, sample_weight=sample_weight)
             return self
 
-        # determine the closest kernel with respect to the new point instance
-        closest_kernel = None
+        # determine the closest micro-cluster with respect to the new point instance
+        closest_micro_cluster = None
         min_distance = math.inf
-        for kernel in self.kernels.values():
-            distance = self._distance(x, kernel.center)
+        for micro_cluster in self.micro_clusters.values():
+            distance = self._distance(x, micro_cluster.center)
             if distance < min_distance:
-                closest_kernel = kernel
+                closest_micro_cluster = micro_cluster
                 min_distance = distance
 
-        # check whether the new instance fits into the closest kernel
-        radius = 0.0
-        if closest_kernel.weight == 1:
+        # check whether the new instance fits into the closest micro-cluster
+        if closest_micro_cluster.weight == 1:
             radius = math.inf
-            center = closest_kernel.center
-            for kernel in self.kernels.values():
-                if kernel == closest_kernel:
+            center = closest_micro_cluster.center
+            for micro_cluster in self.micro_clusters.values():
+                if micro_cluster == closest_micro_cluster:
                     continue
-                distance = self._distance(kernel.center, center)
+                distance = self._distance(micro_cluster.center, center)
                 radius = min(distance, radius)
         else:
-            radius = closest_kernel.radius
+            radius = closest_micro_cluster.radius
 
         if min_distance < radius:
-            closest_kernel.insert(x, sample_weight, self.time_stamp)
+            closest_micro_cluster.insert(x, sample_weight, self.time_stamp)
             return self
 
-        # In the case the new instance does not fit, some space will be freed up in order to insert a new kernel.
-        # Next, old kernels will be deleted, and the two closest kernels will be merged.
-
-        # calculate the threshold to delete old kernels
-        threshold = self.time_stamp - self.time_window
-
-        # try to delete old kernels when its relevant stamp is smaller than the threshold
-        for i, kernel in self.kernels.items():
-            if kernel.relevance_stamp < threshold:
-                self.kernels[i] = CluStreamKernel(
-                    x=x,
-                    sample_weight=sample_weight,
-                    timestamp=self.time_stamp,
-                    kernel_radius_factor=self.kernel_radius_factor,
-                    max_kernels=self.max_kernels,
-                )
-
-                return self
-
-        # try to merge two closest kernels
-        self._merge_closest_kernels(x=x, sample_weight=sample_weight)
+        # If the new point does not fit in the micro-cluster, micro-clusters
+        # whose relevance stamps are less than the threshold are deleted.
+        # Otherwise, closest micro-clusters are merged with each other.
+        self._maintain_micro_clusters(x=x, sample_weight=sample_weight)
 
         return self
 
     def predict_one(self, x):
-        """Predict cluster index for each sample.
-
-        Convenience method; equivalent to calling partial_fit(x) followed by predict(x).
-
-        Parameters
-        ----------
-        x
-            Instance attributes
-
-        Returns
-        -------
-        label
-            Cluster label generated from passing the point instance
-
-        """
 
         micro_cluster_centers = {
             i: self._get_micro_clustering_result()[i].center
             for i in range(len(self._get_micro_clustering_result()))
         }
 
-        # implementing the incremental KMeans in River to generate clusters from micro cluster centers
         kmeans = cluster.KMeans(
-            n_clusters=self.number_of_clusters, seed=self.seed, **self.kwargs
+            n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs
         )
         for center in micro_cluster_centers.values():
             kmeans = kmeans.learn_one(center)
 
         self.centers = kmeans.centers
 
-        index, _ = self._get_closest_kernel(x, self._get_micro_clustering_result())
+        index, _ = self._get_closest_micro_cluster(
+            x, self._get_micro_clustering_result()
+        )
         y = kmeans.predict_one(micro_cluster_centers[index])
 
         return y
