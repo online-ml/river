@@ -432,10 +432,9 @@ class MicroCluster(metaclass=ABCMeta):
 
         return res
 
-    def add(self, cluster):
-        if len(cluster.linear_sum) == len(self.linear_sum):
-            self.n_samples += cluster.n_samples
-            self.linear_sum_timestamp += cluster.linear_sum_timestamp
-            self.squared_sum_timestamp += cluster.squared_sum_timestamp
-            add_dict_values(self.linear_sum, cluster.linear_sum, inplace=True)
-            add_dict_values(self.squared_sum, cluster.squared_sum, inplace=True)
+    def add(self, micro_cluster):
+        self.n_samples += micro_cluster.n_samples
+        self.linear_sum_timestamp += micro_cluster.linear_sum_timestamp
+        self.squared_sum_timestamp += micro_cluster.squared_sum_timestamp
+        add_dict_values(self.linear_sum, micro_cluster.linear_sum, inplace=True)
+        add_dict_values(self.squared_sum, micro_cluster.squared_sum, inplace=True)
