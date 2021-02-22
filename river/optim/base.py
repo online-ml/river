@@ -33,7 +33,7 @@ class Optimizer(base.Base, abc.ABC):
     def learning_rate(self) -> float:
         return self.lr.get(self.n_iterations)
 
-    def update_before_pred(self, w: dict) -> dict:
+    def look_ahead(self, w: dict) -> dict:
         """Updates a weight vector before a prediction is made.
 
         Parameters:
@@ -46,11 +46,11 @@ class Optimizer(base.Base, abc.ABC):
         return w
 
     @abc.abstractmethod
-    def _update_after_pred(self, w: dict, g: dict) -> dict:
+    def _step(self, w: dict, g: dict) -> dict:
         """Updates a weight vector given a gradient."""
         raise NotImplementedError
 
-    def update_after_pred(self, w: dict, g: dict) -> dict:
+    def step(self, w: dict, g: dict) -> dict:
         """Updates a weight vector given a gradient.
 
         Parameters:
@@ -63,7 +63,7 @@ class Optimizer(base.Base, abc.ABC):
         """
 
         # Update the weights
-        w = self._update_after_pred(w, g)
+        w = self._step(w, g)
 
         # Update the iteration counter
         self.n_iterations += 1

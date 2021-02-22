@@ -1,5 +1,5 @@
 """Unsupervised clustering."""
-from .clustream import Clustream
+from .clustream import CluStream
 from .denstream import Denstream
 from .k_means import KMeans
 
