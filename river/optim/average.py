@@ -54,12 +54,12 @@ class Averager(base.Optimizer):
         self.avg_w = collections.defaultdict(float)
         self.n_iterations = 0
 
-    def update_before_pred(self, w):
-        return self.optimizer.update_before_pred(w)
+    def look_ahead(self, w):
+        return self.optimizer.look_ahead(w)
 
-    def _update_after_pred(self, w, g):
+    def _step(self, w, g):
 
-        w = self.optimizer.update_after_pred(w, g)
+        w = self.optimizer.step(w, g)
 
         # No averaging occurs during the first start iterations
         if self.n_iterations < self.start:
