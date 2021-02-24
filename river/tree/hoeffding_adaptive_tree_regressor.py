@@ -233,11 +233,16 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             depth = 0
             leaf_model = deepcopy(self.leaf_model)
 
+        if self.attr_obs == self._QO:
+            attr_obs_params = self._qo_radii
+        else:
+            attr_obs_params = self.attr_obs_params
+
         new_ada_leaf = AdaLearningNodeRegressor(
             stats=initial_stats,
             depth=depth,
             attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params,
+            attr_obs_params=attr_obs_params,
             leaf_model=leaf_model,
             adwin_delta=self.adwin_confidence,
             seed=self.seed,

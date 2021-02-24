@@ -5,6 +5,8 @@ from river.stats import Var
 from .._attribute_observer import (
     NominalAttributeRegressionObserver,
     NumericAttributeRegressionObserver,
+    NumericAttributeRegressionQuantizerObserver,
+    NumericAttributeRegressionTruncatedObserver,
 )
 from .base import LearningNode
 
@@ -39,8 +41,12 @@ class LearningNodeMean(LearningNode):
 
     @staticmethod
     def new_numeric_attribute_observer(attr_obs, attr_obs_params):
-        # Currently this is the only supported numeric attribute observer for regression
-        return NumericAttributeRegressionObserver()
+        if attr_obs == "e-bst":
+            return NumericAttributeRegressionObserver()
+        elif attr_obs == "qo":
+            return NumericAttributeRegressionQuantizerObserver(**attr_obs_params)
+        else:  # Truncated E-BST
+            return NumericAttributeRegressionTruncatedObserver(**attr_obs_params)
 
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
         """Trigger Attribute Observers' memory management routines.

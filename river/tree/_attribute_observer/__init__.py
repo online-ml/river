@@ -11,6 +11,12 @@ from .numeric_attribute_class_observer_histogram import (
     NumericAttributeClassObserverHistogram,
 )
 from .numeric_attribute_regression_observer import NumericAttributeRegressionObserver
+from .numeric_attribute_regression_quantizer_observer import (
+    NumericAttributeRegressionQuantizerObserver,
+)
+from .numeric_attribute_regression_truncated_observer import (
+    NumericAttributeRegressionTruncatedObserver,
+)
 
 __all__ = [
     "AttributeObserver",
@@ -20,4 +26,6 @@ __all__ = [
     "NumericAttributeClassObserverGaussian",
     "NumericAttributeClassObserverHistogram",
     "NumericAttributeRegressionObserver",
+    "NumericAttributeRegressionQuantizerObserver",
+    "NumericAttributeRegressionTruncatedObserver",
 ]

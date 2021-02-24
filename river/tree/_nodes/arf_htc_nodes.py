@@ -56,9 +56,16 @@ class BaseRandomLearningNode(LearningNode):
                 ) or not isinstance(x[idx], numbers.Number):
                     obs = self.new_nominal_attribute_observer()
                 else:
-                    obs = self.new_numeric_attribute_observer(
-                        attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params
-                    )
+                    try:
+                        # Try to select hyperparameters specially designed for the given feature
+                        obs = self.new_numeric_attribute_observer(
+                            attr_obs=self.attr_obs,
+                            attr_obs_params=self.attr_obs_params[idx],
+                        )
+                    except KeyError:
+                        obs = self.new_numeric_attribute_observer(
+                            attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params
+                        )
                 self.attribute_observers[idx] = obs
             obs.update(x[idx], y, sample_weight)
 

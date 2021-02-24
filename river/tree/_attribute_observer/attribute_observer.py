@@ -65,3 +65,7 @@ class AttributeObserver(metaclass=ABCMeta):
         -------
             Suggestion of the best attribute split.
         """
+
+    @property
+    def is_numeric(self) -> bool:
+        return True
