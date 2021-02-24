@@ -7,7 +7,7 @@ from . import base_internal_clustering
 __all__ = ["Cohesion", "SSQ"]
 
 
-class Cohesion(base_internal_clustering.MeanMetric):
+class Cohesion(base_internal_clustering.MeanInternalMetric):
     """Mean distance from the points to their assigned cluster centroids.
 
     Examples
@@ -43,7 +43,7 @@ class Cohesion(base_internal_clustering.MeanMetric):
 
 
 class SSQ(Cohesion):
-    """ Mean of sum of squared (SSQ) distances from data points to their assigned cluster centroids.
+    """Mean of sum of squared (SSQ) distances from data points to their assigned cluster centroids.
 
     Examples
     --------

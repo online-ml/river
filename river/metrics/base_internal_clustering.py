@@ -4,10 +4,10 @@ import typing
 
 from river import base, stats, utils
 
-__all__ = ["Metric"]
+__all__ = ["InternalMetric"]
 
 
-class Metric(abc.ABC):
+class InternalMetric(abc.ABC):
     """
     Mother class of all internal clustering metrics.
     """
@@ -16,11 +16,11 @@ class Metric(abc.ABC):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, method, point, label, sample_weight) -> "Metric":
+    def update(self, method, point, label, sample_weight) -> "InternalMetric":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, method, point, label, sample_weight) -> "Metric":
+    def revert(self, method, point, label, sample_weight) -> "InternalMetric":
         """Revert the metric."""
 
     @abc.abstractmethod
@@ -40,7 +40,7 @@ class Metric(abc.ABC):
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
 
-class MeanMetric(Metric):
+class MeanInternalMetric(InternalMetric):
     """Many metrics are just running averages. This is a utility class that avoids repeating
     tedious stuff throughout the module for such metrics.
 

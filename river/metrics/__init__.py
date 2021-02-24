@@ -26,7 +26,7 @@ from .base import (
     RegressionMetric,
     WrapperMetric,
 )
-from .base_internal_clustering import Metric
+from .base_internal_clustering import InternalMetric
 from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
@@ -49,8 +49,8 @@ from .jaccard import Jaccard
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
 from .mae import MAE
-from .mean_internal import Cohesion, SSQ
 from .mcc import MCC
+from .mean_internal import SSQ, Cohesion
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
 from .precision import (
@@ -88,6 +88,7 @@ __all__ = [
     "GeometricMean",
     "Hamming",
     "HammingLoss",
+    "InternalMetric",
     "Jaccard",
     "KappaM",
     "KappaT",
