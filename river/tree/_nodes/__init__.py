@@ -29,7 +29,7 @@ from .isouptr_nodes import (
     LearningNodeMeanMultiTarget,
     LearningNodeModelMultiTarget,
 )
-from .sgt_nodes import SGTLearningNode
+from .sgt_nodes import SGTLearningNode, SGTSplit
 
 __all__ = [
     "FoundNode",
@@ -64,4 +64,5 @@ __all__ = [
     "LearningNodeModelMultiTarget",
     "LearningNodeAdaptiveMultiTarget",
     "SGTLearningNode",
+    "SGTSplit"
 ]

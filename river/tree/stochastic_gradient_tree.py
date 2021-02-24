@@ -9,7 +9,7 @@ from scipy.stats import f as f_dist
 
 from river import base, stats
 
-from ._nodes import SGTLearningNode
+from ._nodes import SGTLearningNode, SGTSplit
 from ._objective import (
     BaseObjective,
     BinaryCrossEntropyObjective,
@@ -18,8 +18,8 @@ from ._objective import (
 from ._utils import GradHess
 
 
-class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
-    """ Base Streaming Gradient Tree (SGT) class.
+class BaseStochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
+    """ Base Stochastic Gradient Tree (SGT) class.
 
     This class defines the main characteristics that are shared by the different SGT
     implementations.
@@ -134,20 +134,30 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         return std_ / self.quantization_strategy[1]
 
     def _update_tree(self, x: dict, grad_hess: GradHess, w: float):
-        """ Update Streaming Gradient Tree with a single instance. """
+        """ Update Stochastic Gradient Tree with a single instance. """
 
         leaf = self._root.sort_instance_to_leaf(x)
         leaf.update(x, grad_hess, self, w)
 
-        if (
-            leaf.total_weight - leaf.last_split_attempt_at < self.grace_period
-            or leaf.depth >= self.max_depth
-        ):
+        if leaf.total_weight - leaf.last_split_attempt_at < self.grace_period:
             return
 
         # Update split attempt data
         leaf.last_split_attempt_at = leaf.total_weight
-        best_split = leaf.find_best_split(self)
+
+        # If the maximum depth is reached, attempt to apply a "null split", i.e., update the
+        # prediction value
+        if leaf.depth >= self.max_depth:
+            # Null split: update the prediction using the new gradient information
+            best_split = SGTSplit()
+            best_split.delta_pred = leaf.delta_prediction(
+                leaf.update_stats.mean, self.lambda_value
+            )
+            dlms = leaf.update_stats.delta_loss_mean_var(best_split.delta_pred)
+            best_split.loss_mean = dlms.mean.get()
+            best_split.loss_var = dlms.get()
+        else:  # Proceed with the standard split attempt procedure
+            best_split = leaf.find_best_split(self)
 
         p = self._compute_p_value(best_split, leaf.total_weight)
 
@@ -219,12 +229,12 @@ class BaseStreamingGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         return self._depth
 
 
-class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier):
-    """Streaming Gradient Tree for classification.
+class StochasticGradientTreeClassifier(BaseStochasticGradientTree, base.Classifier):
+    """Stochastic Gradient Tree for classification.
 
     Binary decision tree classifier that minimizes the binary cross-entropy to guide its growth.
 
-    Streaming Gradient Trees (SGT) directly minimize a loss function to guide tree growth and
+    Stochastic Gradient Trees (SGT) directly minimize a loss function to guide tree growth and
     update their predictions. Thus, they differ from other incrementally tree learners that do
     not directly optimize the loss, but a data impurity-related heuristic.
 
@@ -278,7 +288,7 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
     >>> from river import tree
 
     >>> dataset = datasets.Phishing()
-    >>> model = tree.StreamingGradientTreeClassifier()
+    >>> model = tree.StochasticGradientTreeClassifier()
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
@@ -342,12 +352,12 @@ class StreamingGradientTreeClassifier(BaseStreamingGradientTree, base.Classifier
         return {True: t_proba, False: 1 - t_proba}
 
 
-class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
-    """Streaming Gradient Tree for regression.
+class StochasticGradientTreeRegressor(BaseStochasticGradientTree, base.Regressor):
+    """Stochastic Gradient Tree for regression.
 
     Incremental decision tree regressor that minimizes the mean square error to guide its growth.
 
-    Streaming Gradient Trees (SGT) directly minimize a loss function to guide tree growth and
+    Stochastic Gradient Trees (SGT) directly minimize a loss function to guide tree growth and
     update their predictions. Thus, they differ from other incrementally tree learners that do
     not directly optimize the loss, but a data impurity-related heuristic.
 
@@ -401,7 +411,7 @@ class StreamingGradientTreeRegressor(BaseStreamingGradientTree, base.Regressor):
     >>> from river import tree
 
     >>> dataset = datasets.TrumpApproval()
-    >>> model = tree.StreamingGradientTreeRegressor(grace_period=20)
+    >>> model = tree.StochasticGradientTreeRegressor(grace_period=20)
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)

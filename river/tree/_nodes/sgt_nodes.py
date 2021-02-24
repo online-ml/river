@@ -10,10 +10,19 @@ from .._utils import FeatureQuantizer, GradHess, GradHessStats
 
 
 class SGTSplit:
-    """ Split Class of the Streaming Gradient Trees (SGT).
+    """Split Class of the Stochastic Gradient Trees (SGT).
 
     SGTs only have one type of node. Their nodes, however, can carry a split object that indicates
     they have been split and are not leaves anymore.
+
+    Parameters
+    ----------
+    feature_idx
+        The identifier of the split feature.
+    feature_val
+        The value of the split.
+    is_nominal
+        Whether the split feature is nominal.
     """
 
     def __init__(
@@ -33,6 +42,20 @@ class SGTSplit:
 
 
 class SGTLearningNode:
+    """Learning Node of the Stochastic Gradient Trees (SGT).
+
+    There is only one type of learning node in SGTs. It handles only gradient and hessian
+    information about the target. The tree handles target transformation and encoding.
+
+    Parameters
+    ----------
+    prediction
+        The initial prediction of the node.
+    depth
+        The depth of the node in the tree.
+
+    """
+
     def __init__(self, prediction=0.0, depth=0):
         self._prediction = prediction
         self.depth = depth
@@ -112,7 +135,7 @@ class SGTLearningNode:
         best_split = SGTSplit()
 
         # Null split: update the prediction using the new gradient information
-        best_split.delta_pred = delta_prediction(
+        best_split.delta_pred = self.delta_prediction(
             self._update_stats.mean, sgt.lambda_value
         )
         dlms = self._update_stats.delta_loss_mean_var(best_split.delta_pred)
@@ -134,7 +157,7 @@ class SGTLearningNode:
 
                 cat_collection = self._split_stats[feature_idx]
                 for category in cat_collection:
-                    dp = delta_prediction(
+                    dp = self.delta_prediction(
                         cat_collection[category].mean, sgt.lambda_value
                     )
 
@@ -163,11 +186,11 @@ class SGTLearningNode:
                 left_dlms = stats.Var()
                 for i, ghs in enumerate(quantizer):
                     left_ghs += ghs
-                    left_delta_pred = delta_prediction(left_ghs.mean, sgt.lambda_value)
+                    left_delta_pred = self.delta_prediction(left_ghs.mean, sgt.lambda_value)
                     left_dlms += left_ghs.delta_loss_mean_var(left_delta_pred)
 
                     right_ghs = self._update_stats - left_ghs
-                    right_delta_pred = delta_prediction(
+                    right_delta_pred = self.delta_prediction(
                         right_ghs.mean, sgt.lambda_value
                     )
                     right_dlms = right_ghs.delta_loss_mean_var(right_delta_pred)
@@ -231,8 +254,12 @@ class SGTLearningNode:
     @property
     def total_weight(self) -> float:
         return self._update_stats.total_weight
+    
+    @property
+    def update_stats(self):
+        return self._update_stats
 
-
-def delta_prediction(gh: GradHess, lambda_value: float):
-    # Add small constant value to avoid division by zero
-    return -gh.gradient / (gh.hessian + sys.float_info.min + lambda_value)
+    @staticmethod
+    def delta_prediction(gh: GradHess, lambda_value: float):
+        # Add small constant value to avoid division by zero
+        return -gh.gradient / (gh.hessian + sys.float_info.min + lambda_value)
