@@ -51,14 +51,16 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
     ):
         candidate = AttributeSplitSuggestion(None, [{}], -math.inf)
 
-        p_x = None
+        # The previously evaluated x value
+        prev_x = None
+
         for (x, left_dist) in self._quantizer:
             # First hash element
-            if p_x is None:
+            if prev_x is None:
                 # In case the hash carries just one element return the null split
                 if len(self._quantizer) == 1:
                     return candidate
-                p_x = x
+                prev_x = x
                 continue
 
             right_dist = pre_split_dist - left_dist
@@ -66,12 +68,12 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
             merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
             if merit > candidate.merit:
-                split_point = (p_x + x) / 2.0
+                split_point = (prev_x + x) / 2.0
                 candidate = self._update_candidate(
                     split_point, att_idx, post_split_dists, merit
                 )
 
-            p_x = x
+            prev_x = x
         return candidate
 
     @property
@@ -89,6 +91,13 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
 
 
 class Slot:
+    """ The element stored in the quantization hash.
+
+    Each slot keeps the mean values of the numerical feature, as well as the variance
+    and mean of the target.
+
+    """
+
     def __init__(
         self, x: float, y=typing.Union[float, VectorDict], weight: float = 1.0
     ):
@@ -133,6 +142,16 @@ class Slot:
 
 
 class FeatureQuantizer:
+    """ The actual dynamic feature quantization mechanism.
+
+    The input numerical feature is partitioned using equal-sized intervals that are defined
+    by the `radius` parameter. For each interval, estimators of target's mean and variance are
+    kept, as well as an estimator of the feature's mean value. At any time, one can iterate
+    over the ordered stored values in the hash. The ordering is defined by the quantized values
+    of the feature.
+
+    """
+
     def __init__(self, radius: float):
         self.radius = radius
         self.hash = {}
