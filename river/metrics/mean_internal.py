@@ -70,7 +70,7 @@ class SSQ(Cohesion):
     ...     metric = metric.update(k_means, x, label)
 
     >>> metric
-    SSQ: 1.976694
+    SSQ: 3.093166
     """
 
     def get(self):
