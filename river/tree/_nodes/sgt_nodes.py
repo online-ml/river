@@ -186,7 +186,9 @@ class SGTLearningNode:
                 left_dlms = stats.Var()
                 for i, ghs in enumerate(quantizer):
                     left_ghs += ghs
-                    left_delta_pred = self.delta_prediction(left_ghs.mean, sgt.lambda_value)
+                    left_delta_pred = self.delta_prediction(
+                        left_ghs.mean, sgt.lambda_value
+                    )
                     left_dlms += left_ghs.delta_loss_mean_var(left_delta_pred)
 
                     right_ghs = self._update_stats - left_ghs
@@ -254,7 +256,7 @@ class SGTLearningNode:
     @property
     def total_weight(self) -> float:
         return self._update_stats.total_weight
-    
+
     @property
     def update_stats(self):
         return self._update_stats

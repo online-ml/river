@@ -64,5 +64,5 @@ __all__ = [
     "LearningNodeModelMultiTarget",
     "LearningNodeAdaptiveMultiTarget",
     "SGTLearningNode",
-    "SGTSplit"
+    "SGTSplit",
 ]
