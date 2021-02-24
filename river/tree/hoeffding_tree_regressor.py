@@ -173,7 +173,12 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         if self.attr_obs == self._QO:
             self._qo_std_div = 3
             if "std_div" in self.attr_obs_params:
-                self._qo_std_div = self.attr_obs_params["std_div"]
+                # Make sure the passed std_div value is valid
+                if (
+                    self.attr_obs_params["std_div"] is None
+                    or self.attr_obs_params["std_div"] > 0
+                ):
+                    self._qo_std_div = self.attr_obs_params["std_div"]
 
             if self._qo_std_div:  # Dynamically evolving radii will be used
                 self._feat_var = {}
