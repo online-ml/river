@@ -47,7 +47,8 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
 
 
 class SSQ(base_internal_clustering.MeanInternalMetric):
-    """Mean of sum of squared (SSQ) distances from data points to their assigned cluster centroids. The bigger the better.
+    """Mean of sum of squared (SSQ) distances from data points to their assigned cluster centroids.
+    The bigger the better.
 
     Examples
     --------
