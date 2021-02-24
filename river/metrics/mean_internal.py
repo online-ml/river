@@ -29,13 +29,13 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
     >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
     >>> metric = metrics.Cohesion()
 
-    >>> for x, _ in enumerate(stream.iter_array(X)):
+    >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
     ...     label = k_means.predict_one(x)
     ...     metric = metric.update(k_means, x, label)
 
     >>> metric
-
+    Cohesion: 1.975643
     """
 
     def _eval(self, method, point, label):
@@ -70,7 +70,7 @@ class SSQ(Cohesion):
     ...     metric = metric.update(k_means, x, label)
 
     >>> metric
-
+    SSQ: 1.976694
     """
 
     def get(self):
