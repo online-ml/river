@@ -74,7 +74,7 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
     ...     metric = metric.update(k_means, x, label)
 
     >>> metric
-    SSQ: 3.903166
+    SSQ: 4.226734
     """
 
     @property
