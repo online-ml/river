@@ -81,9 +81,5 @@ class MeanInternalMetric(InternalMetric):
     def get(self):
         return self._mean.get()
 
-    @property
-    def bigger_is_better(self):
-        return False
-
     def works_with(self, model) -> bool:
         return utils.inspect.isclusterer(model)

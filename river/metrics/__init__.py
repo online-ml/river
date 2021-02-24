@@ -50,7 +50,7 @@ from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
 from .mae import MAE
 from .mcc import MCC
-from .mean_internal import SSQ, Cohesion
+from .mean_internal import SSQ, Cohesion, Separation
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
 from .precision import (
@@ -120,6 +120,7 @@ __all__ = [
     "ROCAUC",
     "Rolling",
     "R2",
+    "Separation",
     "SMAPE",
     "SSQ",
     "TimeRolling",
