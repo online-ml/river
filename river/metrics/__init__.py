@@ -26,6 +26,7 @@ from .base import (
     RegressionMetric,
     WrapperMetric,
 )
+from .base_internal_clustering import Metric
 from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
@@ -48,6 +49,7 @@ from .jaccard import Jaccard
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
 from .mae import MAE
+from .mean_internal import Cohesion, SSQ
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
@@ -73,6 +75,7 @@ __all__ = [
     "ClassificationMetric",
     "ClassificationReport",
     "CohenKappa",
+    "Cohesion",
     "ConfusionMatrix",
     "CrossEntropy",
     "ExactMatch",
@@ -117,6 +120,7 @@ __all__ = [
     "Rolling",
     "R2",
     "SMAPE",
+    "SSQ",
     "TimeRolling",
     "WeightedF1",
     "WeightedFBeta",
