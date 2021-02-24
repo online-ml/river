@@ -42,7 +42,7 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
         return math.sqrt(utils.math.minkowski_distance(method.centers[label], point, 2))
 
 
-class SSQ(Cohesion):
+class SSQ(base_internal_clustering.MeanInternalMetric):
     """Mean of sum of squared (SSQ) distances from data points to their assigned cluster centroids.
 
     Examples
@@ -73,5 +73,5 @@ class SSQ(Cohesion):
     SSQ: 3.903166
     """
 
-    def get(self):
-        return super().get() * super().get()
+    def _eval(self, method, point, label):
+        return utils.math.minkowski_distance(method.centers[label], point, 2)
