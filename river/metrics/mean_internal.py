@@ -36,6 +36,7 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
 
     >>> metric
     Cohesion: 1.975643
+
     """
 
     @property
@@ -76,6 +77,7 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
 
     >>> metric
     SSQ: 4.226734
+
     """
 
     @property
@@ -115,6 +117,7 @@ class Separation(base_internal_clustering.MeanInternalMetric):
 
     >>> metric
     Separation: 4.647488
+
     """
 
     @property

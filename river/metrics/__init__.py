@@ -65,6 +65,7 @@ from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRec
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
 from .rolling import Rolling
+from .silhouette import Silhouette
 from .smape import SMAPE
 from .time_rolling import TimeRolling
 
@@ -121,6 +122,7 @@ __all__ = [
     "Rolling",
     "R2",
     "Separation",
+    "Silhouette",
     "SMAPE",
     "SSQ",
     "TimeRolling",
