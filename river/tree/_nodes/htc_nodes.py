@@ -1,12 +1,7 @@
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from .._tree_utils import do_naive_bayes_prediction
-from ..splitter import (
-    ExhaustiveSplitter,
-    GaussianSplitter,
-    HistogramSplitter,
-    NominalClassSplitter,
-)
+from ..splitter import NominalClassSplitter
 from .base import LearningNode
 
 
@@ -19,28 +14,19 @@ class LearningNodeMC(LearningNode):
         Initial class observations.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
+    **kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params):
-        super().__init__(stats, depth, attr_obs, attr_obs_params)
+    def __init__(self, stats, depth, splitter, **kwargs):
+        super().__init__(stats, depth, splitter, **kwargs)
 
     @staticmethod
-    def new_nominal_attribute_observer():
+    def new_nominal_splitter():
         return NominalClassSplitter()
-
-    @staticmethod
-    def new_numeric_attribute_observer(attr_obs, attr_obs_params):
-        if attr_obs == "bst":
-            return ExhaustiveSplitter()
-        elif attr_obs == "gaussian":
-            return GaussianSplitter(**attr_obs_params)
-        elif attr_obs == "histogram":
-            return HistogramSplitter(**attr_obs_params)
 
     def update_stats(self, y, sample_weight):
         try:
@@ -73,9 +59,9 @@ class LearningNodeMC(LearningNode):
             given class than the other classes.
 
         """
-        total_seen = sum(self._stats.values())
+        total_seen = sum(self.stats.values())
         if total_seen > 0:
-            return total_seen - max(self._stats.values())
+            return total_seen - max(self.stats.values())
         else:
             return 0
 
@@ -88,7 +74,7 @@ class LearningNodeMC(LearningNode):
             True if observed number of classes is less than 2, False otherwise.
         """
         count = 0
-        for weight in self._stats.values():
+        for weight in self.stats.values():
             if weight != 0:
                 count += 1
                 if count == 2:  # No need to count beyond this point
@@ -105,19 +91,19 @@ class LearningNodeNB(LearningNodeMC):
         Initial class observations.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
+    **kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params):
-        super().__init__(stats, depth, attr_obs, attr_obs_params)
+    def __init__(self, stats, depth, splitter, **kwargs):
+        super().__init__(stats, depth, splitter, **kwargs)
 
     def leaf_prediction(self, x, *, tree=None):
         if self.is_active() and self.total_weight >= tree.nb_threshold:
-            return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
+            return do_naive_bayes_prediction(x, self.stats, self.splitters)
         else:
             return super().leaf_prediction(x)
 
@@ -144,15 +130,15 @@ class LearningNodeNBA(LearningNodeMC):
         Initial class observations.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
+    **kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params):
-        super().__init__(stats, depth, attr_obs, attr_obs_params)
+    def __init__(self, stats, depth, splitter, **kwargs):
+        super().__init__(stats, depth, splitter, **kwargs)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
@@ -178,7 +164,7 @@ class LearningNodeNBA(LearningNodeMC):
             if len(self.stats) == 0 or max(mc_pred, key=mc_pred.get) == y:
                 self._mc_correct_weight += sample_weight
 
-            nb_pred = do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
+            nb_pred = do_naive_bayes_prediction(x, self.stats, self.splitters)
             if nb_pred is not None and max(nb_pred, key=nb_pred.get) == y:
                 self._nb_correct_weight += sample_weight
 
@@ -200,7 +186,7 @@ class LearningNodeNBA(LearningNodeMC):
 
         """
         if self.is_active() and self._nb_correct_weight >= self._mc_correct_weight:
-            return do_naive_bayes_prediction(x, self.stats, self.attribute_observers)
+            return do_naive_bayes_prediction(x, self.stats, self.splitters)
         else:
             return super().leaf_prediction(x)
 

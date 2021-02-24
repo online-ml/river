@@ -3,7 +3,6 @@ from operator import attrgetter
 from river import base
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
-from ._base_tree import BaseHoeffdingTree
 from ._nodes import (
     LearningNode,
     LearningNodeMC,
@@ -16,6 +15,7 @@ from ._split_criterion import (
     HellingerDistanceCriterion,
     InfoGainSplitCriterion,
 )
+from .base_hoeffding_tree import BaseHoeffdingTree
 
 
 class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):

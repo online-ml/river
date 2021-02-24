@@ -414,10 +414,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 ) and (id_current != id_best):
                     # Create a new branch
                     new_split = self._new_split_node(
-                        x_best.split_test,
-                        node.stats,
-                        node.depth,
-                        node.attribute_observers,
+                        x_best.split_test, node.stats, node.depth, node.splitters,
                     )
                     # Update weights in new_split
                     new_split.last_split_reevaluation_at = node.total_weight
@@ -451,7 +448,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     x_best.merit - x_current.merit > hoeffding_bound
                     or hoeffding_bound < self.tie_threshold
                 ) and (id_current == id_best):
-                    node._split_test = x_best.split_test
+                    node.split_test = x_best.split_test
 
         return stop_flag
 
@@ -510,10 +507,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 ):
                     # Split
                     new_split = self._new_split_node(
-                        x_best.split_test,
-                        node.stats,
-                        node.depth,
-                        node.attribute_observers,
+                        x_best.split_test, node.stats, node.depth, node.splitters,
                     )
 
                     new_split.last_split_reevaluation_at = node.total_weight
@@ -552,6 +546,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         leaf.depth = node.depth
 
         leaf.stats = node.stats
-        leaf.attribute_observers = node.attribute_observers
+        leaf.splitters = node.splitters
 
         return leaf

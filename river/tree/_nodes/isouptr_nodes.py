@@ -20,16 +20,16 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
         `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
+    **kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params):
+    def __init__(self, stats, depth, splitter, **kwargs):
         stats = stats if stats else VectorDict(default_factory=functools.partial(Var))
-        super().__init__(stats, depth, attr_obs, attr_obs_params)
+        super().__init__(stats, depth, splitter, **kwargs)
 
     def update_stats(self, y, sample_weight):
         for t in y:
@@ -57,17 +57,17 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
         `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     leaf_models
         A dictionary composed of target identifiers and their respective predictive models.
+    **kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_models):
-        super().__init__(stats, depth, attr_obs, attr_obs_params)
+    def __init__(self, stats, depth, splitter, leaf_models, **kwargs):
+        super().__init__(stats, depth, splitter, **kwargs)
         self._leaf_models = leaf_models
         self._model_supports_weights = {}
         if self._leaf_models:
@@ -128,17 +128,17 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
         `river.stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     leaf_models
         A dictionary composed of target identifiers and their respective predictive models.
+    **kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_models):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, leaf_models)
+    def __init__(self, stats, depth, splitter, leaf_models, **kwargs):
+        super().__init__(stats, depth, splitter, leaf_models, **kwargs)
         self._fmse_mean = defaultdict(lambda: 0.0)
         self._fmse_model = defaultdict(lambda: 0.0)
 

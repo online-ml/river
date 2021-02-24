@@ -5,7 +5,6 @@ from operator import attrgetter
 
 from river import base, linear_model
 
-from ._base_tree import BaseHoeffdingTree
 from ._nodes import (
     LearningNode,
     LearningNodeAdaptive,
@@ -14,6 +13,7 @@ from ._nodes import (
     SplitNode,
 )
 from ._split_criterion import VarianceReductionSplitCriterion
+from .base_hoeffding_tree import BaseHoeffdingTree
 
 
 class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
@@ -456,7 +456,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             else:
                 # Update the features' variance estimators if QO is used
                 if self.attr_obs == self._QO and self._qo_std_div:
-                    for feat_id, ao in node.attribute_observers.items():
+                    for feat_id, ao in node.splitters.items():
                         if not ao.is_numeric:
                             continue
 
