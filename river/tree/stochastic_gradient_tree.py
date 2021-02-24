@@ -8,13 +8,9 @@ import typing
 from scipy.stats import f as f_dist
 
 from river import base, stats
+from river.tree import loss
 
 from ._nodes import SGTLearningNode, SGTSplit
-from ._objective import (
-    BaseObjective,
-    BinaryCrossEntropyObjective,
-    SquaredErrorObjective,
-)
 from ._utils import GradHess
 
 
@@ -33,6 +29,7 @@ class BaseStochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
     def __init__(
         self,
+        loss_func,
         delta,
         grace_period,
         init_pred,
@@ -42,7 +39,8 @@ class BaseStochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         nominal_attributes,
         quantization_strategy,
     ):
-
+        # What really defines how a SGT works is its loss function
+        self.loss_func = loss_func
         self.delta = delta
         self.grace_period = grace_period
         self.init_pred = init_pred
@@ -85,8 +83,6 @@ class BaseStochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         self._n_node_updates = 0
         self._n_observations = 0
         self._depth = 0
-
-        self._objective: BaseObjective
 
     def _target_transform(self, y):
         """Apply transformation to the raw target input.
@@ -186,7 +182,7 @@ class BaseStochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         y_pred_raw = self._raw_prediction(x)
         y_true_trs = self._target_transform(y)
 
-        grad_hess = self._objective.compute_derivatives(y_true_trs, y_pred_raw)  # noqa
+        grad_hess = self.loss_func.compute_derivatives(y_true_trs, y_pred_raw)  # noqa
 
         # Update the tree with the gradient/hessian info
         self._update_tree(x, grad_hess, w)
@@ -197,7 +193,7 @@ class BaseStochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         """ Obtain a raw prediction for a single instance. """
 
         y_pred_raw = self._root.sort_instance_to_leaf(x).leaf_prediction()
-        return self._objective.transfer(y_pred_raw)  # noqa
+        return self.loss_func.transfer(y_pred_raw)  # noqa
 
     @property
     def n_nodes(self):
@@ -240,6 +236,8 @@ class StochasticGradientTreeClassifier(BaseStochasticGradientTree, base.Classifi
 
     Parameters
     ----------
+    loss_func
+        The objetive loss function the tree aims at optimizing.
     delta
         Define the significance level of the F-tests performed to decide upon creating splits
         or updating predictions.
@@ -298,7 +296,7 @@ class StochasticGradientTreeClassifier(BaseStochasticGradientTree, base.Classifi
     -----
     This implementation enhances the original proposal [^1] by using an incremental strategy to
     discretize numerical features dynamically, rather than relying on a calibration set and
-    parameterized number of bins. The strategy used is an adaptation of the Quantile Observer
+    parameterized number of bins. The strategy used is an adaptation of the Quantization Observer
     (QO) [^2]. Different bin size setting policies are available for selection.
     They directly related to number of split candidates the tree is going to explore, and thus,
     how accurate its split decisions are going to be. Besides, the number of stored bins per
@@ -308,13 +306,14 @@ class StochasticGradientTreeClassifier(BaseStochasticGradientTree, base.Classifi
     ---------
     [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
     In Asian Conference on Machine Learning (pp. 1094-1109).
-    [^2]: Mastelini, S.M. and de Carvalho, A.C.P.D.L.F., 2020. Using dynamical quantization to
-    perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
+    [^2]: Mastelini, S.M. and de Leon Ferreira, A.C.P., 2021. Using dynamical quantization
+    to perform split attempts in online tree regressors. Pattern Recognition Letters.
 
     """
 
     def __init__(
         self,
+        loss_func: loss.BaseLoss = None,
         delta: float = 1e-7,
         grace_period: int = 200,
         init_pred: float = 0.0,
@@ -329,6 +328,9 @@ class StochasticGradientTreeClassifier(BaseStochasticGradientTree, base.Classifi
     ):
 
         super().__init__(
+            loss_func=loss_func
+            if loss_func is not None
+            else loss.BinaryCrossEntropyLoss(),
             delta=delta,
             grace_period=grace_period,
             init_pred=init_pred,
@@ -339,13 +341,11 @@ class StochasticGradientTreeClassifier(BaseStochasticGradientTree, base.Classifi
             quantization_strategy=quantization_strategy,
         )
 
-        self._objective = BinaryCrossEntropyObjective()
-
     def _target_transform(self, y):
         return float(y)
 
     def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
-        t_proba = self._objective.transfer(
+        t_proba = self.loss_func.transfer(
             self._root.sort_instance_to_leaf(x).leaf_prediction()
         )
 
@@ -363,6 +363,8 @@ class StochasticGradientTreeRegressor(BaseStochasticGradientTree, base.Regressor
 
     Parameters
     ----------
+    loss_func
+        The objetive loss function the tree aims at optimizing.
     delta
         Define the significance level of the F-tests performed to decide upon creating splits
         or updating predictions.
@@ -421,7 +423,7 @@ class StochasticGradientTreeRegressor(BaseStochasticGradientTree, base.Regressor
     -----
     This implementation enhances the original proposal [^1] by using an incremental strategy to
     discretize numerical features dynamically, rather than relying on a calibration set and
-    parameterized number of bins. The strategy used is an adaptation of the Quantile Observer
+    parameterized number of bins. The strategy used is an adaptation of the Quantization Observer
     (QO) [^2]. Different bin size setting policies are available for selection.
     They directly related to number of split candidates the tree is going to explore, and thus,
     how accurate its split decisions are going to be. Besides, the number of stored bins per
@@ -431,13 +433,14 @@ class StochasticGradientTreeRegressor(BaseStochasticGradientTree, base.Regressor
     ---------
     [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
     In Asian Conference on Machine Learning (pp. 1094-1109).
-    [^2]: Mastelini, S.M. and de Carvalho, A.C.P.D.L.F., 2020. Using dynamical quantization to
-    perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
+    [^2]: Mastelini, S.M. and de Leon Ferreira, A.C.P., 2021. Using dynamical quantization
+    to perform split attempts in online tree regressors. Pattern Recognition Letters.
 
     """
 
     def __init__(
         self,
+        loss_func: loss.BaseLoss = None,
         delta: float = 1e-7,
         grace_period: int = 200,
         init_pred: float = 0.0,
@@ -452,6 +455,7 @@ class StochasticGradientTreeRegressor(BaseStochasticGradientTree, base.Regressor
     ):
 
         super().__init__(
+            loss_func=loss_func if loss_func is not None else loss.SquaredErrorLoss(),
             delta=delta,
             grace_period=grace_period,
             init_pred=init_pred,
@@ -461,8 +465,6 @@ class StochasticGradientTreeRegressor(BaseStochasticGradientTree, base.Regressor
             nominal_attributes=nominal_attributes,
             quantization_strategy=quantization_strategy,
         )
-
-        self._objective = SquaredErrorObjective()
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
         return self._root.sort_instance_to_leaf(x).leaf_prediction()

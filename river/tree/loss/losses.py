@@ -4,15 +4,15 @@ from abc import ABCMeta
 from .._utils import GradHess
 
 
-class BaseObjective(metaclass=ABCMeta):
-    """ Base class to implement optimization objectives used in Streaming Gradient Trees. """
+class BaseLoss(metaclass=ABCMeta):
+    """Base class to implement optimization objectives used in Stochastic Gradient Trees. """
 
     def compute_derivatives(self, y_true: float, y_pred: float) -> GradHess:
         """ Return the gradient and hessian data concerning one instance and its prediction.
 
         Parameters
         ----------
-        y
+        y_true
             Target value.
         y_pred
             Predicted target value.
@@ -33,7 +33,7 @@ class BaseObjective(metaclass=ABCMeta):
         return y
 
 
-class BinaryCrossEntropyObjective(BaseObjective):
+class BinaryCrossEntropyLoss(BaseLoss):
     """ Loss function used in binary classification tasks. """
 
     def compute_derivatives(self, y_true, y_pred):
@@ -45,7 +45,7 @@ class BinaryCrossEntropyObjective(BaseObjective):
         return 1.0 / (1.0 + math.exp(-y))
 
 
-class SquaredErrorObjective(BaseObjective):
+class SquaredErrorLoss(BaseLoss):
     """ Loss function used in regression tasks. """
 
     def compute_derivatives(self, y_true, y_pred):
