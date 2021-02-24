@@ -62,7 +62,7 @@ class GLM:
     def _fit(self, x, y, w, get_grad):
 
         # Some optimizers need to do something before a prediction is made
-        self.optimizer.update_before_pred(w=self._weights)
+        self.optimizer.look_ahead(w=self._weights)
 
         # Calculate the gradient
         gradient, loss_gradient = get_grad(x, y, w)
@@ -73,7 +73,7 @@ class GLM:
         )
 
         # Update the weights
-        self.optimizer.update_after_pred(w=self._weights, g=gradient)
+        self.optimizer.step(w=self._weights, g=gradient)
 
         return self
 
