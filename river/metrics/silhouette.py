@@ -28,12 +28,12 @@ class Silhouette(base_internal_clustering.InternalMetric):
     ...     [4, 2],
     ...     [4, 4],
     ...     [4, 0],
-    ...     [5, 2],
-    ...     [5, 4],
-    ...     [5, 0]
+    ...     [-2, 2],
+    ...     [-2, 4],
+    ...     [-2, 0]
     ... ]
 
-    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
+    >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
     >>> metric = metrics.Silhouette()
 
     >>> for x, _ in stream.iter_array(X):
@@ -42,7 +42,7 @@ class Silhouette(base_internal_clustering.InternalMetric):
     ...     metric = metric.update(k_means, x, label)
 
     >>> metric
-    Silhouette: 0.640892
+    Silhouette: 0.453723
 
     """
 
