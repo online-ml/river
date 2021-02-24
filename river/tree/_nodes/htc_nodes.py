@@ -1,12 +1,12 @@
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
-from .._attribute_observer import (
-    NominalAttributeClassObserver,
-    NumericAttributeClassObserverBinaryTree,
-    NumericAttributeClassObserverGaussian,
-    NumericAttributeClassObserverHistogram,
-)
 from .._tree_utils import do_naive_bayes_prediction
+from ..splitter import (
+    ExhaustiveSplitter,
+    GaussianSplitter,
+    HistogramSplitter,
+    NominalClassSplitter,
+)
 from .base import LearningNode
 
 
@@ -31,16 +31,16 @@ class LearningNodeMC(LearningNode):
 
     @staticmethod
     def new_nominal_attribute_observer():
-        return NominalAttributeClassObserver()
+        return NominalClassSplitter()
 
     @staticmethod
     def new_numeric_attribute_observer(attr_obs, attr_obs_params):
         if attr_obs == "bst":
-            return NumericAttributeClassObserverBinaryTree()
+            return ExhaustiveSplitter()
         elif attr_obs == "gaussian":
-            return NumericAttributeClassObserverGaussian(**attr_obs_params)
+            return GaussianSplitter(**attr_obs_params)
         elif attr_obs == "histogram":
-            return NumericAttributeClassObserverHistogram(**attr_obs_params)
+            return HistogramSplitter(**attr_obs_params)
 
     def update_stats(self, y, sample_weight):
         try:

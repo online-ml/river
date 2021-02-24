@@ -1,11 +1,17 @@
 from abc import ABCMeta, abstractmethod
 
+from river import base
+
 from .._attribute_test import AttributeSplitSuggestion
 
 
-class AttributeObserver(metaclass=ABCMeta):
-    """Abstract class for observing the class data distribution for an attribute.
-    This observer monitors the class distribution of a given attribute.
+class Splitter(base.Estimator, metaclass=ABCMeta):
+    """Base class for the tree splitters.
+
+    Attribute Observers (AO) or Splitters are responsible by monitoring an input feature
+    and evaluating possible split points to them. They can also perform other tasks related
+    to the monitored feature, such as estimating the feature's probability density
+    function.
 
     This class should not be instantiated, as none of its methods are implemented.
     """
@@ -14,14 +20,14 @@ class AttributeObserver(metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def update(self, att_val, target_val, sample_weight) -> "AttributeObserver":
+    def update(self, att_val, target_val, sample_weight) -> "Splitter":
         """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
 
         Parameters
         ----------
         att_val
-            The value of the attribute.
+            The value of the monitored attribute.
         target_val
             The target value.
         sample_weight
@@ -29,15 +35,15 @@ class AttributeObserver(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def probability_of_attribute_value_given_class(self, att_val, target_val) -> float:
+    def cond_proba(self, att_val, class_val) -> float:
         """Get the probability for an attribute value given a class.
 
         Parameters
         ----------
         att_val
             The value of the attribute.
-        target_val
-            The target value.
+        class_val
+            The class value.
 
         Returns
         -------
@@ -68,4 +74,8 @@ class AttributeObserver(metaclass=ABCMeta):
 
     @property
     def is_numeric(self) -> bool:
+        return True
+
+    @property
+    def is_target_class(self) -> bool:
         return True

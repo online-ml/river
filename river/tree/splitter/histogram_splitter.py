@@ -6,10 +6,10 @@ from river import utils
 from river.utils.histogram import Bin  # noqa
 
 from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
-from .attribute_observer import AttributeObserver
+from .base_splitter import Splitter
 
 
-class NumericAttributeClassObserverHistogram(AttributeObserver):
+class HistogramSplitter(Splitter):
     """Numeric attribute observer for classification tasks that discretizes features
     using histograms.
 
@@ -31,13 +31,13 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
             functools.partial(utils.Histogram, max_bins=n_bins)
         )
 
-    def update(self, att_val, class_val, sample_weight):
+    def update(self, att_val, target_val, sample_weight):
         for _ in range(int(sample_weight)):
-            self.hists[class_val].update(att_val)
+            self.hists[target_val].update(att_val)
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
+    def cond_proba(self, att_val, class_val):
         if class_val not in self.hists:
             return 0.0
 

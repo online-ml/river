@@ -5,12 +5,15 @@ from river.base.typing import ClfTarget
 from river.proba import Gaussian
 
 from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
-from .attribute_observer import AttributeObserver
+from .base_splitter import Splitter
 
 
-class NumericAttributeClassObserverGaussian(AttributeObserver):
+class GaussianSplitter(Splitter):
     """Numeric attribute observer for classification tasks that is based on
     Gaussian estimators.
+
+    The distribution of each class is approximated using a Gaussian distribution. Hence,
+    the probability density function can be easily calculated.
 
 
     Parameters
@@ -26,27 +29,27 @@ class NumericAttributeClassObserverGaussian(AttributeObserver):
         self._att_dist_per_class: typing.Dict[ClfTarget, Gaussian] = {}
         self.n_splits = n_splits
 
-    def update(self, att_val, class_val, sample_weight):
+    def update(self, att_val, target_val, sample_weight):
         if att_val is None:
             return
         else:
             try:
-                val_dist = self._att_dist_per_class[class_val]
-                if att_val < self._min_per_class[class_val]:
-                    self._min_per_class[class_val] = att_val
-                if att_val > self._max_per_class[class_val]:
-                    self._max_per_class[class_val] = att_val
+                val_dist = self._att_dist_per_class[target_val]
+                if att_val < self._min_per_class[target_val]:
+                    self._min_per_class[target_val] = att_val
+                if att_val > self._max_per_class[target_val]:
+                    self._max_per_class[target_val] = att_val
             except KeyError:
                 val_dist = Gaussian()
-                self._att_dist_per_class[class_val] = val_dist
-                self._min_per_class[class_val] = att_val
-                self._max_per_class[class_val] = att_val
+                self._att_dist_per_class[target_val] = val_dist
+                self._min_per_class[target_val] = att_val
+                self._max_per_class[target_val] = att_val
 
             val_dist.update(att_val, sample_weight)
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
+    def cond_proba(self, att_val, class_val):
         if class_val in self._att_dist_per_class:
             obs = self._att_dist_per_class[class_val]
             return obs.pdf(att_val)

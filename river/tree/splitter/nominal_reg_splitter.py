@@ -6,10 +6,10 @@ from .._attribute_test import (
     NominalAttributeBinaryTest,
     NominalAttributeMultiwayTest,
 )
-from .attribute_observer import AttributeObserver
+from .base_splitter import Splitter
 
 
-class NominalAttributeRegressionObserver(AttributeObserver):
+class NominalRegSplitter(Splitter):
     """Nominal attribute observer for regression tasks."""
 
     def __init__(self):
@@ -49,7 +49,7 @@ class NominalAttributeRegressionObserver(AttributeObserver):
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, target):
+    def cond_proba(self, att_val, target):
         raise NotImplementedError
 
     def best_evaluated_split_suggestion(

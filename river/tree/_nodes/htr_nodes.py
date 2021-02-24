@@ -2,12 +2,7 @@ import inspect
 
 from river.stats import Var
 
-from .._attribute_observer import (
-    NominalAttributeRegressionObserver,
-    NumericAttributeRegressionObserver,
-    NumericAttributeRegressionQuantizerObserver,
-    NumericAttributeRegressionTruncatedObserver,
-)
+from ..splitter import EBSTSplitter, NominalRegSplitter, QOSplitter, TEBSTSplitter
 from .base import LearningNode
 
 
@@ -37,16 +32,16 @@ class LearningNodeMean(LearningNode):
 
     @staticmethod
     def new_nominal_attribute_observer():
-        return NominalAttributeRegressionObserver()
+        return NominalRegSplitter()
 
     @staticmethod
     def new_numeric_attribute_observer(attr_obs, attr_obs_params):
         if attr_obs == "e-bst":
-            return NumericAttributeRegressionObserver()
+            return EBSTSplitter()
         elif attr_obs == "qo":
-            return NumericAttributeRegressionQuantizerObserver(**attr_obs_params)
+            return QOSplitter(**attr_obs_params)
         else:  # Truncated E-BST
-            return NumericAttributeRegressionTruncatedObserver(**attr_obs_params)
+            return TEBSTSplitter(**attr_obs_params)
 
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
         """Trigger Attribute Observers' memory management routines.
@@ -66,7 +61,7 @@ class LearningNodeMean(LearningNode):
             Hoeffding bound value calculated in the last split attempt.
         """
         for obs in self.attribute_observers.values():
-            if isinstance(obs, NumericAttributeRegressionObserver):
+            if isinstance(obs, EBSTSplitter):
                 obs.remove_bad_splits(
                     criterion=criterion,
                     last_check_ratio=last_check_ratio,

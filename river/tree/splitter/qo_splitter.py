@@ -6,11 +6,11 @@ from river.stats import Mean, Var
 from river.utils import VectorDict
 
 from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
-from .attribute_observer import AttributeObserver
+from .base_splitter import Splitter
 
 
-class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
-    """Quantizer observer (QO).
+class QOSplitter(Splitter):
+    """Quantization observer (QO).
 
     Utilizes a dynamical hash-based quantization algorithm to keep track of the target statistics
     and evaluate split candidates. This class implements the algorithm described in [^1].
@@ -36,14 +36,14 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
         self._x_var = Var()
         self._quantizer = FeatureQuantizer(radius=self.radius)
 
-    def update(self, x, y, sample_weight):
-        if x is None:
+    def update(self, att_val, target_val, sample_weight):
+        if att_val is None:
             return
         else:
-            self._x_var.update(x, sample_weight)
-            self._quantizer.update(x, y, sample_weight)
+            self._x_var.update(att_val, sample_weight)
+            self._quantizer.update(att_val, target_val, sample_weight)
 
-    def probability_of_attribute_value_given_class(self, x, y):
+    def cond_proba(self, att_val, class_val):
         raise NotImplementedError
 
     def best_evaluated_split_suggestion(
@@ -77,8 +77,9 @@ class NumericAttributeRegressionQuantizerObserver(AttributeObserver):
         return candidate
 
     @property
-    def x_var(self):
-        return self._x_var
+    def x_std(self) -> float:
+        """The standard deviation of the monitored feature."""
+        return math.sqrt(self._x_var.get())
 
     @staticmethod
     def _update_candidate(split_point, att_idx, post_split_dists, merit):

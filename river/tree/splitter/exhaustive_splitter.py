@@ -1,10 +1,10 @@
 from collections import Counter, defaultdict
 
 from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
-from .attribute_observer import AttributeObserver
+from .base_splitter import Splitter
 
 
-class NumericAttributeClassObserverBinaryTree(AttributeObserver):
+class ExhaustiveSplitter(Splitter):
     """Numeric attribute observer for classification tasks that is based on
     a Binary Search Tree.
 
@@ -14,14 +14,14 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
     """
 
     class Node:
-        def __init__(self, val, label, sample_weight):
+        def __init__(self, att_val, target_val, sample_weight):
             self.class_count_left = defaultdict(float)
             self.class_count_right = defaultdict(float)
             self._left = None
             self._right = None
 
-            self.cut_point = val
-            self.class_count_left[label] += sample_weight
+            self.cut_point = att_val
+            self.class_count_left[target_val] += sample_weight
 
         def insert_value(self, val, label, sample_weight):
             if val == self.cut_point:
@@ -29,42 +29,32 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
             elif val < self.cut_point:
                 self.class_count_left[label] += sample_weight
                 if self._left is None:
-                    self._left = NumericAttributeClassObserverBinaryTree.Node(
-                        val, label, sample_weight
-                    )
+                    self._left = ExhaustiveSplitter.Node(val, label, sample_weight)
                 else:
                     self._left.insert_value(val, label, sample_weight)
             else:
                 self.class_count_right[label] += sample_weight
                 if self._right is None:
-                    self._right = NumericAttributeClassObserverBinaryTree.Node(
-                        val, label, sample_weight
-                    )
+                    self._right = ExhaustiveSplitter.Node(val, label, sample_weight)
                 else:
                     self._right.insert_value(val, label, sample_weight)
-
-    """
-    end of class Node
-    """
 
     def __init__(self):
         super().__init__()
         self._root = None
 
-    def update(self, att_val, class_val, sample_weight):
+    def update(self, att_val, target_val, sample_weight):
         if att_val is None:
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeClassObserverBinaryTree.Node(
-                    att_val, class_val, sample_weight
-                )
+                self._root = ExhaustiveSplitter.Node(att_val, target_val, sample_weight)
             else:
-                self._root.insert_value(att_val, class_val, sample_weight)
+                self._root.insert_value(att_val, target_val, sample_weight)
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
+    def cond_proba(self, att_val, class_val):
         # Cannot determine the probability of a single attribute observation
         return 0.0
 

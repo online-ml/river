@@ -46,9 +46,7 @@ def do_naive_bayes_prediction(
                     continue
                 obs = attribute_observers[att_idx]
                 # Prior plus the log likelihood
-                tmp = obs.probability_of_attribute_value_given_class(
-                    x[att_idx], class_index
-                )
+                tmp = obs.cond_proba(x[att_idx], class_index)
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.0
 
     # Max log-likelihood

@@ -4,10 +4,10 @@ from river.stats import Var
 from river.utils import VectorDict
 
 from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
-from .attribute_observer import AttributeObserver
+from .base_splitter import Splitter
 
 
-class NumericAttributeRegressionObserver(AttributeObserver):
+class EBSTSplitter(Splitter):
     """iSOUP-Tree's Extended Binary Search Tree (E-BST).
 
     This class implements the Extended Binary Search Tree (E-BST)
@@ -24,17 +24,17 @@ class NumericAttributeRegressionObserver(AttributeObserver):
     """
 
     class Node:
-        def __init__(self, att_val, target, sample_weight):
+        def __init__(self, att_val, target_val, sample_weight):
             self.att_val = att_val
 
-            if isinstance(target, dict):
+            if isinstance(target_val, dict):
                 self.estimator = VectorDict(default_factory=functools.partial(Var))
                 self._update_estimator = self._update_estimator_multivariate
             else:
                 self.estimator = Var()
                 self._update_estimator = self._update_estimator_univariate
 
-            self._update_estimator(self, target, sample_weight)
+            self._update_estimator(self, target_val, sample_weight)
 
             self._left = None
             self._right = None
@@ -50,17 +50,17 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         # Incremental implementation of the insert method. Avoiding unnecessary
         # stack tracing must decrease memory costs
-        def insert_value(self, att_val, target, sample_weight):
+        def insert_value(self, att_val, target_val, sample_weight):
             current = self
             antecedent = None
 
             while current is not None:
                 antecedent = current
                 if att_val == current.att_val:
-                    self._update_estimator(current, target, sample_weight)
+                    self._update_estimator(current, target_val, sample_weight)
                     return
                 elif att_val < current.att_val:
-                    self._update_estimator(current, target, sample_weight)
+                    self._update_estimator(current, target_val, sample_weight)
 
                     current = current._left
                     is_right = False
@@ -70,32 +70,32 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
             # Value was not yet added to the tree
             if is_right:
-                antecedent._right = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight
+                antecedent._right = EBSTSplitter.Node(
+                    att_val, target_val, sample_weight
                 )
             else:
-                antecedent._left = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight
-                )
+                antecedent._left = EBSTSplitter.Node(att_val, target_val, sample_weight)
 
     def __init__(self):
         super().__init__()
         self._root = None
+
+    @property
+    def is_target_class(self) -> bool:
+        return False
 
     def update(self, att_val, target_val, sample_weight):
         if att_val is None:
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeRegressionObserver.Node(
-                    att_val, target_val, sample_weight
-                )
+                self._root = EBSTSplitter.Node(att_val, target_val, sample_weight)
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
+    def cond_proba(self, att_val, class_val):
         raise NotImplementedError
 
     def best_evaluated_split_suggestion(

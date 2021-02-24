@@ -3,10 +3,10 @@ from .._attribute_test import (
     NominalAttributeBinaryTest,
     NominalAttributeMultiwayTest,
 )
-from .attribute_observer import AttributeObserver
+from .base_splitter import Splitter
 
 
-class NominalAttributeClassObserver(AttributeObserver):
+class NominalClassSplitter(Splitter):
     """Class for observing the class data distribution for a nominal attribute.
     This observer monitors the class distribution of a given attribute.
     Used in naive Bayes and decision trees to monitor data statistics on leaves.
@@ -46,7 +46,7 @@ class NominalAttributeClassObserver(AttributeObserver):
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
+    def cond_proba(self, att_val, class_val):
         obs = self._att_val_dist_per_class.get(class_val, None)
         if obs is not None:
             value = obs[att_val] if att_val in obs else 0.0
