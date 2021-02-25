@@ -199,17 +199,22 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
                     # Due to an emerging category in a nominal feature, a split node was reached
                     leaf_models = {}
 
+        if self.attr_obs == self._QO:
+            attr_obs_params = self._qo_radii
+        else:
+            attr_obs_params = self.attr_obs_params
+
         if self.leaf_prediction == self._TARGET_MEAN:
             return LearningNodeMeanMultiTarget(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params
+                initial_stats, depth, self.attr_obs, attr_obs_params
             )
         elif self.leaf_prediction == self._MODEL:
             return LearningNodeModelMultiTarget(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_models
+                initial_stats, depth, self.attr_obs, attr_obs_params, leaf_models
             )
         else:  # adaptive learning node
             new_adaptive = LearningNodeAdaptiveMultiTarget(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_models
+                initial_stats, depth, self.attr_obs, attr_obs_params, leaf_models
             )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean.copy()
