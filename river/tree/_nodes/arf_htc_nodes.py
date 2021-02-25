@@ -42,7 +42,9 @@ class BaseRandomLearningNode(LearningNode):
             self.feature_indices = self._sample_features(x, self.max_features)
 
         for att_id in self.feature_indices:
-            yield att_id
+            # First check if the feature is available
+            if att_id in x:
+                yield att_id, x[att_id]
 
     def _sample_features(self, x, max_features):
         selected = self._rng.choice(len(x), size=max_features, replace=False)

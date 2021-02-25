@@ -391,8 +391,8 @@ class LearningNode(Node, metaclass=ABCMeta):
         x
             The input instance.
         """
-        for att_id in x:
-            yield att_id
+        for att_id, att_val in x.items():
+            yield att_id, att_val
 
     def update_splitters(self, x, y, sample_weight, nominal_attributes):
         for att_id, att_val in self._iter_features(x):
