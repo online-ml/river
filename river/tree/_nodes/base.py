@@ -408,16 +408,6 @@ class LearningNode(Node, metaclass=ABCMeta):
                     splitter = self.new_nominal_splitter()
                 else:
                     splitter = copy.deepcopy(self.splitter)
-                    if "__splitter_args" in self.kwargs:
-                        try:
-                            # Try to select hyper-parameters specially designed for
-                            # the given feature
-                            splitter._set_params(  # noqa
-                                **self.kwargs["__splitter_args"][att_id]
-                            )
-                        except KeyError:
-                            # Use the default hyper-parameter values
-                            pass
 
                 self.splitters[att_id] = splitter
             splitter.update(att_val, y, sample_weight)

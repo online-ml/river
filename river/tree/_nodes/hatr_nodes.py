@@ -29,18 +29,8 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
         Other parameters passed to the learning node.
     """
 
-    def __init__(
-        self,
-        stats,
-        depth,
-        attr_obs,
-        attr_obs_params,
-        leaf_model,
-        adwin_delta,
-        seed,
-        **kwargs
-    ):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, leaf_model, **kwargs)
+    def __init__(self, stats, depth, splitter, leaf_model, adwin_delta, seed, **kwargs):
+        super().__init__(stats, depth, splitter, leaf_model, **kwargs)
 
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)

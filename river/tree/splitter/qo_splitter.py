@@ -2,8 +2,7 @@ import functools
 import math
 import typing
 
-from river.stats import Mean, Var
-from river.utils import VectorDict
+from river import stats, utils
 
 from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
 from .base_splitter import Splitter
@@ -12,16 +11,32 @@ from .base_splitter import Splitter
 class QOSplitter(Splitter):
     """Quantization observer (QO).
 
-    Utilizes a dynamical hash-based quantization algorithm to keep track of the target statistics
-    and evaluate split candidates. This class implements the algorithm described in [^1].
-    This attribute observer keeps an internal estimator of the input feature's variance. By doing
-    that, QO can calculate better values for its radius parameter to be passed to future learning
-    nodes.
+    This splitter utilizes a hash-based quantization algorithm to keep track of the target
+    statistics and evaluate split candidates. QO, relies on the radius parameter to define
+    discretization intervals for each incoming feature. Split candidates are defined as the
+    midpoint between two consecutive hash slots.This class implements the algorithm described
+    in [^1].
+
+    The smaller the quantization radius, the more hash slots will be created to accommodate the
+    discretized data. Hence, both the running time and memory consumption increase, but the
+    resulting splits ought to be closer to the ones obtained by a batch exhaustive approach.
+    On the other hand, if the radius is too large, fewer slots will be created, less memory and
+    running time will be required, but at the cost of coarse split suggestions.
+
+    QO assumes that all features have the same range. It is always advised to scale the features
+    to apply this splitter. That can be done using the `preprocessing` module. A good "rule of
+    thumb" is to scale data using `preprocessing.StandardScaler` and define the radius as a
+    proportion of the features' standard deviation. For instance, the default radius value
+    would correspond to one quarter of the normalized features' standard deviation (since the
+    scaled data has zero mean and unit variance). If the features come from normal
+    distributions, by following the empirical rule, roughly `32` hash slots will be created.
 
     Parameters
     ----------
     radius
-        The quantization radius.
+        The quantization radius. QO discretizes the incoming feature in intervals of equal length
+        that are defined by this parameter.
+
 
     References
     ----------
@@ -30,17 +45,18 @@ class QOSplitter(Splitter):
 
     """
 
-    def __init__(self, radius: float = 0.01):
+    def __init__(self, radius: float = 0.25):
         super().__init__()
-        self.radius = radius if radius > 0 else 0.01
-        self._x_var = Var()
+
+        if radius <= 0:
+            raise ValueError("'radius' must be greater than zero.")
+        self.radius = radius
         self._quantizer = FeatureQuantizer(radius=self.radius)
 
     def update(self, att_val, target_val, sample_weight):
         if att_val is None:
             return
         else:
-            self._x_var.update(att_val, sample_weight)
             self._quantizer.update(att_val, target_val, sample_weight)
 
     def cond_proba(self, att_val, class_val):
@@ -76,11 +92,6 @@ class QOSplitter(Splitter):
             prev_x = x
         return candidate
 
-    @property
-    def x_std(self) -> float:
-        """The standard deviation of the monitored feature."""
-        return math.sqrt(self._x_var.get())
-
     @staticmethod
     def _update_candidate(split_point, att_idx, post_split_dists, merit):
         num_att_binary_test = NumericAttributeBinaryTest(att_idx, split_point, True)
@@ -89,6 +100,10 @@ class QOSplitter(Splitter):
         )
 
         return candidate
+
+    @property
+    def is_target_class(self) -> bool:
+        return False
 
 
 class Slot:
@@ -100,15 +115,15 @@ class Slot:
     """
 
     def __init__(
-        self, x: float, y=typing.Union[float, VectorDict], weight: float = 1.0
+        self, x: float, y=typing.Union[float, utils.VectorDict], weight: float = 1.0
     ):
-        self.x_stats = Mean()
+        self.x_stats = stats.Mean()
         self.x_stats.update(x, weight)
 
-        self.y_stats: typing.Union[Var, VectorDict]
+        self.y_stats: typing.Union[stats.Var, utils.VectorDict]
 
         self._update_estimator: typing.Callable[
-            [typing.Union[float, VectorDict], float], None
+            [typing.Union[float, utils.VectorDict], float], None
         ]
         self.is_single_target = True
 
@@ -118,10 +133,12 @@ class Slot:
     def _init_estimator(self, y):
         if isinstance(y, dict):
             self.is_single_target = False
-            self.y_stats = VectorDict(default_factory=functools.partial(Var))
+            self.y_stats = utils.VectorDict(
+                default_factory=functools.partial(stats.Var)
+            )
             self._update_estimator = self._update_estimator_multivariate
         else:
-            self.y_stats = Var()
+            self.y_stats = stats.Var()
             self._update_estimator = self._update_estimator_univariate
 
     def _update_estimator_univariate(self, target, sample_weight):
@@ -163,7 +180,7 @@ class FeatureQuantizer:
     def __len__(self):
         return len(self.hash)
 
-    def update(self, x: float, y: typing.Union[float, VectorDict], weight: float):
+    def update(self, x: float, y: typing.Union[float, utils.VectorDict], weight: float):
         index = math.floor(x / self.radius)
         try:
             self.hash[index].update(x, y, weight)
@@ -172,9 +189,9 @@ class FeatureQuantizer:
 
     def __iter__(self):
         aux_stats = (
-            Var()
+            stats.Var()
             if next(iter(self.hash.values())).is_single_target
-            else VectorDict(default_factory=functools.partial(Var))
+            else utils.VectorDict(default_factory=functools.partial(stats.Var))
         )
 
         for i in sorted(self.hash.keys()):

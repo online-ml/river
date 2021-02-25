@@ -15,9 +15,8 @@ from ._split_criterion import (
     HellingerDistanceCriterion,
     InfoGainSplitCriterion,
 )
-
-from .splitter import Splitter, GaussianSplitter
 from .base_hoeffding_tree import BaseHoeffdingTree
+from .splitter import GaussianSplitter, Splitter
 
 
 class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
@@ -138,7 +137,9 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             self.splitter = GaussianSplitter()
         else:
             if not splitter.is_target_class:
-                raise ValueError("The chosen splitter cannot be used in classification tasks.")
+                raise ValueError(
+                    "The chosen splitter cannot be used in classification tasks."
+                )
             self.splitter = splitter
 
         self.kwargs = kwargs
@@ -187,17 +188,11 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return LearningNodeMC(
-                initial_stats, depth, self.splitter
-            )
+            return LearningNodeMC(initial_stats, depth, self.splitter)
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return LearningNodeNB(
-                initial_stats, depth, self.splitter
-            )
+            return LearningNodeNB(initial_stats, depth, self.splitter)
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return LearningNodeNBA(
-                initial_stats, depth, self.splitter
-            )
+            return LearningNodeNBA(initial_stats, depth, self.splitter)
 
     def _attempt_to_split(self, node: LearningNode, parent: SplitNode, parent_idx: int):
         """Attempt to split a node.

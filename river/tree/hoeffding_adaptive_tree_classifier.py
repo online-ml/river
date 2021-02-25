@@ -7,9 +7,8 @@ from ._nodes import (
     LearningNode,
     SplitNode,
 )
-
-from .splitter import Splitter
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
+from .splitter import Splitter
 
 
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):

@@ -11,8 +11,8 @@ from ._split_criterion import (
     HellingerDistanceCriterion,
     InfoGainSplitCriterion,
 )
-from .splitter import Splitter
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
+from .splitter import Splitter
 
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
@@ -134,17 +134,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return EFDTLearningNodeMC(
-                initial_stats, depth, self.splitter
-            )
+            return EFDTLearningNodeMC(initial_stats, depth, self.splitter)
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return EFDTLearningNodeNB(
-                initial_stats, depth, self.splitter
-            )
+            return EFDTLearningNodeNB(initial_stats, depth, self.splitter)
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return EFDTLearningNodeNBA(
-                initial_stats, depth, self.splitter
-            )
+            return EFDTLearningNodeNBA(initial_stats, depth, self.splitter)
 
     def _new_split_node(
         self, split_test, target_stats=None, depth=0, existing_splitters=None

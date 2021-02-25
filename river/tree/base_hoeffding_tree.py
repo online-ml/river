@@ -93,8 +93,8 @@ class BaseHoeffdingTree(ABC):
         merit_preprune: bool = True,
     ):
         # Properties common to all the Hoeffding trees
-        self._split_criterion: str = ''
-        self._leaf_prediction: str = ''
+        self._split_criterion: str = ""
+        self._leaf_prediction: str = ""
 
         self.max_depth: float = max_depth if max_depth is not None else math.inf
         self.binary_split: bool = binary_split
@@ -425,7 +425,9 @@ class BaseHoeffdingTree(ABC):
                 child_index = node.split_test.branch_for_instance(x)  # noqa
 
                 if child_index >= 0:
-                    _print(node.split_test.describe_condition_for_branch(child_index))  # noqa
+                    _print(
+                        node.split_test.describe_condition_for_branch(child_index)
+                    )  # noqa
                 else:  # Corner case where an emerging nominal feature value arrives
                     _print("Decision node reached as final destination")
                     pred = node.stats
