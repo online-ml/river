@@ -7,9 +7,10 @@ from river import base, utils
 
 class DBSTREAM(base.Clusterer):
     r"""DBSTREAM
+
     DBSTREAM [^1] is a clustering algorithm for evolving data streams.
     It is the first micro-cluster-based online clustering component that
-    explicitely capters the density between micro-clusters via a shared
+    explicitely captures the density between micro-clusters via a shared
     density graph. The density information in the graph is then exploited
     for reclustering based on actual density between adjacent micro clusters.
 
@@ -108,7 +109,7 @@ class DBSTREAM(base.Clusterer):
     ... ]
 
     >>> dbstream = cluster.DBSTREAM(clustering_threshold = 1.5,
-    ...                               fading_factor = 0.1,
+    ...                               fading_factor = 0.05,
     ...                               cleanup_interval = 3,
     ...                               intersection_factor = 0.1,
     ...                               minimum_weight = 1)
@@ -129,15 +130,14 @@ class DBSTREAM(base.Clusterer):
 
     def __init__(
         self,
-        clustering_threshold: float = 0.25,
-        fading_factor: float = 5,
-        cleanup_interval: float = 0.5,
-        minimum_weight: float = 2,
-        intersection_factor: float = 1,
+        clustering_threshold: float = 1,
+        fading_factor: float = 0.01,
+        cleanup_interval: float = 2,
+        intersection_factor: float = 0.3,
+        minimum_weight: float = 1
     ):
         super().__init__()
         self.time_stamp = 0
-        self.initialized = False
 
         self.clustering_threshold = clustering_threshold
         self.fading_factor = fading_factor
@@ -145,10 +145,6 @@ class DBSTREAM(base.Clusterer):
         self.minimum_weight = minimum_weight
         self.intersection_factor = intersection_factor
 
-        self.n_clusters = 0
-        self.clusters = {}
-        self.centers = {}
-        self.micro_clusters = {}
         self.s = {
             i: {j: 0 for j in range(len(self.micro_clusters))}
             for i in range(len(self.micro_clusters))
@@ -157,6 +153,11 @@ class DBSTREAM(base.Clusterer):
             i: {j: 0 for j in range(len(self.micro_clusters))}
             for i in range(len(self.micro_clusters))
         }
+
+        self.n_clusters = 0
+        self.clusters = {}
+        self.centers = {}
+        self.micro_clusters = {}
 
     @staticmethod
     def _distance(point_a, point_b):
