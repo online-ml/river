@@ -6,7 +6,7 @@ from river import base
 
 
 class DenStream(base.Clusterer):
-    """DenStream
+    r"""DenStream
 
     DenStream [^1] is a clustering algorithm for evolving data streams.
     DenStream can discover clusters with arbitrary shape and is robust against
@@ -136,6 +136,7 @@ class DenStream(base.Clusterer):
         # on p micro-cluster centers and their centers
         self.n_clusters = 0
         self.clusters = {}
+        self.centers = {}
         self.p_micro_clusters = {}
         self.o_micro_clusters = {}
 
@@ -356,6 +357,8 @@ class DenStream(base.Clusterer):
         self.n_clusters, self.clusters = self._generate_clusters_from_labels(labels)
 
         y = self._find_closest_cluster_index(x, self.clusters)
+
+        self.centers = {i: self.clusters[i].center for i in self.clusters.keys()}
 
         return y
 
