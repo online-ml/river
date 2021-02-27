@@ -39,10 +39,6 @@ def isclassifier(model):
     return isinstance(extract_relevant(model), base.Classifier)
 
 
-def isclusterer(model):
-    return isinstance(extract_relevant(model), base.Clusterer)
-
-
 def ismoclassifier(model):
     return isclassifier(model) and isinstance(
         extract_relevant(model), base.MultiOutputMixin

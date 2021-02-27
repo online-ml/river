@@ -26,7 +26,6 @@ from .base import (
     RegressionMetric,
     WrapperMetric,
 )
-from .base_internal_clustering import InternalMetric
 from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
@@ -50,7 +49,6 @@ from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
 from .mae import MAE
 from .mcc import MCC
-from .mean_internal import SSQ, Cohesion, Separation
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
 from .precision import (
@@ -65,7 +63,6 @@ from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRec
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
 from .rolling import Rolling
-from .silhouette import Silhouette
 from .smape import SMAPE
 from .time_rolling import TimeRolling
 
@@ -76,7 +73,6 @@ __all__ = [
     "ClassificationMetric",
     "ClassificationReport",
     "CohenKappa",
-    "Cohesion",
     "ConfusionMatrix",
     "CrossEntropy",
     "ExactMatch",
@@ -89,7 +85,6 @@ __all__ = [
     "GeometricMean",
     "Hamming",
     "HammingLoss",
-    "InternalMetric",
     "Jaccard",
     "KappaM",
     "KappaT",
@@ -121,10 +116,7 @@ __all__ = [
     "ROCAUC",
     "Rolling",
     "R2",
-    "Separation",
-    "Silhouette",
     "SMAPE",
-    "SSQ",
     "TimeRolling",
     "WeightedF1",
     "WeightedFBeta",
