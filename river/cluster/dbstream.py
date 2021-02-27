@@ -105,22 +105,22 @@ class DBSTREAM(base.Clusterer):
 
     >>> X = [
     ...     [1, 0.5], [1, 0.625], [1, 0.75], [1, 1.125], [1, 1.5], [1, 1.75],
-    ...     [4, 1.5], [4, 2.25], [4, 2.5], [4, 3]
+    ...     [4, 1.5], [4, 2.25], [4, 2.5], [4, 3], [4, 3.25]
     ... ]
 
     >>> dbstream = cluster.DBSTREAM(clustering_threshold = 1.5,
     ...                               fading_factor = 0.05,
-    ...                               cleanup_interval = 3,
-    ...                               intersection_factor = 0.1,
+    ...                               cleanup_interval = 4,
+    ...                               intersection_factor = 0.5,
     ...                               minimum_weight = 1)
 
     >>> for x, _ in stream.iter_array(X):
     ...     dbstream = dbstream.learn_one(x)
 
-    >>> dbstream.predict_one({0:1, 1:2})
+    >>> dbstream.predict_one({0: 1, 1: 2})
     0
 
-    >>> dbstream.predict_one({0:5, 1:2})
+    >>> dbstream.predict_one({0: 5, 1: 2})
     2
 
     >>> dbstream.n_clusters
@@ -134,7 +134,7 @@ class DBSTREAM(base.Clusterer):
         fading_factor: float = 0.01,
         cleanup_interval: float = 2,
         intersection_factor: float = 0.3,
-        minimum_weight: float = 1
+        minimum_weight: float = 1,
     ):
         super().__init__()
         self.time_stamp = 0
@@ -145,19 +145,13 @@ class DBSTREAM(base.Clusterer):
         self.minimum_weight = minimum_weight
         self.intersection_factor = intersection_factor
 
-        self.s = {
-            i: {j: 0 for j in range(len(self.micro_clusters))}
-            for i in range(len(self.micro_clusters))
-        }
-        self.s_t = {
-            i: {j: 0 for j in range(len(self.micro_clusters))}
-            for i in range(len(self.micro_clusters))
-        }
-
         self.n_clusters = 0
         self.clusters = {}
         self.centers = {}
         self.micro_clusters = {}
+
+        self.s = {}
+        self.s_t = {}
 
     @staticmethod
     def _distance(point_a, point_b):
@@ -178,6 +172,19 @@ class DBSTREAM(base.Clusterer):
         sigma = self.clustering_threshold / 3
         gaussian_neighborhood = math.exp((distance * distance) / (2 * (sigma * sigma)))
         return gaussian_neighborhood
+
+    def _update_dim_shared_density(self):
+        new_s = new_s_t = {
+            i: {j: 0 for j in range(len(self.micro_clusters))}
+            for i in range(len(self.micro_clusters))
+        }
+
+        for i in self.s.keys():
+            for j in self.s[i].keys():
+                new_s[i][j] = self.s[i][j]
+                new_s_t[i][j] = self.s_t[i][j]
+
+        self.s, self.s_t = new_s, new_s_t
 
     def _update(self, x):
         # Algorithm 1 of Michael Hahsler and Matthew Bolanos
@@ -212,6 +219,8 @@ class DBSTREAM(base.Clusterer):
                 self.micro_clusters[i].last_update = self.time_stamp
 
                 # update shared density
+                self._update_dim_shared_density()
+
                 for j in N.keys():
                     if j > i:
                         self.s[i][j] = (
@@ -246,6 +255,7 @@ class DBSTREAM(base.Clusterer):
         # inactive clusters and shared density entries from memory
 
         weight_weak = 2 ** (-self.fading_factor * self.cleanup_interval)
+
         for i, micro_cluster_i in list(self.micro_clusters.items()):
             if (
                 micro_cluster_i.weight
@@ -259,6 +269,7 @@ class DBSTREAM(base.Clusterer):
                 < weight_weak
             ):
                 self.micro_clusters.pop(i)
+
         for i in list(self.s.keys()):
             for j in list(self.s[i].keys()):
                 if (
@@ -373,7 +384,8 @@ class DBSTREAM(base.Clusterer):
 
         self._update(x)
 
-        self._cleanup()
+        if self.time_stamp % self.cleanup_interval == 0:
+            self._cleanup()
 
         return self
 
