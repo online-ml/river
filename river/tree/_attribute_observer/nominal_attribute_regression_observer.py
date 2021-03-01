@@ -17,6 +17,10 @@ class NominalAttributeRegressionObserver(AttributeObserver):
         self._statistics = {}
         self._update_estimator = self._update_estimator_univariate
 
+    @property
+    def is_numeric(self):
+        return False
+
     @staticmethod
     def _update_estimator_univariate(estimator, target, sample_weight):
         estimator.update(target, sample_weight)
