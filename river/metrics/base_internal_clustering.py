@@ -16,11 +16,15 @@ class InternalClusteringMetrics(abc.ABC):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, centers, point, label, sample_weight) -> "InternalClusteringMetrics":
+    def update(
+        self, centers, point, label, sample_weight
+    ) -> "InternalClusteringMetrics":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, centers, point, label, sample_weight) -> "InternalClusteringMetrics":
+    def revert(
+        self, centers, point, label, sample_weight
+    ) -> "InternalClusteringMetrics":
         """Revert the metric."""
 
     @abc.abstractmethod
