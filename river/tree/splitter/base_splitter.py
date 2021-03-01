@@ -8,10 +8,9 @@ from .._attribute_test import AttributeSplitSuggestion
 class Splitter(base.Estimator, metaclass=ABCMeta):
     """Base class for the tree splitters.
 
-    Attribute Observers (AO) or Splitters are responsible by monitoring an input feature
-    and evaluating possible split points to them. They can also perform other tasks related
-    to the monitored feature, such as estimating the feature's probability density
-    function.
+    Each Attribute Observer (AO) or Splitter monitors one input feature and finds the best
+    split point for this attribute. AOs can also perform other tasks related to the monitored
+    feature, such as estimating its probability density function (classification case).
 
     This class should not be instantiated, as none of its methods are implemented.
     """
@@ -74,8 +73,14 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
 
     @property
     def is_numeric(self) -> bool:
+        """Determine whether or not the splitter works with numerical features."""
         return True
 
     @property
     def is_target_class(self) -> bool:
+        """Check on which kind of learning task the splitter is designed to work.
+
+        If `True`, the splitter works with classification trees, otherwise it is designed for
+        regression trees.
+        """
         return True

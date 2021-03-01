@@ -144,7 +144,7 @@ class SplitNode(Node):
         Class observations.
     depth
         The depth of the node.
-    **kwargs
+    kwargs
         Other parameters passed to the split node.
     """
 
@@ -332,6 +332,8 @@ class LearningNode(Node, metaclass=ABCMeta):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
     def __init__(self, stats, depth, splitter, **kwargs):

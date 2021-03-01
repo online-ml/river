@@ -25,7 +25,7 @@ class BaseRandomLearningNode(LearningNode):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes the ARF implementations randomize.
     """
 
@@ -71,7 +71,7 @@ class RandomLearningNodeMC(BaseRandomLearningNode, LearningNodeMC):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes the ARF implementations randomize.
 
     """
@@ -98,7 +98,7 @@ class RandomLearningNodeNB(BaseRandomLearningNode, LearningNodeNB):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes the ARF implementations randomize.
     """
 
@@ -125,7 +125,7 @@ class RandomLearningNodeNBA(BaseRandomLearningNode, LearningNodeNBA):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes the ARF implementations randomize.
     """
 

@@ -20,7 +20,7 @@ class LearningNodeMean(LearningNode):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 
@@ -51,9 +51,9 @@ class LearningNodeMean(LearningNode):
         last_check_e
             Hoeffding bound value calculated in the last split attempt.
         """
-        for obs in self.splitters.values():
-            if isinstance(obs, EBSTSplitter):
-                obs.remove_bad_splits(
+        for splitter in self.splitters.values():
+            if isinstance(splitter, EBSTSplitter):
+                splitter.remove_bad_splits(
                     criterion=criterion,
                     last_check_ratio=last_check_ratio,
                     last_check_vr=last_check_vr,
@@ -116,7 +116,7 @@ class LearningNodeModel(LearningNodeMean):
     leaf_model
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 
@@ -158,7 +158,7 @@ class LearningNodeAdaptive(LearningNodeModel):
     leaf_model
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 

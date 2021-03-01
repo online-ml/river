@@ -23,7 +23,7 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 
@@ -62,7 +62,7 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
         and perform split attempts.
     leaf_models
         A dictionary composed of target identifiers and their respective predictive models.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 
@@ -133,7 +133,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
         and perform split attempts.
     leaf_models
         A dictionary composed of target identifiers and their respective predictive models.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 

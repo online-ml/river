@@ -17,7 +17,7 @@ class LearningNodeMC(LearningNode):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 
@@ -94,7 +94,7 @@ class LearningNodeNB(LearningNodeMC):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 
@@ -133,7 +133,7 @@ class LearningNodeNBA(LearningNodeMC):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         Other parameters passed to the learning node.
     """
 

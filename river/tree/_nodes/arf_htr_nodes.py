@@ -23,7 +23,7 @@ class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes the ARF implementations randomize.
     """
 
@@ -55,7 +55,7 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
     leaf_model
         A `base.Regressor` instance used to learn from instances and provide
         responses.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes the ARF implementations randomize.
     """
 
@@ -91,7 +91,7 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
     leaf_model
         A `base.Regressor` instance used to learn from instances and provide
         responses.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes the ARF implementations randomize.
     """
 

@@ -76,8 +76,8 @@ class BaseEFDTNode(LearningNode):
         best_suggestions = []
         pre_split_dist = self.stats
 
-        for idx, obs in self.splitters.items():
-            best_suggestion = obs.best_evaluated_split_suggestion(
+        for idx, splitter in self.splitters.items():
+            best_suggestion = splitter.best_evaluated_split_suggestion(
                 criterion, pre_split_dist, idx, tree.binary_split
             )
             if best_suggestion is not None:
