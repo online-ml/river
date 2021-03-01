@@ -35,10 +35,6 @@ class InternalClusteringMetrics(abc.ABC):
     def bigger_is_better(self) -> bool:
         """Indicates if a high value is better than a low one or not."""
 
-    @abc.abstractmethod
-    def works_with(self, model: base.Estimator) -> bool:
-        """Indicates whether or not a metric can work with a given model."""
-
     def __repr__(self):
         """Returns the class name along with the current value of the metric."""
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
@@ -84,6 +80,3 @@ class MeanInternalMetric(InternalClusteringMetrics):
 
     def get(self):
         return self._mean.get()
-
-    def works_with(self, model) -> bool:
-        return utils.inspect.isclusterer(model)
