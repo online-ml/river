@@ -4,7 +4,7 @@ from river import utils
 
 from . import base_internal_clustering
 
-__all__ = ["Cohesion", "SSQ", "Separation"]
+__all__ = ["Cohesion", "SSQ", "Separation", "Silhouette"]
 
 
 class Cohesion(base_internal_clustering.MeanInternalMetric):

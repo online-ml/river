@@ -45,12 +45,12 @@ from .fbeta import (
 )
 from .geometric_mean import GeometricMean
 from .hamming import Hamming, HammingLoss
+from .internal_clustering_metrics import SSQ, Cohesion, Separation, Silhouette
 from .jaccard import Jaccard
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
 from .mae import MAE
 from .mcc import MCC
-from .internal_clustering_metrics import SSQ, Cohesion, Separation, Silhouette
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
 from .precision import (

@@ -64,7 +64,7 @@ class MeanInternalMetric(InternalClusteringMetrics):
 
     def update(
         self,
-        centers: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
+        centers,
         point: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         label: numbers.Number,
         sample_weight=1.0,
