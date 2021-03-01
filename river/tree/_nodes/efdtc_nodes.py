@@ -24,7 +24,7 @@ class BaseEFDTNode(LearningNode):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         To ensure compatibility with split nodes.
 
     Notes
@@ -119,7 +119,7 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
         and perform split attempts.
     existing_splitters
         Existing attribute observers from previous nodes passed to provide a warm-start.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes.
     """
 
@@ -244,7 +244,7 @@ class EFDTLearningNodeMC(BaseEFDTNode, LearningNodeMC):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes.
     """
 
@@ -265,7 +265,7 @@ class EFDTLearningNodeNB(BaseEFDTNode, LearningNodeNB):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes.
     """
 
@@ -286,7 +286,7 @@ class EFDTLearningNodeNBA(BaseEFDTNode, LearningNodeNBA):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    **kwargs
+    kwargs
         Other parameters passed to the learning nodes.
     """
 
