@@ -1,7 +1,7 @@
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from .._tree_utils import do_naive_bayes_prediction
-from ..splitter import NominalClassSplitter
+from ..splitter.nominal_class_splitter import NominalClassSplitter
 from .base import LearningNode
 
 

@@ -2,7 +2,8 @@ import inspect
 
 from river.stats import Var
 
-from ..splitter import EBSTSplitter, NominalRegSplitter
+from ..splitter import EBSTSplitter
+from ..splitter.nominal_reg_splitter import NominalRegSplitter
 from .base import LearningNode
 
 

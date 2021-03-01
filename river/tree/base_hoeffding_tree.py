@@ -23,7 +23,7 @@ except ImportError:
     GRAPHVIZ_INSTALLED = False
 
 
-class BaseHoeffdingTree(ABC):
+class HoeffdingTree(ABC):
     """Base class for Hoeffding Decision Trees.
 
     This is an **abstract class**, so it cannot be used directly. It defines base operations

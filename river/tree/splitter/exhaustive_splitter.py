@@ -15,32 +15,6 @@ class ExhaustiveSplitter(Splitter):
     when coupled with tree leaves using naive bayes models.
     """
 
-    class Node:
-        def __init__(self, att_val, target_val, sample_weight):
-            self.class_count_left = defaultdict(float)
-            self.class_count_right = defaultdict(float)
-            self._left = None
-            self._right = None
-
-            self.cut_point = att_val
-            self.class_count_left[target_val] += sample_weight
-
-        def insert_value(self, val, label, sample_weight):
-            if val == self.cut_point:
-                self.class_count_left[label] += sample_weight
-            elif val < self.cut_point:
-                self.class_count_left[label] += sample_weight
-                if self._left is None:
-                    self._left = ExhaustiveSplitter.Node(val, label, sample_weight)
-                else:
-                    self._left.insert_value(val, label, sample_weight)
-            else:
-                self.class_count_right[label] += sample_weight
-                if self._right is None:
-                    self._right = ExhaustiveSplitter.Node(val, label, sample_weight)
-                else:
-                    self._right.insert_value(val, label, sample_weight)
-
     def __init__(self):
         super().__init__()
         self._root = None
@@ -50,7 +24,7 @@ class ExhaustiveSplitter(Splitter):
             return
         else:
             if self._root is None:
-                self._root = ExhaustiveSplitter.Node(att_val, target_val, sample_weight)
+                self._root = Node(att_val, target_val, sample_weight)
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
@@ -187,3 +161,30 @@ class ExhaustiveSplitter(Splitter):
         )
 
         return current_best_option
+
+
+class Node:
+    def __init__(self, att_val, target_val, sample_weight):
+        self.class_count_left = defaultdict(float)
+        self.class_count_right = defaultdict(float)
+        self._left = None
+        self._right = None
+
+        self.cut_point = att_val
+        self.class_count_left[target_val] += sample_weight
+
+    def insert_value(self, val, label, sample_weight):
+        if val == self.cut_point:
+            self.class_count_left[label] += sample_weight
+        elif val < self.cut_point:
+            self.class_count_left[label] += sample_weight
+            if self._left is None:
+                self._left = Node(val, label, sample_weight)
+            else:
+                self._left.insert_value(val, label, sample_weight)
+        else:
+            self.class_count_right[label] += sample_weight
+            if self._right is None:
+                self._right = Node(val, label, sample_weight)
+            else:
+                self._right.insert_value(val, label, sample_weight)

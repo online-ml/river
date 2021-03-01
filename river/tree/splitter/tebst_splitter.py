@@ -28,4 +28,5 @@ class TEBSTSplitter(EBSTSplitter):
             return
 
     def cond_proba(self, att_val, class_val):
+        """Not implemented in regression splitters."""
         raise NotImplementedError

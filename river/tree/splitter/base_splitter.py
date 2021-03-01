@@ -1,8 +1,10 @@
+import typing
 from abc import ABCMeta, abstractmethod
 
 from river import base
 
 from .._attribute_test import AttributeSplitSuggestion
+from .._split_criterion.base_split_criterion import SplitCriterion
 
 
 class Splitter(base.Estimator, metaclass=ABCMeta):
@@ -19,7 +21,9 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def update(self, att_val, target_val, sample_weight) -> "Splitter":
+    def update(
+        self, att_val, target_val: base.typing.Target, sample_weight: float
+    ) -> "Splitter":
         """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
 
@@ -34,7 +38,7 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def cond_proba(self, att_val, class_val) -> float:
+    def cond_proba(self, att_val, class_val: base.typing.ClfTarget) -> float:
         """Get the probability for an attribute value given a class.
 
         Parameters
@@ -51,7 +55,11 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
 
     @abstractmethod
     def best_evaluated_split_suggestion(
-        self, criterion, pre_split_dist, att_idx, binary_only
+        self,
+        criterion: SplitCriterion,
+        pre_split_dist: typing.Union[typing.List, typing.Dict],
+        att_idx: base.typing.FeatureName,
+        binary_only: bool,
     ) -> AttributeSplitSuggestion:
         """Get the best split suggestion given a criterion and the target's statistics.
 

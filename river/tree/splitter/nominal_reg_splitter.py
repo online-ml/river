@@ -56,6 +56,7 @@ class NominalRegSplitter(Splitter):
         return self
 
     def cond_proba(self, att_val, target):
+        """Not implemented in regression splitters."""
         raise NotImplementedError
 
     def best_evaluated_split_suggestion(

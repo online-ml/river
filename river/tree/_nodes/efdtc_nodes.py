@@ -2,7 +2,7 @@ import math
 from collections import Counter
 
 from .._attribute_test import AttributeSplitSuggestion
-from ..splitter import NominalClassSplitter
+from ..splitter.nominal_class_splitter import NominalClassSplitter
 from .base import SplitNode
 from .htc_nodes import LearningNode, LearningNodeMC, LearningNodeNB, LearningNodeNBA
 

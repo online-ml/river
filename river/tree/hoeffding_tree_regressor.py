@@ -11,11 +11,11 @@ from ._nodes import (
     SplitNode,
 )
 from ._split_criterion import VarianceReductionSplitCriterion
-from .base_hoeffding_tree import BaseHoeffdingTree
+from .base_hoeffding_tree import HoeffdingTree
 from .splitter import EBSTSplitter, Splitter
 
 
-class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
+class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     """Hoeffding Tree regressor.
 
     Parameters
@@ -134,7 +134,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
 
         self.kwargs = kwargs
 
-    @BaseHoeffdingTree.leaf_prediction.setter
+    @HoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
             print(
@@ -146,7 +146,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @BaseHoeffdingTree.split_criterion.setter
+    @HoeffdingTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion != "vr":  # variance reduction
             print(

@@ -15,11 +15,11 @@ from ._split_criterion import (
     HellingerDistanceCriterion,
     InfoGainSplitCriterion,
 )
-from .base_hoeffding_tree import BaseHoeffdingTree
+from .base_hoeffding_tree import HoeffdingTree
 from .splitter import GaussianSplitter, Splitter
 
 
-class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
+class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     """Hoeffding Tree or Very Fast Decision Tree classifier.
 
     Parameters
@@ -147,7 +147,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         # To keep track of the observed classes
         self.classes: set = set()
 
-    @BaseHoeffdingTree.split_criterion.setter
+    @HoeffdingTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion not in [
             self._GINI_SPLIT,
@@ -163,7 +163,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         else:
             self._split_criterion = split_criterion
 
-    @BaseHoeffdingTree.leaf_prediction.setter
+    @HoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in [
             self._MAJORITY_CLASS,
