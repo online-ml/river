@@ -10,7 +10,9 @@ class ExhaustiveSplitter(Splitter):
 
     This algorithm is also referred to as exhaustive attribute observer,
     since it ends up storing all the observations between split attempts.
-    Used in decision trees to monitor data statistics on leaves.
+
+    This splitter cannot perform probability density estimations, so it does not work well
+    when coupled with tree leaves using naive bayes models.
     """
 
     class Node:
@@ -55,7 +57,8 @@ class ExhaustiveSplitter(Splitter):
         return self
 
     def cond_proba(self, att_val, class_val):
-        # Cannot determine the probability of a single attribute observation
+        """The underlying data structure used to monitor the input does not allow probability
+        density estimations. Hence, it always returns zero for any given input."""
         return 0.0
 
     def best_evaluated_split_suggestion(

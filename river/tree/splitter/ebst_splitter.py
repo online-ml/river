@@ -15,7 +15,8 @@ class EBSTSplitter(Splitter):
     iSOUP-Tree algorithm. This structure is employed to observe the target
     space distribution.
 
-    In this variant, only the left branch statistics are stored.
+    In this variant, only the left branch statistics are stored and the complete split-enabling
+    statistics are calculated with an in-order traversal of the binary search tree.
 
     References
     ----------
@@ -53,6 +54,7 @@ class EBSTSplitter(Splitter):
         def insert_value(self, att_val, target_val, sample_weight):
             current = self
             antecedent = None
+            is_right = False
 
             while current is not None:
                 antecedent = current

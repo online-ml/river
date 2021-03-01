@@ -10,11 +10,17 @@ from .base_splitter import Splitter
 
 
 class NominalRegSplitter(Splitter):
-    """Nominal attribute observer for regression tasks."""
+    """Splitter utilized to monitor nominal features in regression tasks.
+
+    As the monitored feature is nominal, it already has well-defined partitions. Hence,
+    this splitter simply keeps the split-enabling target statistics for each incoming
+    category."""
 
     def __init__(self):
         super().__init__()
         self._statistics = {}
+        # The way in which the target statistics are update are selected on the fly.
+        # Different strategies are used for univariate and multivariate regression.
         self._update_estimator = self._update_estimator_univariate
 
     @property
@@ -30,14 +36,14 @@ class NominalRegSplitter(Splitter):
         for t in target:
             estimator[t].update(target[t], sample_weight)
 
-    def update(self, att_val, target, sample_weight=1.0):
+    def update(self, att_val, target_val, sample_weight):
         if att_val is None or sample_weight is None:
             return
         else:
             try:
                 estimator = self._statistics[att_val]
             except KeyError:
-                if isinstance(target, dict):  # Multi-target case
+                if isinstance(target_val, dict):  # Multi-target case
                     self._statistics[att_val] = VectorDict(
                         default_factory=lambda: Var()
                     )
@@ -45,7 +51,7 @@ class NominalRegSplitter(Splitter):
                 else:
                     self._statistics[att_val] = Var()
                 estimator = self._statistics[att_val]
-            self._update_estimator(estimator, target, sample_weight)
+            self._update_estimator(estimator, target_val, sample_weight)
 
         return self
 

@@ -7,10 +7,10 @@ from .base_splitter import Splitter
 
 
 class NominalClassSplitter(Splitter):
-    """Class for observing the class data distribution for a nominal attribute.
-    This observer monitors the class distribution of a given attribute.
-    Used in naive Bayes and decision trees to monitor data statistics on leaves.
+    """Splitter utilized to monitor nominal features in classification tasks.
 
+    As the monitored feature is nominal, it already has well-defined partitions. Hence,
+    this splitter uses dictionary structures to keep class counts for each incoming category.
     """
 
     def __init__(self):
@@ -23,23 +23,23 @@ class NominalClassSplitter(Splitter):
     def is_numeric(self):
         return False
 
-    def update(self, att_val, class_val, sample_weight):
+    def update(self, att_val, target_val, sample_weight):
         if att_val is None:
             self._missing_weight_observed += sample_weight
         else:
             try:
-                self._att_val_dist_per_class[class_val]
+                self._att_val_dist_per_class[target_val]
             except KeyError:
-                self._att_val_dist_per_class[class_val] = {att_val: 0.0}
+                self._att_val_dist_per_class[target_val] = {att_val: 0.0}
                 self._att_val_dist_per_class = dict(
                     sorted(self._att_val_dist_per_class.items())
                 )
             try:
-                self._att_val_dist_per_class[class_val][att_val] += sample_weight
+                self._att_val_dist_per_class[target_val][att_val] += sample_weight
             except KeyError:
-                self._att_val_dist_per_class[class_val][att_val] = sample_weight
-                self._att_val_dist_per_class[class_val] = dict(
-                    sorted(self._att_val_dist_per_class[class_val].items())
+                self._att_val_dist_per_class[target_val][att_val] = sample_weight
+                self._att_val_dist_per_class[target_val] = dict(
+                    sorted(self._att_val_dist_per_class[target_val].items())
                 )
 
         self._total_weight_observed += sample_weight
@@ -67,7 +67,7 @@ class NominalClassSplitter(Splitter):
             )
         )
         if not binary_only:
-            post_split_dist = self.class_dist_from_multiway_split()
+            post_split_dist = self._class_dist_from_multiway_split()
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             branch_mapping = {
                 attr_val: branch_id for branch_id, attr_val in enumerate(att_values)
@@ -78,7 +78,7 @@ class NominalClassSplitter(Splitter):
                 merit,
             )
         for att_val in att_values:
-            post_split_dist = self.class_dist_from_binary_split(att_val)
+            post_split_dist = self._class_dist_from_binary_split(att_val)
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
                 best_suggestion = AttributeSplitSuggestion(
@@ -86,7 +86,7 @@ class NominalClassSplitter(Splitter):
                 )
         return best_suggestion
 
-    def class_dist_from_multiway_split(self):
+    def _class_dist_from_multiway_split(self):
         resulting_dist = {}
         for i, att_val_dist in self._att_val_dist_per_class.items():
             for j, value in att_val_dist.items():
@@ -100,7 +100,7 @@ class NominalClassSplitter(Splitter):
         distributions = [dict(sorted(resulting_dist[k].items())) for k in sorted_keys]
         return distributions
 
-    def class_dist_from_binary_split(self, val_idx):
+    def _class_dist_from_binary_split(self, val_idx):
         equal_dist = {}
         not_equal_dist = {}
         for i, att_val_dist in self._att_val_dist_per_class.items():
