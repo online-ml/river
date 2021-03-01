@@ -2,7 +2,7 @@ import abc
 import numbers
 import typing
 
-from river import base, stats, utils
+from river import stats
 
 __all__ = ["InternalClusteringMetrics"]
 

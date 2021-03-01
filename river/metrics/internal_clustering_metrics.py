@@ -166,7 +166,7 @@ class Silhouette(base_internal_clustering.InternalClusteringMetrics):
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
     ...     label = k_means.predict_one(x)
-    ...     metric = metric.update(k_means, x, label)
+    ...     metric = metric.update(k_means.centers, x, label)
 
     >>> metric
     Silhouette: 0.453723
