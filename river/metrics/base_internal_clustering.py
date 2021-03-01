@@ -4,10 +4,10 @@ import typing
 
 from river import base, stats, utils
 
-__all__ = ["InternalMetric"]
+__all__ = ["InternalClusteringMetrics"]
 
 
-class InternalMetric(abc.ABC):
+class InternalClusteringMetrics(abc.ABC):
     """
     Mother class of all internal clustering metrics.
     """
@@ -16,11 +16,11 @@ class InternalMetric(abc.ABC):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, method, point, label, sample_weight) -> "InternalMetric":
+    def update(self, centers, point, label, sample_weight) -> "InternalClusteringMetrics":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, method, point, label, sample_weight) -> "InternalMetric":
+    def revert(self, centers, point, label, sample_weight) -> "InternalClusteringMetrics":
         """Revert the metric."""
 
     @abc.abstractmethod
@@ -40,7 +40,7 @@ class InternalMetric(abc.ABC):
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
 
-class MeanInternalMetric(InternalMetric):
+class MeanInternalMetric(InternalClusteringMetrics):
     """Many metrics are just running averages. This is a utility class that avoids repeating
     tedious stuff throughout the module for such metrics.
 
@@ -52,7 +52,7 @@ class MeanInternalMetric(InternalMetric):
     @abc.abstractmethod
     def _eval(
         self,
-        method,
+        centers,
         point: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         label: numbers.Number,
     ):
@@ -60,22 +60,22 @@ class MeanInternalMetric(InternalMetric):
 
     def update(
         self,
-        method,
+        centers: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         point: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         label: numbers.Number,
         sample_weight=1.0,
     ):
-        self._mean.update(x=self._eval(method, point, label), w=sample_weight)
+        self._mean.update(x=self._eval(centers, point, label), w=sample_weight)
         return self
 
     def revert(
         self,
-        method,
+        centers,
         point: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         label: numbers.Number,
         sample_weight=1.0,
     ):
-        self._mean.revert(x=self._eval(method, point, label), w=sample_weight)
+        self._mean.revert(x=self._eval(centers, point, label), w=sample_weight)
         return self
 
     def get(self):
