@@ -31,8 +31,8 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
-    ...     label = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, label)
+    ...     y_pred = k_means.predict_one(x)
+    ...     metric = metric.update(k_means.centers, x, y_pred)
 
     >>> metric
     Cohesion: 1.975643
@@ -43,8 +43,8 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
     def bigger_is_better(self):
         return False
 
-    def _eval(self, centers, point, label):
-        return math.sqrt(utils.math.minkowski_distance(centers[label], point, 2))
+    def _eval(self, centers, point, y_pred):
+        return math.sqrt(utils.math.minkowski_distance(centers[y_pred], point, 2))
 
 
 class SSQ(base_internal_clustering.MeanInternalMetric):
@@ -72,8 +72,8 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
-    ...     label = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, label)
+    ...     y_pred = k_means.predict_one(x)
+    ...     metric = metric.update(k_means.centers, x, y_pred)
 
     >>> metric
     SSQ: 4.226734
@@ -84,8 +84,8 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
     def bigger_is_better(self):
         return False
 
-    def _eval(self, centers, point, label):
-        return utils.math.minkowski_distance(centers[label], point, 2)
+    def _eval(self, centers, point, y_pred):
+        return utils.math.minkowski_distance(centers[y_pred], point, 2)
 
 
 class Separation(base_internal_clustering.MeanInternalMetric):
@@ -112,8 +112,8 @@ class Separation(base_internal_clustering.MeanInternalMetric):
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
-    ...     label = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, label)
+    ...     y_pred = k_means.predict_one(x)
+    ...     metric = metric.update(k_means.centers, x, y_pred)
 
     >>> metric
     Separation: 4.647488
@@ -124,10 +124,10 @@ class Separation(base_internal_clustering.MeanInternalMetric):
     def bigger_is_better(self):
         return True
 
-    def _eval(self, centers, point, label):
+    def _eval(self, centers, point, y_pred):
         sum_distance_other_clusters = 0
         for i in centers.keys():
-            if i != label:
+            if i != y_pred:
                 sum_distance_other_clusters += math.sqrt(
                     utils.math.minkowski_distance(centers[i], point, 2)
                 )
@@ -165,8 +165,8 @@ class Silhouette(base_internal_clustering.InternalClusteringMetrics):
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
-    ...     label = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, label)
+    ...     y_pred = k_means.predict_one(x)
+    ...     metric = metric.update(k_means.centers, x, y_pred)
 
     >>> metric
     Silhouette: 0.453723
@@ -187,9 +187,9 @@ class Silhouette(base_internal_clustering.InternalClusteringMetrics):
         }
         return sorted(distances.values())[-2]
 
-    def update(self, centers, point, label, sample_weight=1.0):
+    def update(self, centers, point, y_pred, sample_weight=1.0):
         distance_closest_centroid = math.sqrt(
-            utils.math.minkowski_distance(centers[label], point, 2)
+            utils.math.minkowski_distance(centers[y_pred], point, 2)
         )
         self._sum_distance_closest_centroid += distance_closest_centroid
 
@@ -206,7 +206,7 @@ class Silhouette(base_internal_clustering.InternalClusteringMetrics):
 
         return self
 
-    def revert(self, centers, point, label, sample_weight=1.0, correction=None):
+    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
         self._sum_distance_closest_centroid -= correction["distance_closest_centroid"]
         self._sum_distance_second_closest_centroid -= correction[
             "distance_second_closest_centroid"

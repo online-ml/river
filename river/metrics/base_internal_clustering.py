@@ -17,13 +17,13 @@ class InternalClusteringMetrics(abc.ABC):
 
     @abc.abstractmethod
     def update(
-        self, centers, point, label, sample_weight
+        self, centers, point, y_pred, sample_weight
     ) -> "InternalClusteringMetrics":
         """Update the metric."""
 
     @abc.abstractmethod
     def revert(
-        self, centers, point, label, sample_weight
+        self, centers, point, y_pred, sample_weight
     ) -> "InternalClusteringMetrics":
         """Revert the metric."""
 
@@ -54,7 +54,7 @@ class MeanInternalMetric(InternalClusteringMetrics):
         self,
         centers,
         point: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        label: numbers.Number,
+        y_pred: numbers.Number,
     ):
         pass
 
@@ -62,20 +62,20 @@ class MeanInternalMetric(InternalClusteringMetrics):
         self,
         centers,
         point: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        label: numbers.Number,
+        y_pred: numbers.Number,
         sample_weight=1.0,
     ):
-        self._mean.update(x=self._eval(centers, point, label), w=sample_weight)
+        self._mean.update(x=self._eval(centers, point, y_pred), w=sample_weight)
         return self
 
     def revert(
         self,
         centers,
         point: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        label: numbers.Number,
+        y_pred: numbers.Number,
         sample_weight=1.0,
     ):
-        self._mean.revert(x=self._eval(centers, point, label), w=sample_weight)
+        self._mean.revert(x=self._eval(centers, point, y_pred), w=sample_weight)
         return self
 
     def get(self):
