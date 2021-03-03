@@ -90,8 +90,8 @@ class DBSTREAM(base.Clusterer):
 
     References
     ----------
-    [^1]: Michael Hahsler and Matthew Bolanos (2016, pp 1449-1461). Clsutering Data Streams Based on Shared Density
-          between Micro-Clusters, IEEE Transactions on Knowledge and Data Engineering (volume .
+    [^1]: Michael Hahsler and Matthew Bolanos (2016, pp 1449-1461). Clsutering Data Streams Based on
+          Shared Density between Micro-Clusters, IEEE Transactions on Knowledge and Data Engineering 28(6) .
           In Proceedings of the Sixth SIAM International Conference on Data Mining,
           April 20–22, 2006, Bethesda, MD, USA.
     [^2]: Ester et al (1996). A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases
@@ -105,14 +105,14 @@ class DBSTREAM(base.Clusterer):
 
     >>> X = [
     ...     [1, 0.5], [1, 0.625], [1, 0.75], [1, 1.125], [1, 1.5], [1, 1.75],
-    ...     [4, 1.5], [4, 2.25], [4, 2.5], [4, 3], [4, 3.25]
+    ...     [4, 1.5], [4, 2.25], [4, 2.5], [4, 3], [4, 3.25], [4, 3.5]
     ... ]
 
     >>> dbstream = cluster.DBSTREAM(clustering_threshold = 1.5,
-    ...                               fading_factor = 0.05,
-    ...                               cleanup_interval = 4,
-    ...                               intersection_factor = 0.5,
-    ...                               minimum_weight = 1)
+    ...                             fading_factor = 0.05,
+    ...                             cleanup_interval = 4,
+    ...                             intersection_factor = 0.5,
+    ...                             minimum_weight = 1)
 
     >>> for x, _ in stream.iter_array(X):
     ...     dbstream = dbstream.learn_one(x)
@@ -121,11 +121,10 @@ class DBSTREAM(base.Clusterer):
     0
 
     >>> dbstream.predict_one({0: 5, 1: 2})
-    2
+    1
 
     >>> dbstream.n_clusters
-    3
-
+    2
     """
 
     def __init__(
@@ -170,21 +169,8 @@ class DBSTREAM(base.Clusterer):
     def _gaussian_neighborhood(self, point_a, point_b):
         distance = self._distance(point_a, point_b)
         sigma = self.clustering_threshold / 3
-        gaussian_neighborhood = math.exp((distance * distance) / (2 * (sigma * sigma)))
+        gaussian_neighborhood = math.exp(-(distance * distance) / (2 * (sigma * sigma)))
         return gaussian_neighborhood
-
-    def _update_dim_shared_density(self):
-        new_s = new_s_t = {
-            i: {j: 0 for j in range(len(self.micro_clusters))}
-            for i in range(len(self.micro_clusters))
-        }
-
-        for i in self.s.keys():
-            for j in self.s[i].keys():
-                new_s[i][j] = self.s[i][j]
-                new_s_t[i][j] = self.s_t[i][j]
-
-        self.s, self.s_t = new_s, new_s_t
 
     def _update(self, x):
         # Algorithm 1 of Michael Hahsler and Matthew Bolanos
@@ -219,10 +205,16 @@ class DBSTREAM(base.Clusterer):
                 self.micro_clusters[i].last_update = self.time_stamp
 
                 # update shared density
-                self._update_dim_shared_density()
-
                 for j in N.keys():
                     if j > i:
+                        # initiate s[i][j] in cases when i or j is not in s.keys() or s[i].keys()
+                        if i not in self.s.keys():
+                            self.s[i] = {j: 0}
+                            self.s_t[i] = {j: 0}
+                        elif j not in self.s[i].keys():
+                            self.s[i][j] = 0
+                            self.s_t[i][j] = 0
+                        # update s[i][j]
                         self.s[i][j] = (
                             self.s[i][j]
                             * 2
@@ -331,15 +323,18 @@ class DBSTREAM(base.Clusterer):
                 if labels[seed_set[0]] is not None:
                     seed_set.popleft()
                     continue
-                labels[seed_set[0]] = count
-                # find neighbors
-                neighbor_neighbors = collections.deque(
-                    weighted_adjacency_list[seed_set[0]].keys()
-                )
-                # add new neighbors to seed set
-                for neighbor_neighbor in neighbor_neighbors:
-                    if labels[neighbor_neighbor] is not None:
-                        seed_set.append(neighbor_neighbor)
+                # proceed DBSCAN when seed set is not blank
+                if seed_set:
+                    labels[seed_set[0]] = count
+                    # find neighbors
+                    if seed_set[0] in weighted_adjacency_list.keys():
+                        neighbor_neighbors = collections.deque(
+                            weighted_adjacency_list[seed_set[0]].keys()
+                        )
+                        # add new neighbors to seed set
+                        for neighbor_neighbor in neighbor_neighbors:
+                            if labels[neighbor_neighbor] is not None:
+                                seed_set.append(neighbor_neighbor)
 
         return labels
 
