@@ -129,6 +129,12 @@ Or, through SSH:
 pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 ```
 
+For **Windows** users:
+- If you get `Microsoft Visual C++ 14.0 or greater is required` error, follow this [solution](https://docs.microsoft.com/en-us/answers/questions/136595/error-microsoft-visual-c-140-or-greater-is-require.html)
+
+For **Windows + Anaconda** users:
+- To utilize graphviz-related functionality, in addition to `graphviz` install `python-graphviz` (so as to evade [this problem](https://stackoverflow.com/a/59365894))
+
 ## 🧠 Philosophy
 
 Machine learning is often done in a batch setting, whereby a model is fitted to a dataset in one go. This results in a static model which has to be retrained in order to learn from new data. In many cases, this isn't elegant nor efficient, and usually incurs [a fair amount of technical debt](https://research.google/pubs/pub43146/). Indeed, if you're using a batch model, then you need to think about maintaining a training set, monitoring real-time performance, model retraining, etc.
