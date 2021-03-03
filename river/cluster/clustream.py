@@ -131,7 +131,7 @@ class CluStream(base.Clusterer):
 
         # Create a micro-cluster with the new point
         if len(self.buffer) < self.max_micro_clusters:
-            self.buffer[len(self.buffer)] = MicroCluster(
+            self.buffer[len(self.buffer)] = CluStreamMicroCluster(
                 x=x,
                 sample_weight=sample_weight,
                 timestamp=self.time_stamp,
@@ -142,7 +142,7 @@ class CluStream(base.Clusterer):
             # The buffer is full. Use the micro-clusters centers to create the
             # micro-clusters set.
             for i in range(self.max_micro_clusters):
-                self.micro_clusters[i] = MicroCluster(
+                self.micro_clusters[i] = CluStreamMicroCluster(
                     x=self.buffer[i].center,
                     sample_weight=1.0,
                     timestamp=self.time_stamp,
@@ -159,7 +159,7 @@ class CluStream(base.Clusterer):
         # Delete old micro-clusters if its relevance stamp is smaller than the threshold
         for i, micro_cluster_a in self.micro_clusters.items():
             if micro_cluster_a.relevance_stamp < threshold:
-                self.micro_clusters[i] = MicroCluster(
+                self.micro_clusters[i] = CluStreamMicroCluster(
                     x=x,
                     sample_weight=sample_weight,
                     timestamp=self.time_stamp,
@@ -180,7 +180,7 @@ class CluStream(base.Clusterer):
                     closest_a = i
                     closest_b = j
         self.micro_clusters[closest_a].add(self.micro_clusters[closest_b])
-        self.micro_clusters[closest_b] = MicroCluster(
+        self.micro_clusters[closest_b] = CluStreamMicroCluster(
             x=x,
             sample_weight=sample_weight,
             timestamp=self.time_stamp,
@@ -192,7 +192,7 @@ class CluStream(base.Clusterer):
         if not self.initialized:
             return {}
         res = {
-            i: MicroCluster(
+            i: CluStreamMicroCluster(
                 micro_cluster=micro_cluster,
                 micro_cluster_r_factor=self.micro_cluster_r_factor,
                 max_micro_clusters=self.max_micro_clusters,
@@ -295,7 +295,7 @@ class CluStream(base.Clusterer):
         return y
 
 
-class MicroCluster(metaclass=ABCMeta):
+class CluStreamMicroCluster(metaclass=ABCMeta):
     """ Micro-cluster class """
 
     def __init__(
