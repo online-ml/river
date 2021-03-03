@@ -145,7 +145,7 @@ class Node(metaclass=ABCMeta):
                     text += f"{target_id}: {self.stats[target_id].mean} | {self.stats[target_id]}"
                     text += ", " if i < len(self.stats) - 1 else ""
             else:  # Single-target regression
-                text += f"{self.stats.mean} | {self.stats}"
+                text += f"{self.stats.mean.get()} | {self.stats.get()}"
             text += "}"
             buffer[0] += f"Output {text}\n"  # Regression problems
 
