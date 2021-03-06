@@ -1,6 +1,6 @@
 # Sentence classification
 
-In this tutorial we will try to predict whether a sms is spam or not. To train our model, we will use the `SMSSpam` dataset. This dataset is unbalanced, there is only 13.4% spam. Let's look at the data:
+In this tutorial we will try to predict whether an SMS is a spam or not. To train our model, we will use the `SMSSpam` dataset. This dataset is unbalanced, there is only 13.4% spam. Let's look at the data:
 
 
 ```python
@@ -36,7 +36,6 @@ from pprint import pprint
 X_y = datasets.SMSSpam()
 
 for x, y in X_y:
-    
     pprint(x)
     print(f'Spam: {y}')
     break
@@ -47,7 +46,7 @@ for x, y in X_y:
     Spam: False
 
 
-Let's start by building a simple model like a naive bayes classifier. We will first transform the sentences with a tf-idf to feed our model. Then, we will measure the accuracy of our model with the AUC metric. This metric is adapted when the classes of our dataset are not uniformly distributed. In addition, the Naive Bayes models can perform very well on unbalanced datasets and supports multiple classes for multiple classification problems.
+Let's start by building a simple model like a Naive Bayes classifier. We will first preprocess the sentences with a TF-IDF transform that our model can consume. Then, we will measure the accuracy of our model with the AUC metric. This is the right metric to use when the classes are not balanced. In addition, the Naive Bayes models can perform very well on unbalanced datasets and can be used for both binary and multi-class classification problems.
 
 
 ```python
@@ -61,10 +60,13 @@ def extract_body(x):
 
 X_y = datasets.SMSSpam()
 
-model = extract_body | feature_extraction.TFIDF() | naive_bayes.BernoulliNB(alpha = 0)
+model = (
+    extract_body | 
+    feature_extraction.TFIDF() | 
+    naive_bayes.BernoulliNB(alpha=0)
+)
 
 metric = metrics.ROCAUC()
-
 cm = metrics.ConfusionMatrix()
 
 for x, y in X_y:
@@ -72,9 +74,7 @@ for x, y in X_y:
     y_pred = model.predict_one(x)
     
     if y_pred is not None:
-        
         metric.update(y_pred=y_pred, y_true=y)
-        
         cm.update(y_pred=y_pred, y_true=y)
     
     model.learn_one(x, y)
@@ -107,7 +107,7 @@ cm
 
 The results are quite good with this first model.
 
-Since we are working with an unbalanced dataset, we can use the `imblearn` module to artificially increase the number of spam in our dataset. For more information about the `imblearn` module, you can find a dedicated tutorial [here](https://riverml.xyz/latest/examples/imbalanced-learning/).
+Since we are working with an unbalanced dataset, we can use the `imblearn` module to rebalance the classes of our dataset. For more information about the `imblearn` module, you can find a dedicated tutorial [here](../imbalanced-learning).
 
 
 ```python
@@ -115,14 +115,17 @@ from river import imblearn
 
 X_y = datasets.SMSSpam()
 
-model = extract_body | feature_extraction.TFIDF() | imblearn.RandomUnderSampler(
-    classifier=naive_bayes.BernoulliNB(alpha = 0),
-    desired_dist={0: 0.5, 1: 0.5},
-    seed=42
+model = (
+    extract_body | 
+    feature_extraction.TFIDF() | 
+    imblearn.RandomUnderSampler(
+        classifier=naive_bayes.BernoulliNB(alpha=0),
+        desired_dist={0: .5, 1: .5},
+        seed=42
+    )
 )
 
 metric = metrics.ROCAUC()
-
 cm = metrics.ConfusionMatrix()
 
 for x, y in X_y:
@@ -130,9 +133,7 @@ for x, y in X_y:
     y_pred = model.predict_one(x)
     
     if y_pred is not None:
-        
         metric.update(y_pred=y_pred, y_true=y)
-        
         cm.update(y_pred=y_pred, y_true=y)
     
     model.learn_one(x, y)
@@ -179,7 +180,7 @@ model.draw()
 
 
 
-Now let's try to use logistic regression to classify messages. I will use different tips to make my model perform better. As in the previous example, I artificially increase the number of spam. The logistics regression will be fed from a tf-idf.
+Now let's try to use logistic regression to classify messages. We will use different tips to make my model perform better. As in the previous example, we rebalance the classes of our dataset. The logistics regression will be fed from a TF-IDF.
 
 
 ```python
@@ -189,14 +190,21 @@ from river import preprocessing
 
 X_y = datasets.SMSSpam()
 
-model = extract_body | feature_extraction.TFIDF() | preprocessing.StandardScaler() | imblearn.RandomUnderSampler(
-    classifier=linear_model.LogisticRegression(optimizer=optim.SGD(0.05), loss=optim.losses.Log()),
-    desired_dist={0: 0.5, 1: 0.5},
-    seed=42
+model = (
+    extract_body | 
+    feature_extraction.TFIDF() | 
+    preprocessing.Normalizer() | 
+    imblearn.RandomUnderSampler(
+        classifier=linear_model.LogisticRegression(
+            optimizer=optim.SGD(.9), 
+            loss=optim.losses.Log()
+        ),
+        desired_dist={0: .5, 1: .5},
+        seed=42
+    )
 )
 
 metric = metrics.ROCAUC()
-
 cm = metrics.ConfusionMatrix()
 
 for x, y in X_y:
@@ -204,7 +212,6 @@ for x, y in X_y:
     y_pred = model.predict_one(x)
 
     metric.update(y_pred=y_pred, y_true=y)
-    
     cm.update(y_pred=y_pred, y_true=y)
     
     model.learn_one(x, y)
@@ -215,7 +222,7 @@ metric
 
 
 
-    ROCAUC: 0.834134
+    ROCAUC: 0.946039
 
 
 
@@ -230,8 +237,8 @@ cm
 
 
                False    True
-       False    4027     800
-        True     124     623
+       False    4655     172
+        True      54     693
 
 
 
@@ -249,15 +256,19 @@ model.draw()
 
 
 
-The results of the logistic regression are less good. It is more difficult for the model to determine if a text message is spam.
+The results of the logistic regression are quite good but still inferior to the naive Bayes model.
 
-Let's try to use word embeddings to improve our logistic regression. Word embeddings allow you to represent a word as a vector. Embeddings are developed to build semantic rich vectors, i.e. the vector which represents the word **python** is close to the vector which represents the word **programming**. We will use Scipy to convert our sentence to vectors. Scipy convert a sentence to a vector by calculating the average of the embeddings of the words of the sentence.
+Let's try to use word embeddings to improve our logistic regression. Word embeddings allow you to represent a word as a vector. Embeddings are developed to build semantically rich vectors. For instance, the vector which represents the word **python** should be close to the vector which represents the word **programming**. We will use [spaCy](https://spacy.io/) to convert our sentence to vectors. spaCy converts a sentence to a vector by calculating the average of the embeddings of the words in the sentence.
 
-You can download pre-trained embeddings in many languages. We will use English pre-trained embeddings as our sms are in English.
+You can download pre-trained embeddings in many languages. We will use English pre-trained embeddings as our SMS are in English.
 
-The command below allows you to download the embeddings of spacy. More informations about spacy and it's installation [here](https://spacy.io/usage).
+The command below allows you to download the pre-trained embeddings that spaCy makes available. More informations about spaCy and its installation may be found here [here](https://spacy.io/usage).
+
+```sh
 python -m spacy download en_core_web_sm
-Here, I create a custom transformer to convert an input sentence to a dict of float. I will integrate this transformer into my pipeline.
+```
+
+Here, we create a custom transformer to convert an input sentence to a dict of floats. We will integrate this transformer into our pipeline.
 
 
 ```python
@@ -266,13 +277,13 @@ import spacy
 from river.base import Transformer
 
 class Embeddings(Transformer):
-    """My custom transformer, words embeddings using spacy."""
+    """My custom transformer, word embedding using spaCy."""
     
     def __init__(self):
         self.embeddings = spacy.load('en_core_web_sm')
         
     def transform_one(self, x, y=None):
-        return {i: xi for i, xi in enumerate(self.embeddings(x).vector)}
+        return {dimension: xi for dimension, xi in enumerate(self.embeddings(x).vector)}
 ```
 
 Let's train our logistic regression:
@@ -281,14 +292,21 @@ Let's train our logistic regression:
 ```python
 X_y = datasets.SMSSpam()
 
-model = extract_body | Embeddings() | preprocessing.StandardScaler() | imblearn.RandomOverSampler(
-    classifier=linear_model.LogisticRegression(loss=optim.losses.Log()),
-    desired_dist={0: 0.5, 1: 0.5},
-    seed=42
+model = (
+    extract_body | 
+    Embeddings() | 
+    preprocessing.Normalizer() |
+    imblearn.RandomOverSampler(
+        classifier=linear_model.LogisticRegression(
+            optimizer=optim.SGD(.5), 
+            loss=optim.losses.Log()
+        ),
+        desired_dist={0: .5, 1: .5},
+        seed=42
+    )
 )
 
 metric = metrics.ROCAUC()
-
 cm = metrics.ConfusionMatrix()
 
 for x, y in X_y:
@@ -296,18 +314,17 @@ for x, y in X_y:
     y_pred = model.predict_one(x)
     
     metric.update(y_pred=y_pred, y_true=y)
-    
     cm.update(y_pred=y_pred, y_true=y)
     
     model.learn_one(x, y)
-    
+
 metric
 ```
 
 
 
 
-    ROCAUC: 0.926478
+    ROCAUC: 0.91568
 
 
 
@@ -322,8 +339,8 @@ cm
 
 
                False    True
-       False    4408     419
-        True      45     702
+       False    4517     310
+        True      78     669
 
 
 
@@ -341,4 +358,4 @@ model.draw()
 
 
 
-The results of the logistic regression with the spacy embeddings are much better than the tf-idf. We could surely improve the results by cleaning up the text. However, on this problem, the logistic regression is not better than the naive bayes model. No free lunch today.
+The results of the logistic regression using spaCy embeddings are lower than those obtained with TF-IDF values. We could surely improve the results by cleaning up the text. We could also use embeddings more suited to our dataset. However, on this problem, the logistic regression is not better than the Naive Bayes model. No free lunch today.
