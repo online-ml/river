@@ -3,7 +3,6 @@ import copy
 
 from river import base, linear_model
 from river.utils.math import prod
-from river.utils.skmultiflow_utils import check_random_state
 
 __all__ = [
     "ClassifierChain",
