@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from river import compose, linear_model, preprocessing, anomaly
+from river import anomaly, compose, linear_model, preprocessing
 
 
 def test_pipeline_funcs():
@@ -54,7 +54,9 @@ def test_union_funcs():
         assert str(pipeline) == "a + b"
 
 
-@pytest.mark.parametrize("func", [compose.Pipeline.predict_one, compose.Pipeline.predict_proba_one])
+@pytest.mark.parametrize(
+    "func", [compose.Pipeline.predict_one, compose.Pipeline.predict_proba_one]
+)
 def test_no_learn_unsupervised_one(func):
     pipeline = compose.Pipeline(
         ("scale", preprocessing.StandardScaler()),
@@ -74,7 +76,9 @@ def test_no_learn_unsupervised_one(func):
         assert counts_post == counts_no_learn
 
 
-@pytest.mark.parametrize("func", [compose.Pipeline.predict_many, compose.Pipeline.predict_proba_many])
+@pytest.mark.parametrize(
+    "func", [compose.Pipeline.predict_many, compose.Pipeline.predict_proba_many]
+)
 def test_no_learn_unsupervised_many(func):
     pipeline = compose.Pipeline(
         ("scale", preprocessing.StandardScaler()),
@@ -94,6 +98,7 @@ def test_no_learn_unsupervised_many(func):
 
         assert counts_pre != counts_post
         assert counts_post == counts_no_learn
+
 
 def test_no_learn_unsupervised_score_one():
     pipeline = compose.Pipeline(
