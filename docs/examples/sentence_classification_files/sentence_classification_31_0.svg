@@ -43,15 +43,15 @@
 <path fill="none" stroke="black" d="M95,-290.7C95,-282.98 95,-273.71 95,-265.11"/>
 <polygon fill="black" stroke="black" points="98.5,-265.1 95,-255.1 91.5,-265.1 98.5,-265.1"/>
 </g>
-<!-- StandardScaler -->
+<!-- Normalizer -->
 <g id="node4" class="node">
-<title>StandardScaler</title>
-<ellipse fill="none" stroke="black" cx="95" cy="-165" rx="63.89" ry="18"/>
-<text text-anchor="middle" x="95" y="-161.3" font-family="Times,serif" font-size="14.00">StandardScaler</text>
+<title>Normalizer</title>
+<ellipse fill="none" stroke="black" cx="95" cy="-165" rx="51.19" ry="18"/>
+<text text-anchor="middle" x="95" y="-161.3" font-family="Times,serif" font-size="14.00">Normalizer</text>
 </g>
-<!-- Embeddings&#45;&gt;StandardScaler -->
+<!-- Embeddings&#45;&gt;Normalizer -->
 <g id="edge4" class="edge">
-<title>Embeddings&#45;&gt;StandardScaler</title>
+<title>Embeddings&#45;&gt;Normalizer</title>
 <path fill="none" stroke="black" d="M95,-218.7C95,-210.98 95,-201.71 95,-193.11"/>
 <polygon fill="black" stroke="black" points="98.5,-193.1 95,-183.1 91.5,-193.1 98.5,-193.1"/>
 </g>
@@ -61,9 +61,9 @@
 <ellipse fill="none" stroke="black" cx="95" cy="-90" rx="78.79" ry="18"/>
 <text text-anchor="middle" x="95" y="-86.3" font-family="Times,serif" font-size="14.00">LogisticRegression</text>
 </g>
-<!-- StandardScaler&#45;&gt;LogisticRegression -->
+<!-- Normalizer&#45;&gt;LogisticRegression -->
 <g id="edge3" class="edge">
-<title>StandardScaler&#45;&gt;LogisticRegression</title>
+<title>Normalizer&#45;&gt;LogisticRegression</title>
 <path fill="none" stroke="black" d="M95,-146.7C95,-138.25 95,-127.87 95,-118.37"/>
 <polygon fill="black" stroke="black" points="98.5,-118.18 95,-108.18 91.5,-118.18 98.5,-118.18"/>
 </g>
