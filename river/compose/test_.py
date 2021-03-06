@@ -53,7 +53,7 @@ def test_union_funcs():
         assert str(pipeline) == "a + b"
 
 
-def test_no_learn_predict_one():
+def test_no_learn_unsupervised_predict_one():
     pipeline = compose.Pipeline(
         ("scale", preprocessing.StandardScaler()),
         ("lin_reg", linear_model.LinearRegression()),
@@ -63,16 +63,16 @@ def test_no_learn_predict_one():
 
     for x, y in dataset:
         counts_pre = dict(pipeline.steps["scale"].counts)
-        pipeline.predict_one(x, no_learn=False)
+        pipeline.predict_one(x, learn_unsupervised=True)
         counts_post = dict(pipeline.steps["scale"].counts)
-        pipeline.predict_one(x, no_learn=True)
+        pipeline.predict_one(x, learn_unsupervised=False)
         counts_no_learn = dict(pipeline.steps["scale"].counts)
 
         assert counts_pre != counts_post
         assert counts_post == counts_no_learn
 
 
-def test_no_learn_predict_many():
+def test_no_learn_unsupervised_predict_many():
     pipeline = compose.Pipeline(
         ("scale", preprocessing.StandardScaler()),
         ("lin_reg", linear_model.LinearRegression()),
@@ -84,9 +84,9 @@ def test_no_learn_predict_many():
         X = pd.DataFrame([x for x, y in dataset][i : i + 5])
 
         counts_pre = dict(pipeline.steps["scale"].counts)
-        pipeline.predict_many(X, no_learn=False)
+        pipeline.predict_many(X, learn_unsupervised=True)
         counts_post = dict(pipeline.steps["scale"].counts)
-        pipeline.predict_many(X, no_learn=True)
+        pipeline.predict_many(X, learn_unsupervised=False)
         counts_no_learn = dict(pipeline.steps["scale"].counts)
 
         assert counts_pre != counts_post
