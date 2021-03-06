@@ -324,7 +324,7 @@ class Pipeline(base.Estimator):
 
         return self
 
-    def _transform_one(self, x: dict, no_learn: bool=False):
+    def _transform_one(self, x: dict, no_learn: bool = False):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -351,7 +351,7 @@ class Pipeline(base.Estimator):
 
         return x, next(steps)
 
-    def transform_one(self, x: dict, no_learn: bool=False):
+    def transform_one(self, x: dict, no_learn: bool = False):
         """Apply each transformer in the pipeline to some features.
 
         The final step in the pipeline will be applied if it is a transformer. If not, then it will
@@ -364,15 +364,15 @@ class Pipeline(base.Estimator):
             return final_step.transform_one(x=x)
         return x
 
-    def predict_one(self, x: dict, no_learn: bool=False):
+    def predict_one(self, x: dict, no_learn: bool = False):
         x, final_step = self._transform_one(x=x, no_learn=no_learn)
         return final_step.predict_one(x=x)
 
-    def predict_proba_one(self, x: dict, no_learn: bool=False):
+    def predict_proba_one(self, x: dict, no_learn: bool = False):
         x, final_step = self._transform_one(x=x, no_learn=no_learn)
         return final_step.predict_proba_one(x=x)
 
-    def score_one(self, x: dict, no_learn: bool=False):
+    def score_one(self, x: dict, no_learn: bool = False):
         x, final_step = self._transform_one(x=x, no_learn=no_learn)
         return final_step.score_one(x=x)
 
@@ -525,7 +525,7 @@ class Pipeline(base.Estimator):
 
         return self
 
-    def _transform_many(self, X: pd.DataFrame, no_learn: bool=False):
+    def _transform_many(self, X: pd.DataFrame, no_learn: bool = False):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -565,11 +565,11 @@ class Pipeline(base.Estimator):
             return final_step.transform_many(X=X)
         return X
 
-    def predict_many(self, X: pd.DataFrame, no_learn: bool=False):
+    def predict_many(self, X: pd.DataFrame, no_learn: bool = False):
         X, final_step = self._transform_many(X=X, no_learn=no_learn)
         return final_step.predict_many(X=X)
 
-    def predict_proba_many(self, X: pd.DataFrame, no_learn: bool=False):
+    def predict_proba_many(self, X: pd.DataFrame, no_learn: bool = False):
         X, final_step = self._transform_many(X=X, no_learn=no_learn)
         return final_step.predict_proba_many(X=X)
 
