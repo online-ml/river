@@ -29,7 +29,7 @@ class Track:
 
     """
 
-    def __init__(self, name: str, dataset, metric, n_samples: int=None):
+    def __init__(self, name: str, dataset, metric, n_samples: int = None):
 
         if n_samples is None:
             n_samples = dataset.n_samples
