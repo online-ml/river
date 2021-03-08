@@ -3,8 +3,6 @@ import typing
 from river import datasets, metrics
 from river.evaluate.progressive_validation import _progressive_validation
 
-__all__ = ["load_binary_clf_tracks"]
-
 
 class Track:
     """A track evaluate a model's performance.

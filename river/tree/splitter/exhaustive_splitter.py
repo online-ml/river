@@ -8,11 +8,20 @@ class ExhaustiveSplitter(Splitter):
     """Numeric attribute observer for classification tasks that is based on
     a Binary Search Tree.
 
-    This algorithm is also referred to as exhaustive attribute observer,
-    since it ends up storing all the observations between split attempts.
+    This algorithm[^1] is also referred to as exhaustive attribute observer,
+    since it ends up storing all the observations between split attempts[^2].
 
     This splitter cannot perform probability density estimations, so it does not work well
     when coupled with tree leaves using naive bayes models.
+
+    References
+    ----------
+    [^1]: Domingos, P. and Hulten, G., 2000, August. Mining high-speed data streams.
+    In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery
+    and data mining (pp. 71-80).
+    [^2]: Pfahringer, B., Holmes, G. and Kirkby, R., 2008, May. Handling numeric attributes in
+    hoeffding trees. In Pacific-Asia Conference on Knowledge Discovery and Data Mining
+    (pp. 296-307). Springer, Berlin, Heidelberg.
     """
 
     def __init__(self):
