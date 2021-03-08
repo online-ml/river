@@ -324,7 +324,7 @@ class Pipeline(base.Estimator):
 
         return self
 
-    def _transform_one(self, x: dict):
+    def _transform_one(self, x: dict, learn_unsupervised: bool = True):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -341,17 +341,17 @@ class Pipeline(base.Estimator):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._supervised:
+                    if not sub_t._supervised and learn_unsupervised:
                         sub_t.learn_one(x=x)
 
-            elif not t._supervised:
+            elif not t._supervised and learn_unsupervised:
                 t.learn_one(x=x)
 
             x = t.transform_one(x=x)
 
         return x, next(steps)
 
-    def transform_one(self, x: dict):
+    def transform_one(self, x: dict, learn_unsupervised: bool = True):
         """Apply each transformer in the pipeline to some features.
 
         The final step in the pipeline will be applied if it is a transformer. If not, then it will
@@ -359,21 +359,21 @@ class Pipeline(base.Estimator):
         that precede the final step are assumed to all be transformers.
 
         """
-        x, final_step = self._transform_one(x=x)
+        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         if isinstance(final_step, base.Transformer):
             return final_step.transform_one(x=x)
         return x
 
-    def predict_one(self, x: dict):
-        x, final_step = self._transform_one(x=x)
+    def predict_one(self, x: dict, learn_unsupervised: bool = True):
+        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.predict_one(x=x)
 
-    def predict_proba_one(self, x: dict):
-        x, final_step = self._transform_one(x=x)
+    def predict_proba_one(self, x: dict, learn_unsupervised: bool = True):
+        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.predict_proba_one(x=x)
 
-    def score_one(self, x: dict):
-        x, final_step = self._transform_one(x=x)
+    def score_one(self, x: dict, learn_unsupervised: bool = True):
+        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.score_one(x=x)
 
     def forecast(self, horizon: int, xs: typing.List[dict] = None):
@@ -525,7 +525,7 @@ class Pipeline(base.Estimator):
 
         return self
 
-    def _transform_many(self, X: pd.DataFrame):
+    def _transform_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -542,10 +542,10 @@ class Pipeline(base.Estimator):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._supervised:
+                    if not sub_t._supervised and learn_unsupervised:
                         sub_t.learn_many(X=X)
 
-            elif not t._supervised:
+            elif not t._supervised and learn_unsupervised:
                 t.learn_many(X=X)
 
             X = t.transform_many(X=X)
@@ -565,12 +565,12 @@ class Pipeline(base.Estimator):
             return final_step.transform_many(X=X)
         return X
 
-    def predict_many(self, X: pd.DataFrame):
-        X, final_step = self._transform_many(X=X)
+    def predict_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
+        X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
         return final_step.predict_many(X=X)
 
-    def predict_proba_many(self, X: pd.DataFrame):
-        X, final_step = self._transform_many(X=X)
+    def predict_proba_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
+        X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
         return final_step.predict_proba_many(X=X)
 
     def draw(self):
