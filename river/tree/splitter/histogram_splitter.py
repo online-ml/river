@@ -28,7 +28,7 @@ class HistogramSplitter(Splitter):
         self.n_bins = n_bins
         self.n_splits = n_splits
         self.hists = collections.defaultdict(
-            functools.partial(utils.Histogram, max_bins=n_bins)
+            functools.partial(utils.Histogram, max_bins=self.n_bins)
         )
 
     def update(self, att_val, target_val, sample_weight):
@@ -76,28 +76,29 @@ class HistogramSplitter(Splitter):
         thresholds = list(decimal_range(start=low, stop=high, num=n_thresholds))
         cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.hists.items()}
 
+        total_weight = sum(pre_split_dist.values())
         for at in thresholds:
 
             l_dist = {}
             r_dist = {}
-            total_weight = sum(pre_split_dist.values())
 
             for y in pre_split_dist:
-                p_xy = next(cdfs[y]) if y in cdfs else 0.0  # P(x < t | y)
-                p_y = pre_split_dist[y] / total_weight  # P(y)
-                l_dist[y] = total_weight * p_y * p_xy  # P(y | x < t)
-                r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x >= t)
+                if y in cdfs:
+                    p_xy = next(cdfs[y])  # P(x < t | y)
+                    p_y = pre_split_dist[y] / total_weight  # P(y)
+                    l_dist[y] = total_weight * p_y * p_xy  # P(y | x < t)
+                    r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x >= t)
 
-                post_split_dist = [l_dist, r_dist]
-                merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
+            post_split_dist = [l_dist, r_dist]
+            merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
-                if best_suggestion is None or merit > best_suggestion.merit:
-                    num_att_binary_test = NumericAttributeBinaryTest(
-                        att_idx, at, equal_passes_test=False
-                    )
-                    best_suggestion = AttributeSplitSuggestion(
-                        num_att_binary_test, post_split_dist, merit
-                    )
+            if best_suggestion is None or merit > best_suggestion.merit:
+                num_att_binary_test = NumericAttributeBinaryTest(
+                    att_idx, at, equal_passes_test=False
+                )
+                best_suggestion = AttributeSplitSuggestion(
+                    num_att_binary_test, post_split_dist, merit
+                )
 
         return best_suggestion
 
