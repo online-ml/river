@@ -378,7 +378,7 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.MSSTD()
+    >>> metric = metrics.XieBeni()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
@@ -386,7 +386,7 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
     ...     metric = metric.update(k_means.centers, x, y_pred)
 
     >>> metric
-    MSSTD: 2.635708
+    XieBeni: 0.397043
 
     """
 
@@ -400,12 +400,10 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
     @staticmethod
     def _find_minimum_separation(centers):
         minimum_separation = math.inf
-        n_centers = max(centers)
+        n_centers = max(centers) + 1
         for i in range(n_centers):
-            for j in range(i, n_centers):
-                separation_ij = math.sqrt(
-                    utils.math.minkowski_distance(centers[i], centers[j], 2)
-                )
+            for j in range(i+1, n_centers):
+                separation_ij = utils.math.minkowski_distance(centers[i], centers[j], 2)
                 if separation_ij < minimum_separation:
                     minimum_separation = separation_ij
         return minimum_separation
@@ -423,7 +421,7 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
 
         self._ssq += squared_distance
         self._total_points += 1
-        self._minimum_separation += minimum_separation - self._minimum_separation
+        self._minimum_separation = minimum_separation
 
         return self
 
