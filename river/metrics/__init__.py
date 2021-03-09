@@ -45,7 +45,14 @@ from .fbeta import (
 )
 from .geometric_mean import GeometricMean
 from .hamming import Hamming, HammingLoss
-from .internal_clustering_metrics import SSQ, Cohesion, Separation, Silhouette
+from .internal_clustering_metrics import (
+    MSSTD,
+    RMSSTD,
+    SSQ,
+    Cohesion,
+    Separation,
+    Silhouette,
+)
 from .jaccard import Jaccard
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
@@ -105,6 +112,7 @@ __all__ = [
     "MicroFBeta",
     "MicroPrecision",
     "MicroRecall",
+    "MSSTD",
     "MultiClassMetric",
     "MultiFBeta",
     "MultiLabelConfusionMatrix",
@@ -117,6 +125,7 @@ __all__ = [
     "RegressionMultiOutput",
     "RMSE",
     "RMSLE",
+    "RMSSTD",
     "ROCAUC",
     "Rolling",
     "R2",
