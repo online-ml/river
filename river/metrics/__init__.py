@@ -52,6 +52,7 @@ from .internal_clustering_metrics import (
     Cohesion,
     Separation,
     Silhouette,
+    XieBeni,
 )
 from .jaccard import Jaccard
 from .kappa import CohenKappa, KappaM, KappaT
@@ -139,4 +140,5 @@ __all__ = [
     "WeightedPrecision",
     "WeightedRecall",
     "WrapperMetric",
+    "XieBeni",
 ]
