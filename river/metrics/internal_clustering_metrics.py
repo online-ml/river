@@ -4,88 +4,15 @@ from river import utils
 
 from . import base_internal_clustering
 
-__all__ = ["Cohesion", "MSSTD", "RMSSTD", "SSQ", "Separation", "Silhouette", "XieBeni"]
-
-
-class Cohesion(base_internal_clustering.MeanInternalMetric):
-    """Mean distance from the points to their assigned cluster centroids. The smaller the better.
-
-    Examples
-    --------
-
-    >>> from river import cluster
-    >>> from river import stream
-    >>> from river import metrics
-
-    >>> X = [
-    ...     [1, 2],
-    ...     [1, 4],
-    ...     [1, 0],
-    ...     [4, 2],
-    ...     [4, 4],
-    ...     [4, 0]
-    ... ]
-
-    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.Cohesion()
-
-    >>> for x, _ in stream.iter_array(X):
-    ...     k_means = k_means.learn_one(x)
-    ...     y_pred = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, y_pred)
-
-    >>> metric
-    Cohesion: 1.975643
-
-    """
-
-    @property
-    def bigger_is_better(self):
-        return False
-
-    def _eval(self, centers, point, y_pred):
-        return math.sqrt(utils.math.minkowski_distance(centers[y_pred], point, 2))
-
-
-class SSQ(base_internal_clustering.MeanInternalMetric):
-    """Mean of sum of squared (SSQ) distances from data points to their assigned cluster centroids.
-    The bigger the better.
-
-    Examples
-    --------
-
-    >>> from river import cluster
-    >>> from river import stream
-    >>> from river import metrics
-
-    >>> X = [
-    ...     [1, 2],
-    ...     [1, 4],
-    ...     [1, 0],
-    ...     [4, 2],
-    ...     [4, 4],
-    ...     [4, 0]
-    ... ]
-
-    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.SSQ()
-
-    >>> for x, _ in stream.iter_array(X):
-    ...     k_means = k_means.learn_one(x)
-    ...     y_pred = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, y_pred)
-
-    >>> metric
-    SSQ: 4.226734
-
-    """
-
-    @property
-    def bigger_is_better(self):
-        return False
-
-    def _eval(self, centers, point, y_pred):
-        return utils.math.minkowski_distance(centers[y_pred], point, 2)
+__all__ = [
+    "MSSTD",
+    "RMSSTD",
+    "SSQ",
+    "Cohesion",
+    "DaviesBouldin",
+    "Separation",
+    "XieBeni",
+]
 
 
 class MSSTD(base_internal_clustering.InternalClusteringMetrics):
@@ -209,6 +136,188 @@ class RMSSTD(MSSTD):
         return super().get() ** 0.5
 
 
+class SSQ(base_internal_clustering.MeanInternalMetric):
+    """Mean of sum of squared (SSQ) distances from data points to their assigned cluster centroids.
+    The bigger the better.
+
+    Examples
+    --------
+
+    >>> from river import cluster
+    >>> from river import stream
+    >>> from river import metrics
+
+    >>> X = [
+    ...     [1, 2],
+    ...     [1, 4],
+    ...     [1, 0],
+    ...     [4, 2],
+    ...     [4, 4],
+    ...     [4, 0],
+    ...     [-2, 2],
+    ...     [-2, 4],
+    ...     [-2, 0]
+    ... ]
+
+    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
+    >>> metric = metrics.SSQ()
+
+    >>> for x, _ in stream.iter_array(X):
+    ...     k_means = k_means.learn_one(x)
+    ...     y_pred = k_means.predict_one(x)
+    ...     metric = metric.update(k_means.centers, x, y_pred)
+
+    >>> metric
+    SSQ: 3.514277
+
+    """
+
+    @property
+    def bigger_is_better(self):
+        return False
+
+    def _eval(self, centers, point, y_pred):
+        return utils.math.minkowski_distance(centers[y_pred], point, 2)
+
+
+class Cohesion(base_internal_clustering.MeanInternalMetric):
+    """Mean distance from the points to their assigned cluster centroids. The smaller the better.
+
+    Examples
+    --------
+
+    >>> from river import cluster
+    >>> from river import stream
+    >>> from river import metrics
+
+    >>> X = [
+    ...     [1, 2],
+    ...     [1, 4],
+    ...     [1, 0],
+    ...     [4, 2],
+    ...     [4, 4],
+    ...     [4, 0],
+    ...     [-2, 2],
+    ...     [-2, 4],
+    ...     [-2, 0]
+    ... ]
+
+    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
+    >>> metric = metrics.Cohesion()
+
+    >>> for x, _ in stream.iter_array(X):
+    ...     k_means = k_means.learn_one(x)
+    ...     y_pred = k_means.predict_one(x)
+    ...     metric = metric.update(k_means.centers, x, y_pred)
+
+    >>> metric
+    Cohesion: 1.682748
+
+    """
+
+    @property
+    def bigger_is_better(self):
+        return False
+
+    def _eval(self, centers, point, y_pred):
+        return math.sqrt(utils.math.minkowski_distance(centers[y_pred], point, 2))
+
+
+class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
+    """Davies-Bouldin index (DB).
+
+    The Davies-Bouldin index (DB) is an old but still widely used inernal validaion measure.
+    DB uses intra-cluster variance and inter-cluster cener disance to find the worst partner
+    cluster, i.e., the closest most scattered one for each cluster. Thus, minimizing DB gives
+    us the optimal number of clusters.
+
+    Examples
+    --------
+
+    >>> from river import cluster
+    >>> from river import stream
+    >>> from river import metrics
+
+    >>> X = [
+    ...     [1, 2],
+    ...     [1, 4],
+    ...     [1, 0],
+    ...     [4, 2],
+    ...     [4, 4],
+    ...     [4, 0],
+    ...     [-2, 2],
+    ...     [-2, 4],
+    ...     [-2, 0]
+    ... ]
+
+    >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
+    >>> metric = metrics.DaviesBouldin()
+
+    >>> for x, _ in stream.iter_array(X):
+    ...     k_means = k_means.learn_one(x)
+    ...     y_pred = k_means.predict_one(x)
+    ...     metric = metric.update(k_means.centers, x, y_pred)
+
+    >>> metric
+    DaviesBouldin: 0.22583
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self._inter_cluster_distances = {}
+        self._n_points_by_clusters = {}
+        self._total_points = 0
+        self.centers = {}
+        self.sample_correction = {}
+
+    def update(self, centers, point, y_pred, sample_weight=1.0):
+
+        distance = math.sqrt(utils.math.minkowski_distance(centers[y_pred], point, 2))
+
+        # To trace back
+        self.sample_correction = {"distance": distance}
+
+        if y_pred not in self._inter_cluster_distances.keys():
+            self._inter_cluster_distances[y_pred] = distance
+            self._n_points_by_clusters[y_pred] = 1
+        else:
+            self._inter_cluster_distances[y_pred] += distance
+            self._n_points_by_clusters[y_pred] += 1
+
+        self.centers = centers
+
+        return self
+
+    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+
+        self._inter_cluster_distances[y_pred] -= correction["distance"]
+        self._n_points_by_clusters[y_pred] -= 1
+        self.centers = centers
+
+        return self
+
+    def get(self):
+        max_partner_clusters_index = -math.inf
+        n_clusters = len(self._inter_cluster_distances)
+        for i in range(n_clusters):
+            for j in range(i + 1, n_clusters):
+                distance_ij = math.sqrt(
+                    utils.math.minkowski_distance(self.centers[i], self.centers[j], 2)
+                )
+                ij_partner_cluster_index = (
+                    self._inter_cluster_distances[i] / self._n_points_by_clusters[i]
+                    + self._inter_cluster_distances[j] / self._n_points_by_clusters[j]
+                ) / distance_ij
+                if ij_partner_cluster_index > max_partner_clusters_index:
+                    max_partner_clusters_index = ij_partner_cluster_index
+        return max_partner_clusters_index / n_clusters
+
+    @property
+    def bigger_is_better(self):
+        return False
+
+
 class Separation(base_internal_clustering.MeanInternalMetric):
     """Average distance from a point to the points assigned to other clusters. The bigger the better.
 
@@ -225,7 +334,10 @@ class Separation(base_internal_clustering.MeanInternalMetric):
     ...     [1, 0],
     ...     [4, 2],
     ...     [4, 4],
-    ...     [4, 0]
+    ...     [4, 0],
+    ...     [-2, 2],
+    ...     [-2, 4],
+    ...     [-2, 0]
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
@@ -237,7 +349,7 @@ class Separation(base_internal_clustering.MeanInternalMetric):
     ...     metric = metric.update(k_means.centers, x, y_pred)
 
     >>> metric
-    Separation: 4.647488
+    Separation: 4.54563
 
     """
 
@@ -402,7 +514,7 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
         minimum_separation = math.inf
         n_centers = max(centers) + 1
         for i in range(n_centers):
-            for j in range(i+1, n_centers):
+            for j in range(i + 1, n_centers):
                 separation_ij = utils.math.minkowski_distance(centers[i], centers[j], 2)
                 if separation_ij < minimum_separation:
                     minimum_separation = separation_ij
