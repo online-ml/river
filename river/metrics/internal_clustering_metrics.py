@@ -203,9 +203,7 @@ class MSSTD(base_internal_clustering.InternalClusteringMetrics):
 
     def get(self):
         try:
-            return self._ssq / (
-                self._dim * (self._total_points - self._total_clusters)
-            )
+            return self._ssq / (self._dim * (self._total_points - self._total_clusters))
         except ZeroDivisionError:
             return math.inf
 
