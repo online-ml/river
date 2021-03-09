@@ -3,6 +3,7 @@ import copy
 
 from river import base, linear_model
 from river.utils.math import prod
+from river.utils.skmultiflow_utils import check_random_state
 
 __all__ = [
     "ClassifierChain",
@@ -407,7 +408,9 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     """
 
     def __init__(self, model: base.Classifier, m: int = 10, seed: int = None):
-        ClassifierChain.__init__(self, model=model, order=None, seed=seed)
+        ClassifierChain.__init__(self, model=model, order=None)
+        self.seed = seed
+        self._rng = check_random_state(seed)
         self.m = m
 
     def _sample(self, x):
