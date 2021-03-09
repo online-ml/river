@@ -120,7 +120,7 @@ class RMSSTD(MSSTD):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.MSSTD()
+    >>> metric = metrics.RMSSTD()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
@@ -159,7 +159,7 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
     ...     [-2, 0]
     ... ]
 
-    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
+    >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
     >>> metric = metrics.SSQ()
 
     >>> for x, _ in stream.iter_array(X):
@@ -202,7 +202,7 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
     ...     [-2, 0]
     ... ]
 
-    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
+    >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
     >>> metric = metrics.Cohesion()
 
     >>> for x, _ in stream.iter_array(X):
@@ -340,7 +340,7 @@ class Separation(base_internal_clustering.MeanInternalMetric):
     ...     [-2, 0]
     ... ]
 
-    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
+    >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
     >>> metric = metrics.Separation()
 
     >>> for x, _ in stream.iter_array(X):
