@@ -70,6 +70,7 @@ from .rmsstd import MSSTD, RMSSTD
 from .roc_auc import ROCAUC
 from .rolling import Rolling
 from .separation import Separation
+from .sd_validation import SD
 from .silhouette import Silhouette
 from .smape import SMAPE
 from .time_rolling import TimeRolling
@@ -132,6 +133,7 @@ __all__ = [
     "ROCAUC",
     "Rolling",
     "R2",
+    "SD",
     "Separation",
     "Silhouette",
     "SMAPE",
