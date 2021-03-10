@@ -41,6 +41,11 @@ class Separation(base_internal_clustering.MeanInternalMetric):
     >>> metric
     Separation: 4.54563
 
+    References
+    ----------
+    [^1]: Bifet, A. et al. (2018). "Machine Learning for Data Streams".
+          DOI: 10.7551/mitpress/10654.001.0001.
+
     """
 
     @property

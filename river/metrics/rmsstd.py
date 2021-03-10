@@ -40,6 +40,12 @@ class MSSTD(base_internal_clustering.InternalClusteringMetrics):
     >>> metric
     MSSTD: 2.635708
 
+    References
+    ----------
+    [^1]: Halkidi, M., Batistakis, Y. and Vazirgiannis, M. (2001). On Clustering Validation Techniques.
+          Journal of Intelligent Information Systems, 17, 107 - 145.
+          DOI: 10.1023/a:1012801612483.
+
     """
 
     def __init__(self):
@@ -122,6 +128,12 @@ class RMSSTD(MSSTD):
 
     >>> metric
     RMSSTD: 1.623486
+
+    References
+    ----------
+    [^1]: Halkidi, M., Batistakis, Y. and Vazirgiannis, M. (2001). On Clustering Validation Techniques.
+          Journal of Intelligent Information Systems, 17, 107 - 145.
+          DOI: 10.1023/a:1012801612483.
 
     """
 

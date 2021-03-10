@@ -10,7 +10,7 @@ __all__ = ["IIndex"]
 class IIndex(base_internal_clustering.InternalClusteringMetrics):
     """I-Index (I).
 
-    I-Index (I) adopts the maximum distance between cluster centers. It also shares the type of
+    I-Index (I) [^1] adopts the maximum distance between cluster centers. It also shares the type of
     formulation numerator-separation/denominator-compactness. For compactness, the distance from
     a data point to its cluster center is also used like CH.
 
@@ -43,6 +43,13 @@ class IIndex(base_internal_clustering.InternalClusteringMetrics):
 
     >>> metric
     IIndex: 6.836566
+
+    References
+    --------
+
+    [^1]: Maulik, U., Bandyopadhyay, S. (2002). Performance evaluation of some clustering algorithms and
+          validity indices. In: IEEE Transactions on Pattern Analysis and Machine Intelligence 24(12)
+          1650 - 1654. DOI: 10.1109/TPAMI.2002.1114856
 
     """
 

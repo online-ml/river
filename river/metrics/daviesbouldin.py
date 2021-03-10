@@ -10,7 +10,7 @@ __all__ = ["DaviesBouldin"]
 class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
     """Davies-Bouldin index (DB).
 
-    The Davies-Bouldin index (DB) is an old but still widely used inernal validaion measure.
+    The Davies-Bouldin index (DB) [^1] is an old but still widely used inernal validaion measure.
     DB uses intra-cluster variance and inter-cluster center disance to find the worst partner
     cluster, i.e., the closest most scattered one for each cluster. Thus, minimizing DB gives
     us the optimal number of clusters.
@@ -45,6 +45,12 @@ class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
     >>> metric
     DaviesBouldin: 0.22583
 
+    References
+    ----------
+    [^1]: David L., D., Don, B. (1979). A Cluster Separation Measure. In: IEEE
+          Transactions on Pattern Analysis and Machine Intelligence (PAMI) 1(2), 224 - 227.
+          DOI: 10.1109/TPAMI.1979.4766909
+
     """
 
     def __init__(self):
@@ -62,7 +68,7 @@ class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
         # To trace back
         self.sample_correction = {"distance": distance}
 
-        if y_pred not in self._inter_cluster_distances.keys():
+        if y_pred not in self._inter_cluster_distances:
             self._inter_cluster_distances[y_pred] = distance
             self._n_points_by_clusters[y_pred] = 1
         else:

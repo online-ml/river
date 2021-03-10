@@ -44,6 +44,11 @@ class CalinskiHarabasz(base_internal_clustering.InternalClusteringMetrics):
     >>> metric
     CalinskiHarabasz: 2.540276
 
+    References
+    ----------
+    [^1]: Calinski, T., Harabasz, J.-A. (1974). A Dendrite Method for Cluster Analysis.
+          Communications in Statistics 3(1), 1 - 27. DOI: 10.1080/03610927408827101
+
     """
 
     def __init__(self):

@@ -9,10 +9,13 @@ __all__ = ["Silhouette"]
 
 class Silhouette(base_internal_clustering.InternalClusteringMetrics):
     """
-    Silhouette coefficient, roughly speaking, is the ratio between cohesion and the average distances
+    Silhouette coefficient [^1], roughly speaking, is the ratio between cohesion and the average distances
     from the points to their second-closest centroid. It rewards the clustering algorithm where
     points are very close to their assigned centroids and far from any other centroids,
     that is clustering results with good cohesion and good separation.
+
+    It rewards clusterings where points are very close to their assigned centroids and far from any other
+    centroids, that is clusterings with good cohesion and good separation. [^2]
 
     Examples
     --------
@@ -43,6 +46,15 @@ class Silhouette(base_internal_clustering.InternalClusteringMetrics):
 
     >>> metric
     Silhouette: 0.453723
+
+    References
+    ----------
+
+    [^1]: Rousseeuw, P. (1987). Silhouettes: a graphical aid to the intepretation and validation
+          of cluster analysis 20, 53 - 65. DOI: 10.1016/0377-0427(87)90125-7
+
+    [^2]: Bifet, A. et al. (2018). "Machine Learning for Data Streams".
+          DOI: 10.7551/mitpress/10654.001.0001.
 
     """
 

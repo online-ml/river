@@ -41,6 +41,11 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
     >>> metric
     SSQ: 3.514277
 
+    References
+    ----------
+    [^1]: Bifet, A. et al. (2018). "Machine Learning for Data Streams".
+          DOI: 10.7551/mitpress/10654.001.0001.
+
     """
 
     @property
@@ -83,6 +88,11 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
 
     >>> metric
     Cohesion: 1.682748
+
+    References
+    ----------
+    [^1]: Bifet, A. et al. (2018). "Machine Learning for Data Streams".
+          DOI: 10.7551/mitpress/10654.001.0001.
 
     """
 

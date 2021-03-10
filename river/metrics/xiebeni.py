@@ -10,7 +10,7 @@ _all__ = ["XieBeni"]
 class XieBeni(base_internal_clustering.InternalClusteringMetrics):
     """Xie-Beni index (XB).
 
-    The Xie-Beni index has the form of (Compactness)/(Separation), which defines the
+    The Xie-Beni index [^1] has the form of (Compactness)/(Separation), which defines the
     inter-cluster separation as the minimum squared distance between cluster centers,
     and the intra-cluster compactness as the mean squared distance between each data
     object and its cluster centers. The smaller the value of XB, the better the
@@ -45,6 +45,13 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
 
     >>> metric
     XieBeni: 0.397043
+
+    References
+    ----------
+
+    [^1]: X. L. Xie, G. Beni (1991). A validity measure for fuzzy clustering. In: IEEE
+          Transactions on Pattern Analysis and Machine Intelligence 13(8), 841 - 847.
+          DOI: 10.1109/34.85677
 
     """
 

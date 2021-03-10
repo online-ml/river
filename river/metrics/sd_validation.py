@@ -10,7 +10,7 @@ __all__ = ["SD"]
 class SD(base_internal_clustering.InternalClusteringMetrics):
     """The SD validity index (SD).
 
-    The SD validity index (SD) is a more recent clustering validation measure. It is composed of
+    The SD validity index (SD) [^1] is a more recent clustering validation measure. It is composed of
     two terms:
 
     * Scat(NC) stands for the scattering within clusters,
@@ -54,6 +54,12 @@ class SD(base_internal_clustering.InternalClusteringMetrics):
 
     >>> metric
     SD: 4.332702
+
+    References
+    ----------
+    [^1]: Halkidi, M., Vazirgiannis, M., & Batistakis, Y. (2000). Quality Scheme Assessment in the
+          Clustering Process. Principles Of Data Mining And Knowledge Discovery, 265-276.
+          DOI: 10.1007/3-540-45372-5_26
 
     """
 
