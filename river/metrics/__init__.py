@@ -69,8 +69,8 @@ from .report import ClassificationReport
 from .rmsstd import MSSTD, RMSSTD
 from .roc_auc import ROCAUC
 from .rolling import Rolling
-from .separation import Separation
 from .sd_validation import SD
+from .separation import Separation
 from .silhouette import Silhouette
 from .smape import SMAPE
 from .time_rolling import TimeRolling

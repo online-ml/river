@@ -21,6 +21,10 @@ class SD(base_internal_clustering.InternalClusteringMetrics):
     with distnace between cluster centers, but uses them in a different way. The smaller the value
     of SD, the better.
 
+    In the original formula for SD validation index, the ratio between the maximum and the actual
+    number of clusters is taken into account. However, due to the fact that metrics are update live
+    along with the data stream, this ratio will be automatically set to default as 1.
+
     Examples
     --------
 
