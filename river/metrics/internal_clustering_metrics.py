@@ -536,9 +536,6 @@ class IIndex(base_internal_clustering.InternalClusteringMetrics):
 
         for i in self._center_all_points:
             self._center_all_points[i].update(point[i], w=-sample_weight)
-        center_all_points = {
-            i: self._center_all_points[i].get() for i in self._center_all_points
-        }
 
         self._ssq_points_cluster_centers -= correction["distance_point_cluster_center"]
         self._ssq_points_center -= correction["distance_point_center"]
