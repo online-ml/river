@@ -9,6 +9,7 @@ __all__ = [
     "RMSSTD",
     "SSQ",
     "Cohesion",
+    "IIndex",
     "CalinskiHarabasz",
     "DaviesBouldin",
     "IIndex",
@@ -461,7 +462,7 @@ class IIndex(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.DaviesBouldin()
+    >>> metric = metrics.IIndex()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
