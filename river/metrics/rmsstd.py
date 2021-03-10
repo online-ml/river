@@ -35,7 +35,7 @@ class MSSTD(base_internal_clustering.InternalClusteringMetrics):
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
     ...     y_pred = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, y_pred)
+    ...     metric = metric.update(x, y_pred, k_means.centers)
 
     >>> metric
     MSSTD: 2.635708
@@ -124,7 +124,7 @@ class RMSSTD(MSSTD):
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
     ...     y_pred = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, y_pred)
+    ...     metric = metric.update(x, y_pred, k_means.centers)
 
     >>> metric
     RMSSTD: 1.623486

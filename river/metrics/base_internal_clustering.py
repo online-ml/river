@@ -54,7 +54,7 @@ class MeanInternalMetric(InternalClusteringMetrics):
         self,
         x: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         y_pred: numbers.Number,
-        centers
+        centers,
     ):
         pass
 
@@ -63,7 +63,7 @@ class MeanInternalMetric(InternalClusteringMetrics):
         x: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         y_pred: numbers.Number,
         centers,
-        sample_weight=1.0
+        sample_weight=1.0,
     ):
         self._mean.update(x=self._eval(x, y_pred, centers), w=sample_weight)
         return self
@@ -73,7 +73,7 @@ class MeanInternalMetric(InternalClusteringMetrics):
         x: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         y_pred: numbers.Number,
         centers,
-        sample_weight=1.0
+        sample_weight=1.0,
     ):
         self._mean.revert(x=self._eval(x, y_pred, centers), w=sample_weight)
         return self
