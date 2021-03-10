@@ -97,51 +97,51 @@ class SD(base_internal_clustering.InternalClusteringMetrics):
         origin = {i: 0 for i in x}
         return math.sqrt(utils.math.minkowski_distance(x, origin, 2))
 
-    def update(self, centers, point, y_pred, sample_weight=1.0):
+    def update(self, x, y_pred, centers, sample_weight=1.0):
 
         if not self._initialized:
             self._center_all_points = self._overall_variance = {
-                i: stats.Mean() for i in point
+                i: stats.Mean() for i in x
             }
             self._initialized = True
         for i in self._center_all_points:
-            self._center_all_points[i].update(point[i], w=sample_weight)
+            self._center_all_points[i].update(x[i], w=sample_weight)
         center_all_points = {
             i: self._center_all_points[i].get() for i in self._center_all_points
         }
 
         for i in self._overall_variance:
             self._overall_variance[i].update(
-                (point[i] - center_all_points[i]) ** 2, w=sample_weight
+                (x[i] - center_all_points[i]) ** 2, w=sample_weight
             )
 
         if y_pred not in self._cluster_variance:
-            self._cluster_variance[y_pred] = {i: stats.Mean() for i in point}
-        for i in point:
+            self._cluster_variance[y_pred] = {i: stats.Mean() for i in x}
+        for i in x:
             self._cluster_variance[y_pred][i].update(
-                (point[i] - centers[y_pred][i]) ** 2, w=sample_weight
+                (x[i] - centers[y_pred][i]) ** 2, w=sample_weight
             )
 
         self._centers = centers
 
         return self
 
-    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
 
         for i in self._center_all_points:
-            self._center_all_points[i].update(point[i], w=-sample_weight)
+            self._center_all_points[i].update(x[i], w=-sample_weight)
         center_all_points = {
             i: self._center_all_points[i].get() for i in self._center_all_points
         }
 
         for i in self._overall_variance:
             self._overall_variance[i].update(
-                (point[i] - center_all_points[i]) ** 2, w=-sample_weight
+                (x[i] - center_all_points[i]) ** 2, w=-sample_weight
             )
 
-        for i in point:
+        for i in x:
             self._cluster_variance[y_pred][i].update(
-                (point[i] - centers[y_pred][i]) ** 2, w=-sample_weight
+                (x[i] - centers[y_pred][i]) ** 2, w=-sample_weight
             )
 
         self._centers = centers

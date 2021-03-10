@@ -77,26 +77,26 @@ class IIndex(base_internal_clustering.InternalClusteringMetrics):
                     max_distance = distance_ij
         return max_distance
 
-    def update(self, centers, point, y_pred, sample_weight=1.0):
+    def update(self, x, y_pred, centers, sample_weight=1.0):
 
         self._furthest_cluster_distance = self._find_furthest_cluster_distance(centers)
 
         if not self._initialized:
-            self._center_all_points = {i: stats.Mean() for i in point}
-            self._dim = len(point)
+            self._center_all_points = {i: stats.Mean() for i in x}
+            self._dim = len(x)
             self._initialized = True
 
         for i in self._center_all_points:
-            self._center_all_points[i].update(point[i], w=sample_weight)
+            self._center_all_points[i].update(x[i], w=sample_weight)
         center_all_points = {
             i: self._center_all_points[i].get() for i in self._center_all_points
         }
 
         distance_point_cluster_center = math.sqrt(
-            utils.math.minkowski_distance(centers[y_pred], point, 2)
+            utils.math.minkowski_distance(centers[y_pred], x, 2)
         )
         distance_point_center = math.sqrt(
-            utils.math.minkowski_distance(center_all_points, point, 2)
+            utils.math.minkowski_distance(center_all_points, x, 2)
         )
         self._ssq_points_cluster_centers += distance_point_cluster_center
         self._ssq_points_center += distance_point_center
@@ -110,17 +110,17 @@ class IIndex(base_internal_clustering.InternalClusteringMetrics):
 
         return self
 
-    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
 
         self._furthest_cluster_distance = self._find_furthest_cluster_distance(centers)
 
         for i in self._center_all_points:
-            self._center_all_points[i].update(point[i], w=-sample_weight)
+            self._center_all_points[i].update(x[i], w=-sample_weight)
 
         self._ssq_points_cluster_centers -= correction["distance_point_cluster_center"]
         self._ssq_points_center -= correction["distance_point_center"]
         self._n_clusters = len(centers)
-        self._dim = len(point)
+        self._dim = len(x)
 
         return self
 

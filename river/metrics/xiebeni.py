@@ -73,9 +73,9 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
                     minimum_separation = separation_ij
         return minimum_separation
 
-    def update(self, centers, point, y_pred, sample_weight=1.0):
+    def update(self, x, y_pred, centers, sample_weight=1.0):
 
-        squared_distance = utils.math.minkowski_distance(centers[y_pred], point, 2)
+        squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
         minimum_separation = self._find_minimum_separation(centers)
 
         # To trace back
@@ -90,7 +90,7 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
 
         return self
 
-    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
         self._ssq -= correction["squared_distance"]
         self._total_points -= 1
         self._minimum_separation -= correction["separation_difference"]

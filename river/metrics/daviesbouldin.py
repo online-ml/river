@@ -61,9 +61,9 @@ class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
         self._centers = {}
         self.sample_correction = {}
 
-    def update(self, centers, point, y_pred, sample_weight=1.0):
+    def update(self, x, y_pred, centers, sample_weight=1.0):
 
-        distance = math.sqrt(utils.math.minkowski_distance(centers[y_pred], point, 2))
+        distance = math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
 
         # To trace back
         self.sample_correction = {"distance": distance}
@@ -79,7 +79,7 @@ class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
 
         return self
 
-    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
 
         self._inter_cluster_distances[y_pred] -= correction["distance"]
         self._n_points_by_clusters[y_pred] -= 1

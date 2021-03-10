@@ -65,21 +65,21 @@ class Silhouette(base_internal_clustering.InternalClusteringMetrics):
         self.sample_correction = {}
 
     @staticmethod
-    def _find_distance_second_closest_center(centers, point):
+    def _find_distance_second_closest_center(centers, x):
         distances = {
-            i: math.sqrt(utils.math.minkowski_distance(centers[i], point, 2))
+            i: math.sqrt(utils.math.minkowski_distance(centers[i], x, 2))
             for i in centers
         }
         return sorted(distances.values())[-2]
 
-    def update(self, centers, point, y_pred, sample_weight=1.0):
+    def update(self, x, y_pred, centers, sample_weight=1.0):
         distance_closest_centroid = math.sqrt(
-            utils.math.minkowski_distance(centers[y_pred], point, 2)
+            utils.math.minkowski_distance(centers[y_pred], x, 2)
         )
         self._sum_distance_closest_centroid += distance_closest_centroid
 
         distance_second_closest_centroid = self._find_distance_second_closest_center(
-            centers, point
+            centers, x
         )
         self._sum_distance_second_closest_centroid += distance_second_closest_centroid
 
@@ -91,7 +91,7 @@ class Silhouette(base_internal_clustering.InternalClusteringMetrics):
 
         return self
 
-    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
         self._sum_distance_closest_centroid -= correction["distance_closest_centroid"]
         self._sum_distance_second_closest_centroid -= correction[
             "distance_second_closest_centroid"

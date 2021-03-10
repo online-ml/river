@@ -61,14 +61,14 @@ class CalinskiHarabasz(base_internal_clustering.InternalClusteringMetrics):
         self.sample_correction = {}
         self._initialized = False
 
-    def update(self, centers, point, y_pred, sample_weight=1.0):
+    def update(self, x, y_pred, centers, sample_weight=1.0):
 
         squared_distance_point_center = utils.math.minkowski_distance(
-            centers[y_pred], point, 2
+            centers[y_pred], x, 2
         )
 
         if not self._initialized:
-            self._center_all_points = {i: stats.Mean() for i in point}
+            self._center_all_points = {i: stats.Mean() for i in x}
             self._initialized = True
 
         # To trace back
@@ -77,7 +77,7 @@ class CalinskiHarabasz(base_internal_clustering.InternalClusteringMetrics):
         }
 
         for i in self._center_all_points:
-            self._center_all_points[i].update(point[i], w=sample_weight)
+            self._center_all_points[i].update(x[i], w=sample_weight)
         center_all_points = {
             i: self._center_all_points[i].get() for i in self._center_all_points
         }
@@ -93,10 +93,10 @@ class CalinskiHarabasz(base_internal_clustering.InternalClusteringMetrics):
 
         return self
 
-    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
 
         for i in self._center_all_points:
-            self._center_all_points[i].update(point[i], w=-sample_weight)
+            self._center_all_points[i].update(x[i], w=-sample_weight)
         center_all_points = {
             i: self._center_all_points[i].get() for i in self._center_all_points
         }

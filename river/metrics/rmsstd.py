@@ -56,9 +56,9 @@ class MSSTD(base_internal_clustering.InternalClusteringMetrics):
         self._dim = 0
         self.sample_correction = {}
 
-    def update(self, centers, point, y_pred, sample_weight=1.0):
+    def update(self, x, y_pred, centers, sample_weight=1.0):
 
-        squared_distance = utils.math.minkowski_distance(centers[y_pred], point, 2)
+        squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
         n_added_centers = len(centers) - self._total_clusters
 
         # To trace back
@@ -70,11 +70,11 @@ class MSSTD(base_internal_clustering.InternalClusteringMetrics):
         self._ssq += squared_distance
         self._total_points += 1
         self._total_clusters += n_added_centers
-        self._dim = len(point)
+        self._dim = len(x)
 
         return self
 
-    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
 
         self._ssq -= correction["squared_distance"]
         self._total_clusters -= correction["n_added_centers"]

@@ -52,11 +52,11 @@ class Separation(base_internal_clustering.MeanInternalMetric):
     def bigger_is_better(self):
         return True
 
-    def _eval(self, centers, point, y_pred):
+    def _eval(self, x, y_pred, centers):
         sum_distance_other_clusters = 0
         for i in centers:
             if i != y_pred:
                 sum_distance_other_clusters += math.sqrt(
-                    utils.math.minkowski_distance(centers[i], point, 2)
+                    utils.math.minkowski_distance(centers[i], x, 2)
                 )
         return sum_distance_other_clusters / (len(centers) - 1)

@@ -52,8 +52,8 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
     def bigger_is_better(self):
         return False
 
-    def _eval(self, centers, point, y_pred):
-        return utils.math.minkowski_distance(centers[y_pred], point, 2)
+    def _eval(self, x, y_pred, centers):
+        return utils.math.minkowski_distance(centers[y_pred], x, 2)
 
 
 class Cohesion(base_internal_clustering.MeanInternalMetric):
@@ -100,5 +100,5 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
     def bigger_is_better(self):
         return False
 
-    def _eval(self, centers, point, y_pred):
-        return math.sqrt(utils.math.minkowski_distance(centers[y_pred], point, 2))
+    def _eval(self, x, y_pred, centers):
+        return math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
