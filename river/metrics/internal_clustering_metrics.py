@@ -11,6 +11,7 @@ __all__ = [
     "Cohesion",
     "CalinskiHarabasz",
     "DaviesBouldin",
+    "IIndex",
     "Separation",
     "Silhouette",
     "XieBeni",
@@ -186,7 +187,7 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
 class CalinskiHarabasz(base_internal_clustering.InternalClusteringMetrics):
     """Calinski-Harabasz index (CH).
 
-    The Davies-Bouldin index (DB) index measures the two criteari simultaneously
+    The Davies-Bouldin index (DB) index measures the two criteria simultaneously
     with the help of average between and within cluster sum of squares. The numerator
     reflects the degree of separation in the way of how much centers are spread, and
     the denominator corresponds to compactness, to reflect how close the in-cluster objects
@@ -427,6 +428,133 @@ class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
                 if ij_partner_cluster_index > max_partner_clusters_index:
                     max_partner_clusters_index = ij_partner_cluster_index
         return max_partner_clusters_index / n_clusters
+
+    @property
+    def bigger_is_better(self):
+        return False
+
+
+class IIndex(base_internal_clustering.InternalClusteringMetrics):
+    """I-Index (I).
+
+    I-Index (I) adopts the maximum distance between cluster centers. It also shares the type of
+    formulation numerator-separation/denominator-compactness. For compactness, the distance from
+    a data point to its cluster center is also used like CH.
+
+    Examples
+    --------
+
+    >>> from river import cluster
+    >>> from river import stream
+    >>> from river import metrics
+
+    >>> X = [
+    ...     [1, 2],
+    ...     [1, 4],
+    ...     [1, 0],
+    ...     [4, 2],
+    ...     [4, 4],
+    ...     [4, 0],
+    ...     [-2, 2],
+    ...     [-2, 4],
+    ...     [-2, 0]
+    ... ]
+
+    >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
+    >>> metric = metrics.DaviesBouldin()
+
+    >>> for x, _ in stream.iter_array(X):
+    ...     k_means = k_means.learn_one(x)
+    ...     y_pred = k_means.predict_one(x)
+    ...     metric = metric.update(k_means.centers, x, y_pred)
+
+    >>> metric
+    IIndex: 6.836566
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self._center_all_points = {}
+        self._ssq_points_cluster_centers = 0
+        self._ssq_points_center = 0
+        self._furthest_cluster_distance = 0
+        self._n_clusters = 0
+        self._dim = 0
+        self.sample_correction = {}
+        self._initialized = False
+
+    @staticmethod
+    def _find_furthest_cluster_distance(centers):
+        n_centers = len(centers)
+        max_distance = -math.inf
+        for i in range(n_centers):
+            for j in range(i + 1, n_centers):
+                distance_ij = math.sqrt(
+                    utils.math.minkowski_distance(centers[i], centers[j], 2)
+                )
+                if distance_ij > max_distance:
+                    max_distance = distance_ij
+        return max_distance
+
+    def update(self, centers, point, y_pred, sample_weight=1.0):
+
+        self._furthest_cluster_distance = self._find_furthest_cluster_distance(centers)
+
+        if not self._initialized:
+            self._center_all_points = {i: stats.Mean() for i in point}
+            self._dim = len(point)
+            self._initialized = True
+
+        for i in self._center_all_points:
+            self._center_all_points[i].update(point[i], w=sample_weight)
+        center_all_points = {
+            i: self._center_all_points[i].get() for i in self._center_all_points
+        }
+
+        distance_point_cluster_center = math.sqrt(
+            utils.math.minkowski_distance(centers[y_pred], point, 2)
+        )
+        distance_point_center = math.sqrt(
+            utils.math.minkowski_distance(center_all_points, point, 2)
+        )
+        self._ssq_points_cluster_centers += distance_point_cluster_center
+        self._ssq_points_center += distance_point_center
+        self._n_clusters = len(centers)
+
+        # To trace back
+        self.sample_correction = {
+            "distance_point_cluster_center": distance_point_cluster_center,
+            "distance_point_center": distance_point_center,
+        }
+
+        return self
+
+    def revert(self, centers, point, y_pred, sample_weight=1.0, correction=None):
+
+        self._furthest_cluster_distance = self._find_furthest_cluster_distance(centers)
+
+        for i in self._center_all_points:
+            self._center_all_points[i].update(point[i], w=-sample_weight)
+        center_all_points = {
+            i: self._center_all_points[i].get() for i in self._center_all_points
+        }
+
+        self._ssq_points_cluster_centers -= correction["distance_point_cluster_center"]
+        self._ssq_points_center -= correction["distance_point_center"]
+        self._n_clusters = len(centers)
+        self._dim = len(point)
+
+        return self
+
+    def get(self):
+        return (
+            1
+            / self._n_clusters
+            * self._ssq_points_center
+            / self._ssq_points_cluster_centers
+            * self._furthest_cluster_distance
+        ) ** self._dim
 
     @property
     def bigger_is_better(self):
