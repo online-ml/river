@@ -27,8 +27,11 @@ from .base import (
     WrapperMetric,
 )
 from .base_internal_clustering import InternalClusteringMetrics
+from .calinskiharabasz import CalinskiHarabasz
+from .compactness import SSQ, Cohesion
 from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
+from .daviesbouldin import DaviesBouldin
 from .exact_match import ExactMatch
 from .fbeta import (
     F1,
@@ -45,18 +48,7 @@ from .fbeta import (
 )
 from .geometric_mean import GeometricMean
 from .hamming import Hamming, HammingLoss
-from .internal_clustering_metrics import (
-    MSSTD,
-    RMSSTD,
-    SSQ,
-    CalinskiHarabasz,
-    Cohesion,
-    DaviesBouldin,
-    IIndex,
-    Separation,
-    Silhouette,
-    XieBeni,
-)
+from .i_index import IIndex
 from .jaccard import Jaccard
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
@@ -74,10 +66,14 @@ from .precision import (
 from .r2 import R2
 from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
+from .rmsstd import MSSTD, RMSSTD
 from .roc_auc import ROCAUC
 from .rolling import Rolling
+from .separation import Separation
+from .silhouette import Silhouette
 from .smape import SMAPE
 from .time_rolling import TimeRolling
+from .xiebeni import XieBeni
 
 __all__ = [
     "Accuracy",
