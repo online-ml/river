@@ -36,7 +36,7 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
     ...     y_pred = k_means.predict_one(x)
-    ...     metric = metric.update(k_means.centers, x, y_pred)
+    ...     metric = metric.update(x, y_pred, k_means.centers)
 
     >>> metric
     SSQ: 3.514277
