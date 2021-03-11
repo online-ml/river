@@ -59,14 +59,10 @@ class DaviesBouldin(base.InternalClusMetric):
         self._n_points_by_clusters = {}
         self._total_points = 0
         self._centers = {}
-        self.sample_correction = {}
 
     def update(self, x, y_pred, centers, sample_weight=1.0):
 
         distance = math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
-
-        # To trace back
-        self.sample_correction = {"distance": distance}
 
         if y_pred not in self._inter_cluster_distances:
             self._inter_cluster_distances[y_pred] = distance
@@ -79,9 +75,11 @@ class DaviesBouldin(base.InternalClusMetric):
 
         return self
 
-    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0):
 
-        self._inter_cluster_distances[y_pred] -= correction["distance"]
+        distance = math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
+
+        self._inter_cluster_distances[y_pred] -= distance
         self._n_points_by_clusters[y_pred] -= 1
         self._centers = centers
 
@@ -101,7 +99,10 @@ class DaviesBouldin(base.InternalClusMetric):
                 ) / distance_ij
                 if ij_partner_cluster_index > max_partner_clusters_index:
                     max_partner_clusters_index = ij_partner_cluster_index
-        return max_partner_clusters_index / n_clusters
+        try:
+            return max_partner_clusters_index / n_clusters
+        except ZeroDivisionError:
+            return math.inf
 
     @property
     def bigger_is_better(self):

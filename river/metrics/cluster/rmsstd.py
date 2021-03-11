@@ -54,18 +54,11 @@ class MSSTD(base.InternalClusMetric):
         self._total_points = 0
         self._total_clusters = 0
         self._dim = 0
-        self.sample_correction = {}
 
     def update(self, x, y_pred, centers, sample_weight=1.0):
 
         squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
         n_added_centers = len(centers) - self._total_clusters
-
-        # To trace back
-        self.sample_correction = {
-            "squared_distance": squared_distance,
-            "n_added_centers": n_added_centers,
-        }
 
         self._ssq += squared_distance
         self._total_points += 1
@@ -74,10 +67,13 @@ class MSSTD(base.InternalClusMetric):
 
         return self
 
-    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0):
 
-        self._ssq -= correction["squared_distance"]
-        self._total_clusters -= correction["n_added_centers"]
+        squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
+        n_added_centers = len(centers) - self._total_clusters
+
+        self._ssq -= squared_distance
+        self._total_clusters -= n_added_centers
         self._total_points -= 1
 
         return self

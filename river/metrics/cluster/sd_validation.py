@@ -126,7 +126,7 @@ class SD(base.InternalClusMetric):
 
         return self
 
-    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0):
 
         for i in self._center_all_points:
             self._center_all_points[i].update(x[i], w=-sample_weight)
@@ -165,7 +165,10 @@ class SD(base.InternalClusMetric):
         for i in cluster_variance:
             scat_nc += self._norm(cluster_variance[i]) / self._norm(overall_variance)
 
-        return scat_nc + dispersion_nc
+        try:
+            return scat_nc + dispersion_nc
+        except ZeroDivisionError:
+            return math.inf
 
     @property
     def bigger_is_better(self):

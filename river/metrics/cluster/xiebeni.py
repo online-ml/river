@@ -60,7 +60,6 @@ class XieBeni(base.InternalClusMetric):
         self._ssq = 0
         self._minimum_separation = 0
         self._total_points = 0
-        self.sample_correction = {}
 
     @staticmethod
     def _find_minimum_separation(centers):
@@ -78,22 +77,20 @@ class XieBeni(base.InternalClusMetric):
         squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
         minimum_separation = self._find_minimum_separation(centers)
 
-        # To trace back
-        self.sample_correction = {
-            "squared_distance": squared_distance,
-            "separation_difference": minimum_separation - self._minimum_separation,
-        }
-
         self._ssq += squared_distance
         self._total_points += 1
         self._minimum_separation = minimum_separation
 
         return self
 
-    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
-        self._ssq -= correction["squared_distance"]
+    def revert(self, x, y_pred, centers, sample_weight=1.0):
+
+        squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
+        minimum_separation = self._find_minimum_separation(centers)
+
+        self._ssq -= squared_distance
         self._total_points -= 1
-        self._minimum_separation -= correction["separation_difference"]
+        self._minimum_separation -= minimum_separation
 
         return self
 

@@ -125,14 +125,17 @@ class IIndex(base.InternalClusMetric):
         return self
 
     def get(self):
-        return (
-            1
-            / self._n_clusters
-            * self._ssq_points_center
-            / self._ssq_points_cluster_centers
-            * self._furthest_cluster_distance
-        ) ** self._dim
+        try:
+            return (
+                1
+                / self._n_clusters
+                * self._ssq_points_center
+                / self._ssq_points_cluster_centers
+                * self._furthest_cluster_distance
+            ) ** self._dim
+        except ZeroDivisionError:
+            return - math.inf
 
     @property
     def bigger_is_better(self):
-        return False
+        return True

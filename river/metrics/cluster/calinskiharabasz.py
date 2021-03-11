@@ -1,3 +1,5 @@
+import math
+
 from river import stats, utils
 
 from . import base
@@ -58,7 +60,6 @@ class CalinskiHarabasz(base.InternalClusMetric):
         self._ssq_centers_center = 0
         self._n_points = 0
         self._n_clusters = 0
-        self.sample_correction = {}
         self._initialized = False
 
     def update(self, x, y_pred, centers, sample_weight=1.0):
@@ -70,11 +71,6 @@ class CalinskiHarabasz(base.InternalClusMetric):
         if not self._initialized:
             self._center_all_points = {i: stats.Mean() for i in x}
             self._initialized = True
-
-        # To trace back
-        self.sample_correction = {
-            "squared_distance_point_center": squared_distance_point_center
-        }
 
         for i in self._center_all_points:
             self._center_all_points[i].update(x[i], w=sample_weight)
@@ -93,7 +89,11 @@ class CalinskiHarabasz(base.InternalClusMetric):
 
         return self
 
-    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
+    def revert(self, x, y_pred, centers, sample_weight=1.0):
+
+        squared_distance_point_center = utils.math.minkowski_distance(
+            centers[y_pred], x, 2
+        )
 
         for i in self._center_all_points:
             self._center_all_points[i].update(x[i], w=-sample_weight)
@@ -106,17 +106,20 @@ class CalinskiHarabasz(base.InternalClusMetric):
                 centers[i], center_all_points, 2
             )
         self._ssq_centers_center = ssq_centers_center
-        self._ssq_points_centers -= correction["squared_distance_point_center"]
+        self._ssq_points_centers -= squared_distance_point_center
         self._n_points -= 1
         self._n_clusters = len(centers)
 
         return self
 
     def get(self):
-        return (self._ssq_centers_center / (self._n_clusters - 1)) / (
-            self._ssq_points_centers / (self._n_points - self._n_clusters)
-        )
+        try:
+            return (self._ssq_centers_center / (self._n_clusters - 1)) / (
+                self._ssq_points_centers / (self._n_points - self._n_clusters)
+            )
+        except ZeroDivisionError:
+            return - math.inf
 
     @property
     def bigger_is_better(self):
-        return False
+        return True

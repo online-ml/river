@@ -59,4 +59,7 @@ class Separation(base.MeanInternalMetric):
                 sum_distance_other_clusters += math.sqrt(
                     utils.math.minkowski_distance(centers[i], x, 2)
                 )
-        return sum_distance_other_clusters / (len(centers) - 1)
+        try:
+            return sum_distance_other_clusters / (len(centers) - 1)
+        except ZeroDivisionError:
+            return - math.inf

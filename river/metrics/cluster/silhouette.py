@@ -62,7 +62,6 @@ class Silhouette(base.InternalClusMetric):
         super().__init__()
         self._sum_distance_closest_centroid = 0
         self._sum_distance_second_closest_centroid = 0
-        self.sample_correction = {}
 
     @staticmethod
     def _find_distance_second_closest_center(centers, x):
@@ -73,6 +72,7 @@ class Silhouette(base.InternalClusMetric):
         return sorted(distances.values())[-2]
 
     def update(self, x, y_pred, centers, sample_weight=1.0):
+
         distance_closest_centroid = math.sqrt(
             utils.math.minkowski_distance(centers[y_pred], x, 2)
         )
@@ -83,19 +83,19 @@ class Silhouette(base.InternalClusMetric):
         )
         self._sum_distance_second_closest_centroid += distance_second_closest_centroid
 
-        # To trace back
-        self.sample_correction = {
-            "distance_closest_centroid": distance_closest_centroid,
-            "distance_second_closest_centroid": distance_second_closest_centroid,
-        }
-
         return self
 
-    def revert(self, x, y_pred, centers, sample_weight=1.0, correction=None):
-        self._sum_distance_closest_centroid -= correction["distance_closest_centroid"]
-        self._sum_distance_second_closest_centroid -= correction[
-            "distance_second_closest_centroid"
-        ]
+    def revert(self, x, y_pred, centers, sample_weight=1.0):
+
+        distance_closest_centroid = math.sqrt(
+            utils.math.minkowski_distance(centers[y_pred], x, 2)
+        )
+        self._sum_distance_closest_centroid -= distance_closest_centroid
+
+        distance_second_closest_centroid = self._find_distance_second_closest_center(
+            centers, x
+        )
+        self._sum_distance_second_closest_centroid -= distance_second_closest_centroid
 
         return self
 

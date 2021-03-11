@@ -1,3 +1,5 @@
+import math
+
 from river import stats, utils
 
 from . import base
@@ -102,7 +104,10 @@ class R2(base.InternalClusMetric):
         return self
 
     def get(self):
-        return 1 - self._ssq_point_cluster_centers / self._ssq_point_center
+        try:
+            return 1 - self._ssq_point_cluster_centers / self._ssq_point_center
+        except ZeroDivisionError:
+            return - math.inf
 
     @property
     def bigger_is_better(self):
