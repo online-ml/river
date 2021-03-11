@@ -4,7 +4,11 @@ import typing
 
 from river import stats, utils
 
-from .._attribute_test import NumericAttributeBinaryTest, SplitSuggestion
+from .._attribute_test import (
+    NumericAttributeBinaryTest,
+    NumericAttributeMultiwayTest,
+    SplitSuggestion,
+)
 from .base_splitter import Splitter
 
 
@@ -14,7 +18,8 @@ class QOSplitter(Splitter):
     This splitter utilizes a hash-based quantization algorithm to keep track of the target
     statistics and evaluate split candidates. QO, relies on the radius parameter to define
     discretization intervals for each incoming feature. Split candidates are defined as the
-    midpoint between two consecutive hash slots.This class implements the algorithm described
+    midpoints between two consecutive hash slots. Both binary splits and multi-way splits can be
+    created by this attribute observer. This class implements the algorithm described
     in [^1].
 
     The smaller the quantization radius, the more hash slots will be created to accommodate the
@@ -36,6 +41,11 @@ class QOSplitter(Splitter):
     radius
         The quantization radius. QO discretizes the incoming feature in intervals of equal length
         that are defined by this parameter.
+    allow_multiway_splits
+        Whether or not allow that multiway splits are evaluated. Numeric multi-way splits use
+        the same quantization strategy of QO to create multiple tree branches. The same
+        quantization radius is used, and each stored slot represents the split enabling
+        statistics of one branch.
 
 
     References
@@ -45,13 +55,15 @@ class QOSplitter(Splitter):
 
     """
 
-    def __init__(self, radius: float = 0.25):
+    def __init__(self, radius: float = 0.25, allow_multiway_splits=False):
         super().__init__()
 
         if radius <= 0:
             raise ValueError("'radius' must be greater than zero.")
         self.radius = radius
         self._quantizer = FeatureQuantizer(radius=self.radius)
+
+        self.allow_multiway_splits = allow_multiway_splits
 
     def update(self, att_val, target_val, sample_weight):
         if att_val is None:
@@ -66,6 +78,20 @@ class QOSplitter(Splitter):
         self, criterion, pre_split_dist, att_idx, binary_only=True
     ):
         candidate = SplitSuggestion(None, [{}], -math.inf)
+
+        # Numeric multiway test
+        if self.allow_multiway_splits and not binary_only:
+            slot_ids, post_split_dists = self._quantizer.all()
+            merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
+
+            if merit > candidate.merit:
+                branch_mapping = {
+                    slot_id: branch_id for branch_id, slot_id in enumerate(slot_ids)
+                }
+                multiway_test = NumericAttributeMultiwayTest(
+                    att_idx, self.radius, branch_mapping
+                )
+                candidate = SplitSuggestion(multiway_test, post_split_dists, merit)
 
         # The previously evaluated x value
         prev_x = None
@@ -196,3 +222,12 @@ class FeatureQuantizer:
             x = self.hash[i].x_stats.get()
             aux_stats += self.hash[i].y_stats
             yield x, aux_stats
+
+    def all(self):
+        branch_ids = []
+        split_stats = []
+        for slot_id in sorted(self.hash.keys()):
+            branch_ids.append(slot_id)
+            split_stats.append(self.hash[slot_id].y_stats)
+
+        return branch_ids, split_stats
