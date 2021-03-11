@@ -1,11 +1,11 @@
 from river import stats, utils
 
-from . import base_internal_clustering
+from . import base
 
 __all__ = ["CalinskiHarabasz"]
 
 
-class CalinskiHarabasz(base_internal_clustering.InternalClusteringMetrics):
+class CalinskiHarabasz(base.InternalClusMetric):
     """Calinski-Harabasz index (CH).
 
     The Calinski-Harabasz index (CH) index measures the two criteria simultaneously
@@ -34,7 +34,7 @@ class CalinskiHarabasz(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.CalinskiHarabasz()
+    >>> metric = metrics.cluster.CalinskiHarabasz()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

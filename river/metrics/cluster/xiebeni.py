@@ -2,12 +2,12 @@ import math
 
 from river import utils
 
-from . import base_internal_clustering
+from . import base
 
 _all__ = ["XieBeni"]
 
 
-class XieBeni(base_internal_clustering.InternalClusteringMetrics):
+class XieBeni(base.InternalClusMetric):
     """Xie-Beni index (XB).
 
     The Xie-Beni index [^1] has the form of (Compactness)/(Separation), which defines the
@@ -36,7 +36,7 @@ class XieBeni(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.XieBeni()
+    >>> metric = metrics.cluster.XieBeni()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

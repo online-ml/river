@@ -4,10 +4,10 @@ import typing
 
 from river import stats
 
-__all__ = ["InternalClusteringMetrics"]
+__all__ = ["InternalClusMetric"]
 
 
-class InternalClusteringMetrics(abc.ABC):
+class InternalClusMetric(abc.ABC):
     """
     Mother class of all internal clustering metrics.
     """
@@ -18,13 +18,13 @@ class InternalClusteringMetrics(abc.ABC):
     @abc.abstractmethod
     def update(
         self, x, y_pred, centers, sample_weight=1.0
-    ) -> "InternalClusteringMetrics":
+    ) -> "InternalClusMetric":
         """Update the metric."""
 
     @abc.abstractmethod
     def revert(
         self, x, y_pred, centers, sample_weight=1.0
-    ) -> "InternalClusteringMetrics":
+    ) -> "InternalClusMetric":
         """Revert the metric."""
 
     @abc.abstractmethod
@@ -40,7 +40,7 @@ class InternalClusteringMetrics(abc.ABC):
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
 
-class MeanInternalMetric(InternalClusteringMetrics):
+class MeanInternalMetric(InternalClusMetric):
     """Many metrics are just running averages. This is a utility class that avoids repeating
     tedious stuff throughout the module for such metrics.
 

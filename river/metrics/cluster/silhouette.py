@@ -2,12 +2,12 @@ import math
 
 from river import utils
 
-from . import base_internal_clustering
+from . import base
 
 __all__ = ["Silhouette"]
 
 
-class Silhouette(base_internal_clustering.InternalClusteringMetrics):
+class Silhouette(base.InternalClusMetric):
     """
     Silhouette coefficient [^1], roughly speaking, is the ratio between cohesion and the average distances
     from the points to their second-closest centroid. It rewards the clustering algorithm where
@@ -37,7 +37,7 @@ class Silhouette(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.Silhouette()
+    >>> metric = metrics.cluster.Silhouette()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

@@ -2,12 +2,12 @@ import math
 
 from river import stats, utils
 
-from . import base_internal_clustering
+from . import base
 
 __all__ = ["IIndex"]
 
 
-class IIndex(base_internal_clustering.InternalClusteringMetrics):
+class IIndex(base.InternalClusMetric):
     """I-Index (I).
 
     I-Index (I) [^1] adopts the maximum distance between cluster centers. It also shares the type of
@@ -34,7 +34,7 @@ class IIndex(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.IIndex()
+    >>> metric = metrics.cluster.IIndex()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

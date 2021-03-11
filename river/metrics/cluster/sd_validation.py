@@ -2,12 +2,12 @@ import math
 
 from river import stats, utils
 
-from . import base_internal_clustering
+from . import base
 
 __all__ = ["SD"]
 
 
-class SD(base_internal_clustering.InternalClusteringMetrics):
+class SD(base.InternalClusMetric):
     """The SD validity index (SD).
 
     The SD validity index (SD) [^1] is a more recent clustering validation measure. It is composed of
@@ -45,7 +45,7 @@ class SD(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.SD()
+    >>> metric = metrics.cluster.SD()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

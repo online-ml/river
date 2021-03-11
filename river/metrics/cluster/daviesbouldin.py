@@ -2,12 +2,12 @@ import math
 
 from river import utils
 
-from . import base_internal_clustering
+from . import base
 
 __all__ = ["DaviesBouldin"]
 
 
-class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
+class DaviesBouldin(base.InternalClusMetric):
     """Davies-Bouldin index (DB).
 
     The Davies-Bouldin index (DB) [^1] is an old but still widely used inernal validaion measure.
@@ -35,7 +35,7 @@ class DaviesBouldin(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.DaviesBouldin()
+    >>> metric = metrics.cluster.DaviesBouldin()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

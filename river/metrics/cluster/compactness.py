@@ -2,12 +2,12 @@ import math
 
 from river import utils
 
-from . import base_internal_clustering
+from . import base
 
 __all__ = ["SSQ", "Cohesion"]
 
 
-class SSQ(base_internal_clustering.MeanInternalMetric):
+class SSQ(base.MeanInternalMetric):
     """Mean of sum of squared (SSQ) distances from data points to their assigned cluster centroids.
     The bigger the better.
 
@@ -31,7 +31,7 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.SSQ()
+    >>> metric = metrics.cluster.SSQ()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
@@ -56,7 +56,7 @@ class SSQ(base_internal_clustering.MeanInternalMetric):
         return utils.math.minkowski_distance(centers[y_pred], x, 2)
 
 
-class Cohesion(base_internal_clustering.MeanInternalMetric):
+class Cohesion(base.MeanInternalMetric):
     """Mean distance from the points to their assigned cluster centroids. The smaller the better.
 
     Examples
@@ -79,7 +79,7 @@ class Cohesion(base_internal_clustering.MeanInternalMetric):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.Cohesion()
+    >>> metric = metrics.cluster.Cohesion()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

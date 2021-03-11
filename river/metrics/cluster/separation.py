@@ -2,12 +2,12 @@ import math
 
 from river import utils
 
-from . import base_internal_clustering
+from . import base
 
 __all__ = ["Separation"]
 
 
-class Separation(base_internal_clustering.MeanInternalMetric):
+class Separation(base.MeanInternalMetric):
     """Average distance from a point to the points assigned to other clusters.
     The bigger the better.
 
@@ -31,7 +31,7 @@ class Separation(base_internal_clustering.MeanInternalMetric):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.Separation()
+    >>> metric = metrics.cluster.Separation()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

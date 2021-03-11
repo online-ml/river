@@ -2,12 +2,12 @@ import math
 
 from river import utils
 
-from . import base_internal_clustering
+from . import base
 
 __all__ = ["MSSTD", "RMSSTD"]
 
 
-class MSSTD(base_internal_clustering.InternalClusteringMetrics):
+class MSSTD(base.InternalClusMetric):
     """Mean squared standard deviation.
 
     Examples
@@ -30,7 +30,7 @@ class MSSTD(base_internal_clustering.InternalClusteringMetrics):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.MSSTD()
+    >>> metric = metrics.cluster.MSSTD()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
@@ -119,7 +119,7 @@ class RMSSTD(MSSTD):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.RMSSTD()
+    >>> metric = metrics.cluster.RMSSTD()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)

@@ -5,6 +5,7 @@ predictive methods over time.
 
 """
 
+from . import cluster
 from ._performance_evaluator import _ClassificationReport  # noqa: F401
 from ._performance_evaluator import _MLClassificationReport  # noqa: F401
 from ._performance_evaluator import _MTRegressionReport  # noqa: F401
@@ -26,12 +27,8 @@ from .base import (
     RegressionMetric,
     WrapperMetric,
 )
-from .base_internal_clustering import InternalClusteringMetrics
-from .calinskiharabasz import CalinskiHarabasz
-from .compactness import SSQ, Cohesion
 from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
-from .daviesbouldin import DaviesBouldin
 from .exact_match import ExactMatch
 from .fbeta import (
     F1,
@@ -48,7 +45,6 @@ from .fbeta import (
 )
 from .geometric_mean import GeometricMean
 from .hamming import Hamming, HammingLoss
-from .i_index import IIndex
 from .jaccard import Jaccard
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
@@ -66,28 +62,20 @@ from .precision import (
 from .r2 import R2
 from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
-from .rmsstd import MSSTD, RMSSTD
 from .roc_auc import ROCAUC
 from .rolling import Rolling
-from .sd_validation import SD
-from .separation import Separation
-from .silhouette import Silhouette
 from .smape import SMAPE
 from .time_rolling import TimeRolling
-from .xiebeni import XieBeni
 
 __all__ = [
     "Accuracy",
     "BalancedAccuracy",
     "BinaryMetric",
-    "CalinskiHarabasz",
     "ClassificationMetric",
     "ClassificationReport",
     "CohenKappa",
-    "Cohesion",
     "ConfusionMatrix",
     "CrossEntropy",
-    "DaviesBouldin",
     "ExactMatch",
     "ExamplePrecision",
     "ExampleRecall",
@@ -98,8 +86,6 @@ __all__ = [
     "GeometricMean",
     "Hamming",
     "HammingLoss",
-    "IIndex",
-    "InternalClusteringMetrics",
     "Jaccard",
     "KappaM",
     "KappaT",
@@ -116,7 +102,6 @@ __all__ = [
     "MicroFBeta",
     "MicroPrecision",
     "MicroRecall",
-    "MSSTD",
     "MultiClassMetric",
     "MultiFBeta",
     "MultiLabelConfusionMatrix",
@@ -129,20 +114,14 @@ __all__ = [
     "RegressionMultiOutput",
     "RMSE",
     "RMSLE",
-    "RMSSTD",
     "ROCAUC",
     "Rolling",
     "R2",
-    "SD",
-    "Separation",
-    "Silhouette",
     "SMAPE",
-    "SSQ",
     "TimeRolling",
     "WeightedF1",
     "WeightedFBeta",
     "WeightedPrecision",
     "WeightedRecall",
     "WrapperMetric",
-    "XieBeni",
 ]
