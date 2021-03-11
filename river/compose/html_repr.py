@@ -1,8 +1,9 @@
 import inspect
 import pprint
 from xml.etree import ElementTree as ET
-from xml.dom import minidom
+
 from river import compose
+
 
 def to_html(obj):
     if isinstance(obj, compose.Pipeline):
@@ -11,43 +12,47 @@ def to_html(obj):
         return union_to_html(obj)
     return estimator_to_html(obj)
 
+
 def estimator_to_html(estimator):
 
-    details = ET.Element('details', attrib={'class': 'estimator'})
+    details = ET.Element("details", attrib={"class": "estimator"})
 
-    summary = ET.Element('summary')
+    summary = ET.Element("summary")
     details.append(summary)
 
-    pre = ET.Element('pre', attrib={'class': 'estimator-name'})
+    pre = ET.Element("pre", attrib={"class": "estimator-name"})
     pre.text = str(estimator)
     summary.append(pre)
 
-    code = ET.Element('code', attrib={'class': 'estimator-params'})
+    code = ET.Element("code", attrib={"class": "estimator-params"})
     if isinstance(estimator, compose.FuncTransformer):
-        code.text = f'\n{inspect.getsource(estimator.func)}\n'
+        code.text = f"\n{inspect.getsource(estimator.func)}\n"
     else:
-        code.text = f'\n{pprint.pformat(estimator.__dict__)}\n\n'
+        code.text = f"\n{pprint.pformat(estimator.__dict__)}\n\n"
     details.append(code)
 
     return details
 
+
 def pipeline_to_html(pipeline):
 
-    div = ET.Element('div', attrib={'class': 'pipeline'})
+    div = ET.Element("div", attrib={"class": "pipeline"})
 
     for step in pipeline.steps.values():
         div.append(to_html(step))
 
     return div
 
+
 def union_to_html(union):
 
-    div = ET.Element('div', attrib={'class': 'union'})
+    div = ET.Element("div", attrib={"class": "union"})
 
     for transformer in union.transformers.values():
         div.append(to_html(transformer))
 
     return div
+
 
 CSS = """
 .estimator {
