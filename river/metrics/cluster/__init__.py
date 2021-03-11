@@ -11,6 +11,7 @@ from .calinskiharabasz import CalinskiHarabasz
 from .compactness import SSQ, Cohesion
 from .daviesbouldin import DaviesBouldin
 from .i_index import IIndex
+from .r2 import R2
 from .rmsstd import MSSTD, RMSSTD
 from .sd_validation import SD
 from .separation import Separation
@@ -24,6 +25,7 @@ __all__ = [
     "IIndex",
     "InternalClusMetric",
     "MSSTD",
+    "R2",
     "RMSSTD",
     "SD",
     "Separation",
