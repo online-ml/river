@@ -42,14 +42,14 @@ class DBSTREAM(base.Clusterer):
 
     **Offline generation of macro clusters (clustering)**
 
-    The offline generation of macro clusters is generated through two following steps:
+    The offline generation of macro clusters is generated through the two following steps:
 
     * The connectivity graph `C` is constructed using shared density entries
     between strong micro clusters. The edges in this connectivity graph with
     a connectivity value greater than the intersection threshold ($\alpha$)
     are used to find connected components representing the final cluster.
 
-    * After the connectivity graph is generated, a variant of DBSCAN algorithm
+    * After the connectivity graph is generated, a variant of the DBSCAN algorithm
     proposed by Ester et al. is applied to form all macro clusters
     from $\alpha$-connected micro clusters.
 
@@ -129,11 +129,11 @@ class DBSTREAM(base.Clusterer):
 
     def __init__(
         self,
-        clustering_threshold: float = 1,
+        clustering_threshold: float = 1.0,
         fading_factor: float = 0.01,
         cleanup_interval: float = 2,
         intersection_factor: float = 0.3,
-        minimum_weight: float = 1,
+        minimum_weight: float = 1.0,
     ):
         super().__init__()
         self.time_stamp = 0
@@ -175,9 +175,9 @@ class DBSTREAM(base.Clusterer):
     def _update(self, x):
         # Algorithm 1 of Michael Hahsler and Matthew Bolanos
 
-        N = self._find_fixed_radius_nn(x)
+        neighbor_clusters = self._find_fixed_radius_nn(x)
 
-        if len(N) < 1:
+        if len(neighbor_clusters) < 1:
             # create new micro cluster
             self.micro_clusters[len(self.micro_clusters)] = DBSTREAMMicroCluster(
                 x=x, last_update=self.time_stamp, weight=1
@@ -185,7 +185,7 @@ class DBSTREAM(base.Clusterer):
         else:
             # update existing micro clusters
             current_centers = {}
-            for i in N.keys():
+            for i in neighbor_clusters.keys():
                 current_centers[i] = self.micro_clusters[i].center
                 self.micro_clusters[i].weight = (
                     self.micro_clusters[i].weight
@@ -205,29 +205,30 @@ class DBSTREAM(base.Clusterer):
                 self.micro_clusters[i].last_update = self.time_stamp
 
                 # update shared density
-                for j in N.keys():
+                for j in neighbor_clusters.keys():
                     if j > i:
-                        # initiate s[i][j] in cases when i or j is not in s.keys() or s[i].keys()
-                        if i not in self.s.keys():
-                            self.s[i] = {j: 0}
-                            self.s_t[i] = {j: 0}
-                        elif j not in self.s[i].keys():
-                            self.s[i][j] = 0
-                            self.s_t[i][j] = 0
-                        # update s[i][j]
-                        self.s[i][j] = (
-                            self.s[i][j]
-                            * 2
-                            ** (
-                                -self.fading_factor * (self.time_stamp - self.s_t[i][j])
+                        try:
+                            self.s[i][j] = (
+                                self.s[i][j]
+                                * 2
+                                ** (
+                                    -self.fading_factor
+                                    * (self.time_stamp - self.s_t[i][j])
+                                )
+                                + 1
                             )
-                            + 1
-                        )
-                        self.s_t[i][j] = self.time_stamp
+                            self.s_t[i][j] = self.time_stamp
+                        except KeyError:
+                            try:
+                                self.s[i][j] = 0
+                                self.s_t[i][j] = 0
+                            except KeyError:
+                                self.s[i] = {j: 0}
+                                self.s_t[i] = {j: 0}
 
             # prevent collapsing clusters
-            for i in N.keys():
-                for j in N.keys():
+            for i in neighbor_clusters.keys():
+                for j in neighbor_clusters.keys():
                     if j > i:
                         if (
                             self._distance(
@@ -248,7 +249,7 @@ class DBSTREAM(base.Clusterer):
 
         weight_weak = 2 ** (-self.fading_factor * self.cleanup_interval)
 
-        for i, micro_cluster_i in list(self.micro_clusters.items()):
+        for i, micro_cluster_i in self.micro_clusters.items():
             if (
                 micro_cluster_i.weight
                 * (
@@ -262,8 +263,8 @@ class DBSTREAM(base.Clusterer):
             ):
                 self.micro_clusters.pop(i)
 
-        for i in list(self.s.keys()):
-            for j in list(self.s[i].keys()):
+        for i in self.s.keys():
+            for j in self.s[i].keys():
                 if (
                     self.s[i][j]
                     * (2 ** (self.fading_factor * (self.time_stamp - self.s_t[i][j])))
@@ -276,7 +277,7 @@ class DBSTREAM(base.Clusterer):
         # Algorithm 3 of Michael Hahsler and Matthew Bolanos: Reclustering using
         # shared density graph
 
-        weighted_adjacency_list = {
+        weighted_adjacency_matrix = {
             i: {j: 0 for j in self.s[i].keys()} for i in self.s.keys()
         }
         for i in list(self.s.keys()):
@@ -285,17 +286,14 @@ class DBSTREAM(base.Clusterer):
                     self.micro_clusters[i].weight >= self.minimum_weight
                     and self.micro_clusters[j].weight >= self.minimum_weight
                 ):
-                    weighted_adjacency_list[i][j] = self.s[i][j] / (
+                    weighted_adjacency_matrix[i][j] = self.s[i][j] / (
                         (self.micro_clusters[i].weight + self.micro_clusters[j].weight)
                         / 2
                     )
+                    if weighted_adjacency_matrix[i][j] <= self.intersection_factor:
+                        weighted_adjacency_matrix[i].pop(j)
 
-        for i in list(weighted_adjacency_list.keys()):
-            for j in list(weighted_adjacency_list[i].keys()):
-                if weighted_adjacency_list[i][j] <= self.intersection_factor:
-                    weighted_adjacency_list[i].pop(j)
-
-        return weighted_adjacency_list
+        return weighted_adjacency_matrix
 
     def _generate_labels(self, weighted_adjacency_list):
 
