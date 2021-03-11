@@ -107,7 +107,7 @@ class R2(base.InternalClusMetric):
         try:
             return 1 - self._ssq_point_cluster_centers / self._ssq_point_center
         except ZeroDivisionError:
-            return - math.inf
+            return -math.inf
 
     @property
     def bigger_is_better(self):

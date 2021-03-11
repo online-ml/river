@@ -118,7 +118,7 @@ class CalinskiHarabasz(base.InternalClusMetric):
                 self._ssq_points_centers / (self._n_points - self._n_clusters)
             )
         except ZeroDivisionError:
-            return - math.inf
+            return -math.inf
 
     @property
     def bigger_is_better(self):

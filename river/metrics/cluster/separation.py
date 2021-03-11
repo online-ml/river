@@ -62,4 +62,4 @@ class Separation(base.MeanInternalMetric):
         try:
             return sum_distance_other_clusters / (len(centers) - 1)
         except ZeroDivisionError:
-            return - math.inf
+            return -math.inf

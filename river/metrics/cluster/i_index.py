@@ -134,7 +134,7 @@ class IIndex(base.InternalClusMetric):
                 * self._furthest_cluster_distance
             ) ** self._dim
         except ZeroDivisionError:
-            return - math.inf
+            return -math.inf
 
     @property
     def bigger_is_better(self):
