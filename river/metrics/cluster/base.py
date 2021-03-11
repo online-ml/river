@@ -16,15 +16,11 @@ class InternalClusMetric(abc.ABC):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(
-        self, x, y_pred, centers, sample_weight=1.0
-    ) -> "InternalClusMetric":
+    def update(self, x, y_pred, centers, sample_weight=1.0) -> "InternalClusMetric":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(
-        self, x, y_pred, centers, sample_weight=1.0
-    ) -> "InternalClusMetric":
+    def revert(self, x, y_pred, centers, sample_weight=1.0) -> "InternalClusMetric":
         """Revert the metric."""
 
     @abc.abstractmethod
