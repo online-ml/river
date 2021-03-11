@@ -5,7 +5,7 @@ import functools
 from river import utils
 from river.utils.histogram import Bin  # noqa
 
-from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
+from .._attribute_test import NumericAttributeBinaryTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -96,7 +96,7 @@ class HistogramSplitter(Splitter):
                 num_att_binary_test = NumericAttributeBinaryTest(
                     att_idx, at, equal_passes_test=False
                 )
-                best_suggestion = AttributeSplitSuggestion(
+                best_suggestion = SplitSuggestion(
                     num_att_binary_test, post_split_dist, merit
                 )
 

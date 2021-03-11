@@ -1,6 +1,6 @@
 from collections import Counter, defaultdict
 
-from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
+from .._attribute_test import NumericAttributeBinaryTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -47,7 +47,7 @@ class ExhaustiveSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        current_best_option = AttributeSplitSuggestion(None, [{}], -float("inf"))
+        current_best_option = SplitSuggestion(None, [{}], -float("inf"))
 
         return self._search_for_best_split_option(
             current_node=self._root,
@@ -139,7 +139,7 @@ class ExhaustiveSplitter(Splitter):
                 att_value=current_node.cut_point,
                 equal_passes_test=True,
             )
-            current_best_option = AttributeSplitSuggestion(
+            current_best_option = SplitSuggestion(
                 split_test=num_att_binary_test,
                 resulting_class_distributions=post_split_dists,
                 merit=merit,

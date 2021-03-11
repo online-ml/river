@@ -1,7 +1,7 @@
 import math
 from collections import Counter
 
-from .._attribute_test import AttributeSplitSuggestion
+from .._attribute_test import SplitSuggestion
 from ..splitter.nominal_class_splitter import NominalClassSplitter
 from .base import SplitNode
 from .htc_nodes import LearningNode, LearningNodeMC, LearningNodeNB, LearningNodeNBA
@@ -49,7 +49,7 @@ class BaseEFDTNode(LearningNode):
             The null split candidate.
         """
         pre_split_dist = self.stats
-        null_split = AttributeSplitSuggestion(
+        null_split = SplitSuggestion(
             None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
         )
         # Force null slot merit to be 0 instead of -infinity

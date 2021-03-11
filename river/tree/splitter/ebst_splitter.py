@@ -4,7 +4,7 @@ import typing
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
+from .._attribute_test import NumericAttributeBinaryTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -61,7 +61,7 @@ class EBSTSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only=True
     ):
-        candidate = AttributeSplitSuggestion(None, [{}], -float("inf"))
+        candidate = SplitSuggestion(None, [{}], -float("inf"))
 
         if self._root is None:
             return candidate
@@ -103,9 +103,7 @@ class EBSTSplitter(Splitter):
             num_att_binary_test = NumericAttributeBinaryTest(
                 self._att_idx, node.att_val, True
             )
-            candidate = AttributeSplitSuggestion(
-                num_att_binary_test, post_split_dists, merit
-            )
+            candidate = SplitSuggestion(num_att_binary_test, post_split_dists, merit)
 
         if node._right is not None:
             self._aux_estimator += node.estimator

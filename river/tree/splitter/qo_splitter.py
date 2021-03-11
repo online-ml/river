@@ -4,7 +4,7 @@ import typing
 
 from river import stats, utils
 
-from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
+from .._attribute_test import NumericAttributeBinaryTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -65,7 +65,7 @@ class QOSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only=True
     ):
-        candidate = AttributeSplitSuggestion(None, [{}], -math.inf)
+        candidate = SplitSuggestion(None, [{}], -math.inf)
 
         # The previously evaluated x value
         prev_x = None
@@ -95,9 +95,7 @@ class QOSplitter(Splitter):
     @staticmethod
     def _update_candidate(split_point, att_idx, post_split_dists, merit):
         num_att_binary_test = NumericAttributeBinaryTest(att_idx, split_point, True)
-        candidate = AttributeSplitSuggestion(
-            num_att_binary_test, post_split_dists, merit
-        )
+        candidate = SplitSuggestion(num_att_binary_test, post_split_dists, merit)
 
         return candidate
 

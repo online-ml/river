@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 from river import base
 from river.stats import Var
 
-from .._attribute_test import AttributeSplitSuggestion, InstanceConditionalTest
+from .._attribute_test import InstanceConditionalTest, SplitSuggestion
 
 # Helper structure to manage nodes
 FoundNode = collections.namedtuple("FoundNode", ["node", "parent", "parent_branch"])
@@ -414,9 +414,7 @@ class LearningNode(Node, metaclass=ABCMeta):
                 self.splitters[att_id] = splitter
             splitter.update(att_val, y, sample_weight)
 
-    def best_split_suggestions(
-        self, criterion, tree
-    ) -> typing.List[AttributeSplitSuggestion]:
+    def best_split_suggestions(self, criterion, tree) -> typing.List[SplitSuggestion]:
         """Find possible split candidates.
 
         Parameters
@@ -434,7 +432,7 @@ class LearningNode(Node, metaclass=ABCMeta):
         pre_split_dist = self.stats
         if tree.merit_preprune:
             # Add null split as an option
-            null_split = AttributeSplitSuggestion(
+            null_split = SplitSuggestion(
                 None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
             )
             best_suggestions.append(null_split)

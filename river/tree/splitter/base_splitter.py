@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 from river import base
 
-from .._attribute_test import AttributeSplitSuggestion
+from .._attribute_test import SplitSuggestion
 from .._split_criterion.base_split_criterion import SplitCriterion
 
 
@@ -60,7 +60,7 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
         pre_split_dist: typing.Union[typing.List, typing.Dict],
         att_idx: base.typing.FeatureName,
         binary_only: bool,
-    ) -> AttributeSplitSuggestion:
+    ) -> SplitSuggestion:
         """Get the best split suggestion given a criterion and the target's statistics.
 
         Parameters
