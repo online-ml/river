@@ -35,6 +35,7 @@ compat_packages = base_packages + ["scikit-learn", "scikit-surprise", "sqlalchem
 
 dev_packages = base_packages + [
     "asv",
+    "graphviz>=0.10.1",
     "matplotlib>=3.0.2",
     "mypy>=0.761",
     "pre-commit>=2.9.2",
