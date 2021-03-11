@@ -1,5 +1,3 @@
-import math
-
 from river import base, cluster, utils
 
 
@@ -92,10 +90,6 @@ class STREAMKMeans(base.Clusterer):
         self._kmeans = cluster.KMeans(n_clusters=self.n_clusters, **self.kwargs)
         self._temp_chunk = {}
         self.centers = {}
-
-    @staticmethod
-    def _distance(point_a, point_b):
-        return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
 
     def learn_one(self, x, sample_weight=None):
 
