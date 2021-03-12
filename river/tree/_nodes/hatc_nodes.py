@@ -188,12 +188,9 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
     @property
     def n_leaves(self):
-        num_of_leaves = 0
-        for child in self._children.values():
-            if child is not None:
-                num_of_leaves += child.n_leaves  # noqa
-
-        return num_of_leaves
+        return sum(
+            [child.n_leaves for child in self._children.values() if child is not None]
+        )
 
     @property
     def error_estimation(self):
