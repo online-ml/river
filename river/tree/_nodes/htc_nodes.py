@@ -1,7 +1,7 @@
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from .._tree_utils import do_naive_bayes_prediction
-from ..splitter.nominal_class_splitter import NominalClassSplitter
+from ..splitter.nominal_splitter_classif import NominalSplitterClassif
 from .base import LearningNode
 
 
@@ -26,7 +26,7 @@ class LearningNodeMC(LearningNode):
 
     @staticmethod
     def new_nominal_splitter():
-        return NominalClassSplitter()
+        return NominalSplitterClassif()
 
     def update_stats(self, y, sample_weight):
         try:

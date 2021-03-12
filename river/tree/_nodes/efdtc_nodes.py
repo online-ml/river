@@ -2,7 +2,7 @@ import math
 from collections import Counter
 
 from .._attribute_test import SplitSuggestion
-from ..splitter.nominal_class_splitter import NominalClassSplitter
+from ..splitter.nominal_splitter_classif import NominalSplitterClassif
 from .base import SplitNode
 from .htc_nodes import LearningNode, LearningNodeMC, LearningNodeNB, LearningNodeNBA
 
@@ -138,7 +138,7 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
 
     @staticmethod
     def new_nominal_splitter():
-        return NominalClassSplitter()
+        return NominalSplitterClassif()
 
     def update_stats(self, y, sample_weight):
         try:

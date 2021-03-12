@@ -5,7 +5,7 @@ from .._attribute_test import NominalBinaryTest, NominalMultiwayTest, SplitSugge
 from .base_splitter import Splitter
 
 
-class NominalRegSplitter(Splitter):
+class NominalSplitterReg(Splitter):
     """Splitter utilized to monitor nominal features in regression tasks.
 
     As the monitored feature is nominal, it already has well-defined partitions. Hence,

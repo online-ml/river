@@ -3,7 +3,7 @@ import inspect
 from river.stats import Var
 
 from ..splitter import EBSTSplitter
-from ..splitter.nominal_reg_splitter import NominalRegSplitter
+from ..splitter.nominal_splitter_reg import NominalSplitterReg
 from .base import LearningNode
 
 
@@ -33,7 +33,7 @@ class LearningNodeMean(LearningNode):
 
     @staticmethod
     def new_nominal_splitter():
-        return NominalRegSplitter()
+        return NominalSplitterReg()
 
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
         """Trigger Attribute Observers' memory management routines.
