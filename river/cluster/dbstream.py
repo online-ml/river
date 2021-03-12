@@ -277,21 +277,22 @@ class DBSTREAM(base.Clusterer):
         # Algorithm 3 of Michael Hahsler and Matthew Bolanos: Reclustering using
         # shared density graph
 
-        weighted_adjacency_matrix = {
-            i: {j: 0 for j in self.s[i].keys()} for i in self.s.keys()
-        }
+        weighted_adjacency_matrix = {}
         for i in list(self.s.keys()):
             for j in list(self.s[i].keys()):
                 if (
                     self.micro_clusters[i].weight >= self.minimum_weight
                     and self.micro_clusters[j].weight >= self.minimum_weight
                 ):
-                    weighted_adjacency_matrix[i][j] = self.s[i][j] / (
+                    value = self.s[i][j] / (
                         (self.micro_clusters[i].weight + self.micro_clusters[j].weight)
                         / 2
                     )
-                    if weighted_adjacency_matrix[i][j] <= self.intersection_factor:
-                        weighted_adjacency_matrix[i].pop(j)
+                    if value > self.intersection_factor:
+                        try:
+                            weighted_adjacency_matrix[i][j] = value
+                        except KeyError:
+                            weighted_adjacency_matrix[i] = {j: value}
 
         return weighted_adjacency_matrix
 
