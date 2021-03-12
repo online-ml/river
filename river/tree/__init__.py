@@ -5,6 +5,10 @@ from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
 from .label_combination_hoeffding_tree import LabelCombinationHoeffdingTreeClassifier
+from .stochastic_gradient_tree import (
+    StochasticGradientTreeClassifier,
+    StochasticGradientTreeRegressor,
+)
 
 __all__ = [
     "ExtremelyFastDecisionTreeClassifier",
@@ -14,4 +18,6 @@ __all__ = [
     "HoeffdingTreeRegressor",
     "iSOUPTreeRegressor",
     "LabelCombinationHoeffdingTreeClassifier",
+    "StochasticGradientTreeClassifier",
+    "StochasticGradientTreeRegressor",
 ]
