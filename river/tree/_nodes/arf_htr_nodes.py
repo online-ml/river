@@ -24,7 +24,7 @@ class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     kwargs
-        Other parameters passed to the learning nodes the ARF implementations randomize.
+        Other parameters passed to the learning node.
     """
 
     def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
@@ -56,7 +56,7 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         A `base.Regressor` instance used to learn from instances and provide
         responses.
     kwargs
-        Other parameters passed to the learning nodes the ARF implementations randomize.
+        Other parameters passed to the learning node.
     """
 
     def __init__(
@@ -92,7 +92,7 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
         A `base.Regressor` instance used to learn from instances and provide
         responses.
     kwargs
-        Other parameters passed to the learning nodes the ARF implementations randomize.
+        Other parameters passed to the learning node.
     """
 
     def __init__(
