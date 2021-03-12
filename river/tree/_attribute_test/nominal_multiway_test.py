@@ -1,7 +1,7 @@
 from .instance_conditional_test import InstanceConditionalTest
 
 
-class NominalAttributeMultiwayTest(InstanceConditionalTest):
+class NominalMultiwayTest(InstanceConditionalTest):
     """Multi-way split tests for categorical features.
 
     The resulting test considers one branch for each possible feature

@@ -4,7 +4,7 @@ import typing
 from river.base.typing import ClfTarget
 from river.proba import Gaussian
 
-from .._attribute_test import NumericAttributeBinaryTest, SplitSuggestion
+from .._attribute_test import NumericBinaryTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -65,9 +65,7 @@ class GaussianSplitter(Splitter):
             post_split_dist = self._class_dists_from_binary_split(split_value)
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
-                num_att_binary_test = NumericAttributeBinaryTest(
-                    att_idx, split_value, True
-                )
+                num_att_binary_test = NumericBinaryTest(att_idx, split_value, True)
                 best_suggestion = SplitSuggestion(
                     num_att_binary_test, post_split_dist, merit
                 )

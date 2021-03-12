@@ -1,11 +1,7 @@
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._attribute_test import (
-    NominalAttributeBinaryTest,
-    NominalAttributeMultiwayTest,
-    SplitSuggestion,
-)
+from .._attribute_test import NominalBinaryTest, NominalMultiwayTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -73,9 +69,7 @@ class NominalRegSplitter(Splitter):
                 for branch_id, attr_val in enumerate(ordered_feature_values)
             }
             current_best = SplitSuggestion(
-                NominalAttributeMultiwayTest(att_idx, branch_mapping),
-                post_split_dist,
-                merit,
+                NominalMultiwayTest(att_idx, branch_mapping), post_split_dist, merit,
             )
 
         for att_val in ordered_feature_values:
@@ -86,7 +80,7 @@ class NominalRegSplitter(Splitter):
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
             if current_best is None or merit > current_best.merit:
-                nom_att_binary_test = NominalAttributeBinaryTest(att_idx, att_val)
+                nom_att_binary_test = NominalBinaryTest(att_idx, att_val)
                 current_best = SplitSuggestion(
                     nom_att_binary_test, post_split_dist, merit
                 )

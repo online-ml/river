@@ -1,8 +1,4 @@
-from .._attribute_test import (
-    NominalAttributeBinaryTest,
-    NominalAttributeMultiwayTest,
-    SplitSuggestion,
-)
+from .._attribute_test import NominalBinaryTest, NominalMultiwayTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -73,16 +69,14 @@ class NominalClassSplitter(Splitter):
                 attr_val: branch_id for branch_id, attr_val in enumerate(att_values)
             }
             best_suggestion = SplitSuggestion(
-                NominalAttributeMultiwayTest(att_idx, branch_mapping),
-                post_split_dist,
-                merit,
+                NominalMultiwayTest(att_idx, branch_mapping), post_split_dist, merit,
             )
         for att_val in att_values:
             post_split_dist = self._class_dist_from_binary_split(att_val)
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
                 best_suggestion = SplitSuggestion(
-                    NominalAttributeBinaryTest(att_idx, att_val), post_split_dist, merit
+                    NominalBinaryTest(att_idx, att_val), post_split_dist, merit
                 )
         return best_suggestion
 

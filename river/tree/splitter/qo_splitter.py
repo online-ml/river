@@ -4,11 +4,7 @@ import typing
 
 from river import stats, utils
 
-from .._attribute_test import (
-    NumericAttributeBinaryTest,
-    NumericAttributeMultiwayTest,
-    SplitSuggestion,
-)
+from .._attribute_test import NumericBinaryTest, NumericMultiwayTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -88,7 +84,7 @@ class QOSplitter(Splitter):
                 branch_mapping = {
                     slot_id: branch_id for branch_id, slot_id in enumerate(slot_ids)
                 }
-                multiway_test = NumericAttributeMultiwayTest(
+                multiway_test = NumericMultiwayTest(
                     att_idx, self.radius, branch_mapping
                 )
                 candidate = SplitSuggestion(multiway_test, post_split_dists, merit)
@@ -120,7 +116,7 @@ class QOSplitter(Splitter):
 
     @staticmethod
     def _update_candidate(split_point, att_idx, post_split_dists, merit):
-        num_att_binary_test = NumericAttributeBinaryTest(att_idx, split_point, True)
+        num_att_binary_test = NumericBinaryTest(att_idx, split_point, True)
         candidate = SplitSuggestion(num_att_binary_test, post_split_dists, merit)
 
         return candidate

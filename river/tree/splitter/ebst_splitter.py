@@ -4,7 +4,7 @@ import typing
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._attribute_test import NumericAttributeBinaryTest, SplitSuggestion
+from .._attribute_test import NumericBinaryTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -100,9 +100,7 @@ class EBSTSplitter(Splitter):
 
         merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
         if merit > candidate.merit:
-            num_att_binary_test = NumericAttributeBinaryTest(
-                self._att_idx, node.att_val, True
-            )
+            num_att_binary_test = NumericBinaryTest(self._att_idx, node.att_val, True)
             candidate = SplitSuggestion(num_att_binary_test, post_split_dists, merit)
 
         if node._right is not None:

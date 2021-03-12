@@ -3,7 +3,7 @@ import math
 from .instance_conditional_test import InstanceConditionalTest
 
 
-class NumericAttributeMultiwayTest(InstanceConditionalTest):
+class NumericMultiwayTest(InstanceConditionalTest):
     """Multi-way split tests for numerical features.
 
     The resulting test considers one branch for each discretized feature bin.

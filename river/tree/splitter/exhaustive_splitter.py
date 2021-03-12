@@ -1,6 +1,6 @@
 from collections import Counter, defaultdict
 
-from .._attribute_test import NumericAttributeBinaryTest, SplitSuggestion
+from .._attribute_test import NumericBinaryTest, SplitSuggestion
 from .base_splitter import Splitter
 
 
@@ -134,7 +134,7 @@ class ExhaustiveSplitter(Splitter):
         merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
         if current_best_option is None or merit > current_best_option.merit:
-            num_att_binary_test = NumericAttributeBinaryTest(
+            num_att_binary_test = NumericBinaryTest(
                 att_idx=att_idx,
                 att_value=current_node.cut_point,
                 equal_passes_test=True,
