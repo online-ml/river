@@ -33,7 +33,7 @@ class ExhaustiveSplitter(Splitter):
             return
         else:
             if self._root is None:
-                self._root = Node(att_val, target_val, sample_weight)
+                self._root = ExhaustiveNode(att_val, target_val, sample_weight)
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
@@ -172,7 +172,7 @@ class ExhaustiveSplitter(Splitter):
         return current_best_option
 
 
-class Node:
+class ExhaustiveNode:
     def __init__(self, att_val, target_val, sample_weight):
         self.class_count_left = defaultdict(float)
         self.class_count_right = defaultdict(float)
@@ -188,12 +188,12 @@ class Node:
         elif val < self.cut_point:
             self.class_count_left[label] += sample_weight
             if self._left is None:
-                self._left = Node(val, label, sample_weight)
+                self._left = ExhaustiveNode(val, label, sample_weight)
             else:
                 self._left.insert_value(val, label, sample_weight)
         else:
             self.class_count_right[label] += sample_weight
             if self._right is None:
-                self._right = Node(val, label, sample_weight)
+                self._right = ExhaustiveNode(val, label, sample_weight)
             else:
                 self._right.insert_value(val, label, sample_weight)

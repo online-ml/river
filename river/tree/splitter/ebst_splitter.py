@@ -48,7 +48,7 @@ class EBSTSplitter(Splitter):
             return
         else:
             if self._root is None:
-                self._root = Node(att_val, target_val, sample_weight)
+                self._root = EBSTNode(att_val, target_val, sample_weight)
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
@@ -243,7 +243,7 @@ class EBSTSplitter(Splitter):
         return False
 
 
-class Node:
+class EBSTNode:
     def __init__(self, att_val, target_val, sample_weight):
         self.att_val = att_val
 
@@ -291,6 +291,6 @@ class Node:
 
         # Value was not yet added to the tree
         if is_right:
-            antecedent._right = Node(att_val, target_val, sample_weight)
+            antecedent._right = EBSTNode(att_val, target_val, sample_weight)
         else:
-            antecedent._left = Node(att_val, target_val, sample_weight)
+            antecedent._left = EBSTNode(att_val, target_val, sample_weight)
