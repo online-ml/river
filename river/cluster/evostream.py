@@ -8,99 +8,113 @@ from river import base, utils
 
 
 class evoStream(base.Clusterer):
-    r"""DBSTREAM
+    r"""evoStream
 
-    DBSTREAM [^1] is a clustering algorithm for evolving data streams.
-    It is the first micro-cluster-based online clustering component that
-    explicitely captures the density between micro-clusters via a shared
-    density graph. The density information in the graph is then exploited
-    for reclustering based on actual density between adjacent micro clusters.
-    The algorithm is divided into two parts:
+    evoStream [^1] is a fairly new approach to utilize the idle time to incrementally
+    build and refine micro clusters. This allows efficient time utilization and
+    can support the offline component or replace it entirely, depending on
+    the stream's speed. To do so, it employs an evolutionary algorithm, i.e
+    a heuristic optimization, in order to find better macro-cluster solutions.
+
+    Evolutionary algorithms, first introduced by Maulik U. and Bandyopadhyay S. [^2], are
+    inspired by natural evolution where promising solutions are combined to create
+    offsprings which can combine the best arrtributes of both parents.
+
+    In River, since data arrive continuously, we will replace the concept of "idle"
+    with a evolution gap. This means that, after each gap, a temporary batch will be
+    formed, the evolution function will be called, simulating the effect of "idle"
+    time between batches of data points.
+
+    The algorithm is divided into two main parts:
 
     **Online micro-cluster maintenance (learning)**
 
     For a new point `p`:
 
-    * Find all micro clusters for which `p` falls within the fixed radius
-    (clustering threshold). If no neighbor is found, a new micro cluster
-    with a weight of 1 is created for `p`.
+    * Create a new micro cluster from point `p`. Find all micro clusters whose
+    centers fall within the fixed radius (clustering threshold) from the newly
+    generated cluster
 
-    * If no neighbor is found, a new micro cluster with a weight of 1 is
-    created for `p`. If one or more neighbors of `p` are found, we update
-    the micro clusters by applying the appropriate fading, increasing
-    their weight and then we try to move them closer to `p` using the
-    Gaussian neighborhood function.
+    * If one or more neighboring micro clusters are found, these micro clusters
+    will be updated, trying to move them closer to the new instance (similar to the
+    DBSTREAM algorithm [^3]). Else, that new micro cluster will
+    be added to the current.
 
-    * Next, the shared density graph is updated. To prevent collapsing
-    micro clusters, we will restrict the movement for micro clusters in case
-    they come closer than $r$ (clustering threshold) to each other. Finishing
-    this process, the time stamp is also increased by 1.
+    * After each cleanup interval, weights of all micro clusters are updated once
+    again. At this time, if the weight of any cluster is less than a certain threshold,
+    it will be removed. Then, all clusters whose centers are less than `r` from
+    each other are merged.
 
-    * Finally, the cleanup will be processed. It is executed every `t_gap`
-    time steps, removing weak micro clusters and weak entries in the
-    shared density graph to recover memory and improve the clustering algorithm's
-    processing speed.
+    * When the stream is not initiated and the number of cluster is at least equal
+    to the initialization threshold, a cluster population of size `P` will be generated
+    by choosing randomly micro-clusters from the set of currently available micro-clusters.
 
-    **Offline generation of macro clusters (clustering)**
+    **Offline generation of macro clusters (evolutionary step)**
 
-    The offline generation of macro clusters is generated through two following steps:
+    The offline generation of macro clusters is based upon the original GA clustering algirthm,
+    as follows:
 
-    * The connectivity graph `C` is constructed using shared density entries
-    between strong micro clusters. The edges in this connectivity graph with
-    a connectivity value greater than the intersection threshold ($\alpha$)
-    are used to find connected components representing the final cluster.
+    * Using the roulette wheel algorithm, choose 2 arbitrary cluster solutions proportionally
+    to their fitness from the cluster population.
 
-    * After the connectivity graph is generated, a variant of DBSCAN algorithm
-    proposed by Ester et al. is applied to form all macro clusters
-    from $\alpha$-connected micro clusters.
+    * Generate two offsprings using binary crossover.
+
+    * Generate a random number `delta` within the range `[0,1]`. If `delta < P_m`, each gene `g_i`
+    within these two offsprings will be mutated with the following rules
+
+        - If `g_i = 0`, `g_i` will be equal to either `-2 * delta` or `2 * delta`, with equal probability
+
+        - If `g_i != 0`, `2 * delta * g_i` will be added or subtracted from `g_i`, with equal probability
+
+    * The two newly generated solutions will be added to the set of cluster population. Two solutions with
+    highest SSQ (or lowest fitness) will be discarded.
+
+    * Choose the solution with the highest fitness and assign it as the clusters for the whole algorithm.
 
     Parameters
     ----------
     radius
-        DBStream represents each micro cluster by a leader (a data point defining the
-        micro cluster's center) and the density in an area of a user-specified radius
-        $r$ (`clustering_threshold`) around the center.
+        Radius threshold to determine neighboring clusters.
     decay_rate
         Parameter that controls the importance of historical data to current cluster.
-        Note that `fading_factor` has to be different from `0`.
+        Note that `decay_rate` is usually sufficiently small and has to be different from `0`.
     cleanup_interval
         The time interval between two consecutive time points when the cleanup process is
          conducted.
     evolution_interval
-        The minimum weight for a cluster to be not "noisy".
+        The time interval between two consecutive time points when the evolution is conducted
+        (i.e when the stream is "idle"). Besides, the algorithm will also choose the clustering
+        solution with highest fitness to facilitate later predictions.
     initialization_threshold
-        The intersection factor related to the area of the overlap of the micro clusters
-        relative to the area cover by micro clusters. This parameter is used to determine
-        whether a micro cluster or a shared density is weak.
+        The minimum number of micro clusters required to initialize the choice of cluster
+        solutions.
     mutation_probability
-
+        Probability that the offsprings of two selected solution from the cluster population
+        will be mutated. This probability has to be between `0` and `1`.
     population_size
-
+        Size of the cluster population generated from the set of micro clusters.
     n_clusters
+        Number of clusters generated by the algorithm.
 
     Attributes
     ----------
-    n_clusters
-        Number of clusters generated by the algorithm.
     clusters
-        A set of final clusters of type `DBStreamMicroCluster`. However, these are either
-        micro clusters, or macro clusters that are generated by merging all $\alpha$-connected
-        micro clusters. This set is generated through the offline phase of the algorithm.
+        A set of final clusters of type `evoStreamMicroCluster`, i.e clusters with structure
+        `(center, last_update, weight)`. These clusters are formed by choosing the cluster solution
+        with highest fitness.
     centers
         Final clusters' centers.
-    micro_clusters
-        Micro clusters generated by the algorithm. Instead of updating directly the new instance points
-        into a nearest micro cluster, through each iteration, the weight and center will be modified
-        so that the clusters are closer to the new points, using the Gaussian neighborhood function.
 
     References
     ----------
-    [^1]: Michael Hahsler and Matthew Bolanos (2016, pp 1449-1461). Clsutering Data Streams Based on Shared Density
-          between Micro-Clusters, IEEE Transactions on Knowledge and Data Engineering (volume .
+    [^1]: Carnein, M., & Trautmann, H. (2018). evoStream – Evolutionary Stream Clustering Utilizing Idle Times.
+          Big Data Research, 14, 101-111. DOI: 10.1016/j.bdr.2018.05.005
+    [^2]: Maulik, U., & Bandyopadhyay, S. (2000). Genetic algorithm-based clustering technique.
+          Pattern Recognition, 33(9), 1455-1465. DOI: 10.1016/s0031-3203(99)00137-5
+    [^3]: Hahsler, M., Bolanos, M. Clsutering Data Streams Based on Shared Density between Micro-Clusters,
+          IEEE Transactions on Knowledge and Data Engineering 28(6), 2016, 1449-1461.
           In Proceedings of the Sixth SIAM International Conference on Data Mining,
           April 20–22, 2006, Bethesda, MD, USA.
-    [^2]: Ester et al (1996). A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases
-          with Noise. In KDD-96 Proceedings, AAAI.
 
     Examples
     ----------
@@ -108,12 +122,15 @@ class evoStream(base.Clusterer):
     >>> from river import stream
 
     >>> X = [
-    ...     [1, 0.5], [1, 0.625], [1, 0.75], [1, 1.125], [1, 1.5], [1, 1.75],
-    ...     [4, 1.25], [4, 1.5], [4, 2.25], [4, 2.5],
-    ...     [4, 3], [4, 3.25], [4, 3.5], [4, 3.75], [4, 4]
+    ...     [1, 0.5], [1, 0.625], [1, 0.75], [1, 1], [1, 1.125], [1, 1.25],
+    ...     [1, 1.5], [1, 1.75], [1, 2], [4, 1.25], [4, 1.5], [4, 2.25],
+    ...     [4, 2.5], [4, 3], [4, 3.25], [4, 3.5], [4, 3.75], [4, 4],
     ... ]
 
-    >>> evostream = cluster.evoStream(radius=0.25, evolution_interval=5, cleanup_interval=6, n_clusters=2)
+    >>> evostream = cluster.evoStream(radius=0.25,
+    ...                               cleanup_interval=6,
+    ...                               evolution_interval=7,
+    ...                               n_clusters=2)
 
     >>> for x, _ in stream.iter_array(X):
     ...     evostream = evostream.learn_one(x)
@@ -125,7 +142,7 @@ class evoStream(base.Clusterer):
 
     def __init__(
         self,
-        radius: float = 1,
+        radius: float = 1.0,
         decay_rate: float = 0.01,
         cleanup_interval: int = 6,
         evolution_interval: int = 4,
@@ -149,10 +166,11 @@ class evoStream(base.Clusterer):
 
         self.clusters = {}
         self.centers = {}
-        self.micro_clusters = {}
-        self.cluster_population = {}
-        self.evolution_batch = {}
-        self.fitness_cluster_population = {}
+
+        self._evolution_batch = {}
+        self._micro_clusters = {}
+        self._cluster_population = {}
+        self._fitness_cluster_population = {}
 
     @staticmethod
     def _binary_crossover(cluster_sol_1, cluster_sol_2):
@@ -170,6 +188,16 @@ class evoStream(base.Clusterer):
     def _distance(point_a, point_b):
         return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
 
+    def _find_closest_cluster_index(self, point, clusters):
+        min_distance = math.inf
+        closest_cluster_index = -1
+        for i, cluster_i in clusters.items():
+            distance = self._distance(clusters[i].center, point)
+            if distance < min_distance:
+                min_distance = distance
+                closest_cluster_index = i
+        return closest_cluster_index
+
     def _gaussian_neighborhood(self, point_a, point_b):
         distance = self._distance(point_a, point_b)
         gaussian_neighborhood = math.exp(
@@ -184,22 +212,22 @@ class evoStream(base.Clusterer):
         evolution_index = self.time_stamp % self.evolution_interval
 
         if evolution_index == 0:
-            self.evolution_batch[self.evolution_interval - 1] = x
+            self._evolution_batch[self.evolution_interval - 1] = x
         elif evolution_index == 1:
-            self.evolution_batch = {0: x}
+            self._evolution_batch = {0: x}
         else:
-            self.evolution_batch[evolution_index - 1] = x
+            self._evolution_batch[evolution_index - 1] = x
 
         temp_mc = evoStreamMicroCluster(x=x, last_update=self.time_stamp, weight=1)
 
         merged_status = False
 
-        for micro_cluster in self.micro_clusters.values():
+        for micro_cluster in self._micro_clusters.values():
             if self._distance(temp_mc.center, micro_cluster.center) < self.radius:
                 magnitude = self._gaussian_neighborhood(
                     temp_mc.center, micro_cluster.center
                 )
-                for i in micro_cluster.center.keys():
+                for i in micro_cluster.center:
                     micro_cluster.center[i] += magnitude * (
                         temp_mc.center[i] - micro_cluster.center[i]
                     )
@@ -218,17 +246,7 @@ class evoStream(base.Clusterer):
                 merged_status = True
 
         if not merged_status:
-            self.micro_clusters[len(self.micro_clusters)] = temp_mc
-
-    def _find_closest_cluster_index(self, point, clusters):
-        min_distance = math.inf
-        closest_cluster_index = -1
-        for i, cluster_i in clusters.items():
-            distance = self._distance(clusters[i].center, point)
-            if distance < min_distance:
-                min_distance = distance
-                closest_cluster_index = i
-        return closest_cluster_index
+            self._micro_clusters[len(self._micro_clusters)] = temp_mc
 
     def _fitness(self, points, clusters):
         ssq = 0
@@ -255,20 +273,20 @@ class evoStream(base.Clusterer):
             if key_1 != -1 and key_2 != -1:
                 break
 
-        return self.cluster_population[key_1], self.cluster_population[key_2]
+        return self._cluster_population[key_1], self._cluster_population[key_2]
 
     def _evolution(self):
-        self.fitness_cluster_population = {
-            i: self._fitness(self.evolution_batch, self.cluster_population[i])
-            for i in self.cluster_population.keys()
+        self._fitness_cluster_population = {
+            i: self._fitness(self._evolution_batch, self._cluster_population[i])
+            for i in self._cluster_population
         }
 
-        p_1, p_2 = self._roulette_wheel_selection(self.fitness_cluster_population)
+        p_1, p_2 = self._roulette_wheel_selection(self._fitness_cluster_population)
         o_1, o_2 = self._binary_crossover(p_1, p_2)
         delta = random.uniform(0, 1)
 
         def mutate(g):
-            for i in g.keys():
+            for i in g:
                 if g[i] == 0:
                     g[i] = 2 * delta if random.uniform(0, 1) < 0.5 else -2 * delta
                 else:
@@ -284,21 +302,21 @@ class evoStream(base.Clusterer):
                 o_1[i].center = mutate(o_1[i].center)
                 o_2[i].center = mutate(o_2[i].center)
 
-        fitness_o_1 = self._fitness(self.evolution_batch, o_1)
-        fitness_o_2 = self._fitness(self.evolution_batch, o_2)
+        fitness_o_1 = self._fitness(self._evolution_batch, o_1)
+        fitness_o_2 = self._fitness(self._evolution_batch, o_2)
 
-        if fitness_o_1 > min(self.fitness_cluster_population.values()):
-            argmin_1 = np.argmin(list(self.fitness_cluster_population.values()))
-            self.cluster_population[argmin_1] = o_1
-            self.fitness_cluster_population[argmin_1] = fitness_o_1
+        if fitness_o_1 > min(self._fitness_cluster_population.values()):
+            argmin_1 = np.argmin(list(self._fitness_cluster_population.values()))
+            self._cluster_population[argmin_1] = o_1
+            self._fitness_cluster_population[argmin_1] = fitness_o_1
 
-        if fitness_o_2 > min(self.fitness_cluster_population.values()):
-            argmin_2 = np.argmin(list(self.fitness_cluster_population.values()))
-            self.cluster_population[argmin_2] = o_2
-            self.fitness_cluster_population[argmin_2] = fitness_o_2
+        if fitness_o_2 > min(self._fitness_cluster_population.values()):
+            argmin_2 = np.argmin(list(self._fitness_cluster_population.values()))
+            self._cluster_population[argmin_2] = o_2
+            self._fitness_cluster_population[argmin_2] = fitness_o_2
 
     def _merge_micro_clusters(self, micro_clusters):
-        merged_status = {i: False for i in micro_clusters.keys()}
+        merged_status = {i: False for i in micro_clusters}
         merged_mcs = {}
         n_micro_cluster = len(micro_clusters)
         count = 0
@@ -320,31 +338,35 @@ class evoStream(base.Clusterer):
         # Algorithm 2 of Michael Hahsler and Matthew Bolanos: Cleanup process to remove
         # inactive clusters and shared density entries from memory
 
-        for i in list(self.micro_clusters.keys()):
-            self.micro_clusters[i].weight = self.micro_clusters[i].weight * (
+        for i in list(self._micro_clusters):
+            self._micro_clusters[i].weight = self._micro_clusters[i].weight * (
                 2
                 ** (
                     -self.decay_rate
-                    * (self.time_stamp - self.micro_clusters[i].last_update)
+                    * (self.time_stamp - self._micro_clusters[i].last_update)
                 )
             )
-            if self.micro_clusters[i].weight < 2 ** (
+            if self._micro_clusters[i].weight < 2 ** (
                 -self.decay_rate * self.cleanup_interval
             ):
-                self.micro_clusters.pop(i)
+                self._micro_clusters.pop(i)
 
-        self.micro_clusters = {i: v for i, v in enumerate(self.micro_clusters.values())}
+        self._micro_clusters = {
+            i: v for i, v in enumerate(self._micro_clusters.values())
+        }
 
-        self.micro_clusters = self._merge_micro_clusters(self.micro_clusters)
+        self._micro_clusters = self._merge_micro_clusters(self._micro_clusters)
 
     @staticmethod
     def _generate_population(micro_clusters, population_size, n_clusters):
-        C = {}
+        cluster_population = {}
         for i in range(population_size):
-            C_i_keys = random.sample(micro_clusters.keys(), n_clusters)
-            C_i = {i: micro_clusters[C_i_keys[i]] for i in range(n_clusters)}
-            C[i] = C_i
-        return C
+            cluster_population_i_keys = random.sample(micro_clusters.keys(), n_clusters)
+            cluster_population[i] = {
+                i: micro_clusters[cluster_population_i_keys[i]]
+                for i in range(n_clusters)
+            }
+        return cluster_population
 
     def learn_one(self, x, sample_weight=None):
 
@@ -355,11 +377,11 @@ class evoStream(base.Clusterer):
 
         # initialize macro clusters
         if (
-            len(self.micro_clusters) == self.initialization_threshold
+            len(self._micro_clusters) == self.initialization_threshold
             and not self.initialized
         ):
-            self.cluster_population = self._generate_population(
-                self.micro_clusters, self.initialization_threshold, self.n_clusters
+            self._cluster_population = self._generate_population(
+                self._micro_clusters, self.initialization_threshold, self.n_clusters
             )
             self.initialized = True
 
@@ -367,25 +389,20 @@ class evoStream(base.Clusterer):
             self._evolution()
 
             clusters_solution_index = np.argmax(
-                list(self.fitness_cluster_population.values())
+                list(self._fitness_cluster_population.values())
             )
 
-            self.clusters = self.cluster_population[clusters_solution_index]
+            self.clusters = self._cluster_population[clusters_solution_index]
 
             self.centers = {i: self.clusters[i].center for i in self.clusters}
 
         return self
 
     def predict_one(self, x, sample_weight=None):
-        min_distance = math.inf
-        closest_cluster_index = -1
-        for i, center_i in self.centers.items():
-            distance = self._distance(center_i, x)
-            if distance < min_distance:
-                min_distance = distance
-                closest_cluster_index = i
 
-        return closest_cluster_index
+        label = self._find_closest_cluster_index(x, self.clusters)
+
+        return label
 
 
 class evoStreamMicroCluster(metaclass=ABCMeta):
@@ -401,7 +418,7 @@ class evoStreamMicroCluster(metaclass=ABCMeta):
         self.center = {
             i: (self.center[i] * self.weight + cluster.center[i] * cluster.weight)
             / (self.weight + cluster.weight)
-            for i in self.center.keys()
+            for i in self.center
         }
         self.weight += cluster.weight
         self.last_update = max(self.last_update, cluster.last_update)
