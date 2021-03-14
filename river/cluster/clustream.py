@@ -1,8 +1,7 @@
 import math
 from abc import ABCMeta
 
-from river import base, cluster
-from river.utils.skmultiflow_utils import add_dict_values
+from river import base, cluster, utils
 
 EPSILON = 0.00005
 MIN_VARIANCE = 1e-50
@@ -213,16 +212,7 @@ class CluStream(base.Clusterer):
 
     @staticmethod
     def _distance(point_a, point_b):
-        distance = 0.0
-        for key_a in point_a.keys():
-            try:
-                distance += (point_a[key_a] - point_b[key_a]) * (
-                    point_a[key_a] - point_b[key_a]
-                )
-            except KeyError:
-                # Keys do not match, return inf as the distance is undefined.
-                return math.inf
-        return math.sqrt(distance)
+        return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
 
     def learn_one(self, x, sample_weight=None):
 
@@ -436,5 +426,9 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
         self.n_samples += micro_cluster.n_samples
         self.linear_sum_timestamp += micro_cluster.linear_sum_timestamp
         self.squared_sum_timestamp += micro_cluster.squared_sum_timestamp
-        add_dict_values(self.linear_sum, micro_cluster.linear_sum, inplace=True)
-        add_dict_values(self.squared_sum, micro_cluster.squared_sum, inplace=True)
+        utils.skmultiflow_utils.add_dict_values(
+            self.linear_sum, micro_cluster.linear_sum, inplace=True
+        )
+        utils.skmultiflow_utils.add_dict_values(
+            self.squared_sum, micro_cluster.squared_sum, inplace=True
+        )
