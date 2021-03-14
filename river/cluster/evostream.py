@@ -20,8 +20,8 @@ class evoStream(base.Clusterer):
     inspired by natural evolution where promising solutions are combined to create
     offsprings which can combine the best arrtributes of both parents.
 
-    In River, since data arrive continuously, we will replace the concept of "idle"
-    with a evolution gap. This means that, after each gap, a temporary batch will be
+    In River, since data arrives continuously, we will replace the concept of "idle" time
+    with an evolution gap. This means that, after each gap, a temporary batch will be
     formed, the evolution function will be called, simulating the effect of "idle"
     time between batches of data points.
 
@@ -80,7 +80,7 @@ class evoStream(base.Clusterer):
         Note that `decay_rate` is usually sufficiently small and has to be different from `0`.
     cleanup_interval
         The time interval between two consecutive time points when the cleanup process is
-         conducted.
+        conducted.
     evolution_interval
         The time interval between two consecutive time points when the evolution is conducted
         (i.e when the stream is "idle"). Besides, the algorithm will also choose the clustering
@@ -107,9 +107,9 @@ class evoStream(base.Clusterer):
 
     References
     ----------
-    [^1]: Carnein, M., & Trautmann, H. (2018). evoStream – Evolutionary Stream Clustering Utilizing Idle Times.
+    [^1]: Carnein, M., Trautmann, H. (2018). evoStream – Evolutionary Stream Clustering Utilizing Idle Times.
           Big Data Research, 14, 101-111. DOI: 10.1016/j.bdr.2018.05.005
-    [^2]: Maulik, U., & Bandyopadhyay, S. (2000). Genetic algorithm-based clustering technique.
+    [^2]: Maulik, U., Bandyopadhyay, S. (2000). Genetic algorithm-based clustering technique.
           Pattern Recognition, 33(9), 1455-1465. DOI: 10.1016/s0031-3203(99)00137-5
     [^3]: Hahsler, M., Bolanos, M. Clsutering Data Streams Based on Shared Density between Micro-Clusters,
           IEEE Transactions on Knowledge and Data Engineering 28(6), 2016, 1449-1461.
@@ -406,7 +406,7 @@ class evoStream(base.Clusterer):
 
 
 class evoStreamMicroCluster(metaclass=ABCMeta):
-    """ DBStream Micro-cluster class """
+    """ evoStream Micro-cluster class """
 
     def __init__(self, x=None, last_update=None, weight=None):
 
