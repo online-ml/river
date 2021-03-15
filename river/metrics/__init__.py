@@ -5,7 +5,6 @@ predictive methods over time.
 
 """
 
-from . import cluster
 from ._performance_evaluator import _ClassificationReport  # noqa: F401
 from ._performance_evaluator import _MLClassificationReport  # noqa: F401
 from ._performance_evaluator import _MTRegressionReport  # noqa: F401
