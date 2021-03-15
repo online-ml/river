@@ -44,6 +44,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         features and perform splits. Splitters are available in the `tree.splitter` module.
         Different splitters are available for classification and regression tasks. Classification
         and regression splitters can be distinguished by their property `is_target_class`.
+        This is an advanced option. Special care must be taken when choosing different splitters.
         By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
     bootstrap_sampling
         If True, perform bootstrap sampling in the leaf nodes.
