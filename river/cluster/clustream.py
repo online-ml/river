@@ -1,8 +1,7 @@
 import math
 from abc import ABCMeta
 
-from river import base, cluster
-from river.utils.skmultiflow_utils import add_dict_values
+from river import base, cluster, utils
 
 EPSILON = 0.00005
 MIN_VARIANCE = 1e-50
@@ -131,7 +130,7 @@ class CluStream(base.Clusterer):
 
         # Create a micro-cluster with the new point
         if len(self.buffer) < self.max_micro_clusters:
-            self.buffer[len(self.buffer)] = MicroCluster(
+            self.buffer[len(self.buffer)] = CluStreamMicroCluster(
                 x=x,
                 sample_weight=sample_weight,
                 timestamp=self.time_stamp,
@@ -142,7 +141,7 @@ class CluStream(base.Clusterer):
             # The buffer is full. Use the micro-clusters centers to create the
             # micro-clusters set.
             for i in range(self.max_micro_clusters):
-                self.micro_clusters[i] = MicroCluster(
+                self.micro_clusters[i] = CluStreamMicroCluster(
                     x=self.buffer[i].center,
                     sample_weight=1.0,
                     timestamp=self.time_stamp,
@@ -159,7 +158,7 @@ class CluStream(base.Clusterer):
         # Delete old micro-clusters if its relevance stamp is smaller than the threshold
         for i, micro_cluster_a in self.micro_clusters.items():
             if micro_cluster_a.relevance_stamp < threshold:
-                self.micro_clusters[i] = MicroCluster(
+                self.micro_clusters[i] = CluStreamMicroCluster(
                     x=x,
                     sample_weight=sample_weight,
                     timestamp=self.time_stamp,
@@ -180,7 +179,7 @@ class CluStream(base.Clusterer):
                     closest_a = i
                     closest_b = j
         self.micro_clusters[closest_a].add(self.micro_clusters[closest_b])
-        self.micro_clusters[closest_b] = MicroCluster(
+        self.micro_clusters[closest_b] = CluStreamMicroCluster(
             x=x,
             sample_weight=sample_weight,
             timestamp=self.time_stamp,
@@ -192,7 +191,7 @@ class CluStream(base.Clusterer):
         if not self.initialized:
             return {}
         res = {
-            i: MicroCluster(
+            i: CluStreamMicroCluster(
                 micro_cluster=micro_cluster,
                 micro_cluster_r_factor=self.micro_cluster_r_factor,
                 max_micro_clusters=self.max_micro_clusters,
@@ -213,16 +212,7 @@ class CluStream(base.Clusterer):
 
     @staticmethod
     def _distance(point_a, point_b):
-        distance = 0.0
-        for key_a in point_a.keys():
-            try:
-                distance += (point_a[key_a] - point_b[key_a]) * (
-                    point_a[key_a] - point_b[key_a]
-                )
-            except KeyError:
-                # Keys do not match, return inf as the distance is undefined.
-                return math.inf
-        return math.sqrt(distance)
+        return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
 
     def learn_one(self, x, sample_weight=None):
 
@@ -295,7 +285,7 @@ class CluStream(base.Clusterer):
         return y
 
 
-class MicroCluster(metaclass=ABCMeta):
+class CluStreamMicroCluster(metaclass=ABCMeta):
     """ Micro-cluster class """
 
     def __init__(
@@ -436,5 +426,9 @@ class MicroCluster(metaclass=ABCMeta):
         self.n_samples += micro_cluster.n_samples
         self.linear_sum_timestamp += micro_cluster.linear_sum_timestamp
         self.squared_sum_timestamp += micro_cluster.squared_sum_timestamp
-        add_dict_values(self.linear_sum, micro_cluster.linear_sum, inplace=True)
-        add_dict_values(self.squared_sum, micro_cluster.squared_sum, inplace=True)
+        utils.skmultiflow_utils.add_dict_values(
+            self.linear_sum, micro_cluster.linear_sum, inplace=True
+        )
+        utils.skmultiflow_utils.add_dict_values(
+            self.squared_sum, micro_cluster.squared_sum, inplace=True
+        )

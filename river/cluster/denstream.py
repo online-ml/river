@@ -1,9 +1,8 @@
 import collections
 import math
-import sys
 from abc import ABCMeta
 
-from river import base
+from river import base, utils
 
 
 class DenStream(base.Clusterer):
@@ -95,26 +94,28 @@ class DenStream(base.Clusterer):
     >>> from river import stream
 
     >>> X = [
-    ...     [1, 0.5], [1, 0.625], [1, 0.75], [1, 1.125], [1, 1.5], [1, 1.75],
-    ...     [4, 1.5], [4, 2.25], [4, 2.5], [4, 3]
+    ...     [-1, -0.5], [-1, -0.625], [-1, -0.75], [-1, -1], [-1, -1.125], [-1, -1.25],
+    ...     [-1.5, -0.5], [-1.5, -0.625], [-1.5, -0.75], [-1.5, -1], [-1.5, -1.125], [-1.5, -1.25],
+    ...     [1, 1.5], [1, 1.75], [1, 2], [4, 1.25], [4, 1.5], [4, 2.25],
+    ...     [4, 2.5], [4, 3], [4, 3.25], [4, 3.5], [4, 3.75], [4, 4],
     ... ]
 
-    >>> denstream = cluster.DenStream(decaying_factor = 0.25,
-    ...                               core_weight_threshold = 2,
-    ...                               tolerance_factor = 0.75,
+    >>> denstream = cluster.DenStream(decaying_factor = 0.01,
+    ...                               core_weight_threshold = 1.01,
+    ...                               tolerance_factor = 1.0005,
     ...                               radius = 0.5)
 
     >>> for x, _ in stream.iter_array(X):
     ...     denstream = denstream.learn_one(x)
 
-    >>> denstream.predict_one({0:1, 1:2})
+    >>> denstream.predict_one({0: -1, 1: -2})
     0
 
-    >>> denstream.predict_one({0:5, 1:2})
-    0
+    >>> denstream.predict_one({0:5, 1:4})
+    1
 
     >>> denstream.n_clusters
-    1
+    2
 
     """
 
@@ -155,19 +156,10 @@ class DenStream(base.Clusterer):
 
     @staticmethod
     def _distance(point_a, point_b):
-        distance = 0.0
-        for key_a in point_a.keys():
-            try:
-                distance += (point_a[key_a] - point_b[key_a]) * (
-                    point_a[key_a] - point_b[key_a]
-                )
-            except KeyError:
-                # Keys do not match, return inf as the distance is undefined.
-                return math.inf
-        return math.sqrt(distance)
+        return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
 
     def _find_closest_cluster_index(self, point, micro_clusters):
-        min_distance = sys.float_info.max
+        min_distance = math.inf
         closest_cluster_index = -1
         for i, micro_cluster_i in micro_clusters.items():
             distance = self._distance(micro_cluster_i.center, point)
@@ -177,6 +169,8 @@ class DenStream(base.Clusterer):
         return closest_cluster_index
 
     def _merge(self, point):
+        # initiate merged status
+        merged_status = False
         # create a new micro-cluster from point p
         mc_from_p = DenStreamMicroCluster(
             x=point,
@@ -195,26 +189,29 @@ class DenStream(base.Clusterer):
             if new_pmc.radius <= self.radius:
                 # merge p into nearest c_p
                 self.p_micro_clusters[closest_pmc_index].add(mc_from_p)
-        elif len(self.o_micro_clusters) != 0:
-            closest_omc_index = self._find_closest_cluster_index(
-                point, self.o_micro_clusters
-            )
-            new_omc = self.o_micro_clusters[closest_omc_index]
-            new_omc.add(mc_from_p)
-            if new_omc.radius <= self.radius:
-                # merge p into nearest c_0
-                self.o_micro_clusters[closest_omc_index].add(mc_from_p)
-                if (
-                    self.o_micro_clusters[closest_omc_index].weight
-                    > self.tolerance_factor * self.core_weight_threshold
-                ):
-                    # remove c_o from outlier-buffer
-                    self.o_micro_clusters.pop(closest_omc_index)
-                    # add a new p_micro_cluster by c_o
-                    self.p_micro_clusters[len(self.p_micro_clusters)] = new_omc
-            else:
-                # create a new o-micro-cluster by p and add it to o_micro_clusters
-                self.o_micro_clusters[len(self.o_micro_clusters)] = mc_from_p
+                merged_status = True
+
+        if not merged_status:
+            if len(self.o_micro_clusters) != 0:
+                closest_omc_index = self._find_closest_cluster_index(
+                    point, self.o_micro_clusters
+                )
+                new_omc = self.o_micro_clusters[closest_omc_index]
+                new_omc.add(mc_from_p)
+                if new_omc.radius <= self.radius:
+                    # merge p into nearest c_0
+                    self.o_micro_clusters[closest_omc_index].add(mc_from_p)
+                    if (
+                        self.o_micro_clusters[closest_omc_index].weight
+                        > self.tolerance_factor * self.core_weight_threshold
+                    ):
+                        # remove c_o from outlier-buffer
+                        self.o_micro_clusters.pop(closest_omc_index)
+                        # add a new p_micro_cluster by c_o
+                        self.p_micro_clusters[len(self.p_micro_clusters)] = new_omc
+                else:
+                    # create a new o-micro-cluster by p and add it to o_micro_clusters
+                    self.o_micro_clusters[len(self.o_micro_clusters)] = mc_from_p
 
     def _is_directly_density_reachable(self, c_p, c_q):
         # if c_p is directly reachable from c_q, weight of c_q > mu, and vice versa.
@@ -348,15 +345,16 @@ class DenStream(base.Clusterer):
                 if labels[seed_set[0]] is not None:
                     seed_set.popleft()
                     continue
-                labels[seed_set[0]] = c
-                # find neighbors
-                neighbor_neighbors = collections.deque(
-                    self._query_neighbor(seed_set[0]).keys()
-                )
-                # add new neighbors to seed set
-                for neighbor_neighbor in neighbor_neighbors:
-                    if labels[neighbor_neighbor] is not None:
-                        seed_set.append(neighbor_neighbor)
+                if seed_set:
+                    labels[seed_set[0]] = c
+                    # find neighbors
+                    neighbor_neighbors = collections.deque(
+                        self._query_neighbor(seed_set[0]).keys()
+                    )
+                    # add new neighbors to seed set
+                    for neighbor_neighbor in neighbor_neighbors:
+                        if labels[neighbor_neighbor] is not None:
+                            seed_set.append(neighbor_neighbor)
 
         self.n_clusters, self.clusters = self._generate_clusters_from_labels(labels)
 
