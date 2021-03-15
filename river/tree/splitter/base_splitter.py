@@ -38,15 +38,15 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def cond_proba(self, att_val, class_val: base.typing.ClfTarget) -> float:
+    def cond_proba(self, att_val, target_val: base.typing.ClfTarget) -> float:
         """Get the probability for an attribute value given a class.
 
         Parameters
         ----------
         att_val
             The value of the attribute.
-        class_val
-            The class value.
+        target_val
+            The target (class label) value.
 
         Returns
         -------

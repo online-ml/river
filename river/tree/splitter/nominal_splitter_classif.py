@@ -42,8 +42,8 @@ class NominalSplitterClassif(Splitter):
 
         return self
 
-    def cond_proba(self, att_val, class_val):
-        obs = self._att_val_dist_per_class.get(class_val, None)
+    def cond_proba(self, att_val, target_val):
+        obs = self._att_val_dist_per_class.get(target_val, None)
         if obs is not None:
             value = obs[att_val] if att_val in obs else 0.0
             return (value + 1.0) / (sum(obs.values()) + len(obs))

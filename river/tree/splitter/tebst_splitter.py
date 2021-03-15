@@ -27,6 +27,6 @@ class TEBSTSplitter(EBSTSplitter):
         except TypeError:  # feature value is None
             return
 
-    def cond_proba(self, att_val, class_val):
+    def cond_proba(self, att_val, target_val):
         """Not implemented in regression splitters."""
         raise NotImplementedError

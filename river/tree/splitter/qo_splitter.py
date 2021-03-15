@@ -67,7 +67,7 @@ class QOSplitter(Splitter):
         else:
             self._quantizer.update(att_val, target_val, sample_weight)
 
-    def cond_proba(self, att_val, class_val):
+    def cond_proba(self, att_val, target_val):
         raise NotImplementedError
 
     def best_evaluated_split_suggestion(

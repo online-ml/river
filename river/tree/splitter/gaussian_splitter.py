@@ -49,9 +49,9 @@ class GaussianSplitter(Splitter):
 
         return self
 
-    def cond_proba(self, att_val, class_val):
-        if class_val in self._att_dist_per_class:
-            obs = self._att_dist_per_class[class_val]
+    def cond_proba(self, att_val, target_val):
+        if target_val in self._att_dist_per_class:
+            obs = self._att_dist_per_class[target_val]
             return obs.pdf(att_val)
         else:
             return 0.0

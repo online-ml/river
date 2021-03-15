@@ -39,7 +39,7 @@ class ExhaustiveSplitter(Splitter):
 
         return self
 
-    def cond_proba(self, att_val, class_val):
+    def cond_proba(self, att_val, target_val):
         """The underlying data structure used to monitor the input does not allow probability
         density estimations. Hence, it always returns zero for any given input."""
         return 0.0

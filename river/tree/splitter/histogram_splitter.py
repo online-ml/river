@@ -37,20 +37,20 @@ class HistogramSplitter(Splitter):
 
         return self
 
-    def cond_proba(self, att_val, class_val):
-        if class_val not in self.hists:
+    def cond_proba(self, att_val, target_val):
+        if target_val not in self.hists:
             return 0.0
 
-        total_weight = self.hists[class_val].n
+        total_weight = self.hists[target_val].n
         if not total_weight > 0:
             return 0.0
 
-        i = bisect.bisect(self.hists[class_val], Bin(att_val, att_val, 1))
+        i = bisect.bisect(self.hists[target_val], Bin(att_val, att_val, 1))
 
-        if i < len(self.hists[class_val]):
-            b = self.hists[class_val][i]
+        if i < len(self.hists[target_val]):
+            b = self.hists[target_val][i]
         else:  # att_val exceeds the range: take the last bin
-            b = self.hists[class_val][-1]
+            b = self.hists[target_val][-1]
 
         # Approximates the PDF of x by using the frequency in its corresponding
         # histogram bin
