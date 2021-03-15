@@ -12,6 +12,12 @@ The typical workflow for contributing to `river` is:
 
 ## Local setup
 
+You will need developer version of Python.
+
+```sh
+$ sudo apt install python3-dev  
+```
+
 We encourage you to use a virtual environment. You'll want to activate it every time you want to work on `river`.
 
 ```sh
