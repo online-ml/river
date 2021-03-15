@@ -161,12 +161,11 @@ class DenStream(base.Clusterer):
     def _find_closest_cluster_index(self, point, micro_clusters):
         min_distance = math.inf
         closest_cluster_index = -1
-        if len(micro_clusters) != 0:
-            for i, micro_cluster_i in micro_clusters.items():
-                distance = self._distance(micro_cluster_i.center, point)
-                if distance < min_distance:
-                    min_distance = distance
-                    closest_cluster_index = i
+        for i, micro_cluster_i in micro_clusters.items():
+            distance = self._distance(micro_cluster_i.center, point)
+            if distance < min_distance:
+                min_distance = distance
+                closest_cluster_index = i
         return closest_cluster_index
 
     def _merge(self, point):
