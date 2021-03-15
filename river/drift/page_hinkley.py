@@ -56,7 +56,6 @@ class PageHinkley(DriftDetector):
         self.x_mean = None
         self.sample_count = None
         self.sum = None
-        self.Mint = None
         self.reset()
 
     def reset(self):
@@ -65,7 +64,6 @@ class PageHinkley(DriftDetector):
         self.sample_count = 1
         self.x_mean = 0.0
         self.sum = 0.0
-        self.Mint = float("inf")
 
     def update(self, value) -> tuple:
         """Update the change detector with a single data point.
@@ -88,18 +86,12 @@ class PageHinkley(DriftDetector):
 
         self.sample_count += 1
 
-        if self.sum <= self.Mint:
-            self.Mint = self.sum
-
-        pht = self.sum - self.Mint
-
         self._in_concept_change = False
-        self._in_warning_zone = False
 
         if self.sample_count < self.min_instances:
             return False, False
 
-        if pht > self.threshold:
+        if self.sum >= self.threshold:
             self._in_concept_change = True
 
         return self._in_concept_change, self._in_warning_zone
