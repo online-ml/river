@@ -489,6 +489,18 @@
   
 
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/on-hoeffding-trees/" class="md-nav__link">
+        Incremental decision trees in river: the Hoeffding Tree case
+      </a>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -1696,6 +1708,18 @@
           evaluate
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../evaluate/Track/" class="md-nav__link">
+        Track
+      </a>
+    </li>
+  
+
           
             
   
@@ -5407,6 +5431,117 @@
   
 
           
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33_8" type="checkbox" id="__nav_4_33_8" >
+      
+      <label class="md-nav__link" for="__nav_4_33_8">
+        splitter
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="splitter" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_33_8">
+          <span class="md-nav__icon md-icon"></span>
+          splitter
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splitter/EBSTSplitter/" class="md-nav__link">
+        EBSTSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splitter/ExhaustiveSplitter/" class="md-nav__link">
+        ExhaustiveSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splitter/GaussianSplitter/" class="md-nav__link">
+        GaussianSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splitter/HistogramSplitter/" class="md-nav__link">
+        HistogramSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splitter/QOSplitter/" class="md-nav__link">
+        QOSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splitter/Splitter/" class="md-nav__link">
+        Splitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splitter/TEBSTSplitter/" class="md-nav__link">
+        TEBSTSplitter
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -6323,12 +6458,8 @@
 <p>List of Nominal attributes identifiers. If empty, then assume that all numeric attributes should be treated as continuous.</p>
 </li>
 <li>
-<p><strong>attr_obs</strong> (<em>str</em>) – defaults to <code>e-bst</code></p>
-<p>The attribute observer (AO) used to monitor the target statistics of numeric features and perform splits. Parameters can be passed to the AOs (when supported) by using <code>attr_obs_params</code>. Valid options are:</br> - <code>'e-bst'</code>: Extended Binary Search Tree (E-BST). This AO has no parameters.</br> - <code>'qo'</code>: Quantizer Observer. This AO uses <code>radius</code> (defaults to <code>0.01</code>) to define a cold-start for the quantization radius. As new leaves are created, new QO instances will use the standard deviation of the input features divided by <code>std_div</code> (defaults to <code>3</code>) as radius values. If <code>std_div</code> is <code>None</code>, the initially passed <code>radius</code> value will be replicated to all QO instances.</br> - <code>'te-bst'</code>: Truncated E-BST. This extension of E-BST first truncates the input values before passing them to the binary search tree. The number of decimal places to consider is given by <code>digits</code> (defaults to <code>3</code> digits).</br> See notes for more information about the supported AOs.</p>
-</li>
-<li>
-<p><strong>attr_obs_params</strong> (<em>dict</em>) – defaults to <code>None</code></p>
-<p>Parameters passed to the numeric AOs. See <code>attr_obs</code> for more information.</p>
+<p><strong>splitter</strong> (<em>river.tree.splitter.base_splitter.Splitter</em>) – defaults to <code>None</code></p>
+<p>The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <code>tree.splitter</code> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <code>tree.splitter.EBSTSplitter</code> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>min_samples_split</strong> (<em>int</em>) – defaults to <code>5</code></p>
@@ -6336,7 +6467,7 @@
 </li>
 <li>
 <p><strong>kwargs</strong></p>
-<p>Other parameters passed to <code>river.tree.BaseHoeffdingTree</code>.</p>
+<p>Other parameters passed to <code>tree.HoeffdingTree</code>. Check the <code>tree</code> module documentation for more information.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
@@ -6435,29 +6566,6 @@ HTR relies on calculating the reduction of variance in the target space to decid
 split candidates. The smallest the variance at its leaf nodes, the more homogeneous the
 partitions are. At its leaf nodes, HTR fits either linear models or uses the target
 average as the predictor.</p>
-<p>Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-and perform splits. Nominal features can be easily dealt with, since the partitions
-are well-defined. Numerical features, however, require more sophisticated solutions.
-Currently, three AO algorithms are supported in <code>river</code> for regression trees:</p>
-<ul>
-<li>Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
-candidates, similarly to batch decision tree algorithms. It ends up storing all
-observations between split attempts. It has a <span class="arithmatex">\(O(\log n)\)</span> cost per insertion in average,
-where <span class="arithmatex">\(n\)</span> is the number of observations. In the worst case, i.e., when input features
-values are passed in an ordered fashion, the insertion cost becomes <span class="arithmatex">\(O(n)\)</span>. A naive E-BST
-implementation has a <span class="arithmatex">\(O(n)\)</span> cost to evaluate split candidates since all stored points must
-be evaluated. However, the implementation of E-BST in river automatically removes bad split
-points periodically from its structure and, thus, alleviates the memory and time
-costs involved in its usage.</li>
-<li>Quantizer Observer (QO) uses a dynamical hash-based algorithm to discretize the numerical
-input features and perform split attempts. QO has <span class="arithmatex">\(O(1)\)</span>, <span class="arithmatex">\(O(H)\)</span>, and <span class="arithmatex">\(O(H\log H)\)</span> costs
-of insertion, memory, and split candidate query, respectively, where <span class="arithmatex">\(H\)</span> is the number of
-slots in QO's hash structure. Typically, <span class="arithmatex">\(H \ll n\)</span>.</li>
-<li>Truncated E-BST extends E-BST by rouding the input feature values before inserting them in
-the binary search tree (BST). Hence, similar inputs will be mapped to the nodes in the BST
-structure. This strategy might result in memory and processing time savings when compared to
-the vanilla E-BST.</li>
-</ul>
                 
               
               

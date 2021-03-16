@@ -489,6 +489,18 @@
   
 
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/on-hoeffding-trees/" class="md-nav__link">
+        Incremental decision trees in river: the Hoeffding Tree case
+      </a>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -1657,13 +1669,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    Notes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     References
   </a>
@@ -1764,6 +1769,18 @@
           evaluate
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../evaluate/Track/" class="md-nav__link">
+        Track
+      </a>
+    </li>
+  
+
           
             
   
@@ -5407,6 +5424,117 @@
   
 
           
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33_8" type="checkbox" id="__nav_4_33_8" >
+      
+      <label class="md-nav__link" for="__nav_4_33_8">
+        splitter
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="splitter" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_33_8">
+          <span class="md-nav__icon md-icon"></span>
+          splitter
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/splitter/EBSTSplitter/" class="md-nav__link">
+        EBSTSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/splitter/ExhaustiveSplitter/" class="md-nav__link">
+        ExhaustiveSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/splitter/GaussianSplitter/" class="md-nav__link">
+        GaussianSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/splitter/HistogramSplitter/" class="md-nav__link">
+        HistogramSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/splitter/QOSplitter/" class="md-nav__link">
+        QOSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/splitter/Splitter/" class="md-nav__link">
+        Splitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/splitter/TEBSTSplitter/" class="md-nav__link">
+        TEBSTSplitter
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -6260,13 +6388,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    Notes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     References
   </a>
@@ -6364,12 +6485,8 @@
 <p>[<em>Tree parameter</em>] List of Nominal attributes. If empty, then assume that all attributes are numerical.</p>
 </li>
 <li>
-<p><strong>attr_obs</strong> (<em>str</em>) – defaults to <code>gaussian</code></p>
-<p>[<em>Tree parameter</em>] The Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Parameters can be passed to the AOs (when supported) by using <code>attr_obs_params</code>. Valid options are:</br> - <code>'bst'</code>: Binary Search Tree.</br> - <code>'gaussian'</code>: Gaussian observer. The <code>n_splits</code> used to query  for split candidates can be adjusted (defaults to <code>10</code>).</br> - <code>'histogram'</code>: Histogram-based class frequency estimation.  The number of histogram bins (<code>n_bins</code> -- defaults to <code>256</code>) and the number of split point candidates to evaluate (<code>n_splits</code> -- defaults to <code>32</code>) can be adjusted.</br> See 'Notes' for more information about the AOs.</p>
-</li>
-<li>
-<p><strong>attr_obs_params</strong> (<em>dict</em>) – defaults to <code>None</code></p>
-<p>[<em>Tree parameter</em>] Parameters passed to the numeric AOs. See <code>attr_obs</code> for more information.</p>
+<p><strong>splitter</strong> (<em>river.tree.splitter.base_splitter.Splitter</em>) – defaults to <code>None</code></p>
+<p>[<em>Tree parameter</em>] The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <code>tree.splitter</code> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <code>tree.splitter.GaussianSplitter</code> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>max_size</strong> (<em>int</em>) – defaults to <code>32</code></p>
@@ -6385,7 +6502,7 @@
 </li>
 <li>
 <p><strong>kwargs</strong></p>
-<p>Other parameters passed to <code>river.tree.BaseHoeffdingTree</code>.</p>
+<p>Other parameters passed to <code>tree.HoeffdingTree</code>. Check the <code>tree</code> module documentation for more information.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -6446,33 +6563,6 @@
 </details>
 <details class="- note"><summary>reset</summary><p>Reset the forest.</p>
 </details>
-<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-and perform splits. Nominal features can be easily dealt with, since the partitions
-are well-defined. Numerical features, however, require more sophisticated solutions.
-Currently, three AOs are supported in <code>river</code> for classification trees:</p>
-<ul>
-<li><em>Binary Search Tree (BST)</em>: uses an exhaustive algorithm to find split candidates,
-similarly to batch decision trees. It ends up storing all observations between split
-attempts. This AO is the most costly one in terms of memory and processing
-time; however, it tends to yield the most accurate results when using <code>leaf_prediction=mc</code>.
-It cannot be used to calculate the Probability Density Function (PDF) of the monitored
-feature due to its binary tree nature. Hence, leaf prediction strategies other than
-the majority class will end up effectively mimicing the majority class classifier.
-This AO has no parameters.</br></li>
-<li><em>Gaussian Estimator</em>: Approximates the numeric feature distribution by using
-a Gaussian distribution per class. The Cumulative Distribution Function (CDF) necessary to
-calculate the entropy (and, consequently, the information gain), the gini index, and
-other split criteria is then calculated using the fit feature's distribution.</br></li>
-<li><em>Histogram</em>: approximates the numeric feature distribution using an incrementally
-maintained histogram per class. It represents a compromise between the intensive
-resource usage of BST and the strong assumptions about the feature's distribution
-used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
-previous two in terms of memory usage and running time. Note that the number of
-bins affects the probability density approximation required to use leaves with
-(adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
-Gaussian estimator when adaptive or naive bayes leaves are used.</li>
-</ul>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <div class="footnote">
 <hr />

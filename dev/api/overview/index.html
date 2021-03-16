@@ -489,6 +489,18 @@
   
 
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/on-hoeffding-trees/" class="md-nav__link">
+        Incremental decision trees in river: the Hoeffding Tree case
+      </a>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -817,6 +829,19 @@
   <a href="#tree" class="md-nav__link">
     tree
   </a>
+  
+    <nav class="md-nav" aria-label="tree">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#splitter" class="md-nav__link">
+    splitter
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2018,6 +2043,18 @@
           evaluate
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluate/Track/" class="md-nav__link">
+        Track
+      </a>
+    </li>
+  
+
           
             
   
@@ -5661,6 +5698,117 @@
   
 
           
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33_8" type="checkbox" id="__nav_4_33_8" >
+      
+      <label class="md-nav__link" for="__nav_4_33_8">
+        splitter
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="splitter" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_33_8">
+          <span class="md-nav__icon md-icon"></span>
+          splitter
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tree/splitter/EBSTSplitter/" class="md-nav__link">
+        EBSTSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tree/splitter/ExhaustiveSplitter/" class="md-nav__link">
+        ExhaustiveSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tree/splitter/GaussianSplitter/" class="md-nav__link">
+        GaussianSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tree/splitter/HistogramSplitter/" class="md-nav__link">
+        HistogramSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tree/splitter/QOSplitter/" class="md-nav__link">
+        QOSplitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tree/splitter/Splitter/" class="md-nav__link">
+        Splitter
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tree/splitter/TEBSTSplitter/" class="md-nav__link">
+        TEBSTSplitter
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
         </ul>
       </nav>
     </li>
@@ -6754,6 +6902,19 @@
     tree
   </a>
   
+    <nav class="md-nav" aria-label="tree">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#splitter" class="md-nav__link">
+    splitter
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -6949,6 +7110,11 @@ metrics. This allows a principled manner to compare models with each other. For 
 the <code>load_binary_clf_tracks</code> returns tracks that are to be used to evaluate the performance of
 a binary classification model.</p>
 <p>The <code>benchmarks</code> directory at the root of the River repository uses these tracks.</p>
+<p><strong>Classes</strong></p>
+<ul>
+<li><a href="../evaluate/Track">Track</a></li>
+</ul>
+<p><strong>Functions</strong></p>
 <ul>
 <li><a href="../evaluate/load-binary-clf-tracks">load_binary_clf_tracks</a></li>
 <li><a href="../evaluate/progressive-val-score">progressive_val_score</a></li>
@@ -7321,6 +7487,102 @@ the majority of these methods are infinite data generators.</p>
 <li><a href="../time-series/SNARIMAX">SNARIMAX</a></li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<p>This module implements incremental Decision Tree (iDT) algorithms for handling classification
+and regression tasks.</p>
+<p>Each family of iDT will be presented in a dedicated section.</p>
+<p>At any moment, iDT might face situations where an input feature previously used to make
+a split decision is missing in an incoming sample. In this case, the river's trees follow the
+conventions:</p>
+<ul>
+<li><em>Learning:</em> choose the subtree branch most traversed so far to pass the instance on.</br><ul>
+<li>In case of nominal features, a new branch is created to accommodate the new
+category.</br></li>
+</ul>
+</li>
+<li><em>Predicting:</em> Use the last "reachable" decision node to provide responses.</li>
+</ul>
+<p><strong>1. Hoeffding Trees</strong></p>
+<p>This family of iDT algorithms use the Hoeffding Bound to determine whether or not the
+incrementally computed best split candidates would be equivalent to the ones obtained in a
+batch-processing fashion.</p>
+<p>All the available Hoeffding Tree (HT) implementation share some common functionalities:</p>
+<ul>
+<li>
+<p>Set the maximum tree depth allowed (<code>max_depth</code>).</p>
+</li>
+<li>
+<p>Handle <em>Active</em> and <em>Inactive</em> nodes: Active learning nodes update their own
+internal state to improve predictions and monitor input features to perform split
+attempts. Inactive learning nodes do not update their internal state and only keep the
+predictors; they are used to save memory in the tree (<code>max_size</code>).</p>
+</li>
+<li>
+<p>Enable/disable memory management.</p>
+</li>
+<li>
+<p>Define strategies to sort leaves according to how likely they are going to be split.
+This enables deactivating non-promising leaves to save memory.</p>
+</li>
+<li>
+<p>Disabling ‘poor’ attributes to save memory and speed up tree construction.
+A poor attribute is an input feature whose split merit is much smaller than the current
+best candidate. Once a feature is disabled, the tree stops saving statistics necessary
+to split such a feature.</p>
+</li>
+<li>
+<p>Define properties to access leaf prediction strategies, split criteria, and other
+relevant characteristics.</p>
+</li>
+</ul>
+<p>All HTs have the following parameters, in addition to their own, that can be selected
+using <code>**kwargs</code>. The following default values are used, unless otherwise explicitly stated
+in the tree documentation.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Description</th>
+<th align="right">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>max_depth</code></td>
+<td align="left">The maximum depth a tree can reach. If <code>None</code>, the tree will grow indefinitely.</td>
+<td align="right"><code>None</code></td>
+</tr>
+<tr>
+<td align="left"><code>binary_split</code></td>
+<td align="left">If True, only allow binary splits.</td>
+<td align="right"><code>False</code></td>
+</tr>
+<tr>
+<td align="left"><code>max_size</code></td>
+<td align="left">The maximum size the tree can reach, in Megabytes (MB).</td>
+<td align="right"><code>100</code></td>
+</tr>
+<tr>
+<td align="left"><code>memory_estimate_period</code></td>
+<td align="left">Interval (number of processed instances) between memory consumption checks.</td>
+<td align="right"><code>1_000_000</code></td>
+</tr>
+<tr>
+<td align="left"><code>stop_mem_management</code></td>
+<td align="left">If True, stop growing as soon as memory limit is hit.</td>
+<td align="right"><code>False</code></td>
+</tr>
+<tr>
+<td align="left"><code>remove_poor_attrs</code></td>
+<td align="left">If True, disable poorly descriptive attributes to reduce memory usage.</td>
+<td align="right"><code>False</code></td>
+</tr>
+<tr>
+<td align="left"><code>merit_preprune</code></td>
+<td align="left">If True, enable merit-based tree pre-pruning.</td>
+<td align="right"><code>True</code></td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li><a href="../tree/ExtremelyFastDecisionTreeClassifier">ExtremelyFastDecisionTreeClassifier</a></li>
 <li><a href="../tree/HoeffdingAdaptiveTreeClassifier">HoeffdingAdaptiveTreeClassifier</a></li>
@@ -7329,6 +7591,23 @@ the majority of these methods are infinite data generators.</p>
 <li><a href="../tree/HoeffdingTreeRegressor">HoeffdingTreeRegressor</a></li>
 <li><a href="../tree/LabelCombinationHoeffdingTreeClassifier">LabelCombinationHoeffdingTreeClassifier</a></li>
 <li><a href="../tree/iSOUPTreeRegressor">iSOUPTreeRegressor</a></li>
+</ul>
+<h3 id="splitter">splitter<a class="headerlink" href="#splitter" title="Permanent link">&para;</a></h3>
+<p>This module implements the Attribute Observers (AO) (or tree splitters) that are used by the
+iDTs. AOs are a core aspect of the iDT construction, and might represent one of the major
+bottlenecks when building the trees. The correct choice and setup of a splitter might result
+in significant differences in the running time and memory usage of the iDTs.</p>
+<p>Splitters for classification and regression trees can be differentiated by using the property
+<code>is_target_class</code> (<code>True</code> for splitters designed to classification tasks). An error will be raised
+if one tries to use a classification splitter in a regression tree and vice-versa.</p>
+<ul>
+<li><a href="../tree/splitter/EBSTSplitter">EBSTSplitter</a></li>
+<li><a href="../tree/splitter/ExhaustiveSplitter">ExhaustiveSplitter</a></li>
+<li><a href="../tree/splitter/GaussianSplitter">GaussianSplitter</a></li>
+<li><a href="../tree/splitter/HistogramSplitter">HistogramSplitter</a></li>
+<li><a href="../tree/splitter/QOSplitter">QOSplitter</a></li>
+<li><a href="../tree/splitter/Splitter">Splitter</a></li>
+<li><a href="../tree/splitter/TEBSTSplitter">TEBSTSplitter</a></li>
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <p>Utility classes and functions.</p>
