@@ -1,0 +1,6486 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Machine learning for data streams in Python">
+      
+      
+      
+        <meta name="author" content="The river developers">
+      
+      
+        <link rel="canonical" href="https://riverml.xyz/api/neural-net/MLPRegressor/">
+      
+      <link rel="icon" href="../../../img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.0.6">
+    
+    
+      
+        <title>MLPRegressor - River</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2c0c5eaf.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.7fa14f5b.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../css/version-select.css">
+    
+    
+      
+        
+<script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-63302552-3","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){var e;this.value&&(e=document.location.pathname,ga("send","pageview",e+"?q="+this.value))}),"undefined"!=typeof location$&&location$.subscribe(function(e){ga("send","pageview",e.pathname)})})</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="indigo" data-md-color-accent="indigo">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mlpregressor" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="River" class="md-header__button md-logo" aria-label="River" data-md-component="logo">
+      
+  <img src="../../../img/river_square.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            River
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MLPRegressor
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="md-header__options">
+      
+    </div>
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/online-ml/river" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    online-ml/river
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../getting-started/getting-started/" class="md-tabs__link">
+        Getting started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../user-guide/reading-data/" class="md-tabs__link">
+        User guide
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link md-tabs__link--active">
+        API reference
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../examples/batch-to-online/" class="md-tabs__link">
+        Examples
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../faq/faq/" class="md-tabs__link">
+        FAQ
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../releases/unreleased/" class="md-tabs__link">
+        Releases
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="River" class="md-nav__button md-logo" aria-label="River" data-md-component="logo">
+      
+  <img src="../../../img/river_square.svg" alt="logo">
+
+    </a>
+    River
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/online-ml/river" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    online-ml/river
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Getting started
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Getting started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/getting-started/" class="md-nav__link">
+        In a nutshell
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      <label class="md-nav__link" for="__nav_3">
+        User guide
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="User guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          User guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/reading-data/" class="md-nav__link">
+        Reading data
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/model-evaluation/" class="md-nav__link">
+        Model evaluation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/pipelines/" class="md-nav__link">
+        Pipelines
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/feature-extraction/" class="md-nav__link">
+        Feature extraction
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/hyperparameter-tuning/" class="md-nav__link">
+        Hyperparameter tuning
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user-guide/mini-batching/" class="md-nav__link">
+        Mini-batching
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      <label class="md-nav__link" for="__nav_4">
+        API reference
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          API reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
+      
+      <label class="md-nav__link" for="__nav_4_2">
+        anomaly
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="anomaly" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          anomaly
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../anomaly/HalfSpaceTrees/" class="md-nav__link">
+        HalfSpaceTrees
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+      
+      <label class="md-nav__link" for="__nav_4_3">
+        base
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="base" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          base
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/AnomalyDetector/" class="md-nav__link">
+        AnomalyDetector
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/Base/" class="md-nav__link">
+        Base
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/Classifier/" class="md-nav__link">
+        Classifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/Clusterer/" class="md-nav__link">
+        Clusterer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/DriftDetector/" class="md-nav__link">
+        DriftDetector
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/EnsembleMixin/" class="md-nav__link">
+        EnsembleMixin
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/Estimator/" class="md-nav__link">
+        Estimator
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MiniBatchClassifier/" class="md-nav__link">
+        MiniBatchClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MiniBatchRegressor/" class="md-nav__link">
+        MiniBatchRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MultiOutputMixin/" class="md-nav__link">
+        MultiOutputMixin
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/Regressor/" class="md-nav__link">
+        Regressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/SupervisedTransformer/" class="md-nav__link">
+        SupervisedTransformer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/Transformer/" class="md-nav__link">
+        Transformer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/WrapperMixin/" class="md-nav__link">
+        WrapperMixin
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" >
+      
+      <label class="md-nav__link" for="__nav_4_4">
+        cluster
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="cluster" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          cluster
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cluster/CluStream/" class="md-nav__link">
+        CluStream
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cluster/DBSTREAM/" class="md-nav__link">
+        DBSTREAM
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cluster/DenStream/" class="md-nav__link">
+        DenStream
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cluster/KMeans/" class="md-nav__link">
+        KMeans
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cluster/STREAMKMeans/" class="md-nav__link">
+        STREAMKMeans
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_5" type="checkbox" id="__nav_4_5" >
+      
+      <label class="md-nav__link" for="__nav_4_5">
+        compat
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="compat" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_5">
+          <span class="md-nav__icon md-icon"></span>
+          compat
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compat/River2SKLClassifier/" class="md-nav__link">
+        River2SKLClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compat/River2SKLClusterer/" class="md-nav__link">
+        River2SKLClusterer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compat/River2SKLRegressor/" class="md-nav__link">
+        River2SKLRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compat/River2SKLTransformer/" class="md-nav__link">
+        River2SKLTransformer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compat/SKL2RiverClassifier/" class="md-nav__link">
+        SKL2RiverClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compat/SKL2RiverRegressor/" class="md-nav__link">
+        SKL2RiverRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compat/convert-river-to-sklearn/" class="md-nav__link">
+        convert_river_to_sklearn
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compat/convert-sklearn-to-river/" class="md-nav__link">
+        convert_sklearn_to_river
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_6" type="checkbox" id="__nav_4_6" >
+      
+      <label class="md-nav__link" for="__nav_4_6">
+        compose
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="compose" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_6">
+          <span class="md-nav__icon md-icon"></span>
+          compose
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compose/Discard/" class="md-nav__link">
+        Discard
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compose/FuncTransformer/" class="md-nav__link">
+        FuncTransformer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compose/Grouper/" class="md-nav__link">
+        Grouper
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compose/Pipeline/" class="md-nav__link">
+        Pipeline
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compose/Renamer/" class="md-nav__link">
+        Renamer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compose/Select/" class="md-nav__link">
+        Select
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compose/SelectType/" class="md-nav__link">
+        SelectType
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../compose/TransformerUnion/" class="md-nav__link">
+        TransformerUnion
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_7" type="checkbox" id="__nav_4_7" >
+      
+      <label class="md-nav__link" for="__nav_4_7">
+        datasets
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="datasets" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_7">
+          <span class="md-nav__icon md-icon"></span>
+          datasets
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/AirlinePassengers/" class="md-nav__link">
+        AirlinePassengers
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Bananas/" class="md-nav__link">
+        Bananas
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Bikes/" class="md-nav__link">
+        Bikes
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/ChickWeights/" class="md-nav__link">
+        ChickWeights
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/CreditCard/" class="md-nav__link">
+        CreditCard
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Elec2/" class="md-nav__link">
+        Elec2
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/HTTP/" class="md-nav__link">
+        HTTP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Higgs/" class="md-nav__link">
+        Higgs
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/ImageSegments/" class="md-nav__link">
+        ImageSegments
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Insects/" class="md-nav__link">
+        Insects
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/MaliciousURL/" class="md-nav__link">
+        MaliciousURL
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/MovieLens100K/" class="md-nav__link">
+        MovieLens100K
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Music/" class="md-nav__link">
+        Music
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Phishing/" class="md-nav__link">
+        Phishing
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Restaurants/" class="md-nav__link">
+        Restaurants
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/SMSSpam/" class="md-nav__link">
+        SMSSpam
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/SMTP/" class="md-nav__link">
+        SMTP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/SolarFlare/" class="md-nav__link">
+        SolarFlare
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/TREC07/" class="md-nav__link">
+        TREC07
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/Taxis/" class="md-nav__link">
+        Taxis
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/TrumpApproval/" class="md-nav__link">
+        TrumpApproval
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_8" type="checkbox" id="__nav_4_8" >
+      
+      <label class="md-nav__link" for="__nav_4_8">
+        drift
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="drift" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_8">
+          <span class="md-nav__icon md-icon"></span>
+          drift
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/ADWIN/" class="md-nav__link">
+        ADWIN
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/DDM/" class="md-nav__link">
+        DDM
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/EDDM/" class="md-nav__link">
+        EDDM
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/HDDM-A/" class="md-nav__link">
+        HDDM_A
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/HDDM-W/" class="md-nav__link">
+        HDDM_W
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/KSWIN/" class="md-nav__link">
+        KSWIN
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/PageHinkley/" class="md-nav__link">
+        PageHinkley
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_9" type="checkbox" id="__nav_4_9" >
+      
+      <label class="md-nav__link" for="__nav_4_9">
+        dummy
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="dummy" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_9">
+          <span class="md-nav__icon md-icon"></span>
+          dummy
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dummy/NoChangeClassifier/" class="md-nav__link">
+        NoChangeClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dummy/PriorClassifier/" class="md-nav__link">
+        PriorClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dummy/StatisticRegressor/" class="md-nav__link">
+        StatisticRegressor
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_10" type="checkbox" id="__nav_4_10" >
+      
+      <label class="md-nav__link" for="__nav_4_10">
+        ensemble
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="ensemble" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_10">
+          <span class="md-nav__icon md-icon"></span>
+          ensemble
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/ADWINBaggingClassifier/" class="md-nav__link">
+        ADWINBaggingClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/AdaBoostClassifier/" class="md-nav__link">
+        AdaBoostClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/AdaptiveRandomForestClassifier/" class="md-nav__link">
+        AdaptiveRandomForestClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/AdaptiveRandomForestRegressor/" class="md-nav__link">
+        AdaptiveRandomForestRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/BaggingClassifier/" class="md-nav__link">
+        BaggingClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/BaggingRegressor/" class="md-nav__link">
+        BaggingRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/LeveragingBaggingClassifier/" class="md-nav__link">
+        LeveragingBaggingClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/SRPClassifier/" class="md-nav__link">
+        SRPClassifier
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_11" type="checkbox" id="__nav_4_11" >
+      
+      <label class="md-nav__link" for="__nav_4_11">
+        evaluate
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="evaluate" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_11">
+          <span class="md-nav__icon md-icon"></span>
+          evaluate
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../evaluate/load-binary-clf-tracks/" class="md-nav__link">
+        load_binary_clf_tracks
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../evaluate/progressive-val-score/" class="md-nav__link">
+        progressive_val_score
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_12" type="checkbox" id="__nav_4_12" >
+      
+      <label class="md-nav__link" for="__nav_4_12">
+        expert
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="expert" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_12">
+          <span class="md-nav__icon md-icon"></span>
+          expert
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../expert/EWARegressor/" class="md-nav__link">
+        EWARegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../expert/EpsilonGreedyRegressor/" class="md-nav__link">
+        EpsilonGreedyRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../expert/StackingClassifier/" class="md-nav__link">
+        StackingClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../expert/SuccessiveHalvingClassifier/" class="md-nav__link">
+        SuccessiveHalvingClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../expert/SuccessiveHalvingRegressor/" class="md-nav__link">
+        SuccessiveHalvingRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../expert/UCBRegressor/" class="md-nav__link">
+        UCBRegressor
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_13" type="checkbox" id="__nav_4_13" >
+      
+      <label class="md-nav__link" for="__nav_4_13">
+        facto
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="facto" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_13">
+          <span class="md-nav__icon md-icon"></span>
+          facto
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../facto/FFMClassifier/" class="md-nav__link">
+        FFMClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../facto/FFMRegressor/" class="md-nav__link">
+        FFMRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../facto/FMClassifier/" class="md-nav__link">
+        FMClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../facto/FMRegressor/" class="md-nav__link">
+        FMRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../facto/FwFMClassifier/" class="md-nav__link">
+        FwFMClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../facto/FwFMRegressor/" class="md-nav__link">
+        FwFMRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../facto/HOFMClassifier/" class="md-nav__link">
+        HOFMClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../facto/HOFMRegressor/" class="md-nav__link">
+        HOFMRegressor
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_14" type="checkbox" id="__nav_4_14" >
+      
+      <label class="md-nav__link" for="__nav_4_14">
+        feature_extraction
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="feature_extraction" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_14">
+          <span class="md-nav__icon md-icon"></span>
+          feature_extraction
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-extraction/Agg/" class="md-nav__link">
+        Agg
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-extraction/BagOfWords/" class="md-nav__link">
+        BagOfWords
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-extraction/PolynomialExtender/" class="md-nav__link">
+        PolynomialExtender
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-extraction/RBFSampler/" class="md-nav__link">
+        RBFSampler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-extraction/TFIDF/" class="md-nav__link">
+        TFIDF
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-extraction/TargetAgg/" class="md-nav__link">
+        TargetAgg
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_15" type="checkbox" id="__nav_4_15" >
+      
+      <label class="md-nav__link" for="__nav_4_15">
+        feature_selection
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="feature_selection" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_15">
+          <span class="md-nav__icon md-icon"></span>
+          feature_selection
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-selection/PoissonInclusion/" class="md-nav__link">
+        PoissonInclusion
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-selection/SelectKBest/" class="md-nav__link">
+        SelectKBest
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-selection/VarianceThreshold/" class="md-nav__link">
+        VarianceThreshold
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_16" type="checkbox" id="__nav_4_16" >
+      
+      <label class="md-nav__link" for="__nav_4_16">
+        imblearn
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="imblearn" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_16">
+          <span class="md-nav__icon md-icon"></span>
+          imblearn
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../imblearn/HardSamplingClassifier/" class="md-nav__link">
+        HardSamplingClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../imblearn/HardSamplingRegressor/" class="md-nav__link">
+        HardSamplingRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../imblearn/RandomOverSampler/" class="md-nav__link">
+        RandomOverSampler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../imblearn/RandomSampler/" class="md-nav__link">
+        RandomSampler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../imblearn/RandomUnderSampler/" class="md-nav__link">
+        RandomUnderSampler
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_17" type="checkbox" id="__nav_4_17" >
+      
+      <label class="md-nav__link" for="__nav_4_17">
+        linear_model
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="linear_model" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_17">
+          <span class="md-nav__icon md-icon"></span>
+          linear_model
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../linear-model/ALMAClassifier/" class="md-nav__link">
+        ALMAClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../linear-model/LinearRegression/" class="md-nav__link">
+        LinearRegression
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../linear-model/LogisticRegression/" class="md-nav__link">
+        LogisticRegression
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../linear-model/PAClassifier/" class="md-nav__link">
+        PAClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../linear-model/PARegressor/" class="md-nav__link">
+        PARegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../linear-model/Perceptron/" class="md-nav__link">
+        Perceptron
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../linear-model/SoftmaxRegression/" class="md-nav__link">
+        SoftmaxRegression
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18" type="checkbox" id="__nav_4_18" >
+      
+      <label class="md-nav__link" for="__nav_4_18">
+        meta
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="meta" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_18">
+          <span class="md-nav__icon md-icon"></span>
+          meta
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meta/BoxCoxRegressor/" class="md-nav__link">
+        BoxCoxRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meta/PredClipper/" class="md-nav__link">
+        PredClipper
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meta/TransformedTargetRegressor/" class="md-nav__link">
+        TransformedTargetRegressor
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_19" type="checkbox" id="__nav_4_19" >
+      
+      <label class="md-nav__link" for="__nav_4_19">
+        metrics
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="metrics" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_19">
+          <span class="md-nav__icon md-icon"></span>
+          metrics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/Accuracy/" class="md-nav__link">
+        Accuracy
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/BalancedAccuracy/" class="md-nav__link">
+        BalancedAccuracy
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/BinaryMetric/" class="md-nav__link">
+        BinaryMetric
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ClassificationMetric/" class="md-nav__link">
+        ClassificationMetric
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ClassificationReport/" class="md-nav__link">
+        ClassificationReport
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/CohenKappa/" class="md-nav__link">
+        CohenKappa
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ConfusionMatrix/" class="md-nav__link">
+        ConfusionMatrix
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/CrossEntropy/" class="md-nav__link">
+        CrossEntropy
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ExactMatch/" class="md-nav__link">
+        ExactMatch
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ExampleF1/" class="md-nav__link">
+        ExampleF1
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ExampleFBeta/" class="md-nav__link">
+        ExampleFBeta
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ExamplePrecision/" class="md-nav__link">
+        ExamplePrecision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ExampleRecall/" class="md-nav__link">
+        ExampleRecall
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/F1/" class="md-nav__link">
+        F1
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/FBeta/" class="md-nav__link">
+        FBeta
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/GeometricMean/" class="md-nav__link">
+        GeometricMean
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/Hamming/" class="md-nav__link">
+        Hamming
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/HammingLoss/" class="md-nav__link">
+        HammingLoss
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/Jaccard/" class="md-nav__link">
+        Jaccard
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/KappaM/" class="md-nav__link">
+        KappaM
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/KappaT/" class="md-nav__link">
+        KappaT
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/LogLoss/" class="md-nav__link">
+        LogLoss
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MAE/" class="md-nav__link">
+        MAE
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MCC/" class="md-nav__link">
+        MCC
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MSE/" class="md-nav__link">
+        MSE
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MacroF1/" class="md-nav__link">
+        MacroF1
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MacroFBeta/" class="md-nav__link">
+        MacroFBeta
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MacroPrecision/" class="md-nav__link">
+        MacroPrecision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MacroRecall/" class="md-nav__link">
+        MacroRecall
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/Metric/" class="md-nav__link">
+        Metric
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/Metrics/" class="md-nav__link">
+        Metrics
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MicroF1/" class="md-nav__link">
+        MicroF1
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MicroFBeta/" class="md-nav__link">
+        MicroFBeta
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MicroPrecision/" class="md-nav__link">
+        MicroPrecision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MicroRecall/" class="md-nav__link">
+        MicroRecall
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MultiClassMetric/" class="md-nav__link">
+        MultiClassMetric
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MultiFBeta/" class="md-nav__link">
+        MultiFBeta
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MultiLabelConfusionMatrix/" class="md-nav__link">
+        MultiLabelConfusionMatrix
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MultiOutputClassificationMetric/" class="md-nav__link">
+        MultiOutputClassificationMetric
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/MultiOutputRegressionMetric/" class="md-nav__link">
+        MultiOutputRegressionMetric
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/Precision/" class="md-nav__link">
+        Precision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/R2/" class="md-nav__link">
+        R2
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/RMSE/" class="md-nav__link">
+        RMSE
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/RMSLE/" class="md-nav__link">
+        RMSLE
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/ROCAUC/" class="md-nav__link">
+        ROCAUC
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/Recall/" class="md-nav__link">
+        Recall
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/RegressionMetric/" class="md-nav__link">
+        RegressionMetric
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/RegressionMultiOutput/" class="md-nav__link">
+        RegressionMultiOutput
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/Rolling/" class="md-nav__link">
+        Rolling
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/SMAPE/" class="md-nav__link">
+        SMAPE
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/TimeRolling/" class="md-nav__link">
+        TimeRolling
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/WeightedF1/" class="md-nav__link">
+        WeightedF1
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/WeightedFBeta/" class="md-nav__link">
+        WeightedFBeta
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/WeightedPrecision/" class="md-nav__link">
+        WeightedPrecision
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/WeightedRecall/" class="md-nav__link">
+        WeightedRecall
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/WrapperMetric/" class="md-nav__link">
+        WrapperMetric
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_20" type="checkbox" id="__nav_4_20" >
+      
+      <label class="md-nav__link" for="__nav_4_20">
+        multiclass
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="multiclass" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_20">
+          <span class="md-nav__icon md-icon"></span>
+          multiclass
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiclass/OneVsOneClassifier/" class="md-nav__link">
+        OneVsOneClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiclass/OneVsRestClassifier/" class="md-nav__link">
+        OneVsRestClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiclass/OutputCodeClassifier/" class="md-nav__link">
+        OutputCodeClassifier
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_21" type="checkbox" id="__nav_4_21" >
+      
+      <label class="md-nav__link" for="__nav_4_21">
+        multioutput
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="multioutput" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_21">
+          <span class="md-nav__icon md-icon"></span>
+          multioutput
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+        ClassifierChain
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multioutput/MonteCarloClassifierChain/" class="md-nav__link">
+        MonteCarloClassifierChain
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multioutput/ProbabilisticClassifierChain/" class="md-nav__link">
+        ProbabilisticClassifierChain
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multioutput/RegressorChain/" class="md-nav__link">
+        RegressorChain
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22" type="checkbox" id="__nav_4_22" >
+      
+      <label class="md-nav__link" for="__nav_4_22">
+        naive_bayes
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="naive_bayes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_22">
+          <span class="md-nav__icon md-icon"></span>
+          naive_bayes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../naive-bayes/BernoulliNB/" class="md-nav__link">
+        BernoulliNB
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../naive-bayes/ComplementNB/" class="md-nav__link">
+        ComplementNB
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../naive-bayes/GaussianNB/" class="md-nav__link">
+        GaussianNB
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../naive-bayes/MultinomialNB/" class="md-nav__link">
+        MultinomialNB
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23" type="checkbox" id="__nav_4_23" >
+      
+      <label class="md-nav__link" for="__nav_4_23">
+        neighbors
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="neighbors" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_23">
+          <span class="md-nav__icon md-icon"></span>
+          neighbors
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../neighbors/KNNADWINClassifier/" class="md-nav__link">
+        KNNADWINClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../neighbors/KNNClassifier/" class="md-nav__link">
+        KNNClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../neighbors/KNNRegressor/" class="md-nav__link">
+        KNNRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../neighbors/SAMKNNClassifier/" class="md-nav__link">
+        SAMKNNClassifier
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24" type="checkbox" id="__nav_4_24" checked>
+      
+      <label class="md-nav__link" for="__nav_4_24">
+        neural_net
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="neural_net" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_24">
+          <span class="md-nav__icon md-icon"></span>
+          neural_net
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          MLPRegressor
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        MLPRegressor
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_2" type="checkbox" id="__nav_4_24_2" >
+      
+      <label class="md-nav__link" for="__nav_4_24_2">
+        activations
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="activations" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_24_2">
+          <span class="md-nav__icon md-icon"></span>
+          activations
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../activations/Identity/" class="md-nav__link">
+        Identity
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../activations/ReLU/" class="md-nav__link">
+        ReLU
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../activations/Sigmoid/" class="md-nav__link">
+        Sigmoid
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25" type="checkbox" id="__nav_4_25" >
+      
+      <label class="md-nav__link" for="__nav_4_25">
+        optim
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="optim" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_25">
+          <span class="md-nav__icon md-icon"></span>
+          optim
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/AMSGrad/" class="md-nav__link">
+        AMSGrad
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/AdaBound/" class="md-nav__link">
+        AdaBound
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/AdaDelta/" class="md-nav__link">
+        AdaDelta
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/AdaGrad/" class="md-nav__link">
+        AdaGrad
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/AdaMax/" class="md-nav__link">
+        AdaMax
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/Adam/" class="md-nav__link">
+        Adam
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/Averager/" class="md-nav__link">
+        Averager
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/FTRLProximal/" class="md-nav__link">
+        FTRLProximal
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/Momentum/" class="md-nav__link">
+        Momentum
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/Nadam/" class="md-nav__link">
+        Nadam
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/NesterovMomentum/" class="md-nav__link">
+        NesterovMomentum
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/Optimizer/" class="md-nav__link">
+        Optimizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/RMSProp/" class="md-nav__link">
+        RMSProp
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/SGD/" class="md-nav__link">
+        SGD
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25_15" type="checkbox" id="__nav_4_25_15" >
+      
+      <label class="md-nav__link" for="__nav_4_25_15">
+        initializers
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="initializers" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_25_15">
+          <span class="md-nav__icon md-icon"></span>
+          initializers
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/initializers/Constant/" class="md-nav__link">
+        Constant
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/initializers/Normal/" class="md-nav__link">
+        Normal
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/initializers/Zeros/" class="md-nav__link">
+        Zeros
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25_16" type="checkbox" id="__nav_4_25_16" >
+      
+      <label class="md-nav__link" for="__nav_4_25_16">
+        losses
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="losses" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_25_16">
+          <span class="md-nav__icon md-icon"></span>
+          losses
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/Absolute/" class="md-nav__link">
+        Absolute
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/BinaryFocalLoss/" class="md-nav__link">
+        BinaryFocalLoss
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/BinaryLoss/" class="md-nav__link">
+        BinaryLoss
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/Cauchy/" class="md-nav__link">
+        Cauchy
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/CrossEntropy/" class="md-nav__link">
+        CrossEntropy
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/EpsilonInsensitiveHinge/" class="md-nav__link">
+        EpsilonInsensitiveHinge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/Hinge/" class="md-nav__link">
+        Hinge
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/Log/" class="md-nav__link">
+        Log
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/MultiClassLoss/" class="md-nav__link">
+        MultiClassLoss
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/Poisson/" class="md-nav__link">
+        Poisson
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/Quantile/" class="md-nav__link">
+        Quantile
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/RegressionLoss/" class="md-nav__link">
+        RegressionLoss
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/losses/Squared/" class="md-nav__link">
+        Squared
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25_17" type="checkbox" id="__nav_4_25_17" >
+      
+      <label class="md-nav__link" for="__nav_4_25_17">
+        schedulers
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="schedulers" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_25_17">
+          <span class="md-nav__icon md-icon"></span>
+          schedulers
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/schedulers/Constant/" class="md-nav__link">
+        Constant
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/schedulers/InverseScaling/" class="md-nav__link">
+        InverseScaling
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/schedulers/Optimal/" class="md-nav__link">
+        Optimal
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optim/schedulers/Scheduler/" class="md-nav__link">
+        Scheduler
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_26" type="checkbox" id="__nav_4_26" >
+      
+      <label class="md-nav__link" for="__nav_4_26">
+        preprocessing
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="preprocessing" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_26">
+          <span class="md-nav__icon md-icon"></span>
+          preprocessing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/AdaptiveStandardScaler/" class="md-nav__link">
+        AdaptiveStandardScaler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/Binarizer/" class="md-nav__link">
+        Binarizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/FeatureHasher/" class="md-nav__link">
+        FeatureHasher
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/LDA/" class="md-nav__link">
+        LDA
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/MaxAbsScaler/" class="md-nav__link">
+        MaxAbsScaler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/MinMaxScaler/" class="md-nav__link">
+        MinMaxScaler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/Normalizer/" class="md-nav__link">
+        Normalizer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/OneHotEncoder/" class="md-nav__link">
+        OneHotEncoder
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/PreviousImputer/" class="md-nav__link">
+        PreviousImputer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/RobustScaler/" class="md-nav__link">
+        RobustScaler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/StandardScaler/" class="md-nav__link">
+        StandardScaler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/StatImputer/" class="md-nav__link">
+        StatImputer
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27" type="checkbox" id="__nav_4_27" >
+      
+      <label class="md-nav__link" for="__nav_4_27">
+        proba
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="proba" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_27">
+          <span class="md-nav__icon md-icon"></span>
+          proba
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proba/Gaussian/" class="md-nav__link">
+        Gaussian
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proba/Multinomial/" class="md-nav__link">
+        Multinomial
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28" type="checkbox" id="__nav_4_28" >
+      
+      <label class="md-nav__link" for="__nav_4_28">
+        reco
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="reco" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_28">
+          <span class="md-nav__icon md-icon"></span>
+          reco
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reco/Baseline/" class="md-nav__link">
+        Baseline
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reco/BiasedMF/" class="md-nav__link">
+        BiasedMF
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reco/FunkMF/" class="md-nav__link">
+        FunkMF
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reco/RandomNormal/" class="md-nav__link">
+        RandomNormal
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_29" type="checkbox" id="__nav_4_29" >
+      
+      <label class="md-nav__link" for="__nav_4_29">
+        stats
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="stats" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_29">
+          <span class="md-nav__icon md-icon"></span>
+          stats
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/AbsMax/" class="md-nav__link">
+        AbsMax
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/AutoCorr/" class="md-nav__link">
+        AutoCorr
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/BayesianMean/" class="md-nav__link">
+        BayesianMean
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Bivariate/" class="md-nav__link">
+        Bivariate
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Count/" class="md-nav__link">
+        Count
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Cov/" class="md-nav__link">
+        Cov
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/EWMean/" class="md-nav__link">
+        EWMean
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/EWVar/" class="md-nav__link">
+        EWVar
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Entropy/" class="md-nav__link">
+        Entropy
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/IQR/" class="md-nav__link">
+        IQR
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Kurtosis/" class="md-nav__link">
+        Kurtosis
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Link/" class="md-nav__link">
+        Link
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Max/" class="md-nav__link">
+        Max
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Mean/" class="md-nav__link">
+        Mean
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Min/" class="md-nav__link">
+        Min
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Mode/" class="md-nav__link">
+        Mode
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/NUnique/" class="md-nav__link">
+        NUnique
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/PeakToPeak/" class="md-nav__link">
+        PeakToPeak
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/PearsonCorr/" class="md-nav__link">
+        PearsonCorr
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Quantile/" class="md-nav__link">
+        Quantile
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingAbsMax/" class="md-nav__link">
+        RollingAbsMax
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingCov/" class="md-nav__link">
+        RollingCov
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingIQR/" class="md-nav__link">
+        RollingIQR
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingMax/" class="md-nav__link">
+        RollingMax
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingMean/" class="md-nav__link">
+        RollingMean
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingMin/" class="md-nav__link">
+        RollingMin
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingMode/" class="md-nav__link">
+        RollingMode
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingPeakToPeak/" class="md-nav__link">
+        RollingPeakToPeak
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingPearsonCorr/" class="md-nav__link">
+        RollingPearsonCorr
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingQuantile/" class="md-nav__link">
+        RollingQuantile
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingSEM/" class="md-nav__link">
+        RollingSEM
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingSum/" class="md-nav__link">
+        RollingSum
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/RollingVar/" class="md-nav__link">
+        RollingVar
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/SEM/" class="md-nav__link">
+        SEM
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Shift/" class="md-nav__link">
+        Shift
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Skew/" class="md-nav__link">
+        Skew
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Sum/" class="md-nav__link">
+        Sum
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Univariate/" class="md-nav__link">
+        Univariate
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stats/Var/" class="md-nav__link">
+        Var
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_30" type="checkbox" id="__nav_4_30" >
+      
+      <label class="md-nav__link" for="__nav_4_30">
+        stream
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="stream" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_30">
+          <span class="md-nav__icon md-icon"></span>
+          stream
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/Cache/" class="md-nav__link">
+        Cache
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/iter-arff/" class="md-nav__link">
+        iter_arff
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/iter-array/" class="md-nav__link">
+        iter_array
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/iter-csv/" class="md-nav__link">
+        iter_csv
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/iter-libsvm/" class="md-nav__link">
+        iter_libsvm
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/iter-pandas/" class="md-nav__link">
+        iter_pandas
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/iter-sklearn-dataset/" class="md-nav__link">
+        iter_sklearn_dataset
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/iter-sql/" class="md-nav__link">
+        iter_sql
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/shuffle/" class="md-nav__link">
+        shuffle
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stream/simulate-qa/" class="md-nav__link">
+        simulate_qa
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_31" type="checkbox" id="__nav_4_31" >
+      
+      <label class="md-nav__link" for="__nav_4_31">
+        synth
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="synth" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_31">
+          <span class="md-nav__icon md-icon"></span>
+          synth
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Agrawal/" class="md-nav__link">
+        Agrawal
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/AnomalySine/" class="md-nav__link">
+        AnomalySine
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/ConceptDriftStream/" class="md-nav__link">
+        ConceptDriftStream
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Friedman/" class="md-nav__link">
+        Friedman
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/FriedmanDrift/" class="md-nav__link">
+        FriedmanDrift
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Hyperplane/" class="md-nav__link">
+        Hyperplane
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/LED/" class="md-nav__link">
+        LED
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/LEDDrift/" class="md-nav__link">
+        LEDDrift
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Logical/" class="md-nav__link">
+        Logical
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Mixed/" class="md-nav__link">
+        Mixed
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Mv/" class="md-nav__link">
+        Mv
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Planes2D/" class="md-nav__link">
+        Planes2D
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/RandomRBF/" class="md-nav__link">
+        RandomRBF
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/RandomRBFDrift/" class="md-nav__link">
+        RandomRBFDrift
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/RandomTree/" class="md-nav__link">
+        RandomTree
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/SEA/" class="md-nav__link">
+        SEA
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/STAGGER/" class="md-nav__link">
+        STAGGER
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Sine/" class="md-nav__link">
+        Sine
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synth/Waveform/" class="md-nav__link">
+        Waveform
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_32" type="checkbox" id="__nav_4_32" >
+      
+      <label class="md-nav__link" for="__nav_4_32">
+        time_series
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="time_series" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_32">
+          <span class="md-nav__icon md-icon"></span>
+          time_series
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../time-series/Detrender/" class="md-nav__link">
+        Detrender
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../time-series/GroupDetrender/" class="md-nav__link">
+        GroupDetrender
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../time-series/SNARIMAX/" class="md-nav__link">
+        SNARIMAX
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33" type="checkbox" id="__nav_4_33" >
+      
+      <label class="md-nav__link" for="__nav_4_33">
+        tree
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="tree" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_33">
+          <span class="md-nav__icon md-icon"></span>
+          tree
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/ExtremelyFastDecisionTreeClassifier/" class="md-nav__link">
+        ExtremelyFastDecisionTreeClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/HoeffdingAdaptiveTreeClassifier/" class="md-nav__link">
+        HoeffdingAdaptiveTreeClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/HoeffdingAdaptiveTreeRegressor/" class="md-nav__link">
+        HoeffdingAdaptiveTreeRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/HoeffdingTreeClassifier/" class="md-nav__link">
+        HoeffdingTreeClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/HoeffdingTreeRegressor/" class="md-nav__link">
+        HoeffdingTreeRegressor
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/LabelCombinationHoeffdingTreeClassifier/" class="md-nav__link">
+        LabelCombinationHoeffdingTreeClassifier
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tree/iSOUPTreeRegressor/" class="md-nav__link">
+        iSOUPTreeRegressor
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34" type="checkbox" id="__nav_4_34" >
+      
+      <label class="md-nav__link" for="__nav_4_34">
+        utils
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="utils" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_34">
+          <span class="md-nav__icon md-icon"></span>
+          utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/Histogram/" class="md-nav__link">
+        Histogram
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/SDFT/" class="md-nav__link">
+        SDFT
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/Skyline/" class="md-nav__link">
+        Skyline
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/SortedWindow/" class="md-nav__link">
+        SortedWindow
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/VectorDict/" class="md-nav__link">
+        VectorDict
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/Window/" class="md-nav__link">
+        Window
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/check-estimator/" class="md-nav__link">
+        check_estimator
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/dict2numpy/" class="md-nav__link">
+        dict2numpy
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/expand-param-grid/" class="md-nav__link">
+        expand_param_grid
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/numpy2dict/" class="md-nav__link">
+        numpy2dict
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_11" type="checkbox" id="__nav_4_34_11" >
+      
+      <label class="md-nav__link" for="__nav_4_34_11">
+        math
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="math" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_34_11">
+          <span class="md-nav__icon md-icon"></span>
+          math
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/argmax/" class="md-nav__link">
+        argmax
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/chain-dot/" class="md-nav__link">
+        chain_dot
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/clamp/" class="md-nav__link">
+        clamp
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/dot/" class="md-nav__link">
+        dot
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/dotvecmat/" class="md-nav__link">
+        dotvecmat
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/matmul2d/" class="md-nav__link">
+        matmul2d
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/minkowski-distance/" class="md-nav__link">
+        minkowski_distance
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/norm/" class="md-nav__link">
+        norm
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/outer/" class="md-nav__link">
+        outer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/prod/" class="md-nav__link">
+        prod
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/sherman-morrison/" class="md-nav__link">
+        sherman_morrison
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/sigmoid/" class="md-nav__link">
+        sigmoid
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/sign/" class="md-nav__link">
+        sign
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/math/softmax/" class="md-nav__link">
+        softmax
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_12" type="checkbox" id="__nav_4_34_12" >
+      
+      <label class="md-nav__link" for="__nav_4_34_12">
+        pretty
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="pretty" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_34_12">
+          <span class="md-nav__icon md-icon"></span>
+          pretty
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/pretty/humanize-bytes/" class="md-nav__link">
+        humanize_bytes
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/pretty/print-table/" class="md-nav__link">
+        print_table
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      <label class="md-nav__link" for="__nav_5">
+        Examples
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Examples" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/batch-to-online/" class="md-nav__link">
+        From batch to online/stream
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/bike-sharing-forecasting/" class="md-nav__link">
+        Bike-sharing forecasting
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/building-a-simple-time-series-model/" class="md-nav__link">
+        Building a simple time series model
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/concept-drift-detection/" class="md-nav__link">
+        Concept Drift
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/debugging-a-pipeline/" class="md-nav__link">
+        Debugging a pipeline
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/imbalanced-learning/" class="md-nav__link">
+        Working with imbalanced data
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/matrix-factorization-for-recommender-systems-part-1/" class="md-nav__link">
+        Matrix Factorization for Recommender Systems - Part 1
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/matrix-factorization-for-recommender-systems-part-2/" class="md-nav__link">
+        Matrix Factorization for Recommender Systems - Part 2
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/matrix-factorization-for-recommender-systems-part-3/" class="md-nav__link">
+        Matrix Factorization for Recommender Systems - Part 3
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/quantile-regression-uncertainty/" class="md-nav__link">
+        Handling uncertainty with quantile regression
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/sentence_classification/" class="md-nav__link">
+        Sentence classification
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/the-art-of-using-pipelines/" class="md-nav__link">
+        The art of using pipelines
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        FAQ
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="FAQ" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          FAQ
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../faq/faq/" class="md-nav__link">
+        Frequently Asked Questions
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      <label class="md-nav__link" for="__nav_7">
+        Releases
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Releases" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Releases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.6.1/" class="md-nav__link">
+        0.6.1 - 2020-06-10
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.6.0/" class="md-nav__link">
+        0.6.0 - 2020-06-09
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.5.1/" class="md-nav__link">
+        0.5.1 - 2020-03-29
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.5.0/" class="md-nav__link">
+        0.5.0 - 2020-03-13
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.4.4/" class="md-nav__link">
+        0.4.4 - 2019-11-11
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.4.3/" class="md-nav__link">
+        0.4.3 - 2019-10-27
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.4.1/" class="md-nav__link">
+        0.4.1 - 2019-10-23
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.3.0/" class="md-nav__link">
+        0.3.0 - 2019-06-23
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.2.0/" class="md-nav__link">
+        0.2.0 - 2019-05-27
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.1.0/" class="md-nav__link">
+        0.1.0 - 2019-05-08
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.0.3/" class="md-nav__link">
+        0.0.3 - 2019-03-21
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.0.2/" class="md-nav__link">
+        0.0.2 - 2019-02-13
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="mlpregressor">MLPRegressor<a class="headerlink" href="#mlpregressor" title="Permanent link">&para;</a></h1>
+<p>Multi-layer Perceptron for regression.</p>
+<p>This model is still work in progress. Here are some features that still need implementing: </p>
+<ul>
+<li><code>learn_one</code> and <code>predict_one</code> just cast the input <code>dict</code> to a single row dataframe and then     call <code>learn_many</code> and <code>predict_many</code> respectively. This is very inefficient. - Not all of the optimizers in the <code>optim</code> module can be used as they are not all vectorised. - Emerging and disappearing features are not supported. Each instance/batch has to have the     same features. - The gradient haven't been numerically checked.</li>
+</ul>
+<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>hidden_dims</strong></p>
+<p>The dimensions of the hidden layers. For example, specifying <code>(10, 20)</code> means that there are two hidden layers with 10 and 20 neurons, respectively. Note that the number of layers the network contains is equal to the number of hidden layers plus two (to account for the input and output layers).</p>
+</li>
+<li>
+<p><strong>activations</strong></p>
+<p>The activation functions to use at each layer, including the input and output layers. Therefore you need to specify three activation if you specify one hidden layer.</p>
+</li>
+<li>
+<p><strong>loss</strong> (<em><a href="../../optim/losses/Loss">optim.losses.Loss</a></em>) – defaults to <code>None</code></p>
+<p>Loss function. Defaults to <code>optim.losses.Squared</code>.</p>
+</li>
+<li>
+<p><strong>optimizer</strong> (<em><a href="../../optim/Optimizer">optim.Optimizer</a></em>) – defaults to <code>None</code></p>
+<p>Optimizer. Defaults to <code>optim.SGD(.01)</code>.</p>
+</li>
+<li>
+<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p>Random number generation seed. Set this for reproducibility.</p>
+</li>
+</ul>
+<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>n_layers</strong></p>
+<p>Return the number of layers in the network.  The number of layers is equal to the number of hidden layers plus 2. The 2 accounts for the input layer and the output layer.</p>
+</li>
+</ul>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">neural_net</span> <span class="k">as</span> <span class="n">nn</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span> <span class="k">as</span> <span class="n">pp</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+<span class="o">...</span>     <span class="n">pp</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
+<span class="o">...</span>     <span class="n">nn</span><span class="o">.</span><span class="n">MLPRegressor</span><span class="p">(</span>
+<span class="o">...</span>         <span class="n">hidden_dims</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,),</span>
+<span class="o">...</span>         <span class="n">activations</span><span class="o">=</span><span class="p">(</span>
+<span class="o">...</span>             <span class="n">nn</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">ReLU</span><span class="p">,</span>
+<span class="o">...</span>             <span class="n">nn</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">ReLU</span><span class="p">,</span>
+<span class="o">...</span>             <span class="n">nn</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">Identity</span>
+<span class="o">...</span>         <span class="p">),</span>
+<span class="o">...</span>         <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">),</span>
+<span class="o">...</span>         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="o">...</span>     <span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+<span class="n">MAE</span><span class="p">:</span> <span class="mf">1.589827</span>
+</code></pre></div>
+<p>You can also use this to process mini-batches of data.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+<span class="o">...</span>     <span class="n">pp</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
+<span class="o">...</span>     <span class="n">nn</span><span class="o">.</span><span class="n">MLPRegressor</span><span class="p">(</span>
+<span class="o">...</span>         <span class="n">hidden_dims</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,),</span>
+<span class="o">...</span>         <span class="n">activations</span><span class="o">=</span><span class="p">(</span>
+<span class="o">...</span>             <span class="n">nn</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">ReLU</span><span class="p">,</span>
+<span class="o">...</span>             <span class="n">nn</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">ReLU</span><span class="p">,</span>
+<span class="o">...</span>             <span class="n">nn</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">ReLU</span>
+<span class="o">...</span>         <span class="p">),</span>
+<span class="o">...</span>         <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span>
+<span class="o">...</span>         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="o">...</span>     <span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">for</span> <span class="n">xb</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">batch_size</span><span class="p">):</span>
+<span class="o">...</span>         <span class="n">yb</span> <span class="o">=</span> <span class="n">xb</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;five_thirty_eight&#39;</span><span class="p">)</span>
+<span class="o">...</span>         <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">xb</span><span class="p">)</span>
+<span class="o">...</span>         <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">xb</span><span class="p">,</span> <span class="n">yb</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">xb</span><span class="p">)</span>
+      <span class="n">five_thirty_eight</span>
+<span class="mi">992</span>           <span class="mf">39.361609</span>
+<span class="mi">993</span>           <span class="mf">46.398536</span>
+<span class="mi">994</span>           <span class="mf">42.094086</span>
+<span class="mi">995</span>           <span class="mf">40.195802</span>
+<span class="mi">996</span>           <span class="mf">40.782954</span>
+<span class="mi">997</span>           <span class="mf">40.839678</span>
+<span class="mi">998</span>           <span class="mf">40.896403</span>
+<span class="mi">999</span>           <span class="mf">48.362659</span>
+<span class="mi">1000</span>          <span class="mf">42.021849</span>
+</code></pre></div>
+<h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
+<details class="- note"><summary><strong>call</strong></summary><p>Make predictions.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+</ul>
+</details>
+<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
+</details>
+<details class="- note"><summary>learn_many</summary><p>Train the network.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+<li><strong>y</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+</ul>
+</details>
+<details class="- note"><summary>learn_one</summary><p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>y</strong>     (<em>numbers.Number</em>)    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>Regressor</em>:     self</p>
+</details>
+<details class="- note"><summary>predict_many</summary></details>
+<details class="- note"><summary>predict_one</summary><p>Predicts the target value of a set of features <code>x</code>.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>x</strong>     (<em>dict</em>)    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>Number</em>:     The prediction.</p>
+</details>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+
+<!-- Application footer -->
+<footer class="md-footer">
+
+  <!-- Further information -->
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+
+      <!-- Copyright and theme information -->
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2019 - 2020
+          </div>
+        
+        Made with
+        <a
+          href="https://squidfunk.github.io/mkdocs-material/"
+          target="_blank" rel="noopener"
+        >
+          Material for MkDocs
+        </a>
+      </div>
+
+      <!-- Social links -->
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/online-ml/river" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../../assets/javascripts/workers/search.fb4a9340.min.js", "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a1c7c35e.min.js"></script>
+      
+        <script src="../../../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../../../js/version-select.js"></script>
+      
+    
+  </body>
+</html>
