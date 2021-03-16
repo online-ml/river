@@ -22,10 +22,10 @@ datasets.SMSSpam()
        Samples  5,574                                                                                
       Features  1                                                                                    
         Sparse  False                                                                                
-          Path  /Users/home/river_data/SMSSpam/SMSSpamCollection                                     
+          Path  /Users/max.halford/river_data/SMSSpam/SMSSpamCollection                              
            URL  https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip
           Size  466.71 KB                                                                            
-    Downloaded  True                                                                                 
+    Downloaded  False                                                                                
 
 
 
@@ -41,6 +41,8 @@ for x, y in X_y:
     break
 ```
 
+    Downloading https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip (198.65 KB)
+    Uncompressing into /Users/max.halford/river_data/SMSSpam
     {'body': 'Go until jurong point, crazy.. Available only in bugis n great world '
              'la e buffet... Cine there got amore wat...\n'}
     Spam: False
@@ -286,6 +288,22 @@ class Embeddings(Transformer):
         return {dimension: xi for dimension, xi in enumerate(self.embeddings(x).vector)}
 ```
 
+
+    ---------------------------------------------------------------------------
+
+    ModuleNotFoundError                       Traceback (most recent call last)
+
+    <ipython-input-11-f2a8877fc890> in <module>
+    ----> 1 import spacy
+          2 
+          3 from river.base import Transformer
+          4 
+          5 class Embeddings(Transformer):
+
+
+    ModuleNotFoundError: No module named 'spacy'
+
+
 Let's train our logistic regression:
 
 
@@ -321,13 +339,6 @@ for x, y in X_y:
 metric
 ```
 
-
-
-
-    ROCAUC: 0.91568
-
-
-
 The confusion matrix:
 
 
@@ -336,26 +347,8 @@ cm
 ```
 
 
-
-
-               False    True
-       False    4517     310
-        True      78     669
-
-
-
-
 ```python
-model.draw()
+model
 ```
-
-
-
-
-    
-![svg](sentence_classification_files/sentence_classification_31_0.svg)
-    
-
-
 
 The results of the logistic regression using spaCy embeddings are lower than those obtained with TF-IDF values. We could surely improve the results by cleaning up the text. We could also use embeddings more suited to our dataset. However, on this problem, the logistic regression is not better than the Naive Bayes model. No free lunch today.

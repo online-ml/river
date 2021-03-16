@@ -1,13 +1,14 @@
 import collections
+import copy
 import numbers
 import textwrap
+import typing
 from abc import ABCMeta, abstractmethod
-from typing import Dict, Iterator, List, Union
 
 from river import base
 from river.stats import Var
-from river.tree._attribute_test import AttributeSplitSuggestion  # noqa
-from river.tree._attribute_test import InstanceConditionalTest  # noqa
+
+from .._attribute_test import InstanceConditionalTest, SplitSuggestion
 
 # Helper structure to manage nodes
 FoundNode = collections.namedtuple("FoundNode", ["node", "parent", "parent_branch"])
@@ -27,9 +28,10 @@ class Node(metaclass=ABCMeta):
         follow non-trivial structures).
     """
 
-    def __init__(self, stats: Union[dict, Var] = None, depth: int = 0, **kwargs):
-        self._stats: Union[dict, Var] = stats if stats is not None else {}
-        self._depth = depth
+    def __init__(self, stats: typing.Union[dict, Var] = None, depth: int = 0, **kwargs):
+        self.stats: typing.Union[dict, Var] = stats if stats is not None else {}
+        self.depth = depth
+        self.kwargs = kwargs
 
     @staticmethod
     def is_leaf() -> bool:
@@ -62,7 +64,7 @@ class Node(metaclass=ABCMeta):
         """
         return FoundNode(self, parent, parent_branch)
 
-    def path(self, x) -> Iterator["Node"]:
+    def path(self, x) -> typing.Iterator["Node"]:
         """
         Yield the nodes that lead to the leaf which contains x.
 
@@ -79,25 +81,6 @@ class Node(metaclass=ABCMeta):
 
     def iter_edges(self):
         yield None, 0, None, self, None
-
-    @property
-    def stats(self) -> Union[dict, Var]:
-        """Statistics observed by the node. """
-        return self._stats
-
-    @stats.setter
-    def stats(self, new_stats: Union[dict, Var]):
-        """Set the statistics at the node. """
-        self._stats = new_stats if new_stats is not None else {}
-
-    @property
-    def depth(self) -> int:
-        return self._depth
-
-    @depth.setter
-    def depth(self, depth):
-        if depth >= 0:
-            self._depth = depth
 
     @property
     @abstractmethod
@@ -120,7 +103,7 @@ class Node(metaclass=ABCMeta):
         """
         return 0
 
-    def describe_subtree(self, tree, buffer: List[str], indent: int = 0):
+    def describe_subtree(self, tree, buffer: typing.List[str], indent: int = 0):
         """Walk the tree and write its structure to a buffer string.
 
         Parameters
@@ -161,13 +144,15 @@ class SplitNode(Node):
         Class observations.
     depth
         The depth of the node.
+    kwargs
+        Other parameters passed to the split node.
     """
 
     def __init__(self, split_test: InstanceConditionalTest, stats, depth, **kwargs):
         super().__init__(stats, depth, **kwargs)
-        self._split_test = split_test
-        # Dict -> branch_id: child_node
-        self._children: Dict[int, Node] = {}
+        self.split_test = split_test
+        # dict -> branch_id: child_node
+        self._children: typing.Dict[int, Node] = {}
 
     @staticmethod
     def is_leaf():
@@ -184,18 +169,6 @@ class SplitNode(Node):
     def n_children(self) -> int:
         """Count the number of children for a node."""
         return len(self._children)
-
-    @property
-    def split_test(self) -> InstanceConditionalTest:
-        """The split test of this node.
-
-        Returns
-        -------
-        InstanceConditionalTest
-            Split test.
-        """
-
-        return self._split_test
 
     @property
     def total_weight(self) -> float:
@@ -217,13 +190,13 @@ class SplitNode(Node):
         node
             The node to insert.
         """
-        if (self._split_test.max_branches() >= 0) and (
-            index >= self._split_test.max_branches()
+        if (self.split_test.max_branches() >= 0) and (
+            index >= self.split_test.max_branches()
         ):
             raise IndexError
         self._children[index] = node
 
-    def get_child(self, index: int) -> Union[Node, None]:
+    def get_child(self, index: int) -> typing.Union[Node, None]:
         """Retrieve a node's child given its branch index.
 
         Parameters
@@ -248,7 +221,7 @@ class SplitNode(Node):
         int
             Branch index, -1 if unknown.
         """
-        return self._split_test.branch_for_instance(x)
+        return self.split_test.branch_for_instance(x)
 
     def filter_instance_to_leaf(self, x: dict, parent: Node, parent_branch: int):
         """Traverse down the tree to locate the corresponding leaf for an instance.
@@ -326,7 +299,7 @@ class SplitNode(Node):
                     max_child_depth = depth
         return max_child_depth + 1
 
-    def describe_subtree(self, tree, buffer: List[str], indent: int = 0):
+    def describe_subtree(self, tree, buffer: typing.List[str], indent: int = 0):
         """Walk the tree and write its structure to a buffer string.
 
         Parameters
@@ -342,7 +315,7 @@ class SplitNode(Node):
             child = self.get_child(branch_idx)
             if child is not None:
                 buffer[0] += textwrap.indent("if ", " " * indent)
-                buffer[0] += self._split_test.describe_condition_for_branch(branch_idx)
+                buffer[0] += self.split_test.describe_condition_for_branch(branch_idx)
                 buffer[0] += ":\n"
                 child.describe_subtree(tree, buffer, indent + 2)
 
@@ -356,32 +329,31 @@ class LearningNode(Node, metaclass=ABCMeta):
         Target statistics (they differ in classification and regression tasks).
     depth
         The depth of the node
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs: str, attr_obs_params: dict, **kwargs):
+    def __init__(self, stats, depth, splitter, **kwargs):
         super().__init__(stats, depth, **kwargs)
 
-        self.attr_obs = attr_obs
-        self.attr_obs_params = attr_obs_params
+        self.splitter = splitter
 
-        self._attribute_observers = {}
+        self.splitters = {}
         self._disabled_attrs = set()
         self._last_split_attempt_at = self.total_weight
 
     def is_active(self):
-        return self._attribute_observers is not None
+        return self.splitters is not None
 
     def activate(self):
         if not self.is_active():
-            self._attribute_observers = {}
+            self.splitters = {}
 
     def deactivate(self):
-        self._attribute_observers = None
+        self.splitters = None
 
     @property
     def last_split_attempt_at(self) -> float:
@@ -404,55 +376,45 @@ class LearningNode(Node, metaclass=ABCMeta):
         """
         self._last_split_attempt_at = weight
 
-    @property
-    def attribute_observers(self):
-        return self._attribute_observers
-
-    @attribute_observers.setter
-    def attribute_observers(self, attr_obs):
-        self._attribute_observers = attr_obs
-
     @staticmethod
     @abstractmethod
-    def new_nominal_attribute_observer():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def new_numeric_attribute_observer(attr_obs, attr_obs_params, **kwargs):
+    def new_nominal_splitter():
         pass
 
     @abstractmethod
     def update_stats(self, y, sample_weight):
         pass
 
-    def update_attribute_observers(self, x, y, sample_weight, nominal_attributes):
-        for attr_idx, attr_val in x.items():
-            if attr_idx in self._disabled_attrs:
+    def _iter_features(self, x) -> typing.Iterable:
+        """Determine how the input instance is looped through when updating the splitters.
+
+        Parameters
+        ----------
+        x
+            The input instance.
+        """
+        for att_id, att_val in x.items():
+            yield att_id, att_val
+
+    def update_splitters(self, x, y, sample_weight, nominal_attributes):
+        for att_id, att_val in self._iter_features(x):
+            if att_id in self._disabled_attrs:
                 continue
 
             try:
-                obs = self.attribute_observers[attr_idx]
+                splitter = self.splitters[att_id]
             except KeyError:
                 if (
-                    nominal_attributes is not None and attr_idx in nominal_attributes
-                ) or not isinstance(attr_val, numbers.Number):
-                    obs = self.new_nominal_attribute_observer()
+                    nominal_attributes is not None and att_id in nominal_attributes
+                ) or not isinstance(att_val, numbers.Number):
+                    splitter = self.new_nominal_splitter()
                 else:
-                    try:
-                        # Try to select hyperparameters specially designed for the given feature
-                        obs = self.new_numeric_attribute_observer(
-                            attr_obs=self.attr_obs,
-                            attr_obs_params=self.attr_obs_params[attr_idx],
-                        )
-                    except KeyError:
-                        obs = self.new_numeric_attribute_observer(
-                            attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params
-                        )
-                self.attribute_observers[attr_idx] = obs
-            obs.update(attr_val, y, sample_weight)
+                    splitter = copy.deepcopy(self.splitter)
 
-    def best_split_suggestions(self, criterion, tree) -> List[AttributeSplitSuggestion]:
+                self.splitters[att_id] = splitter
+            splitter.update(att_val, y, sample_weight)
+
+    def best_split_suggestions(self, criterion, tree) -> typing.List[SplitSuggestion]:
         """Find possible split candidates.
 
         Parameters
@@ -470,30 +432,30 @@ class LearningNode(Node, metaclass=ABCMeta):
         pre_split_dist = self.stats
         if tree.merit_preprune:
             # Add null split as an option
-            null_split = AttributeSplitSuggestion(
+            null_split = SplitSuggestion(
                 None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
             )
             best_suggestions.append(null_split)
-        for i, obs in self.attribute_observers.items():
-            best_suggestion = obs.best_evaluated_split_suggestion(
-                criterion, pre_split_dist, i, tree.binary_split
+        for att_id, splitter in self.splitters.items():
+            best_suggestion = splitter.best_evaluated_split_suggestion(
+                criterion, pre_split_dist, att_id, tree.binary_split
             )
             if best_suggestion is not None:
                 best_suggestions.append(best_suggestion)
         return best_suggestions
 
-    def disable_attribute(self, attr_idx):
+    def disable_attribute(self, att_id):
         """Disable an attribute observer.
 
         Parameters
         ----------
-        attr_idx
+        att_id
             Attribute index.
 
         """
-        if attr_idx in self.attribute_observers:
-            del self.attribute_observers[attr_idx]
-            self._disabled_attrs.add(attr_idx)
+        if att_id in self.splitters:
+            del self.splitters[att_id]
+            self._disabled_attrs.add(att_id)
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         """Update the node with the provided sample.
@@ -517,9 +479,7 @@ class LearningNode(Node, metaclass=ABCMeta):
         """
         self.update_stats(y, sample_weight)
         if self.is_active():
-            self.update_attribute_observers(
-                x, y, sample_weight, tree.nominal_attributes
-            )
+            self.update_splitters(x, y, sample_weight, tree.nominal_attributes)
 
     @abstractmethod
     def leaf_prediction(self, x, *, tree=None) -> dict:

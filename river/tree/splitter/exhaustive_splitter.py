@@ -1,77 +1,53 @@
 from collections import Counter, defaultdict
 
-from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
-from .attribute_observer import AttributeObserver
+from .._attribute_test import NumericBinaryTest, SplitSuggestion
+from .base_splitter import Splitter
 
 
-class NumericAttributeClassObserverBinaryTree(AttributeObserver):
+class ExhaustiveSplitter(Splitter):
     """Numeric attribute observer for classification tasks that is based on
     a Binary Search Tree.
 
-    This algorithm is also referred to as exhaustive attribute observer,
-    since it ends up storing all the observations between split attempts.
-    Used in decision trees to monitor data statistics on leaves.
-    """
+    This algorithm[^1] is also referred to as exhaustive attribute observer,
+    since it ends up storing all the observations between split attempts[^2].
 
-    class Node:
-        def __init__(self, val, label, sample_weight):
-            self.class_count_left = defaultdict(float)
-            self.class_count_right = defaultdict(float)
-            self._left = None
-            self._right = None
+    This splitter cannot perform probability density estimations, so it does not work well
+    when coupled with tree leaves using naive bayes models.
 
-            self.cut_point = val
-            self.class_count_left[label] += sample_weight
-
-        def insert_value(self, val, label, sample_weight):
-            if val == self.cut_point:
-                self.class_count_left[label] += sample_weight
-            elif val < self.cut_point:
-                self.class_count_left[label] += sample_weight
-                if self._left is None:
-                    self._left = NumericAttributeClassObserverBinaryTree.Node(
-                        val, label, sample_weight
-                    )
-                else:
-                    self._left.insert_value(val, label, sample_weight)
-            else:
-                self.class_count_right[label] += sample_weight
-                if self._right is None:
-                    self._right = NumericAttributeClassObserverBinaryTree.Node(
-                        val, label, sample_weight
-                    )
-                else:
-                    self._right.insert_value(val, label, sample_weight)
-
-    """
-    end of class Node
+    References
+    ----------
+    [^1]: Domingos, P. and Hulten, G., 2000, August. Mining high-speed data streams.
+    In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery
+    and data mining (pp. 71-80).
+    [^2]: Pfahringer, B., Holmes, G. and Kirkby, R., 2008, May. Handling numeric attributes in
+    hoeffding trees. In Pacific-Asia Conference on Knowledge Discovery and Data Mining
+    (pp. 296-307). Springer, Berlin, Heidelberg.
     """
 
     def __init__(self):
         super().__init__()
         self._root = None
 
-    def update(self, att_val, class_val, sample_weight):
+    def update(self, att_val, target_val, sample_weight):
         if att_val is None:
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeClassObserverBinaryTree.Node(
-                    att_val, class_val, sample_weight
-                )
+                self._root = ExhaustiveNode(att_val, target_val, sample_weight)
             else:
-                self._root.insert_value(att_val, class_val, sample_weight)
+                self._root.insert_value(att_val, target_val, sample_weight)
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
-        # Cannot determine the probability of a single attribute observation
+    def cond_proba(self, att_val, target_val):
+        """The underlying data structure used to monitor the input does not allow probability
+        density estimations. Hence, it always returns zero for any given input."""
         return 0.0
 
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        current_best_option = AttributeSplitSuggestion(None, [{}], -float("inf"))
+        current_best_option = SplitSuggestion(None, [{}], -float("inf"))
 
         return self._search_for_best_split_option(
             current_node=self._root,
@@ -158,12 +134,12 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
         if current_best_option is None or merit > current_best_option.merit:
-            num_att_binary_test = NumericAttributeBinaryTest(
+            num_att_binary_test = NumericBinaryTest(
                 att_idx=att_idx,
                 att_value=current_node.cut_point,
                 equal_passes_test=True,
             )
-            current_best_option = AttributeSplitSuggestion(
+            current_best_option = SplitSuggestion(
                 split_test=num_att_binary_test,
                 resulting_class_distributions=post_split_dists,
                 merit=merit,
@@ -194,3 +170,30 @@ class NumericAttributeClassObserverBinaryTree(AttributeObserver):
         )
 
         return current_best_option
+
+
+class ExhaustiveNode:
+    def __init__(self, att_val, target_val, sample_weight):
+        self.class_count_left = defaultdict(float)
+        self.class_count_right = defaultdict(float)
+        self._left = None
+        self._right = None
+
+        self.cut_point = att_val
+        self.class_count_left[target_val] += sample_weight
+
+    def insert_value(self, val, label, sample_weight):
+        if val == self.cut_point:
+            self.class_count_left[label] += sample_weight
+        elif val < self.cut_point:
+            self.class_count_left[label] += sample_weight
+            if self._left is None:
+                self._left = ExhaustiveNode(val, label, sample_weight)
+            else:
+                self._left.insert_value(val, label, sample_weight)
+        else:
+            self.class_count_right[label] += sample_weight
+            if self._right is None:
+                self._right = ExhaustiveNode(val, label, sample_weight)
+            else:
+                self._right.insert_value(val, label, sample_weight)

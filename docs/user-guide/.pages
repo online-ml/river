@@ -6,3 +6,4 @@ nav:
     - feature-extraction.md
     - hyperparameter-tuning.md
     - mini-batching.md
+    - on-hoeffding-trees.md
