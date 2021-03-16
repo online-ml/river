@@ -15,7 +15,7 @@ from ._split_criterion import (
     HellingerDistanceCriterion,
     InfoGainSplitCriterion,
 )
-from .base_hoeffding_tree import HoeffdingTree
+from .hoeffding_tree import HoeffdingTree
 from .splitter import GaussianSplitter, Splitter
 
 
@@ -55,7 +55,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         This is an advanced option. Special care must be taken when choosing different splitters.
         By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
     kwargs
-        Other parameters passed to `tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----

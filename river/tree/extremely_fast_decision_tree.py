@@ -55,7 +55,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         This is an advanced option. Special care must be taken when choosing different splitters.
         By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
     kwargs
-        Other parameters passed to `tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----

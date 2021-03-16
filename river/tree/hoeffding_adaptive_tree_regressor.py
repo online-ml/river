@@ -68,7 +68,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
        bootstrap sampling.</br>
     kwargs
-        Other parameters passed to `tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----

@@ -62,7 +62,8 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
     kwargs
-        Other parameters passed to `tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     References
     ----------

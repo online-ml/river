@@ -393,7 +393,8 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
     kwargs
-        Other parameters passed to `tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Examples
     --------
@@ -631,7 +632,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
     kwargs
-        Other parameters passed to `tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     References
     ----------

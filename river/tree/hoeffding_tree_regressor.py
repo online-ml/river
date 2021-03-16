@@ -11,7 +11,7 @@ from ._nodes import (
     SplitNode,
 )
 from ._split_criterion import VarianceReductionSplitCriterion
-from .base_hoeffding_tree import HoeffdingTree
+from .hoeffding_tree import HoeffdingTree
 from .splitter import EBSTSplitter, Splitter
 
 
@@ -57,7 +57,8 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
     kwargs
-        Other parameters passed to `tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----
