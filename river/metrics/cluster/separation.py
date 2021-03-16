@@ -4,8 +4,6 @@ from river import utils
 
 from . import base
 
-__all__ = ["Separation"]
-
 
 class Separation(base.MeanInternalMetric):
     """Average distance from a point to the points assigned to other clusters.

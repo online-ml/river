@@ -4,14 +4,12 @@ from river import utils
 
 from . import base
 
-__all__ = ["DaviesBouldin"]
-
 
 class DaviesBouldin(base.InternalClusMetric):
     """Davies-Bouldin index (DB).
 
     The Davies-Bouldin index (DB) [^1] is an old but still widely used inernal validaion measure.
-    DB uses intra-cluster variance and inter-cluster center disance to find the worst partner
+    DB uses intra-cluster variance and inter-cluster center distance to find the worst partner
     cluster, i.e., the closest most scattered one for each cluster. Thus, minimizing DB gives
     us the optimal number of clusters.
 

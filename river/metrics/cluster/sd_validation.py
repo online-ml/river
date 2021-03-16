@@ -4,8 +4,6 @@ from river import stats, utils
 
 from . import base
 
-__all__ = ["SD"]
-
 
 class SD(base.InternalClusMetric):
     """The SD validity index (SD).
@@ -18,12 +16,12 @@ class SD(base.InternalClusMetric):
     * Dis(NC) stands for the dispersion between clusters.
 
     Like DB and SB, SD measures the compactness with variance of clustered objects and separation
-    with distnace between cluster centers, but uses them in a different way. The smaller the value
+    with distance between cluster centers, but uses them in a different way. The smaller the value
     of SD, the better.
 
     In the original formula for SD validation index, the ratio between the maximum and the actual
-    number of clusters is taken into account. However, due to the fact that metrics are update live
-    along with the data stream, this ratio will be automatically set to default as 1.
+    number of clusters is taken into account. However, due to the fact that metrics are updated in
+    an incremental fashion, this ratio will be automatically set to default as 1.
 
     Examples
     --------
@@ -53,7 +51,7 @@ class SD(base.InternalClusMetric):
     ...     metric = metric.update(x, y_pred, k_means.centers)
 
     >>> metric
-    SD: 4.332702
+    SD: 2.339016
 
     References
     ----------
@@ -90,7 +88,10 @@ class SD(base.InternalClusMetric):
                     min_distance_clusters = distance_ij
                 sum_inverse_distances += 1 / distance_ij
 
-        return max_distance_clusters / min_distance_clusters * sum_inverse_distances
+        try:
+            return max_distance_clusters / min_distance_clusters * sum_inverse_distances
+        except ZeroDivisionError:
+            return math.inf
 
     @staticmethod
     def _norm(x):
@@ -100,27 +101,15 @@ class SD(base.InternalClusMetric):
     def update(self, x, y_pred, centers, sample_weight=1.0):
 
         if not self._initialized:
-            self._center_all_points = self._overall_variance = {
-                i: stats.Mean() for i in x
-            }
+            self._overall_variance = {i: stats.Var() for i in x}
             self._initialized = True
-        for i in self._center_all_points:
-            self._center_all_points[i].update(x[i], w=sample_weight)
-        center_all_points = {
-            i: self._center_all_points[i].get() for i in self._center_all_points
-        }
-
-        for i in self._overall_variance:
-            self._overall_variance[i].update(
-                (x[i] - center_all_points[i]) ** 2, w=sample_weight
-            )
 
         if y_pred not in self._cluster_variance:
-            self._cluster_variance[y_pred] = {i: stats.Mean() for i in x}
+            self._cluster_variance[y_pred] = {i: stats.Var() for i in x}
+
         for i in x:
-            self._cluster_variance[y_pred][i].update(
-                (x[i] - centers[y_pred][i]) ** 2, w=sample_weight
-            )
+            self._cluster_variance[y_pred][i].update(x[i], w=sample_weight)
+            self._overall_variance[i].update(x[i], w=sample_weight)
 
         self._centers = centers
 
@@ -128,21 +117,9 @@ class SD(base.InternalClusMetric):
 
     def revert(self, x, y_pred, centers, sample_weight=1.0):
 
-        for i in self._center_all_points:
-            self._center_all_points[i].update(x[i], w=-sample_weight)
-        center_all_points = {
-            i: self._center_all_points[i].get() for i in self._center_all_points
-        }
-
-        for i in self._overall_variance:
-            self._overall_variance[i].update(
-                (x[i] - center_all_points[i]) ** 2, w=-sample_weight
-            )
-
         for i in x:
-            self._cluster_variance[y_pred][i].update(
-                (x[i] - centers[y_pred][i]) ** 2, w=-sample_weight
-            )
+            self._overall_variance[i].update(x[i], w=-sample_weight)
+            self._cluster_variance[y_pred][i].update(x[i], w=-sample_weight)
 
         self._centers = centers
 

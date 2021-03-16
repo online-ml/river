@@ -4,8 +4,6 @@ from river import stats, utils
 
 from . import base
 
-__all__ = ["IIndex"]
-
 
 class IIndex(base.InternalClusMetric):
     """I-Index (I).

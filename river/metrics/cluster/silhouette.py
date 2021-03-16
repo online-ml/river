@@ -4,18 +4,20 @@ from river import utils
 
 from . import base
 
-__all__ = ["Silhouette"]
-
 
 class Silhouette(base.InternalClusMetric):
     """
     Silhouette coefficient [^1], roughly speaking, is the ratio between cohesion and the average distances
     from the points to their second-closest centroid. It rewards the clustering algorithm where
     points are very close to their assigned centroids and far from any other centroids,
-    that is clustering results with good cohesion and good separation.
+    that is, clustering results with good cohesion and good separation.
 
     It rewards clusterings where points are very close to their assigned centroids and far from any other
     centroids, that is clusterings with good cohesion and good separation. [^2]
+
+    The definition of Silhouette coefficient for online clustering evaluation is different from that of
+    batch learning. It does not store information and calculate pairwise distances between all points at the
+    same time, since the practice is too expensive for an incremental metric.
 
     Examples
     --------

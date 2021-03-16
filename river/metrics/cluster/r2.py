@@ -4,8 +4,6 @@ from river import stats, utils
 
 from . import base
 
-__all__ = ["R2"]
-
 
 class R2(base.InternalClusMetric):
     """R-Squared

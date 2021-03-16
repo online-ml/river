@@ -8,7 +8,10 @@ __all__ = ["MSSTD", "RMSSTD"]
 
 
 class MSSTD(base.InternalClusMetric):
-    """Mean squared standard deviation.
+    """Mean Squared Standard Deviation.
+
+    This is the pooled sample variance of all the attributes, which measures
+    only the compactness of found clusters.
 
     Examples
     --------
@@ -90,7 +93,7 @@ class MSSTD(base.InternalClusMetric):
 
 
 class RMSSTD(MSSTD):
-    """Root mean squared standard deviation.
+    """Root Mean Squared Standard Deviation.
 
     This is the square root of the pooled sample variance of all the attributes, which
     measures only the compactness of found clusters.

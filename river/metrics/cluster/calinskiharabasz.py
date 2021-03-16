@@ -4,16 +4,16 @@ from river import stats, utils
 
 from . import base
 
-__all__ = ["CalinskiHarabasz"]
-
 
 class CalinskiHarabasz(base.InternalClusMetric):
     """Calinski-Harabasz index (CH).
 
-    The Calinski-Harabasz index (CH) index measures the two criteria simultaneously
-    with the help of average between and within cluster sum of squares. The numerator
-    reflects the degree of separation in the way of how much centers are spread, and
-    the denominator corresponds to compactness, to reflect how close the in-cluster objects
+    The Calinski-Harabasz index (CH) index measures the criteria simultaneously
+    with the help of average between and within cluster sum of squares.
+
+        * The **numerator** reflects the degree of separation in the way of how much centers are spread.
+
+        * The **denominator** corresponds to compactness, to reflect how close the in-cluster objects
     are gathered around the cluster center.
 
     Examples

@@ -4,8 +4,6 @@ from river import utils
 
 from . import base
 
-_all__ = ["XieBeni"]
-
 
 class XieBeni(base.InternalClusMetric):
     """Xie-Beni index (XB).

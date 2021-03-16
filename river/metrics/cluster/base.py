@@ -3,6 +3,9 @@ import numbers
 import typing
 
 from river import stats
+from typing import Number
+
+from river.base.typing import FeatureName
 
 __all__ = ["InternalClusMetric"]
 
@@ -27,6 +30,7 @@ class InternalClusMetric(abc.ABC):
     def get(self) -> float:
         """Return the current value of the metric."""
 
+    @property
     @abc.abstractmethod
     def bigger_is_better(self) -> bool:
         """Indicates if a high value is better than a low one or not."""
@@ -48,15 +52,16 @@ class MeanInternalMetric(InternalClusMetric):
     @abc.abstractmethod
     def _eval(
         self,
-        x: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
+        x: typing.Dict[FeatureName, Number],
         y_pred: numbers.Number,
         centers,
+        sample_weight=1.0,
     ):
         pass
 
     def update(
         self,
-        x: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
+        x: typing.Dict[FeatureName, Number],
         y_pred: numbers.Number,
         centers,
         sample_weight=1.0,
@@ -66,7 +71,7 @@ class MeanInternalMetric(InternalClusMetric):
 
     def revert(
         self,
-        x: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
+        x: typing.Dict[FeatureName, Number],
         y_pred: numbers.Number,
         centers,
         sample_weight=1.0,
