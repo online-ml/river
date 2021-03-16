@@ -5,11 +5,11 @@ import functools
 from river import utils
 from river.utils.histogram import Bin  # noqa
 
-from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
-from .attribute_observer import AttributeObserver
+from .._attribute_test import NumericBinaryTest, SplitSuggestion
+from .base_splitter import Splitter
 
 
-class NumericAttributeClassObserverHistogram(AttributeObserver):
+class HistogramSplitter(Splitter):
     """Numeric attribute observer for classification tasks that discretizes features
     using histograms.
 
@@ -28,29 +28,29 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
         self.n_bins = n_bins
         self.n_splits = n_splits
         self.hists = collections.defaultdict(
-            functools.partial(utils.Histogram, max_bins=n_bins)
+            functools.partial(utils.Histogram, max_bins=self.n_bins)
         )
 
-    def update(self, att_val, class_val, sample_weight):
+    def update(self, att_val, target_val, sample_weight):
         for _ in range(int(sample_weight)):
-            self.hists[class_val].update(att_val)
+            self.hists[target_val].update(att_val)
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
-        if class_val not in self.hists:
+    def cond_proba(self, att_val, target_val):
+        if target_val not in self.hists:
             return 0.0
 
-        total_weight = self.hists[class_val].n
+        total_weight = self.hists[target_val].n
         if not total_weight > 0:
             return 0.0
 
-        i = bisect.bisect(self.hists[class_val], Bin(att_val, att_val, 1))
+        i = bisect.bisect(self.hists[target_val], Bin(att_val, att_val, 1))
 
-        if i < len(self.hists[class_val]):
-            b = self.hists[class_val][i]
+        if i < len(self.hists[target_val]):
+            b = self.hists[target_val][i]
         else:  # att_val exceeds the range: take the last bin
-            b = self.hists[class_val][-1]
+            b = self.hists[target_val][-1]
 
         # Approximates the PDF of x by using the frequency in its corresponding
         # histogram bin
@@ -76,28 +76,29 @@ class NumericAttributeClassObserverHistogram(AttributeObserver):
         thresholds = list(decimal_range(start=low, stop=high, num=n_thresholds))
         cdfs = {y: hist.iter_cdf(thresholds) for y, hist in self.hists.items()}
 
+        total_weight = sum(pre_split_dist.values())
         for at in thresholds:
 
             l_dist = {}
             r_dist = {}
-            total_weight = sum(pre_split_dist.values())
 
             for y in pre_split_dist:
-                p_xy = next(cdfs[y]) if y in cdfs else 0.0  # P(x < t | y)
-                p_y = pre_split_dist[y] / total_weight  # P(y)
-                l_dist[y] = total_weight * p_y * p_xy  # P(y | x < t)
-                r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x >= t)
+                if y in cdfs:
+                    p_xy = next(cdfs[y])  # P(x < t | y)
+                    p_y = pre_split_dist[y] / total_weight  # P(y)
+                    l_dist[y] = total_weight * p_y * p_xy  # P(y | x < t)
+                    r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x >= t)
 
-                post_split_dist = [l_dist, r_dist]
-                merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
+            post_split_dist = [l_dist, r_dist]
+            merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
-                if best_suggestion is None or merit > best_suggestion.merit:
-                    num_att_binary_test = NumericAttributeBinaryTest(
-                        att_idx, at, equal_passes_test=False
-                    )
-                    best_suggestion = AttributeSplitSuggestion(
-                        num_att_binary_test, post_split_dist, merit
-                    )
+            if best_suggestion is None or merit > best_suggestion.merit:
+                num_att_binary_test = NumericBinaryTest(
+                    att_idx, at, equal_passes_test=False
+                )
+                best_suggestion = SplitSuggestion(
+                    num_att_binary_test, post_split_dist, merit
+                )
 
         return best_suggestion
 
