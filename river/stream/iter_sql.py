@@ -20,7 +20,6 @@ def iter_sql(
     the `stream_results` parameter to `True`, as [explained in SQLAlchemy's documentation](https://docs.sqlalchemy.org/en/13/core/connections.html#sqlalchemy.engine.Connection.execution_options). Note, however,
     that this isn't available for all database engines.
 
-
     Parameters
     ----------
     query
@@ -85,10 +84,10 @@ def iter_sql(
 
     if target_name is None:
         for row in result_proxy:
-            yield dict(row.items()), None
+            yield dict(row._mapping.items()), None
         return
 
     for row in result_proxy:
-        x = dict(row.items())
+        x = dict(row._mapping.items())
         y = x.pop(target_name)
         yield x, y
