@@ -3,8 +3,6 @@ import numbers
 import typing
 
 from river import stats
-from typing import Number
-
 from river.base.typing import FeatureName
 
 __all__ = ["InternalClusMetric"]
@@ -52,7 +50,7 @@ class MeanInternalMetric(InternalClusMetric):
     @abc.abstractmethod
     def _eval(
         self,
-        x: typing.Dict[FeatureName, Number],
+        x: typing.Dict[FeatureName, numbers.Number],
         y_pred: numbers.Number,
         centers,
         sample_weight=1.0,
@@ -61,7 +59,7 @@ class MeanInternalMetric(InternalClusMetric):
 
     def update(
         self,
-        x: typing.Dict[FeatureName, Number],
+        x: typing.Dict[FeatureName, numbers.Number],
         y_pred: numbers.Number,
         centers,
         sample_weight=1.0,
@@ -71,7 +69,7 @@ class MeanInternalMetric(InternalClusMetric):
 
     def revert(
         self,
-        x: typing.Dict[FeatureName, Number],
+        x: typing.Dict[FeatureName, numbers.Number],
         y_pred: numbers.Number,
         centers,
         sample_weight=1.0,
