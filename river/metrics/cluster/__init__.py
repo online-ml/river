@@ -8,7 +8,6 @@ of the clustering algorithm without having to store information of all previousl
 
 from .base import InternalClusMetric
 from .calinskiharabasz import CalinskiHarabasz
-from .ssw import BallHall, SSW, Cohesion
 from .daviesbouldin import DaviesBouldin
 from .i_index import IIndex
 from .r2 import R2
@@ -16,6 +15,8 @@ from .rmsstd import MSSTD, RMSSTD
 from .sd_validation import SD
 from .separation import Separation
 from .silhouette import Silhouette
+from .ssb import SSB
+from .ssw import SSW, BallHall, Cohesion
 from .xiebeni import XieBeni
 
 __all__ = [
@@ -31,6 +32,7 @@ __all__ = [
     "SD",
     "Separation",
     "Silhouette",
+    "SSB",
     "SSW",
     "XieBeni",
 ]

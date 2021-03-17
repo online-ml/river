@@ -33,7 +33,7 @@ class SSW(base.MeanInternalMetric):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.cluster.SSQ()
+    >>> metric = metrics.cluster.SSW()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
@@ -41,7 +41,7 @@ class SSW(base.MeanInternalMetric):
     ...     metric = metric.update(x, y_pred, k_means.centers)
 
     >>> metric
-    SSQ: 3.514277
+    SSW: 3.514277
 
     References
     ----------
