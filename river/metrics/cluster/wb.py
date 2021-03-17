@@ -1,13 +1,19 @@
+import math
+
 from river import stats, utils
 
 from . import base
 
 
-class SSB(base.InternalClusMetric):
-    """Sum-of-Squares Between Clusters (SSB).
+class WB(base.InternalClusMetric):
+    """R-Squared
 
-    The Sum-of-Squares Between Clusters is the weighted mean of the squares of distances
-    between cluster centers to the mean value of the whole dataset.
+    R-Squared (RS) [^1] is the complement of the ratio of sum of squared distances between objects
+    in different clusters to the total sum of squares. It is an intuitive and simple formulation
+    of measuring the differences between clusters.
+
+    The maximum value of R-Squared is 1, which means that the higher the index, the better
+    the clustering results.
 
     Examples
     --------
@@ -29,7 +35,7 @@ class SSB(base.InternalClusMetric):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.cluster.SSB()
+    >>> metric = metrics.cluster.WB()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
@@ -37,7 +43,7 @@ class SSB(base.InternalClusMetric):
     ...     metric = metric.update(x, y_pred, k_means.centers)
 
     >>> metric
-    SSB: 8.109389
+    WB: 1.300077
 
     References
     ----------
@@ -50,6 +56,7 @@ class SSB(base.InternalClusMetric):
 
     def __init__(self):
         super().__init__()
+        self._ssw = stats.Mean()
         self._center_all_points = {}
         self._n_points = 0
         self._n_points_by_clusters = {}
@@ -57,6 +64,8 @@ class SSB(base.InternalClusMetric):
         self._initialized = False
 
     def update(self, x, y_pred, centers, sample_weight=1.0):
+
+        self._ssw.update(utils.math.minkowski_distance(centers[y_pred], x, 2), w=sample_weight)
 
         if not self._initialized:
             self._center_all_points = {i: stats.Mean() for i in x}
@@ -84,6 +93,8 @@ class SSB(base.InternalClusMetric):
 
     def revert(self, x, y_pred, centers, sample_weight=1.0):
 
+        self._ssw.update(utils.math.minkowski_distance(centers[y_pred], x, 2), w=-sample_weight)
+
         for i in self._center_all_points:
             self._center_all_points[i].update(x[i], w=-sample_weight)
         center_all_points = {
@@ -102,20 +113,28 @@ class SSB(base.InternalClusMetric):
         return self
 
     def get(self):
+
+        n_clusters = len(self._n_points_by_clusters)
+
+        ssw = self._ssw.get()
+
         ssb = 0
         for i in self._n_points_by_clusters:
             try:
                 ssb += (
-                    1
-                    / self._n_points
-                    * self._n_points_by_clusters[i]
-                    * self._squared_distances[i]
+                        1
+                        / self._n_points
+                        * self._n_points_by_clusters[i]
+                        * self._squared_distances[i]
                 )
             except ZeroDivisionError:
                 ssb += 0
 
-        return ssb
+        try:
+            return n_clusters * ssw / ssb
+        except ZeroDivisionError:
+            return math.inf
 
     @property
     def bigger_is_better(self):
-        return True
+        return False

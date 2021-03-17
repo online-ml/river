@@ -17,6 +17,7 @@ from .separation import Separation
 from .silhouette import Silhouette
 from .ssb import SSB
 from .ssw import SSW, BallHall, Cohesion
+from .wb import WB
 from .xiebeni import XieBeni
 
 __all__ = [
@@ -35,4 +36,5 @@ __all__ = [
     "SSB",
     "SSW",
     "XieBeni",
+    "WB",
 ]
