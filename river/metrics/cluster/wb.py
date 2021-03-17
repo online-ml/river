@@ -65,7 +65,9 @@ class WB(base.InternalClusMetric):
 
     def update(self, x, y_pred, centers, sample_weight=1.0):
 
-        self._ssw.update(utils.math.minkowski_distance(centers[y_pred], x, 2), w=sample_weight)
+        self._ssw.update(
+            utils.math.minkowski_distance(centers[y_pred], x, 2), w=sample_weight
+        )
 
         if not self._initialized:
             self._center_all_points = {i: stats.Mean() for i in x}
@@ -93,7 +95,9 @@ class WB(base.InternalClusMetric):
 
     def revert(self, x, y_pred, centers, sample_weight=1.0):
 
-        self._ssw.update(utils.math.minkowski_distance(centers[y_pred], x, 2), w=-sample_weight)
+        self._ssw.update(
+            utils.math.minkowski_distance(centers[y_pred], x, 2), w=-sample_weight
+        )
 
         for i in self._center_all_points:
             self._center_all_points[i].update(x[i], w=-sample_weight)
@@ -122,10 +126,10 @@ class WB(base.InternalClusMetric):
         for i in self._n_points_by_clusters:
             try:
                 ssb += (
-                        1
-                        / self._n_points
-                        * self._n_points_by_clusters[i]
-                        * self._squared_distances[i]
+                    1
+                    / self._n_points
+                    * self._n_points_by_clusters[i]
+                    * self._squared_distances[i]
                 )
             except ZeroDivisionError:
                 ssb += 0
