@@ -1,107 +1,67 @@
 import functools
+import typing
 
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._attribute_test import AttributeSplitSuggestion, NumericAttributeBinaryTest
-from .attribute_observer import AttributeObserver
+from .._attribute_test import NumericBinaryTest, SplitSuggestion
+from .base_splitter import Splitter
 
 
-class NumericAttributeRegressionObserver(AttributeObserver):
+class EBSTSplitter(Splitter):
     """iSOUP-Tree's Extended Binary Search Tree (E-BST).
 
-    This class implements the Extended Binary Search Tree (E-BST)
-    structure, using the variant employed by Osojnik et al. [^1] in the
+    This class implements the Extended Binary Search Tree[^1] (E-BST)
+    structure, using the variant employed by Osojnik et al.[^2] in the
     iSOUP-Tree algorithm. This structure is employed to observe the target
     space distribution.
 
-    In this variant, only the left branch statistics are stored.
+    Proposed along with Fast Incremental Model Tree with Drift Detection[^1] (FIMT-DD), E-BST was
+    the first attribute observer (AO) proposed for incremental Hoeffding Tree regressors. This
+    AO works by storing all observations between splits in an extended binary search tree
+    structure. E-BST stores the input feature realizations and statistics of the target(s) that
+    enable calculating the split heuristic at any time. To alleviate time and memory costs, E-BST
+    implements a memory management routine, where the worst split candidates are pruned from the
+    binary tree.
+
+    In this variant, only the left branch statistics are stored and the complete split-enabling
+    statistics are calculated with an in-order traversal of the binary search tree.
 
     References
     ----------
-    [^1]: [Osojnik, Aljaž. 2017. Structured output prediction on Data Streams
+    [^1]: Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving
+        data streams. Data mining and knowledge discovery, 23(1), 128-168.
+    [^2]: [Osojnik, Aljaž. 2017. Structured output prediction on Data Streams
     (Doctoral Dissertation)](http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf)
     """
-
-    class Node:
-        def __init__(self, att_val, target, sample_weight):
-            self.att_val = att_val
-
-            if isinstance(target, dict):
-                self.estimator = VectorDict(default_factory=functools.partial(Var))
-                self._update_estimator = self._update_estimator_multivariate
-            else:
-                self.estimator = Var()
-                self._update_estimator = self._update_estimator_univariate
-
-            self._update_estimator(self, target, sample_weight)
-
-            self._left = None
-            self._right = None
-
-        @staticmethod
-        def _update_estimator_univariate(node, target, sample_weight):
-            node.estimator.update(target, sample_weight)
-
-        @staticmethod
-        def _update_estimator_multivariate(node, target, sample_weight):
-            for t in target:
-                node.estimator[t].update(target[t], sample_weight)
-
-        # Incremental implementation of the insert method. Avoiding unnecessary
-        # stack tracing must decrease memory costs
-        def insert_value(self, att_val, target, sample_weight):
-            current = self
-            antecedent = None
-
-            while current is not None:
-                antecedent = current
-                if att_val == current.att_val:
-                    self._update_estimator(current, target, sample_weight)
-                    return
-                elif att_val < current.att_val:
-                    self._update_estimator(current, target, sample_weight)
-
-                    current = current._left
-                    is_right = False
-                else:
-                    current = current._right
-                    is_right = True
-
-            # Value was not yet added to the tree
-            if is_right:
-                antecedent._right = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight
-                )
-            else:
-                antecedent._left = NumericAttributeRegressionObserver.Node(
-                    att_val, target, sample_weight
-                )
 
     def __init__(self):
         super().__init__()
         self._root = None
+
+    @property
+    def is_target_class(self) -> bool:
+        return False
 
     def update(self, att_val, target_val, sample_weight):
         if att_val is None:
             return
         else:
             if self._root is None:
-                self._root = NumericAttributeRegressionObserver.Node(
-                    att_val, target_val, sample_weight
-                )
+                self._root = EBSTNode(att_val, target_val, sample_weight)
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
+    def cond_proba(self, att_val, target_val):
+        """Not implemented in regression splitters."""
         raise NotImplementedError
 
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only=True
     ):
-        candidate = AttributeSplitSuggestion(None, [{}], -float("inf"))
+        candidate = SplitSuggestion(None, [{}], -float("inf"))
 
         if self._root is None:
             return candidate
@@ -140,12 +100,8 @@ class NumericAttributeRegressionObserver(AttributeObserver):
 
         merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
         if merit > candidate.merit:
-            num_att_binary_test = NumericAttributeBinaryTest(
-                self._att_idx, node.att_val, True
-            )
-            candidate = AttributeSplitSuggestion(
-                num_att_binary_test, post_split_dists, merit
-            )
+            num_att_binary_test = NumericBinaryTest(self._att_idx, node.att_val, True)
+            candidate = SplitSuggestion(num_att_binary_test, post_split_dists, merit)
 
         if node._right is not None:
             self._aux_estimator += node.estimator
@@ -160,7 +116,12 @@ class NumericAttributeRegressionObserver(AttributeObserver):
         return candidate
 
     def remove_bad_splits(
-        self, criterion, last_check_ratio, last_check_vr, last_check_e, pre_split_dist
+        self,
+        criterion,
+        last_check_ratio: float,
+        last_check_vr: float,
+        last_check_e: float,
+        pre_split_dist: typing.Union[typing.List, typing.Dict],
     ):
         """Remove bad splits.
 
@@ -280,3 +241,56 @@ class NumericAttributeRegressionObserver(AttributeObserver):
                 return True
 
         return False
+
+
+class EBSTNode:
+    def __init__(self, att_val, target_val, sample_weight):
+        self.att_val = att_val
+
+        if isinstance(target_val, dict):
+            self.estimator = VectorDict(default_factory=functools.partial(Var))
+            self._update_estimator = self._update_estimator_multivariate
+        else:
+            self.estimator = Var()
+            self._update_estimator = self._update_estimator_univariate
+
+        self._update_estimator(self, target_val, sample_weight)
+
+        self._left = None
+        self._right = None
+
+    @staticmethod
+    def _update_estimator_univariate(node, target, sample_weight):
+        node.estimator.update(target, sample_weight)
+
+    @staticmethod
+    def _update_estimator_multivariate(node, target, sample_weight):
+        for t in target:
+            node.estimator[t].update(target[t], sample_weight)
+
+    # Incremental implementation of the insert method. Avoiding unnecessary
+    # stack tracing must decrease memory costs
+    def insert_value(self, att_val, target_val, sample_weight):
+        current = self
+        antecedent = None
+        is_right = False
+
+        while current is not None:
+            antecedent = current
+            if att_val == current.att_val:
+                self._update_estimator(current, target_val, sample_weight)
+                return
+            elif att_val < current.att_val:
+                self._update_estimator(current, target_val, sample_weight)
+
+                current = current._left
+                is_right = False
+            else:
+                current = current._right
+                is_right = True
+
+        # Value was not yet added to the tree
+        if is_right:
+            antecedent._right = EBSTNode(att_val, target_val, sample_weight)
+        else:
+            antecedent._left = EBSTNode(att_val, target_val, sample_weight)

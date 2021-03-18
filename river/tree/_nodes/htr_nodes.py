@@ -2,12 +2,8 @@ import inspect
 
 from river.stats import Var
 
-from .._attribute_observer import (
-    NominalAttributeRegressionObserver,
-    NumericAttributeRegressionObserver,
-    NumericAttributeRegressionQuantizerObserver,
-    NumericAttributeRegressionTruncatedObserver,
-)
+from ..splitter import EBSTSplitter
+from ..splitter.nominal_splitter_reg import NominalSplitterReg
 from .base import LearningNode
 
 
@@ -22,36 +18,27 @@ class LearningNodeMean(LearningNode):
         the target's statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params):
+    def __init__(self, stats, depth, splitter, **kwargs):
         if stats is None:
             # Enforce the usage of Var to keep track of target statistics
             stats = Var()
-        super().__init__(stats, depth, attr_obs, attr_obs_params)
+        super().__init__(stats, depth, splitter, **kwargs)
 
     @staticmethod
-    def new_nominal_attribute_observer():
-        return NominalAttributeRegressionObserver()
-
-    @staticmethod
-    def new_numeric_attribute_observer(attr_obs, attr_obs_params):
-        if attr_obs == "e-bst":
-            return NumericAttributeRegressionObserver()
-        elif attr_obs == "qo":
-            return NumericAttributeRegressionQuantizerObserver(**attr_obs_params)
-        else:  # Truncated E-BST
-            return NumericAttributeRegressionTruncatedObserver(**attr_obs_params)
+    def new_nominal_splitter():
+        return NominalSplitterReg()
 
     def manage_memory(self, criterion, last_check_ratio, last_check_vr, last_check_e):
         """Trigger Attribute Observers' memory management routines.
 
-        Currently, only `NumericAttributeRegressionObserver` has support to this feature.
+        Currently, only `EBSTSplitter` and `TEBSTSplitter` have support to this feature.
 
         Parameters
         ----------
@@ -65,9 +52,9 @@ class LearningNodeMean(LearningNode):
         last_check_e
             Hoeffding bound value calculated in the last split attempt.
         """
-        for obs in self.attribute_observers.values():
-            if isinstance(obs, NumericAttributeRegressionObserver):
-                obs.remove_bad_splits(
+        for splitter in self.splitters.values():
+            if isinstance(splitter, EBSTSplitter):
+                splitter.remove_bad_splits(
                     criterion=criterion,
                     last_check_ratio=last_check_ratio,
                     last_check_vr=last_check_vr,
@@ -124,18 +111,18 @@ class LearningNodeModel(LearningNodeMean):
         the target's statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     leaf_model
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_model):
-        super().__init__(stats, depth, attr_obs, attr_obs_params)
+    def __init__(self, stats, depth, splitter, leaf_model, **kwargs):
+        super().__init__(stats, depth, splitter, **kwargs)
 
         self._leaf_model = leaf_model
         sign = inspect.signature(leaf_model.learn_one).parameters
@@ -166,18 +153,18 @@ class LearningNodeAdaptive(LearningNodeModel):
         the target's statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     leaf_model
         A `river.base.Regressor` instance used to learn from instances and provide
         responses.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, leaf_model):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, leaf_model)
+    def __init__(self, stats, depth, splitter, leaf_model, **kwargs):
+        super().__init__(stats, depth, splitter, leaf_model, **kwargs)
         self._fmse_mean = 0.0
         self._fmse_model = 0.0
 

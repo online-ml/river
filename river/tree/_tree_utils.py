@@ -1,9 +1,7 @@
 import math
 
 
-def do_naive_bayes_prediction(
-    x, observed_class_distribution: dict, attribute_observers: dict
-):
+def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: dict):
     """Perform Naive Bayes prediction
 
     Parameters
@@ -12,15 +10,14 @@ def do_naive_bayes_prediction(
         The feature values.
 
     observed_class_distribution
-        Observed class distribution
+        Observed class distribution.
 
-    attribute_observers
-        Attribute (features) observer
+    splitters
+        Attribute (features) observers.
 
     Returns
     -------
-    votes
-        dict
+    The probabilities related to each class.
 
     Notes
     -----
@@ -40,15 +37,13 @@ def do_naive_bayes_prediction(
             votes[class_index] = 0.0
             continue
 
-        if attribute_observers:
-            for att_idx in attribute_observers:
+        if splitters:
+            for att_idx in splitters:
                 if att_idx not in x:
                     continue
-                obs = attribute_observers[att_idx]
+                obs = splitters[att_idx]
                 # Prior plus the log likelihood
-                tmp = obs.probability_of_attribute_value_given_class(
-                    x[att_idx], class_index
-                )
+                tmp = obs.cond_proba(x[att_idx], class_index)
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.0
 
     # Max log-likelihood
