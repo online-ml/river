@@ -177,7 +177,7 @@ Here are some benefits of using River (and online machine learning in general):
 
 Feel free to contribute in any way you like, we're always open to new ideas and approaches. 
 
-We have three main ways to users get involved with `river`:
+There are three ways for users to get involved:
 
 - [Issue tracker](https://github.com/online-ml/river/issues): this place is meant to report bugs, request for minor features, or small improvements. Issues should be short-lived and solved as fast as possible.
 - [Discussions](https://github.com/online-ml/river/discussions): you can ask for new features, submit your questions and get help, propose new ideas, or even show the community what you are achieving with `river`! If you have a new technique or want to port a new functionality to `river`, this is the place to discuss.  
