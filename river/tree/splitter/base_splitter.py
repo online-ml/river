@@ -1,11 +1,18 @@
+import typing
 from abc import ABCMeta, abstractmethod
 
-from .._attribute_test import AttributeSplitSuggestion
+from river import base
+
+from .._attribute_test import SplitSuggestion
+from .._split_criterion.base_split_criterion import SplitCriterion
 
 
-class AttributeObserver(metaclass=ABCMeta):
-    """Abstract class for observing the class data distribution for an attribute.
-    This observer monitors the class distribution of a given attribute.
+class Splitter(base.Estimator, metaclass=ABCMeta):
+    """Base class for the tree splitters.
+
+    Each Attribute Observer (AO) or Splitter monitors one input feature and finds the best
+    split point for this attribute. AOs can also perform other tasks related to the monitored
+    feature, such as estimating its probability density function (classification case).
 
     This class should not be instantiated, as none of its methods are implemented.
     """
@@ -14,14 +21,16 @@ class AttributeObserver(metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def update(self, att_val, target_val, sample_weight) -> "AttributeObserver":
+    def update(
+        self, att_val, target_val: base.typing.Target, sample_weight: float
+    ) -> "Splitter":
         """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
 
         Parameters
         ----------
         att_val
-            The value of the attribute.
+            The value of the monitored attribute.
         target_val
             The target value.
         sample_weight
@@ -29,7 +38,7 @@ class AttributeObserver(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def probability_of_attribute_value_given_class(self, att_val, target_val) -> float:
+    def cond_proba(self, att_val, target_val: base.typing.ClfTarget) -> float:
         """Get the probability for an attribute value given a class.
 
         Parameters
@@ -37,7 +46,7 @@ class AttributeObserver(metaclass=ABCMeta):
         att_val
             The value of the attribute.
         target_val
-            The target value.
+            The target (class label) value.
 
         Returns
         -------
@@ -46,8 +55,12 @@ class AttributeObserver(metaclass=ABCMeta):
 
     @abstractmethod
     def best_evaluated_split_suggestion(
-        self, criterion, pre_split_dist, att_idx, binary_only
-    ) -> AttributeSplitSuggestion:
+        self,
+        criterion: SplitCriterion,
+        pre_split_dist: typing.Union[typing.List, typing.Dict],
+        att_idx: base.typing.FeatureName,
+        binary_only: bool,
+    ) -> SplitSuggestion:
         """Get the best split suggestion given a criterion and the target's statistics.
 
         Parameters
@@ -68,4 +81,14 @@ class AttributeObserver(metaclass=ABCMeta):
 
     @property
     def is_numeric(self) -> bool:
+        """Determine whether or not the splitter works with numerical features."""
+        return True
+
+    @property
+    def is_target_class(self) -> bool:
+        """Check on which kind of learning task the splitter is designed to work.
+
+        If `True`, the splitter works with classification trees, otherwise it is designed for
+        regression trees.
+        """
         return True
