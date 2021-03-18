@@ -382,11 +382,13 @@ class HoeffdingTree(ABC):
                         _print("Predictions:\n{")
                         for i, (t, var) in enumerate(pred.items()):
                             _print(
-                                f"\t{t}: {pred[t]} | {node.stats[t].mean} | {node.stats[t]}"
+                                f"\t{t}: {pred[t]} | {repr(node.stats[t].mean)} | {repr(node.stats[t])}"
                             )
                         _print("}")
                     else:  # Single-target regression
-                        _print(f"Prediction {pred} | {node.stats.mean} | {node.stats}")
+                        _print(
+                            f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
+                        )
                 break
             else:
                 child_index = node.split_test.branch_for_instance(x)  # noqa
@@ -411,7 +413,7 @@ class HoeffdingTree(ABC):
                             _print("}")
                         else:  # Single-target regression
                             _print(
-                                f"Prediction {pred} | {node.stats.mean} | {node.stats}"
+                                f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
                             )
 
         return buffer.getvalue()
@@ -609,3 +611,4 @@ def transparency_hex(color: typing.Tuple[int, int, int], alpha: float) -> str:
     return "#%02x%02x%02x" % tuple(
         [int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]
     )
+
