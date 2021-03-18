@@ -14,6 +14,7 @@ from river.tree._nodes import RandomLearningNodeMean  # noqa
 from river.tree._nodes import RandomLearningNodeModel  # noqa
 from river.tree._nodes import RandomLearningNodeNB  # noqa
 from river.tree._nodes import RandomLearningNodeNBA  # noqa
+from river.tree.splitter import Splitter
 from river.utils.skmultiflow_utils import check_random_state
 
 
@@ -154,8 +155,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
-        attr_obs: str = "gaussian",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         seed=None,
         **kwargs,
     ):
@@ -168,22 +168,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
-            **kwargs,
-        )
-
-        super().__init__(
-            grace_period=grace_period,
-            max_depth=max_depth,
-            split_criterion=split_criterion,
-            split_confidence=split_confidence,
-            tie_threshold=tie_threshold,
-            leaf_prediction=leaf_prediction,
-            nb_threshold=nb_threshold,
-            nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
+            splitter=splitter,
             **kwargs,
         )
 
@@ -205,30 +190,15 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLearningNodeMC(
-                initial_stats,
-                depth,
-                self.attr_obs,
-                self.attr_obs_params,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return RandomLearningNodeNB(
-                initial_stats,
-                depth,
-                self.attr_obs,
-                self.attr_obs_params,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return RandomLearningNodeNBA(
-                initial_stats,
-                depth,
-                self.attr_obs,
-                self.attr_obs_params,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
 
     def new_instance(self):
@@ -259,8 +229,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "e-bst",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         min_samples_split: int = 5,
         seed=None,
         **kwargs,
@@ -274,8 +243,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
             leaf_model=leaf_model,
             model_selector_decay=model_selector_decay,
             nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
+            splitter=splitter,
             min_samples_split=min_samples_split,
             **kwargs,
         )
@@ -298,46 +266,35 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         # Generate a random seed for the new learning node
         seed = self._rng.randint(0, 4294967295, dtype="u8")
 
+        leaf_model = None
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
             if parent is None:
                 leaf_model = copy.deepcopy(self.leaf_model)
             else:
                 leaf_model = copy.deepcopy(parent._leaf_model)  # noqa
 
-        if self.attr_obs == self._QO:
-            attr_obs_params = self._qo_radii
-        else:
-            attr_obs_params = self.attr_obs_params
-
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLearningNodeMean(
-                initial_stats,
-                depth,
-                self.attr_obs,
-                attr_obs_params,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self.leaf_prediction == self._MODEL:
             return RandomLearningNodeModel(
                 initial_stats,
                 depth,
-                self.attr_obs,
-                attr_obs_params,
+                self.splitter,
                 self.max_features,
                 seed,
                 leaf_model=leaf_model,
-            )  # noqa
+            )
         else:  # adaptive learning node
             new_adaptive = RandomLearningNodeAdaptive(
                 initial_stats,
                 depth,
-                self.attr_obs,
-                attr_obs_params,
+                self.splitter,
                 self.max_features,
                 seed,
                 leaf_model=leaf_model,
-            )  # noqa
+            )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean  # noqa
                 new_adaptive._fmse_model = parent._fmse_model  # noqa
@@ -418,20 +375,14 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     nominal_attributes
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
-    attr_obs
-        [*Tree parameter*] The Attribute Observer (AO) used to monitor the class statistics of
-        numeric features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'bst'`: Binary Search Tree.</br>
-        - `'gaussian'`: Gaussian observer. The `n_splits` used to query
-         for split candidates can be adjusted (defaults to `10`).</br>
-        - `'histogram'`: Histogram-based class frequency estimation.  The number of histogram
-        bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
-        evaluate (`n_splits` -- defaults to `32`) can be adjusted.</br>
-        See 'Notes' for more information about the AOs.
-    attr_obs_params
-        [*Tree parameter*] Parameters passed to the numeric AOs. See `attr_obs` for more
-        information.
+    splitter
+        [*Tree parameter*] The Splitter or Attribute Observer (AO) used to monitor the class
+        statistics of numeric features and perform splits. Splitters are available in the
+        `tree.splitter` module. Different splitters are available for classification and
+        regression tasks. Classification and regression splitters can be distinguished by their
+        property `is_target_class`. This is an advanced option. Special care must be taken when
+        choosing different splitters. By default, `tree.splitter.GaussianSplitter` is used
+        if `splitter` is `None`.
     max_size
         [*Tree parameter*] Maximum memory (MB) consumed by the tree.
     memory_estimate_period
@@ -442,35 +393,8 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
-
-    Notes
-    -----
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, three AOs are supported in `river` for classification trees:
-
-    - *Binary Search Tree (BST)*: uses an exhaustive algorithm to find split candidates,
-    similarly to batch decision trees. It ends up storing all observations between split
-    attempts. This AO is the most costly one in terms of memory and processing
-    time; however, it tends to yield the most accurate results when using `leaf_prediction=mc`.
-    It cannot be used to calculate the Probability Density Function (PDF) of the monitored
-    feature due to its binary tree nature. Hence, leaf prediction strategies other than
-    the majority class will end up effectively mimicing the majority class classifier.
-    This AO has no parameters.</br>
-    - *Gaussian Estimator*: Approximates the numeric feature distribution by using
-    a Gaussian distribution per class. The Cumulative Distribution Function (CDF) necessary to
-    calculate the entropy (and, consequently, the information gain), the gini index, and
-    other split criteria is then calculated using the fit feature's distribution.</br>
-    - *Histogram*: approximates the numeric feature distribution using an incrementally
-    maintained histogram per class. It represents a compromise between the intensive
-    resource usage of BST and the strong assumptions about the feature's distribution
-    used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
-    previous two in terms of memory usage and running time. Note that the number of
-    bins affects the probability density approximation required to use leaves with
-    (adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
-    Gaussian estimator when adaptive or naive bayes leaves are used.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Examples
     --------
@@ -519,8 +443,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
-        attr_obs: str = "gaussian",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         max_size: int = 32,
         memory_estimate_period: int = 2000000,
         seed: int = None,
@@ -549,8 +472,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
-        self.attr_obs = attr_obs
-        self.attr_obs_params = attr_obs_params
+        self.splitter = splitter
         self.max_size = max_size
         self.memory_estimate_period = memory_estimate_period
         self.kwargs = kwargs
@@ -597,8 +519,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             leaf_prediction=self.leaf_prediction,
             nb_threshold=self.nb_threshold,
             nominal_attributes=self.nominal_attributes,
-            attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params,
+            splitter=self.splitter,
             max_depth=self.max_depth,
             memory_estimate_period=self.memory_estimate_period,
             max_size=self.max_size,
@@ -690,23 +611,14 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     nominal_attributes
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
-    attr_obs
-        [*Tree parameter*] The attribute observer (AO) used to monitor the target statistics of
-        numeric features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
-        - `'qo'`: Quantizer Observer. This AO uses `radius` (defaults to `0.01`) to define a
-        cold-start for the quantization radius. As new leaves are created, new QO instances will
-        use the standard deviation of the input features divided by `std_div` (defaults to `3`)
-        as radius values. If `std_div` is `None`, the initially passed `radius` value will be
-        replicated to all QO instances.</br>
-        - `'te-bst'`: Truncated E-BST. This extension of E-BST first truncates the input values
-        before passing them to the binary search tree. The number of decimal places to consider
-        is given by `digits` (defaults to `3` digits).</br>
-        See notes for more information about the supported AOs.
-    attr_obs_params
-        [*Tree parameter*] Parameters passed to the numeric AOs. See `attr_obs`
-        for more information.
+    splitter
+        [*Tree parameter*] The Splitter or Attribute Observer (AO) used to monitor the class
+        statistics of numeric features and perform splits. Splitters are available in the
+        `tree.splitter` module. Different splitters are available for classification and
+        regression tasks. Classification and regression splitters can be distinguished by their
+        property `is_target_class`. This is an advanced option. Special care must be taken when
+        choosing different splitters.By default, `tree.splitter.EBSTSplitter` is used if
+        `splitter` is `None`.
     min_samples_split
         [*Tree parameter*] The minimum number of samples every branch resulting from a split
         candidate must have to be considered valid.
@@ -720,41 +632,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
-
-    Notes
-    -----
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, only one AO is supported in `river` for regression trees:
-
-    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
-    candidates, similarly to batch decision tree algorithms. It ends up storing all
-    observations between split attempts. However, E-BST automatically removes bad split
-    points periodically from its structure and, thus, alleviates the memory and time
-    costs involved in its usage.Hoeffding trees rely on Attribute Observer (AO) algorithms to
-    monitor input features and perform splits. Nominal features can be easily dealt with, since
-    the partitions are well-defined. Numerical features, however, require more sophisticated
-    solutions. Currently, three AO algorithms are supported in `river` for regression trees:
-
-    - Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
-    candidates, similarly to batch decision tree algorithms. It ends up storing all
-    observations between split attempts. It has a $O(\\log n)$ cost per insertion in average,
-    where $n$ is the number of observations. In the worst case, i.e., when input features
-    values are passed in an ordered fashion, the insertion cost becomes $O(n)$. A naive E-BST
-    implementation has a $O(n)$ cost to evaluate split candidates since all stored points must
-    be evaluated. However, the implementation of E-BST in river automatically removes bad split
-    points periodically from its structure and, thus, alleviates the memory and time
-    costs involved in its usage.
-    - Quantizer Observer (QO) uses a dynamical hash-based algorithm to discretize the numerical
-    input features and perform split attempts. QO has $O(1)$, $O(H)$, and $O(H\\log H)$ costs
-    of insertion, memory, and split candidate query, respectively, where $H$ is the number of
-    slots in QO's hash structure. Typically, $H \\ll n$.
-    - Truncated E-BST extends E-BST by rouding the input feature values before inserting them in
-    the binary search tree (BST). Hence, similar inputs will be mapped to the nodes in the BST
-    structure. This strategy might result in memory and processing time savings when compared to
-    the vanilla E-BST.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     References
     ----------
@@ -812,8 +691,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "e-bst",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         min_samples_split: int = 5,
         max_size: int = 100,
         memory_estimate_period: int = 2000000,
@@ -843,8 +721,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         self.leaf_model = leaf_model
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
-        self.attr_obs = attr_obs
-        self.attr_obs_params = attr_obs_params
+        self.splitter = splitter
         self.min_samples_split = min_samples_split
         self.max_size = max_size
         self.memory_estimate_period = memory_estimate_period
@@ -909,8 +786,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             leaf_model=self.leaf_model,
             model_selector_decay=self.model_selector_decay,
             nominal_attributes=self.nominal_attributes,
-            attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params,
+            splitter=self.splitter,
             max_size=self.max_size,
             memory_estimate_period=self.memory_estimate_period,
             seed=seed,
