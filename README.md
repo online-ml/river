@@ -13,9 +13,9 @@
   <a href="https://riverml.xyz">
     <img src="https://img.shields.io/website?label=docs&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
   </a>
-  <!-- Documentation -->
+  <!-- Roadmap -->
   <a href="https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1">
-    <img src="https://img.shields.io/website?label=roadmap&style=flat-square&url=https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1" alt="documentation">
+    <img src="https://img.shields.io/website?label=roadmap&style=flat-square&url=https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1" alt="roadmap">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
