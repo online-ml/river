@@ -1,4 +1,4 @@
-class AttributeSplitSuggestion:
+class SplitSuggestion:
     def __init__(self, split_test, resulting_class_distributions, merit):
         self.split_test = split_test
         self.resulting_class_distributions = resulting_class_distributions

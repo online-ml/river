@@ -1,20 +1,22 @@
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._attribute_test import (
-    AttributeSplitSuggestion,
-    NominalAttributeBinaryTest,
-    NominalAttributeMultiwayTest,
-)
-from .attribute_observer import AttributeObserver
+from .._attribute_test import NominalBinaryTest, NominalMultiwayTest, SplitSuggestion
+from .base_splitter import Splitter
 
 
-class NominalAttributeRegressionObserver(AttributeObserver):
-    """Nominal attribute observer for regression tasks."""
+class NominalSplitterReg(Splitter):
+    """Splitter utilized to monitor nominal features in regression tasks.
+
+    As the monitored feature is nominal, it already has well-defined partitions. Hence,
+    this splitter simply keeps the split-enabling target statistics for each incoming
+    category."""
 
     def __init__(self):
         super().__init__()
         self._statistics = {}
+        # The way in which the target statistics are update are selected on the fly.
+        # Different strategies are used for univariate and multivariate regression.
         self._update_estimator = self._update_estimator_univariate
 
     @property
@@ -30,14 +32,14 @@ class NominalAttributeRegressionObserver(AttributeObserver):
         for t in target:
             estimator[t].update(target[t], sample_weight)
 
-    def update(self, att_val, target, sample_weight=1.0):
+    def update(self, att_val, target_val, sample_weight):
         if att_val is None or sample_weight is None:
             return
         else:
             try:
                 estimator = self._statistics[att_val]
             except KeyError:
-                if isinstance(target, dict):  # Multi-target case
+                if isinstance(target_val, dict):  # Multi-target case
                     self._statistics[att_val] = VectorDict(
                         default_factory=lambda: Var()
                     )
@@ -45,11 +47,12 @@ class NominalAttributeRegressionObserver(AttributeObserver):
                 else:
                     self._statistics[att_val] = Var()
                 estimator = self._statistics[att_val]
-            self._update_estimator(estimator, target, sample_weight)
+            self._update_estimator(estimator, target_val, sample_weight)
 
         return self
 
-    def probability_of_attribute_value_given_class(self, att_val, target):
+    def cond_proba(self, att_val, target_val):
+        """Not implemented in regression splitters."""
         raise NotImplementedError
 
     def best_evaluated_split_suggestion(
@@ -65,10 +68,8 @@ class NominalAttributeRegressionObserver(AttributeObserver):
                 attr_val: branch_id
                 for branch_id, attr_val in enumerate(ordered_feature_values)
             }
-            current_best = AttributeSplitSuggestion(
-                NominalAttributeMultiwayTest(att_idx, branch_mapping),
-                post_split_dist,
-                merit,
+            current_best = SplitSuggestion(
+                NominalMultiwayTest(att_idx, branch_mapping), post_split_dist, merit,
             )
 
         for att_val in ordered_feature_values:
@@ -79,8 +80,8 @@ class NominalAttributeRegressionObserver(AttributeObserver):
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
             if current_best is None or merit > current_best.merit:
-                nom_att_binary_test = NominalAttributeBinaryTest(att_idx, att_val)
-                current_best = AttributeSplitSuggestion(
+                nom_att_binary_test = NominalBinaryTest(att_idx, att_val)
+                current_best = SplitSuggestion(
                     nom_att_binary_test, post_split_dist, merit
                 )
 

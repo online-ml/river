@@ -222,7 +222,7 @@ class Base:
         return find(self._get_params())
 
     @property
-    def _memory_usage_raw(self) -> int:
+    def _raw_memory_usage(self) -> int:
         """Return the memory usage in bytes."""
 
         def get_size(obj, seen=None):
@@ -254,7 +254,7 @@ class Base:
         """Return the memory usage in a human readable format."""
         from river import utils
 
-        return utils.pretty.humanize_bytes(self._memory_usage_raw)
+        return utils.pretty.humanize_bytes(self._raw_memory_usage)
 
 
 def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:

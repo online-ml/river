@@ -4,6 +4,7 @@ import io
 import itertools
 import types
 import typing
+from xml.etree import ElementTree as ET
 
 import pandas as pd
 
@@ -114,12 +115,6 @@ class Pipeline(base.Estimator):
     >>> model |= preprocessing.StandardScaler()
     >>> model |= linear_model.LinearRegression()
 
-    You can obtain a visual representation of the pipeline by calling it's `draw` method.
-
-    >>> dot = model.draw()
-
-    ![pipeline_example](/img/pipeline_docstring.svg)
-
     The following shows an example of using `debug_one` to visualize how the information
     flows and changes throughout the pipeline.
 
@@ -211,6 +206,18 @@ class Pipeline(base.Estimator):
             + "\t".join(",\n".join(map(repr, self.steps.values())).splitlines(True))
             + "\n)"
         ).expandtabs(2)
+
+    def _repr_html_(self):
+        from .html_repr import CSS, pipeline_to_html
+
+        html = ET.Element("html")
+        body = ET.Element("body")
+        html.append(body)
+
+        pipeline_div = pipeline_to_html(self)
+        body.append(pipeline_div)
+
+        return f"<html>{ET.tostring(body).decode()}<style>{CSS}</style></html>"
 
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
@@ -324,7 +331,7 @@ class Pipeline(base.Estimator):
 
         return self
 
-    def _transform_one(self, x: dict):
+    def _transform_one(self, x: dict, learn_unsupervised: bool = True):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -341,17 +348,17 @@ class Pipeline(base.Estimator):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._supervised:
+                    if not sub_t._supervised and learn_unsupervised:
                         sub_t.learn_one(x=x)
 
-            elif not t._supervised:
+            elif not t._supervised and learn_unsupervised:
                 t.learn_one(x=x)
 
             x = t.transform_one(x=x)
 
         return x, next(steps)
 
-    def transform_one(self, x: dict):
+    def transform_one(self, x: dict, learn_unsupervised: bool = True):
         """Apply each transformer in the pipeline to some features.
 
         The final step in the pipeline will be applied if it is a transformer. If not, then it will
@@ -359,21 +366,21 @@ class Pipeline(base.Estimator):
         that precede the final step are assumed to all be transformers.
 
         """
-        x, final_step = self._transform_one(x=x)
+        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         if isinstance(final_step, base.Transformer):
             return final_step.transform_one(x=x)
         return x
 
-    def predict_one(self, x: dict):
-        x, final_step = self._transform_one(x=x)
+    def predict_one(self, x: dict, learn_unsupervised: bool = True):
+        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.predict_one(x=x)
 
-    def predict_proba_one(self, x: dict):
-        x, final_step = self._transform_one(x=x)
+    def predict_proba_one(self, x: dict, learn_unsupervised: bool = True):
+        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.predict_proba_one(x=x)
 
-    def score_one(self, x: dict):
-        x, final_step = self._transform_one(x=x)
+    def score_one(self, x: dict, learn_unsupervised: bool = True):
+        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.score_one(x=x)
 
     def forecast(self, horizon: int, xs: typing.List[dict] = None):
@@ -525,7 +532,7 @@ class Pipeline(base.Estimator):
 
         return self
 
-    def _transform_many(self, X: pd.DataFrame):
+    def _transform_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -542,10 +549,10 @@ class Pipeline(base.Estimator):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._supervised:
+                    if not sub_t._supervised and learn_unsupervised:
                         sub_t.learn_many(X=X)
 
-            elif not t._supervised:
+            elif not t._supervised and learn_unsupervised:
                 t.learn_many(X=X)
 
             X = t.transform_many(X=X)
@@ -565,149 +572,10 @@ class Pipeline(base.Estimator):
             return final_step.transform_many(X=X)
         return X
 
-    def predict_many(self, X: pd.DataFrame):
-        X, final_step = self._transform_many(X=X)
+    def predict_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
+        X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
         return final_step.predict_many(X=X)
 
-    def predict_proba_many(self, X: pd.DataFrame):
-        X, final_step = self._transform_many(X=X)
+    def predict_proba_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
+        X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
         return final_step.predict_proba_many(X=X)
-
-    def draw(self):
-        """Draws the pipeline using the `graphviz` library."""
-
-        def networkify(step):
-
-            # Unions are converted to an undirected network
-            if isinstance(step, union.TransformerUnion):
-                return Network(
-                    nodes=map(networkify, step.transformers.values()),
-                    edges=[],
-                    directed=False,
-                )
-
-            # Pipelines are converted to a directed network
-            if isinstance(step, Pipeline):
-                return Network(
-                    nodes=[],
-                    edges=zip(
-                        map(networkify, list(step.steps.values())[:-1]),
-                        map(networkify, list(step.steps.values())[1:]),
-                    ),
-                    directed=True,
-                )
-
-            # Wrapper models are handled recursively
-            if isinstance(step, base.WrapperMixin):
-                return Network(
-                    nodes=[networkify(step._wrapped_model)],
-                    edges=[],
-                    directed=True,
-                    name=type(step).__name__,
-                    labelloc=step._labelloc,
-                )
-
-            # Other steps are treated as strings
-            return str(step)
-
-        # Draw input
-        net = Network(nodes=["x"], edges=[], directed=True)
-        previous = "x"
-
-        # Draw each step
-        for step in self.steps.values():
-            current = networkify(step)
-            net.link(previous, current)
-            previous = current
-
-        # Draw output
-        net.link(previous, "y")
-
-        return net.draw()
-
-
-class Network(collections.UserList):
-    """An abstraction to help with drawing pipelines."""
-
-    def __init__(self, nodes, edges, directed, name=None, labelloc=None):
-        super().__init__()
-        for node in nodes:
-            self.append(node)
-        self.edges = set()
-        for link in edges:
-            self.link(*link)
-        self.directed = directed
-        self.name = name
-        self.labelloc = labelloc
-
-    def append(self, a):
-        if a not in self:
-            super().append(a)
-
-    def link(self, a, b):
-        self.append(a)
-        self.append(b)
-        self.edges.add((self.index(a), self.index(b)))
-
-    def draw(self):
-
-        import graphviz
-
-        G = graphviz.Digraph()
-
-        drawn_subclusters = set()
-
-        def draw_node(a):
-            if isinstance(a, Network):
-                for part in a:
-                    draw_node(part)
-            else:
-                G.node(a)
-
-        for a in self:
-            draw_node(a)
-
-        def draw_link(a, b):
-
-            if isinstance(a, Network):
-
-                # Connect the last part of a with b
-                if a.directed:
-                    draw_link(a[-1], b)
-                # Connect each part of a with b
-                else:
-                    for part in a:
-                        draw_link(part, b)
-
-            elif isinstance(b, Network):
-
-                # Connect the first part of b with a
-                if b.directed:
-
-                    if str(b) not in drawn_subclusters:
-
-                        sub = b.draw()
-
-                        # If the graph has a name, then we treat is as a cluster
-                        if b.name is not None:
-                            sub.attr(label=b.name, labelloc=b.labelloc)
-                            sub.name = f"cluster_{b.name}"
-
-                        G.subgraph(sub)
-
-                        drawn_subclusters.add(str(b))
-
-                    draw_link(a, b[0])
-
-                # Connect each part of b with a
-                else:
-                    for part in b:
-                        draw_link(a, part)
-
-            else:
-                G.edge(a, b)
-
-        for a, b in self.edges:
-            draw_link(self[a], self[b])
-
-        return G

@@ -1,11 +1,8 @@
-import math
-from collections import defaultdict
 from copy import deepcopy
 from operator import attrgetter
 
 from river import base, linear_model
 
-from ._base_tree import BaseHoeffdingTree
 from ._nodes import (
     LearningNode,
     LearningNodeAdaptive,
@@ -14,9 +11,11 @@ from ._nodes import (
     SplitNode,
 )
 from ._split_criterion import VarianceReductionSplitCriterion
+from .hoeffding_tree import HoeffdingTree
+from .splitter import EBSTSplitter, Splitter
 
 
-class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
+class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     """Hoeffding Tree regressor.
 
     Parameters
@@ -47,27 +46,19 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
-    attr_obs
-        The attribute observer (AO) used to monitor the target statistics of numeric
-        features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
-        - `'qo'`: Quantizer Observer. This AO uses `radius` (defaults to `0.01`) to define a
-        cold-start for the quantization radius. As new leaves are created, new QO instances will
-        use the standard deviation of the input features divided by `std_div` (defaults to `3`)
-        as radius values. If `std_div` is `None`, the initially passed `radius` value will be
-        replicated to all QO instances.</br>
-        - `'te-bst'`: Truncated E-BST. This extension of E-BST first truncates the input values
-        before passing them to the binary search tree. The number of decimal places to consider
-        is given by `digits` (defaults to `3` digits).</br>
-        See notes for more information about the supported AOs.
-    attr_obs_params
-        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    splitter
+        The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Splitters are available in the `tree.splitter` module.
+        Different splitters are available for classification and regression tasks. Classification
+        and regression splitters can be distinguished by their property `is_target_class`.
+        This is an advanced option. Special care must be taken when choosing different splitters.
+        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----
@@ -78,29 +69,6 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     split candidates. The smallest the variance at its leaf nodes, the more homogeneous the
     partitions are. At its leaf nodes, HTR fits either linear models or uses the target
     average as the predictor.
-
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, three AO algorithms are supported in `river` for regression trees:
-
-    - Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
-    candidates, similarly to batch decision tree algorithms. It ends up storing all
-    observations between split attempts. It has a $O(\\log n)$ cost per insertion in average,
-    where $n$ is the number of observations. In the worst case, i.e., when input features
-    values are passed in an ordered fashion, the insertion cost becomes $O(n)$. A naive E-BST
-    implementation has a $O(n)$ cost to evaluate split candidates since all stored points must
-    be evaluated. However, the implementation of E-BST in river automatically removes bad split
-    points periodically from its structure and, thus, alleviates the memory and time
-    costs involved in its usage.
-    - Quantizer Observer (QO) uses a dynamical hash-based algorithm to discretize the numerical
-    input features and perform split attempts. QO has $O(1)$, $O(H)$, and $O(H\\log H)$ costs
-    of insertion, memory, and split candidate query, respectively, where $H$ is the number of
-    slots in QO's hash structure. Typically, $H \\ll n$.
-    - Truncated E-BST extends E-BST by rouding the input feature values before inserting them in
-    the binary search tree (BST). Hence, similar inputs will be mapped to the nodes in the BST
-    structure. This strategy might result in memory and processing time savings when compared to
-    the vanilla E-BST.
 
     Examples
     --------
@@ -130,10 +98,6 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     _TARGET_MEAN = "mean"
     _MODEL = "model"
     _ADAPTIVE = "adaptive"
-    _E_BST = "e-bst"
-    _QO = "qo"
-    _TE_BST = "te-bst"
-    _VALID_AO = [_E_BST, _QO, _TE_BST]
 
     def __init__(
         self,
@@ -145,8 +109,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "e-bst",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         min_samples_split: int = 5,
         **kwargs,
     ):
@@ -162,34 +125,18 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.nominal_attributes = nominal_attributes
         self.min_samples_split = min_samples_split
 
-        if attr_obs not in self._VALID_AO:
-            raise AttributeError(
-                f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}'
-            )
-        self.attr_obs = attr_obs
-        self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
+        if splitter is None:
+            self.splitter = EBSTSplitter()
+        else:
+            if splitter.is_target_class:
+                raise ValueError(
+                    "The chosen splitter cannot be used in regression tasks."
+                )
+            self.splitter = splitter
+
         self.kwargs = kwargs
 
-        if self.attr_obs == self._QO:
-            self._qo_std_div = 3
-            if "std_div" in self.attr_obs_params:
-                # Make sure the passed std_div value is valid
-                if (
-                    self.attr_obs_params["std_div"] is None
-                    or self.attr_obs_params["std_div"] > 0
-                ):
-                    self._qo_std_div = self.attr_obs_params["std_div"]
-
-            if self._qo_std_div:  # Dynamically evolving radii will be used
-                self._feat_var = {}
-                self._qo_radii = defaultdict(dict)
-            else:  # Static values will be used
-                if "radius" in self.attr_obs_params:
-                    self._qo_radii = {"radius": self.attr_obs_params["radius"]}
-                else:
-                    self._qo_radii = {}
-
-    @BaseHoeffdingTree.leaf_prediction.setter
+    @HoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
             print(
@@ -201,7 +148,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @BaseHoeffdingTree.split_criterion.setter
+    @HoeffdingTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion != "vr":  # variance reduction
             print(
@@ -226,35 +173,27 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         else:
             depth = 0
 
+        leaf_model = None
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
             if parent is None:
                 leaf_model = deepcopy(self.leaf_model)
             else:
                 try:
-                    leaf_model = deepcopy(parent._leaf_model)
+                    leaf_model = deepcopy(parent._leaf_model)  # noqa
                 except AttributeError:
                     leaf_model = deepcopy(self.leaf_model)
 
-        if self.attr_obs == self._QO:
-            attr_obs_params = self._qo_radii
-        else:
-            attr_obs_params = self.attr_obs_params
-
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMean(
-                initial_stats, depth, self.attr_obs, attr_obs_params
-            )
+            return LearningNodeMean(initial_stats, depth, self.splitter)
         elif self.leaf_prediction == self._MODEL:
-            return LearningNodeModel(
-                initial_stats, depth, self.attr_obs, attr_obs_params, leaf_model
-            )
+            return LearningNodeModel(initial_stats, depth, self.splitter, leaf_model)
         else:  # adaptive learning node
             new_adaptive = LearningNodeAdaptive(
-                initial_stats, depth, self.attr_obs, attr_obs_params, leaf_model
+                initial_stats, depth, self.splitter, leaf_model
             )
             if parent is not None:
-                new_adaptive._fmse_mean = parent._fmse_mean
-                new_adaptive._fmse_model = parent._fmse_model
+                new_adaptive._fmse_mean = parent._fmse_mean  # noqa
+                new_adaptive._fmse_model = parent._fmse_model  # noqa
 
             return new_adaptive
 
@@ -281,7 +220,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
 
-        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
         leaf_node = found_node.node
 
         if leaf_node is None:
@@ -366,7 +305,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
 
         """
         if self._tree_root is not None:
-            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
             node = found_node.node
             if node is not None:
                 if node.is_leaf():
@@ -454,24 +393,6 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 self._n_inactive_leaves += 1
                 self._n_active_leaves -= 1
             else:
-                # Update the features' variance estimators if QO is used
-                if self.attr_obs == self._QO and self._qo_std_div:
-                    for feat_id, ao in node.attribute_observers.items():
-                        if not ao.is_numeric:
-                            continue
-
-                        # Update the var estimates using the estimators carried by the QO instances
-                        if feat_id in self._feat_var:
-                            self._feat_var[feat_id] += ao.x_var
-                        else:
-                            self._feat_var[feat_id] = ao.x_var
-
-                        self._qo_radii[feat_id] = {
-                            # Update radii estimates
-                            "radius": math.sqrt(self._feat_var[feat_id].get())
-                            / self._qo_std_div
-                        }
-
                 new_split = self._new_split_node(
                     split_decision.split_test, node.stats, node.depth
                 )
@@ -502,4 +423,4 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
 
             node.manage_memory(
                 split_criterion, last_check_ratio, last_check_vr, hoeffding_bound
-            )
+            )  # noqa

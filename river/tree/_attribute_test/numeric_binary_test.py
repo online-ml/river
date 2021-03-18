@@ -3,7 +3,7 @@ from river.utils.skmultiflow_utils import round_sig_fig
 from .instance_conditional_test import InstanceConditionalTest
 
 
-class NumericAttributeBinaryTest(InstanceConditionalTest):
+class NumericBinaryTest(InstanceConditionalTest):
     def __init__(self, att_idx, att_value, equal_passes_test):
         super().__init__()
         self._att_idx = att_idx

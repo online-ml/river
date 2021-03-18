@@ -1,7 +1,7 @@
 from .instance_conditional_test import InstanceConditionalTest
 
 
-class NominalAttributeBinaryTest(InstanceConditionalTest):
+class NominalBinaryTest(InstanceConditionalTest):
     """Implement binary split tests for categorical features.
 
     The resulting test considers two branches: one encompassing a specific

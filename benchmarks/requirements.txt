@@ -1,10 +1,7 @@
-ipywidgets
-jupyter
-jupyterlab
 git+https://github.com/online-ml/river
-git+https://github.com/scikit-garden/scikit-garden
-scikit-learn==0.23.2
-scikit-multiflow==0.5.3
-tqdm
-torch==1.7.0
-watermark
+pandas
+rich
+scikit-learn
+tabulate
+torch
+vowpalwabbit
