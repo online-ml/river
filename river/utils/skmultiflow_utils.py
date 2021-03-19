@@ -288,7 +288,7 @@ def round_sig_fig(x, significant_digits=2) -> float:
     `significant_digits` prototype.
 
     If`significant_digits` match the number of significant figures in `x`, its value
-    will be used for rounding; otherwise, decimal places will be added or removed
+    will be used for rounding; otherwise, decimal places will removed
     accordingly to the significant figures in `x`.
 
     Parameters
