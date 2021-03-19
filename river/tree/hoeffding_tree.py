@@ -611,4 +611,3 @@ def transparency_hex(color: typing.Tuple[int, int, int], alpha: float) -> str:
     return "#%02x%02x%02x" % tuple(
         [int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]
     )
-
