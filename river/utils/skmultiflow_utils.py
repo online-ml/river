@@ -320,5 +320,7 @@ def round_sig_fig(x, significant_digits=2) -> float:
     0.03
     >>> round_sig_fig(0.025, significant_digits=10)
     0.025
+    >>> round_sig_fig(0.0250, significant_digits=10)
+    0.025
     """
     return round(x, significant_digits - int(math.floor(math.log10(abs(x) + 1))) - 1)
