@@ -1,19 +1,20 @@
 import math
 
-from river import stats, utils
+from river import metrics
 
 from . import base
 
 
 class WB(base.InternalClusMetric):
-    """R-Squared
+    """WB Index
 
-    R-Squared (RS) [^1] is the complement of the ratio of sum of squared distances between objects
-    in different clusters to the total sum of squares. It is an intuitive and simple formulation
-    of measuring the differences between clusters.
+    WB Index is a simple sum-of-square method, calculated by dividing the within
+    cluster sum-of-squares by the between cluster sum-of-squares. Its effect is emphasized
+    by multiplying the number of clusters. The advantages of the proposed method
+    are that it determines the number of clusters by minimal value of it without
+    any knee point detection method, and it is easy to be implemented.
 
-    The maximum value of R-Squared is 1, which means that the higher the index, the better
-    the clustering results.
+    The lower the WB index, the higher the clustering quality is.
 
     Examples
     --------
@@ -56,86 +57,34 @@ class WB(base.InternalClusMetric):
 
     def __init__(self):
         super().__init__()
-        self._ssw = stats.Mean()
-        self._center_all_points = {}
-        self._n_points = 0
-        self._n_points_by_clusters = {}
-        self._squared_distances = {}
-        self._initialized = False
+        self._ssw = metrics.cluster.SSW()
+        self._ssb = metrics.cluster.SSB()
+        self._n_clusters = 0
 
     def update(self, x, y_pred, centers, sample_weight=1.0):
 
-        self._ssw.update(
-            utils.math.minkowski_distance(centers[y_pred], x, 2), w=sample_weight
-        )
+        self._ssw.update(x, y_pred, centers, sample_weight)
 
-        if not self._initialized:
-            self._center_all_points = {i: stats.Mean() for i in x}
-            self._initialized = True
+        self._ssb.update(x, y_pred, centers, sample_weight)
 
-        for i in self._center_all_points:
-            self._center_all_points[i].update(x[i], w=sample_weight)
-        center_all_points = {
-            i: self._center_all_points[i].get() for i in self._center_all_points
-        }
-
-        self._n_points += 1
-
-        try:
-            self._n_points_by_clusters[y_pred] += 1
-        except KeyError:
-            self._n_points_by_clusters[y_pred] = 1
-
-        for i in centers:
-            self._squared_distances[i] = utils.math.minkowski_distance(
-                centers[i], center_all_points, 2
-            )
+        self._n_clusters = len(centers)
 
         return self
 
     def revert(self, x, y_pred, centers, sample_weight=1.0):
 
-        self._ssw.update(
-            utils.math.minkowski_distance(centers[y_pred], x, 2), w=-sample_weight
-        )
+        self._ssw.revert(x, y_pred, centers, sample_weight)
 
-        for i in self._center_all_points:
-            self._center_all_points[i].update(x[i], w=-sample_weight)
-        center_all_points = {
-            i: self._center_all_points[i].get() for i in self._center_all_points
-        }
+        self._ssb.revert(x, y_pred, centers, sample_weight)
 
-        self._n_points -= 1
-
-        self._n_points_by_clusters[y_pred] -= 1
-
-        for i in centers:
-            self._squared_distances[i] = utils.math.minkowski_distance(
-                centers[i], center_all_points, 2
-            )
+        self._n_clusters = len(centers)
 
         return self
 
     def get(self):
 
-        n_clusters = len(self._n_points_by_clusters)
-
-        ssw = self._ssw.get()
-
-        ssb = 0
-        for i in self._n_points_by_clusters:
-            try:
-                ssb += (
-                    1
-                    / self._n_points
-                    * self._n_points_by_clusters[i]
-                    * self._squared_distances[i]
-                )
-            except ZeroDivisionError:
-                ssb += 0
-
         try:
-            return n_clusters * ssw / ssb
+            return self._n_clusters * self._ssw.get() / self._ssb.get()
         except ZeroDivisionError:
             return math.inf
 

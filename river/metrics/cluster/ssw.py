@@ -1,6 +1,6 @@
 import math
 
-from river import stats, utils
+from river import metrics, utils
 
 from . import base
 
@@ -8,7 +8,7 @@ __all__ = ["BallHall", "SSW", "Cohesion"]
 
 
 class SSW(base.MeanInternalMetric):
-    """ Sum-of-Squares Within Clusters (SSW).
+    """Sum-of-Squares Within Clusters (SSW).
 
     Mean of sum of squared distances from data points to their assigned cluster centroids.
     The bigger the better.
@@ -156,23 +156,21 @@ class BallHall(base.InternalClusMetric):
     """
 
     def __init__(self):
-        self._ssw = stats.Mean()
+        self._ssw = metrics.cluster.SSW()
         self._n_clusters = 0
 
     def update(self, x, y_pred, centers, sample_weight=1.0):
 
-        squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
+        self._ssw.update(x, y_pred, centers, sample_weight)
 
-        self._ssw.update(squared_distance, w=sample_weight)
         self._n_clusters = len(centers)
 
         return self
 
     def revert(self, x, y_pred, centers, sample_weight=1.0):
 
-        squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
+        self._ssw.revert(x, y_pred, centers, sample_weight)
 
-        self._ssw.update(squared_distance, w=-sample_weight)
         self._n_clusters = len(centers)
 
         return self
