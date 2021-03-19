@@ -73,7 +73,10 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=
         # Can not normalize, return gracefully
         return dictionary
 
-    for (key, value,) in dictionary.items():  # loop over the keys, values in the dictionary
+    for (
+        key,
+        value,
+    ) in dictionary.items():  # loop over the keys, values in the dictionary
         dictionary[key] = value / factor
 
     return dictionary
@@ -275,7 +278,9 @@ def check_random_state(seed):
         return np.random.RandomState(seed)
     if isinstance(seed, np.random.RandomState):
         return seed
-    raise ValueError(f"{seed} cannot be used to seed a numpy.random.RandomState instance")
+    raise ValueError(
+        f"{seed} cannot be used to seed a numpy.random.RandomState instance"
+    )
 
 
 def round_sig_fig(x, significant_digits=2) -> float:
