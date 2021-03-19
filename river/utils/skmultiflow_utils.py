@@ -301,5 +301,24 @@ def round_sig_fig(x, significant_digits=2) -> float:
     Returns
     -------
         The rounded value of `x`.
+
+    Examples
+    --------
+    >>> round_sig_fig(1.2345)
+    1.2
+    >>> round_sig_fig(1.2345, significant_digits=3)
+    1.23
+    >>> round_sig_fig(0.0)
+    0.0
+    >>> round_sig_fig(0)
+    0
+    >>> round_sig_fig(1999, significant_digits=1)
+    2000
+    >>> round_sig_fig(1999, significant_digits=4)
+    1999
+    >>> round_sig_fig(0.025, significant_digits=3)
+    0.03
+    >>> round_sig_fig(0.025, significant_digits=10)
+    0.025
     """
     return round(x, significant_digits - int(math.floor(math.log10(abs(x) + 1))) - 1)
