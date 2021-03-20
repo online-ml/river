@@ -55,7 +55,7 @@ class XieBeni(base.InternalClusMetric):
 
     def __init__(self):
         super().__init__()
-        self._ssq = 0
+        self._ssw = 0
         self._minimum_separation = 0
         self._total_points = 0
 
@@ -75,7 +75,7 @@ class XieBeni(base.InternalClusMetric):
         squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
         minimum_separation = self._find_minimum_separation(centers)
 
-        self._ssq += squared_distance
+        self._ssw += squared_distance
         self._total_points += 1
         self._minimum_separation = minimum_separation
 
@@ -86,7 +86,7 @@ class XieBeni(base.InternalClusMetric):
         squared_distance = utils.math.minkowski_distance(centers[y_pred], x, 2)
         minimum_separation = self._find_minimum_separation(centers)
 
-        self._ssq -= squared_distance
+        self._ssw -= squared_distance
         self._total_points -= 1
         self._minimum_separation -= minimum_separation
 
@@ -94,7 +94,7 @@ class XieBeni(base.InternalClusMetric):
 
     def get(self):
         try:
-            return self._ssq / (self._total_points * self._minimum_separation)
+            return self._ssw / (self._total_points * self._minimum_separation)
         except ZeroDivisionError:
             return math.inf
 
