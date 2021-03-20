@@ -17,7 +17,7 @@ from .separation import Separation
 from .silhouette import Silhouette
 from .ssb import SSB
 from .ssw import SSW, BallHall, Cohesion
-from .wb import WB
+from .ssq_based import WB, Hartigan
 from .xiebeni import XieBeni
 
 __all__ = [
@@ -25,6 +25,7 @@ __all__ = [
     "CalinskiHarabasz",
     "Cohesion",
     "DaviesBouldin",
+    "Hartigan",
     "IIndex",
     "InternalClusMetric",
     "MSSTD",
