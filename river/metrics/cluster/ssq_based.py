@@ -7,7 +7,7 @@ from . import base
 __all__ = ["Hartigan", "WB"]
 
 
-class Hartigan(base.InternalClusMetric):
+class Hartigan(base.InternalMetric):
     """Hartigan Index (H - Index)
 
     Hartigan Index (H - Index) [^1] is a sum-of-square based index [^2], which is
@@ -91,7 +91,7 @@ class Hartigan(base.InternalClusMetric):
         return True
 
 
-class WB(base.InternalClusMetric):
+class WB(base.InternalMetric):
     """WB Index
 
     WB Index is a simple sum-of-square method, calculated by dividing the within

@@ -7,7 +7,7 @@ from . import base
 __all__ = ["MSSTD", "RMSSTD"]
 
 
-class MSSTD(base.InternalClusMetric):
+class MSSTD(base.InternalMetric):
     """Mean Squared Standard Deviation.
 
     This is the pooled sample variance of all the attributes, which measures

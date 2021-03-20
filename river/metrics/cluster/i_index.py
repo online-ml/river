@@ -5,7 +5,7 @@ from river import stats, utils
 from . import base
 
 
-class IIndex(base.InternalClusMetric):
+class IIndex(base.InternalMetric):
     """I-Index (I).
 
     I-Index (I) [^1] adopts the maximum distance between cluster centers. It also shares the type of

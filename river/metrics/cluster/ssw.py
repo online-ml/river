@@ -4,7 +4,7 @@ from river import metrics, utils
 
 from . import base
 
-__all__ = ["BallHall", "SSW", "Cohesion"]
+__all__ = ["BallHall", "Cohesion", "SSW"]
 
 
 class SSW(base.MeanInternalMetric):
@@ -106,7 +106,7 @@ class Cohesion(base.MeanInternalMetric):
         return math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
 
 
-class BallHall(base.InternalClusMetric):
+class BallHall(base.InternalMetric):
     """Ball-Hall index
 
     Ball-Hall index is a sum-of-squared based index. It is calculated by

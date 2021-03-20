@@ -6,7 +6,7 @@ of the clustering algorithm without having to store information of all previousl
 
 """
 
-from .base import InternalClusMetric
+from .base import InternalMetric
 from .calinskiharabasz import CalinskiHarabasz
 from .daviesbouldin import DaviesBouldin
 from .i_index import IIndex
@@ -16,8 +16,8 @@ from .sd_validation import SD
 from .separation import Separation
 from .silhouette import Silhouette
 from .ssb import SSB
-from .ssw import SSW, BallHall, Cohesion
 from .ssq_based import WB, Hartigan
+from .ssw import SSW, BallHall, Cohesion
 from .xiebeni import XieBeni
 
 __all__ = [
@@ -27,7 +27,7 @@ __all__ = [
     "DaviesBouldin",
     "Hartigan",
     "IIndex",
-    "InternalClusMetric",
+    "InternalMetric",
     "MSSTD",
     "R2",
     "RMSSTD",

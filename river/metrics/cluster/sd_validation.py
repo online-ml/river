@@ -5,7 +5,7 @@ from river import stats, utils
 from . import base
 
 
-class SD(base.InternalClusMetric):
+class SD(base.InternalMetric):
     """The SD validity index (SD).
 
     The SD validity index (SD) [^1] is a more recent clustering validation measure. It is composed of

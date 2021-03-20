@@ -5,7 +5,7 @@ from river import stats, utils
 from . import base
 
 
-class R2(base.InternalClusMetric):
+class R2(base.InternalMetric):
     """R-Squared
 
     R-Squared (RS) [^1] is the complement of the ratio of sum of squared distances between objects

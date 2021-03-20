@@ -5,7 +5,7 @@ from river import utils
 from . import base
 
 
-class XieBeni(base.InternalClusMetric):
+class XieBeni(base.InternalMetric):
     """Xie-Beni index (XB).
 
     The Xie-Beni index [^1] has the form of (Compactness)/(Separation), which defines the

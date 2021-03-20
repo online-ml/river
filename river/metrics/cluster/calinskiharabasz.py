@@ -5,7 +5,7 @@ from river import stats, utils
 from . import base
 
 
-class CalinskiHarabasz(base.InternalClusMetric):
+class CalinskiHarabasz(base.InternalMetric):
     """Calinski-Harabasz index (CH).
 
     The Calinski-Harabasz index (CH) index measures the criteria simultaneously

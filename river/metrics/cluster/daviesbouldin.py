@@ -5,7 +5,7 @@ from river import utils
 from . import base
 
 
-class DaviesBouldin(base.InternalClusMetric):
+class DaviesBouldin(base.InternalMetric):
     """Davies-Bouldin index (DB).
 
     The Davies-Bouldin index (DB) [^1] is an old but still widely used inernal validaion measure.
