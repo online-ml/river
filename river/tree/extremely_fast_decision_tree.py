@@ -1,14 +1,18 @@
 from operator import attrgetter
 
-from river.tree import HoeffdingTreeClassifier
-
-from ._split_criterion import GiniSplitCriterion
-from ._split_criterion import InfoGainSplitCriterion
-from ._split_criterion import HellingerDistanceCriterion
-from ._nodes import EFDTSplitNode
-from ._nodes import EFDTLearningNodeMC
-from ._nodes import EFDTLearningNodeNB
-from ._nodes import EFDTLearningNodeNBA
+from ._nodes import (
+    EFDTLearningNodeMC,
+    EFDTLearningNodeNB,
+    EFDTLearningNodeNBA,
+    EFDTSplitNode,
+)
+from ._split_criterion import (
+    GiniSplitCriterion,
+    HellingerDistanceCriterion,
+    InfoGainSplitCriterion,
+)
+from .hoeffding_tree_classifier import HoeffdingTreeClassifier
+from .splitter import Splitter
 
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
@@ -43,21 +47,16 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
-    attr_obs
-        The Attribute Observer (AO) used to monitor the class statistics of numeric
-        features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'bst'`: Binary Search Tree.</br>
-        - `'gaussian'`: Gaussian observer. The `n_splits` used to query
-         for split candidates can be adjusted (defaults to `10`).</br>
-        - `'histogram'`: Histogram-based class frequency estimation.  The number of histogram
-        bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
-        evaluate (`n_splits` -- defaults to `32`) can be adjusted.</br>
-        See 'Notes' for more information about the AOs.
-    attr_obs_params
-        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    splitter
+        The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Splitters are available in the `tree.splitter` module.
+        Different splitters are available for classification and regression tasks. Classification
+        and regression splitters can be distinguished by their property `is_target_class`.
+        This is an advanced option. Special care must be taken when choosing different splitters.
+        By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----
@@ -66,32 +65,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     that decision, replacing the split if it subsequently becomes evident that a better split is
     available. The EFDT learns rapidly from a stationary distribution and eventually it learns the
     asymptotic batch tree if the distribution from which the data are drawn is stationary.
-
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, three AOs are supported in `river` for classification trees:
-
-    - *Binary Search Tree (BST)*: uses an exhaustive algorithm to find split candidates,
-    similarly to batch decision trees. It ends up storing all observations between split
-    attempts. This AO is the most costly one in terms of memory and processing
-    time; however, it tends to yield the most accurate results when using `leaf_prediction=mc`.
-    It cannot be used to calculate the Probability Density Function (PDF) of the monitored
-    feature due to its binary tree nature. Hence, leaf prediction strategies other than
-    the majority class will end up effectively mimicing the majority class classifier.
-    This AO has no parameters.</br>
-    - *Gaussian Estimator*: Approximates the numeric feature distribution by using
-    a Gaussian distribution per class. The Cumulative Distribution Function (CDF) necessary to
-    calculate the entropy (and, consequently, the information gain), the gini index, and
-    other split criteria is then calculated using the fit feature's distribution.</br>
-    - *Histogram*: approximates the numeric feature distribution using an incrementally
-    maintained histogram per class. It represents a compromise between the intensive
-    resource usage of BST and the strong assumptions about the feature's distribution
-    used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
-    previous two in terms of memory usage and running time. Note that the number of
-    bins affects the probability density approximation required to use leaves with
-    (adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
-    Gaussian estimator when adaptive or naive bayes leaves are used.
 
     References
     ----------
@@ -135,8 +108,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
-        attr_obs: str = "gaussian",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         **kwargs
     ):
 
@@ -149,8 +121,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
+            splitter=splitter,
             **kwargs
         )
 
@@ -165,21 +136,22 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return EFDTLearningNodeMC(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return EFDTLearningNodeMC(initial_stats, depth, self.splitter)
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return EFDTLearningNodeNB(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return EFDTLearningNodeNB(initial_stats, depth, self.splitter)
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return EFDTLearningNodeNBA(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return EFDTLearningNodeNBA(initial_stats, depth, self.splitter)
 
-    def _new_split_node(self, split_test, target_stats=None, depth=0, attribute_observers=None):
+    def _new_split_node(
+        self, split_test, target_stats=None, depth=0, existing_splitters=None
+    ):
         """Create a new split node."""
         return EFDTSplitNode(
             split_test=split_test,
             stats=target_stats,
             depth=depth,
-            attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params,
-            attribute_observers=attribute_observers,
+            splitter=self.splitter,
+            existing_splitters=existing_splitters,
         )
 
     def learn_one(self, x, y, *, sample_weight=1.0):
@@ -262,7 +234,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 if child_index >= 0:
                     child = node.get_child(child_index)
                     if child is not None:
-                        self._process_nodes(x, y, sample_weight, child, node, child_index)
+                        self._process_nodes(
+                            x, y, sample_weight, child, node, child_index
+                        )
         elif self._growth_allowed and node.is_active():
             if node.depth >= self.max_depth:  # Max depth reached
                 node.deactivate()
@@ -295,7 +269,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             The weight of the sample.
 
         """
-        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
         leaf_node = found_node.node
 
         if leaf_node is None:
@@ -401,17 +375,16 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 ) and (id_current != id_best):
                     # Create a new branch
                     new_split = self._new_split_node(
-                        x_best.split_test,
-                        node.stats,
-                        node.depth,
-                        node.attribute_observers,
+                        x_best.split_test, node.stats, node.depth, node.splitters,
                     )
                     # Update weights in new_split
                     new_split.last_split_reevaluation_at = node.total_weight
 
                     # Update EFDT
                     for i in range(x_best.num_splits()):
-                        new_child = self._new_learning_node(x_best.resulting_stats_from_split(i))
+                        new_child = self._new_learning_node(
+                            x_best.resulting_stats_from_split(i)
+                        )
                         new_split.set_child(i, new_child)
 
                     deleted_node_cnt = node.count_nodes()
@@ -436,7 +409,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     x_best.merit - x_current.merit > hoeffding_bound
                     or hoeffding_bound < self.tie_threshold
                 ) and (id_current == id_best):
-                    node._split_test = x_best.split_test
+                    node.split_test = x_best.split_test
 
         return stop_flag
 
@@ -463,7 +436,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             Parent node's branch index.
 
         """
-        if not node.observed_class_distribution_is_pure():
+        if not node.observed_class_distribution_is_pure():  # noqa
             if self._split_criterion == self._GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
             elif self._split_criterion == self._INFO_GAIN_SPLIT:
@@ -481,7 +454,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 x_best = best_split_suggestions[-1]
 
                 # Get x_null
-                x_null = node.null_split(split_criterion)
+                x_null = node.null_split(split_criterion)  # noqa
 
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(node.stats),
@@ -495,10 +468,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 ):
                     # Split
                     new_split = self._new_split_node(
-                        x_best.split_test,
-                        node.stats,
-                        node.depth,
-                        node.attribute_observers,
+                        x_best.split_test, node.stats, node.depth, node.splitters,
                     )
 
                     new_split.last_split_reevaluation_at = node.total_weight
@@ -537,6 +507,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         leaf.depth = node.depth
 
         leaf.stats = node.stats
-        leaf.attribute_observers = node.attribute_observers
+        leaf.splitters = node.splitters
 
         return leaf

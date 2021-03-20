@@ -1,10 +1,8 @@
 import collections
-import typing
 import random
+import typing
 
-from river import base
-from river import optim
-from river import utils
+from river import base, optim, utils
 
 
 class Triplet(collections.namedtuple("Triplet", "x y loss")):
@@ -209,7 +207,11 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
         seed: int = None,
     ):
         if loss is None:
-            loss = optim.losses.CrossEntropy() if classifier._multiclass else optim.losses.Log()
+            loss = (
+                optim.losses.CrossEntropy()
+                if classifier._multiclass
+                else optim.losses.Log()
+            )
         super().__init__(model=classifier, loss=loss, size=size, p=p, seed=seed)
 
     @property

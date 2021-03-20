@@ -2,12 +2,9 @@ import collections
 import copy
 import typing
 
-from river import stats
-from river import optim
-from river import utils
+from river import optim, stats, utils
 
 from . import base
-
 
 __all__ = ["Baseline"]
 
@@ -91,8 +88,12 @@ class Baseline(base.Recommender):
         clip_gradient=1e12,
     ):
         self.optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
-        self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
-        self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        self.u_optimizer = (
+            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        )
+        self.i_optimizer = (
+            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        )
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2 = l2
 
@@ -121,14 +122,16 @@ class Baseline(base.Recommender):
         g_loss = self.loss.gradient(y, self._predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
+        g_loss = utils.math.clamp(
+            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
+        )
 
         # Calculate bias gradients
         u_grad_bias = {user: g_loss + self.l2 * self.u_biases[user]}
         i_grad_bias = {item: g_loss + self.l2 * self.i_biases[item]}
 
         # Update biases
-        self.u_biases = self.u_optimizer.update_after_pred(self.u_biases, u_grad_bias)
-        self.i_biases = self.i_optimizer.update_after_pred(self.i_biases, i_grad_bias)
+        self.u_biases = self.u_optimizer.step(self.u_biases, u_grad_bias)
+        self.i_biases = self.i_optimizer.step(self.i_biases, i_grad_bias)
 
         return self

@@ -1,19 +1,21 @@
-from operator import attrgetter
 from copy import deepcopy
+from operator import attrgetter
 
-from river import base
-from river import linear_model
+from river import base, linear_model
 
-from ._base_tree import BaseHoeffdingTree
+from ._nodes import (
+    LearningNode,
+    LearningNodeAdaptive,
+    LearningNodeMean,
+    LearningNodeModel,
+    SplitNode,
+)
 from ._split_criterion import VarianceReductionSplitCriterion
-from ._nodes import SplitNode
-from ._nodes import LearningNode
-from ._nodes import LearningNodeMean
-from ._nodes import LearningNodeModel
-from ._nodes import LearningNodeAdaptive
+from .hoeffding_tree import HoeffdingTree
+from .splitter import EBSTSplitter, Splitter
 
 
-class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
+class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     """Hoeffding Tree regressor.
 
     Parameters
@@ -44,19 +46,19 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
-    attr_obs
-        The attribute observer (AO) used to monitor the target statistics of numeric
-        features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
-        See notes for more information about the supported AOs.
-    attr_obs_params
-        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    splitter
+        The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Splitters are available in the `tree.splitter` module.
+        Different splitters are available for classification and regression tasks. Classification
+        and regression splitters can be distinguished by their property `is_target_class`.
+        This is an advanced option. Special care must be taken when choosing different splitters.
+        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----
@@ -67,17 +69,6 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     split candidates. The smallest the variance at its leaf nodes, the more homogeneous the
     partitions are. At its leaf nodes, HTR fits either linear models or uses the target
     average as the predictor.
-
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, only one AO is supported in `river` for regression trees:
-
-    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
-    candidates, similarly to batch decision tree algorithms. It ends up storing all
-    observations between split attempts. However, E-BST automatically removes bad split
-    points periodically from its structure and, thus, alleviates the memory and time
-    costs involved in its usage.
 
     Examples
     --------
@@ -107,8 +98,6 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
     _TARGET_MEAN = "mean"
     _MODEL = "model"
     _ADAPTIVE = "adaptive"
-    _E_BST = "e-bst"
-    _VALID_AO = [_E_BST]
 
     def __init__(
         self,
@@ -120,8 +109,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "e-bst",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         min_samples_split: int = 5,
         **kwargs,
     ):
@@ -137,13 +125,18 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         self.nominal_attributes = nominal_attributes
         self.min_samples_split = min_samples_split
 
-        if attr_obs not in self._VALID_AO:
-            raise AttributeError(f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}')
-        self.attr_obs = attr_obs
-        self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
+        if splitter is None:
+            self.splitter = EBSTSplitter()
+        else:
+            if splitter.is_target_class:
+                raise ValueError(
+                    "The chosen splitter cannot be used in regression tasks."
+                )
+            self.splitter = splitter
+
         self.kwargs = kwargs
 
-    @BaseHoeffdingTree.leaf_prediction.setter
+    @HoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
             print(
@@ -155,7 +148,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @BaseHoeffdingTree.split_criterion.setter
+    @HoeffdingTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion != "vr":  # variance reduction
             print(
@@ -180,28 +173,27 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
         else:
             depth = 0
 
+        leaf_model = None
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
             if parent is None:
                 leaf_model = deepcopy(self.leaf_model)
             else:
                 try:
-                    leaf_model = deepcopy(parent._leaf_model)
+                    leaf_model = deepcopy(parent._leaf_model)  # noqa
                 except AttributeError:
                     leaf_model = deepcopy(self.leaf_model)
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMean(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return LearningNodeMean(initial_stats, depth, self.splitter)
         elif self.leaf_prediction == self._MODEL:
-            return LearningNodeModel(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
-            )
+            return LearningNodeModel(initial_stats, depth, self.splitter, leaf_model)
         else:  # adaptive learning node
             new_adaptive = LearningNodeAdaptive(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_model
+                initial_stats, depth, self.splitter, leaf_model
             )
             if parent is not None:
-                new_adaptive._fmse_mean = parent._fmse_mean
-                new_adaptive._fmse_model = parent._fmse_model
+                new_adaptive._fmse_mean = parent._fmse_mean  # noqa
+                new_adaptive._fmse_model = parent._fmse_model  # noqa
 
             return new_adaptive
 
@@ -228,7 +220,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
 
-        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
         leaf_node = found_node.node
 
         if leaf_node is None:
@@ -271,7 +263,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 while not nd.is_leaf():
                     path = max(
                         nd._children,
-                        key=lambda c: nd._children[c].total_weight if nd._children[c] else 0.0,
+                        key=lambda c: nd._children[c].total_weight
+                        if nd._children[c]
+                        else 0.0,
                     )
                     most_traversed = nd.get_child(path)
                     # Pass instance to the most traversed path
@@ -311,7 +305,7 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
 
         """
         if self._tree_root is not None:
-            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
             node = found_node.node
             if node is not None:
                 if node.is_leaf():
@@ -368,7 +362,8 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
             if best_suggestion.merit > 0.0 and (
-                second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
+                second_best_suggestion.merit / best_suggestion.merit
+                < 1 - hoeffding_bound
                 or hoeffding_bound < self.tie_threshold
             ):
                 should_split = True
@@ -379,7 +374,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 # Add any poor attribute to set
                 for i in range(len(best_split_suggestions)):
                     if best_split_suggestions[i].split_test is not None:
-                        split_attrs = best_split_suggestions[i].split_test.attrs_test_depends_on()
+                        split_attrs = best_split_suggestions[
+                            i
+                        ].split_test.attrs_test_depends_on()
                         if len(split_attrs) == 1:
                             if (
                                 best_split_suggestions[i].merit / best_suggestion.merit
@@ -396,7 +393,9 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
                 self._n_inactive_leaves += 1
                 self._n_active_leaves -= 1
             else:
-                new_split = self._new_split_node(split_decision.split_test, node.stats, node.depth)
+                new_split = self._new_split_node(
+                    split_decision.split_test, node.stats, node.depth
+                )
                 for i in range(split_decision.num_splits()):
                     new_child = self._new_learning_node(
                         split_decision.resulting_stats_from_split(i), node
@@ -417,7 +416,11 @@ class HoeffdingTreeRegressor(BaseHoeffdingTree, base.Regressor):
             and best_split_suggestions[-1].merit > 0
             and best_split_suggestions[-2].merit > 0
         ):
-            last_check_ratio = best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
+            last_check_ratio = (
+                best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
+            )
             last_check_vr = best_split_suggestions[-1].merit
 
-            node.manage_memory(split_criterion, last_check_ratio, last_check_vr, hoeffding_bound)
+            node.manage_memory(
+                split_criterion, last_check_ratio, last_check_vr, hoeffding_bound
+            )  # noqa

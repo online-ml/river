@@ -3,7 +3,7 @@ name: dev-docs
 on:
   push:
     branches:
-      - origin/master
+      - master
 
 jobs:
   ubuntu:
@@ -31,6 +31,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install wheel
         pip install -e ".[docs]"
 
     - name: Build docs

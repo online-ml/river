@@ -1,23 +1,9 @@
-from . import Accuracy
-from . import CohenKappa, KappaM, KappaT
-from . import Recall, MicroRecall, MacroRecall
-from . import Precision, MicroPrecision, MacroPrecision
-from . import F1, MicroF1, MacroF1
-from . import GeometricMean
-from . import Hamming, HammingLoss
-from . import Jaccard
-from . import ExactMatch
-from . import Rolling
-from . import ConfusionMatrix
-from . import MSE
-from . import MAE
-from . import R2
-from .confusion import MultiLabelConfusionMatrix
-
 from collections import deque
 from timeit import default_timer as timer
 
 import numpy as np
+
+from river import metrics
 
 
 class _ClassificationReport:
@@ -69,23 +55,23 @@ class _ClassificationReport:
     # Define the format specification used for string representation.
     _fmt = ">10.4f"
 
-    def __init__(self, cm: ConfusionMatrix = None):
+    def __init__(self, cm: "metrics.ConfusionMatrix" = None):
 
-        self.cm = ConfusionMatrix() if cm is None else cm
-        self.accuracy = Accuracy(cm=self.cm)
-        self.kappa = CohenKappa(cm=self.cm)
-        self.kappa_m = KappaM(cm=self.cm)
-        self.kappa_t = KappaT(cm=self.cm)
-        self.recall = Recall(cm=self.cm)
-        self.micro_recall = MicroRecall(cm=self.cm)
-        self.macro_recall = MacroRecall(cm=self.cm)
-        self.precision = Precision(cm=self.cm)
-        self.micro_precision = MicroPrecision(cm=self.cm)
-        self.macro_precision = MacroPrecision(cm=self.cm)
-        self.f1 = F1(cm=self.cm)
-        self.micro_f1 = MicroF1(cm=self.cm)
-        self.macro_f1 = MacroF1(cm=self.cm)
-        self.geometric_mean = GeometricMean(cm=self.cm)
+        self.cm = metrics.ConfusionMatrix() if cm is None else cm
+        self.accuracy = metrics.Accuracy(cm=self.cm)
+        self.kappa = metrics.CohenKappa(cm=self.cm)
+        self.kappa_m = metrics.KappaM(cm=self.cm)
+        self.kappa_t = metrics.KappaT(cm=self.cm)
+        self.recall = metrics.Recall(cm=self.cm)
+        self.micro_recall = metrics.MicroRecall(cm=self.cm)
+        self.macro_recall = metrics.MacroRecall(cm=self.cm)
+        self.precision = metrics.Precision(cm=self.cm)
+        self.micro_precision = metrics.MicroPrecision(cm=self.cm)
+        self.macro_precision = metrics.MacroPrecision(cm=self.cm)
+        self.f1 = metrics.F1(cm=self.cm)
+        self.micro_f1 = metrics.MicroF1(cm=self.cm)
+        self.macro_f1 = metrics.MacroF1(cm=self.cm)
+        self.geometric_mean = metrics.GeometricMean(cm=self.cm)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
         self.cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
@@ -215,15 +201,18 @@ class _RollingClassificationReport(_ClassificationReport):
 
     """
 
-    def __init__(self, cm: ConfusionMatrix = None, window_size=200):
+    def __init__(self, cm: "metrics.ConfusionMatrix" = None, window_size=200):
         self.window_size = window_size
-        self._rolling_cm = Rolling(
-            ConfusionMatrix() if cm is None else cm, window_size=self.window_size
+        self._rolling_cm = metrics.Rolling(
+            metrics.ConfusionMatrix() if cm is None else cm,
+            window_size=self.window_size,
         )
         super().__init__(cm=self._rolling_cm.metric)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
-        self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
 
     def __repr__(self):
         return "".join(
@@ -283,12 +272,12 @@ class _MLClassificationReport:
     # Define the format specification used for string representation.
     _fmt = ">10.4f"
 
-    def __init__(self, cm: MultiLabelConfusionMatrix = None):
-        self.cm = MultiLabelConfusionMatrix() if cm is None else cm
-        self.hamming = Hamming(cm=self.cm)
-        self.hamming_loss = HammingLoss(cm=self.cm)
-        self.jaccard_index = Jaccard(cm=self.cm)
-        self.exact_match = ExactMatch(cm=self.cm)
+    def __init__(self, cm: "metrics.MultiLabelConfusionMatrix" = None):
+        self.cm = metrics.MultiLabelConfusionMatrix() if cm is None else cm
+        self.hamming = metrics.Hamming(cm=self.cm)
+        self.hamming_loss = metrics.HammingLoss(cm=self.cm)
+        self.jaccard_index = metrics.Jaccard(cm=self.cm)
+        self.exact_match = metrics.ExactMatch(cm=self.cm)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
         self.cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
@@ -390,16 +379,18 @@ class _RollingMLClassificationReport(_MLClassificationReport):
 
     """
 
-    def __init__(self, cm: ConfusionMatrix = None, window_size=200):
+    def __init__(self, cm: "metrics.ConfusionMatrix" = None, window_size=200):
         self.window_size = window_size
-        self._rolling_cm = Rolling(
-            MultiLabelConfusionMatrix() if cm is None else cm,
+        self._rolling_cm = metrics.Rolling(
+            metrics.MultiLabelConfusionMatrix() if cm is None else cm,
             window_size=self.window_size,
         )
         super().__init__(cm=self._rolling_cm.metric)
 
     def add_result(self, y_true, y_pred, sample_weight=1.0):
-        self._rolling_cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
 
     def __repr__(self):
         return "".join(
@@ -447,16 +438,16 @@ class _RegressionReport(object):
 
     def __init__(self):
         super().__init__()
-        self.mae = MAE()
-        self.mse = MSE()
-        self.r2 = R2()
+        self.mae = metrics.MAE()
+        self.mse = metrics.MSE()
+        self.r2 = metrics.R2()
         self.last_true_label = None
         self.last_prediction = None
 
     def reset(self):
-        self.mae = MAE()
-        self.mse = MSE()
-        self.r2 = R2()
+        self.mae = metrics.MAE()
+        self.mse = metrics.MSE()
+        self.r2 = metrics.R2()
         self.last_true_label = None
         self.last_prediction = None
 
@@ -536,17 +527,17 @@ class _RollingRegressionReport(_RegressionReport):
     def __init__(self, window_size=200):
         super().__init__()
         self.window_size = window_size
-        self.mae = Rolling(MAE(), window_size=self.window_size)
-        self.mse = Rolling(MSE(), window_size=self.window_size)
-        self.r2 = Rolling(R2(), window_size=self.window_size)
+        self.mae = metrics.Rolling(metrics.MAE(), window_size=self.window_size)
+        self.mse = metrics.Rolling(metrics.MSE(), window_size=self.window_size)
+        self.r2 = metrics.Rolling(metrics.R2(), window_size=self.window_size)
         self.sample_count = 0
         self.last_true_label = None
         self.last_prediction = None
 
     def reset(self):
-        self.mae = Rolling(MAE(), window_size=self.window_size)
-        self.mse = Rolling(MSE(), window_size=self.window_size)
-        self.r2 = Rolling(R2(), window_size=self.window_size)
+        self.mae = metrics.Rolling(metrics.MAE(), window_size=self.window_size)
+        self.mse = metrics.Rolling(metrics.MSE(), window_size=self.window_size)
+        self.r2 = metrics.Rolling(metrics.R2(), window_size=self.window_size)
         self.sample_count = 0
         self.last_true_label = None
         self.last_prediction = None
@@ -567,7 +558,7 @@ class _RollingRegressionReport(_RegressionReport):
         )
 
 
-class _MTRegressionReport(object):
+class _MTRegressionReport:
     """Multi-target regression report
 
     Keeps incremental performance metrics in a multi-target regression problem.
@@ -644,7 +635,10 @@ class _MTRegressionReport(object):
     def get_average_root_mean_square_error(self):
         try:
             mse = self.total_square_error / self.n_samples
-            return np.sum(np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0)) / self.n_targets
+            return (
+                np.sum(np.sqrt(mse, out=np.zeros_like(mse), where=mse >= 0.0))
+                / self.n_targets
+            )
         except ZeroDivisionError:
             return 0.0
 
@@ -739,7 +733,9 @@ class _RollingMTRegressionReport(_MTRegressionReport):
             if len(self.total_square_error_correction) == self.window_size
             else None
         )
-        self.total_square_error_correction.append(-1 * (y_true - y_pred) * (y_true - y_pred))
+        self.total_square_error_correction.append(
+            -1 * (y_true - y_pred) * (y_true - y_pred)
+        )
         old_average = (
             self.average_error_correction[0]
             if len(self.average_error_correction) == self.window_size

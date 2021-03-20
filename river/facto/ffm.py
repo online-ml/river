@@ -5,12 +5,9 @@ import typing
 
 import numpy as np
 
-from river import base
-from river import optim
-from river import utils
+from river import base, optim, utils
 
 from .base import BaseFM
-
 
 __all__ = ["FFMClassifier", "FFMRegressor"]
 
@@ -55,7 +52,9 @@ class FFM(BaseFM):
         )
 
     def _init_latents(self):
-        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
+        random_latents = functools.partial(
+            self.latent_initializer, shape=self.n_factors
+        )
         field_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(field_latents_dict)
 
@@ -63,7 +62,9 @@ class FFM(BaseFM):
         """Calculates pairwise interactions."""
         field = self._field
         return sum(
-            x[j1] * x[j2] * np.dot(self.latents[j1][field(j2)], self.latents[j2][field(j1)])
+            x[j1]
+            * x[j2]
+            * np.dot(self.latents[j1][field(j2)], self.latents[j2][field(j1)])
             for j1, j2 in itertools.combinations(x.keys(), 2)
         )
 
@@ -96,7 +97,7 @@ class FFM(BaseFM):
         # Finally update the latent weights
         for j in x.keys():
             for field in latent_gradient[j].keys():
-                self.latents[j][field] = self.latent_optimizer.update_after_pred(
+                self.latents[j][field] = self.latent_optimizer.step(
                     w=v[j][field],
                     g={
                         f: g_loss * latent_gradient[j][field][f]

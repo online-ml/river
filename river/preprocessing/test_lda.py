@@ -14,7 +14,6 @@ import numpy as np
 
 from river import preprocessing
 
-
 DOC_SET = [
     "weather cold",
     "weather hot dry",
@@ -24,10 +23,7 @@ DOC_SET = [
 ]
 
 REFERENCE_STATISTICS_TWO_COMPONENTS = [
-    {
-        0: np.array([0.0, 0.0, 0.0]),
-        1: np.array([0.0, 1.0, 1.0]),
-    },
+    {0: np.array([0.0, 0.0, 0.0]), 1: np.array([0.0, 1.0, 1.0])},
     {0: np.array([0.0, 0.6, 0.0, 0.8, 0.6]), 1: np.array([0.0, 0.4, 0.0, 0.2, 0.4])},
     {
         0: np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
@@ -125,13 +121,7 @@ def test_extraction_words_ids():
 
         word_indexes_list.append([lda.word_to_index[word] for word in words])
 
-    assert word_indexes_list == [
-        [1, 2],
-        [1, 3, 4],
-        [1, 2, 5],
-        [1, 3],
-        [1, 2, 6],
-    ]
+    assert word_indexes_list == [[1, 2], [1, 3, 4], [1, 2, 5], [1, 3], [1, 2, 6]]
 
 
 def test_statistics_two_components():
@@ -153,7 +143,7 @@ def test_statistics_two_components():
         word_indexes = [lda.word_to_index[word] for word in word_list]
 
         statistics, _ = lda._compute_statistics_components(
-            words_indexes_list=word_indexes,
+            words_indexes_list=word_indexes
         )
 
         statistics_list.append(statistics)
@@ -195,7 +185,7 @@ def test_statistics_five_components():
         word_indexes = [lda.word_to_index[word] for word in word_list]
 
         statistics, _ = lda._compute_statistics_components(
-            words_indexes_list=word_indexes,
+            words_indexes_list=word_indexes
         )
 
         statistics_list.append(statistics)
@@ -234,8 +224,7 @@ def test_five_components():
 
     for index, component in enumerate(components_list):
         assert np.array_equal(
-            a1=list(component.values()),
-            a2=REFERENCE_FIVE_COMPONENTS[index],
+            a1=list(component.values()), a2=REFERENCE_FIVE_COMPONENTS[index]
         )
 
 

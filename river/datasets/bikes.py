@@ -11,7 +11,7 @@ class Bikes(base.RemoteDataset):
 
     References
     ----------
-    [^1]: [A short introduction and conclusion to the OpenBikes 2016 Challenge](https://maxhalford.github.io/blog/a-short-introduction-and-conclusion-to-the-openbikes-2016-challenge/)
+    [^1]: [A short introduction and conclusion to the OpenBikes 2016 Challenge](https://maxhalford.github.io/blog/openbikes-challenge/)
 
     """
 

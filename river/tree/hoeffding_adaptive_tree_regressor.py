@@ -1,11 +1,10 @@
 from copy import deepcopy
 
-from river.tree import HoeffdingTreeRegressor
 from river import base
 
-from ._nodes import FoundNode
-from ._nodes import AdaSplitNodeRegressor
-from ._nodes import AdaLearningNodeRegressor
+from ._nodes import AdaLearningNodeRegressor, AdaSplitNodeRegressor, FoundNode
+from .hoeffding_tree_regressor import HoeffdingTreeRegressor
+from .splitter import Splitter
 
 
 class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
@@ -45,14 +44,13 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     nominal_attributes
         List of Nominal attributes. If empty, then assume that all numeric attributes should
         be treated as continuous.
-    attr_obs
-        The attribute observer (AO) used to monitor the target statistics of numeric
-        features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
-        See notes for more information about the supported AOs.
-    attr_obs_params
-        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    splitter
+        The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Splitters are available in the `tree.splitter` module.
+        Different splitters are available for classification and regression tasks. Classification
+        and regression splitters can be distinguished by their property `is_target_class`.
+        This is an advanced option. Special care must be taken when choosing different splitters.
+        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
@@ -70,7 +68,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
        bootstrap sampling.</br>
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----
@@ -87,17 +86,6 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     these errors to a min-max normalization assuming that most of the data lies in the
     $\\left[-3\\sigma, 3\\sigma\\right]$ range. These normalized errors are passed to the ADWIN
     instances. This is the same strategy used by Adaptive Random Forest Regressor.
-
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, only one AO is supported in `river` for regression trees:
-
-    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
-    candidates, similarly to batch decision tree algorithms. It ends up storing all
-    observations between split attempts. However, E-BST automatically removes bad split
-    points periodically from its structure and, thus, alleviates the memory and time
-    costs involved in its usage.
 
     References
     ----------
@@ -144,8 +132,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "e-bst",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         min_samples_split: int = 5,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
@@ -163,8 +150,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             leaf_model=leaf_model,
             model_selector_decay=model_selector_decay,
             nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
+            splitter=splitter,
             min_samples_split=min_samples_split,
             **kwargs
         )
@@ -228,7 +214,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             depth = parent.depth + 1
             # Leverage ancestor's learning models
             if parent.is_leaf():
-                leaf_model = deepcopy(parent._leaf_model)
+                leaf_model = deepcopy(parent._leaf_model)  # noqa
             else:  # Corner case where an alternate tree is created
                 leaf_model = deepcopy(self.leaf_model)
         else:
@@ -238,16 +224,15 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         new_ada_leaf = AdaLearningNodeRegressor(
             stats=initial_stats,
             depth=depth,
-            attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params,
+            splitter=self.splitter,
             leaf_model=leaf_model,
             adwin_delta=self.adwin_confidence,
             seed=self.seed,
         )
 
         if parent is not None and parent.is_leaf():
-            new_ada_leaf._fmse_mean = parent._fmse_mean
-            new_ada_leaf._fmse_model = parent._fmse_model
+            new_ada_leaf._fmse_mean = parent._fmse_mean  # noqa
+            new_ada_leaf._fmse_model = parent._fmse_model  # noqa
 
         return new_ada_leaf
 
@@ -268,9 +253,13 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             else:
                 split_node = node
                 for i in range(split_node.n_children):
-                    self.__find_learning_nodes(split_node.get_child(i), split_node, i, found)
+                    self.__find_learning_nodes(
+                        split_node.get_child(i), split_node, i, found
+                    )
                 if split_node._alternate_tree is not None:
-                    self.__find_learning_nodes(split_node._alternate_tree, split_node, -999, found)
+                    self.__find_learning_nodes(
+                        split_node._alternate_tree, split_node, -999, found
+                    )
 
     @classmethod
     def _unit_test_params(cls):

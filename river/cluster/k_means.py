@@ -2,9 +2,7 @@ import collections
 import functools
 import random
 
-from river import base
-from river import utils
-
+from river import base, utils
 
 __all__ = ["KMeans"]
 
@@ -87,7 +85,9 @@ class KMeans(base.Clusterer):
 
     """
 
-    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int = None):
+    def __init__(
+        self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int = None
+    ):
         self.n_clusters = n_clusters
         self.halflife = halflife
         self.mu = mu
@@ -96,7 +96,9 @@ class KMeans(base.Clusterer):
         self.seed = seed
         self._rng = random.Random(seed)
         rand_gauss = functools.partial(self._rng.gauss, self.mu, self.sigma)
-        self.centers = {i: collections.defaultdict(rand_gauss) for i in range(n_clusters)}  # type: ignore
+        self.centers = {
+            i: collections.defaultdict(rand_gauss) for i in range(n_clusters)
+        }  # type: ignore
 
     def learn_predict_one(self, x):
         """Equivalent to `k_means.learn_one(x).predict_one(x)`, but faster."""

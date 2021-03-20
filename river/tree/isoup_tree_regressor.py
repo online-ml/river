@@ -1,16 +1,18 @@
 import typing
 from copy import deepcopy
 
-from river import base
-from river.tree import HoeffdingTreeRegressor
+from river import base, tree
 
+from ._nodes import (
+    LearningNodeAdaptiveMultiTarget,
+    LearningNodeMeanMultiTarget,
+    LearningNodeModelMultiTarget,
+)
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
-from ._nodes import LearningNodeMeanMultiTarget
-from ._nodes import LearningNodeModelMultiTarget
-from ._nodes import LearningNodeAdaptiveMultiTarget
+from .splitter import Splitter
 
 
-class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
+class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
     """Incremental Structured Output Prediction Tree (iSOUP-Tree) for multi-target regression.
 
     This is an implementation of the iSOUP-Tree proposed by A. Osojnik, P. Panov, and
@@ -49,32 +51,19 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric attributes
         should be treated as continuous.
-    attr_obs
-        The attribute observer (AO) used to monitor the target statistics of numeric
-        features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
-        See notes for more information about the supported AOs.
-    attr_obs_params
-        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    splitter
+        The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Splitters are available in the `tree.splitter` module.
+        Different splitters are available for classification and regression tasks. Classification
+        and regression splitters can be distinguished by their property `is_target_class`.
+        This is an advanced option. Special care must be taken when choosing different splitters.
+        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
-
-    Notes
-    -----
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, only one AO is supported in `river` for regression trees:
-
-    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
-    candidates, similarly to batch decision tree algorithms. It ends up storing all
-    observations between split attempts. However, E-BST automatically removes bad split
-    points periodically from its structure and, thus, alleviates the memory and time
-    costs involved in its usage.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     References
     ----------
@@ -124,8 +113,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "e-bst",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         min_samples_split: int = 5,
         **kwargs
     ):
@@ -138,8 +126,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             leaf_model=leaf_model,
             model_selector_decay=model_selector_decay,
             nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
+            splitter=splitter,
             min_samples_split=min_samples_split,
             **kwargs
         )
@@ -147,7 +134,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         self.split_criterion: str = "icvr"  # intra cluster variance reduction
         self.targets: set = set()
 
-    @HoeffdingTreeRegressor.leaf_prediction.setter
+    @tree.HoeffdingTreeRegressor.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
             print(
@@ -159,7 +146,7 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @HoeffdingTreeRegressor.split_criterion.setter
+    @tree.HoeffdingTreeRegressor.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion == "vr":
             # Corner case due to parent class initialization
@@ -175,7 +162,9 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return IntraClusterVarianceReductionSplitCriterion(min_samples_split=self.min_samples_split)
+        return IntraClusterVarianceReductionSplitCriterion(
+            min_samples_split=self.min_samples_split
+        )
 
     def _new_learning_node(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
@@ -186,31 +175,30 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         else:
             depth = 0
 
+        leaf_models = None
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
             if parent is None:
                 leaf_models = {}
             else:
                 try:
-                    leaf_models = deepcopy(parent._leaf_models)
+                    leaf_models = deepcopy(parent._leaf_models)  # noqa
                 except AttributeError:
                     # Due to an emerging category in a nominal feature, a split node was reached
                     leaf_models = {}
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMeanMultiTarget(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params
-            )
+            return LearningNodeMeanMultiTarget(initial_stats, depth, self.splitter)
         elif self.leaf_prediction == self._MODEL:
             return LearningNodeModelMultiTarget(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_models
+                initial_stats, depth, self.splitter, leaf_models
             )
         else:  # adaptive learning node
             new_adaptive = LearningNodeAdaptiveMultiTarget(
-                initial_stats, depth, self.attr_obs, self.attr_obs_params, leaf_models
+                initial_stats, depth, self.splitter, leaf_models
             )
             if parent is not None:
-                new_adaptive._fmse_mean = parent._fmse_mean.copy()
-                new_adaptive._fmse_model = parent._fmse_model.copy()
+                new_adaptive._fmse_mean = parent._fmse_mean.copy()  # noqa
+                new_adaptive._fmse_model = parent._fmse_model.copy()  # noqa
 
             return new_adaptive
 
@@ -244,11 +232,13 @@ class iSOUPTreeRegressor(HoeffdingTreeRegressor, base.MultiOutputMixin):
         # Update target set
         self.targets.update(y.keys())
 
-        super().learn_one(x, y, sample_weight=sample_weight)
+        super().learn_one(x, y, sample_weight=sample_weight)  # noqa
 
         return self
 
-    def predict_one(self, x: dict) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
+    def predict_one(
+        self, x: dict
+    ) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
         """Predict the target values for a given instance.
 
         Parameters

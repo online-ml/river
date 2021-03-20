@@ -1,7 +1,5 @@
 from .arf_htc_nodes import BaseRandomLearningNode
-from .htr_nodes import LearningNodeMean
-from .htr_nodes import LearningNodeModel
-from .htr_nodes import LearningNodeAdaptive
+from .htr_nodes import LearningNodeAdaptive, LearningNodeMean, LearningNodeModel
 
 
 class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
@@ -15,11 +13,9 @@ class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
         the target's statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -27,10 +23,12 @@ class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, max_features, seed)
+    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
+        super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
 
 
 class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
@@ -44,11 +42,9 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         the target's statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -57,19 +53,17 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     leaf_model
-        A `river.base.Regressor` instance used to learn from instances and provide
+        A `base.Regressor` instance used to learn from instances and provide
         responses.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model):
+    def __init__(
+        self, stats, depth, splitter, max_features, seed, leaf_model, **kwargs
+    ):
         super().__init__(
-            stats,
-            depth,
-            attr_obs,
-            attr_obs_params,
-            max_features,
-            seed,
-            leaf_model=leaf_model,
+            stats, depth, splitter, max_features, seed, leaf_model=leaf_model, **kwargs
         )
 
 
@@ -84,11 +78,9 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
         the target's statistics.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -97,17 +89,15 @@ class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
         If None, the random number generator is the RandomState instance used
         by `np.random`.
     leaf_model
-        A `river.base.Regressor` instance used to learn from instances and provide
+        A `base.Regressor` instance used to learn from instances and provide
         responses.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, leaf_model):
+    def __init__(
+        self, stats, depth, splitter, max_features, seed, leaf_model, **kwargs
+    ):
         super().__init__(
-            stats,
-            depth,
-            attr_obs,
-            attr_obs_params,
-            max_features,
-            seed,
-            leaf_model=leaf_model,
+            stats, depth, splitter, max_features, seed, leaf_model=leaf_model, **kwargs
         )

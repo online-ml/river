@@ -2,7 +2,6 @@ import collections
 
 from . import base
 
-
 __all__ = ["Momentum"]
 
 
@@ -42,7 +41,7 @@ class Momentum(base.Optimizer):
         self.rho = rho
         self.s = collections.defaultdict(float)
 
-    def _update_after_pred(self, w, g):
+    def _step(self, w, g):
 
         for i, gi in g.items():
             self.s[i] = self.rho * self.s[i] + self.learning_rate * gi

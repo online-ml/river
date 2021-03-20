@@ -2,10 +2,11 @@ import collections
 import functools
 import math
 
+import pandas as pd
+
 from river import proba
 
 from . import base
-
 
 __all__ = ["GaussianNB"]
 
@@ -61,3 +62,6 @@ class GaussianNB(base.BaseNB):
             + sum(math.log(10e-10 + gaussians[i].pdf(xi)) for i, xi in x.items())
             for c, gaussians in self.gaussians.items()
         }
+
+    def joint_log_likelihood_many(self, X: pd.DataFrame):
+        pass

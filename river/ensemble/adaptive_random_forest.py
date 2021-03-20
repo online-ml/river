@@ -1,26 +1,20 @@
 import abc
 import collections
+import copy
 import math
 import typing
-import copy
 
 import numpy as np
 
-from river import base
+from river import base, metrics, stats, tree
 from river.drift import ADWIN
-from river.metrics import Accuracy
-from river.metrics import MSE
-from river.metrics.base import MultiClassMetric
-from river.metrics.base import RegressionMetric
-from river.tree import HoeffdingTreeClassifier
-from river.tree import HoeffdingTreeRegressor
+from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
 from river.tree._nodes import RandomLearningNodeMC  # noqa
-from river.tree._nodes import RandomLearningNodeNB  # noqa
-from river.tree._nodes import RandomLearningNodeNBA  # noqa
 from river.tree._nodes import RandomLearningNodeMean  # noqa
 from river.tree._nodes import RandomLearningNodeModel  # noqa
-from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
-from river.stats import Var
+from river.tree._nodes import RandomLearningNodeNB  # noqa
+from river.tree._nodes import RandomLearningNodeNBA  # noqa
+from river.tree.splitter import Splitter
 from river.utils.skmultiflow_utils import check_random_state
 
 
@@ -36,7 +30,7 @@ class BaseForest(base.EnsembleMixin):
         lambda_value: int,
         drift_detector: typing.Union[base.DriftDetector, None],
         warning_detector: typing.Union[base.DriftDetector, None],
-        metric: typing.Union[MultiClassMetric, RegressionMetric],
+        metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
         disable_weighted_vote,
         seed,
     ):
@@ -72,7 +66,9 @@ class BaseForest(base.EnsembleMixin):
             k = self._rng.poisson(lam=self.lambda_value)
             if k > 0:
                 # print(self._n_samples_seen)
-                model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
+                model.learn_one(
+                    x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen
+                )
 
         return self
 
@@ -138,7 +134,7 @@ class BaseForest(base.EnsembleMixin):
         self._rng = check_random_state(self.seed)
 
 
-class BaseTreeClassifier(HoeffdingTreeClassifier):
+class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
     """Adaptive Random Forest Hoeffding Tree Classifier.
 
     This is the base-estimator of the Adaptive Random Forest classifier.
@@ -159,8 +155,7 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
-        attr_obs: str = "gaussian",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         seed=None,
         **kwargs,
     ):
@@ -173,22 +168,7 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
-            **kwargs,
-        )
-
-        super().__init__(
-            grace_period=grace_period,
-            max_depth=max_depth,
-            split_criterion=split_criterion,
-            split_confidence=split_confidence,
-            tie_threshold=tie_threshold,
-            leaf_prediction=leaf_prediction,
-            nb_threshold=nb_threshold,
-            nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
+            splitter=splitter,
             **kwargs,
         )
 
@@ -210,30 +190,15 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLearningNodeMC(
-                initial_stats,
-                depth,
-                self.attr_obs,
-                self.attr_obs_params,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return RandomLearningNodeNB(
-                initial_stats,
-                depth,
-                self.attr_obs,
-                self.attr_obs_params,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return RandomLearningNodeNBA(
-                initial_stats,
-                depth,
-                self.attr_obs,
-                self.attr_obs_params,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
 
     def new_instance(self):
@@ -243,7 +208,7 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
         return new_instance
 
 
-class BaseTreeRegressor(HoeffdingTreeRegressor):
+class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
     """ARF Hoeffding Tree regressor.
 
     This is the base-estimator of the Adaptive Random Forest regressor.
@@ -264,8 +229,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "gaussian",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         min_samples_split: int = 5,
         seed=None,
         **kwargs,
@@ -279,8 +243,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
             leaf_model=leaf_model,
             model_selector_decay=model_selector_decay,
             nominal_attributes=nominal_attributes,
-            attr_obs=attr_obs,
-            attr_obs_params=attr_obs_params,
+            splitter=splitter,
             min_samples_split=min_samples_split,
             **kwargs,
         )
@@ -303,6 +266,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
         # Generate a random seed for the new learning node
         seed = self._rng.randint(0, 4294967295, dtype="u8")
 
+        leaf_model = None
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
             if parent is None:
                 leaf_model = copy.deepcopy(self.leaf_model)
@@ -311,33 +275,26 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
 
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLearningNodeMean(
-                initial_stats,
-                depth,
-                self.attr_obs,
-                self.attr_obs_params,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self.leaf_prediction == self._MODEL:
             return RandomLearningNodeModel(
                 initial_stats,
                 depth,
-                self.attr_obs,
-                self.attr_obs_params,
+                self.splitter,
                 self.max_features,
                 seed,
                 leaf_model=leaf_model,
-            )  # noqa
+            )
         else:  # adaptive learning node
             new_adaptive = RandomLearningNodeAdaptive(
                 initial_stats,
                 depth,
-                self.attr_obs,
-                self.attr_obs_params,
+                self.splitter,
                 self.max_features,
                 seed,
                 leaf_model=leaf_model,
-            )  # noqa
+            )
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean  # noqa
                 new_adaptive._fmse_model = parent._fmse_model  # noqa
@@ -418,20 +375,14 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     nominal_attributes
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
-    attr_obs
-        [*Tree parameter*] The Attribute Observer (AO) used to monitor the class statistics of
-        numeric features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'bst'`: Binary Search Tree.</br>
-        - `'gaussian'`: Gaussian observer. The `n_splits` used to query
-         for split candidates can be adjusted (defaults to `10`).</br>
-        - `'histogram'`: Histogram-based class frequency estimation.  The number of histogram
-        bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
-        evaluate (`n_splits` -- defaults to `32`) can be adjusted.</br>
-        See 'Notes' for more information about the AOs.
-    attr_obs_params
-        [*Tree parameter*] Parameters passed to the numeric AOs. See `attr_obs` for more
-        information.
+    splitter
+        [*Tree parameter*] The Splitter or Attribute Observer (AO) used to monitor the class
+        statistics of numeric features and perform splits. Splitters are available in the
+        `tree.splitter` module. Different splitters are available for classification and
+        regression tasks. Classification and regression splitters can be distinguished by their
+        property `is_target_class`. This is an advanced option. Special care must be taken when
+        choosing different splitters. By default, `tree.splitter.GaussianSplitter` is used
+        if `splitter` is `None`.
     max_size
         [*Tree parameter*] Maximum memory (MB) consumed by the tree.
     memory_estimate_period
@@ -442,35 +393,8 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
-
-    Notes
-    -----
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, three AOs are supported in `river` for classification trees:
-
-    - *Binary Search Tree (BST)*: uses an exhaustive algorithm to find split candidates,
-    similarly to batch decision trees. It ends up storing all observations between split
-    attempts. This AO is the most costly one in terms of memory and processing
-    time; however, it tends to yield the most accurate results when using `leaf_prediction=mc`.
-    It cannot be used to calculate the Probability Density Function (PDF) of the monitored
-    feature due to its binary tree nature. Hence, leaf prediction strategies other than
-    the majority class will end up effectively mimicing the majority class classifier.
-    This AO has no parameters.</br>
-    - *Gaussian Estimator*: Approximates the numeric feature distribution by using
-    a Gaussian distribution per class. The Cumulative Distribution Function (CDF) necessary to
-    calculate the entropy (and, consequently, the information gain), the gini index, and
-    other split criteria is then calculated using the fit feature's distribution.</br>
-    - *Histogram*: approximates the numeric feature distribution using an incrementally
-    maintained histogram per class. It represents a compromise between the intensive
-    resource usage of BST and the strong assumptions about the feature's distribution
-    used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
-    previous two in terms of memory usage and running time. Note that the number of
-    bins affects the probability density approximation required to use leaves with
-    (adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
-    Gaussian estimator when adaptive or naive bayes leaves are used.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Examples
     --------
@@ -490,7 +414,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 72.87%
+    Accuracy: 70.47%
 
     References
     ----------
@@ -506,7 +430,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         n_models: int = 10,
         max_features: typing.Union[bool, str, int] = "sqrt",
         lambda_value: int = 6,
-        metric: MultiClassMetric = Accuracy(),
+        metric: metrics.MultiClassMetric = metrics.Accuracy(),
         disable_weighted_vote=False,
         drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
         warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
@@ -519,8 +443,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
-        attr_obs: str = "gaussian",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         max_size: int = 32,
         memory_estimate_period: int = 2000000,
         seed: int = None,
@@ -549,8 +472,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
-        self.attr_obs = attr_obs
-        self.attr_obs_params = attr_obs_params
+        self.splitter = splitter
         self.max_size = max_size
         self.memory_estimate_period = memory_estimate_period
         self.kwargs = kwargs
@@ -577,7 +499,9 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
-                y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
+                y_proba_temp = {
+                    k: val * metric_value for k, val in y_proba_temp.items()
+                }
             y_pred.update(y_proba_temp)
 
         total = sum(y_pred.values())
@@ -595,8 +519,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             leaf_prediction=self.leaf_prediction,
             nb_threshold=self.nb_threshold,
             nominal_attributes=self.nominal_attributes,
-            attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params,
+            splitter=self.splitter,
             max_depth=self.max_depth,
             memory_estimate_period=self.memory_estimate_period,
             max_size=self.max_size,
@@ -679,8 +602,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         `river.linear_model.LinearRegression` with the default hyperparameters
          is used.
     model_selector_decay
-        The exponential decaying factor applied to the learning models' squared
-        errors, that are monitored if `leaf_prediction='adaptive'`. Must be
+        [*Tree parameter*] The exponential decaying factor applied to the learning models'
+        squared errors, that are monitored if `leaf_prediction='adaptive'`. Must be
         between `0` and `1`. The closer to `1`, the more importance is going to
         be given to past observations. On the other hand, if its value
         approaches `0`, the recent observed errors are going to have more
@@ -688,15 +611,14 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     nominal_attributes
         [*Tree parameter*] List of Nominal attributes. If empty, then assume that
         all attributes are numerical.
-    attr_obs
-        [*Tree parameter*] The attribute observer (AO) used to monitor the target
-        statistics of numeric features and perform splits. Parameters can be passed to the
-        AOs (when supported) by using `attr_obs_params`. Valid options are:</br>
-        - `'e-bst'`: Extended Binary Search Tree (E-BST). This AO has no parameters.</br>
-        See notes for more information about the supported AOs.
-    attr_obs_params
-        [*Tree parameter*] Parameters passed to the numeric AOs. See `attr_obs`
-        for more information.
+    splitter
+        [*Tree parameter*] The Splitter or Attribute Observer (AO) used to monitor the class
+        statistics of numeric features and perform splits. Splitters are available in the
+        `tree.splitter` module. Different splitters are available for classification and
+        regression tasks. Classification and regression splitters can be distinguished by their
+        property `is_target_class`. This is an advanced option. Special care must be taken when
+        choosing different splitters.By default, `tree.splitter.EBSTSplitter` is used if
+        `splitter` is `None`.
     min_samples_split
         [*Tree parameter*] The minimum number of samples every branch resulting from a split
         candidate must have to be considered valid.
@@ -710,20 +632,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
-
-    Notes
-    -----
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, only one AO is supported in `river` for regression trees:
-
-    - The Extended Binary Search Tree (E-BST) uses an exhaustive algorithm to find split
-    candidates, similarly to batch decision tree algorithms. It ends up storing all
-    observations between split attempts. However, E-BST automatically removes bad split
-    points periodically from its structure and, thus, alleviates the memory and time
-    costs involved in its usage.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     References
     ----------
@@ -753,7 +663,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 23.320694
+    MAE: 1.870913
 
     """
 
@@ -768,8 +678,8 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         max_features="sqrt",
         aggregation_method: str = "median",
         lambda_value: int = 6,
-        metric: RegressionMetric = MSE(),
-        disable_weighted_vote=False,
+        metric: metrics.RegressionMetric = metrics.MSE(),
+        disable_weighted_vote=True,
         drift_detector: base.DriftDetector = ADWIN(0.001),
         warning_detector: base.DriftDetector = ADWIN(0.01),
         # Tree parameters
@@ -781,8 +691,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
-        attr_obs: str = "e-bst",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         min_samples_split: int = 5,
         max_size: int = 100,
         memory_estimate_period: int = 2000000,
@@ -812,8 +721,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         self.leaf_model = leaf_model
         self.model_selector_decay = model_selector_decay
         self.nominal_attributes = nominal_attributes
-        self.attr_obs = attr_obs
-        self.attr_obs_params = attr_obs_params
+        self.splitter = splitter
         self.min_samples_split = min_samples_split
         self.max_size = max_size
         self.memory_estimate_period = memory_estimate_period
@@ -842,7 +750,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
         y_pred = np.zeros(self.n_models)
 
-        if not self.disable_weighted_vote:
+        if not self.disable_weighted_vote and self.aggregation_method != self._MEDIAN:
             weights = np.zeros(self.n_models)
             sum_weights = 0.0
             for idx, model in enumerate(self.models):
@@ -878,8 +786,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             leaf_model=self.leaf_model,
             model_selector_decay=self.model_selector_decay,
             nominal_attributes=self.nominal_attributes,
-            attr_obs=self.attr_obs,
-            attr_obs_params=self.attr_obs_params,
+            splitter=self.splitter,
             max_size=self.max_size,
             memory_estimate_period=self.memory_estimate_period,
             seed=seed,
@@ -931,7 +838,7 @@ class BaseForestMember:
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: typing.Union[MultiClassMetric, RegressionMetric],
+        metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
     ):
         self.index_original = index_original
         self.model = model.clone()
@@ -939,7 +846,7 @@ class BaseForestMember:
         self.is_background_learner = is_background_learner
         self.metric = copy.deepcopy(metric)
         # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.metric, MultiClassMetric):
+        if isinstance(self.metric, metrics.MultiClassMetric):
             self.metric.cm.reset()
         # Keep a copy of the original metric for background learners or reset
         self._original_metric = copy.deepcopy(metric)
@@ -983,16 +890,20 @@ class BaseForestMember:
             self.created_on = n_samples_seen
             self.drift_detector = self.drift_detector.clone()
         # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.metric, MultiClassMetric):
+        if isinstance(self.metric, metrics.MultiClassMetric):
             self.metric.cm.reset()
 
-    def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int):
+    def learn_one(
+        self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int
+    ):
 
         self.model.learn_one(x, y, sample_weight=sample_weight)
 
         if self.background_learner:
             # Train the background learner
-            self.background_learner.model.learn_one(x=x, y=y, sample_weight=sample_weight)
+            self.background_learner.model.learn_one(
+                x=x, y=y, sample_weight=sample_weight
+            )
 
         if self._use_drift_detector and not self.is_background_learner:
             drift_detector_input = self._drift_detector_input(
@@ -1048,7 +959,7 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: MultiClassMetric,
+        metric: metrics.MultiClassMetric,
     ):
         super().__init__(
             index_original=index_original,
@@ -1060,7 +971,9 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
             metric=metric,
         )
 
-    def _drift_detector_input(self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget):
+    def _drift_detector_input(
+        self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget
+    ):
         return int(not y_true == y_pred)  # Not correctly_classifies
 
     def predict_one(self, x):
@@ -1081,7 +994,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: RegressionMetric,
+        metric: metrics.RegressionMetric,
     ):
         super().__init__(
             index_original=index_original,
@@ -1092,7 +1005,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
             is_background_learner=is_background_learner,
             metric=metric,
         )
-        self._var = Var()  # Used to track drift
+        self._var = stats.Var()  # Used to track drift
 
     def _drift_detector_input(self, y_true: float, y_pred: float):
         drift_input = y_true - y_pred
@@ -1101,7 +1014,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
         if self._var.mean.n == 1:
             return 0.5  # The expected error is the normalized mean error
 
-        sd = math.sqrt(self._var.sigma)
+        sd = math.sqrt(self._var.get())
 
         # We assume the error follows a normal distribution -> (empirical rule)
         # 99.73% of the values lie  between [mean - 3*sd, mean + 3*sd]. We
@@ -1112,7 +1025,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
     def reset(self, n_samples_seen):
         super().reset(n_samples_seen)
         # Reset the stats for the drift detector
-        self._var = Var()
+        self._var = stats.Var()
 
     def predict_one(self, x):
         return self.model.predict_one(x)

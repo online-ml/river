@@ -1,6 +1,4 @@
-from . import base
-from . import maximum
-from . import minimum
+from . import base, maximum, minimum
 
 
 class PeakToPeak(base.Univariate):

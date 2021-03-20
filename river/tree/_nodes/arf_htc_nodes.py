@@ -1,10 +1,8 @@
-import numbers
+import typing
+
 from river.utils.skmultiflow_utils import check_random_state
 
-from .htc_nodes import LearningNode
-from .htc_nodes import LearningNodeMC
-from .htc_nodes import LearningNodeNB
-from .htc_nodes import LearningNodeNBA
+from .htc_nodes import LearningNode, LearningNodeMC, LearningNodeNB, LearningNodeNBA
 
 
 class BaseRandomLearningNode(LearningNode):
@@ -17,11 +15,9 @@ class BaseRandomLearningNode(LearningNode):
         Initial class observations.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -29,38 +25,26 @@ class BaseRandomLearningNode(LearningNode):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
-    **kwargs
-        Other parameters passed to the learning nodes the ARF implementations randomize.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed, **kwargs):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, **kwargs)  # noqa
+    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
+        super().__init__(stats, depth, splitter, **kwargs)
         self.max_features = max_features
         self.seed = seed
         self._rng = check_random_state(self.seed)
         self.feature_indices = []
 
-    def update_attribute_observers(self, x, y, sample_weight, nominal_attributes):
+    def _iter_features(self, x) -> typing.Iterable:
+        # Only a random subset of the features is monitored
         if len(self.feature_indices) == 0:
             self.feature_indices = self._sample_features(x, self.max_features)
 
-        for idx in self.feature_indices:
-            if idx in self._disabled_attrs or idx not in x:
-                continue
-
-            try:
-                obs = self.attribute_observers[idx]
-            except KeyError:
-                if (nominal_attributes is not None and idx in nominal_attributes) or not isinstance(
-                    x[idx], numbers.Number
-                ):
-                    obs = self.new_nominal_attribute_observer()
-                else:
-                    obs = self.new_numeric_attribute_observer(
-                        attr_obs=self.attr_obs, attr_obs_params=self.attr_obs_params
-                    )
-                self.attribute_observers[idx] = obs
-            obs.update(x[idx], y, sample_weight)
+        for att_id in self.feature_indices:
+            # First check if the feature is available
+            if att_id in x:
+                yield att_id, x[att_id]
 
     def _sample_features(self, x, max_features):
         selected = self._rng.choice(len(x), size=max_features, replace=False)
@@ -77,11 +61,9 @@ class RandomLearningNodeMC(BaseRandomLearningNode, LearningNodeMC):
         Initial class observations.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -89,11 +71,13 @@ class RandomLearningNodeMC(BaseRandomLearningNode, LearningNodeMC):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
+    kwargs
+        Other parameters passed to the learning node.
 
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, max_features, seed)
+    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
+        super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
 
 
 class RandomLearningNodeNB(BaseRandomLearningNode, LearningNodeNB):
@@ -105,11 +89,10 @@ class RandomLearningNodeNB(BaseRandomLearningNode, LearningNodeNB):
         Initial class observations.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
+        Number of attributes per subset for each node split.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -117,10 +100,12 @@ class RandomLearningNodeNB(BaseRandomLearningNode, LearningNodeNB):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, max_features, seed)
+    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
+        super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
 
 
 class RandomLearningNodeNBA(BaseRandomLearningNode, LearningNodeNBA):
@@ -132,11 +117,9 @@ class RandomLearningNodeNBA(BaseRandomLearningNode, LearningNodeNBA):
         Initial class observations.
     depth
         The depth of the node.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     max_features
         Number of attributes per subset for each node split.
     seed
@@ -144,7 +127,9 @@ class RandomLearningNodeNBA(BaseRandomLearningNode, LearningNodeNBA):
         If RandomState instance, seed is the random number generator;
         If None, the random number generator is the RandomState instance used
         by `np.random`.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, max_features, seed):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, max_features, seed)
+    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
+        super().__init__(stats, depth, splitter, max_features, seed, **kwargs)

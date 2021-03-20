@@ -5,10 +5,7 @@ import typing
 import numpy as np
 import pandas as pd
 
-from river import base
-from river import optim
-from river import utils
-
+from river import base, optim, utils
 
 __all__ = ["LinearRegression", "LogisticRegression", "Perceptron"]
 
@@ -65,16 +62,18 @@ class GLM:
     def _fit(self, x, y, w, get_grad):
 
         # Some optimizers need to do something before a prediction is made
-        self.optimizer.update_before_pred(w=self._weights)
+        self.optimizer.look_ahead(w=self._weights)
 
         # Calculate the gradient
         gradient, loss_gradient = get_grad(x, y, w)
 
         # Update the intercept
-        self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
+        self.intercept -= (
+            self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
+        )
 
         # Update the weights
-        self.optimizer.update_after_pred(w=self._weights, g=gradient)
+        self.optimizer.step(w=self._weights, g=gradient)
 
         return self
 
@@ -109,7 +108,9 @@ class GLM:
         self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
     ) -> (dict, float):
 
-        loss_gradient = self.loss.gradient(y_true=y.values, y_pred=self._raw_dot_many(X))
+        loss_gradient = self.loss.gradient(
+            y_true=y.values, y_pred=self._raw_dot_many(X)
+        )
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
 
@@ -122,7 +123,9 @@ class GLM:
 
         return dict(zip(X.columns, gradient)), loss_gradient.mean()
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1):
+    def learn_many(
+        self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1
+    ):
         self._y_name = y.name
         with self._learn_mode(set(X)):
             return self._fit(X, y, w, get_grad=self._eval_gradient_many)
@@ -276,8 +279,12 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
 
         names = list(map(str, x.keys())) + ["Intercept"]
         values = list(map(fmt_float, list(x.values()) + [1]))
-        weights = list(map(fmt_float, [self._weights.get(i, 0) for i in x] + [self.intercept]))
-        contributions = [xi * self._weights.get(i, 0) for i, xi in x.items()] + [self.intercept]
+        weights = list(
+            map(fmt_float, [self._weights.get(i, 0) for i in x] + [self.intercept])
+        )
+        contributions = [xi * self._weights.get(i, 0) for i, xi in x.items()] + [
+            self.intercept
+        ]
         order = reversed(np.argsort(contributions))
         contributions = list(map(fmt_float, contributions))
 
@@ -374,7 +381,9 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         return {False: 1.0 - p, True: p}
 
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
+        p = self.loss.mean_func(
+            self._raw_dot_many(X)
+        )  # Convert logits to probabilities
         return pd.DataFrame({False: 1.0 - p, True: p}, index=X.index, copy=False)
 
 

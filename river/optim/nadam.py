@@ -1,8 +1,7 @@
-import math
 import collections
+import math
 
 from . import base
-
 
 __all__ = ["Nadam"]
 
@@ -52,7 +51,7 @@ class Nadam(base.Optimizer):
         self.m = collections.defaultdict(float)
         self.v = collections.defaultdict(float)
 
-    def _update_after_pred(self, w, g):
+    def _step(self, w, g):
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
@@ -65,7 +64,9 @@ class Nadam(base.Optimizer):
                 self.learning_rate
                 * (
                     self.beta_1 * m_hat
-                    + (1 - self.beta_1) * gi / (1 - math.pow(self.beta_1, self.n_iterations + 1))
+                    + (1 - self.beta_1)
+                    * gi
+                    / (1 - math.pow(self.beta_1, self.n_iterations + 1))
                 )
                 / (v_hat ** 0.5 + self.eps)
             )

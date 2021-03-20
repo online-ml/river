@@ -1,12 +1,8 @@
 import pytest
-from sklearn.utils import estimator_checks
 from sklearn import linear_model as sk_linear_model
+from sklearn.utils import estimator_checks
 
-from river import base
-from river import cluster
-from river import compat
-from river import linear_model
-from river import preprocessing
+from river import base, cluster, compat, linear_model, preprocessing
 
 
 @pytest.mark.parametrize(
@@ -21,11 +17,13 @@ from river import preprocessing
         ]
     ],
 )
+@pytest.mark.filterwarnings("ignore::sklearn.utils.estimator_checks.SkipTestWarning")
 def test_river_to_sklearn_check_estimator(estimator: base.Estimator):
     skl_estimator = compat.convert_river_to_sklearn(estimator)
     estimator_checks.check_estimator(skl_estimator)
 
 
+@pytest.mark.filterwarnings("ignore::sklearn.utils.estimator_checks.SkipTestWarning")
 def test_sklearn_check_twoway():
     estimator = sk_linear_model.SGDRegressor()
     river_estimator = compat.convert_sklearn_to_river(estimator)

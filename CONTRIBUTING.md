@@ -1,5 +1,11 @@
 # Contribution guidelines
 
+## What to work on?
+
+We have a [Kanban board](https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1) that lists what has been done, what we're currently doing, and what needs doing. There's also an icebox with high level ideas that need framing. You're welcome to pick anything that takes your fancy and that you deem important. Feel free to [open a discussion](https://github.com/online-ml/river/discussions/new) if you want to clarify a topic and/or want to be formally assigned a task in the board.
+
+Of course, you're welcome to propose and contribute new ideas. We encourage you to [open a discussion](https://github.com/online-ml/river/discussions/new) so that we can align on the work to be done. It's generally a good idea to have a quick discussion before opening a pull request that is potentially out-of-scope.
+
 ## Fork/clone/pull
 
 The typical workflow for contributing to `river` is:
@@ -22,7 +28,7 @@ $ source .venv/bin/activate
 You can also create a virtual environment via `conda`:
 
 ```sh
-$ conda create -n river -y python
+$ conda create -n river -y python=3.8 anaconda
 $ conda activate river
 ```
 
@@ -42,6 +48,12 @@ Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will
 
 ```sh
 $ pre-commit install --hook-type pre-push
+```
+
+You can optionally run `pre-commit` at any time as so:
+
+```sh
+$ pre-commit run --all-files
 ```
 
 ## Making changes

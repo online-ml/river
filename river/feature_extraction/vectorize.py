@@ -7,8 +7,10 @@ import re
 import typing
 import unicodedata
 
-from river import base
+import pandas as pd
+from scipy import sparse
 
+from river import base
 
 __all__ = ["BagOfWords", "TFIDF"]
 
@@ -59,7 +61,9 @@ def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
     return zip(*[tokens[i:] for i in range(n)])
 
 
-def find_all_ngrams(tokens: typing.List[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
+def find_all_ngrams(
+    tokens: typing.List[str], ngram_range: range
+) -> typing.Iterator[N_GRAM]:
     """Generates all n-grams in a given range.
 
     Examples
@@ -120,7 +124,9 @@ class VectorizerMixin:
         self.strip_accents = strip_accents
         self.lowercase = lowercase
         self.preprocessor = preprocessor
-        self.tokenizer = re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
+        self.tokenizer = (
+            re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
+        )
         self.ngram_range = ngram_range
 
         self.processing_steps = []
@@ -166,7 +172,8 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     """Counts tokens in sentences.
 
     This transformer can be used to counts tokens in a given piece of text. It takes care of
-    normalizing the text before tokenizing it.
+    normalizing the text before tokenizing it. In mini-batch settings, this transformers
+    allows to convert a series of pandas of text into sparse dataframe.
 
     Note that the parameters are identical to those of `feature_extraction.TFIDF`.
 
@@ -254,10 +261,41 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     ('in', 'the') 1
     ('the', 'morning') 1
 
+    `BagOfWord` allows to build a term-frequency pandas sparse dataframe with the `transform_many` method.
+
+    >>> import pandas as pd
+    >>> X = pd.Series(['Hello world', 'Hello River'], index = ['river', 'rocks'])
+    >>> bow = fx.BagOfWords()
+    >>> bow.transform_many(X=X)
+           hello  world  river
+    river      1      1      0
+    rocks      1      0      1
+
     """
 
     def transform_one(self, x):
         return collections.Counter(self.process_text(x))
+
+    def transform_many(self, X: pd.Series) -> pd.DataFrame:
+        """Transform pandas series of string into term-frequency pandas sparse dataframe."""
+        indptr, indices, data = [0], [], []
+        index = {}
+
+        for d in X:
+            for t, f in collections.Counter(self.process_text(d)).items():
+                indices.append(index.setdefault(t, len(index)))
+                data.append(f)
+
+            indptr.append(len(data))
+
+        return pd.DataFrame.sparse.from_spmatrix(
+            sparse.csr_matrix((data, indices, indptr)),
+            index=X.index,
+            columns=index.keys(),
+        )
+
+    def learn_many(self, X):
+        return self
 
 
 class TFIDF(BagOfWords):

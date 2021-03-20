@@ -1,7 +1,8 @@
+import numpy as np
+
 from river import utils
 
 from . import base
-
 
 __all__ = ["SGD"]
 
@@ -43,9 +44,11 @@ class SGD(base.Optimizer):
     def __init__(self, lr=0.01):
         super().__init__(lr)
 
-    def _update_after_pred(self, w, g):
+    def _step(self, w, g):
 
         if isinstance(w, utils.VectorDict) and isinstance(g, utils.VectorDict):
+            w -= self.learning_rate * g
+        elif isinstance(w, np.ndarray) and isinstance(g, np.ndarray):
             w -= self.learning_rate * g
         else:
             for i, gi in g.items():

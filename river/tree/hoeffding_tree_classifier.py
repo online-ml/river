@@ -3,18 +3,23 @@ from operator import attrgetter
 from river import base
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
-from ._base_tree import BaseHoeffdingTree
-from ._split_criterion import GiniSplitCriterion
-from ._split_criterion import InfoGainSplitCriterion
-from ._split_criterion import HellingerDistanceCriterion
-from ._nodes import SplitNode
-from ._nodes import LearningNode
-from ._nodes import LearningNodeMC
-from ._nodes import LearningNodeNB
-from ._nodes import LearningNodeNBA
+from ._nodes import (
+    LearningNode,
+    LearningNodeMC,
+    LearningNodeNB,
+    LearningNodeNBA,
+    SplitNode,
+)
+from ._split_criterion import (
+    GiniSplitCriterion,
+    HellingerDistanceCriterion,
+    InfoGainSplitCriterion,
+)
+from .hoeffding_tree import HoeffdingTree
+from .splitter import GaussianSplitter, Splitter
 
 
-class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
+class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     """Hoeffding Tree or Very Fast Decision Tree classifier.
 
     Parameters
@@ -42,21 +47,16 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     nominal_attributes
         List of Nominal attributes identifiers. If empty, then assume that all numeric
         attributes should be treated as continuous.
-    attr_obs
-        The Attribute Observer (AO) used to monitor the class statistics of numeric
-        features and perform splits. Parameters can be passed to the AOs (when supported)
-        by using `attr_obs_params`. Valid options are:</br>
-        - `'bst'`: Binary Search Tree.</br>
-        - `'gaussian'`: Gaussian observer. The `n_splits` used to query
-         for split candidates can be adjusted (defaults to `10`).</br>
-        - `'histogram'`: Histogram-based class frequency estimation.  The number of histogram
-        bins (`n_bins` -- defaults to `256`) and the number of split point candidates to
-        evaluate (`n_splits` -- defaults to `32`) can be adjusted.</br>
-        See 'Notes' for more information about the AOs.
-    attr_obs_params
-        Parameters passed to the numeric AOs. See `attr_obs` for more information.
+    splitter
+        The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Splitters are available in the `tree.splitter` module.
+        Different splitters are available for classification and regression tasks. Classification
+        and regression splitters can be distinguished by their property `is_target_class`.
+        This is an advanced option. Special care must be taken when choosing different splitters.
+        By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
     kwargs
-        Other parameters passed to `river.tree.BaseHoeffdingTree`.
+        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
+        for more information.
 
     Notes
     -----
@@ -72,32 +72,6 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     tree learners is that it has sound guarantees of performance. Using the Hoeffding bound one
     can show that its output is asymptotically nearly identical to that of a non-incremental
     learner using infinitely many examples. Implementation based on MOA [^2].
-
-    Hoeffding trees rely on Attribute Observer (AO) algorithms to monitor input features
-    and perform splits. Nominal features can be easily dealt with, since the partitions
-    are well-defined. Numerical features, however, require more sophisticated solutions.
-    Currently, three AOs are supported in `river` for classification trees:
-
-    - *Binary Search Tree (BST)*: uses an exhaustive algorithm to find split candidates,
-    similarly to batch decision trees. It ends up storing all observations between split
-    attempts. This AO is the most costly one in terms of memory and processing
-    time; however, it tends to yield the most accurate results when using `leaf_prediction=mc`.
-    It cannot be used to calculate the Probability Density Function (PDF) of the monitored
-    feature due to its binary tree nature. Hence, leaf prediction strategies other than
-    the majority class will end up effectively mimicing the majority class classifier.
-    This AO has no parameters.</br>
-    - *Gaussian Estimator*: Approximates the numeric feature distribution by using
-    a Gaussian distribution per class. The Cumulative Distribution Function (CDF) necessary to
-    calculate the entropy (and, consequently, the information gain), the gini index, and
-    other split criteria is then calculated using the fit feature's distribution.</br>
-    - *Histogram*: approximates the numeric feature distribution using an incrementally
-    maintained histogram per class. It represents a compromise between the intensive
-    resource usage of BST and the strong assumptions about the feature's distribution
-    used in the Gaussian Estimator. Besides that, this AO sits in the middle between the
-    previous two in terms of memory usage and running time. Note that the number of
-    bins affects the probability density approximation required to use leaves with
-    (adaptive) naive bayes models. Hence, Histogram tends to be less accurate than the
-    Gaussian estimator when adaptive or naive bayes leaves are used.
 
     References
     ----------
@@ -137,10 +111,6 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     _MAJORITY_CLASS = "mc"
     _NAIVE_BAYES = "nb"
     _NAIVE_BAYES_ADAPTIVE = "nba"
-    _BST = "bst"
-    _GAUSSIAN = "gaussian"
-    _HISTOGRAM = "histogram"
-    _VALID_AO = [_BST, _GAUSSIAN, _HISTOGRAM]
 
     def __init__(
         self,
@@ -152,8 +122,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
-        attr_obs: str = "gaussian",
-        attr_obs_params: dict = None,
+        splitter: Splitter = None,
         **kwargs,
     ):
 
@@ -166,16 +135,21 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
 
-        if attr_obs not in self._VALID_AO:
-            raise AttributeError(f'Invalid "attr_obs" option. Valid options are: {self._VALID_AO}')
-        self.attr_obs = attr_obs
-        self.attr_obs_params = attr_obs_params if attr_obs_params is not None else {}
+        if splitter is None:
+            self.splitter = GaussianSplitter()
+        else:
+            if not splitter.is_target_class:
+                raise ValueError(
+                    "The chosen splitter cannot be used in classification tasks."
+                )
+            self.splitter = splitter
+
         self.kwargs = kwargs
 
         # To keep track of the observed classes
         self.classes: set = set()
 
-    @BaseHoeffdingTree.split_criterion.setter
+    @HoeffdingTree.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion not in [
             self._GINI_SPLIT,
@@ -191,7 +165,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         else:
             self._split_criterion = split_criterion
 
-    @BaseHoeffdingTree.leaf_prediction.setter
+    @HoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in [
             self._MAJORITY_CLASS,
@@ -216,11 +190,11 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return LearningNodeMC(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return LearningNodeMC(initial_stats, depth, self.splitter)
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return LearningNodeNB(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return LearningNodeNB(initial_stats, depth, self.splitter)
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return LearningNodeNBA(initial_stats, depth, self.attr_obs, self.attr_obs_params)
+            return LearningNodeNBA(initial_stats, depth, self.splitter)
 
     def _attempt_to_split(self, node: LearningNode, parent: SplitNode, parent_idx: int):
         """Attempt to split a node.
@@ -245,7 +219,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
         parent_idx
             Parent node's branch index.
         """
-        if not node.observed_class_distribution_is_pure():
+        if not node.observed_class_distribution_is_pure():  # noqa
             if self._split_criterion == self._GINI_SPLIT:
                 split_criterion = GiniSplitCriterion()
             elif self._split_criterion == self._INFO_GAIN_SPLIT:
@@ -268,7 +242,8 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
                 if (
-                    best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
+                    best_suggestion.merit - second_best_suggestion.merit
+                    > hoeffding_bound
                     or hoeffding_bound < self.tie_threshold
                 ):
                     should_split = True
@@ -282,7 +257,8 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                             ].split_test.attrs_test_depends_on()
                             if len(split_atts) == 1:
                                 if (
-                                    best_suggestion.merit - best_split_suggestions[i].merit
+                                    best_suggestion.merit
+                                    - best_split_suggestions[i].merit
                                     > hoeffding_bound
                                 ):
                                     poor_atts.add(split_atts[0])
@@ -291,7 +267,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             if should_split:
                 split_decision = best_split_suggestions[-1]
                 if split_decision.split_test is None:
-                    # Preprune - null wins
+                    # Pre-pruning - null wins
                     node.deactivate()
                     self._n_inactive_leaves += 1
                     self._n_active_leaves -= 1
@@ -354,7 +330,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
             self._tree_root = self._new_learning_node()
             self._n_active_leaves = 1
 
-        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
         leaf_node = found_node.node
         if leaf_node is None:
             leaf_node = self._new_learning_node(parent=found_node.parent)
@@ -396,7 +372,9 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
                 while not nd.is_leaf():
                     path = max(
                         nd._children,
-                        key=lambda c: nd._children[c].total_weight if nd._children[c] else 0.0,
+                        key=lambda c: nd._children[c].total_weight
+                        if nd._children[c]
+                        else 0.0,
                     )
                     most_traversed = nd.get_child(path)
                     # Pass instance to the most traversed path
@@ -425,7 +403,7 @@ class HoeffdingTreeClassifier(BaseHoeffdingTree, base.Classifier):
     def predict_proba_one(self, x):
         proba = {c: 0.0 for c in self.classes}
         if self._tree_root is not None:
-            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
             node = found_node.node
             if node is None:
                 node = found_node.parent

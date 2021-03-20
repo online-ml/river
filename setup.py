@@ -1,6 +1,6 @@
 import io
-import platform
 import os
+import platform
 import subprocess
 import sys
 
@@ -31,21 +31,24 @@ REQUIRES_PYTHON = ">=3.6.0"
 # Package requirements.
 base_packages = ["numpy>=1.18.1", "scipy>=1.4.1", "pandas>=1.0.1"]
 
-compat_packages = base_packages + ["scikit-learn", "scikit-surprise", "sqlalchemy", "torch", "vaex"]
+compat_packages = base_packages + [
+    "scikit-learn",
+    "scikit-surprise",
+    "sqlalchemy>=1.4",
+    "torch",
+    "vaex"
+]
 
 dev_packages = base_packages + [
     "asv",
-    "black>=20.8b1",
-    "flake8>=3.7.9",
     "graphviz>=0.10.1",
     "matplotlib>=3.0.2",
     "mypy>=0.761",
     "pre-commit>=2.9.2",
     "pytest>=4.5.0",
     "pytest-cov>=2.6.1",
-    "pytest-cython>=0.1.0",
     "scikit-learn>=0.22.1",
-    "sqlalchemy>=1.3.15",
+    "sqlalchemy>=1.4",
 ]
 
 docs_packages = dev_packages + [
@@ -82,7 +85,7 @@ setuptools.setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=setuptools.find_packages(exclude=("tests", "scikit-multiflow")),
+    packages=setuptools.find_packages(exclude=("tests",)),
     install_requires=base_packages,
     extras_require={"dev": dev_packages, "compat": compat_packages, "docs": docs_packages},
     include_package_data=True,
@@ -106,6 +109,7 @@ setuptools.setup(
                 sources=["**/*.pyx"],
                 include_dirs=[get_include()],
                 libraries=[] if platform.system() == "Windows" else ["m"],
+                define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
             )
         ],
         compiler_directives={"language_level": 3, "binding": True, "embedsignature": True},
@@ -120,7 +124,7 @@ setuptools.setup(
             ],
             include_dirs=[get_include()],
             libraries=[] if platform.system() == "Windows" else ["m"],
-            language="c++",
+            language="c++"
         )
     ],
 )

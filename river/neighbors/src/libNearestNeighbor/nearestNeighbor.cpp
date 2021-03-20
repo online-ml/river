@@ -387,5 +387,3 @@ initlibNearestNeighbor(void)
 	#endif
 
 }
-
-

@@ -1,11 +1,9 @@
 import collections
 import copy
 
-from river import base
-from river import linear_model
+from river import base, linear_model
 from river.utils.math import prod
 from river.utils.skmultiflow_utils import check_random_state
-
 
 __all__ = [
     "ClassifierChain",
@@ -16,54 +14,37 @@ __all__ = [
 
 
 class BaseChain(base.WrapperMixin, collections.UserDict):
-    def __init__(self, model, order=None, seed=None):
+    def __init__(self, model, order: list = None):
         super().__init__()
         self.model = model
-        self.order = order
-        self.seed = seed
-        self._rng = check_random_state(self.seed)
-
-        # If the order is specified, then we can instantiate a model for each label, if not we'll
-        # do it in the first call to learn_one
-        if isinstance(order, list):
-            self._init_models()
+        self.order = order or []
 
     @property
     def _wrapped_model(self):
         return self.model
 
-    def _init_models(self):
-        for o in self.order:
-            self[o] = copy.deepcopy(self.model)
-
-    def _check_order(self, y):
-        if self.order is None:
-            self.order = list(y.keys())
-            self._init_models()
-        elif self.order == "random":
-            self.order = list(y.keys())
-            self._rng.shuffle(self.order)
-            self._init_models()
+    def __getitem__(self, key):
+        try:
+            return collections.UserDict.__getitem__(self, key)
+        except KeyError:
+            collections.UserDict.__setitem__(self, key, copy.deepcopy(self.model))
+            return self[key]
 
 
 class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     """A multi-output model that arranges classifiers into a chain.
 
     This will create one model per output. The prediction of the first output will be used as a
-    feature in the second output. The prediction for the second output will be used as a feature
-    for the third, etc. This "chain model" is therefore capable of capturing dependencies between
-    outputs.
+    feature in the second model. The prediction for the second output will be used as a feature
+    for the third model, etc. This "chain model" is therefore capable of capturing dependencies
+    between outputs.
 
     Parameters
     ----------
     model
     order
-        A list with the targets order in which to construct the chain.
-        If `None` then the order will be inferred from the order of the keys in the first
-        provided target dictionary.
-        If `'random'` then the order is set at random.
-    seed
-        Random number generator seed for reproducibility. Only relevant in `order='random'`.
+        A list with the targets order in which to construct the chain. If `None` then the order
+        will be inferred from the order of the keys in the target.
 
 
     Examples
@@ -78,7 +59,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     >>> from sklearn import datasets
 
     >>> dataset = stream.iter_sklearn_dataset(
-    ...     dataset=datasets.fetch_openml('yeast', version=4),
+    ...     dataset=datasets.fetch_openml('yeast', version=4, as_frame=False),
     ...     shuffle=True,
     ...     seed=42
     ... )
@@ -108,8 +89,8 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     """
 
-    def __init__(self, model: base.Classifier, order: list = None, seed: int = None):
-        super().__init__(model, order, seed)
+    def __init__(self, model: base.Classifier, order: list = None):
+        super().__init__(model, order)
 
     @classmethod
     def _unit_test_params(cls):
@@ -120,9 +101,8 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     def learn_one(self, x, y):
 
-        self._check_order(y)
-
         x = copy.copy(x)
+        n_seen = 0
 
         for o in self.order:
             clf = self[o]
@@ -130,7 +110,13 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
             # Make predictions before the model is updated to avoid leakage
             y_pred = clf.predict_proba_one(x)
 
-            clf.learn_one(x, y[o])
+            # We handle the case where an output has been seen in the past but is missing now
+            try:
+                y_o = y[o]
+                n_seen += 1
+                clf.learn_one(x, y_o)
+            except KeyError:
+                pass
 
             # The predictions are stored as features for the next label
             if clf._multiclass:
@@ -139,15 +125,19 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
             else:
                 x[o] = y_pred[True]
 
+        # Now we check if there are any new outputs
+        n_unseen = len(y) - n_seen
+        if n_unseen:
+            for o in y:
+                if o not in self.order:
+                    self.order.append(o)
+
         return self
 
     def predict_proba_one(self, x):
 
         x = copy.copy(x)
         y_pred = {}
-
-        if not isinstance(self.order, list):
-            return y_pred
 
         for o in self.order:
             clf = self[o]
@@ -180,12 +170,8 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     ----------
     model
     order
-        A list with the targets order in which to construct the chain.
-        If `None` then the order will be inferred from the order of the keys in the first
-        provided target dictionary.
-        If `'random'` then the order is set at random.
-    seed
-        Random number generator seed for reproducibility. Only relevant in `order='random'`.
+        A list with the targets order in which to construct the chain. If `None` then the order
+        will be inferred from the order of the keys in the target.
 
     Examples
     --------
@@ -215,12 +201,12 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 16.396347
+    MAE: 12.649592
 
     """
 
-    def __init__(self, model: base.Regressor, order: list = None, seed: int = None):
-        super().__init__(model, order, seed)
+    def __init__(self, model: base.Regressor, order: list = None):
+        super().__init__(model, order)
 
     @classmethod
     def _unit_test_params(cls):
@@ -228,9 +214,8 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
 
     def learn_one(self, x, y):
 
-        self._check_order(y)
-
         x = copy.copy(x)
+        n_seen = 0
 
         for o in self.order:
             reg = self[o]
@@ -238,10 +223,23 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
             # Make predictions before the model is updated to avoid leakage
             y_pred = reg.predict_one(x)
 
-            reg.learn_one(x, y[o])
+            # We handle the case where an output has been seen in the past but is missing now
+            try:
+                y_o = y[o]
+                n_seen += 1
+                reg.learn_one(x, y_o)
+            except KeyError:
+                pass
 
             # The predictions are stored as features for the next label
             x[o] = y_pred
+
+        # Now we check if there are any new outputs
+        n_unseen = len(y) - n_seen
+        if n_unseen:
+            for o in y:
+                if o not in self.order:
+                    self.order.append(o)
 
         return self
 
@@ -301,7 +299,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    Jaccard: 0.573935
+    Jaccard: 0.571429
 
     References
     ----------
@@ -327,7 +325,10 @@ class ProbabilisticClassifierChain(ClassifierChain):
         # for each and every possible label combination
         for label in range(2 ** n_labels):
             # put together a binary label vector
-            y_gen = {i: int(v) for i, v in zip(self.order, list(bin(label)[2:].zfill(n_labels)))}
+            y_gen = {
+                i: int(v)
+                for i, v in zip(self.order, list(bin(label)[2:].zfill(n_labels)))
+            }
             # ... and gauge a probability for it (given x)
             payoff = self._payoff(x=x, y=y_gen)
             # if it performs well, keep it, and record the max
@@ -396,7 +397,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    Jaccard: 0.571846
+    Jaccard: 0.568087
 
     References
     ----------
@@ -407,7 +408,9 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     """
 
     def __init__(self, model: base.Classifier, m: int = 10, seed: int = None):
-        ClassifierChain.__init__(self, model=model, order=None, seed=seed)
+        ClassifierChain.__init__(self, model=model, order=None)
+        self.seed = seed
+        self._rng = check_random_state(seed)
         self.m = m
 
     def _sample(self, x):
@@ -438,7 +441,9 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
         max_payoff = self._payoff(x=x, y=y_pred)
         # for M times
         for m in range(self.m):
-            y_, p_ = self._sample(x)  # N.B. in fact, the calculation p_ is done again in P.
+            y_, p_ = self._sample(
+                x
+            )  # N.B. in fact, the calculation p_ is done again in P.
             payoff = self._payoff(x=x, y=y_)
             # if it performs well, keep it, and record the max
             if payoff > max_payoff:

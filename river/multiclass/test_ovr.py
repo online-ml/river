@@ -1,11 +1,6 @@
 import pandas as pd
 
-from river import datasets
-from river import linear_model
-from river import metrics
-from river import multiclass
-from river import preprocessing
-from river import stream
+from river import datasets, linear_model, metrics, multiclass, preprocessing, stream
 
 
 def test_online_batch_consistent():

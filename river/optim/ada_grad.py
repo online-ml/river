@@ -2,7 +2,6 @@ import collections
 
 from . import base
 
-
 __all__ = ["AdaGrad"]
 
 
@@ -50,7 +49,7 @@ class AdaGrad(base.Optimizer):
         self.eps = eps
         self.g2 = collections.defaultdict(float)
 
-    def _update_after_pred(self, w, g):
+    def _step(self, w, g):
 
         for i, gi in g.items():
             self.g2[i] += gi ** 2

@@ -71,6 +71,39 @@ class Classifier(estimator.Estimator):
             return max(y_pred, key=y_pred.get)
         return None
 
+    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Predict the labels of a DataFrame `X`.
+
+        Parameters
+        ----------
+        X
+            A DataFrame of features.
+
+        Returns
+        -------
+        DataFrame that associate probabilities which each label as columns.
+
+        """
+        raise NotImplementedError
+
+    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+        """Predict the labels of a DataFrame `X`.
+
+        Parameters
+        ----------
+        X
+            A DataFrame of features.
+
+        Returns
+        -------
+        Series of predicted labels.
+
+        """
+        y_pred = self.predict_proba_many(X)
+        if y_pred.empty:
+            return y_pred
+        return y_pred.idxmax(axis="columns")
+
     @property
     def _multiclass(self):
         return False
@@ -84,7 +117,9 @@ class MiniBatchClassifier(Classifier):
     """A classifier that can can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series, **kwargs) -> "MiniBatchClassifier":
+    def learn_many(
+        self, X: pd.DataFrame, y: pd.Series, **kwargs
+    ) -> "MiniBatchClassifier":
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters

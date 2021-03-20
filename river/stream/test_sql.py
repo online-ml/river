@@ -1,9 +1,9 @@
 import json
 import os
+import zipfile
 
 import pytest
 import sqlalchemy as sql
-import zipfile
 
 from river import stream
 
@@ -71,7 +71,7 @@ def test_iter_sql(pokedb):
         assert y is None
 
     # This raises an exception because the resource is closed...
-    with pytest.raises(sql.exc.StatementError):
+    with pytest.raises(sql.exc.ResourceClosedError):
         for x, y in stream.iter_sql(query="SELECT * FROM pokemons;", conn=conn):
             pass
 
