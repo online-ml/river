@@ -49,7 +49,7 @@ class Hartigan(base.InternalMetric):
     References
     ----------
     [^1]: Hartigan JA (1975). Clustering Algorithms. John Wiley & Sons, Inc.,
-    New York, NY, USA. ISBN 047135645X.
+          New York, NY, USA. ISBN 047135645X.
 
     [^2]: Q. Zhao, M. Xu, and P. Franti, "Sum-of-squares based cluster validity index
           and significance analysis," in Adaptive and Natural Computing Algorithms,
