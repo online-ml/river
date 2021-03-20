@@ -243,13 +243,14 @@ class GD53(base.InternalMetric):
                     delta_5 = (self._cp_by_clusters[i] + self._cp_by_clusters[j]) / (
                         self._n_points_by_clusters[i] + self._n_points_by_clusters[j]
                     )
-                    if delta_5 < min_delta_5:
-                        min_delta_5 = delta_5
                 except KeyError:
                     continue
 
+                if delta_5 < min_delta_5:
+                    min_delta_5 = delta_5
+
         try:
-            min_delta_5 / self._minimum_separation
+            return min_delta_5 / self._minimum_separation
         except ZeroDivisionError:
             return -math.inf
 
