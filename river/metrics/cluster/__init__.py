@@ -8,6 +8,7 @@ of the clustering algorithm without having to store information of all previousl
 
 from .base import InternalMetric
 from .daviesbouldin import DaviesBouldin
+from .generalized_dunn import GD43
 from .i_index import IIndex
 from .r2 import R2
 from .rmsstd import MSSTD, RMSSTD
@@ -24,6 +25,7 @@ __all__ = [
     "CalinskiHarabasz",
     "Cohesion",
     "DaviesBouldin",
+    "GD43",
     "Hartigan",
     "IIndex",
     "InternalMetric",
