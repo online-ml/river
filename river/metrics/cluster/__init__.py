@@ -7,7 +7,6 @@ of the clustering algorithm without having to store information of all previousl
 """
 
 from .base import InternalMetric
-from .calinskiharabasz import CalinskiHarabasz
 from .daviesbouldin import DaviesBouldin
 from .i_index import IIndex
 from .r2 import R2
@@ -16,7 +15,7 @@ from .sd_validation import SD
 from .separation import Separation
 from .silhouette import Silhouette
 from .ssb import SSB
-from .ssq_based import WB, Hartigan
+from .ssq_based import WB, CalinskiHarabasz, Hartigan
 from .ssw import SSW, BallHall, Cohesion, Xu
 from .xiebeni import XieBeni
 
