@@ -80,7 +80,9 @@ class GD43(base.InternalMetric):
         n_centers = max(centers) + 1
         for i in range(n_centers):
             for j in range(i + 1, n_centers):
-                separation_ij = math.sqrt(utils.math.minkowski_distance(centers[i], centers[j], 2))
+                separation_ij = math.sqrt(
+                    utils.math.minkowski_distance(centers[i], centers[j], 2)
+                )
                 if separation_ij < minimum_separation:
                     minimum_separation = separation_ij
         return minimum_separation
