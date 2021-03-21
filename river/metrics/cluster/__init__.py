@@ -10,6 +10,7 @@ from .base import InternalMetric
 from .daviesbouldin import DaviesBouldin
 from .generalized_dunn import GD43, GD53
 from .i_index import IIndex
+from .ps import PS
 from .r2 import R2
 from .rmsstd import MSSTD, RMSSTD
 from .sd_validation import SD
@@ -31,6 +32,7 @@ __all__ = [
     "IIndex",
     "InternalMetric",
     "MSSTD",
+    "PS",
     "R2",
     "RMSSTD",
     "SD",
