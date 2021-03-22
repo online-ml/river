@@ -53,39 +53,44 @@ class ADWIN(DriftDetector):
 
     References
     ----------
-    [^1]: Bifet, Albert, and Ricard Gavalda. "Learning from time-changing data with adaptive windowing." In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
+    [^1]: Bifet, Albert, and Ricard Gavalda.
+    "Learning from time-changing data with adaptive windowing."
+    In Proceedings of the 2007 SIAM international conference on data mining,
+    pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     """
 
     def __init__(self, delta=0.002):
         super().__init__()
-        self.helper = ADWINC(delta)
+        self._helper = ADWINC(delta)
 
     @property
     def delta(self):
-        return self.helper.delta
-
-    @property
-    def _bucket_used_bucket(self):
-        return self.helper._bucket_used_bucket
+        return self._helper.get_delta()
 
     @property
     def width(self):
         """Window size"""
-        return self.helper.width
+        return self._helper.get_width()
 
     @property
     def n_detections(self):
-        return self.helper.n_detections
+        return self._helper.get_n_detections()
 
     @property
     def variance(self):
-        return self.helper.variance
+        return self._helper.get_variance()
+
+    @property
+    def total(self):
+        return self._helper.get_total()
 
     @property
     def estimation(self):
         """Error estimation"""
-        return self.helper.estimation
+        if self.width == 0:
+            return 0.0
+        return self.total / self.width
 
     def update(self, value):
         """Update the change detector with a single data point.
@@ -107,5 +112,5 @@ class ADWIN(DriftDetector):
             detected.
 
         """
-        self._in_concept_change = self.helper.update(value)
+        self._in_concept_change = self._helper.update(value)
         return self._in_concept_change, self._in_warning_zone
