@@ -8,8 +8,8 @@ from . import base
 class BIC(base.InternalMetric):
     r"""Bayesian Information Criterion (BIC).
 
-    In statistics, the Bayesian Information Criterion (BIC) or Schwarz Information
-    Criterion (SIC) is a criterion for model selection among a finite set of models;
+    In statistics, the Bayesian Information Criterion (BIC) [^1], or Schwarz Information
+    Criterion (SIC), is a criterion for model selection among a finite set of models;
     the model with the lowest BIC is preferred. It is based, in part, on  the likelihood
     function and is closely related to the Akaike Information Criterion (AIC).
 
@@ -33,14 +33,14 @@ class BIC(base.InternalMetric):
     \hat{l}(D) = \sum_{i = 1}^k n_i \log(n_i) - n \log n - \frac{n_i \times d}{2} \times \log(2 \pi \hat{\sigma}^2) - \frac{(n_i - 1) \times d}{2},
     $$
 
-    and the BIC will then be
+    and the BIC will then be calculated as
 
     $$
     BIC = \hat{l}(D) - 0.5 \times k \times log(n) \times (d+1).
     $$
 
     Using the previously mentioned maximum likelihood function, the higher the BIC value, the
-    better the clustering solution is. Moreover, the BIC calculated will always be less than 0.
+    better the clustering solution is. Moreover, the BIC calculated will always be less than 0 [^2].
 
 
     Examples
@@ -75,8 +75,10 @@ class BIC(base.InternalMetric):
 
     References
     ----------
-    [^1]: E. Lughofer, "Extensions of vector quantization for incremental clustering,"
-          Pattern Recognit., vol. 41, no. 3, pp. 995–1011, Mar. 2008.
+    [^1]: Wikipedia contributors. (2020, December 14). Bayesian information criterion.
+          In Wikipedia, The Free Encyclopedia,
+          from https://en.wikipedia.org/w/index.php?title=Bayesian_information_criterion&oldid=994127616
+    [^2]: BIC Notes, https://github.com/bobhancock/goxmeans/blob/master/doc/BIC_notes.pdf
 
     """
 
