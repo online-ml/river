@@ -18,21 +18,19 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
         Initial class observations.
     depth
         The depth of the learning node in the tree.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     adwin_delta
         The delta parameter of ADWIN.
     seed
         Seed to control the generation of random numbers and support reproducibility.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(
-        self, stats, depth, attr_obs, attr_obs_params, leaf_model, adwin_delta, seed
-    ):
-        super().__init__(stats, depth, attr_obs, attr_obs_params, leaf_model)
+    def __init__(self, stats, depth, splitter, leaf_model, adwin_delta, seed, **kwargs):
+        super().__init__(stats, depth, splitter, leaf_model, **kwargs)
 
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
@@ -128,11 +126,13 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         The delta parameter of ADWIN.
     seed
         Internal random state used to sample from poisson distributions.
+    kwargs
+        Other parameters passed to the split node.
     """
 
-    def __init__(self, split_test, stats, depth, adwin_delta, seed):
+    def __init__(self, split_test, stats, depth, adwin_delta, seed, **kwargs):
         stats = stats if stats else Var()
-        super().__init__(split_test, stats, depth)
+        super().__init__(split_test, stats, depth, **kwargs)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self._alternate_tree = None
@@ -148,7 +148,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         num_of_leaves = 0
         for child in self._children.values():
             if child is not None:
-                num_of_leaves += child.n_leaves
+                num_of_leaves += child.n_leaves  # noqa
 
         return num_of_leaves
 
@@ -169,8 +169,6 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
 
     # Override AdaSplitNodeClassifier
     def learn_one(self, x, y, sample_weight, tree, parent, parent_branch):
-        normalized_error = 0.0
-
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch).node
         if leaf is not None:
             y_pred = leaf.leaf_prediction(x, tree=tree)
@@ -238,7 +236,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                     tree._n_switch_alternate_trees += 1
                 elif bound < alt_error_rate - old_error_rate:
                     if isinstance(self._alternate_tree, SplitNode):
-                        self._alternate_tree.kill_tree_children(tree)
+                        self._alternate_tree.kill_tree_children(tree)  # noqa
                     self._alternate_tree = None
                     tree._n_pruned_alternate_trees += 1
 
@@ -269,7 +267,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
             if self.split_test.max_branches() == -1 and split_feat in x:
                 # Creates a new learning node to encompass the new observed feature value
                 leaf_node = tree._new_learning_node(parent=self)
-                branch_id = self.split_test.add_new_branch(x[split_feat])
+                branch_id = self.split_test.add_new_branch(x[split_feat])  # noqa
                 self.set_child(branch_id, leaf_node)
                 tree._n_active_leaves += 1
                 leaf_node.learn_one(
@@ -322,10 +320,10 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                         child._alternate_tree = None
 
                     # Recursive delete of SplitNodes
-                    child.kill_tree_children(tree)
+                    child.kill_tree_children(tree)  # noqa
                     tree._n_decision_nodes -= 1
                 else:
-                    if child.is_active():
+                    if child.is_active():  # noqa
                         tree._n_active_leaves -= 1
                     else:
                         tree._n_inactive_leaves -= 1
@@ -338,7 +336,9 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
         if child_index >= 0:
             child = self.get_child(child_index)
             if child is not None:
-                child.filter_instance_to_leaves(x, parent, parent_branch, found_nodes)
+                child.filter_instance_to_leaves(
+                    x, parent, parent_branch, found_nodes
+                )  # noqa
             else:
                 found_nodes.append(FoundNode(None, self, child_index))
         else:

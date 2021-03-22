@@ -11,11 +11,11 @@
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
-    <img src="https://img.shields.io/website?label=documentation&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
+    <img src="https://img.shields.io/website?label=docs&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
   </a>
-  <!-- Black -->
-  <a href="https://github.com/psf/black">
-    <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square">
+  <!-- Roadmap -->
+  <a href="https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1">
+    <img src="https://img.shields.io/website?label=roadmap&style=flat-square&url=https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1" alt="roadmap">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
@@ -175,7 +175,15 @@ Here are some benefits of using River (and online machine learning in general):
 
 ## 👍 Contributing
 
-Feel free to contribute in any way you like, we're always open to new ideas and approaches. You can also take a look at the [issue tracker](https://github.com/online-ml/river/issues) and the [icebox](https://github.com/online-ml/river/projects/2) to see if anything takes your fancy. Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).
+Feel free to contribute in any way you like, we're always open to new ideas and approaches. 
+
+There are three ways for users to get involved:
+
+- [Issue tracker](https://github.com/online-ml/river/issues): this place is meant to report bugs, request for minor features, or small improvements. Issues should be short-lived and solved as fast as possible.
+- [Discussions](https://github.com/online-ml/river/discussions): you can ask for new features, submit your questions and get help, propose new ideas, or even show the community what you are achieving with River! If you have a new technique or want to port a new functionality to River, this is the place to discuss.  
+- [Roadmap](https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1): you can check what we are doing, what are the next planned milestones for River, and look for cool ideas that still need someone to make them become a reality!
+
+Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).
 
 ## ❤️ They've used us
 

@@ -26,7 +26,9 @@ jobs:
         python-version: 3.8
 
     - name: Install Python dependencies
-      run: pip install -e ".[compat,dev]" cibuildwheel twine
+      run: |
+        pip install wheel
+        pip install -e ".[compat,dev]" cibuildwheel twine
 
     - name: pytest
       run: |

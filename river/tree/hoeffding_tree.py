@@ -23,34 +23,12 @@ except ImportError:
     GRAPHVIZ_INSTALLED = False
 
 
-class BaseHoeffdingTree(ABC):
+class HoeffdingTree(ABC):
     """Base class for Hoeffding Decision Trees.
 
     This is an **abstract class**, so it cannot be used directly. It defines base operations
-    and properties that all the decision trees must inherit or implement according to
+    and properties that all the Hoeffding decision trees must inherit or implement according to
     their own design.
-
-    All the extended classes inherit the following functionality:
-
-    * Set the maximum tree depth allowed (`max_depth`).
-
-    * Handle *Active* and *Inactive* nodes: Active learning nodes update their own
-    internal state to improve predictions and monitor input features to perform split
-    attempts. Inactive learning nodes do not update their internal state and only keep the
-    predictors; they are used to save memory in the tree (`max_size`).
-
-    *  Enable/disable memory management.
-
-    * Define strategies to sort leaves according to how likely they are going to be split.
-    This enables deactivating non-promising leaves to save memory.
-
-    * Disabling ‘poor’ attributes to save memory and speed up tree construction.
-    A poor attribute is an input feature whose split merit is much smaller than the current
-    best candidate. Once a feature is disabled, the tree stops saving statistics necessary
-    to split such a feature.
-
-    * Define properties to access leaf prediction strategies, split criteria, and other
-    relevant characteristics.
 
     Parameters
     ----------
@@ -69,15 +47,6 @@ class BaseHoeffdingTree(ABC):
     merit_preprune
         If True, enable merit-based tree pre-pruning.
 
-    Notes
-    -----
-    Hoeffding trees might face situations where an input feature previously used to make
-    a split decision is missing in an incoming sample. In this case, the trees follow the
-    conventions:
-
-    - *Learning:* choose the subtree branch most traversed so far to pass the instance on.</br>
-    - *Predicting:* Use the last "reachable" decision node to provide responses.
-
     """
 
     def __init__(
@@ -91,8 +60,8 @@ class BaseHoeffdingTree(ABC):
         merit_preprune: bool = True,
     ):
         # Properties common to all the Hoeffding trees
-        self._split_criterion: str
-        self._leaf_prediction: str
+        self._split_criterion: str = ""
+        self._leaf_prediction: str = ""
 
         self.max_depth: float = max_depth if max_depth is not None else math.inf
         self.binary_split: bool = binary_split
@@ -247,7 +216,15 @@ class BaseHoeffdingTree(ABC):
         """Define the prediction strategy used by the tree in its leaves."""
 
     def _enforce_size_limit(self):
-        """Track the size of the tree and disable/enable nodes if required."""
+        """Track the size of the tree and disable/enable nodes if required.
+
+        This memory-management routine shared by all the Hoeffding Trees is based on [^1].
+
+        References
+        ----------
+        [^1]: Kirkby, R.B., 2007. Improving hoeffding trees (Doctoral dissertation,
+        The University of Waikato).
+        """
         tree_size = self._size_estimate_overhead_fraction * (
             self._active_leaf_size_estimate
             + self._n_inactive_leaves * self._inactive_leaf_size_estimate
@@ -288,7 +265,15 @@ class BaseHoeffdingTree(ABC):
 
     def _estimate_model_size(self):
         """Calculate the size of the model and trigger tracker function
-        if the actual model size exceeds the max size in the configuration."""
+        if the actual model size exceeds the max size in the configuration.
+
+        This memory-management routine shared by all the Hoeffding Trees is based on [^1].
+
+        References
+        ----------
+        [^1]: Kirkby, R.B., 2007. Improving hoeffding trees (Doctoral dissertation,
+        The University of Waikato).
+        """
         learning_nodes = self._find_learning_nodes()
         total_active_size = 0
         total_inactive_size = 0
@@ -387,7 +372,7 @@ class BaseHoeffdingTree(ABC):
 
         for node in self._tree_root.path(x):
             if node.is_leaf():
-                pred = node.leaf_prediction(x, tree=self)
+                pred = node.leaf_prediction(x, tree=self)  # noqa
                 if isinstance(self, base.Classifier):
                     class_val = max(pred, key=pred.get)
                     _print(f"Class {class_val} | {pred}")
@@ -397,17 +382,21 @@ class BaseHoeffdingTree(ABC):
                         _print("Predictions:\n{")
                         for i, (t, var) in enumerate(pred.items()):
                             _print(
-                                f"\t{t}: {pred[t]} | {node.stats[t].mean} | {node.stats[t]}"
+                                f"\t{t}: {pred[t]} | {repr(node.stats[t].mean)} | {repr(node.stats[t])}"
                             )
                         _print("}")
                     else:  # Single-target regression
-                        _print(f"Prediction {pred} | {node.stats.mean} | {node.stats}")
+                        _print(
+                            f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
+                        )
                 break
             else:
-                child_index = node.split_test.branch_for_instance(x)
+                child_index = node.split_test.branch_for_instance(x)  # noqa
 
                 if child_index >= 0:
-                    _print(node.split_test.describe_condition_for_branch(child_index))
+                    _print(
+                        node.split_test.describe_condition_for_branch(child_index)
+                    )  # noqa
                 else:  # Corner case where an emerging nominal feature value arrives
                     _print("Decision node reached as final destination")
                     pred = node.stats
@@ -424,7 +413,7 @@ class BaseHoeffdingTree(ABC):
                             _print("}")
                         else:  # Single-target regression
                             _print(
-                                f"Prediction {pred} | {node.stats.mean} | {node.stats}"
+                                f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
                             )
 
         return buffer.getvalue()
