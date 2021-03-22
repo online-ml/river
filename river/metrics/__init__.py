@@ -60,7 +60,6 @@ from .precision import (
     WeightedPrecision,
 )
 from .r2 import R2
-from .rand import Rand
 from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
@@ -111,7 +110,6 @@ __all__ = [
     "MultiOutputRegressionMetric",
     "MSE",
     "Precision",
-    "Rand",
     "Recall",
     "RegressionMetric",
     "RegressionMultiOutput",
