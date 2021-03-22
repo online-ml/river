@@ -59,7 +59,7 @@ from .precision import (
     WeightedPrecision,
 )
 from .r2 import R2
-from .rand import Rand
+from .rand import AdjustedRand, Rand
 from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
@@ -69,6 +69,7 @@ from .time_rolling import TimeRolling
 
 __all__ = [
     "Accuracy",
+    "AdjustedRand",
     "BalancedAccuracy",
     "BinaryMetric",
     "ClassificationMetric",
