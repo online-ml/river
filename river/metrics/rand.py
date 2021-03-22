@@ -110,7 +110,7 @@ class Rand(base.Metric):
                 self.cm.n_samples * (self.cm.n_samples - 1) / 2
             )
         except ZeroDivisionError:
-            return 0
+            return 0.0
 
 
 class AdjustedRand(base.Metric):
