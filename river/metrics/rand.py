@@ -14,19 +14,19 @@ class Rand(base.Metric):
     Given a set of elements `S` and two partitions of `S` to compare, `X` and `Y`,
     define the following:
 
-    * a, the number of paris of elements in `S` that are in the **same** subset in `X`
+    * a, the number of pairs of elements in `S` that are in the **same** subset in `X`
     and in the **same** subset in `Y`
 
-    * b, the number of paris of elements in `S` that are in the **different** subset in `X`
-    and in the **different** subset in `Y`
+    * b, the number of pairs of elements in `S` that are in the **different** subset in `X`
+    and in **different** subsets in `Y`
 
-    * c, the number of paris of elements in `S` that are in the **same** subset in `X`
-    and in the **different** subset in `Y`
+    * c, the number of pairs of elements in `S` that are in the **same** subset in `X`
+    and in **different** subsets in `Y`
 
-    * d, the number of paris of elements in `S` that are in the **different** subset in `X`
+    * d, the number of pairs of elements in `S` that are in the **different** subset in `X`
     and in the **same** subset in `Y`
 
-    The Rand index R, is
+    The Rand index, R, is
 
     $$
     R = \frac{a+b}{a+b+c+d} = \frac{a+b}{\frac{n(n-1)}{2}}.
@@ -118,7 +118,7 @@ class AdjustedRand(base.Metric):
 
     The Adjusted Rand Index is the corrected-for-chance version of the Rand Index [^1] [^2].
     Such a correction for chance establishes a baseline by using the expected similarity
-    of all pair-wise comparisions between cluserings specified by a random model.
+    of all pair-wise comparisions between clusterings specified by a random model.
 
     Traditionally, the Rand Index was corrected using the Permutation Model for Clustering.
     However, the premises of the permutation model are frequently violated; in many
@@ -126,9 +126,8 @@ class AdjustedRand(base.Metric):
     clusters vary drastically. Variations of the adjusted Rand Index account for different
     models of random clusterings.
 
-    Though the Rand Index may only yield a value between 0 and +1, the Adjusted Rand index
+    Though the Rand Index may only yield a value between 0 and 1, the Adjusted Rand index
     can yield negative values if the index is less than the expected index.
-
 
     Examples
     --------
