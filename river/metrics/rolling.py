@@ -34,10 +34,10 @@ class Rolling(base.WrapperMetric, utils.Window):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    MSE: 0.25   Metric rolling window size: 2
-    MSE: 0.25   Metric rolling window size: 2
-    MSE: 0.125  Metric rolling window size: 2
-    MSE: 0.5    Metric rolling window size: 2
+    MSE: 0.25   (rolling 2)
+    MSE: 0.25   (rolling 2)
+    MSE: 0.125  (rolling 2)
+    MSE: 0.5    (rolling 2)
     """
 
     def __init__(self, metric: base.Metric, window_size: int):
@@ -68,4 +68,4 @@ class Rolling(base.WrapperMetric, utils.Window):
     def __repr__(self):
         if isinstance(self.metric, report.ClassificationReport):
             return self.metric.__repr__()
-        return f"{str(self.metric)}\tMetric rolling window size: {self.window_size}"
+        return f"{str(self.metric)}\t(rolling {self.window_size})"
