@@ -53,7 +53,7 @@ class ADWIN(DriftDetector):
 
     References
     ----------
-    [^1]: Bifet, Albert, and Ricard Gavalda.
+    [^1]: Albert Bifet and Ricard Gavalda.
     "Learning from time-changing data with adaptive windowing."
     In Proceedings of the 2007 SIAM international conference on data mining,
     pp. 443-448. Society for Industrial and Applied Mathematics, 2007.

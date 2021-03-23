@@ -80,13 +80,13 @@ cdef class ADWINC:
         Set all statistics to 0 and create a new bucket List.
 
         """
-        self.bucket_deque: Deque['BucketItem'] = deque([BucketItem()])
+        self.bucket_deque: Deque['Bucket'] = deque([Bucket()])
         self.total = 0.0
         self.variance = 0.0
         self.width = 0.0
         self.n_buckets = 0
 
-    cpdef bint update(self, double value):
+    def update(self, value: float):
         """Update the change detector with a single data point.
 
         Apart from adding the element value to the window, by inserting it in
@@ -101,15 +101,19 @@ cdef class ADWINC:
 
         Returns
         -------
-        bint
+        bool
             If True then a change is detected.
 
         """
+        return self._update(value)
+
+    cdef bint _update(self, double value):
+
         cdef double incremental_variance
 
         self.width += 1
 
-        self._insert_element_bucket(0, value)
+        self._insert_element(value, 0.0)
         incremental_variance = 0.0
         if self.width > 1.0:
             incremental_variance = (
@@ -124,48 +128,47 @@ cdef class ADWINC:
 
         return self._detect_change()
 
-    cdef void _insert_element_bucket(self, double variance, double value):
-        cdef BucketItem node = self.bucket_deque[0]
-        node.insert_bucket(value, variance)
+    cdef void _insert_element(self, double value, double variance):
+        cdef Bucket bucket = self.bucket_deque[0]
+        bucket.insert_data(value, variance)
         self.n_buckets += 1
 
         if self.n_buckets > self.max_n_buckets:
             self.max_n_buckets = self.n_buckets
 
-    # @staticmethod
     cdef double _bucket_size(self, int row):
         return pow(2, row)
 
     cdef double _delete_element(self):
-        """Delete an item from the bucket list.
+        """Delete an item from the bucket deque.
 
         Deletes the last item and updates relevant statistics kept by ADWIN.
 
         Returns
         -------
-        The bucket size from the updated bucket list
+        The size of the item being dropped
 
         """
         cdef:
             double n1, u1
-            BucketItem node
+            Bucket bucket
             double incremental_variance
 
-        node = self.bucket_deque[-1]
+        bucket = self.bucket_deque[-1]
         n1 = self._bucket_size(len(self.bucket_deque) - 1)
         self.width -= n1
-        self.total -= node.get_total(0)
-        u1 = node.get_total(0) / n1
+        self.total -= bucket.get_total_at(0)
+        u1 = bucket.get_total_at(0) / n1
         incremental_variance = (
-                node.get_variance(0) + n1 * self.width
+                bucket.get_variance_at(0) + n1 * self.width
                 * (u1 - self.total / self.width) * (u1 - self.total / self.width)
                 / (n1 + self.width)
         )
         self.variance -= incremental_variance
-        node.remove_bucket()
+        bucket.remove()
         self.n_buckets -= 1
 
-        if node.bucket_idx == 0:
+        if bucket.current_idx == 0:
             self.bucket_deque.pop()
 
         return n1
@@ -175,29 +178,30 @@ cdef class ADWINC:
         cdef:
             int idx, k
             double n1, n2, u1, u2, incremental_variance
-            BucketItem cursor, next_node
+            Bucket bucket, next_bucket
 
-        for idx, cursor in enumerate(self.bucket_deque):
-            k = cursor.bucket_idx
+        for idx, bucket in enumerate(self.bucket_deque):
+            k = bucket.current_idx
             # If the row is full, merge buckets
             if k == self.MAX_BUCKETS + 1:
                 try:
-                    next_node = self.bucket_deque[idx + 1]
+                    next_bucket = self.bucket_deque[idx + 1]
                 except IndexError:
-                    self.bucket_deque.append(BucketItem())
-                    next_node = self.bucket_deque[-1]
+                    self.bucket_deque.append(Bucket())
+                    next_bucket = self.bucket_deque[-1]
                 n1 = self._bucket_size(idx)
                 n2 = self._bucket_size(idx)
-                u1 = cursor.get_total(0) / n1
-                u2 = cursor.get_total(1) / n2
+                u1 = bucket.get_total_at(0) / n1
+                u2 = bucket.get_total_at(1) / n2
                 incremental_variance = n1 * n2 * ((u1 - u2) * (u1 - u2)) / (n1 + n2)
-                next_node.insert_bucket(
-                    cursor.get_total(0) + cursor.get_total(1),
-                    cursor.get_variance(1) + incremental_variance)
+                next_bucket.insert_data(
+                    bucket.get_total_at(0) + bucket.get_total_at(1),
+                    bucket.get_variance_at(1) + incremental_variance
+                )
                 self.n_buckets += 1
-                cursor.compress_bucket_row(2)
+                bucket.compress(2)
 
-                if next_node.bucket_idx <= self.MAX_BUCKETS:
+                if next_bucket.current_idx <= self.MAX_BUCKETS:
                     break
             else:
                 break
@@ -224,7 +228,7 @@ cdef class ADWINC:
             int idx, k
             bint change_detected, exit_flag
             double n0, n1, n2, u0, u1, u2, v0, v1
-            BucketItem cursor
+            Bucket bucket
 
         change_detected = False
         exit_flag = False
@@ -247,32 +251,32 @@ cdef class ADWINC:
                 for idx in range(len(self.bucket_deque) - 1, -1 , -1):
                     if exit_flag:
                         break
-                    cursor = self.bucket_deque[idx]
+                    bucket = self.bucket_deque[idx]
 
-                    for k in range(cursor.bucket_idx - 1):
+                    for k in range(bucket.current_idx - 1):
                         n2 = self._bucket_size(idx)
-                        u2 = cursor.get_total(k)
+                        u2 = bucket.get_total_at(k)
 
                         if n0 > 0.0:
                             v0 += (
-                                    cursor.get_variance(k) + n0 * n2
+                                    bucket.get_variance_at(k) + n0 * n2
                                     * (u0 / n0 - u2 / n2) * (u0 / n0 - u2 / n2)
                                     / (n0 + n2)
                             )
 
                         if n1 > 0.0:
                             v1 -= (
-                                    cursor.get_variance(k) + n1 * n2
+                                    bucket.get_variance_at(k) + n1 * n2
                                     * (u1 / n1 - u2 / n2) * (u1 / n1 - u2 / n2)
                                     / (n1 + n2)
                             )
 
                         n0 += self._bucket_size(idx)
                         n1 -= self._bucket_size(idx)
-                        u0 += cursor.get_total(k)
-                        u1 -= cursor.get_total(k)
+                        u0 += bucket.get_total_at(k)
+                        u1 -= bucket.get_total_at(k)
 
-                        if (idx == 0) and (k == cursor.bucket_idx - 1):
+                        if (idx == 0) and (k == bucket.current_idx - 1):
                             exit_flag = True
                             break
 
@@ -281,7 +285,7 @@ cdef class ADWINC:
                         if (
                                 n1 >= <double> self.mint_min_window_length
                                 and n0 >= <double> self.mint_min_window_length
-                                and self._cut_expression(n0, n1, abs_value, self.delta)
+                                and self._evaluate_cut(n0, n1, abs_value, self.delta)
                         ):
                             self.detect = self.tick
                             if self.detect == 0:
@@ -302,8 +306,8 @@ cdef class ADWINC:
 
         return change_detected
 
-    cdef bint _cut_expression(self, double n0, double n1,
-                                double abs_value, double delta):
+    cdef bint _evaluate_cut(self, double n0, double n1,
+                            double abs_value, double delta):
         cdef:
             double delta_prime, m, epsilon
         delta_prime = log(2 * log(self.width) / delta)
@@ -313,64 +317,63 @@ cdef class ADWINC:
         return fabs(abs_value) > epsilon
 
 
-cdef class BucketItem:
-    """Item to be used by the List object.
+cdef class Bucket:
+    """ A bucket class to keep statistics.
 
-    The Item object, alongside the List object, are the two main data
-    structures used for storing the relevant statistics for the ADWIN
-    algorithm for change detection.
+    In this implementation fixed-size arrays are used for efficiency. The index
+    of the "current" item is used to simulate the dynamic size of the row.
 
     """
     cdef:
-        int bucket_idx, max_buckets
-        np.ndarray bucket_total, bucket_variance
+        int current_idx, max_size
+        np.ndarray total_array, variance_array
 
     def __init__(self):
-        self.max_buckets = ADWINC.MAX_BUCKETS
+        self.max_size = ADWINC.MAX_BUCKETS
 
-        self.bucket_idx = 0
-        self.bucket_total = np.zeros(self.max_buckets + 1, dtype=float)
-        self.bucket_variance = np.zeros(self.max_buckets + 1, dtype=float)
+        self.current_idx = 0
+        self.total_array = np.zeros(self.max_size + 1, dtype=float)
+        self.variance_array = np.zeros(self.max_size + 1, dtype=float)
 
-    cdef void clear_bucket_at(self, int index):
-        self.set_total(0, index)
-        self.set_variance(0, index)
+    cdef void clear_at(self, int index):
+        self.set_total_at(0.0, index)
+        self.set_variance_at(0.0, index)
 
-    cdef void insert_bucket(self, double value, double variance):
-        self.set_total(value, self.bucket_idx)
-        self.set_variance(variance, self.bucket_idx)
-        self.bucket_idx += 1
+    cdef void insert_data(self, double value, double variance):
+        self.set_total_at(value, self.current_idx)
+        self.set_variance_at(variance, self.current_idx)
+        self.current_idx += 1
 
-    def remove_bucket(self):
-        self.compress_bucket_row(1)
+    cdef void remove(self):
+        self.compress(1)
 
-    cdef void compress_bucket_row(self, int n_buckets):
-        """ drop the front n_buckets
+    cdef void compress(self, int n_items):
+        """ Drop the front n_items
 
         Parameters
         ----------
-        n_buckets
+        n_items
             The number of buckets to be cleared.
 
         """
         cdef int i
-        for i in range(n_buckets, ADWINC.MAX_BUCKETS + 1):
-            self.bucket_total[i - n_buckets] = self.bucket_total[i]
-            self.bucket_variance[i - n_buckets] = self.bucket_variance[i]
+        for i in range(n_items, ADWINC.MAX_BUCKETS + 1):
+            self.total_array[i - n_items] = self.total_array[i]
+            self.variance_array[i - n_items] = self.variance_array[i]
 
-        for i in range(1, n_buckets + 1):
-            self.clear_bucket_at(ADWINC.MAX_BUCKETS - i + 1)
+        for i in range(1, n_items + 1):
+            self.clear_at(ADWINC.MAX_BUCKETS - i + 1)
 
-        self.bucket_idx -= n_buckets
+        self.current_idx -= n_items
 
-    cdef double get_total(self, int index):
-        return self.bucket_total[index]
+    cdef double get_total_at(self, int index):
+        return self.total_array[index]
 
-    cdef double get_variance(self, int index):
-        return self.bucket_variance[index]
+    cdef double get_variance_at(self, int index):
+        return self.variance_array[index]
 
-    cdef void set_total(self, double value, int index):
-        self.bucket_total[index] = value
+    cdef void set_total_at(self, double value, int index):
+        self.total_array[index] = value
 
-    cdef void set_variance(self, double value, int index):
-        self.bucket_variance[index] = value
+    cdef void set_variance_at(self, double value, int index):
+        self.variance_array[index] = value
