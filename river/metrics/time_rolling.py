@@ -2,7 +2,7 @@ import bisect
 import datetime as dt
 import typing
 
-from . import base
+from . import base, report
 
 __all__ = ["TimeRolling"]
 
@@ -32,10 +32,10 @@ class TimeRolling(base.WrapperMetric):
     >>> for yt, yp, day in zip(y_true, y_pred, days):
     ...     t = dt.datetime(2019, 1, day)
     ...     print(metric.update(yt, yp, t))
-    MAE: 0.5
-    MAE: 0.5
-    MAE: 0.25
-    MAE: 1.
+    MAE: 0.5    (rolling 2 days, 0:00:00)
+    MAE: 0.5    (rolling 2 days, 0:00:00)
+    MAE: 0.25   (rolling 2 days, 0:00:00)
+    MAE: 1. (rolling 2 days, 0:00:00)
 
     """
 
@@ -75,3 +75,8 @@ class TimeRolling(base.WrapperMetric):
 
     def revert(self, y_true, y_pred):
         raise NotImplementedError
+
+    def __repr__(self):
+        if isinstance(self.metric, report.ClassificationReport):
+            return self.metric.__repr__()
+        return f"{str(self.metric)}\t(rolling {self.period})"
