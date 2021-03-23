@@ -32,10 +32,10 @@ class TimeRolling(base.WrapperMetric):
     >>> for yt, yp, day in zip(y_true, y_pred, days):
     ...     t = dt.datetime(2019, 1, day)
     ...     print(metric.update(yt, yp, t))
-    MAE: 0.5    Metric rolling window period: 2 days, 0:00:00
-    MAE: 0.5    Metric rolling window period: 2 days, 0:00:00
-    MAE: 0.25   Metric rolling window period: 2 days, 0:00:00
-    MAE: 1. Metric rolling window period: 2 days, 0:00:00
+    MAE: 0.5    (rolling 2 days, 0:00:00)
+    MAE: 0.5    (rolling 2 days, 0:00:00)
+    MAE: 0.25   (rolling 2 days, 0:00:00)
+    MAE: 1. (rolling 2 days, 0:00:00)
 
     """
 
@@ -79,4 +79,4 @@ class TimeRolling(base.WrapperMetric):
     def __repr__(self):
         if isinstance(self.metric, report.ClassificationReport):
             return self.metric.__repr__()
-        return f"{str(self.metric)}\tMetric rolling window period: {self.period}"
+        return f"{str(self.metric)}\t(rolling {self.period})"
