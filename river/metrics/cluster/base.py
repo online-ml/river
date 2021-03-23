@@ -2,7 +2,7 @@ import abc
 import numbers
 import typing
 
-from river import stats
+from river import base, stats, utils
 from river.base.typing import FeatureName
 
 __all__ = ["InternalMetric"]
@@ -32,6 +32,10 @@ class InternalMetric(abc.ABC):
     @abc.abstractmethod
     def bigger_is_better(self) -> bool:
         """Indicates if a high value is better than a low one or not."""
+
+    def works_with(self, model: base.Estimator) -> bool:
+        """Indicates whether or not a metric can work with a given model."""
+        return utils.inspect.isclusterer(model)
 
     def __repr__(self):
         """Returns the class name along with the current value of the metric."""

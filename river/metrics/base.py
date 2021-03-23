@@ -84,7 +84,7 @@ class ClassificationMetric(Metric):
         return True
 
     def works_with(self, model) -> bool:
-        return utils.inspect.isclassifier(model)
+        return utils.inspect.isclassifier(model) or utils.inspect.isclusterer(model)
 
     @property
     def requires_labels(self):
