@@ -11,7 +11,7 @@ class Homogeneity(metrics.MultiClassMetric):
     Homogeneity metric [^1] of a cluster labeling given a ground truth.
 
     In order to satisfy the homogeneity criteria, a clustering must assign only
-    those data points that a members of a single class to a single cluster. That
+    those data points that are members of a single class to a single cluster. That
     is, the class distribution within each cluster should be skewed to a single
     class, that is, zero entropy. We determine how close a given clustering is to
     this ideal by examining the conditional entropy of the class distribution given
@@ -179,13 +179,13 @@ class Completeness(metrics.MultiClassMetric):
 
 
 class VBeta(metrics.MultiClassMetric):
-    """V-Meeasure.
+    r"""V-Measure.
 
-    V-measure [^1] is an external entropy-based cluster evaluation measure. It provides
+    V-Measure [^1] is an external entropy-based cluster evaluation measure. It provides
     an elegant solution to many problems that affect previously defined cluster
     evaluation measures including
 
-    * Dependence of clustering algorithm or dataset,
+    * Dependance of clustering algorithm or dataset,
 
     * The "problem of matching", where the clustering of only a portion of data
     points are evaluated, and
