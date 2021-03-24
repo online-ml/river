@@ -188,9 +188,9 @@ class WB(base.InternalMetric):
 
     WB Index is a simple sum-of-square method, calculated by dividing the within
     cluster sum-of-squares by the between cluster sum-of-squares. Its effect is emphasized
-    by multiplying the number of clusters. The advantages of the proposed method
-    are that it determines the number of clusters by minimal value of it without
-    any knee point detection method, and it is easy to be implemented.
+    by multiplying the number of clusters. The advantages of the proposed method are
+    that one can determine the number of clusters by minimizing the WB value, without
+    relying on any knee point detection, and this metric is straightforward to implement.
 
     The lower the WB index, the higher the clustering quality is.
 

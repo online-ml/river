@@ -10,7 +10,7 @@ class BIC(base.InternalMetric):
 
     In statistics, the Bayesian Information Criterion (BIC) [^1], or Schwarz Information
     Criterion (SIC), is a criterion for model selection among a finite set of models;
-    the model with the lowest BIC is preferred. It is based, in part, on  the likelihood
+    the model with the highest BIC is preferred. It is based, in part, on the likelihood
     function and is closely related to the Akaike Information Criterion (AIC).
 
     Let
@@ -132,14 +132,18 @@ class BIC(base.InternalMetric):
         const_term = 0.5 * self._n_clusters * math.log(total_points) * (self._dim + 1)
 
         for i in self._n_points_by_clusters:
-            BIC += (
-                self._n_points_by_clusters[i] * math.log(self._n_points_by_clusters[i])
-                - self._n_points_by_clusters[i] * math.log(total_points)
-                - (self._n_points_by_clusters[i] * self._dim)
-                / 2
-                * math.log(2 * math.pi * variance)
-                - (self._n_points_by_clusters[i] - 1) * self._dim / 2
-            )
+            try:
+                BIC += (
+                    self._n_points_by_clusters[i]
+                    * math.log(self._n_points_by_clusters[i])
+                    - self._n_points_by_clusters[i] * math.log(total_points)
+                    - (self._n_points_by_clusters[i] * self._dim)
+                    / 2
+                    * math.log(2 * math.pi * variance)
+                    - (self._n_points_by_clusters[i] - 1) * self._dim / 2
+                )
+            except ValueError:
+                continue
 
         BIC -= const_term
 

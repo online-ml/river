@@ -191,7 +191,7 @@ class Xu(base.InternalMetric):
 
     Xu Index is among the most complicated sum-of-squares based metrics [^1].
     It is calculated based on the Sum-of-Squares Within Clusters (SSW), total
-    number of points, number of clusters and dimension of the cluserting problem.
+    number of points, number of clusters, and the dimension of the cluserting problem.
 
     The lower the Xu index, the higher the clustering quality is.
 

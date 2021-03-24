@@ -89,7 +89,7 @@ class SD(base.InternalMetric):
                 sum_inverse_distances += 1 / distance_ij
 
         try:
-            return max_distance_clusters / min_distance_clusters * sum_inverse_distances
+            return (max_distance_clusters / min_distance_clusters) * sum_inverse_distances
         except ZeroDivisionError:
             return math.inf
 
