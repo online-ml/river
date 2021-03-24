@@ -66,12 +66,14 @@ from .roc_auc import ROCAUC
 from .rolling import Rolling
 from .smape import SMAPE
 from .time_rolling import TimeRolling
+from .vbeta import Completeness, Homogeneity, VBeta
 
 __all__ = [
     "Accuracy",
     "AdjustedRand",
     "BalancedAccuracy",
     "BinaryMetric",
+    "Completeness",
     "ClassificationMetric",
     "ClassificationReport",
     "CohenKappa",
@@ -87,6 +89,7 @@ __all__ = [
     "GeometricMean",
     "Hamming",
     "HammingLoss",
+    "Homogeneity",
     "Jaccard",
     "KappaM",
     "KappaT",
@@ -121,6 +124,7 @@ __all__ = [
     "R2",
     "SMAPE",
     "TimeRolling",
+    "VBeta",
     "WeightedF1",
     "WeightedFBeta",
     "WeightedPrecision",
