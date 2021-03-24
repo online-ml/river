@@ -42,6 +42,7 @@ from .fbeta import (
     WeightedF1,
     WeightedFBeta,
 )
+from .fowlkes_mallows import PPV, TPR, FowlkesMallows
 from .geometric_mean import GeometricMean
 from .hamming import Hamming, HammingLoss
 from .jaccard import Jaccard
@@ -86,6 +87,7 @@ __all__ = [
     "ExampleFBeta",
     "F1",
     "FBeta",
+    "FowlkesMallows",
     "GeometricMean",
     "Hamming",
     "HammingLoss",
@@ -122,8 +124,10 @@ __all__ = [
     "ROCAUC",
     "Rolling",
     "R2",
+    "Precision",
     "SMAPE",
     "TimeRolling",
+    "TPR",
     "VBeta",
     "WeightedF1",
     "WeightedFBeta",
