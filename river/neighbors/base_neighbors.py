@@ -219,6 +219,11 @@ class BaseNeighbors:
         X = self.data_window.features_buffer
         tree = cKDTree(X, leafsize=self.leaf_size, **self._kwargs)
         dist, idx = tree.query(x.reshape(1, -1), k=self.n_neighbors, p=self.p)
+
+        # We make sure dist and idx is 2D since when k = 1 dist is one dimensional.
+        if not isinstance(dist[0], np.ndarray):
+            dist = [dist]
+            idx = [idx]
         return dist, idx
 
     def reset(self) -> "BaseNeighbors":
