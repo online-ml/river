@@ -52,7 +52,6 @@ from .mae import MAE
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
-from .purity import Purity
 from .precision import (
     ExamplePrecision,
     MacroPrecision,
@@ -60,6 +59,7 @@ from .precision import (
     Precision,
     WeightedPrecision,
 )
+from .purity import Purity
 from .r2 import R2
 from .rand import AdjustedRand, Rand
 from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
