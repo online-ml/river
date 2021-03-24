@@ -50,6 +50,9 @@ class Rand(base.Metric):
     0.6
     0.6666666666666666
 
+    >>> metric
+    Rand: 0.666667
+
     References
     ----------
     [^1]: Wikipedia contributors. (2021, January 13). Rand index.
@@ -82,7 +85,7 @@ class Rand(base.Metric):
 
         return self
 
-    def revert(self, y_true, y_pred, sample_weight, correction=None):
+    def revert(self, y_true, y_pred, sample_weight=1.0):
 
         self.cm.revert(y_true, y_pred)
 
@@ -147,6 +150,9 @@ class AdjustedRand(base.Metric):
     0.2105263157894737
     0.3333333333333333
 
+    >>> metric
+    AdjustedRand: 0.333333
+
     References
     ----------
     [^1]: Wikipedia contributors. (2021, January 13). Rand index.
@@ -184,7 +190,7 @@ class AdjustedRand(base.Metric):
 
         return self
 
-    def revert(self, y_true, y_pred, sample_weight, correction=None):
+    def revert(self, y_true, y_pred, sample_weight=1.0):
 
         self._binomial_all_entries -= scipy.special.binom(
             self.cm[y_true][y_pred], 2

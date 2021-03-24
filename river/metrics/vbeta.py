@@ -41,12 +41,15 @@ class Homogeneity(metrics.MultiClassMetric):
 
     >>> metric = metrics.Homogeneity()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
-    Homogeneity: 1.
-    Homogeneity: 1.
-    Homogeneity: 0.
-    Homogeneity: 0.311278
-    Homogeneity: 0.37515
+    ...     print(metric.update(yt, yp).get())
+    1.0
+    1.0
+    0.0
+    0.311278
+    0.37515
+    0.42062
+
+    >>> metric
     Homogeneity: 0.42062
 
     References
@@ -126,12 +129,15 @@ class Completeness(metrics.MultiClassMetric):
 
     >>> metric = metrics.Completeness()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
-    Completeness: 1.
-    Completeness: 1.
-    Completeness: 1.
-    Completeness: 0.383689
-    Completeness: 0.588033
+    ...     print(metric.update(yt, yp).get())
+    1.0
+    1.0
+    1.0
+    0.3836885465963443
+    0.5880325916843805
+    0.6666666666666667
+
+    >>> metric
     Completeness: 0.666667
 
     References
@@ -211,12 +217,15 @@ class VBeta(metrics.MultiClassMetric):
 
     >>> metric = metrics.VBeta(beta=1.0)
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
-    VBeta: 1.
-    VBeta: 1.
-    VBeta: 0.
-    VBeta: 0.343711
-    VBeta: 0.458065
+    ...     print(metric.update(yt, yp).get())
+    1.0
+    1.0
+    0.0
+    0.3437110184854507
+    0.4580652856440158
+    0.5158037429793888
+
+    >>> metric
     VBeta: 0.515804
 
     References

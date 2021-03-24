@@ -114,6 +114,7 @@ __all__ = [
     "MultiOutputClassificationMetric",
     "MultiOutputRegressionMetric",
     "MSE",
+    "PPV",
     "Precision",
     "Rand",
     "Recall",
