@@ -52,6 +52,7 @@ from .mae import MAE
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
+from .pair_confusion import PairConfusionMatrix
 from .precision import (
     ExamplePrecision,
     MacroPrecision,
@@ -115,6 +116,7 @@ __all__ = [
     "MultiOutputClassificationMetric",
     "MultiOutputRegressionMetric",
     "MSE",
+    "PairConfusionMatrix",
     "PPV",
     "Precision",
     "Purity",
