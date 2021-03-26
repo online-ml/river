@@ -49,6 +49,7 @@ from .jaccard import Jaccard
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
 from .mae import MAE
+from .matthews_corrcoef import MatthewsCorrCoef
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
@@ -103,6 +104,7 @@ __all__ = [
     "MacroFBeta",
     "MacroPrecision",
     "MacroRecall",
+    "MatthewsCorrCoef",
     "MCC",
     "Metric",
     "Metrics",
