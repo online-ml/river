@@ -1,6 +1,6 @@
 from river.base import DriftDetector
 
-from .adwin_c import ADWINC
+from .adwin_c import AdaptiveWindowing
 
 
 class ADWIN(DriftDetector):
@@ -63,7 +63,7 @@ class ADWIN(DriftDetector):
 
     def __init__(self, delta=0.002):
         super().__init__()
-        self._helper = ADWINC(delta)
+        self._helper = AdaptiveWindowing(delta)
 
     @property
     def delta(self):
