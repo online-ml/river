@@ -42,7 +42,7 @@ from .fbeta import (
     WeightedF1,
     WeightedFBeta,
 )
-from .fowlkes_mallows import PPV, TPR, FowlkesMallows
+from .fowlkes_mallows import FowlkesMallows
 from .geometric_mean import GeometricMean
 from .hamming import Hamming, HammingLoss
 from .jaccard import Jaccard
@@ -117,7 +117,6 @@ __all__ = [
     "MultiOutputRegressionMetric",
     "MSE",
     "PairConfusionMatrix",
-    "PPV",
     "Precision",
     "Purity",
     "Rand",
@@ -132,7 +131,6 @@ __all__ = [
     "Precision",
     "SMAPE",
     "TimeRolling",
-    "TPR",
     "VBeta",
     "WeightedF1",
     "WeightedFBeta",

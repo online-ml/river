@@ -13,16 +13,16 @@ class PairConfusionMatrix(metrics.ClassificationMetric):
 
     The pair confusion matrix has the following entries:
 
-    * $C[0][0]$ (**True Negative**): number of pairs of points that are in different clusters
+    * $C[0][0]$ (**True Negatives**): number of pairs of points that are in different clusters
     in both true and predicted labels
 
-    * $C[0][1]$ (**True Positive**): number of pairs of points that are in the same cluster
+    * $C[0][1]$ (**False Positives**): number of pairs of points that are in the same cluster
     in predicted labels but not in predicted labels;
 
-    * $C[1][0]$ (**False Negative**): number of pairs of points that are in the same cluster
+    * $C[1][0]$ (**False Negatives**): number of pairs of points that are in the same cluster
     in true labels but not in predicted labels;
 
-    * $C[0][0]$ (**True Positive**): number of pairs of points that are in the same cluster
+    * $C[1][1]$ (**True Positives**): number of pairs of points that are in the same cluster
     in both true and predicted labels.
 
     We can also show that the four counts have the following property
