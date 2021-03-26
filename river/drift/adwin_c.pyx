@@ -198,7 +198,7 @@ cdef class AdaptiveWindowing:
         Notes
         -----
         Variance calculation is base on:
-        
+
         Babcock, B., Datar, M., Motwani, R., & O’Callaghan, L. (2003).
         Maintaining Variance and k-Medians over Data Stream Windows.
         Proceedings of the ACM SIGACT-SIGMOD-SIGART
