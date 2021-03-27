@@ -53,6 +53,12 @@ from .matthews_corrcoef import MatthewsCorrCoef
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
+from .mutual_info import (
+    AdjustedMutualInfo,
+    ExpectedMutualInfo,
+    MutualInfo,
+    NormalizedMutualInfo,
+)
 from .pair_confusion import PairConfusionMatrix
 from .precision import (
     ExamplePrecision,
@@ -74,6 +80,7 @@ from .vbeta import Completeness, Homogeneity, VBeta
 
 __all__ = [
     "Accuracy",
+    "AdjustedMutualInfo",
     "AdjustedRand",
     "BalancedAccuracy",
     "BinaryMetric",
@@ -88,6 +95,7 @@ __all__ = [
     "ExampleRecall",
     "ExampleF1",
     "ExampleFBeta",
+    "ExpectedMutualInfo",
     "F1",
     "FBeta",
     "FowlkesMallows",
@@ -118,6 +126,8 @@ __all__ = [
     "MultiOutputClassificationMetric",
     "MultiOutputRegressionMetric",
     "MSE",
+    "MutualInfo",
+    "NormalizedMutualInfo",
     "PairConfusionMatrix",
     "Precision",
     "Purity",
