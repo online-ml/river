@@ -41,6 +41,13 @@ class MutualInfo(metrics.MultiClassMetric):
     where $H(U)$ and $H(V)$ are the marginal entropies, $H(U | V)$ and $H(V | U)$ are the
     conditional entropies.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
 
@@ -123,6 +130,13 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
 
     where $H(U)$ and $H(V)$ are the marginal entropies, $H(U | V)$ and $H(V | U)$ are the
     conditional entropies.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -239,6 +253,13 @@ class ExpectedMutualInfo(metrics.MultiClassMetric):
     Information score (AMI) later. Due to the complexity of this metric, the AMI will be
     one order of magnitude slower than most other implemented metrics.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
 
@@ -342,6 +363,13 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
     However, due to the complexity of the Expected Mutual Info Score, the computation of
     this metric is an order of magnitude slower than most other metrics, in general.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------

@@ -32,6 +32,13 @@ class FowlkesMallows(base.ClassificationMetric):
     * TPR is the True Positive Rate (or Sensitivity/Recall), PPV is the Positive Predictive
     Rate (or Precision).
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
     >>> from river import metrics

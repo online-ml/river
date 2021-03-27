@@ -38,6 +38,13 @@ class PairConfusionMatrix(metrics.ClassificationMetric):
         matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
         and computation time.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
 

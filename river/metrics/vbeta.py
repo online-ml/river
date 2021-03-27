@@ -5,7 +5,7 @@ from river import metrics
 __all__ = ["Completeness", "Homogeneity", "VBeta"]
 
 
-class Homogeneity(metrics.MultiClassMetric):
+class Homogeneity(metrics.ClassificationMetric):
     r"""Homogeneity Score.
 
     Homogeneity metric [^1] of a cluster labeling given a ground truth.
@@ -30,6 +30,13 @@ class Homogeneity(metrics.MultiClassMetric):
     1 - \frac{H(C|K)}{H(C)} otherwise.
     \end{cases}.
     $$
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -96,7 +103,7 @@ class Homogeneity(metrics.MultiClassMetric):
             return 1.0
 
 
-class Completeness(metrics.MultiClassMetric):
+class Completeness(metrics.ClassificationMetric):
     r"""Completeness Score.
 
     Completeness [^1] is symmetrical to homogeneity. In order to satisfy the
@@ -118,6 +125,13 @@ class Completeness(metrics.MultiClassMetric):
     1 - \frac{H(K|C)}{H(K)} otherwise.
     \end{cases}.
     $$
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
@@ -184,7 +198,7 @@ class Completeness(metrics.MultiClassMetric):
             return 1.0
 
 
-class VBeta(metrics.MultiClassMetric):
+class VBeta(metrics.ClassificationMetric):
     r"""V-Measure.
 
     V-Measure [^1] is an external entropy-based cluster evaluation measure. It provides
@@ -206,6 +220,15 @@ class VBeta(metrics.MultiClassMetric):
     $$
     V_{\beta} = \frac{(1 + \beta) \times h \times c}{\beta \times h + c}.
     $$
+
+    Parameters
+    ----------
+    beta
+        Weight of Homogeneity in the harmonic mean.
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------

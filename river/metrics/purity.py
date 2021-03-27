@@ -3,7 +3,7 @@ from river import metrics
 __all__ = ["Purity"]
 
 
-class Purity(metrics.MultiClassMetric):
+class Purity(metrics.ClassificationMetric):
     r"""Purity.
 
     In a similar fashion with Entropy, the purity of a clustering solution,
@@ -16,6 +16,13 @@ class Purity(metrics.MultiClassMetric):
     Purity = \sum_{r=1}^k \frac{n_r}{n} \times \left( \frac{1}{n_r} \max_i (n^i_r) \right)
     = \sum_{r=1}^k \frac{1}{n} \max_i (n^i_r)
     $$
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------

@@ -37,6 +37,13 @@ class MatthewsCorrCoef(base.ClassificationMetric):
     MCC = \frac{TP / N - S \times P}{\sqrt{PS(1 - S)(1 - P)}}.
     $$
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
     >>> from river import metrics

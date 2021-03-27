@@ -30,6 +30,13 @@ class Rand(base.ClassificationMetric):
     R = \frac{a+b}{a+b+c+d} = \frac{a+b}{\frac{n(n-1)}{2}}.
     $$
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
     >>> from river import metrics
@@ -95,6 +102,13 @@ class AdjustedRand(base.ClassificationMetric):
 
     Though the Rand Index may only yield a value between 0 and 1, the Adjusted Rand index
     can yield negative values if the index is less than the expected index.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
