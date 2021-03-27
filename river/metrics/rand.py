@@ -1,6 +1,4 @@
-import scipy
-
-from river import metrics, utils
+from river import metrics
 
 from . import base
 
