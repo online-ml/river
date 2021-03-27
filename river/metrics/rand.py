@@ -7,7 +7,7 @@ from . import base
 __all__ = ["AdjustedRand", "Rand"]
 
 
-class Rand(base.Metric):
+class Rand(base.ClassificationMetric):
     """Rand Index.
 
     The Rand Index [^1] [^2] is a measure of the similarity between two data clusterings.
@@ -64,59 +64,25 @@ class Rand(base.Metric):
 
     """
 
-    def __init__(self):
+    def __init__(self, cm=None):
         super().__init__()
-
-        self.cm = metrics.ConfusionMatrix()
-        self._pairs_same_subsets = 0
-        self._pairs_different_subsets = 0
-
-    def update(self, y_true, y_pred, sample_weight=1.0):
-
-        self.cm.update(y_true, y_pred)
-
-        if self.cm[y_true][y_pred] >= 2:
-            self._pairs_same_subsets += self.cm[y_true][y_pred] - 1
-
-        for i in range(self.cm.shape[0]):
-            for j in range(self.cm.shape[1]):
-                if i != y_true and j != y_pred:
-                    self._pairs_different_subsets += self.cm[i][j]
-
-        return self
-
-    def revert(self, y_true, y_pred, sample_weight=1.0):
-
-        self.cm.revert(y_true, y_pred)
-
-        if self.cm[y_true][y_pred] >= 1:
-            self._pairs_same_subsets -= self.cm[y_true][y_pred]
-
-        for i in range(self.cm.shape[0]):
-            for j in range(self.cm.shape[1]):
-                if i != y_true and j != y_pred:
-                    self._pairs_different_subsets -= self.cm[i][j]
-
-        return self
-
-    @property
-    def bigger_is_better(self):
-        return True
-
-    def works_with(self, model):
-        return utils.inspect.isclassifier(model) or utils.inspect.isclusterer(model)
 
     def get(self):
 
+        pair_confusion_matrix = metrics.PairConfusionMatrix(self.cm).get()
+
+        true_positives = pair_confusion_matrix[1][1]
+        true_negatives = pair_confusion_matrix[0][0]
+
+        total_pairs = self.cm.n_samples * (self.cm.n_samples - 1) / 2
+
         try:
-            return (self._pairs_same_subsets + self._pairs_different_subsets) / (
-                self.cm.n_samples * (self.cm.n_samples - 1) / 2
-            )
+            return (true_positives + true_negatives) / total_pairs
         except ZeroDivisionError:
-            return 0.0
+            return true_positives + true_negatives
 
 
-class AdjustedRand(base.Metric):
+class AdjustedRand(base.ClassificationMetric):
     """Adjusted Rand Index.
 
     The Adjusted Rand Index is the corrected-for-chance version of the Rand Index [^1] [^2].
@@ -143,15 +109,15 @@ class AdjustedRand(base.Metric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp).get())
+    1.0
+    1.0
     0.0
     0.0
-    0.0
-    0.0
-    0.2105263157894737
-    0.3333333333333333
+    0.09090909090909091
+    0.24242424242424243
 
     >>> metric
-    AdjustedRand: 0.333333
+    AdjustedRand: 0.242424
 
     References
     ----------
@@ -164,73 +130,26 @@ class AdjustedRand(base.Metric):
 
     """
 
-    def __init__(self):
-        super().__init__()
-
-        self.cm = metrics.ConfusionMatrix()
-        self._binomial_all_entries = 0
-        self._binomial_sum_rows = 0
-        self._binomial_sum_cols = 0
-
-    def update(self, y_true, y_pred, sample_weight=1.0):
-
-        self._binomial_all_entries += scipy.special.binom(
-            self.cm[y_true][y_pred] + 1, 2
-        ) - scipy.special.binom(self.cm[y_true][y_pred], 2)
-
-        self._binomial_sum_rows += scipy.special.binom(
-            self.cm.sum_row[y_true] + 1, 2
-        ) - scipy.special.binom(self.cm.sum_row[y_true], 2)
-
-        self._binomial_sum_cols += scipy.special.binom(
-            self.cm.sum_col[y_pred] + 1, 2
-        ) - scipy.special.binom(self.cm.sum_row[y_pred], 2)
-
-        self.cm.update(y_true, y_pred)
-
-        return self
-
-    def revert(self, y_true, y_pred, sample_weight=1.0):
-
-        self._binomial_all_entries -= scipy.special.binom(
-            self.cm[y_true][y_pred], 2
-        ) - scipy.special.binom(self.cm[y_true][y_pred] - 1, 2)
-
-        self._binomial_sum_rows -= scipy.special.binom(
-            self.cm.sum_row[y_true], 2
-        ) - scipy.special.binom(self.cm.sum_row[y_true] - 1, 2)
-
-        self._binomial_sum_cols -= scipy.special.binom(
-            self.cm.sum_col[y_pred], 2
-        ) - scipy.special.binom(self.cm.sum_row[y_pred] - 1, 2)
-
-        self.cm.revert(y_true, y_pred)
-
-        return self
-
-    @property
-    def bigger_is_better(self):
-        return True
-
-    def works_with(self, model):
-        return utils.inspect.isclassifier(model) or utils.inspect.isclusterer(model)
+    def __init__(self, cm=None):
+        super().__init__(cm)
 
     def get(self):
 
-        if self.cm.n_samples <= 2:
-            return 0.0
-        else:
-            try:
-                numerator = self._binomial_all_entries - (
-                    self._binomial_sum_rows * self._binomial_sum_cols
-                ) / scipy.special.binom(self.cm.n_samples, 2)
-                denominator = 0.5 * (
-                    self._binomial_sum_rows + self._binomial_sum_cols
-                ) - (
-                    self._binomial_sum_rows * self._binomial_sum_cols
-                ) / scipy.special.binom(
-                    self.cm.n_samples, 2
+        pair_confusion_matrix = metrics.PairConfusionMatrix(self.cm).get()
+
+        true_negatives, false_positives = pair_confusion_matrix[0].values()
+        false_negatives, true_positives = pair_confusion_matrix[1].values()
+
+        try:
+            return (
+                2.0
+                * (true_positives * true_negatives - false_negatives * false_positives)
+                / (
+                    (true_positives + false_negatives)
+                    * (false_negatives + true_negatives)
+                    + (true_positives + false_positives)
+                    * (false_positives + true_negatives)
                 )
-                return numerator / denominator
-            except ZeroDivisionError:
-                return 0.0
+            )
+        except ZeroDivisionError:
+            return 1.0
