@@ -45,7 +45,7 @@ from .fbeta import (
 from .fowlkes_mallows import FowlkesMallows
 from .geometric_mean import GeometricMean
 from .hamming import Hamming, HammingLoss
-from .jaccard import Jaccard
+from .jaccard import Jaccard, SorensenDice
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
 from .mae import MAE
@@ -142,6 +142,7 @@ __all__ = [
     "R2",
     "Precision",
     "SMAPE",
+    "SorensenDice",
     "TimeRolling",
     "VBeta",
     "WeightedF1",
