@@ -320,13 +320,13 @@ class Pipeline(base.Estimator):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
                         sub_t.learn_one(x=x_pre, y=y)
-                    elif not sub_t._supervised and learn_unsupervised:
+                    elif learn_unsupervised:
                         sub_t.learn_one(x=x_pre)
 
             elif t._supervised:
                 t.learn_one(x=x_pre, y=y)
 
-            elif not t._supervised and learn_unsupervised:
+            elif learn_unsupervised:
                 t.learn_one(x=x_pre)
 
         # At this point steps contains a single step, which is therefore the final step of the
@@ -538,7 +538,9 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, learn_unsupervised=True, **params):
+    def learn_many(
+        self, X: pd.DataFrame, y: pd.Series = None, learn_unsupervised=False, **params
+    ):
         """Fit to a mini-batch.
 
         Parameters
@@ -566,13 +568,13 @@ class Pipeline(base.Estimator):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
                         sub_t.learn_many(X=X_pre, y=y)
-                    elif not sub_t and learn_unsupervised:
+                    elif learn_unsupervised:
                         sub_t.learn_many(X=X_pre)
 
             elif t._supervised:
                 t.learn_many(X=X_pre, y=y)
 
-            elif not t._supervised and learn_unsupervised:
+            elif learn_unsupervised:
                 t.learn_many(X=X_pre)
 
         # At this point steps contains a single step, which is therefore the final step of the
