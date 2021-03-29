@@ -53,12 +53,12 @@ class PairConfusionMatrix(metrics.MultiClassMetric):
     >>> y_true = [0, 1, 2, 2, 2]
     >>> y_pred = [0, 0, 2, 2, 1]
 
-    >>> matrix = metrics.PairConfusionMatrix()
+    >>> pair_confusion_matrix = metrics.PairConfusionMatrix()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     matrix.update(yt, yp)
+    ...     pair_confusion_matrix = pair_confusion_matrix.update(yt, yp)
 
-    >>> matrix
+    >>> pair_confusion_matrix
     PairConfusionMatrix: {0: defaultdict(<class 'int'>, {0: 6.0, 1: 1.0}), 1: defaultdict(<class 'int'>, {0: 2.0, 1: 1.0})}
 
     """

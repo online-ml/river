@@ -381,7 +381,7 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
     >>> metric = metrics.AdjustedMutualInfo()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric.update(yt, yp)
+    ...     metric = metric.update(yt, yp)
 
     >>> metric
     AdjustedMutualInfo: 0.298792
