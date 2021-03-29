@@ -51,6 +51,7 @@ class ADWIN(DriftDetector):
     Change detected at index 1023, input value: 5
     Change detected at index 1055, input value: 7
     Change detected at index 1087, input value: 5
+    Change detected at index 1119, input value: 7
 
     References
     ----------
