@@ -16,13 +16,6 @@ class HardSampling(base.WrapperMixin):
     def __init__(self, model, loss, size, p, seed=None):
         self.model = model
         self.loss = loss
-
-        self.pred_func = model.predict_one
-        if isinstance(model, base.Classifier):
-            self.pred_func = model.predict_proba_one
-            if not model._multiclass:
-                self.pred_func = lambda x: model.predict_proba_one(x)[True]
-
         self.p = p
         self.size = size
         self.buffer = utils.SortedWindow(self.size)
@@ -36,9 +29,18 @@ class HardSampling(base.WrapperMixin):
     def predict_one(self, x):
         return self.model.predict_one(x)
 
+    @property
+    def _model_pred_func(self) -> typing.Callable:
+        pred_func = self.model.predict_one
+        if isinstance(self.model, base.Classifier):
+            pred_func = self.model.predict_proba_one
+            if not self.model._multiclass:
+                pred_func = lambda x: self.model.predict_proba_one(x)[True]
+        return pred_func
+
     def learn_one(self, x, y):
 
-        loss = self.loss(y_true=y, y_pred=self.pred_func(x))
+        loss = self.loss(y_true=y, y_pred=self._model_pred_func(x))
 
         if len(self.buffer) < self.size:
             self.buffer.append(Triplet(x=x, y=y, loss=loss))
@@ -56,7 +58,7 @@ class HardSampling(base.WrapperMixin):
 
             self.model.learn_one(triplet.x, triplet.y)
 
-            loss = self.loss(y_true=triplet.y, y_pred=self.pred_func(triplet.x))
+            loss = self.loss(y_true=triplet.y, y_pred=self._model_pred_func(triplet.x))
 
             self.buffer.append(Triplet(x=triplet.x, y=triplet.y, loss=loss))
 
