@@ -84,7 +84,7 @@ class ClassificationMetric(Metric):
         return True
 
     def works_with(self, model) -> bool:
-        return utils.inspect.isclassifier(model) or utils.inspect.isclusterer(model)
+        return utils.inspect.isclassifier(model)
 
     @property
     def requires_labels(self):
@@ -160,6 +160,9 @@ class MultiClassMetric(ClassificationMetric):
         and computation time.
 
     """
+
+    def works_with(self, model) -> bool:
+        return utils.inspect.isclassifier(model) or utils.inspect.isclusterer(model)
 
 
 class RegressionMetric(Metric):
