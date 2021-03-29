@@ -77,6 +77,7 @@ from .roc_auc import ROCAUC
 from .rolling import Rolling
 from .smape import SMAPE
 from .time_rolling import TimeRolling
+from .variation_info import VariationInfo
 from .vbeta import Completeness, Homogeneity, VBeta
 
 __all__ = [
@@ -146,6 +147,7 @@ __all__ = [
     "SMAPE",
     "SorensenDice",
     "TimeRolling",
+    "VariationInfo",
     "VBeta",
     "WeightedF1",
     "WeightedFBeta",
