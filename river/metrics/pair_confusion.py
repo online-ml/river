@@ -3,7 +3,7 @@ import collections
 from river import metrics
 
 
-class PairConfusionMatrix(metrics.ClassificationMetric):
+class PairConfusionMatrix(metrics.MultiClassMetric):
     r"""Pair Confusion Matrix.
 
     The pair confusion matrix $C$ is a 2 by 2 similarity matrix between two

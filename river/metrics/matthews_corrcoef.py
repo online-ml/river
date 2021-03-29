@@ -5,7 +5,7 @@ from . import base
 __all__ = ["MatthewsCorrCoef"]
 
 
-class MatthewsCorrCoef(base.ClassificationMetric):
+class MatthewsCorrCoef(base.MultiClassMetric):
     r"""Matthews correlation coefficient.
 
     The Matthews correlation coefficient (MCC) or phi coefficient is used in

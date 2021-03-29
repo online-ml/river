@@ -5,7 +5,7 @@ from . import base
 __all__ = ["AdjustedRand", "Rand"]
 
 
-class Rand(base.ClassificationMetric):
+class Rand(base.MultiClassMetric):
     """Rand Index.
 
     The Rand Index [^1] [^2] is a measure of the similarity between two data clusterings.
@@ -87,7 +87,7 @@ class Rand(base.ClassificationMetric):
             return true_positives + true_negatives
 
 
-class AdjustedRand(base.ClassificationMetric):
+class AdjustedRand(base.MultiClassMetric):
     """Adjusted Rand Index.
 
     The Adjusted Rand Index is the corrected-for-chance version of the Rand Index [^1] [^2].

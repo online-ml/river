@@ -7,7 +7,7 @@ from . import base
 __all__ = ["FowlkesMallows"]
 
 
-class FowlkesMallows(base.ClassificationMetric):
+class FowlkesMallows(base.MultiClassMetric):
     r"""Fowlkes-Mallows Index.
 
     The Fowlkes-Mallows Index [^1] [^2] is an external evaluation method that is
