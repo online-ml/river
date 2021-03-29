@@ -292,7 +292,7 @@ class Pipeline(base.Estimator):
 
     # Single instance methods
 
-    def learn_one(self, x: dict, y=None, **params):
+    def learn_one(self, x: dict, y=None, learn_unsupervised=False, **params):
         """Fit to a single instance.
 
         Parameters
@@ -301,6 +301,9 @@ class Pipeline(base.Estimator):
             A dictionary of features.
         y
             A target value.
+        learn_unsupervised
+            Whether the unsupervised parts of the pipeline should be updated or not. See the
+            docstring of this class for more information.
 
         """
 
@@ -317,21 +320,26 @@ class Pipeline(base.Estimator):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
                         sub_t.learn_one(x=x_pre, y=y)
+                    elif not sub_t._supervised and learn_unsupervised:
+                        sub_t.learn_one(x=x_pre)
 
             elif t._supervised:
                 t.learn_one(x=x_pre, y=y)
+
+            elif not t._supervised and learn_unsupervised:
+                t.learn_one(x=x_pre)
 
         # At this point steps contains a single step, which is therefore the final step of the
         # pipeline
         final = next(steps)
         if final._supervised:
             final.learn_one(x=x, y=y, **params)
-        else:
+        elif learn_unsupervised:
             final.learn_one(x=x, **params)
 
         return self
 
-    def _transform_one(self, x: dict, learn_unsupervised: bool = True):
+    def _transform_one(self, x: dict, learn_unsupervised=True):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -356,9 +364,13 @@ class Pipeline(base.Estimator):
 
             x = t.transform_one(x=x)
 
-        return x, next(steps)
+        final_step = next(steps)
+        if not final_step._supervised and learn_unsupervised:
+            final_step.learn_one(x)
 
-    def transform_one(self, x: dict, learn_unsupervised: bool = True):
+        return x, final_step
+
+    def transform_one(self, x: dict):
         """Apply each transformer in the pipeline to some features.
 
         The final step in the pipeline will be applied if it is a transformer. If not, then it will
@@ -366,20 +378,53 @@ class Pipeline(base.Estimator):
         that precede the final step are assumed to all be transformers.
 
         """
-        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
+        x, final_step = self._transform_one(x=x)
         if isinstance(final_step, base.Transformer):
             return final_step.transform_one(x=x)
         return x
 
-    def predict_one(self, x: dict, learn_unsupervised: bool = True):
+    def predict_one(self, x: dict, learn_unsupervised=True):
+        """Call `transform_one` on the first steps and `predict_one` on the last step.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        learn_unsupervised
+            Whether the unsupervised parts of the pipeline should be updated or not. See the
+            docstring of this class for more information.
+
+        """
         x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.predict_one(x=x)
 
-    def predict_proba_one(self, x: dict, learn_unsupervised: bool = True):
+    def predict_proba_one(self, x: dict, learn_unsupervised=True):
+        """Call `transform_one` on the first steps and `predict_proba_one` on the last step.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        learn_unsupervised
+            Whether the unsupervised parts of the pipeline should be updated or not. See the
+            docstring of this class for more information.
+
+        """
         x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.predict_proba_one(x=x)
 
-    def score_one(self, x: dict, learn_unsupervised: bool = True):
+    def score_one(self, x: dict, learn_unsupervised=True):
+        """Call `transform_one` on the first steps and `score_one` on the last step.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        learn_unsupervised
+            Whether the unsupervised parts of the pipeline should be updated or not. See the
+            docstring of this class for more information.
+
+        """
         x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
         return final_step.score_one(x=x)
 
@@ -493,7 +538,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, learn_unsupervised=True, **params):
         """Fit to a mini-batch.
 
         Parameters
@@ -502,6 +547,9 @@ class Pipeline(base.Estimator):
             A dataframe of features. Columns can be added and/or removed between successive calls.
         y
             A series of target values.
+        learn_unsupervised
+            Whether the unsupervised parts of the pipeline should be updated or not. See the
+            docstring of this class for more information.
 
         """
 
@@ -518,21 +566,26 @@ class Pipeline(base.Estimator):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
                         sub_t.learn_many(X=X_pre, y=y)
+                    elif not sub_t and learn_unsupervised:
+                        sub_t.learn_many(X=X_pre)
 
             elif t._supervised:
                 t.learn_many(X=X_pre, y=y)
+
+            elif not t._supervised and learn_unsupervised:
+                t.learn_many(X=X_pre)
 
         # At this point steps contains a single step, which is therefore the final step of the
         # pipeline
         final = next(steps)
         if final._supervised:
             final.learn_many(X=X, y=y, **params)
-        else:
+        elif learn_unsupervised:
             final.learn_many(X=X, **params)
 
         return self
 
-    def _transform_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
+    def _transform_many(self, X: pd.DataFrame, learn_unsupervised=True):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -572,10 +625,10 @@ class Pipeline(base.Estimator):
             return final_step.transform_many(X=X)
         return X
 
-    def predict_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
+    def predict_many(self, X: pd.DataFrame, learn_unsupervised=True):
         X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
         return final_step.predict_many(X=X)
 
-    def predict_proba_many(self, X: pd.DataFrame, learn_unsupervised: bool = True):
+    def predict_proba_many(self, X: pd.DataFrame, learn_unsupervised=True):
         X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
         return final_step.predict_proba_many(X=X)
