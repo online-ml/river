@@ -131,7 +131,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
     ...     auc = auc.update(y, score)
 
     >>> auc
-    ROCAUC: 0.940431
+    ROCAUC: 0.940572
 
     References
     ----------

@@ -31,12 +31,11 @@ class HardSampling(base.WrapperMixin):
 
     @property
     def _model_pred_func(self) -> typing.Callable:
-        pred_func = self.model.predict_one
         if isinstance(self.model, base.Classifier):
-            pred_func = self.model.predict_proba_one
             if not self.model._multiclass:
-                pred_func = lambda x: self.model.predict_proba_one(x)[True]
-        return pred_func
+                return lambda x: self.model.predict_proba_one(x)[True]
+            return self.model.predict_proba_one
+        return self.model.predict_one
 
     def learn_one(self, x, y):
 
