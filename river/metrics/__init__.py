@@ -69,6 +69,7 @@ from .precision import (
 )
 from .prevalence_threshold import PrevalenceThreshold
 from .purity import Purity
+from .q0 import Q0, Q2
 from .r2 import R2
 from .rand import AdjustedRand, Rand
 from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
@@ -133,6 +134,8 @@ __all__ = [
     "PairConfusionMatrix",
     "Precision",
     "Purity",
+    "Q0",
+    "Q2",
     "Rand",
     "Recall",
     "RegressionMetric",
