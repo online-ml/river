@@ -2,7 +2,7 @@ import collections
 import random
 import typing
 
-from river import base, optim, utils
+from river import base, linear_model, optim, utils
 
 
 class Triplet(collections.namedtuple("Triplet", "x y loss")):
@@ -139,6 +139,14 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
             loss = optim.losses.Absolute()
         super().__init__(model=regressor, loss=loss, size=size, p=p, seed=seed)
 
+    @property
+    def regressor(self):
+        return self.model
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {"regressor": linear_model.LinearRegression(), "p": 0.1, "size": 40}
+
 
 class HardSamplingClassifier(HardSampling, base.Classifier):
     """Hard sampling classifier.
@@ -216,8 +224,16 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
         super().__init__(model=classifier, loss=loss, size=size, p=p, seed=seed)
 
     @property
+    def classifier(self):
+        return self.model
+
+    @property
     def _multiclass(self):
         return self.model._multiclass
 
     def predict_proba_one(self, x):
         return self.model.predict_proba_one(x)
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {"classifier": linear_model.LogisticRegression(), "p": 0.1, "size": 40}
