@@ -67,6 +67,7 @@ from .precision import (
     Precision,
     WeightedPrecision,
 )
+from .prevalence_threshold import PrevalenceThreshold
 from .purity import Purity
 from .r2 import R2
 from .rand import AdjustedRand, Rand
@@ -141,6 +142,7 @@ __all__ = [
     "Rolling",
     "R2",
     "Precision",
+    "PrevalenceThreshold",
     "SMAPE",
     "SorensenDice",
     "TimeRolling",
