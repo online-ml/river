@@ -67,8 +67,6 @@ def get_all_estimators():
         reco.BiasedMF,
         reco.FunkMF,
         reco.RandomNormal,
-        imblearn.HardSamplingClassifier,
-        imblearn.HardSamplingRegressor,
         imblearn.RandomOverSampler,
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,
