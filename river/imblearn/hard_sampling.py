@@ -2,7 +2,7 @@ import collections
 import random
 import typing
 
-from river import base, optim, utils
+from river import base, linear_model, optim, utils
 
 
 class Triplet(collections.namedtuple("Triplet", "x y loss")):
@@ -16,13 +16,6 @@ class HardSampling(base.WrapperMixin):
     def __init__(self, model, loss, size, p, seed=None):
         self.model = model
         self.loss = loss
-
-        self.pred_func = model.predict_one
-        if isinstance(model, base.Classifier):
-            self.pred_func = model.predict_proba_one
-            if not model._multiclass:
-                self.pred_func = lambda x: model.predict_proba_one(x)[True]
-
         self.p = p
         self.size = size
         self.buffer = utils.SortedWindow(self.size)
@@ -36,9 +29,17 @@ class HardSampling(base.WrapperMixin):
     def predict_one(self, x):
         return self.model.predict_one(x)
 
+    @property
+    def _model_pred_func(self) -> typing.Callable:
+        if isinstance(self.model, base.Classifier):
+            if not self.model._multiclass:
+                return lambda x: self.model.predict_proba_one(x)[True]
+            return self.model.predict_proba_one
+        return self.model.predict_one
+
     def learn_one(self, x, y):
 
-        loss = self.loss(y_true=y, y_pred=self.pred_func(x))
+        loss = self.loss(y_true=y, y_pred=self._model_pred_func(x))
 
         if len(self.buffer) < self.size:
             self.buffer.append(Triplet(x=x, y=y, loss=loss))
@@ -56,7 +57,7 @@ class HardSampling(base.WrapperMixin):
 
             self.model.learn_one(triplet.x, triplet.y)
 
-            loss = self.loss(y_true=triplet.y, y_pred=self.pred_func(triplet.x))
+            loss = self.loss(y_true=triplet.y, y_pred=self._model_pred_func(triplet.x))
 
             self.buffer.append(Triplet(x=triplet.x, y=triplet.y, loss=loss))
 
@@ -138,6 +139,14 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
             loss = optim.losses.Absolute()
         super().__init__(model=regressor, loss=loss, size=size, p=p, seed=seed)
 
+    @property
+    def regressor(self):
+        return self.model
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {"regressor": linear_model.LinearRegression(), "p": 0.1, "size": 40}
+
 
 class HardSamplingClassifier(HardSampling, base.Classifier):
     """Hard sampling classifier.
@@ -215,8 +224,16 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
         super().__init__(model=classifier, loss=loss, size=size, p=p, seed=seed)
 
     @property
+    def classifier(self):
+        return self.model
+
+    @property
     def _multiclass(self):
         return self.model._multiclass
 
     def predict_proba_one(self, x):
         return self.model.predict_proba_one(x)
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {"classifier": linear_model.LogisticRegression(), "p": 0.1, "size": 40}
