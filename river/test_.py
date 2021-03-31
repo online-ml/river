@@ -56,7 +56,6 @@ def get_all_estimators():
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_selection.PoissonInclusion,
-        linear_model.SoftmaxRegression,
         meta.PredClipper,
         meta.TransformedTargetRegressor,
         neural_net.MLPRegressor,
