@@ -64,6 +64,7 @@ class SoftmaxRegression(base.Classifier):
         if optimizer is None:
             optimizer = optim.SGD(0.01)
         new_optimizer = functools.partial(copy.deepcopy, optimizer)
+        self.optimizer = optimizer
         self.optimizers = collections.defaultdict(new_optimizer)  # type: ignore
         self.loss = optim.losses.CrossEntropy() if loss is None else loss
         self.l2 = l2
