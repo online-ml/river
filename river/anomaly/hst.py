@@ -32,8 +32,8 @@ class HSTBranch(Branch):
             value = x[self.feature]
         except KeyError:
             if left.l_mass < right.l_mass:
-                return left
-            return right
+                return right
+            return left
         if value < self.threshold:
             return left
         return right

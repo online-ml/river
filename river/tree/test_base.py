@@ -84,15 +84,51 @@ def test_iter_dfs():
         assert i == node.no
 
 
-def iter_leaves():
+def test_iter_leaves():
 
     tree = BinaryBranch(
-        BinaryBranch(
-            Leaf(no=1),
-            Leaf(no=2),
-        ),
+        BinaryBranch(Leaf(no=1), Leaf(no=2)),
         Leaf(no=3)
     )
 
     for i, leaf in enumerate(tree.iter_leaves(), start=1):
         assert i == leaf.no
+
+
+def test_iter_branches():
+
+    tree = BinaryBranch(
+        BinaryBranch(
+            BinaryBranch(Leaf(), Leaf(), no=3),
+            Leaf(),
+            no=2
+        ),
+        BinaryBranch(Leaf(), Leaf(), no=4),
+        no=1
+    )
+
+    for i, branch in enumerate(tree.iter_branches(), start=1):
+        assert i == branch.no
+
+
+def test_iter_edges():
+
+    tree = BinaryBranch(
+        BinaryBranch(
+            Leaf(no=3),
+            Leaf(no=4),
+            no=2
+        ),
+        Leaf(no=5),
+        no=1
+    )
+
+    order = [
+        (1, 2),
+        (2, 3),
+        (2, 4),
+        (1, 5)
+    ]
+
+    for i, (parent, child) in enumerate(tree.iter_edges()):
+        assert order[i] == (parent.no, child.no)

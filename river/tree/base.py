@@ -59,6 +59,18 @@ class Branch(abc.ABC):
         for child in self.children:
             yield from child.iter_leaves()
 
+    def iter_branches(self):
+        """Iterate over branches in depth-first order."""
+        yield self
+        for child in self.children:
+            yield from child.iter_branches()
+
+    def iter_edges(self):
+        """Iterate over edges in depth-first order."""
+        for child in self.children:
+            yield self, child
+            yield from child.iter_edges()
+
 
 class Leaf:
     """A generic tree node."""
@@ -87,3 +99,9 @@ class Leaf:
 
     def iter_leaves(self):
         yield self
+
+    def iter_branches(self):
+        yield from ()
+
+    def iter_edges(self):
+        yield from ()
