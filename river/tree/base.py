@@ -9,6 +9,8 @@ intention is to provide utilies for walking over a tree and visualizing it.
 
 """
 import abc
+from typing import Union
+
 
 class Branch(abc.ABC):
     """A generic tree branch."""
@@ -17,7 +19,7 @@ class Branch(abc.ABC):
         self.children = children
 
     @abc.abstractmethod
-    def next(self, x) -> "Node":
+    def next(self, x) -> Union["Branch", "Leaf"]:
         """Move to the next node down the tree."""
 
     def walk(self, x):

@@ -1,19 +1,15 @@
 import collections
 import functools
-import operator
 import random
 import typing
 
 from river import base
-
 from river.tree.base import Branch, Leaf
-
 
 __all__ = ["HalfSpaceTrees"]
 
 
 class HSTBranch(Branch):
-
     def __init__(self, left, right, feature, threshold, **attributes):
         super().__init__(left, right)
         self.feature = feature
