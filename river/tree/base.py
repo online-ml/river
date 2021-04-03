@@ -9,7 +9,7 @@ intention is to provide utilies for walking over a tree and visualizing it.
 
 """
 import abc
-from typing import Union
+from typing import Iterable, Union
 
 
 class Branch(abc.ABC):
@@ -22,13 +22,19 @@ class Branch(abc.ABC):
     def next(self, x) -> Union["Branch", "Leaf"]:
         """Move to the next node down the tree."""
 
-    def walk(self, x):
+    def walk(self, x) -> Iterable[Union["Branch", "Leaf"]]:
         """Iterate over the nodes that lead to the leaf which contains x."""
         node = self
         while isinstance(node, Branch):
             yield node
             node = node.next(x)
         yield node
+
+    def traverse(self, x) -> "Leaf":
+        """Return the leaf corresponding to the given input."""
+        for node in self.walk(x):
+            pass
+        return node
 
     @property
     def n_nodes(self):
