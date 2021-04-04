@@ -30,7 +30,8 @@ data_stream_3 = np.concatenate(
 ).astype(int)
 
 stream_generator = synth.Hyperplane(
-    seed=42, n_features=5, n_drift_features=3, mag_change=0.5)
+    seed=42, n_features=5, n_drift_features=3, mag_change=0.5
+)
 data_stream_4 = [x for x, _ in stream_generator.take(500)]
 
 
