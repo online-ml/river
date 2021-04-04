@@ -119,7 +119,7 @@ class D3(DriftDetector):
             self._in_concept_change = False
 
         # Start storing labels if not None
-        if (label is not None) and (self.store_labels == False):
+        if (label is not None) and (self.store_labels is False):
             self.data_labels = [None] * self.sub_window_size
             self.store_labels = True
 
