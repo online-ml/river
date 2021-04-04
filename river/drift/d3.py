@@ -1,4 +1,5 @@
 from copy import deepcopy
+
 from river import metrics
 from river.base import DriftDetector
 from river.tree import HoeffdingTreeClassifier
@@ -56,8 +57,7 @@ class D3(DriftDetector):
         self,
         window_size=200,
         auc_threshold=0.7,
-        discriminative_classifier=HoeffdingTreeClassifier(
-            grace_period=40, max_depth=3),
+        discriminative_classifier=HoeffdingTreeClassifier(grace_period=40, max_depth=3),
     ):
         super().__init__()
         self.auc_threshold = auc_threshold
@@ -106,14 +106,14 @@ class D3(DriftDetector):
         sample
             An instance from the data stream (dict) having N items (number of features).
         label
-            Class label for sample. 
+            Class label for sample.
 
         Notes
         -----
-        * The label is is not used in the detection process. It can be set to None. 
-        * If the label is not set to None, D3 will store the last window_size/2 
-          class labels of the samples. It is useful for retraining the stream classifier 
-          when a drift is detected.  
+        * The label is is not used in the detection process. It can be set to None.
+        * If the label is not set to None, D3 will store the last window_size/2
+          class labels of the samples. It is useful for retraining the stream classifier
+          when a drift is detected.
         """
         if self._in_concept_change:
             self._in_concept_change = False
@@ -129,20 +129,18 @@ class D3(DriftDetector):
             return self._in_concept_change, self._in_warning_zone
 
         self.new_data_window[self.new_data_window_index] = sample
-        self.update_labels_if_storing_enabled(
-            self.new_data_window_index, label)
+        self.update_labels_if_storing_enabled(self.new_data_window_index, label)
 
         # Updating discriminative classifier with a sample from the old and new data
         old_data_sample = self.old_data_window[self.new_data_window_index]
+        self.discriminative_classifier.learn_one(sample, D3._LABEL_FOR_NEW_DATA)
         self.discriminative_classifier.learn_one(
-            sample, D3._LABEL_FOR_NEW_DATA)
-        self.discriminative_classifier.learn_one(
-            old_data_sample, D3._LABEL_FOR_OLD_DATA)
+            old_data_sample, D3._LABEL_FOR_OLD_DATA
+        )
 
         # Update AUC
         prob_new = self.discriminative_classifier.predict_proba_one(sample)[1]
-        prob_old = self.discriminative_classifier.predict_proba_one(
-            old_data_sample)[1]
+        prob_old = self.discriminative_classifier.predict_proba_one(old_data_sample)[1]
         self.auc = self.auc.update(D3._LABEL_FOR_NEW_DATA, prob_new)
         self.auc = self.auc.update(D3._LABEL_FOR_OLD_DATA, prob_old)
 
@@ -150,7 +148,9 @@ class D3(DriftDetector):
 
         if self.new_data_window_index == self.sub_window_size:
             auc_score = self.auc.get()
-            if (auc_score > self.auc_threshold) or (auc_score < self.auc_threshold - 0.5):
+            if (auc_score > self.auc_threshold) or (
+                auc_score < self.auc_threshold - 0.5
+            ):
                 self._in_concept_change = True
             self.old_data_window = deepcopy(self.new_data_window)
             self.new_data_window_index = 0
