@@ -18,10 +18,22 @@ class D3(DriftDetector):
     Parameters
     ----------
     window_size
-        The size of the data window. (int)
+        The size of the data window.
     auc_threshold
         Required AUC score to signal a drift.
         From 0.5 to 1.0
+    discriminative_classifier
+        Classifier to be used to distinguish old data from the new data.
+        Any classifier in the river.
+
+    Notes
+    -----
+    * It is advised to use a simple model as the goal of this classifier
+      is to determine if the old data and the new data are seperable,
+      not to classify them.
+    * This implementation differs from the original one in the paper,
+      making the size of the old and new data windows equal, and allowing
+      to use any classifier for discriminating old and new data.
 
 
     Examples
@@ -29,19 +41,20 @@ class D3(DriftDetector):
     >>> from river import synth
     >>> from river.drift import D3
 
-    >>> d3 = D3(seed=12345)
+    >>> d3 = D3()
 
     >>> # Simulate a data stream
-    >>> data_stream = synth.Hyperplane(seed=42, n_features=10, mag_change=0.5)
+    >>> data_stream = synth.Hyperplane(
+    ...    seed=42, n_features=10, n_drift_features=3, mag_change=0.5)
 
     >>> # Update drift detector and verify if change is detected
-    >>> i = 0
-    >>> for x, y in data_stream.take(250):
+    >>> i = 1
+    >>> for x, y in data_stream.take(500):
     ...     in_drift, in_warning = d3.update(x)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}")
     ...     i += 1
-    Change detected at index 242
+    Change detected at index 300
 
     References
     ----------
