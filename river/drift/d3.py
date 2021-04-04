@@ -45,7 +45,7 @@ class D3(DriftDetector):
 
     >>> # Simulate a data stream
     >>> data_stream = synth.Hyperplane(
-    ...    seed=42, n_features=10, n_drift_features=3, mag_change=0.5)
+    ...    seed=42, n_features=5, n_drift_features=3, mag_change=0.5)
 
     >>> # Update drift detector and verify if change is detected
     >>> i = 1
