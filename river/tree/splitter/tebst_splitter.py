@@ -1,11 +1,11 @@
-from .numeric_attribute_regression_observer import NumericAttributeRegressionObserver
+from .ebst_splitter import EBSTSplitter
 
 
-class NumericAttributeRegressionTruncatedObserver(NumericAttributeRegressionObserver):
+class TEBSTSplitter(EBSTSplitter):
     """Truncated E-BST.
 
     Variation of E-BST that rounds the incoming feature values before passing them to the binary
-    search tree (BS). By doing so, the attribute observer might reduce its processing time and
+    search tree (BST). By doing so, the attribute observer might reduce its processing time and
     memory usage since small variations in the input values will end up being mapped to the same
     BST node.
 
@@ -27,5 +27,6 @@ class NumericAttributeRegressionTruncatedObserver(NumericAttributeRegressionObse
         except TypeError:  # feature value is None
             return
 
-    def probability_of_attribute_value_given_class(self, att_val, class_val):
+    def cond_proba(self, att_val, target_val):
+        """Not implemented in regression splitters."""
         raise NotImplementedError

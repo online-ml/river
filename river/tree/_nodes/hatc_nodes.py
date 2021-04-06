@@ -50,19 +50,19 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
         Initial class observations.
     depth
         The depth of the learning node in the tree.
-    attr_obs
+    splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    attr_obs_params
-        The parameters passed to the numeric attribute observer algorithm.
     adwin_delta
         The delta parameter of ADWIN.
     seed
         Seed to control the generation of random numbers and support reproducibility.
+    kwargs
+        Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, attr_obs, attr_obs_params, adwin_delta, seed):
-        super().__init__(stats, depth, attr_obs, attr_obs_params)
+    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
+        super().__init__(stats, depth, splitter, **kwargs)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self.error_change = False
@@ -137,9 +137,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             dist = normalize_values_in_dict(self.stats, inplace=False)
         elif prediction_option == tree._NAIVE_BAYES:
             if self.total_weight >= tree.nb_threshold:
-                dist = do_naive_bayes_prediction(
-                    x, self.stats, self.attribute_observers
-                )
+                dist = do_naive_bayes_prediction(x, self.stats, self.splitters)
             else:  # Use majority class
                 dist = normalize_values_in_dict(self.stats, inplace=False)
         else:  # Naive Bayes Adaptive
@@ -175,10 +173,12 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
         The delta parameter of ADWIN.
     seed
         Internal random state used to sample from poisson distributions.
+    kwargs
+        Other parameters passed to the split node.
     """
 
-    def __init__(self, split_test, stats, depth, adwin_delta, seed):
-        super().__init__(split_test, stats, depth)
+    def __init__(self, split_test, stats, depth, adwin_delta, seed, **kwargs):
+        super().__init__(split_test, stats, depth, **kwargs)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self._alternate_tree = None
@@ -188,12 +188,9 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
     @property
     def n_leaves(self):
-        num_of_leaves = 0
-        for child in self._children.values():
-            if child is not None:
-                num_of_leaves += child.n_leaves
-
-        return num_of_leaves
+        return sum(
+            [child.n_leaves for child in self._children.values() if child is not None]
+        )
 
     @property
     def error_estimation(self):
@@ -312,7 +309,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             if self.split_test.max_branches() == -1 and split_feat in x:
                 # Creates a new learning node to encompass the new observed feature value
                 leaf_node = tree._new_learning_node(parent=self)
-                branch_id = self.split_test.add_new_branch(x[split_feat])
+                branch_id = self.split_test.add_new_branch(x[split_feat])  # noqa
                 self.set_child(branch_id, leaf_node)
                 tree._n_active_leaves += 1
                 leaf_node.learn_one(
@@ -365,10 +362,10 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                         child._alternate_tree = None
 
                     # Recursive delete of SplitNodes
-                    child.kill_tree_children(tree)
+                    child.kill_tree_children(tree)  # noqa
                     tree._n_decision_nodes -= 1
                 else:
-                    if child.is_active():
+                    if child.is_active():  # noqa
                         tree._n_active_leaves -= 1
                     else:
                         tree._n_inactive_leaves -= 1
@@ -381,7 +378,9 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
         if child_index >= 0:
             child = self.get_child(child_index)
             if child is not None:
-                child.filter_instance_to_leaves(x, parent, parent_branch, found_nodes)
+                child.filter_instance_to_leaves(
+                    x, parent, parent_branch, found_nodes
+                )  # noqa
             else:
                 found_nodes.append(FoundNode(None, self, child_index))
         else:

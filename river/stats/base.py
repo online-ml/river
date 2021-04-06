@@ -17,7 +17,7 @@ class Statistic(base.Base):
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
 
-class Univariate(base.Base):
+class Univariate(Statistic):
     """A univariate statistic measures a property of a variable."""
 
     def update(self, x):
@@ -41,7 +41,8 @@ class Univariate(base.Base):
 class RollingUnivariate(Univariate):
     """A rolling univariate statistic measures a property of a variable over a window."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def window_size(self):
         pass
 

@@ -1,13 +1,15 @@
-from .attribute_split_suggestion import AttributeSplitSuggestion
 from .instance_conditional_test import InstanceConditionalTest
-from .nominal_attribute_binary_test import NominalAttributeBinaryTest
-from .nominal_attribute_multiway_test import NominalAttributeMultiwayTest
-from .numeric_attribute_binary_test import NumericAttributeBinaryTest
+from .nominal_binary_test import NominalBinaryTest
+from .nominal_multiway_test import NominalMultiwayTest
+from .numeric_binary_test import NumericBinaryTest
+from .numeric_multiway_test import NumericMultiwayTest
+from .split_suggestion import SplitSuggestion
 
 __all__ = [
-    "AttributeSplitSuggestion",
+    "SplitSuggestion",
     "InstanceConditionalTest",
-    "NominalAttributeBinaryTest",
-    "NominalAttributeMultiwayTest",
-    "NumericAttributeBinaryTest",
+    "NominalBinaryTest",
+    "NominalMultiwayTest",
+    "NumericBinaryTest",
+    "NumericMultiwayTest",
 ]

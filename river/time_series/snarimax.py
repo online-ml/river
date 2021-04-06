@@ -261,7 +261,7 @@ class SNARIMAX(base.Forecaster):
     ...     metric = metric.update(y, y_pred[0])
 
     >>> metric
-    Rolling of size 12 MAE: 11.636563
+    MAE: 11.636563  (rolling 12)
 
     >>> horizon = 12
     >>> future = [
