@@ -1,17 +1,16 @@
 name: unit-tests
 
 on:
-  push:
+  pull_request:
     branches:
-      - master
+      - "*"
 
 jobs:
   ubuntu:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.6, 3.7, 3.8]
-        os: [ubuntu-latest, macos-latest]
+        python: [3.8]
 
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +45,4 @@ jobs:
         run: python -c "from river import datasets; datasets.CreditCard().download()"
 
       - name: pytest
-        run: pytest --cov=river -m "not datasets and slow"
-
-      - name: codecov
-        run: codecov
+        run: pytest --cov=river
