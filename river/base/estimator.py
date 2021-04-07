@@ -1,6 +1,4 @@
 import abc
-import inspect
-import types
 import typing
 
 from . import base
