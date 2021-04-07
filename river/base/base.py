@@ -251,7 +251,20 @@ class Base:
 
     @property
     def _memory_usage(self) -> str:
-        """Return the memory usage in a human readable format."""
+        """Return the memory usage in a human readable format.
+
+        >>> from river import preprocessing
+        >>> from river import linear_model
+
+        >>> model = (
+        ...     preprocessing.StandardScaler() |
+        ...     linear_model.LogisticRegression()
+        ... )
+
+        >>> model._memory_usage
+        '3.83 KB'
+
+        """
         from river import utils
 
         return utils.pretty.humanize_bytes(self._raw_memory_usage)
