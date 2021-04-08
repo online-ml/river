@@ -6788,8 +6788,28 @@
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">synth</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">synth</span><span class="o">.</span><span class="n">Agrawal</span><span class="p">(</span><span class="n">classification_function</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-<span class="o">...</span>                         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">synth</span><span class="o">.</span><span class="n">Agrawal</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">classification_function</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span>
+<span class="n">Synthetic</span> <span class="n">data</span> <span class="n">generator</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+    <span class="n">Name</span>  <span class="n">Agrawal</span>
+    <span class="n">Task</span>  <span class="n">Binary</span> <span class="n">classification</span>
+ <span class="n">Samples</span>  <span class="err">∞</span>
+<span class="n">Features</span>  <span class="mi">9</span>
+ <span class="n">Outputs</span>  <span class="mi">1</span>
+ <span class="n">Classes</span>  <span class="mi">2</span>
+  <span class="n">Sparse</span>  <span class="kc">False</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+<span class="n">Configuration</span>
+<span class="o">-------------</span>
+<span class="n">classification_function</span>  <span class="mi">0</span>
+                   <span class="n">seed</span>  <span class="mi">42</span>
+        <span class="n">balance_classes</span>  <span class="kc">False</span>
+           <span class="n">perturbation</span>  <span class="mf">0.0</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
 <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">y</span><span class="p">)</span>
