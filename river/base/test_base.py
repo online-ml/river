@@ -41,3 +41,15 @@ def test_clone_idempotent():
     for i, (x, y) in enumerate(datasets.Phishing()):
         assert clone.predict_proba_one(x) == trace[i]
         clone.learn_one(x, y)
+
+
+def test_memory_usage():
+
+    model = (
+        preprocessing.StandardScaler() |
+        linear_model.LogisticRegression()
+    )
+
+    # We can't test the exact value because it depends on the platform and the Python version
+    # TODO: we could create a table of expected values for each platform and Python version
+    assert isinstance(model._memory_usage, str)
