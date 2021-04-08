@@ -1,6 +1,8 @@
 import math
 from collections import Counter
 
+from river.utils.skmultiflow_utils import normalize_values_in_dict
+
 from .._attribute_test import SplitSuggestion
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
 from .base import SplitNode
@@ -147,7 +149,7 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
             self.stats[y] = sample_weight
 
     def leaf_prediction(self, x, *, tree=None):
-        return self.stats
+        return normalize_values_in_dict(self.stats, inplace=False)
 
     def calculate_promise(self):
         raise NotImplementedError
