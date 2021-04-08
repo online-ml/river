@@ -46,3 +46,6 @@ jobs:
 
       - name: pytest
         run: pytest --cov=river
+
+      - name: codecov
+        run: codecov
