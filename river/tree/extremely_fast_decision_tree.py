@@ -220,6 +220,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             Parent node's branch index.
         """
         if not node.is_leaf():
+            # Update split nodes as the tree is traversed
+            node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+
             old_weight = node.last_split_reevaluation_at
             new_weight = node.total_weight
             stop_flag = False
