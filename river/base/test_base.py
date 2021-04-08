@@ -45,10 +45,7 @@ def test_clone_idempotent():
 
 def test_memory_usage():
 
-    model = (
-        preprocessing.StandardScaler() |
-        linear_model.LogisticRegression()
-    )
+    model = preprocessing.StandardScaler() | linear_model.LogisticRegression()
 
     # We can't test the exact value because it depends on the platform and the Python version
     # TODO: we could create a table of expected values for each platform and Python version
