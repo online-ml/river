@@ -80,7 +80,9 @@ class Cache:
         # Guess the directory from the system
         system = platform.system()
         if directory is None:
-            directory = {"Linux": "/tmp", "Darwin": "/tmp", "Windows": "C:\TEMP"}.get(system)
+            directory = {"Linux": "/tmp", "Darwin": "/tmp", "Windows": "C:\TEMP"}.get(
+                system
+            )
 
         if directory is None:
             raise ValueError(
@@ -92,7 +94,7 @@ class Cache:
         self.keys = set()
 
         # Check if there is anything already in the cache
-        for f in glob.glob(f"{self.directory}/*.river_cache.pkl"):
+        for f in glob.glob(os.path.join(self.directory, "*.river_cache.pkl")):
             key = os.path.basename(f).split(".")[0]
             self.keys.add(key)
 
