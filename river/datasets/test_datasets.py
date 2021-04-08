@@ -1,3 +1,4 @@
+import functools
 import importlib
 import inspect
 import itertools
@@ -83,6 +84,13 @@ def test_repr(dataset):
 
 
 def _iter_synth_datasets():
+
+    for variant in range(10):
+        dataset = functools.partial(
+            datasets.synth.Agrawal, classification_function=variant
+        )
+        functools.update_wrapper(dataset, datasets.synth.Agrawal)
+        yield dataset
 
     synth = importlib.import_module("river.datasets.synth")
     for name, dataset in inspect.getmembers(synth, inspect.isclass):

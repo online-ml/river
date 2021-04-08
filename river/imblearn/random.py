@@ -29,6 +29,8 @@ class RandomUnderSampler(ClassificationSampler):
     stream of given observations so that the class distribution seen by the classifier follows
     a given desired distribution. The implementation is a discrete version of rejection sampling.
 
+    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
+
     Parameters
     ----------
     classifier
@@ -38,7 +40,31 @@ class RandomUnderSampler(ClassificationSampler):
     seed
         Random seed for reproducibility.
 
-    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import imblearn
+    >>> from river import linear_model
+    >>> from river import metrics
+    >>> from river import preprocessing
+
+    >>> model = imblearn.RandomUnderSampler(
+    ...     (
+    ...         preprocessing.StandardScaler() |
+    ...         linear_model.LogisticRegression()
+    ...     ),
+    ...     desired_dist={False: 0.4, True: 0.6},
+    ...     seed=42
+    ... )
+
+    >>> dataset = datasets.CreditCard().take(3000)
+
+    >>> metric = metrics.LogLoss()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    LogLoss: 0.07292
 
     References
     ----------
@@ -86,6 +112,8 @@ class RandomOverSampler(ClassificationSampler):
     a given desired distribution. The implementation is a discrete version of reverse rejection
     sampling.
 
+    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
+
     Parameters
     ----------
     classifier
@@ -95,7 +123,31 @@ class RandomOverSampler(ClassificationSampler):
     seed
         Random seed for reproducibility.
 
-    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import imblearn
+    >>> from river import linear_model
+    >>> from river import metrics
+    >>> from river import preprocessing
+
+    >>> model = imblearn.RandomOverSampler(
+    ...     (
+    ...         preprocessing.StandardScaler() |
+    ...         linear_model.LogisticRegression()
+    ...     ),
+    ...     desired_dist={False: 0.4, True: 0.6},
+    ...     seed=42
+    ... )
+
+    >>> dataset = datasets.CreditCard().take(3000)
+
+    >>> metric = metrics.LogLoss()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    LogLoss: 0.05421
 
     """
 
@@ -136,6 +188,8 @@ class RandomSampler(ClassificationSampler):
     and over-sampling the stream of given observations so that the class distribution seen by the
     classifier follows a given desired distribution.
 
+    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
+
     Parameters
     ----------
     classifier
@@ -149,7 +203,32 @@ class RandomSampler(ClassificationSampler):
     seed
         Random seed for reproducibility.
 
-    See [Working with imbalanced data](/user-guide/imbalanced-learning) for example usage.
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import imblearn
+    >>> from river import linear_model
+    >>> from river import metrics
+    >>> from river import preprocessing
+
+    >>> model = imblearn.RandomSampler(
+    ...     (
+    ...         preprocessing.StandardScaler() |
+    ...         linear_model.LogisticRegression()
+    ...     ),
+    ...     desired_dist={False: 0.4, True: 0.6},
+    ...     sampling_rate=0.8,
+    ...     seed=42
+    ... )
+
+    >>> dataset = datasets.CreditCard().take(3000)
+
+    >>> metric = metrics.LogLoss()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    LogLoss: 0.130906
 
     """
 
