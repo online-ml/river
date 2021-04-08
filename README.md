@@ -1,3 +1,5 @@
+</br>
+
 <p align="center">
   <img height="80px" src="docs/img/logo.svg" alt="river_logo">
 </p>
