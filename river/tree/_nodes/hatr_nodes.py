@@ -93,7 +93,7 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
                 self.deactivate()
                 tree._n_inactive_leaves += 1
                 tree._n_active_leaves -= 1
-            else:
+            elif self.is_active():
                 tree._attempt_to_split(self, parent, parent_branch)
                 self.last_split_attempt_at = weight_seen
 
