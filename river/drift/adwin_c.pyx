@@ -163,7 +163,7 @@ cdef class AdaptiveWindowing:
                 n1 = self._calculate_bucket_size(idx)   # length of bucket 1
                 n2 = self._calculate_bucket_size(idx)   # length of bucket 2
                 mu1 = bucket.get_total_at(0) / n1       # mean of bucket 1
-                mu2 = bucket.get_total_at(1) / n2       # total in bucket 2
+                mu2 = bucket.get_total_at(1) / n2       # mean of bucket 2
 
                 # Combine total and variance of adjacent buckets
                 total12 = bucket.get_total_at(0) + bucket.get_total_at(1)
@@ -197,7 +197,7 @@ cdef class AdaptiveWindowing:
 
         Notes
         -----
-        Variance calculation is base on:
+        Variance calculation is based on:
 
         Babcock, B., Datar, M., Motwani, R., & O’Callaghan, L. (2003).
         Maintaining Variance and k-Medians over Data Stream Windows.
@@ -271,8 +271,8 @@ cdef class AdaptiveWindowing:
                         # Note: Must re-calculate means per updated values
                         delta_mean = (u0 / n0) - (u1 / n1)
                         if (
-                                n1 >= <double> self.min_window_length
-                                and n0 >= <double> self.min_window_length
+                                n1 >= self.min_window_length
+                                and n0 >= self.min_window_length
                                 and self._evaluate_cut(n0, n1, delta_mean, self.delta)
                         ):
                             # Change detected
@@ -294,13 +294,13 @@ cdef class AdaptiveWindowing:
     cdef bint _evaluate_cut(self, double n0, double n1,
                             double delta_mean, double delta):
         cdef:
-            double delta_prime, m, epsilon
+            double delta_prime, m_recip, epsilon
         delta_prime = log(2 * log(self.width) / delta)
-        # m is inverted (w.r.t. description in the paper) to avoid
-        # extra divisions when calculating epsilon
-        m = ((1.0 / (n0 - self.min_window_length + 1))
-             + (1.0 / (n1 - self.min_window_length + 1)))
-        epsilon = sqrt(2 * m * self.variance_in_window * delta_prime) + 2 / 3 * delta_prime * m
+        # Use reciprocal of m to avoid extra divisions when calculating epsilon
+        m_recip = ((1.0 / (n0 - self.min_window_length + 1))
+                   + (1.0 / (n1 - self.min_window_length + 1)))
+        epsilon = (sqrt(2 * m_recip * self.variance_in_window * delta_prime)
+                   + 2 / 3 * delta_prime * m_recip)
         return fabs(delta_mean) > epsilon
 
 
