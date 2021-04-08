@@ -80,7 +80,7 @@ class Cache:
         # Guess the directory from the system
         system = platform.system()
         if directory is None:
-            directory = {"Linux": "/tmp", "Darwin": "/tmp", "Windows": "C:\TEMP"}.get(
+            directory = {"Linux": "/tmp", "Darwin": "/tmp", "Windows": "C:\\TEMP"}.get(
                 system
             )
 
