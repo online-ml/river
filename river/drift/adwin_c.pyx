@@ -236,7 +236,7 @@ cdef class AdaptiveWindowing:
                     bucket = self.bucket_deque[idx]
 
                     for k in range(bucket.current_idx - 1):
-                        n2 = self._calculate_bucket_size(idx)   # length of window 2  TODO confirm index
+                        n2 = self._calculate_bucket_size(idx)   # length of window 2
                         u2 = bucket.get_total_at(k)             # total of window 2
                         # Warning: means are calculated inside the loop to get updated values.
                         mu2 = u2 / n2   # mean of window 2
@@ -296,9 +296,11 @@ cdef class AdaptiveWindowing:
         cdef:
             double delta_prime, m, epsilon
         delta_prime = log(2 * log(self.width) / delta)
+        # m is inverted (w.r.t. description in the paper) to avoid
+        # extra divisions when calculating epsilon
         m = ((1.0 / (n0 - self.min_window_length + 1))
              + (1.0 / (n1 - self.min_window_length + 1)))
-        epsilon = sqrt(2 * m * self.variance_in_window * delta_prime) + 2 / 3 * delta_prime * m     # TODO confirm calculation
+        epsilon = sqrt(2 * m * self.variance_in_window * delta_prime) + 2 / 3 * delta_prime * m
         return fabs(delta_mean) > epsilon
 
 
