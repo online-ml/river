@@ -46,7 +46,7 @@ jobs:
         run: python -c "from river import datasets; datasets.CreditCard().download()"
 
       - name: pytest
-        run: pytest --cov=river -m "not datasets and slow"
+        run: pytest --cov=river -m "not datasets"
 
       - name: codecov
         run: codecov
