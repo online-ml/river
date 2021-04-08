@@ -161,6 +161,9 @@ class MultiClassMetric(ClassificationMetric):
 
     """
 
+    def works_with(self, model) -> bool:
+        return utils.inspect.isclassifier(model) or utils.inspect.isclusterer(model)
+
 
 class RegressionMetric(Metric):
     """Mother class for all regression metrics."""
