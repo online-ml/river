@@ -14,11 +14,6 @@ data_stream_2 = np.concatenate(
 ).astype(int)
 
 np.random.seed(12345)
-# np.random.seed(1)
-# mu, sigma = 0, 0.1  # mean and standard deviation
-# d_1 = np.random.normal(mu, sigma, 1000) > 0
-# mu, sigma = 0.5, 0.1  # mean and standard deviation
-# d_2 = np.random.normal(mu, sigma, 1000) > 0
 data_stream_3 = np.concatenate(
     (
         np.random.normal(0.0, 0.1, 500) > 0,
@@ -30,7 +25,7 @@ data_stream_3 = np.concatenate(
 
 
 def test_adwin():
-    expected_indices = [1055, 1087, 1151]
+    expected_indices = [1055, 1087, 1215]
     detected_indices = perform_test(ADWIN(), data_stream_1)
 
     assert detected_indices == expected_indices
