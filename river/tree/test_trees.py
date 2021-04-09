@@ -139,16 +139,16 @@ def test_drift_adaptation_hatc():
         grace_period=10,
         adwin_confidence=0.1,
         split_confidence=0.1,
-        drift_window_threshold=15,
+        drift_window_threshold=2,
         seed=42,
         max_depth=3,
     )
 
-    for i in range(2000):
-        if i % 300 == 0 and i > 0:
+    for i in range(1000):
+        if i % 200 == 0 and i > 0:
             dataset = iter(
                 synth.Sine(
-                    seed=8, classification_function=rng.randint(0, 2), has_noise=False
+                    seed=8, classification_function=rng.randint(0, 3), has_noise=False
                 )
             )
 
