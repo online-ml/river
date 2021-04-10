@@ -16,7 +16,7 @@ class HSTBranch(Branch):
         self.threshold = threshold
         self.__dict__.update(attributes)
 
-    def next(self, x):
+    def next(self, x, *, until_leaf=True):
         """
 
         We want to handle the case where a split feature is missing. In that case, we go down the
