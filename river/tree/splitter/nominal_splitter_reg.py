@@ -1,7 +1,9 @@
+import functools
+
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._attribute_test import NominalBinaryTest, NominalMultiwayTest, SplitSuggestion
+from .._nodes import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -41,15 +43,13 @@ class NominalSplitterReg(Splitter):
             except KeyError:
                 if isinstance(target_val, dict):  # Multi-target case
                     self._statistics[att_val] = VectorDict(
-                        default_factory=lambda: Var()
+                        default_factory=functools.partial(Var)
                     )
                     self._update_estimator = self._update_estimator_multivariate
                 else:
                     self._statistics[att_val] = Var()
                 estimator = self._statistics[att_val]
             self._update_estimator(estimator, target_val, sample_weight)
-
-        return self
 
     def cond_proba(self, att_val, target_val):
         """Not implemented in regression splitters."""
@@ -64,12 +64,13 @@ class NominalSplitterReg(Splitter):
             post_split_dist = [self._statistics[k] for k in ordered_feature_values]
 
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
-            branch_mapping = {
-                attr_val: branch_id
-                for branch_id, attr_val in enumerate(ordered_feature_values)
-            }
-            current_best = SplitSuggestion(
-                NominalMultiwayTest(att_idx, branch_mapping), post_split_dist, merit,
+            current_best = BranchFactory(
+                merit,
+                att_idx,
+                ordered_feature_values,
+                post_split_dist,
+                numerical_feature=False,
+                multiway_split=True,
             )
 
         for att_val in ordered_feature_values:
@@ -80,9 +81,13 @@ class NominalSplitterReg(Splitter):
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
             if current_best is None or merit > current_best.merit:
-                nom_att_binary_test = NominalBinaryTest(att_idx, att_val)
-                current_best = SplitSuggestion(
-                    nom_att_binary_test, post_split_dist, merit
+                current_best = BranchFactory(
+                    merit,
+                    att_idx,
+                    att_val,
+                    post_split_dist,
+                    numerical_feature=False,
+                    multiway_split=False,
                 )
 
         return current_best

@@ -181,7 +181,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         else:
             self._leaf_prediction = leaf_prediction
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
+    def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
         if parent is None:
@@ -272,12 +272,12 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     self._n_inactive_leaves += 1
                     self._n_active_leaves -= 1
                 else:
-                    new_split = self._new_split_node(
+                    new_split = self._branch_selector(
                         split_decision.split_test, node.stats, node.depth
                     )
 
                     for i in range(split_decision.num_splits()):
-                        new_child = self._new_learning_node(
+                        new_child = self._new_leaf(
                             split_decision.resulting_stats_from_split(i),
                             parent=new_split,
                         )
@@ -327,13 +327,13 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         self._train_weight_seen_by_model += sample_weight
 
         if self._tree_root is None:
-            self._tree_root = self._new_learning_node()
+            self._tree_root = self._new_leaf()
             self._n_active_leaves = 1
 
         found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
         leaf_node = found_node.node
         if leaf_node is None:
-            leaf_node = self._new_learning_node(parent=found_node.parent)
+            leaf_node = self._new_leaf(parent=found_node.parent)
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._n_active_leaves += 1
 
@@ -359,7 +359,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             # so there is no branch to sort the instance to
             if current.split_test.max_branches() == -1 and split_feat in x:
                 # Creates a new branch to the new categorical value
-                leaf_node = self._new_learning_node(parent=current)
+                leaf_node = self._new_leaf(parent=current)
                 branch_id = current.split_test.add_new_branch(x[split_feat])
                 current.set_child(branch_id, leaf_node)
                 self._n_active_leaves += 1
@@ -383,11 +383,11 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                         nd = found_node.node
 
                         if nd is None:
-                            nd = self._new_learning_node(parent=found_node.parent)
+                            nd = self._new_leaf(parent=found_node.parent)
                             found_node.parent.set_child(found_node.parent_branch, nd)
                             self._n_active_leaves += 1
                     else:
-                        leaf = self._new_learning_node(parent=nd)
+                        leaf = self._new_leaf(parent=nd)
                         nd.set_child(path, leaf)
                         nd = leaf
                         self._n_active_leaves += 1

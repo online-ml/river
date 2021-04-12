@@ -4,7 +4,7 @@ import typing
 from river.base.typing import ClfTarget
 from river.proba import Gaussian
 
-from .._attribute_test import NumericBinaryTest, SplitSuggestion
+from .._nodes import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -47,8 +47,6 @@ class GaussianSplitter(Splitter):
 
             val_dist.update(att_val, sample_weight)
 
-        return self
-
     def cond_proba(self, att_val, target_val):
         if target_val in self._att_dist_per_class:
             obs = self._att_dist_per_class[target_val]
@@ -65,10 +63,10 @@ class GaussianSplitter(Splitter):
             post_split_dist = self._class_dists_from_binary_split(split_value)
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
-                num_att_binary_test = NumericBinaryTest(att_idx, split_value, True)
-                best_suggestion = SplitSuggestion(
-                    num_att_binary_test, post_split_dist, merit
+                best_suggestion = BranchFactory(
+                    merit, att_idx, split_value, post_split_dist
                 )
+
         return best_suggestion
 
     def _split_point_suggestions(self):

@@ -1,4 +1,7 @@
-from .._attribute_test import NominalBinaryTest, NominalMultiwayTest, SplitSuggestion
+import collections
+import functools
+
+from .._nodes import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -13,7 +16,10 @@ class NominalSplitterClassif(Splitter):
         super().__init__()
         self._total_weight_observed = 0.0
         self._missing_weight_observed = 0.0
-        self._att_val_dist_per_class = {}
+        self._att_val_dist_per_class = collections.defaultdict(
+            functools.partial(collections.defaultdict, float)
+        )
+        self._att_values = set()
 
     @property
     def is_numeric(self):
@@ -23,61 +29,50 @@ class NominalSplitterClassif(Splitter):
         if att_val is None:
             self._missing_weight_observed += sample_weight
         else:
-            try:
-                self._att_val_dist_per_class[target_val]
-            except KeyError:
-                self._att_val_dist_per_class[target_val] = {att_val: 0.0}
-                self._att_val_dist_per_class = dict(
-                    sorted(self._att_val_dist_per_class.items())
-                )
-            try:
-                self._att_val_dist_per_class[target_val][att_val] += sample_weight
-            except KeyError:
-                self._att_val_dist_per_class[target_val][att_val] = sample_weight
-                self._att_val_dist_per_class[target_val] = dict(
-                    sorted(self._att_val_dist_per_class[target_val].items())
-                )
+            self._att_values.add(att_val)
+            self._att_val_dist_per_class[target_val][att_val] += sample_weight
 
         self._total_weight_observed += sample_weight
 
-        return self
-
     def cond_proba(self, att_val, target_val):
-        obs = self._att_val_dist_per_class.get(target_val, None)
-        if obs is not None:
-            value = obs[att_val] if att_val in obs else 0.0
+        obs = self._att_val_dist_per_class[target_val]
+        value = self._att_val_dist_per_class[att_val]
+        try:
             return (value + 1.0) / (sum(obs.values()) + len(obs))
-        return 0.0
+        except ZeroDivisionError:
+            return 0.0
 
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
         best_suggestion = None
-        att_values = sorted(
-            set(
-                [
-                    att_val
-                    for att_val_per_class in self._att_val_dist_per_class.values()
-                    for att_val in att_val_per_class
-                ]
-            )
-        )
+
         if not binary_only:
             post_split_dist = self._class_dist_from_multiway_split()
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
-            branch_mapping = {
-                attr_val: branch_id for branch_id, attr_val in enumerate(att_values)
-            }
-            best_suggestion = SplitSuggestion(
-                NominalMultiwayTest(att_idx, branch_mapping), post_split_dist, merit,
+
+            best_suggestion = BranchFactory(
+                merit,
+                att_idx,
+                sorted(self._att_values),
+                post_split_dist,
+                numerical_feature=False,
+                multiway_split=True,
             )
-        for att_val in att_values:
+
+        for att_val in self._att_values:
             post_split_dist = self._class_dist_from_binary_split(att_val)
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
-                best_suggestion = SplitSuggestion(
-                    NominalBinaryTest(att_idx, att_val), post_split_dist, merit
+                best_suggestion = BranchFactory(
+                    merit,
+                    att_idx,
+                    att_val,
+                    post_split_dist,
+                    numerical_feature=False,
+                    multiway_split=False,
                 )
+
         return best_suggestion
 
     def _class_dist_from_multiway_split(self):

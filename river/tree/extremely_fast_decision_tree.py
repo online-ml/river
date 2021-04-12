@@ -127,7 +127,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         self.min_samples_reevaluate = min_samples_reevaluate
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
+    def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
         if parent is None:
@@ -142,7 +142,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         else:  # NAIVE BAYES ADAPTIVE (default)
             return EFDTLearningNodeNBA(initial_stats, depth, self.splitter)
 
-    def _new_split_node(
+    def _branch_selector(
         self, split_test, target_stats=None, depth=0, existing_splitters=None
     ):
         """Create a new split node."""
@@ -186,7 +186,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         self._train_weight_seen_by_model += sample_weight
 
         if self._tree_root is None:
-            self._tree_root = self._new_learning_node()
+            self._tree_root = self._new_leaf()
             self._n_active_leaves = 1
 
         # Sort instance X into a leaf
@@ -276,7 +276,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         leaf_node = found_node.node
 
         if leaf_node is None:
-            leaf_node = self._new_learning_node(parent=found_node.parent)
+            leaf_node = self._new_leaf(parent=found_node.parent)
             found_node.parent.set_child(found_node.parent_branch, leaf_node)
             self._n_active_leaves += 1
 
@@ -377,7 +377,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     or hoeffding_bound < self.tie_threshold
                 ) and (id_current != id_best):
                     # Create a new branch
-                    new_split = self._new_split_node(
+                    new_split = self._branch_selector(
                         x_best.split_test, node.stats, node.depth, node.splitters,
                     )
                     # Update weights in new_split
@@ -385,9 +385,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                     # Update EFDT
                     for i in range(x_best.num_splits()):
-                        new_child = self._new_learning_node(
-                            x_best.resulting_stats_from_split(i)
-                        )
+                        new_child = self._new_leaf(x_best.resulting_stats_from_split(i))
                         new_split.set_child(i, new_child)
 
                     deleted_node_cnt = node.count_nodes()
@@ -470,14 +468,14 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     or hoeffding_bound < self.tie_threshold
                 ):
                     # Split
-                    new_split = self._new_split_node(
+                    new_split = self._branch_selector(
                         x_best.split_test, node.stats, node.depth, node.splitters,
                     )
 
                     new_split.last_split_reevaluation_at = node.total_weight
 
                     for i in range(x_best.num_splits()):
-                        new_child = self._new_learning_node(
+                        new_child = self._new_leaf(
                             x_best.resulting_stats_from_split(i), parent=new_split
                         )
                         new_split.set_child(i, new_child)
@@ -506,7 +504,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             The new leaf.
         """
 
-        leaf = self._new_learning_node()
+        leaf = self._new_leaf()
         leaf.depth = node.depth
 
         leaf.stats = node.stats

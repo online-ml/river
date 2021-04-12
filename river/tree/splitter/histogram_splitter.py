@@ -5,7 +5,7 @@ import functools
 from river import utils
 from river.utils.histogram import Bin  # noqa
 
-from .._attribute_test import NumericBinaryTest, SplitSuggestion
+from .._nodes import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -34,8 +34,6 @@ class HistogramSplitter(Splitter):
     def update(self, att_val, target_val, sample_weight):
         for _ in range(int(sample_weight)):
             self.hists[target_val].update(att_val)
-
-        return self
 
     def cond_proba(self, att_val, target_val):
         if target_val not in self.hists:
@@ -84,21 +82,16 @@ class HistogramSplitter(Splitter):
 
             for y in pre_split_dist:
                 if y in cdfs:
-                    p_xy = next(cdfs[y])  # P(x < t | y)
+                    p_xy = next(cdfs[y])  # P(x <= t | y)
                     p_y = pre_split_dist[y] / total_weight  # P(y)
-                    l_dist[y] = total_weight * p_y * p_xy  # P(y | x < t)
-                    r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x >= t)
+                    l_dist[y] = total_weight * p_y * p_xy  # P(y | x <= t)
+                    r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x > t)
 
             post_split_dist = [l_dist, r_dist]
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
             if best_suggestion is None or merit > best_suggestion.merit:
-                num_att_binary_test = NumericBinaryTest(
-                    att_idx, at, equal_passes_test=False
-                )
-                best_suggestion = SplitSuggestion(
-                    num_att_binary_test, post_split_dist, merit
-                )
+                best_suggestion = BranchFactory(merit, att_idx, at, post_split_dist)
 
         return best_suggestion
 

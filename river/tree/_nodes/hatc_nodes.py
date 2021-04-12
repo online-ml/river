@@ -240,7 +240,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
         # Condition to build a new alternate tree
         if self._error_change:
-            self._alternate_tree = tree._new_learning_node(parent=self)
+            self._alternate_tree = tree._new_leaf(parent=self)
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
         # Condition to replace alternate tree
@@ -308,7 +308,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
             # Instance contains a categorical value previously unseen by the split node
             if self.split_test.max_branches() == -1 and split_feat in x:
                 # Creates a new learning node to encompass the new observed feature value
-                leaf_node = tree._new_learning_node(parent=self)
+                leaf_node = tree._new_leaf(parent=self)
                 branch_id = self.split_test.add_new_branch(x[split_feat])  # noqa
                 self.set_child(branch_id, leaf_node)
                 tree._n_active_leaves += 1
@@ -332,7 +332,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                 leaf_node = self.get_child(path)
                 # Pass instance to the most traversed path
                 if leaf_node is None:
-                    leaf_node = tree._new_learning_node(parent=self)
+                    leaf_node = tree._new_leaf(parent=self)
                     self.set_child(path, leaf_node)
                     tree._n_active_leaves += 1
 

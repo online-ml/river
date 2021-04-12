@@ -4,6 +4,7 @@ import numbers
 import typing
 
 from ..base import Leaf
+from .branch import BranchFactory
 
 
 class HTLeaf(Leaf, metaclass=abc.ABCMeta):
@@ -107,7 +108,7 @@ class HTLeaf(Leaf, metaclass=abc.ABCMeta):
                 self.splitters[att_id] = splitter
             splitter.update(att_val, y, sample_weight)
 
-    def best_split_suggestions(self, criterion, tree) -> typing.List[SplitSuggestion]:
+    def best_split_suggestions(self, criterion, tree) -> typing.List[BranchFactory]:
         """Find possible split candidates.
 
         Parameters
@@ -125,14 +126,15 @@ class HTLeaf(Leaf, metaclass=abc.ABCMeta):
         pre_split_dist = self.stats
         if tree.merit_preprune:
             # Add null split as an option
-            null_split = SplitSuggestion(
-                None, [{}], criterion.merit_of_split(pre_split_dist, [pre_split_dist])
-            )
+            null_split = BranchFactory()
             best_suggestions.append(null_split)
         for att_id, splitter in self.splitters.items():
             best_suggestion = splitter.best_evaluated_split_suggestion(
                 criterion, pre_split_dist, att_id, tree.binary_split
             )
+
+            # TODO verify the need of this if
+
             if best_suggestion is not None:
                 best_suggestions.append(best_suggestion)
         return best_suggestions

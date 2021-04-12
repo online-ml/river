@@ -160,7 +160,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self._train_weight_seen_by_model += sample_weight
 
         if self._tree_root is None:
-            self._tree_root = self._new_learning_node()
+            self._tree_root = self._new_leaf()
             self._n_active_leaves = 1
         self._tree_root.learn_one(
             x, y, sample_weight=sample_weight, tree=self, parent=None, parent_branch=-1
@@ -197,7 +197,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self._tree_root.filter_instance_to_leaves(x, split_parent, parent_branch, nodes)
         return nodes
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
+    def _new_leaf(self, initial_stats=None, parent=None):
         if parent is not None:
             depth = parent.depth + 1
         else:
@@ -211,7 +211,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             seed=self.seed,
         )
 
-    def _new_split_node(self, split_test, target_stats=None, depth=0, **kwargs):
+    def _branch_selector(self, split_test, target_stats=None, depth=0, **kwargs):
         return AdaSplitNodeClassifier(
             split_test=split_test,
             stats=target_stats,
@@ -221,7 +221,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         )
 
     # Override river.tree.BaseHoeffdingTree to include alternate trees
-    def __find_learning_nodes(self, node, parent, parent_branch, found):
+    def __find_leaves(self, node, parent, parent_branch, found):
         if node is not None:
             if isinstance(node, LearningNode):
                 found.append(FoundNode(node, parent, parent_branch))
@@ -229,11 +229,9 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
                 split_node = node
 
                 for i in range(split_node.n_children):
-                    self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found
-                    )
+                    self.__find_leaves(split_node.get_child(i), split_node, i, found)
                 if split_node._alternate_tree is not None:  # noqa
-                    self.__find_learning_nodes(
+                    self.__find_leaves(
                         split_node._alternate_tree, split_node, -999, found  # noqa
                     )
 

@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 from river import base
 
-from .._attribute_test import SplitSuggestion
+from .._nodes import BranchFactory
 from .._split_criterion.base_split_criterion import SplitCriterion
 
 
@@ -21,9 +21,7 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
         super().__init__()
 
     @abstractmethod
-    def update(
-        self, att_val, target_val: base.typing.Target, sample_weight: float
-    ) -> "Splitter":
+    def update(self, att_val, target_val: base.typing.Target, sample_weight: float):
         """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
 
@@ -60,7 +58,7 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
         pre_split_dist: typing.Union[typing.List, typing.Dict],
         att_idx: base.typing.FeatureName,
         binary_only: bool,
-    ) -> SplitSuggestion:
+    ) -> BranchFactory:
         """Get the best split suggestion given a criterion and the target's statistics.
 
         Parameters

@@ -4,7 +4,7 @@ import typing
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._attribute_test import NumericBinaryTest, SplitSuggestion
+from .._nodes import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -52,8 +52,6 @@ class EBSTSplitter(Splitter):
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
-        return self
-
     def cond_proba(self, att_val, target_val):
         """Not implemented in regression splitters."""
         raise NotImplementedError
@@ -61,7 +59,7 @@ class EBSTSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only=True
     ):
-        candidate = SplitSuggestion(None, [{}], -float("inf"))
+        candidate = BranchFactory()
 
         if self._root is None:
             return candidate
@@ -100,8 +98,9 @@ class EBSTSplitter(Splitter):
 
         merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
         if merit > candidate.merit:
-            num_att_binary_test = NumericBinaryTest(self._att_idx, node.att_val, True)
-            candidate = SplitSuggestion(num_att_binary_test, post_split_dists, merit)
+            candidate = BranchFactory(
+                merit, self._att_idx, node.att_val, post_split_dists
+            )
 
         if node._right is not None:
             self._aux_estimator += node.estimator

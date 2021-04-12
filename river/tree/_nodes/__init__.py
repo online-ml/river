@@ -13,7 +13,14 @@ from .arf_htr_nodes import (
     RandomLearningNodeMean,
     RandomLearningNodeModel,
 )
-from .base import FoundNode, LearningNode, Node, SplitNode
+from .branch import (
+    BranchFactory,
+    HTBranch,
+    NominalBinaryBranch,
+    NominalMultiwayBranch,
+    NumericBinaryBranch,
+    NumericMultiwayBranch,
+)
 from .efdtc_nodes import (
     EFDTLearningNodeMC,
     EFDTLearningNodeNB,
@@ -29,12 +36,16 @@ from .isouptr_nodes import (
     LearningNodeMeanMultiTarget,
     LearningNodeModelMultiTarget,
 )
+from .leaf import HTLeaf
 
 __all__ = [
-    "FoundNode",
-    "Node",
-    "SplitNode",
-    "LearningNode",
+    "BranchFactory",
+    "HTBranch",
+    "HTLeaf",
+    "NominalBinaryBranch",
+    "NominalMultiwayBranch",
+    "NumericBinaryBranch",
+    "NumericMultiwayBranch",
     "AdaNode",
     "LearningNodeMC",
     "LearningNodeNB",

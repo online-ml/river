@@ -12,8 +12,14 @@ from river.utils.skmultiflow_utils import (
     round_sig_fig,
 )
 
-from ._attribute_test import InstanceConditionalTest
-from ._nodes import FoundNode, LearningNode, Node, SplitNode
+from ._nodes import (
+    HTBranch,
+    HTLeaf,
+    NominalBinaryBranch,
+    NominalMultiwayBranch,
+    NumericBinaryBranch,
+    NumericMultiwayBranch,
+)
 
 try:
     import graphviz
@@ -72,7 +78,7 @@ class HoeffdingTree(ABC):
         self.remove_poor_attrs: bool = remove_poor_attrs
         self.merit_preprune: bool = merit_preprune
 
-        self._tree_root: typing.Union[Node, None] = None
+        self._tree_root: typing.Union[HTBranch, HTLeaf, None] = None
         self._n_decision_nodes: int = 0
         self._n_active_leaves: int = 0
         self._n_inactive_leaves: int = 0
@@ -159,19 +165,23 @@ class HoeffdingTree(ABC):
                 description += buffer[line]
             return description
 
-    def _new_split_node(
-        self,
-        split_test: InstanceConditionalTest,
-        target_stats: dict = None,
-        depth: int = 0,
-    ) -> SplitNode:
+    def _branch_selector(
+        self, numerical_feature=True, multiway_split=False
+    ) -> typing.Type[HTBranch]:
         """Create a new split node."""
-        return SplitNode(split_test, target_stats, depth)
+        if numerical_feature:
+            if not multiway_split:
+                return NumericBinaryBranch
+            else:
+                return NumericMultiwayBranch
+        else:
+            if not multiway_split:
+                return NominalBinaryBranch
+            else:
+                return NominalMultiwayBranch
 
     @abstractmethod
-    def _new_learning_node(
-        self, initial_stats: dict = None, parent: Node = None
-    ) -> LearningNode:
+    def _new_leaf(self, initial_stats: dict = None, parent: HTLeaf = None) -> HTLeaf:
         """Create a new learning node.
 
         The characteristics of the learning node depends on the tree algorithm.
@@ -191,8 +201,8 @@ class HoeffdingTree(ABC):
     @property
     def depth(self) -> int:
         """The depth of the tree."""
-        if isinstance(self._tree_root, Node):
-            return self._tree_root.subtree_depth()
+        if self._tree_root:
+            return self._tree_root.height
         return 0
 
     @property
@@ -233,33 +243,29 @@ class HoeffdingTree(ABC):
             if self.stop_mem_management:
                 self._growth_allowed = False
                 return
-        learning_nodes = self._find_learning_nodes()
-        learning_nodes.sort(key=lambda n: n.node.calculate_promise())
+        leaves = self._find_leaves()
+        leaves.sort(key=lambda leaf: leaf.calculate_promise())
         max_active = 0
-        while max_active < len(learning_nodes):
+        while max_active < len(leaves):
             max_active += 1
             if (
                 (
                     max_active * self._active_leaf_size_estimate
-                    + (len(learning_nodes) - max_active)
-                    * self._inactive_leaf_size_estimate
+                    + (len(leaves) - max_active) * self._inactive_leaf_size_estimate
                 )
                 * self._size_estimate_overhead_fraction
             ) > self._max_byte_size:
                 max_active -= 1
                 break
-        cutoff = len(learning_nodes) - max_active
+        cutoff = len(leaves) - max_active
         for i in range(cutoff):
-            if learning_nodes[i].node.is_active():
-                learning_nodes[i].node.deactivate()
+            if leaves[i].is_active():
+                leaves[i].deactivate()
                 self._n_inactive_leaves += 1
                 self._n_active_leaves -= 1
-        for i in range(cutoff, len(learning_nodes)):
-            if (
-                not learning_nodes[i].node.is_active()
-                and learning_nodes[i].node.depth < self.max_depth
-            ):
-                learning_nodes[i].node.activate()
+        for i in range(cutoff, len(leaves)):
+            if not leaves[i].is_active() and leaves[i].depth < self.max_depth:
+                leaves[i].activate()
                 self._n_active_leaves += 1
                 self._n_inactive_leaves -= 1
 
@@ -274,18 +280,14 @@ class HoeffdingTree(ABC):
         [^1]: Kirkby, R.B., 2007. Improving hoeffding trees (Doctoral dissertation,
         The University of Waikato).
         """
-        learning_nodes = self._find_learning_nodes()
+        leaves = self._find_leaves()
         total_active_size = 0
         total_inactive_size = 0
-        for found_node in learning_nodes:
-            if (
-                not found_node.node.is_leaf()
-            ):  # Safety check for non-trivial tree structures
-                continue
-            if found_node.node.is_active():
-                total_active_size += calculate_object_size(found_node.node)
+        for leaf in leaves:
+            if leaf.is_active():
+                total_active_size += calculate_object_size(leaf)
             else:
-                total_inactive_size += calculate_object_size(found_node.node)
+                total_inactive_size += calculate_object_size(leaf)
         if total_active_size > 0:
             self._active_leaf_size_estimate = total_active_size / self._n_active_leaves
         if total_inactive_size > 0:
@@ -303,50 +305,20 @@ class HoeffdingTree(ABC):
 
     def _deactivate_all_leaves(self):
         """Deactivate all leaves. """
-        learning_nodes = self._find_learning_nodes()
-        for cur_node in learning_nodes:
-            cur_node.node.deactivate()
+        leaves = self._find_leaves()
+        for leaf in leaves:
+            leaf.deactivate()
             self._n_inactive_leaves += 1
             self._n_active_leaves -= 1
 
-    def _find_learning_nodes(self) -> typing.List[FoundNode]:
+    def _find_leaves(self) -> typing.List[HTLeaf]:
         """Find learning nodes in the tree.
 
         Returns
         -------
         List of learning nodes in the tree.
         """
-        found_list: typing.List[FoundNode] = []
-        self.__find_learning_nodes(self._tree_root, None, -1, found_list)
-        return found_list
-
-    def __find_learning_nodes(self, node, parent, parent_branch, found):
-        """Find learning nodes in the tree from a given node.
-
-        Parameters
-        ----------
-        node
-            The node to start the search.
-        parent
-            The node's parent.
-        parent_branch
-            Parent node's branch.
-        found
-            A list of found nodes.
-
-        Returns
-        -------
-        List of learning nodes.
-        """
-        if node is not None:
-            if node.is_leaf():
-                found.append(FoundNode(node, parent, parent_branch))
-            else:
-                split_node = node
-                for i in range(split_node.n_children):
-                    self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found
-                    )
+        return [leaf for leaf in self._tree_root.iter_leaves()]
 
     # Adapted from creme's original implementation
     def debug_one(self, x: dict) -> typing.Union[str, None]:

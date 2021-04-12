@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import functools
 import math
 import typing
 
@@ -29,15 +30,22 @@ class HTBranch(Branch):
         pass
 
 
-@dataclasses.dataclass(eq=False)
+@functools.total_ordering
+@dataclasses.dataclass
 class BranchFactory:
-    """Helper class used to assemble branches designed by the splitters."""
+    """Helper class used to assemble branches designed by the splitters.
 
-    feature: FeatureName
-    split_info: typing.Union[typing.Hashable, typing.List[typing.Hashable]]
-    children_stats: typing.List
-    numerical_feature: bool
-    multiway_split: bool
+    If constructed using the default values, a null-split suggestion is assumed.
+    """
+
+    merit: float = -math.inf
+    feature: typing.Optional[FeatureName] = None
+    split_info: typing.Optional[
+        typing.Union[typing.Hashable, typing.List[typing.Hashable]]
+    ] = None
+    children_stats: typing.Optional[typing.List] = None
+    numerical_feature: bool = True
+    multiway_split: bool = False
 
     def assemble(
         self,
@@ -48,6 +56,12 @@ class BranchFactory:
         **kwargs
     ):
         return branch(stats, self.feature, self.split_info, depth, *children, **kwargs)
+
+    def __lt__(self, other):
+        return self.merit < other.merit
+
+    def __eq__(self, other):
+        return self.merit == other.merit
 
 
 class NumericBinaryBranch(HTBranch):

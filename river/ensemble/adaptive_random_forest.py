@@ -176,7 +176,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         self.seed = seed
         self._rng = check_random_state(self.seed)
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
+    def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
 
@@ -252,7 +252,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         self.seed = seed
         self._rng = check_random_state(self.seed)
 
-    def _new_learning_node(self, initial_stats=None, parent=None):  # noqa
+    def _new_leaf(self, initial_stats=None, parent=None):  # noqa
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.

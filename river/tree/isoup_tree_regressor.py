@@ -166,7 +166,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             min_samples_split=self.min_samples_split
         )
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
+    def _new_leaf(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
         the tree configuration.
         """
