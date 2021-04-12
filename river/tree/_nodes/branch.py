@@ -1,12 +1,19 @@
 import abc
+import dataclasses
 import math
+import typing
+
+from river.base.typing import FeatureName
+from river.stats import Var
 
 from ..base import Branch
 
 
 class HTBranch(Branch):
-    def __init__(self, *children):
+    def __init__(self, stats, *children, **attributes):
         super().__init__(*children)
+        self.stats = stats
+        self.__dict__.update(attributes)
 
     @property
     def total_weight(self):
@@ -22,13 +29,33 @@ class HTBranch(Branch):
         pass
 
 
+@dataclasses.dataclass(eq=False)
+class BranchFactory:
+    """Helper class used to assemble branches designed by the splitters."""
+
+    feature: FeatureName
+    split_info: typing.Union[typing.Hashable, typing.List[typing.Hashable]]
+    children_stats: typing.List
+    numerical_feature: bool
+    multiway_split: bool
+
+    def assemble(
+        self,
+        branch: typing.Type[HTBranch],
+        stats: typing.Union[typing.Dict, Var],
+        depth: int,
+        *children,
+        **kwargs
+    ):
+        return branch(stats, self.feature, self.split_info, depth, *children, **kwargs)
+
+
 class NumericBinaryBranch(HTBranch):
-    def __init__(self, feature, threshold, depth, left, right, **attributes):
-        super().__init__(left, right)
+    def __init__(self, stats, feature, threshold, depth, left, right, **attributes):
+        super().__init__(stats, left, right, **attributes)
         self.feature = feature
         self.threshold = threshold
         self.depth = depth
-        self.__dict__.update(attributes)
 
     def next(self, x):
         left, right = self.children
@@ -50,12 +77,11 @@ class NumericBinaryBranch(HTBranch):
 
 
 class NominalBinaryBranch(HTBranch):
-    def __init__(self, feature, value, depth, left, right, **attributes):
-        super().__init__(left, right)
+    def __init__(self, stats, feature, value, depth, left, right, **attributes):
+        super().__init__(stats, left, right, **attributes)
         self.feature = feature
         self.value = value
         self.depth = depth
-        self.__dict__.update(attributes)
 
     def next(self, x):
         left, right = self.children
@@ -77,8 +103,10 @@ class NominalBinaryBranch(HTBranch):
 
 
 class NumericMultiwayBranch(HTBranch):
-    def __init__(self, feature, radius, depth, slot_ids, *children, **attributes):
-        super().__init__(*children)
+    def __init__(
+        self, stats, feature, radius, depth, slot_ids, *children, **attributes
+    ):
+        super().__init__(stats, *children, **attributes)
         # The number of branches can increase in runtime
         self.children = list(self.children)
 
@@ -89,8 +117,6 @@ class NumericMultiwayBranch(HTBranch):
         # Controls the branch mapping
         self._mapping = {s: i for i, s in enumerate(slot_ids)}
         self._r_mapping = {i: s for s, i in self._mapping.items()}
-
-        self.__dict__.update(attributes)
 
     def next(self, x):
         slot = math.floor(x[self.feature] / self.radius)
@@ -119,8 +145,8 @@ class NumericMultiwayBranch(HTBranch):
 
 
 class NominalMultiwayBranch(HTBranch):
-    def __init__(self, feature, feature_values, depth, *children, **attributes):
-        super().__init__(*children)
+    def __init__(self, stats, feature, feature_values, depth, *children, **attributes):
+        super().__init__(stats, *children, **attributes)
         # The number of branches can increase in runtime
         self.children = list(self.children)
 
@@ -130,8 +156,6 @@ class NominalMultiwayBranch(HTBranch):
         # Controls the branch mapping
         self._mapping = {feat_v: i for i, feat_v in enumerate(feature_values)}
         self._r_mapping = {i: feat_v for feat_v, i in self._mapping.items()}
-
-        self.__dict__.update(attributes)
 
     def next(self, x):
         pos = self._mapping[x[self.feature]]
