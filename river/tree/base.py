@@ -19,22 +19,23 @@ class Branch(abc.ABC):
         self.children = children
 
     @abc.abstractmethod
-    def next(self, x, *, until_leaf=True) -> Union["Branch", "Leaf"]:
+    def next(self, x) -> Union["Branch", "Leaf"]:
         """Move to the next node down the tree."""
 
     def walk(self, x, until_leaf=True) -> Iterable[Union["Branch", "Leaf"]]:
         """Iterate over the nodes that lead to the leaf which contains x."""
         node = self
 
-        if until_leaf:
-            while isinstance(node, Branch):
-                yield node
-                node = node.next(x, until_leaf=until_leaf)
+        while isinstance(node, Branch):
             yield node
-        else:
-            while node:
-                yield node
-                node = node.next(x, until_leaf=until_leaf)
+            try:
+                node = node.next(x)
+            except KeyError:
+                if until_leaf:
+                    node = node.most_common_path()
+                else:
+                    break
+        yield node
 
     def traverse(self, x, until_leaf=True) -> "Leaf":
         """Return the leaf corresponding to the given input."""
