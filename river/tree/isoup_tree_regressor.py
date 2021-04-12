@@ -252,12 +252,12 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             Predicted target values.
         """
 
-        if self._tree_root is not None:
-            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
+        if self._root is not None:
+            found_node = self._root.filter_instance_to_leaf(x, None, -1)
             node = found_node.node
             if node is not None:
                 if node.is_leaf():
-                    return node.leaf_prediction(x, tree=self)
+                    return node.prediction(x, tree=self)
                 else:
                     # The instance sorting ended up in a Split Node, since no branch was found
                     # for some of the instance's features. Use the mean prediction in this case

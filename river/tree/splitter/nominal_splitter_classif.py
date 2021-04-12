@@ -1,7 +1,7 @@
 import collections
 import functools
 
-from .._nodes import BranchFactory
+from .._nodes.branch import BranchFactory
 from .base_splitter import Splitter
 
 

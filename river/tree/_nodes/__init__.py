@@ -14,7 +14,6 @@ from .arf_htr_nodes import (
     RandomLearningNodeModel,
 )
 from .branch import (
-    BranchFactory,
     HTBranch,
     NominalBinaryBranch,
     NominalMultiwayBranch,
@@ -29,7 +28,7 @@ from .efdtc_nodes import (
 )
 from .hatc_nodes import AdaLearningNodeClassifier, AdaNode, AdaSplitNodeClassifier
 from .hatr_nodes import AdaLearningNodeRegressor, AdaSplitNodeRegressor
-from .htc_nodes import LearningNodeMC, LearningNodeNB, LearningNodeNBA
+from .htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
 from .htr_nodes import LearningNodeAdaptive, LearningNodeMean, LearningNodeModel
 from .isouptr_nodes import (
     LearningNodeAdaptiveMultiTarget,
@@ -39,7 +38,6 @@ from .isouptr_nodes import (
 from .leaf import HTLeaf
 
 __all__ = [
-    "BranchFactory",
     "HTBranch",
     "HTLeaf",
     "NominalBinaryBranch",
@@ -47,9 +45,9 @@ __all__ = [
     "NumericBinaryBranch",
     "NumericMultiwayBranch",
     "AdaNode",
-    "LearningNodeMC",
-    "LearningNodeNB",
-    "LearningNodeNBA",
+    "LeafMajorityClass",
+    "LeafNaiveBayes",
+    "LeafNaiveBayesAdaptive",
     "RandomLearningNodeMC",
     "RandomLearningNodeNB",
     "RandomLearningNodeNBA",

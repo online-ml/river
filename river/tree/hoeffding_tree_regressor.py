@@ -216,11 +216,11 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
 
         self._train_weight_seen_by_model += sample_weight
 
-        if self._tree_root is None:
-            self._tree_root = self._new_leaf()
+        if self._root is None:
+            self._root = self._new_leaf()
             self._n_active_leaves = 1
 
-        found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
+        found_node = self._root.filter_instance_to_leaf(x, None, -1)  # noqa
         leaf_node = found_node.node
 
         if leaf_node is None:
@@ -304,12 +304,12 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         Predicted target value.
 
         """
-        if self._tree_root is not None:
-            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)  # noqa
+        if self._root is not None:
+            found_node = self._root.filter_instance_to_leaf(x, None, -1)  # noqa
             node = found_node.node
             if node is not None:
                 if node.is_leaf():
-                    return node.leaf_prediction(x, tree=self)
+                    return node.prediction(x, tree=self)
                 else:
                     # The instance sorting ended up in a Split Node, since no branch was found
                     # for some of the instance's features. Use the mean prediction in this case
@@ -405,7 +405,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                 self._n_decision_nodes += 1
                 self._n_active_leaves += split_decision.num_splits()
                 if parent is None:
-                    self._tree_root = new_split
+                    self._root = new_split
                 else:
                     parent.set_child(parent_idx, new_split)
 

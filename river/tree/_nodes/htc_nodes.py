@@ -2,11 +2,11 @@ from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from .._tree_utils import do_naive_bayes_prediction
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
-from .base import LearningNode
+from .leaf import HTLeaf
 
 
-class LearningNodeMC(LearningNode):
-    """Learning node that always predicts the majority class.
+class LeafMajorityClass(HTLeaf):
+    """Leaf that always predicts the majority class.
 
     Parameters
     ----------
@@ -34,7 +34,7 @@ class LearningNodeMC(LearningNode):
         except KeyError:
             self.stats[y] = sample_weight
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         return normalize_values_in_dict(self.stats, inplace=False)
 
     @property
@@ -82,8 +82,8 @@ class LearningNodeMC(LearningNode):
         return count < 2
 
 
-class LearningNodeNB(LearningNodeMC):
-    """Learning node that uses Naive Bayes models.
+class LeafNaiveBayes(LeafMajorityClass):
+    """Leaf that uses Naive Bayes models.
 
     Parameters
     ----------
@@ -101,11 +101,11 @@ class LearningNodeNB(LearningNodeMC):
     def __init__(self, stats, depth, splitter, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         if self.is_active() and self.total_weight >= tree.nb_threshold:
             return do_naive_bayes_prediction(x, self.stats, self.splitters)
         else:
-            return super().leaf_prediction(x)
+            return super().prediction(x)
 
     def disable_attribute(self, att_index):
         """Disable an attribute observer.
@@ -121,7 +121,7 @@ class LearningNodeNB(LearningNodeMC):
         pass
 
 
-class LearningNodeNBA(LearningNodeMC):
+class LeafNaiveBayesAdaptive(LeafMajorityClass):
     """Learning node that uses Adaptive Naive Bayes models.
 
     Parameters
@@ -158,7 +158,7 @@ class LearningNodeNBA(LearningNodeMC):
 
         """
         if self.is_active():
-            mc_pred = super().leaf_prediction(x)
+            mc_pred = super().prediction(x)
             # Empty node (assume the majority class will be the best option) or majority
             # class prediction is correct
             if len(self.stats) == 0 or max(mc_pred, key=mc_pred.get) == y:
@@ -170,7 +170,7 @@ class LearningNodeNBA(LearningNodeMC):
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         """Get the probabilities per class for a given instance.
 
         Parameters
@@ -188,7 +188,7 @@ class LearningNodeNBA(LearningNodeMC):
         if self.is_active() and self._nb_correct_weight >= self._mc_correct_weight:
             return do_naive_bayes_prediction(x, self.stats, self.splitters)
         else:
-            return super().leaf_prediction(x)
+            return super().prediction(x)
 
     def disable_attribute(self, att_index):
         """Disable an attribute observer.

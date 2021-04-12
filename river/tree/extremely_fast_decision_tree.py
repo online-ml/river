@@ -322,7 +322,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 split_criterion = GiniSplitCriterion()
             elif self._split_criterion == self._INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
-            elif self._split_criterion == self._HELLINGER:
+            elif self._split_criterion == self._HELLINGER_SPLIT:
                 split_criterion = HellingerDistanceCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()
@@ -442,7 +442,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 split_criterion = GiniSplitCriterion()
             elif self._split_criterion == self._INFO_GAIN_SPLIT:
                 split_criterion = InfoGainSplitCriterion()
-            elif self._split_criterion == self._HELLINGER:
+            elif self._split_criterion == self._HELLINGER_SPLIT:
                 split_criterion = HellingerDistanceCriterion()
             else:
                 split_criterion = InfoGainSplitCriterion()

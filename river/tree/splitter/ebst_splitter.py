@@ -4,7 +4,7 @@ import typing
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._nodes import BranchFactory
+from .._nodes.branch import BranchFactory
 from .base_splitter import Splitter
 
 

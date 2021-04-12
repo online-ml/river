@@ -177,7 +177,7 @@ class HTLeaf(Leaf, metaclass=abc.ABCMeta):
             self.update_splitters(x, y, sample_weight, tree.nominal_attributes)
 
     @abc.abstractmethod
-    def leaf_prediction(self, x, *, tree=None) -> dict:
+    def prediction(self, x, *, tree=None) -> dict:
         pass
 
     @abc.abstractmethod

@@ -6,7 +6,7 @@ from river.utils.skmultiflow_utils import check_random_state, normalize_values_i
 
 from .._tree_utils import do_naive_bayes_prediction
 from .base import FoundNode, SplitNode
-from .htc_nodes import LearningNodeNBA
+from .htc_nodes import LeafNaiveBayesAdaptive
 
 
 class AdaNode(metaclass=ABCMeta):
@@ -41,7 +41,7 @@ class AdaNode(metaclass=ABCMeta):
         pass
 
 
-class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
+class AdaLearningNodeClassifier(LeafNaiveBayesAdaptive, AdaNode):
     """Learning node for Hoeffding Adaptive Tree.
 
     Parameters
@@ -95,7 +95,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             if k > 0:
                 sample_weight = sample_weight * k
 
-        aux = self.leaf_prediction(x, tree=tree)
+        aux = self.prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
 
         is_correct = y == class_prediction
@@ -128,11 +128,11 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
                 self.last_split_attempt_at = weight_seen
 
     # Override LearningNodeNBA
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         if not self.stats:
             return
 
-        prediction_option = tree.leaf_prediction
+        prediction_option = tree.prediction
         if not self.is_active() or prediction_option == tree._MAJORITY_CLASS:
             dist = normalize_values_in_dict(self.stats, inplace=False)
         elif prediction_option == tree._NAIVE_BAYES:
@@ -141,7 +141,7 @@ class AdaLearningNodeClassifier(LearningNodeNBA, AdaNode):
             else:  # Use majority class
                 dist = normalize_values_in_dict(self.stats, inplace=False)
         else:  # Naive Bayes Adaptive
-            dist = super().leaf_prediction(x, tree=tree)
+            dist = super().prediction(x, tree=tree)
 
         dist_sum = sum(dist.values())
         normalization_factor = dist_sum * self.error_estimation * self.error_estimation
@@ -214,7 +214,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
 
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch)
         if leaf.node is not None:
-            aux = leaf.node.leaf_prediction(x, tree=tree)
+            aux = leaf.node.prediction(x, tree=tree)
             class_prediction = max(aux, key=aux.get) if aux else None
 
         is_correct = y == class_prediction
@@ -274,7 +274,7 @@ class AdaSplitNodeClassifier(SplitNode, AdaNode):
                         self._alternate_tree = None
                     else:
                         # Switch tree root
-                        tree._tree_root = tree._tree_root._alternate_tree
+                        tree._root = tree._root._alternate_tree
                     tree._n_switch_alternate_trees += 1
                 elif bound < alt_error_rate - old_error_rate:
                     if not self._alternate_tree.is_leaf():

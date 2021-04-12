@@ -13,12 +13,22 @@ from ..base import Branch
 class HTBranch(Branch):
     def __init__(self, stats, *children, **attributes):
         super().__init__(*children)
+        # The number of branches can increase in runtime
+        self.children = list(self.children)
+
         self.stats = stats
         self.__dict__.update(attributes)
 
     @property
     def total_weight(self):
         return sum(child.total_weight for child in filter(None, self.children))
+
+    @abc.abstractmethod
+    def branch_no(self, x):
+        pass
+
+    def next(self, x):
+        return self.children[self.branch_no(x)]
 
     @property
     @abc.abstractmethod
@@ -71,12 +81,10 @@ class NumericBinaryBranch(HTBranch):
         self.threshold = threshold
         self.depth = depth
 
-    def next(self, x):
-        left, right = self.children
-
+    def branch_no(self, x):
         if x[self.feature] <= self.threshold:
-            return left
-        return right
+            return 0
+        return 1
 
     @property
     def max_branches(self):
@@ -97,12 +105,10 @@ class NominalBinaryBranch(HTBranch):
         self.value = value
         self.depth = depth
 
-    def next(self, x):
-        left, right = self.children
-
+    def branch_no(self, x):
         if x[self.feature] == self.value:
-            return left
-        return right
+            return 0
+        return 1
 
     @property
     def max_branches(self):
@@ -121,8 +127,6 @@ class NumericMultiwayBranch(HTBranch):
         self, stats, feature, radius, depth, slot_ids, *children, **attributes
     ):
         super().__init__(stats, *children, **attributes)
-        # The number of branches can increase in runtime
-        self.children = list(self.children)
 
         self.feature = feature
         self.radius = radius
@@ -132,11 +136,10 @@ class NumericMultiwayBranch(HTBranch):
         self._mapping = {s: i for i, s in enumerate(slot_ids)}
         self._r_mapping = {i: s for s, i in self._mapping.items()}
 
-    def next(self, x):
+    def branch_no(self, x):
         slot = math.floor(x[self.feature] / self.radius)
-        pos = self._mapping[slot]
 
-        return self.children[pos]
+        return self._mapping[slot]
 
     @property
     def max_branches(self):
@@ -161,9 +164,6 @@ class NumericMultiwayBranch(HTBranch):
 class NominalMultiwayBranch(HTBranch):
     def __init__(self, stats, feature, feature_values, depth, *children, **attributes):
         super().__init__(stats, *children, **attributes)
-        # The number of branches can increase in runtime
-        self.children = list(self.children)
-
         self.feature = feature
         self.depth = depth
 
@@ -171,10 +171,8 @@ class NominalMultiwayBranch(HTBranch):
         self._mapping = {feat_v: i for i, feat_v in enumerate(feature_values)}
         self._r_mapping = {i: feat_v for feat_v, i in self._mapping.items()}
 
-    def next(self, x):
-        pos = self._mapping[x[self.feature]]
-
-        return self.children[pos]
+    def branch_no(self, x):
+        return self._mapping[x[self.feature]]
 
     @property
     def max_branches(self):

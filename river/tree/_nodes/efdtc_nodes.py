@@ -6,7 +6,12 @@ from river.utils.skmultiflow_utils import normalize_values_in_dict
 from .._attribute_test import SplitSuggestion
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
 from .base import SplitNode
-from .htc_nodes import LearningNode, LearningNodeMC, LearningNodeNB, LearningNodeNBA
+from .htc_nodes import (
+    LeafMajorityClass,
+    LeafNaiveBayes,
+    LeafNaiveBayesAdaptive,
+    LearningNode,
+)
 
 
 class BaseEFDTNode(LearningNode):
@@ -234,7 +239,7 @@ class EFDTSplitNode(SplitNode, BaseEFDTNode):
         return count < 2
 
 
-class EFDTLearningNodeMC(BaseEFDTNode, LearningNodeMC):
+class EFDTLearningNodeMC(BaseEFDTNode, LeafMajorityClass):
     """Active Learning node for the Hoeffding Anytime Tree.
 
     Parameters
@@ -254,7 +259,7 @@ class EFDTLearningNodeMC(BaseEFDTNode, LearningNodeMC):
         super().__init__(stats, depth, splitter, **kwargs)
 
 
-class EFDTLearningNodeNB(BaseEFDTNode, LearningNodeNB):
+class EFDTLearningNodeNB(BaseEFDTNode, LeafNaiveBayes):
     """Learning node  for the Hoeffding Anytime Tree that uses Naive Bayes
     models.
 
@@ -275,7 +280,7 @@ class EFDTLearningNodeNB(BaseEFDTNode, LearningNodeNB):
         super().__init__(stats, depth, splitter, **kwargs)
 
 
-class EFDTLearningNodeNBA(BaseEFDTNode, LearningNodeNBA):
+class EFDTLearningNodeNBA(BaseEFDTNode, LeafNaiveBayesAdaptive):
     """Learning node for the Hoeffding Anytime Tree that uses Adaptive Naive
     Bayes models.
 

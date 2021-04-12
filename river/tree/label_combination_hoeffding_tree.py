@@ -137,7 +137,7 @@ class LabelCombinationHoeffdingTreeClassifier(
         return self
 
     def predict_proba_one(self, x):
-        if self._tree_root is None:
+        if self._root is None:
             return None
 
         enc_probas = super().predict_proba_one(x)
@@ -165,7 +165,7 @@ class LabelCombinationHoeffdingTreeClassifier(
         -------
         Predicted labels.
         """
-        if self._tree_root is None:
+        if self._root is None:
             return None
 
         probas = self.predict_proba_one(x)

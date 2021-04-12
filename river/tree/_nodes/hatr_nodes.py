@@ -98,7 +98,7 @@ class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
                 self.last_split_attempt_at = weight_seen
 
     def leaf_prediction(self, x, *, tree=None):
-        prediction_option = tree.leaf_prediction
+        prediction_option = tree.prediction
         if prediction_option == tree._TARGET_MEAN:
             return self.stats.mean.get()
         elif prediction_option == tree._MODEL:
@@ -171,9 +171,9 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
     def learn_one(self, x, y, sample_weight, tree, parent, parent_branch):
         leaf = self.filter_instance_to_leaf(x, parent, parent_branch).node
         if leaf is not None:
-            y_pred = leaf.leaf_prediction(x, tree=tree)
+            y_pred = leaf.prediction(x, tree=tree)
         else:
-            y_pred = parent.leaf_prediction(x, tree=tree)
+            y_pred = parent.prediction(x, tree=tree)
 
         normalized_error = normalize_error(y, y_pred, self)
 
@@ -232,7 +232,7 @@ class AdaSplitNodeRegressor(SplitNode, AdaNode):
                         self._alternate_tree = None
                     else:
                         # Switch tree root
-                        tree._tree_root = tree._tree_root._alternate_tree
+                        tree._root = tree._root._alternate_tree
                     tree._n_switch_alternate_trees += 1
                 elif bound < alt_error_rate - old_error_rate:
                     if isinstance(self._alternate_tree, SplitNode):

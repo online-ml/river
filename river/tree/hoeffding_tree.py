@@ -78,7 +78,7 @@ class HoeffdingTree(ABC):
         self.remove_poor_attrs: bool = remove_poor_attrs
         self.merit_preprune: bool = merit_preprune
 
-        self._tree_root: typing.Union[HTBranch, HTLeaf, None] = None
+        self._root: typing.Union[HTBranch, HTLeaf, None] = None
         self._n_decision_nodes: int = 0
         self._n_active_leaves: int = 0
         self._n_inactive_leaves: int = 0
@@ -157,10 +157,10 @@ class HoeffdingTree(ABC):
         The description of the model.
 
         """
-        if self._tree_root is not None:
+        if self._root is not None:
             buffer = [""]
             description = ""
-            self._tree_root.describe_subtree(self, buffer, 0)
+            self._root.describe_subtree(self, buffer, 0)
             for line in range(len(buffer)):
                 description += buffer[line]
             return description
@@ -201,8 +201,8 @@ class HoeffdingTree(ABC):
     @property
     def depth(self) -> int:
         """The depth of the tree."""
-        if self._tree_root:
-            return self._tree_root.height
+        if self._root:
+            return self._root.height
         return 0
 
     @property
@@ -318,7 +318,7 @@ class HoeffdingTree(ABC):
         -------
         List of learning nodes in the tree.
         """
-        return [leaf for leaf in self._tree_root.iter_leaves()]
+        return [leaf for leaf in self._root.iter_leaves()]
 
     # Adapted from creme's original implementation
     def debug_one(self, x: dict) -> typing.Union[str, None]:
@@ -334,7 +334,7 @@ class HoeffdingTree(ABC):
             A representation of the path followed by the tree to predict `x`; `None` if
             the tree is empty.
         """
-        if self._tree_root is None:
+        if self._root is None:
             return
 
         # We'll redirect all the print statement to a buffer, we'll return the content of the
@@ -342,9 +342,9 @@ class HoeffdingTree(ABC):
         buffer = io.StringIO()
         _print = functools.partial(print, file=buffer)
 
-        for node in self._tree_root.path(x):
+        for node in self._root.path(x):
             if node.is_leaf():
-                pred = node.leaf_prediction(x, tree=self)  # noqa
+                pred = node.prediction(x, tree=self)  # noqa
                 if isinstance(self, base.Classifier):
                     class_val = max(pred, key=pred.get)
                     _print(f"Class {class_val} | {pred}")
@@ -481,13 +481,7 @@ class HoeffdingTree(ABC):
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
         palette = collections.defaultdict(new_color)
 
-        for (
-            parent_no,
-            child_no,
-            parent,
-            child,
-            branch_id,
-        ) in self._tree_root.iter_edges():
+        for (parent_no, child_no, parent, child, branch_id,) in self._root.iter_edges():
 
             if child.depth > max_depth:
                 continue
