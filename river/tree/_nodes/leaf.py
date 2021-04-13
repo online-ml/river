@@ -4,7 +4,7 @@ import numbers
 import typing
 
 from ..base import Leaf
-from .branch import BranchFactory
+from ..utils import BranchFactory
 
 
 class HTLeaf(Leaf, metaclass=abc.ABCMeta):
@@ -132,11 +132,8 @@ class HTLeaf(Leaf, metaclass=abc.ABCMeta):
             best_suggestion = splitter.best_evaluated_split_suggestion(
                 criterion, pre_split_dist, att_id, tree.binary_split
             )
+            best_suggestions.append(best_suggestion)
 
-            # TODO verify the need of this if
-
-            if best_suggestion is not None:
-                best_suggestions.append(best_suggestion)
         return best_suggestions
 
     def disable_attribute(self, att_id):

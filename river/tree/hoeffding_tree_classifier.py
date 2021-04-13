@@ -223,7 +223,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         parent_branch
             Parent leaf's branch index.
         """
-        if not node.observed_class_distribution_is_pure():  # noqa
+        if not leaf.observed_class_distribution_is_pure():  # noqa
             split_criterion = self._new_split_criterion()
 
             best_split_suggestions = leaf.best_split_suggestions(split_criterion, self)
@@ -249,9 +249,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     poor_atts = set()
                     # Add any poor attribute to set
                     for suggestion in best_split_suggestions:
-                        if best_suggestion.merit - suggestion.merit > hoeffding_bound:
-                            if suggestion.feature:
-                                poor_atts.add(suggestion.feature)
+                        if suggestion.feature and best_suggestion.merit - suggestion.merit > hoeffding_bound:
+                            poor_atts.add(suggestion.feature)
                     for poor_att in poor_atts:
                         leaf.disable_attribute(poor_att)
             if should_split:
@@ -321,10 +320,17 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             self._n_active_leaves = 1
 
         p_node = None
-        node = self._root
+        node = None
         if isinstance(self._root, HTBranch):
-            for node in self._root.walk(x, until_leaf=False):
+            path = iter(self._root.walk(x, until_leaf=False))
+            while True:
+                aux = next(path, None)
+                if aux is None:
+                    break
                 p_node = node
+                node = aux
+        else:
+            node = self._root
 
         if isinstance(node, HTLeaf):
             node.learn_one(x, y, sample_weight=sample_weight, tree=self)
@@ -337,7 +343,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     weight_seen = node.total_weight
                     weight_diff = weight_seen - node.last_split_attempt_at
                     if weight_diff >= self.grace_period:
-                        self._attempt_to_split(node, p_node, p_node.branch_no(x))
+                        p_branch = p_node.branch_no(x) if isinstance(p_node, HTBranch) else None
+                        self._attempt_to_split(node, p_node, p_branch)
                         node.last_split_attempt_at = weight_seen
         else:
             # Split node encountered a previously unseen categorical value (in a multi-way test),
@@ -363,7 +370,6 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     def predict_proba_one(self, x):
         proba = {c: 0.0 for c in self.classes}
         if self._root is not None:
-
             if isinstance(self._root, HTBranch):
                 leaf = self._root.traverse(x, until_leaf=True)
             else:

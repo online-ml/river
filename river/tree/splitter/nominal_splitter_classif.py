@@ -16,7 +16,7 @@ class NominalSplitterClassif(Splitter):
         super().__init__()
         self._total_weight_observed = 0.0
         self._missing_weight_observed = 0.0
-        self._att_val_dist_per_class = collections.defaultdict(
+        self._att_dist_per_class = collections.defaultdict(
             functools.partial(collections.defaultdict, float)
         )
         self._att_values = set()
@@ -30,12 +30,12 @@ class NominalSplitterClassif(Splitter):
             self._missing_weight_observed += sample_weight
         else:
             self._att_values.add(att_val)
-            self._att_val_dist_per_class[target_val][att_val] += sample_weight
+            self._att_dist_per_class[target_val][att_val] += sample_weight
 
         self._total_weight_observed += sample_weight
 
     def cond_proba(self, att_val, target_val):
-        class_dist = self._att_val_dist_per_class[target_val]
+        class_dist = self._att_dist_per_class[target_val]
         value = class_dist[att_val]
         try:
             return value / sum(class_dist.values())
@@ -77,13 +77,13 @@ class NominalSplitterClassif(Splitter):
 
     def _class_dist_from_multiway_split(self):
         resulting_dist = {}
-        for i, att_val_dist in self._att_val_dist_per_class.items():
-            for j, value in att_val_dist.items():
-                if j not in resulting_dist:
-                    resulting_dist[j] = {}
-                if i not in resulting_dist[j]:
-                    resulting_dist[j][i] = 0.0
-                resulting_dist[j][i] += value
+        for class_val, att_dist in self._att_dist_per_class.items():
+            for att_val, weight in att_dist.items():
+                if att_val not in resulting_dist:
+                    resulting_dist[att_val] = {}
+                if class_val not in resulting_dist[att_val]:
+                    resulting_dist[att_val][class_val] = 0.0
+                resulting_dist[att_val][class_val] += weight
 
         sorted_keys = sorted(resulting_dist.keys())
         distributions = [dict(sorted(resulting_dist[k].items())) for k in sorted_keys]
@@ -92,14 +92,14 @@ class NominalSplitterClassif(Splitter):
     def _class_dist_from_binary_split(self, val_idx):
         equal_dist = {}
         not_equal_dist = {}
-        for i, att_val_dist in self._att_val_dist_per_class.items():
-            for j, value in att_val_dist.items():
-                if j == val_idx:
-                    if i not in equal_dist:
-                        equal_dist[i] = 0.0
-                    equal_dist[i] += value
+        for class_val, att_dist in self._att_dist_per_class.items():
+            for att_val, weight in att_dist.items():
+                if att_val == val_idx:
+                    if class_val not in equal_dist:
+                        equal_dist[class_val] = 0.0
+                    equal_dist[class_val] += weight
                 else:
-                    if i not in not_equal_dist:
-                        not_equal_dist[i] = 0.0
-                    not_equal_dist[i] += value
+                    if class_val not in not_equal_dist:
+                        not_equal_dist[class_val] = 0.0
+                    not_equal_dist[class_val] += weight
         return [equal_dist, not_equal_dist]
