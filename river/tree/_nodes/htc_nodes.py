@@ -1,7 +1,7 @@
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
-from ..utils import do_naive_bayes_prediction
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
+from ..utils import do_naive_bayes_prediction
 from .leaf import HTLeaf
 
 
