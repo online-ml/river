@@ -4,9 +4,10 @@ from copy import deepcopy
 from river import base, tree
 
 from ._nodes import (
-    LearningNodeAdaptiveMultiTarget,
-    LearningNodeMeanMultiTarget,
-    LearningNodeModelMultiTarget,
+    HTBranch,
+    LeafAdaptiveMultiTarget,
+    LeafMeanMultiTarget,
+    LeafModelMultiTarget,
 )
 from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
 from .splitter import Splitter
@@ -134,18 +135,6 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         self.split_criterion: str = "icvr"  # intra cluster variance reduction
         self.targets: set = set()
 
-    @tree.HoeffdingTreeRegressor.leaf_prediction.setter
-    def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
-            print(
-                'Invalid leaf_prediction option "{}", will use default "{}"'.format(
-                    leaf_prediction, self._MODEL
-                )
-            )
-            self._leaf_prediction = self._MODEL
-        else:
-            self._leaf_prediction = leaf_prediction
-
     @tree.HoeffdingTreeRegressor.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion == "vr":
@@ -187,13 +176,13 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
                     leaf_models = {}
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMeanMultiTarget(initial_stats, depth, self.splitter)
+            return LeafMeanMultiTarget(initial_stats, depth, self.splitter)
         elif self.leaf_prediction == self._MODEL:
-            return LearningNodeModelMultiTarget(
+            return LeafModelMultiTarget(
                 initial_stats, depth, self.splitter, leaf_models
             )
         else:  # adaptive learning node
-            new_adaptive = LearningNodeAdaptiveMultiTarget(
+            new_adaptive = LeafAdaptiveMultiTarget(
                 initial_stats, depth, self.splitter, leaf_models
             )
             if parent is not None:
@@ -251,26 +240,12 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         dict
             Predicted target values.
         """
-
+        pred = {}
         if self._root is not None:
-            found_node = self._root.filter_instance_to_leaf(x, None, -1)
-            node = found_node.node
-            if node is not None:
-                if node.is_leaf():
-                    return node.prediction(x, tree=self)
-                else:
-                    # The instance sorting ended up in a Split Node, since no branch was found
-                    # for some of the instance's features. Use the mean prediction in this case
-                    return {
-                        t: node.stats[t].mean.get() if t in node.stats else 0.0
-                        for t in self.targets
-                    }
+            if isinstance(self._root, HTBranch):
+                leaf = self._root.traverse(x, until_leaf=True)
             else:
-                parent = found_node.parent
-                return {
-                    t: parent.stats[t].mean.get() if t in parent.stats else 0.0
-                    for t in self.targets
-                }
-        else:
-            # Model is empty
-            return {}
+                leaf = self._root
+
+            pred = leaf.prediction(x, tree=self)
+        return pred

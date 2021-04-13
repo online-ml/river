@@ -1,23 +1,23 @@
+import collections
 import functools
 import inspect
-from collections import defaultdict
 from copy import deepcopy
 
 from river.stats import Var
 from river.utils import VectorDict
 
-from .htr_nodes import LearningNodeMean
+from .htr_nodes import LeafMean
 
 
-class LearningNodeMeanMultiTarget(LearningNodeMean):
+class LeafMeanMultiTarget(LeafMean):
     """Learning Node for Multi-target Regression tasks that always uses the mean value
     of the targets as responses.
 
     Parameters
     ----------
     stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
+        In regression tasks the node keeps a `utils.VectorDict` with instances of
+        `stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     splitter
@@ -35,7 +35,7 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
         for t in y:
             self.stats[t].update(y[t], sample_weight)
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         return {
             t: self.stats[t].mean.get() if t in self.stats else 0.0
             for t in tree.targets
@@ -46,15 +46,15 @@ class LearningNodeMeanMultiTarget(LearningNodeMean):
         return list(self.stats.values())[0].mean.n if self.stats else 0
 
 
-class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
+class LeafModelMultiTarget(LeafMeanMultiTarget):
     """Learning Node for Multi-target Regression tasks that always uses learning models
     for each target.
 
     Parameters
     ----------
     stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
+        In regression tasks the node keeps a `utils.VectorDict` with instances of
+        `stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     splitter
@@ -109,14 +109,14 @@ class LearningNodeModelMultiTarget(LearningNodeMeanMultiTarget):
                 for _ in range(int(sample_weight)):
                     model.learn_one(x, y_)
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         return {
             t: self._leaf_models[t].predict_one(x) if t in self._leaf_models else 0.0
             for t in tree.targets
         }
 
 
-class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
+class LeafAdaptiveMultiTarget(LeafModelMultiTarget):
     """Learning Node for multi-target regression tasks that dynamically selects between
     predictors and might behave as a regression tree node or a model tree node, depending
     on which predictor is the best one.
@@ -124,8 +124,8 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
     Parameters
     ----------
     stats
-        In regression tasks the node keeps a `river.utils.VectorDict` with instances of
-        `river.stats.Var` to estimate the targets' statistics.
+        In regression tasks the node keeps a `utils.VectorDict` with instances of
+        `stats.Var` to estimate the targets' statistics.
     depth
         The depth of the node.
     splitter
@@ -139,15 +139,15 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
 
     def __init__(self, stats, depth, splitter, leaf_models, **kwargs):
         super().__init__(stats, depth, splitter, leaf_models, **kwargs)
-        self._fmse_mean = defaultdict(lambda: 0.0)
-        self._fmse_model = defaultdict(lambda: 0.0)
+        self._fmse_mean = collections.defaultdict(float)
+        self._fmse_model = collections.defaultdict(float)
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
         pred_mean = {
             t: self.stats[t].mean.get() if t in self.stats else 0.0
             for t in tree.targets
         }
-        pred_model = super().leaf_prediction(x, tree=tree)
+        pred_model = super().prediction(x, tree=tree)
 
         for t in tree.targets:  # Update the faded errors
             self._fmse_mean[t] = (
@@ -161,7 +161,7 @@ class LearningNodeAdaptiveMultiTarget(LearningNodeModelMultiTarget):
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         pred = {}
         for t in tree.targets:
             if self._fmse_mean[t] < self._fmse_model[t]:  # Act as a regression tree
