@@ -200,7 +200,9 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
         return split_criterion
 
-    def _attempt_to_split(self, leaf: HTLeaf, parent: HTBranch, parent_branch: int):
+    def _attempt_to_split(
+        self, leaf: HTLeaf, parent: HTBranch, parent_branch: int, **kwargs
+    ):
         """Attempt to split a leaf.
 
         If the samples seen so far are not from the same class then:
@@ -222,6 +224,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             The leaf's parent.
         parent_branch
             Parent leaf's branch index.
+        kwargs
+            Other parameters passed to the new branch.
         """
         if not leaf.observed_class_distribution_is_pure():  # noqa
             split_criterion = self._new_split_criterion()
@@ -272,7 +276,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     )
 
                     new_split = split_decision.assemble(
-                        branch, leaf.stats, leaf.depth, *leaves
+                        branch, leaf.stats, leaf.depth, *leaves, **kwargs
                     )
 
                     self._n_active_leaves -= 1

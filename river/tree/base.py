@@ -32,7 +32,7 @@ class Branch(abc.ABC):
                 node = node.next(x)
             except KeyError:
                 if until_leaf:
-                    node = node.most_common_path()
+                    _, node = node.most_common_path()
                 else:
                     break
         yield node

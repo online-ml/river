@@ -1,7 +1,9 @@
 import abc
 import math
+import typing
 
 from ..base import Branch
+from .leaf import HTLeaf
 
 
 class HTBranch(Branch):
@@ -30,7 +32,7 @@ class HTBranch(Branch):
         pass
 
     @abc.abstractmethod
-    def most_common_path(self):
+    def most_common_path(self) -> typing.Tuple[int, typing.Union["HTLeaf", "HTBranch"]]:
         pass
 
 
@@ -54,8 +56,8 @@ class NumericBinaryBranch(HTBranch):
         left, right = self.children
 
         if left.total_weight < right.total_weight:
-            return right
-        return left
+            return 1, right
+        return 0, left
 
 
 class NominalBinaryBranch(HTBranch):
@@ -78,8 +80,8 @@ class NominalBinaryBranch(HTBranch):
         left, right = self.children
 
         if left.total_weight < right.total_weight:
-            return right
-        return left
+            return 1, right
+        return 0, left
 
 
 class NumericMultiwayBranch(HTBranch):
@@ -111,7 +113,7 @@ class NumericMultiwayBranch(HTBranch):
             range(len(self.children)), key=lambda i: self.children[i].total_weight
         )
 
-        return self.children[pos]
+        return pos, self.children[pos]
 
     def add_child(self, feature_val, child):
         slot = math.floor(feature_val / self.radius)
@@ -144,7 +146,7 @@ class NominalMultiwayBranch(HTBranch):
             range(len(self.children)), key=lambda i: self.children[i].total_weight
         )
 
-        return self.children[pos]
+        return pos, self.children[pos]
 
     def add_child(self, feature_val, child):
         self._mapping[feature_val] = len(self.children)

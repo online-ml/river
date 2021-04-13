@@ -4,15 +4,11 @@ implementations for the hoeffding trees.
 """
 
 from .arf_htc_nodes import (
-    RandomLearningNodeMC,
-    RandomLearningNodeNB,
-    RandomLearningNodeNBA,
+    RandomLeafMajorityClass,
+    RandomLeafNaiveBayes,
+    RandomLeafNaiveBayesAdaptive,
 )
-from .arf_htr_nodes import (
-    RandomLearningNodeAdaptive,
-    RandomLearningNodeMean,
-    RandomLearningNodeModel,
-)
+from .arf_htr_nodes import RandomLeafAdaptive, RandomLeafMean, RandomLeafModel
 from .branch import (
     HTBranch,
     NominalBinaryBranch,
@@ -21,19 +17,33 @@ from .branch import (
     NumericMultiwayBranch,
 )
 from .efdtc_nodes import (
-    EFDTLearningNodeMC,
-    EFDTLearningNodeNB,
-    EFDTLearningNodeNBA,
-    EFDTSplitNode,
+    BaseEFDTBranch,
+    BaseEFDTLeaf,
+    EFDTLeafMajorityClass,
+    EFDTLeafNaiveBayes,
+    EFDTLeafNaiveBayesAdaptive,
+    EFDTNominalBinaryBranch,
+    EFDTNominalMultiwayBranch,
+    EFDTNumericBinaryBranch,
+    EFDTNumericMultiwayBranch,
 )
-from .hatc_nodes import AdaLearningNodeClassifier, AdaNode, AdaSplitNodeClassifier
-from .hatr_nodes import AdaLearningNodeRegressor, AdaSplitNodeRegressor
+from .hatc_nodes import (
+    AdaBranchClassifier,
+    AdaLeafClassifier,
+    AdaNode,
+    AdaNomBinaryBranchClass,
+    AdaNomMultiwayBranchClass,
+    AdaNumBinaryBranchClass,
+    AdaNumMultiwayBranchClass,
+)
+
+# from .hatr_nodes import AdaLearningNodeRegressor, AdaSplitNodeRegressor
 from .htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
-from .htr_nodes import LearningNodeAdaptive, LearningNodeMean, LearningNodeModel
+from .htr_nodes import LeafAdaptive, LeafMean, LeafModel
 from .isouptr_nodes import (
-    LearningNodeAdaptiveMultiTarget,
-    LearningNodeMeanMultiTarget,
-    LearningNodeModelMultiTarget,
+    LeafAdaptiveMultiTarget,
+    LeafMeanMultiTarget,
+    LeafModelMultiTarget,
 )
 from .leaf import HTLeaf
 
@@ -48,27 +58,36 @@ __all__ = [
     "LeafMajorityClass",
     "LeafNaiveBayes",
     "LeafNaiveBayesAdaptive",
-    "RandomLearningNodeMC",
-    "RandomLearningNodeNB",
-    "RandomLearningNodeNBA",
-    "AdaSplitNodeClassifier",
-    "AdaLearningNodeClassifier",
-    "EFDTSplitNode",
-    "EFDTLearningNodeMC",
-    "EFDTLearningNodeNB",
-    "EFDTLearningNodeNBA",
-    "LearningNodeMean",
-    "LearningNodeModel",
-    "LearningNodeAdaptive",
-    "LearningNodeMean",
-    "LearningNodeModel",
-    "LearningNodeAdaptive",
-    "RandomLearningNodeMean",
-    "RandomLearningNodeModel",
-    "RandomLearningNodeAdaptive",
-    "AdaSplitNodeRegressor",
-    "AdaLearningNodeRegressor",
-    "LearningNodeMeanMultiTarget",
-    "LearningNodeModelMultiTarget",
-    "LearningNodeAdaptiveMultiTarget",
+    "RandomLeafMajorityClass",
+    "RandomLeafNaiveBayes",
+    "RandomLeafNaiveBayesAdaptive",
+    "AdaBranchClassifier",
+    "AdaNomBinaryBranchClass",
+    "AdaNomMultiwayBranchClass",
+    "AdaNumBinaryBranchClass",
+    "AdaNumMultiwayBranchClass",
+    "AdaLeafClassifier",
+    "BaseEFDTBranch",
+    "BaseEFDTLeaf",
+    "EFDTNominalBinaryBranch",
+    "EFDTNominalMultiwayBranch",
+    "EFDTNumericBinaryBranch",
+    "EFDTNumericMultiwayBranch",
+    "EFDTLeafMajorityClass",
+    "EFDTLeafNaiveBayes",
+    "EFDTLeafNaiveBayesAdaptive",
+    "LeafMean",
+    "LeafModel",
+    "LeafAdaptive",
+    "LeafMean",
+    "LeafModel",
+    "LeafAdaptive",
+    "RandomLeafMean",
+    "RandomLeafModel",
+    "RandomLeafAdaptive",
+    # "AdaSplitNodeRegressor",
+    # "AdaLearningNodeRegressor",
+    "LeafMeanMultiTarget",
+    "LeafModelMultiTarget",
+    "LeafAdaptiveMultiTarget",
 ]

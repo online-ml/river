@@ -8,12 +8,12 @@ import numpy as np
 
 from river import base, metrics, stats, tree
 from river.drift import ADWIN
-from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
-from river.tree._nodes import RandomLearningNodeMC  # noqa
-from river.tree._nodes import RandomLearningNodeMean  # noqa
-from river.tree._nodes import RandomLearningNodeModel  # noqa
-from river.tree._nodes import RandomLearningNodeNB  # noqa
-from river.tree._nodes import RandomLearningNodeNBA  # noqa
+from river.tree._nodes import RandomLeafAdaptive  # noqa
+from river.tree._nodes import RandomLeafMajorityClass  # noqa
+from river.tree._nodes import RandomLeafMean  # noqa
+from river.tree._nodes import RandomLeafModel  # noqa
+from river.tree._nodes import RandomLeafNaiveBayes  # noqa
+from river.tree._nodes import RandomLeafNaiveBayesAdaptive  # noqa
 from river.tree.splitter import Splitter
 from river.utils.skmultiflow_utils import check_random_state
 
@@ -189,15 +189,15 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         seed = self._rng.randint(0, 4294967295, dtype="u8")
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return RandomLearningNodeMC(
+            return RandomLeafMajorityClass(
                 initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return RandomLearningNodeNB(
+            return RandomLeafNaiveBayes(
                 initial_stats, depth, self.splitter, self.max_features, seed,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return RandomLearningNodeNBA(
+            return RandomLeafNaiveBayesAdaptive(
                 initial_stats, depth, self.splitter, self.max_features, seed,
             )
 
@@ -274,11 +274,11 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 leaf_model = copy.deepcopy(parent._leaf_model)  # noqa
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return RandomLearningNodeMean(
+            return RandomLeafMean(
                 initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self.leaf_prediction == self._MODEL:
-            return RandomLearningNodeModel(
+            return RandomLeafModel(
                 initial_stats,
                 depth,
                 self.splitter,
@@ -287,7 +287,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 leaf_model=leaf_model,
             )
         else:  # adaptive learning node
-            new_adaptive = RandomLearningNodeAdaptive(
+            new_adaptive = RandomLeafAdaptive(
                 initial_stats,
                 depth,
                 self.splitter,

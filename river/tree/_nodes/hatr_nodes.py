@@ -6,10 +6,10 @@ from river.utils.skmultiflow_utils import check_random_state
 
 from .base import FoundNode, SplitNode
 from .hatc_nodes import AdaNode
-from .htr_nodes import LearningNodeAdaptive
+from .htr_nodes import LeafAdaptive
 
 
-class AdaLearningNodeRegressor(LearningNodeAdaptive, AdaNode):
+class AdaLearningNodeRegressor(LeafAdaptive, AdaNode):
     """Learning Node of the Hoeffding Adaptive Tree regressor.
 
     Parameters

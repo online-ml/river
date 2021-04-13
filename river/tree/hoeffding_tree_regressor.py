@@ -288,7 +288,9 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             pred = leaf.prediction(x, tree=self)
         return pred
 
-    def _attempt_to_split(self, leaf: HTLeaf, parent: HTBranch, parent_branch: int):
+    def _attempt_to_split(
+        self, leaf: HTLeaf, parent: HTBranch, parent_branch: int, **kwargs
+    ):
         """Attempt to split a node.
 
         If the target's variance is high at the leaf node, then:
@@ -312,6 +314,8 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             The node's parent in the tree.
         parent_branch
             Parent node's branch index.
+        kwargs
+            Other parameters passed to the new branch.
 
         """
         split_criterion = self._new_split_criterion()
@@ -363,7 +367,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                 )
 
                 new_split = split_decision.assemble(
-                    branch, leaf.stats, leaf.depth, *leaves
+                    branch, leaf.stats, leaf.depth, *leaves, **kwargs
                 )
 
                 self._n_active_leaves -= 1
