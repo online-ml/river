@@ -4,11 +4,11 @@ from operator import attrgetter
 from river import base, linear_model
 
 from ._nodes import (
-    LearningNode,
-    LearningNodeAdaptive,
-    LearningNodeMean,
-    LearningNodeModel,
-    SplitNode,
+    HTLeaf,
+    LeafAdaptive,
+    LeafMean,
+    LeafModel,
+    HTBranch,
 )
 from ._split_criterion import VarianceReductionSplitCriterion
 from .hoeffding_tree import HoeffdingTree
@@ -99,6 +99,8 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     _MODEL = "model"
     _ADAPTIVE = "adaptive"
 
+    _VALID_LEAF_PREDICTION = [_TARGET_MEAN, _MODEL, _ADAPTIVE]
+
     def __init__(
         self,
         grace_period: int = 200,
@@ -138,7 +140,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
 
     @HoeffdingTree.leaf_prediction.setter
     def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
+        if leaf_prediction not in self._VALID_LEAF_PREDICTION:
             print(
                 'Invalid leaf_prediction option "{}", will use default "{}"'.format(
                     leaf_prediction, self._MODEL
@@ -184,11 +186,11 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                     leaf_model = deepcopy(self.leaf_model)
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMean(initial_stats, depth, self.splitter)
+            return LeafMean(initial_stats, depth, self.splitter)
         elif self.leaf_prediction == self._MODEL:
-            return LearningNodeModel(initial_stats, depth, self.splitter, leaf_model)
+            return LeafModel(initial_stats, depth, self.splitter, leaf_model)
         else:  # adaptive learning node
-            new_adaptive = LearningNodeAdaptive(
+            new_adaptive = LeafAdaptive(
                 initial_stats, depth, self.splitter, leaf_model
             )
             if parent is not None:
@@ -220,71 +222,48 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             self._root = self._new_leaf()
             self._n_active_leaves = 1
 
-        found_node = self._root.filter_instance_to_leaf(x, None, -1)  # noqa
-        leaf_node = found_node.node
+        p_node = None
+        node = None
+        if isinstance(self._root, HTBranch):
+            path = iter(self._root.walk(x, until_leaf=False))
+            while True:
+                aux = next(path, None)
+                if aux is None:
+                    break
+                p_node = node
+                node = aux
+        else:
+            node = self._root
 
-        if leaf_node is None:
-            leaf_node = self._new_leaf()
-            found_node.parent.set_child(found_node.parent_branch, leaf_node)
-            self._n_active_leaves += 1
-
-        if leaf_node.is_leaf():
-            leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
-            if self._growth_allowed and leaf_node.is_active():
-                if leaf_node.depth >= self.max_depth:  # Max depth reached
-                    leaf_node.deactivate()
+        if isinstance(node, HTLeaf):
+            node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            if self._growth_allowed and node.is_active():
+                if node.depth >= self.max_depth:  # Max depth reached
+                    node.deactivate()
                     self._n_active_leaves -= 1
                     self._n_inactive_leaves += 1
                 else:
-                    weight_seen = leaf_node.total_weight
-                    weight_diff = weight_seen - leaf_node.last_split_attempt_at
+                    weight_seen = node.total_weight
+                    weight_diff = weight_seen - node.last_split_attempt_at
                     if weight_diff >= self.grace_period:
-                        self._attempt_to_split(
-                            leaf_node, found_node.parent, found_node.parent_branch
-                        )
-                        leaf_node.last_split_attempt_at = weight_seen
+                        p_branch = p_node.branch_no(x) if isinstance(p_node, HTBranch) else None
+                        self._attempt_to_split(node, p_node, p_branch)
+                        node.last_split_attempt_at = weight_seen
         else:
-            current = leaf_node
-            split_feat = current.split_test.attrs_test_depends_on()[0]
             # Split node encountered a previously unseen categorical value (in a multi-way test),
             # so there is no branch to sort the instance to
-            if current.split_test.max_branches() == -1 and split_feat in x:
+            if node.max_branches() == -1 and node.feature in x:
                 # Creates a new branch to the new categorical value
-                leaf_node = self._new_leaf(parent=current)
-                branch_id = current.split_test.add_new_branch(x[split_feat])
-                current.set_child(branch_id, leaf_node)
+                leaf = self._new_leaf(parent=node)
+                node.add_child(x[node.feature], leaf)
                 self._n_active_leaves += 1
-                leaf_node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+                leaf.learn_one(x, y, sample_weight=sample_weight, tree=self)
             # The split feature is missing in the instance. Hence, we pass the new example
             # to the most traversed path in the current subtree
             else:
-                nd = leaf_node
-                # Keep traversing down the tree until a leaf is found
-                while not nd.is_leaf():
-                    path = max(
-                        nd._children,
-                        key=lambda c: nd._children[c].total_weight
-                        if nd._children[c]
-                        else 0.0,
-                    )
-                    most_traversed = nd.get_child(path)
-                    # Pass instance to the most traversed path
-                    if most_traversed is not None:
-                        found_node = most_traversed.filter_instance_to_leaf(x, nd, path)
-                        nd = found_node.node
-
-                        if nd is None:
-                            nd = self._new_leaf(parent=found_node.parent)
-                            found_node.parent.set_child(found_node.parent_branch, nd)
-                            self._n_active_leaves += 1
-                    else:
-                        leaf = self._new_leaf(parent=nd)
-                        nd.set_child(path, leaf)
-                        nd = leaf
-                        self._n_active_leaves += 1
-
+                leaf = node.traverse(x, until_leaf=True)
                 # Learn from the sample
-                nd.learn_one(x, y, sample_weight=sample_weight, tree=self)
+                leaf.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -304,24 +283,17 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         Predicted target value.
 
         """
+        pred = 0.
         if self._root is not None:
-            found_node = self._root.filter_instance_to_leaf(x, None, -1)  # noqa
-            node = found_node.node
-            if node is not None:
-                if node.is_leaf():
-                    return node.prediction(x, tree=self)
-                else:
-                    # The instance sorting ended up in a Split Node, since no branch was found
-                    # for some of the instance's features. Use the mean prediction in this case
-                    return node.stats.mean.get()
+            if isinstance(self._root, HTBranch):
+                leaf = self._root.traverse(x, until_leaf=True)
             else:
-                parent = found_node.parent
-                return parent.stats.mean.get()
-        else:
-            # Model is empty
-            return 0.0
+                leaf = self._root
 
-    def _attempt_to_split(self, node: LearningNode, parent: SplitNode, parent_idx: int):
+            pred = leaf.prediction(x, tree=self)
+        return pred
+
+    def _attempt_to_split(self, leaf: HTLeaf, parent: HTBranch, parent_branch: int):
         """Attempt to split a node.
 
         If the target's variance is high at the leaf node, then:
@@ -339,25 +311,25 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
 
         Parameters
         ----------
-        node
+        leaf
             The node to evaluate.
         parent
             The node's parent in the tree.
-        parent_idx
+        parent_branch
             Parent node's branch index.
 
         """
         split_criterion = self._new_split_criterion()
-        best_split_suggestions = node.best_split_suggestions(split_criterion, self)
-        best_split_suggestions.sort(key=attrgetter("merit"))
+        best_split_suggestions = leaf.best_split_suggestions(split_criterion, self)
+        best_split_suggestions.sort()
         should_split = False
         if len(best_split_suggestions) < 2:
             should_split = len(best_split_suggestions) > 0
         else:
             hoeffding_bound = self._hoeffding_bound(
-                split_criterion.range_of_merit(node.stats),
+                split_criterion.range_of_merit(leaf.stats),
                 self.split_confidence,
-                node.total_weight,
+                leaf.total_weight,
             )
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
@@ -372,42 +344,36 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                 best_ratio = second_best_suggestion.merit / best_suggestion.merit
 
                 # Add any poor attribute to set
-                for i in range(len(best_split_suggestions)):
-                    if best_split_suggestions[i].split_test is not None:
-                        split_attrs = best_split_suggestions[
-                            i
-                        ].split_test.attrs_test_depends_on()
-                        if len(split_attrs) == 1:
-                            if (
-                                best_split_suggestions[i].merit / best_suggestion.merit
-                                < best_ratio - 2 * hoeffding_bound
-                            ):
-                                poor_attrs.add(split_attrs[0])
+                for suggestion in best_split_suggestions:
+                    if suggestion.feature and suggestion.merit / best_suggestion.merit < best_ratio - 2 * hoeffding_bound:
+                        poor_attrs.add(suggestion.feature)
                 for poor_att in poor_attrs:
-                    node.disable_attribute(poor_att)
+                    leaf.disable_attribute(poor_att)
         if should_split:
             split_decision = best_split_suggestions[-1]
-            if split_decision.split_test is None:
-                # Preprune - null wins
-                node.deactivate()
+            if split_decision.feature is None:
+                # Pre-pruning - null wins
+                leaf.deactivate()
                 self._n_inactive_leaves += 1
                 self._n_active_leaves -= 1
             else:
-                new_split = self._branch_selector(
-                    split_decision.split_test, node.stats, node.depth
+                branch = self._branch_selector()
+                leaves = tuple(
+                    self._new_leaf(initial_stats, parent=leaf)
+                    for initial_stats in split_decision.children_stats
                 )
-                for i in range(split_decision.num_splits()):
-                    new_child = self._new_leaf(
-                        split_decision.resulting_stats_from_split(i), node
-                    )
-                    new_split.set_child(i, new_child)
+
+                new_split = split_decision.assemble(
+                    branch, leaf.stats, leaf.depth, *leaves
+                )
+
                 self._n_active_leaves -= 1
                 self._n_decision_nodes += 1
-                self._n_active_leaves += split_decision.num_splits()
+                self._n_active_leaves += len(leaves)
                 if parent is None:
                     self._root = new_split
                 else:
-                    parent.set_child(parent_idx, new_split)
+                    parent.children[parent_branch] = new_split
 
             # Manage memory
             self._enforce_size_limit()
@@ -421,6 +387,6 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             )
             last_check_vr = best_split_suggestions[-1].merit
 
-            node.manage_memory(
+            leaf.manage_memory(
                 split_criterion, last_check_ratio, last_check_vr, hoeffding_bound
-            )  # noqa
+            )

@@ -4,7 +4,7 @@ import typing
 from river.base.typing import ClfTarget
 from river.proba import Gaussian
 
-from .._nodes.branch import BranchFactory
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 

@@ -5,7 +5,7 @@ import functools
 from river import utils
 from river.utils.histogram import Bin  # noqa
 
-from .._nodes.branch import BranchFactory
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 

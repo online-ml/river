@@ -4,7 +4,7 @@ import typing
 
 from river import stats, utils
 
-from .._nodes.branch import BranchFactory
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 

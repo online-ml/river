@@ -3,7 +3,7 @@ import functools
 from river.stats import Var
 from river.utils import VectorDict
 
-from .._nodes import BranchFactory
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 

@@ -1,7 +1,7 @@
 import collections
 import functools
 
-from .._nodes.branch import BranchFactory
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -35,10 +35,10 @@ class NominalSplitterClassif(Splitter):
         self._total_weight_observed += sample_weight
 
     def cond_proba(self, att_val, target_val):
-        obs = self._att_val_dist_per_class[target_val]
-        value = self._att_val_dist_per_class[att_val]
+        class_dist = self._att_val_dist_per_class[target_val]
+        value = class_dist[att_val]
         try:
-            return (value + 1.0) / (sum(obs.values()) + len(obs))
+            return value / sum(class_dist.values())
         except ZeroDivisionError:
             return 0.0
 

@@ -4,10 +4,10 @@ from river.stats import Var
 
 from ..splitter import EBSTSplitter
 from ..splitter.nominal_splitter_reg import NominalSplitterReg
-from .base import LearningNode
+from .leaf import HTLeaf
 
 
-class LearningNodeMean(LearningNode):
+class LeafMean(HTLeaf):
     """Learning Node for regression tasks that always use the average target
         value as response.
 
@@ -65,7 +65,7 @@ class LearningNodeMean(LearningNode):
     def update_stats(self, y, sample_weight):
         self.stats.update(y, sample_weight)
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         return self.stats.mean.get()
 
     @property
@@ -100,7 +100,7 @@ class LearningNodeMean(LearningNode):
         return -self.depth
 
 
-class LearningNodeModel(LearningNodeMean):
+class LeafModel(LeafMean):
     """Learning Node for regression tasks that always use a learning model to provide
         responses.
 
@@ -137,11 +137,11 @@ class LearningNodeModel(LearningNodeMean):
             for _ in range(int(sample_weight)):
                 self._leaf_model.learn_one(x, y)
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         return self._leaf_model.predict_one(x)
 
 
-class LearningNodeAdaptive(LearningNodeModel):
+class LeafAdaptive(LeafModel):
     """Learning Node for regression tasks that dynamically selects between predictors and
         might behave as a regression tree node or a model tree node, depending on which predictor
         is the best one.
@@ -181,8 +181,8 @@ class LearningNodeAdaptive(LearningNodeModel):
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
 
-    def leaf_prediction(self, x, *, tree=None):
+    def prediction(self, x, *, tree=None):
         if self._fmse_mean < self._fmse_model:  # Act as a regression tree
             return self.stats.mean.get()
         else:  # Act as a model tree
-            return super().leaf_prediction(x)
+            return super().prediction(x)
