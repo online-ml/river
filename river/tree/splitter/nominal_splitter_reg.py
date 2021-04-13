@@ -58,7 +58,7 @@ class NominalSplitterReg(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        current_best = None
+        current_best = BranchFactory()
         ordered_feature_values = sorted(list(self._statistics.keys()))
         if not binary_only:
             post_split_dist = [self._statistics[k] for k in ordered_feature_values]
@@ -80,7 +80,7 @@ class NominalSplitterReg(Splitter):
 
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
-            if current_best is None or merit > current_best.merit:
+            if merit > current_best.merit:
                 current_best = BranchFactory(
                     merit,
                     att_idx,

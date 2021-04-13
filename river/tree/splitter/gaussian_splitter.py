@@ -57,12 +57,12 @@ class GaussianSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        best_suggestion = None
+        best_suggestion = BranchFactory()
         suggested_split_values = self._split_point_suggestions()
         for split_value in suggested_split_values:
             post_split_dist = self._class_dists_from_binary_split(split_value)
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
-            if best_suggestion is None or merit > best_suggestion.merit:
+            if merit > best_suggestion.merit:
                 best_suggestion = BranchFactory(
                     merit, att_idx, split_value, post_split_dist
                 )

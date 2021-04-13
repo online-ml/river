@@ -45,7 +45,7 @@ class NominalSplitterClassif(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        best_suggestion = None
+        best_suggestion = BranchFactory()
 
         if not binary_only:
             post_split_dist = self._class_dist_from_multiway_split()

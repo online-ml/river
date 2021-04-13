@@ -131,7 +131,7 @@ class ExhaustiveSplitter(Splitter):
         post_split_dists = [left_dist, right_dist]
         merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
-        if current_best_option is None or merit > current_best_option.merit:
+        if merit > current_best_option.merit:
             current_best_option = BranchFactory(
                 merit, att_idx, current_node.cut_point, post_split_dists
             )

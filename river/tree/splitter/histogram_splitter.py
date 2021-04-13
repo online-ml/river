@@ -60,7 +60,7 @@ class HistogramSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        best_suggestion = None
+        best_suggestion = BranchFactory()
 
         low = min(h[0].right for h in self.hists.values())
         high = min(h[-1].right for h in self.hists.values())
@@ -90,7 +90,7 @@ class HistogramSplitter(Splitter):
             post_split_dist = [l_dist, r_dist]
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
-            if best_suggestion is None or merit > best_suggestion.merit:
+            if merit > best_suggestion.merit:
                 best_suggestion = BranchFactory(merit, att_idx, at, post_split_dist)
 
         return best_suggestion
