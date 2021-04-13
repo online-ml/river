@@ -1,15 +1,8 @@
 from copy import deepcopy
-from operator import attrgetter
 
 from river import base, linear_model
 
-from ._nodes import (
-    HTLeaf,
-    LeafAdaptive,
-    LeafMean,
-    LeafModel,
-    HTBranch,
-)
+from ._nodes import HTBranch, HTLeaf, LeafAdaptive, LeafMean, LeafModel
 from ._split_criterion import VarianceReductionSplitCriterion
 from .hoeffding_tree import HoeffdingTree
 from .splitter import EBSTSplitter, Splitter
@@ -190,9 +183,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         elif self.leaf_prediction == self._MODEL:
             return LeafModel(initial_stats, depth, self.splitter, leaf_model)
         else:  # adaptive learning node
-            new_adaptive = LeafAdaptive(
-                initial_stats, depth, self.splitter, leaf_model
-            )
+            new_adaptive = LeafAdaptive(initial_stats, depth, self.splitter, leaf_model)
             if parent is not None:
                 new_adaptive._fmse_mean = parent._fmse_mean  # noqa
                 new_adaptive._fmse_model = parent._fmse_model  # noqa
@@ -246,7 +237,11 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                     weight_seen = node.total_weight
                     weight_diff = weight_seen - node.last_split_attempt_at
                     if weight_diff >= self.grace_period:
-                        p_branch = p_node.branch_no(x) if isinstance(p_node, HTBranch) else None
+                        p_branch = (
+                            p_node.branch_no(x)
+                            if isinstance(p_node, HTBranch)
+                            else None
+                        )
                         self._attempt_to_split(node, p_node, p_branch)
                         node.last_split_attempt_at = weight_seen
         else:
@@ -283,7 +278,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         Predicted target value.
 
         """
-        pred = 0.
+        pred = 0.0
         if self._root is not None:
             if isinstance(self._root, HTBranch):
                 leaf = self._root.traverse(x, until_leaf=True)
@@ -345,7 +340,11 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
 
                 # Add any poor attribute to set
                 for suggestion in best_split_suggestions:
-                    if suggestion.feature and suggestion.merit / best_suggestion.merit < best_ratio - 2 * hoeffding_bound:
+                    if (
+                        suggestion.feature
+                        and suggestion.merit / best_suggestion.merit
+                        < best_ratio - 2 * hoeffding_bound
+                    ):
                         poor_attrs.add(suggestion.feature)
                 for poor_att in poor_attrs:
                     leaf.disable_attribute(poor_att)

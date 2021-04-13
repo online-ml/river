@@ -249,7 +249,11 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     poor_atts = set()
                     # Add any poor attribute to set
                     for suggestion in best_split_suggestions:
-                        if suggestion.feature and best_suggestion.merit - suggestion.merit > hoeffding_bound:
+                        if (
+                            suggestion.feature
+                            and best_suggestion.merit - suggestion.merit
+                            > hoeffding_bound
+                        ):
                             poor_atts.add(suggestion.feature)
                     for poor_att in poor_atts:
                         leaf.disable_attribute(poor_att)
@@ -343,7 +347,11 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     weight_seen = node.total_weight
                     weight_diff = weight_seen - node.last_split_attempt_at
                     if weight_diff >= self.grace_period:
-                        p_branch = p_node.branch_no(x) if isinstance(p_node, HTBranch) else None
+                        p_branch = (
+                            p_node.branch_no(x)
+                            if isinstance(p_node, HTBranch)
+                            else None
+                        )
                         self._attempt_to_split(node, p_node, p_branch)
                         node.last_split_attempt_at = weight_seen
         else:

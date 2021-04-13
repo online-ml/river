@@ -3,8 +3,8 @@ from abc import ABCMeta, abstractmethod
 
 from river import base
 
-from ..utils import BranchFactory
 from .._split_criterion.base_split_criterion import SplitCriterion
+from ..utils import BranchFactory
 
 
 class Splitter(base.Estimator, metaclass=ABCMeta):
