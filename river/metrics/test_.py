@@ -144,6 +144,22 @@ TEST_CASES = [
     (metrics.MCC(), sk_metrics.matthews_corrcoef),
     (metrics.MAE(), sk_metrics.mean_absolute_error),
     (metrics.MSE(), sk_metrics.mean_squared_error),
+    (metrics.Homogeneity(), sk_metrics.homogeneity_score),
+    (metrics.Completeness(), sk_metrics.completeness_score),
+    (metrics.VBeta(beta=0.5), partial(sk_metrics.v_measure_score, beta=0.5)),
+    (metrics.MatthewsCorrCoef(), sk_metrics.matthews_corrcoef),
+    (metrics.FowlkesMallows(), sk_metrics.fowlkes_mallows_score),
+    (metrics.Rand(), sk_metrics.rand_score),
+    (metrics.AdjustedRand(), sk_metrics.adjusted_rand_score),
+    (metrics.MutualInfo(), sk_metrics.mutual_info_score),
+    (
+        metrics.NormalizedMutualInfo(average_method="geometric"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="geometric"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="arithmetic"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="arithmetic"),
+    ),
 ]
 
 
