@@ -9,15 +9,13 @@ jobs:
   pypi:
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-latest]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
+    env:
+      CIBW_BUILD: "cp36-* cp37-* cp38-*"
+      CIBW_BEFORE_BUILD: "pip install cython"
     steps:
       - uses: actions/checkout@v2
-
-      - name: Configure cibuildwheel
-        run: |
-          CIBW_BUILD="cp36-* cp37-* cp38-*"
-          CIBW_BEFORE_BUILD="pip install cython"
 
       - name: Set up Python
         uses: actions/setup-python@v2
