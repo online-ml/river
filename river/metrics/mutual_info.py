@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 from scipy.special import factorial
 
 from river import metrics
@@ -202,6 +203,12 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
 
     def get(self):
 
+        n_classes = len([i for i in self.cm.sum_row.values() if i != 0])
+        n_clusters = len([i for i in self.cm.sum_col.values() if i != 0])
+
+        if (n_classes == n_clusters == 1) or (n_classes == n_clusters == 0):
+            return 1.0
+
         mutual_info_score = metrics.MutualInfo(self.cm)
 
         entropy_true = entropy_pred = 0.0
@@ -233,7 +240,8 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
         try:
             return mutual_info_score.get() / normalizer
         except ZeroDivisionError:
-            return math.inf
+            eps = np.finfo(float).eps
+            return mutual_info_score.get() / eps
 
 
 class ExpectedMutualInfo(metrics.MultiClassMetric):
@@ -307,7 +315,7 @@ class ExpectedMutualInfo(metrics.MultiClassMetric):
     @property
     def works_with_weights(self):
         return False
-    
+
     def get(self):
 
         expected_mutual_info = 0.0
