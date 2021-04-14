@@ -76,7 +76,11 @@ class BranchFactory:
     merit: float = -math.inf
     feature: typing.Optional[FeatureName] = None
     split_info: typing.Optional[
-        typing.Union[typing.Hashable, typing.List[typing.Hashable]]
+        typing.Union[
+            typing.Hashable,
+            typing.List[typing.Hashable],
+            typing.Tuple[typing.Hashable, typing.List[typing.Hashable]],
+        ]
     ] = None
     children_stats: typing.Optional[typing.List] = None
     numerical_feature: bool = True
