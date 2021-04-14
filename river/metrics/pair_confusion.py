@@ -59,12 +59,16 @@ class PairConfusionMatrix(metrics.MultiClassMetric):
     ...     pair_confusion_matrix = pair_confusion_matrix.update(yt, yp)
 
     >>> pair_confusion_matrix
-    PairConfusionMatrix: {0: defaultdict(<class 'int'>, {0: 6.0, 1: 1.0}), 1: defaultdict(<class 'int'>, {0: 2.0, 1: 1.0})}
+    PairConfusionMatrix: {0: defaultdict(<class 'int'>, {0: 12.0, 1: 2.0}), 1: defaultdict(<class 'int'>, {0: 4.0, 1: 2.0})}
 
     """
 
     def __init__(self, cm=None):
         super().__init__(cm)
+
+    @property
+    def works_with_weights(self):
+        return False
 
     def get(self):
 
@@ -75,7 +79,7 @@ class PairConfusionMatrix(metrics.MultiClassMetric):
             for j in self.cm.classes:
                 sum_squares += self.cm[i][j] * self.cm[i][j]
 
-        true_positives = (sum_squares - self.cm.n_samples) / 2
+        true_positives = sum_squares - self.cm.n_samples
 
         false_positives = 0
         for i in self.cm.classes:
@@ -84,7 +88,7 @@ class PairConfusionMatrix(metrics.MultiClassMetric):
                     false_positives += self.cm[i][j] * self.cm.sum_col[j]
                 except KeyError:
                     continue
-        false_positives = (false_positives - sum_squares) / 2
+        false_positives = false_positives - sum_squares
 
         false_negatives = 0
         for i in self.cm.classes:
@@ -93,13 +97,13 @@ class PairConfusionMatrix(metrics.MultiClassMetric):
                     false_negatives += self.cm[j][i] * self.cm.sum_row[j]
                 except KeyError:
                     continue
-        false_negatives = (false_negatives - sum_squares) / 2
+        false_negatives = false_negatives - sum_squares
 
         true_negatives = (
             self.cm.n_samples * self.cm.n_samples
-            - 2 * (false_positives + false_negatives)
+            - (false_positives + false_negatives)
             - sum_squares
-        ) / 2
+        )
 
         pair_confusion_matrix[0][0] = true_negatives
         pair_confusion_matrix[0][1] = false_positives
