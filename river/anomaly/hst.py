@@ -34,6 +34,9 @@ class HSTBranch(Branch):
             return left
         return right
 
+    def most_common_path(self):
+        raise NotImplementedError
+
 
 def make_padded_tree(limits, height, padding, rng=random, **node_params):
 
