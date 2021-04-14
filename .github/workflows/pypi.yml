@@ -27,6 +27,9 @@ jobs:
           pip install wheel
           pip install -e ".[compat,dev]" cibuildwheel twine
 
+      - name: Download datasets
+        run: python -c "from river import datasets; datasets.CreditCard().download()"
+
       - name: pytest
         run: |
           pytest
