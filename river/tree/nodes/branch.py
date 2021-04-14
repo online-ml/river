@@ -1,9 +1,7 @@
 import abc
 import math
-import typing
 
 from ..base import Branch
-from .leaf import HTLeaf
 
 
 class HTBranch(Branch):
@@ -29,10 +27,6 @@ class HTBranch(Branch):
     @property
     @abc.abstractmethod
     def max_branches(self):
-        pass
-
-    @abc.abstractmethod
-    def most_common_path(self) -> typing.Tuple[int, typing.Union["HTLeaf", "HTBranch"]]:
         pass
 
 
