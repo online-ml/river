@@ -81,6 +81,10 @@ class MutualInfo(metrics.MultiClassMetric):
     def __init__(self, cm=None):
         super().__init__(cm)
 
+    @property
+    def works_with_weights(self):
+        return False
+
     def get(self):
 
         mutual_info_score = 0.0
@@ -174,6 +178,10 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
     def __init__(self, cm=None, average_method="arithmetic"):
         super().__init__(cm)
         self.average_method = average_method
+
+    @property
+    def works_with_weights(self):
+        return False
 
     @staticmethod
     def _generalized_average(u, v, average_method):
@@ -296,6 +304,10 @@ class ExpectedMutualInfo(metrics.MultiClassMetric):
     def __init__(self, cm=None):
         super().__init__(cm)
 
+    @property
+    def works_with_weights(self):
+        return False
+    
     def get(self):
 
         expected_mutual_info = 0.0
@@ -401,6 +413,10 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
     def __init__(self, cm=None, average_method="arithmetic"):
         super().__init__(cm)
         self.average_method = average_method
+
+    @property
+    def works_with_weights(self):
+        return False
 
     @staticmethod
     def _generalized_average(u, v, average_method):
