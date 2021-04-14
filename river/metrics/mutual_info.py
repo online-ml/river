@@ -209,7 +209,7 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
         if (n_classes == n_clusters == 1) or (n_classes == n_clusters == 0):
             return 1.0
 
-        mutual_info_score = metrics.MutualInfo(self.cm)
+        mutual_info_score = metrics.MutualInfo(self.cm).get()
 
         entropy_true = entropy_pred = 0.0
 
@@ -237,11 +237,9 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
             entropy_true, entropy_pred, self.average_method
         )
 
-        try:
-            return mutual_info_score.get() / normalizer
-        except ZeroDivisionError:
-            eps = np.finfo(float).eps
-            return mutual_info_score.get() / eps
+        normalizer = max(normalizer, np.finfo('float64').eps)
+
+        return mutual_info_score / normalizer
 
 
 class ExpectedMutualInfo(metrics.MultiClassMetric):
