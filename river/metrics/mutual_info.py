@@ -59,12 +59,15 @@ class MutualInfo(metrics.MultiClassMetric):
 
     >>> metric = metrics.MutualInfo()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
-    MutualInfo: 0.
-    MutualInfo: 0.
-    MutualInfo: 0.
-    MutualInfo: 0.215762
-    MutualInfo: 0.395753
+    ...     print(metric.update(yt, yp).get())
+    0.0
+    0.0
+    0.0
+    0.21576155433883565
+    0.39575279478527836
+    0.46209812037329684
+
+    >>> metric
     MutualInfo: 0.462098
 
     References
@@ -154,8 +157,8 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
     >>> metric = metrics.NormalizedMutualInfo()
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp).get())
-    inf
-    inf
+    1.0
+    1.0
     0.0
     0.3437110184854508
     0.4580652856440159
@@ -399,7 +402,13 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
     >>> metric = metrics.AdjustedMutualInfo()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     print(metric.update(yt, yp).get())
+    1.0
+    1.0
+    0.0
+    0.0
+    0.10589171576292913
+    0.29879245817089006
 
     >>> metric
     AdjustedMutualInfo: 0.298792
