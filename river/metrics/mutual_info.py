@@ -443,9 +443,15 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
     def get(self):
 
-        mutual_info_score = metrics.MutualInfo(self.cm)
+        n_classes = len([i for i in self.cm.sum_row.values() if i != 0])
+        n_clusters = len([i for i in self.cm.sum_col.values() if i != 0])
 
-        expected_mutual_info_score = metrics.ExpectedMutualInfo(self.cm)
+        if (n_classes == n_clusters == 1) or (n_classes == n_clusters == 0):
+            return 1.0
+
+        mutual_info_score = metrics.MutualInfo(self.cm).get()
+
+        expected_mutual_info_score = metrics.ExpectedMutualInfo(self.cm).get()
 
         entropy_true = entropy_pred = 0.0
 
@@ -473,9 +479,11 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
             entropy_true, entropy_pred, self.average_method
         )
 
-        try:
-            return (mutual_info_score.get() - expected_mutual_info_score.get()) / (
-                normalizer - expected_mutual_info_score.get()
-            )
-        except (ValueError, ZeroDivisionError):
-            return 0.0
+        denominator = normalizer - expected_mutual_info_score
+
+        if denominator > 0:
+            denominator = max(denominator, np.finfo('float64').eps)
+        else:
+            denominator = -min(denominator, -np.finfo('float64').eps)
+
+        return (mutual_info_score - expected_mutual_info_score) / denominator
