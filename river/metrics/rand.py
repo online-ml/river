@@ -83,7 +83,7 @@ class Rand(base.MultiClassMetric):
         true_positives = pair_confusion_matrix[1][1]
         true_negatives = pair_confusion_matrix[0][0]
 
-        total_pairs = self.cm.n_samples * (self.cm.n_samples - 1) / 2
+        total_pairs = self.cm.n_samples * (self.cm.n_samples - 1)
 
         try:
             return (true_positives + true_negatives) / total_pairs
