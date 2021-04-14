@@ -70,7 +70,11 @@ class Rand(base.MultiClassMetric):
     """
 
     def __init__(self, cm=None):
-        super().__init__()
+        super().__init__(cm)
+
+    @property
+    def works_with_weights(self):
+        return False
 
     def get(self):
 
@@ -84,7 +88,7 @@ class Rand(base.MultiClassMetric):
         try:
             return (true_positives + true_negatives) / total_pairs
         except ZeroDivisionError:
-            return true_positives + true_negatives
+            return 1.0
 
 
 class AdjustedRand(base.MultiClassMetric):
@@ -144,6 +148,10 @@ class AdjustedRand(base.MultiClassMetric):
 
     def __init__(self, cm=None):
         super().__init__(cm)
+
+    @property
+    def works_with_weights(self):
+        return False
 
     def get(self):
 
