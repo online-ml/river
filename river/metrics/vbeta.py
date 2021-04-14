@@ -72,6 +72,10 @@ class Homogeneity(metrics.MultiClassMetric):
     def __init__(self, cm=None):
         super().__init__(cm)
 
+    @property
+    def works_with_weights(self):
+        return False
+
     def get(self):
         raw_conditional_entropy = 0.0
         max_reduction_entropy = 0.0
@@ -167,6 +171,10 @@ class Completeness(metrics.MultiClassMetric):
     def __init__(self, cm=None):
         super().__init__(cm)
 
+    @property
+    def works_with_weights(self):
+        return False
+
     def get(self):
         raw_conditional_entropy = 0
         max_reduction_entropy = 0
@@ -261,11 +269,15 @@ class VBeta(metrics.MultiClassMetric):
 
     """
 
-    def __init__(self, beta: float, cm=None):
+    def __init__(self, beta: float = 1.0, cm=None):
         super().__init__(cm)
         self.beta = beta
         self.homogeneity = metrics.Homogeneity(self.cm)
         self.completeness = metrics.Completeness(self.cm)
+
+    @property
+    def works_with_weights(self):
+        return False
 
     def get(self):
         h = self.homogeneity.get()
