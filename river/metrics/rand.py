@@ -48,7 +48,7 @@ class Rand(base.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp).get())
-    0.0
+    1.0
     1.0
     0.3333333333333333
     0.5
