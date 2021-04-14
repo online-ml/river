@@ -74,6 +74,10 @@ class FowlkesMallows(base.MultiClassMetric):
     def __init__(self, cm=None):
         super().__init__(cm)
 
+    @property
+    def works_with_weights(self):
+        return False
+
     def get(self):
 
         pair_confusion_matrix = metrics.PairConfusionMatrix(self.cm).get()
