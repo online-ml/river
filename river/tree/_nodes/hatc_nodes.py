@@ -64,7 +64,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
         super().__init__(stats, depth, splitter, **kwargs)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
-        self.error_change = False
+        self._error_change = False
         self._rng = check_random_state(seed)
 
     @property
@@ -101,11 +101,11 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
         old_error = self.error_estimation
 
         # Update ADWIN
-        self.error_change, _ = self._adwin.update(int(not is_correct))
+        self._error_change, _ = self._adwin.update(int(not is_correct))
 
         # Error is decreasing
-        if self.error_change and old_error > self.error_estimation:
-            self.error_change = False
+        if self._error_change and old_error > self.error_estimation:
+            self._error_change = False
 
         # Update statistics
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
@@ -238,7 +238,7 @@ class AdaBranchClassifier(HTBranch, AdaNode):
     def learn_one(
         self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None
     ):
-        leaf = self.traverse(x, until_leaf=True)
+        leaf = super().traverse(x, until_leaf=True)
         aux = leaf.prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
         is_correct = y == class_prediction
@@ -301,8 +301,8 @@ class AdaBranchClassifier(HTBranch, AdaNode):
                         tree._root = tree._root._alternate_tree
                     tree._n_switch_alternate_trees += 1
                 elif bound < alt_error_rate - old_error_rate:
-                    if not isinstance(self._alternate_tree, HTLeaf):
-                        self._alternate_tree.kill_tree_children(tree)
+                    if isinstance(self._alternate_tree, HTBranch):
+                        self._alternate_tree.kill_tree_children(tree)  # noqa
                     self._alternate_tree = None
                     tree._n_pruned_alternate_trees += 1
 

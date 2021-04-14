@@ -1,8 +1,18 @@
+import typing
 from copy import deepcopy
 
 from river import base
 
-from ._nodes import AdaLearningNodeRegressor, AdaSplitNodeRegressor, FoundNode
+from ._nodes.branch import HTBranch
+from ._nodes.hatr_nodes import (
+    AdaBranchRegressor,
+    AdaLearningNodeRegressor,
+    AdaNomBinaryBranchReg,
+    AdaNomMultiwayBranchReg,
+    AdaNumBinaryBranchReg,
+    AdaNumMultiwayBranchReg,
+)
+from ._nodes.leaf import HTLeaf
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .splitter import Splitter
 
@@ -167,12 +177,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     def learn_one(self, x, y, *, sample_weight=1.0):
         self._train_weight_seen_by_model += sample_weight
 
-        if self._tree_root is None:
-            self._tree_root = self._new_leaf()
+        if self._root is None:
+            self._root = self._new_leaf()
             self._n_active_leaves = 1
-        self._tree_root.learn_one(
-            x, y, sample_weight=sample_weight, tree=self, parent=None, parent_branch=-1
-        )
+        self._root.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -180,30 +188,17 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         return self
 
     def predict_one(self, x):
-        if self._tree_root is not None:
-            found_nodes = self._filter_instance_to_leaves(x, None, -1)
-
-            pred = 0.0
-            for fn in found_nodes:
-                # parent_branch == -999 means that the node is the root of an alternate tree.
-                # In other words, the alternate tree is a single leaf. It is probably not accurate
-                # enough to be used to predict, so skip it
-                if fn.parent_branch != -999:
-                    leaf_node = fn.node
-                    if leaf_node is None:
-                        leaf_node = fn.parent
-                    # Option Tree prediction (of sorts): combine the response of all leaves reached
-                    # by the instance
-                    pred += leaf_node.prediction(x, tree=self)
+        pred = 0.0
+        if self._root is not None:
+            found_nodes = [self._root]
+            if isinstance(self._root, HTBranch):
+                found_nodes = self._root.traverse(x, until_leaf=True)
+            for leaf in found_nodes:
+                pred += leaf.prediction(x, tree=self)
             # Mean prediction among the reached leaves
-            return pred / len(found_nodes)
-        else:
-            return 0.0
+            pred /= len(found_nodes)
 
-    def _filter_instance_to_leaves(self, x, split_parent, parent_branch):
-        nodes = []
-        self._tree_root.filter_instance_to_leaves(x, split_parent, parent_branch, nodes)
-        return nodes
+        return pred
 
     def _new_leaf(self, initial_stats=None, parent=None, is_active=True):
         """Create a new learning node.
@@ -213,7 +208,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         if parent is not None:
             depth = parent.depth + 1
             # Leverage ancestor's learning models
-            if parent.is_leaf():
+            if isinstance(parent, HTLeaf):
                 leaf_model = deepcopy(parent._leaf_model)  # noqa
             else:  # Corner case where an alternate tree is created
                 leaf_model = deepcopy(self.leaf_model)
@@ -230,34 +225,26 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             seed=self.seed,
         )
 
-        if parent is not None and parent.is_leaf():
+        if parent is not None and isinstance(parent, HTLeaf):
             new_ada_leaf._fmse_mean = parent._fmse_mean  # noqa
             new_ada_leaf._fmse_model = parent._fmse_model  # noqa
 
         return new_ada_leaf
 
-    def _branch_selector(self, split_test, target_stats=None, depth=0, **kwargs):
-        return AdaSplitNodeRegressor(
-            split_test=split_test,
-            stats=target_stats,
-            depth=depth,
-            adwin_delta=self.adwin_confidence,
-            seed=self.seed,
-        )
-
-    # Override river.tree.BaseHoeffdingTree to include alternate trees
-    def __find_leaves(self, node, parent, parent_branch, found):
-        if node is not None:
-            if node.is_leaf():
-                found.append(FoundNode(node, parent, parent_branch))
+    def _branch_selector(
+        self, numerical_feature=True, multiway_split=False
+    ) -> typing.Type[AdaBranchRegressor]:
+        """Create a new split node."""
+        if numerical_feature:
+            if not multiway_split:
+                return AdaNumBinaryBranchReg
             else:
-                split_node = node
-                for i in range(split_node.n_children):
-                    self.__find_leaves(split_node.get_child(i), split_node, i, found)
-                if split_node._alternate_tree is not None:
-                    self.__find_leaves(
-                        split_node._alternate_tree, split_node, -999, found
-                    )
+                return AdaNumMultiwayBranchReg
+        else:
+            if not multiway_split:
+                return AdaNomBinaryBranchReg
+            else:
+                return AdaNomMultiwayBranchReg
 
     @classmethod
     def _unit_test_params(cls):
