@@ -390,14 +390,14 @@ class AdaNumBinaryBranchClass(AdaBranchClassifier, NumericBinaryBranch):
 
 
 class AdaNomMultiwayBranchClass(AdaBranchClassifier, NominalMultiwayBranch):
-    def __init__(
-        self, stats, feature, feature_values, depth, left, right, **attributes
-    ):
-        super().__init__(
-            stats, feature, feature_values, depth, left, right, **attributes
-        )
+    def __init__(self, stats, feature, feature_values, depth, *children, **attributes):
+        super().__init__(stats, feature, feature_values, depth, *children, **attributes)
 
 
 class AdaNumMultiwayBranchClass(AdaBranchClassifier, NumericMultiwayBranch):
-    def __init__(self, stats, feature, radius, depth, left, right, **attributes):
-        super().__init__(stats, feature, radius, depth, left, right, **attributes)
+    def __init__(
+        self, stats, feature, radius, depth, slot_ids, *children, **attributes
+    ):
+        super().__init__(
+            stats, feature, radius, depth, slot_ids, *children, **attributes
+        )

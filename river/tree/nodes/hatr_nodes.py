@@ -356,17 +356,19 @@ class AdaNumBinaryBranchReg(AdaBranchRegressor, NumericBinaryBranch):
 
 
 class AdaNomMultiwayBranchReg(AdaBranchRegressor, NominalMultiwayBranch):
-    def __init__(
-        self, stats, feature, feature_values, depth, left, right, **attributes
-    ):
+    def __init__(self, stats, feature, feature_values, depth, *children, **attributes):
         super().__init__(
-            stats, feature, feature_values, depth, left, right, **attributes
+            self, stats, feature, feature_values, depth, *children, **attributes
         )
 
 
 class AdaNumMultiwayBranchReg(AdaBranchRegressor, NumericMultiwayBranch):
-    def __init__(self, stats, feature, radius, depth, left, right, **attributes):
-        super().__init__(stats, feature, radius, depth, left, right, **attributes)
+    def __init__(
+        self, stats, feature, radius, depth, slot_ids, *children, **attributes
+    ):
+        super().__init__(
+            stats, feature, radius, depth, slot_ids, *children, **attributes
+        )
 
 
 def normalize_error(y_true, y_pred, node):

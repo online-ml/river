@@ -9,7 +9,7 @@ intention is to provide utilies for walking over a tree and visualizing it.
 
 """
 import abc
-from typing import Iterable, Union
+from typing import Iterable, Tuple, Union
 
 
 class Branch(abc.ABC):
@@ -21,6 +21,15 @@ class Branch(abc.ABC):
     @abc.abstractmethod
     def next(self, x) -> Union["Branch", "Leaf"]:
         """Move to the next node down the tree."""
+
+    @abc.abstractmethod
+    def most_common_path(self) -> Tuple[int, Union["Leaf", "Branch"]]:
+        """Return a tuple with the branch index and the child node related to the most
+        traversed path.
+
+        Used in case the split feature is missing from an instance.
+        """
+        pass
 
     def walk(self, x, until_leaf=True) -> Iterable[Union["Branch", "Leaf"]]:
         """Iterate over the nodes that lead to the leaf which contains x."""

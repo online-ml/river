@@ -1,11 +1,9 @@
 import copy
 import numbers
-from collections import Counter
 
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
-from ..utils import BranchFactory
 from .branch import (
     HTBranch,
     NominalBinaryBranch,
@@ -35,32 +33,11 @@ class BaseEFDTLeaf(HTLeaf):
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
     kwargs
-        To ensure compatibility with split nodes.
-
-    Notes
-    -----
-    The constructor method receives additional kwargs params to ensure it plays nice with
-    the multiple inheritance used in the split node of EFDT.
+        Other parameters passed to the node.
     """
 
     def __init__(self, stats, depth, splitter, **kwargs):
         super().__init__(stats=stats, depth=depth, splitter=splitter, **kwargs)
-
-    def null_split(self, criterion):
-        """Compute the null split (don't split).
-
-        Parameters
-        ----------
-        criterion
-            The splitting criterion to be used.
-
-        Returns
-        -------
-            The null split candidate.
-        """
-        null_split = BranchFactory(merit=0)
-
-        return null_split
 
     def best_split_suggestions(self, criterion, tree):
         """Find possible split candidates without taking into account the
@@ -84,21 +61,9 @@ class BaseEFDTLeaf(HTLeaf):
             best_suggestion = splitter.best_evaluated_split_suggestion(
                 criterion, pre_split_dist, idx, tree.binary_split
             )
-            if best_suggestion is not None:
-                best_suggestions.append(best_suggestion)
+            best_suggestions.append(best_suggestion)
 
         return best_suggestions
-
-    @staticmethod
-    def count_nodes():
-        """Calculate the number of split node and leaf starting from this node
-        as a root.
-
-        Returns
-        -------
-            A Counter with the number of `leaf_nodes` and `decision_nodes`.
-        """
-        return Counter(leaf_nodes=1, decision_nodes=0)
 
 
 class BaseEFDTBranch(HTBranch):
@@ -120,11 +85,11 @@ class BaseEFDTBranch(HTBranch):
         Other parameters passed to the learning nodes.
     """
 
-    def __init__(self, stats, *children, **attributes):
+    def __init__(self, stats, *children, splitter, splitters, **attributes):
         super().__init__(stats, *children, **attributes)
 
-        self.splitter = None
-        self.splitters = None
+        self.splitter = splitter
+        self.splitters = splitters
 
         self._disabled_attrs = set()
         self._last_split_reevaluation_at = 0
@@ -195,11 +160,10 @@ class BaseEFDTBranch(HTBranch):
         -------
             Found attribute.
         """
-        # TODO verify the possibility of using dictionaries to go from O(m) to O(1)
         x_current = None
-        for att_split in split_suggestions:
-            if att_split.feature == id_att:
-                x_current = att_split
+        for suggestion in split_suggestions:
+            if suggestion.feature == id_att:
+                x_current = suggestion
                 break
 
         return x_current
@@ -219,24 +183,6 @@ class BaseEFDTBranch(HTBranch):
         """Update weight seen at the last split in the reevaluation. """
         self._last_split_reevaluation_at = value
 
-    def count_nodes(self):
-        """Calculate the number of split node and leaf starting from this node
-        as a root.
-
-        Returns
-        -------
-            A Counter with the number of `leaf_nodes` and `decision_nodes`.
-        """
-
-        count = Counter(leaf_nodes=0, decision_nodes=1)
-        # get children
-        for branch_idx in range(self.n_children):
-            child = self.get_child(branch_idx)
-            if child is not None:
-                count += child.count_nodes()  # noqa
-
-        return count
-
     def observed_class_distribution_is_pure(self):
         """Check if observed class distribution is pure, i.e. if all samples
         belong to the same class.
@@ -252,22 +198,6 @@ class BaseEFDTBranch(HTBranch):
                 if count == 2:  # No need to count beyond this point
                     break
         return count < 2
-
-    def null_split(self, criterion):
-        """Compute the null split (don't split).
-
-        Parameters
-        ----------
-        criterion
-            The splitting criterion to be used.
-
-        Returns
-        -------
-            The null split candidate.
-        """
-        null_split = BranchFactory(merit=0)
-
-        return null_split
 
     def best_split_suggestions(self, criterion, tree):
         """Find possible split candidates without taking into account the
@@ -359,21 +289,25 @@ class EFDTLeafNaiveBayesAdaptive(BaseEFDTLeaf, LeafNaiveBayesAdaptive):
         super().__init__(stats, depth, splitter, **kwargs)
 
 
-class EFDTNumericBinaryBranch(BaseEFDTBranch, NumericBinaryBranch):
-    def __init__(self, stats, *children, **attributes):
-        super().__init__(stats, *children, **attributes)
-
-
-class EFDTNumericMultiwayBranch(BaseEFDTBranch, NumericMultiwayBranch):
-    def __init__(self, stats, *children, **attributes):
-        super().__init__(stats, *children, **attributes)
-
-
 class EFDTNominalBinaryBranch(BaseEFDTBranch, NominalBinaryBranch):
-    def __init__(self, stats, *children, **attributes):
-        super().__init__(stats, *children, **attributes)
+    def __init__(self, stats, feature, value, depth, left, right, **attributes):
+        super().__init__(stats, feature, value, depth, left, right, **attributes)
 
 
 class EFDTNominalMultiwayBranch(BaseEFDTBranch, NominalMultiwayBranch):
-    def __init__(self, stats, *children, **attributes):
-        super().__init__(stats, *children, **attributes)
+    def __init__(self, stats, feature, feature_values, depth, *children, **attributes):
+        super().__init__(stats, feature, feature_values, depth, *children, **attributes)
+
+
+class EFDTNumericBinaryBranch(BaseEFDTBranch, NumericBinaryBranch):
+    def __init__(self, stats, feature, threshold, depth, left, right, **attributes):
+        super().__init__(stats, feature, threshold, depth, left, right, **attributes)
+
+
+class EFDTNumericMultiwayBranch(BaseEFDTBranch, NumericMultiwayBranch):
+    def __init__(
+        self, stats, feature, radius, depth, slot_ids, *children, **attributes
+    ):
+        super().__init__(
+            stats, feature, radius, depth, slot_ids, *children, **attributes
+        )

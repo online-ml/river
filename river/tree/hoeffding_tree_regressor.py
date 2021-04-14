@@ -247,20 +247,27 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                         self._attempt_to_split(node, p_node, p_branch)
                         node.last_split_attempt_at = weight_seen
         else:
-            # Split node encountered a previously unseen categorical value (in a multi-way test),
-            # so there is no branch to sort the instance to
-            if node.max_branches() == -1 and node.feature in x:
-                # Creates a new branch to the new categorical value
-                leaf = self._new_leaf(parent=node)
-                node.add_child(x[node.feature], leaf)
-                self._n_active_leaves += 1
-                leaf.learn_one(x, y, sample_weight=sample_weight, tree=self)
-            # The split feature is missing in the instance. Hence, we pass the new example
-            # to the most traversed path in the current subtree
-            else:
-                leaf = node.traverse(x, until_leaf=True)
-                # Learn from the sample
-                leaf.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            while True:
+                # Split node encountered a previously unseen categorical value (in a multi-way
+                #  test), so there is no branch to sort the instance to
+                if node.max_branches() == -1 and node.feature in x:
+                    # Create a new branch to the new categorical value
+                    leaf = self._new_leaf(parent=node)
+                    node.add_child(x[node.feature], leaf)
+                    self._n_active_leaves += 1
+                    node = leaf
+                # The split feature is missing in the instance. Hence, we pass the new example
+                # to the most traversed path in the current subtree
+                else:
+                    _, node = node.most_common_path()
+                    # And we keep trying to reach a leaf
+                    if isinstance(node, HTBranch):
+                        node = node.traverse(x, until_leaf=False)
+                # Once a leaf is reached, the traversal can stop
+                if isinstance(node, HTLeaf):
+                    break
+            # Learn from the sample
+            node.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -362,7 +369,9 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                 self._n_inactive_leaves += 1
                 self._n_active_leaves -= 1
             else:
-                branch = self._branch_selector()
+                branch = self._branch_selector(
+                    split_decision.numerical_feature, split_decision.multiway_split
+                )
                 leaves = tuple(
                     self._new_leaf(initial_stats, parent=leaf)
                     for initial_stats in split_decision.children_stats
