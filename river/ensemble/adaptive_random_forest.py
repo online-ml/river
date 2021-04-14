@@ -8,12 +8,16 @@ import numpy as np
 
 from river import base, metrics, stats, tree
 from river.drift import ADWIN
-from river.tree._nodes import RandomLeafAdaptive  # noqa
-from river.tree._nodes import RandomLeafMajorityClass  # noqa
-from river.tree._nodes import RandomLeafMean  # noqa
-from river.tree._nodes import RandomLeafModel  # noqa
-from river.tree._nodes import RandomLeafNaiveBayes  # noqa
-from river.tree._nodes import RandomLeafNaiveBayesAdaptive  # noqa
+from river.tree.nodes.arf_htc_nodes import (
+    RandomLeafMajorityClass,
+    RandomLeafNaiveBayes,
+    RandomLeafNaiveBayesAdaptive,
+)
+from river.tree.nodes.arf_htr_nodes import (
+    RandomLeafAdaptive,
+    RandomLeafMean,
+    RandomLeafModel,
+)
 from river.tree.splitter import Splitter
 from river.utils.skmultiflow_utils import check_random_state
 

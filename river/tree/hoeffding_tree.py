@@ -12,14 +12,14 @@ from river.utils.skmultiflow_utils import (
     round_sig_fig,
 )
 
-from ._nodes import (
+from .nodes.branch import (
     HTBranch,
-    HTLeaf,
     NominalBinaryBranch,
     NominalMultiwayBranch,
     NumericBinaryBranch,
     NumericMultiwayBranch,
 )
+from .nodes.leaf import HTLeaf
 
 try:
     import graphviz

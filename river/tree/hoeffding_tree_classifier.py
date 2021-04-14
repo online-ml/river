@@ -1,18 +1,14 @@
 from river import base
 
-from ._nodes import (
-    HTBranch,
-    HTLeaf,
-    LeafMajorityClass,
-    LeafNaiveBayes,
-    LeafNaiveBayesAdaptive,
-)
-from ._split_criterion import (
+from .hoeffding_tree import HoeffdingTree
+from .nodes.branch import HTBranch
+from .nodes.htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
+from .nodes.leaf import HTLeaf
+from .split_criterion import (
     GiniSplitCriterion,
     HellingerDistanceCriterion,
     InfoGainSplitCriterion,
 )
-from .hoeffding_tree import HoeffdingTree
 from .splitter import GaussianSplitter, Splitter
 
 

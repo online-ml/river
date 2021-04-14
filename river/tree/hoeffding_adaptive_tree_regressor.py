@@ -3,8 +3,9 @@ from copy import deepcopy
 
 from river import base
 
-from ._nodes.branch import HTBranch
-from ._nodes.hatr_nodes import (
+from .hoeffding_tree_regressor import HoeffdingTreeRegressor
+from .nodes.branch import HTBranch
+from .nodes.hatr_nodes import (
     AdaBranchRegressor,
     AdaLearningNodeRegressor,
     AdaNomBinaryBranchReg,
@@ -12,8 +13,7 @@ from ._nodes.hatr_nodes import (
     AdaNumBinaryBranchReg,
     AdaNumMultiwayBranchReg,
 )
-from ._nodes.leaf import HTLeaf
-from .hoeffding_tree_regressor import HoeffdingTreeRegressor
+from .nodes.leaf import HTLeaf
 from .splitter import Splitter
 
 

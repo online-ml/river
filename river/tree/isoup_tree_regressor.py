@@ -3,13 +3,13 @@ from copy import deepcopy
 
 from river import base, tree
 
-from ._nodes import (
-    HTBranch,
+from .nodes.branch import HTBranch
+from .nodes.isouptr_nodes import (
     LeafAdaptiveMultiTarget,
     LeafMeanMultiTarget,
     LeafModelMultiTarget,
 )
-from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
+from .split_criterion import IntraClusterVarianceReductionSplitCriterion
 from .splitter import Splitter
 
 

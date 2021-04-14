@@ -2,9 +2,11 @@ from copy import deepcopy
 
 from river import base, linear_model
 
-from ._nodes import HTBranch, HTLeaf, LeafAdaptive, LeafMean, LeafModel
-from ._split_criterion import VarianceReductionSplitCriterion
 from .hoeffding_tree import HoeffdingTree
+from .nodes.branch import HTBranch
+from .nodes.htr_nodes import LeafAdaptive, LeafMean, LeafModel
+from .nodes.leaf import HTLeaf
+from .split_criterion import VarianceReductionSplitCriterion
 from .splitter import EBSTSplitter, Splitter
 
 

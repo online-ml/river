@@ -2,16 +2,16 @@ import typing
 
 from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
 
-from ._nodes import (
+from .hoeffding_tree_classifier import HoeffdingTreeClassifier
+from .nodes.branch import HTBranch
+from .nodes.hatc_nodes import (
     AdaBranchClassifier,
     AdaLeafClassifier,
     AdaNomBinaryBranchClass,
     AdaNomMultiwayBranchClass,
     AdaNumBinaryBranchClass,
     AdaNumMultiwayBranchClass,
-    HTBranch,
 )
-from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .splitter import Splitter
 
 

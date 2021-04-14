@@ -1,7 +1,8 @@
 import typing
 from operator import attrgetter
 
-from ._nodes import (
+from .hoeffding_tree_classifier import HoeffdingTreeClassifier
+from .nodes import (
     BaseEFDTBranch,
     EFDTLeafMajorityClass,
     EFDTLeafNaiveBayes,
@@ -12,12 +13,11 @@ from ._nodes import (
     EFDTNumericMultiwayBranch,
     HTBranch,
 )
-from ._split_criterion import (
+from .split_criterion import (
     GiniSplitCriterion,
     HellingerDistanceCriterion,
     InfoGainSplitCriterion,
 )
-from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .splitter import Splitter
 
 

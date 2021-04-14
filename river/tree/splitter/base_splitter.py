@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 from river import base
 
-from .._split_criterion.base_split_criterion import SplitCriterion
+from ..split_criterion.base_split_criterion import SplitCriterion
 from ..utils import BranchFactory
 
 
