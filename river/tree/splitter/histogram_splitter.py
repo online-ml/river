@@ -67,7 +67,7 @@ class HistogramSplitter(Splitter):
 
         # If only one single value has been observed, then no split can be proposed
         if low >= high:
-            return
+            return best_suggestion
 
         n_thresholds = min(self.n_splits, max(map(len, self.hists.values())) - 1)
 

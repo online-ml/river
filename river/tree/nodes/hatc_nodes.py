@@ -396,8 +396,8 @@ class AdaNomMultiwayBranchClass(AdaBranchClassifier, NominalMultiwayBranch):
 
 class AdaNumMultiwayBranchClass(AdaBranchClassifier, NumericMultiwayBranch):
     def __init__(
-        self, stats, feature, radius, depth, slot_ids, *children, **attributes
+        self, stats, feature, radius_and_slots, depth, *children, **attributes
     ):
         super().__init__(
-            stats, feature, radius, depth, slot_ids, *children, **attributes
+            stats, feature, radius_and_slots, depth, *children, **attributes
         )

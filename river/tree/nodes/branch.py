@@ -86,12 +86,12 @@ class NominalBinaryBranch(HTBranch):
 
 class NumericMultiwayBranch(HTBranch):
     def __init__(
-        self, stats, feature, radius, depth, slot_ids, *children, **attributes
+        self, stats, feature, radius_and_slots, depth, *children, **attributes
     ):
         super().__init__(stats, *children, **attributes)
 
         self.feature = feature
-        self.radius = radius
+        self.radius, slot_ids = radius_and_slots
         self.depth = depth
 
         # Controls the branch mapping

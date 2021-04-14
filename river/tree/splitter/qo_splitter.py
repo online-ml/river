@@ -87,7 +87,7 @@ class QOSplitter(Splitter):
             candidate = BranchFactory(
                 merit,
                 att_idx,
-                slot_ids,
+                (self.radius, slot_ids),
                 post_split_dists,
                 numerical_feature=True,
                 multiway_split=True,
