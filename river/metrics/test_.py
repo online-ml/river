@@ -171,17 +171,29 @@ def test_metric(metric, sk_metric):
             m.update(y_true=yt, y_pred=yp, sample_weight=w)
 
             if i >= 1:
-                assert (
-                    abs(
-                        m.get()
-                        - sk_metric(
-                            y_true=y_true[: i + 1],
-                            y_pred=y_pred[: i + 1],
-                            sample_weight=sample_weights[: i + 1],
+                if metric.works_with_weights:
+                    assert (
+                        abs(
+                            m.get()
+                            - sk_metric(
+                                y_true[: i + 1],
+                                y_pred[: i + 1],
+                                sample_weight=sample_weights[: i + 1],
+                            )
                         )
+                        < 1e-6
                     )
-                    < 1e-6
-                )
+                else:
+                    assert (
+                        abs(
+                            m.get()
+                            - sk_metric(
+                                y_true[: i + 1],
+                                y_pred[: i + 1],
+                            )
+                        )
+                        < 1e-6
+                    )
 
 
 @pytest.mark.parametrize(
@@ -216,8 +228,8 @@ def test_rolling_metric(metric, sk_metric):
                         abs(
                             m.get()
                             - sk_metric(
-                                y_true=tail(y_true[: i + 1], n),
-                                y_pred=tail(y_pred[: i + 1], n),
+                                tail(y_true[: i + 1], n),
+                                tail(y_pred[: i + 1], n),
                             )
                         )
                         < 1e-10
