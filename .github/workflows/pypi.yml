@@ -33,7 +33,7 @@ jobs:
       - name: pytest
         run: |
           pytest
-          pytest -m "datasets and slow"
+          pytest -m datasets
 
       - name: Build wheels
         env:
