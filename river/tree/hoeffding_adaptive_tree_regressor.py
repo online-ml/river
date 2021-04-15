@@ -7,13 +7,15 @@ from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .nodes.branch import HTBranch
 from .nodes.hatr_nodes import (
     AdaBranchRegressor,
-    AdaLearningNodeRegressor,
+    AdaLeafRegAdaptive,
+    AdaLeafRegMean,
+    AdaLeafRegModel,
+    AdaLeafRegressor,
     AdaNomBinaryBranchReg,
     AdaNomMultiwayBranchReg,
     AdaNumBinaryBranchReg,
     AdaNumMultiwayBranchReg,
 )
-from .nodes.leaf import HTLeaf
 from .splitter import Splitter
 
 
@@ -207,29 +209,50 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         """
         if parent is not None:
             depth = parent.depth + 1
-            # Leverage ancestor's learning models
-            if isinstance(parent, HTLeaf):
-                leaf_model = deepcopy(parent._leaf_model)  # noqa
-            else:  # Corner case where an alternate tree is created
-                leaf_model = deepcopy(self.leaf_model)
         else:
             depth = 0
-            leaf_model = deepcopy(self.leaf_model)
 
-        new_ada_leaf = AdaLearningNodeRegressor(
-            stats=initial_stats,
-            depth=depth,
-            splitter=self.splitter,
-            leaf_model=leaf_model,
-            adwin_delta=self.adwin_confidence,
-            seed=self.seed,
-        )
+        leaf_model = None
+        if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
+            if parent is None:
+                leaf_model = deepcopy(self.leaf_model)
+            else:
+                try:
+                    leaf_model = deepcopy(parent._leaf_model)  # noqa
+                except AttributeError:
+                    leaf_model = deepcopy(self.leaf_model)
 
-        if parent is not None and isinstance(parent, HTLeaf):
-            new_ada_leaf._fmse_mean = parent._fmse_mean  # noqa
-            new_ada_leaf._fmse_model = parent._fmse_model  # noqa
+        if self.leaf_prediction == self._TARGET_MEAN:
+            return AdaLeafRegMean(
+                initial_stats,
+                depth,
+                self.splitter,
+                adwin_delta=self.adwin_confidence,
+                seed=self.seed,
+            )
+        elif self.leaf_prediction == self._MODEL:
+            return AdaLeafRegModel(
+                initial_stats,
+                depth,
+                self.splitter,
+                adwin_delta=self.adwin_confidence,
+                seed=self.seed,
+                leaf_model=leaf_model,
+            )
+        else:  # adaptive learning node
+            new_adaptive = AdaLeafRegAdaptive(
+                initial_stats,
+                depth,
+                self.splitter,
+                adwin_delta=self.adwin_confidence,
+                seed=self.seed,
+                leaf_model=leaf_model,
+            )
+            if parent is not None and isinstance(parent, AdaLeafRegressor):
+                new_adaptive._fmse_mean = parent._fmse_mean  # noqa
+                new_adaptive._fmse_model = parent._fmse_model  # noqa
 
-        return new_ada_leaf
+            return new_adaptive
 
     def _branch_selector(
         self, numerical_feature=True, multiway_split=False

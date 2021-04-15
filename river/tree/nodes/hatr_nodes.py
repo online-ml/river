@@ -13,11 +13,11 @@ from .branch import (
     NumericMultiwayBranch,
 )
 from .hatc_nodes import AdaNode
-from .htr_nodes import LeafAdaptive
+from .htr_nodes import LeafAdaptive, LeafMean, LeafModel
 from .leaf import HTLeaf
 
 
-class AdaLearningNodeRegressor(LeafAdaptive, AdaNode):
+class AdaLeafRegressor(HTLeaf, AdaNode):
     """Learning Node of the Hoeffding Adaptive Tree regressor.
 
     Parameters
@@ -37,8 +37,8 @@ class AdaLearningNodeRegressor(LeafAdaptive, AdaNode):
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, leaf_model, adwin_delta, seed, **kwargs):
-        super().__init__(stats, depth, splitter, leaf_model, **kwargs)
+    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
+        super().__init__(stats, depth, splitter, **kwargs)
 
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
@@ -107,23 +107,12 @@ class AdaLearningNodeRegressor(LeafAdaptive, AdaNode):
                 )
                 self.last_split_attempt_at = weight_seen
 
-    def leaf_prediction(self, x, *, tree=None):
-        prediction_option = tree.leaf_prediction
-        if prediction_option == tree._TARGET_MEAN:
-            return self.stats.mean.get()
-        elif prediction_option == tree._MODEL:
-            return self._leaf_model.predict_one(x)
-        else:  # adaptive node
-            return super().prediction(x, tree=tree)
-
 
 class AdaBranchRegressor(HTBranch, AdaNode):
     """Node that splits the data in a Hoeffding Adaptive Tree Regression.
 
     Parameters
     ----------
-    split_test
-        Split test.
     stats
         Target stats.
     depth
@@ -361,9 +350,7 @@ class AdaNumBinaryBranchReg(AdaBranchRegressor, NumericBinaryBranch):
 
 class AdaNomMultiwayBranchReg(AdaBranchRegressor, NominalMultiwayBranch):
     def __init__(self, stats, feature, feature_values, depth, *children, **attributes):
-        super().__init__(
-            self, stats, feature, feature_values, depth, *children, **attributes
-        )
+        super().__init__(stats, feature, feature_values, depth, *children, **attributes)
 
 
 class AdaNumMultiwayBranchReg(AdaBranchRegressor, NumericMultiwayBranch):
@@ -373,6 +360,21 @@ class AdaNumMultiwayBranchReg(AdaBranchRegressor, NumericMultiwayBranch):
         super().__init__(
             stats, feature, radius_and_slots, depth, *children, **attributes
         )
+
+
+class AdaLeafRegMean(AdaLeafRegressor, LeafMean):
+    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
+        super().__init__(stats, depth, splitter, adwin_delta, seed, **kwargs)
+
+
+class AdaLeafRegModel(AdaLeafRegressor, LeafModel):
+    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
+        super().__init__(stats, depth, splitter, adwin_delta, seed, **kwargs)
+
+
+class AdaLeafRegAdaptive(AdaLeafRegressor, LeafAdaptive):
+    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
+        super().__init__(stats, depth, splitter, adwin_delta, seed, **kwargs)
 
 
 def normalize_error(y_true, y_pred, node):
