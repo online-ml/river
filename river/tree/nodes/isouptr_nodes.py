@@ -45,6 +45,14 @@ class LeafMeanMultiTarget(LeafMean):
     def total_weight(self):
         return list(self.stats.values())[0].mean.n if self.stats else 0
 
+    def __repr__(self):
+        if self.stats:
+            buffer = "Targets statistics:\n"
+            for t, var in self.stats.items():
+                buffer += f"\tTarget {t}: {repr(var.mean)} | {repr(var)}\n"
+            return buffer
+        return ""
+
 
 class LeafModelMultiTarget(LeafMeanMultiTarget):
     """Learning Node for Multi-target Regression tasks that always uses learning models

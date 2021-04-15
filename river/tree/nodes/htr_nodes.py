@@ -99,6 +99,9 @@ class LeafMean(HTLeaf):
         """
         return -self.depth
 
+    def __repr__(self):
+        return f"{repr(self.stats.mean)} | {repr(self.stats)}" if self.stats else ""
+
 
 class LeafModel(LeafMean):
     """Learning Node for regression tasks that always use a learning model to provide

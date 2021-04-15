@@ -81,6 +81,13 @@ class LeafMajorityClass(HTLeaf):
                     break
         return count < 2
 
+    def __repr__(self):
+        return (
+            f"Class {max(self.stats, key=self.stats.get)} | {self.stats}"
+            if self.stats
+            else ""
+        )
+
 
 class LeafNaiveBayes(LeafMajorityClass):
     """Leaf that uses Naive Bayes models.

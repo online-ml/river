@@ -344,21 +344,20 @@ class HoeffdingTree(ABC):
         buffer = io.StringIO()
         _print = functools.partial(print, file=buffer)
 
-        for node in self._root.path(x):
-            if node.is_leaf():
-                pred = node.prediction(x, tree=self)  # noqa
+        for node in self._root.walk(x, until_leaf=True):
+            if isinstance(node, HTLeaf):
+                pred = node.prediction(x, tree=self)
                 if isinstance(self, base.Classifier):
                     class_val = max(pred, key=pred.get)
                     _print(f"Class {class_val} | {pred}")
                 else:
                     # Multi-target regression case
                     if isinstance(self, base.MultiOutputMixin):
-                        _print("Predictions:\n{")
+                        _print("Predictions:\n")
                         for i, (t, var) in enumerate(pred.items()):
                             _print(
-                                f"\t{t}: {pred[t]} | {repr(node.stats[t].mean)} | {repr(node.stats[t])}"
+                                f"\t{t}: {pred[t]} | {repr(node.stats[t].mean)} | {repr(node.stats[t])}\n"
                             )
-                        _print("}")
                     else:  # Single-target regression
                         _print(
                             f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
@@ -371,24 +370,6 @@ class HoeffdingTree(ABC):
                     _print(
                         node.split_test.describe_condition_for_branch(child_index)
                     )  # noqa
-                else:  # Corner case where an emerging nominal feature value arrives
-                    _print("Decision node reached as final destination")
-                    pred = node.stats
-                    if isinstance(self, base.Classifier):
-                        class_val = max(pred, key=pred.get)
-                        pred = normalize_values_in_dict(pred, inplace=False)
-                        _print(f"Class {class_val} | {pred}")
-                    else:
-                        # Multi-target regression case
-                        if isinstance(self, base.MultiOutputMixin):
-                            _print("Predictions:\n{")
-                            for i, (t, var) in enumerate(pred.items()):
-                                _print(f"\t{t}: {pred[t].mean.get()} | {pred[t]}")
-                            _print("}")
-                        else:  # Single-target regression
-                            _print(
-                                f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
-                            )
 
         return buffer.getvalue()
 
