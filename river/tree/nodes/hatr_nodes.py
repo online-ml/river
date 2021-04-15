@@ -168,9 +168,13 @@ class AdaBranchRegressor(HTBranch, AdaNode):
                 isinstance(node, AdaBranchRegressor)
                 and node._alternate_tree is not None
             ):
-                found_nodes.append(
-                    node._alternate_tree.traverse(x, until_leaf=until_leaf)
-                )
+                if isinstance(node._alternate_tree, AdaBranchRegressor):
+                    found_nodes.append(
+                        node._alternate_tree.traverse(x, until_leaf=until_leaf)
+                    )
+                else:
+                    found_nodes.append(node._alternate_tree)
+
         found_nodes.append(node)
         return found_nodes
 
