@@ -103,8 +103,6 @@ River is intended to work with **Python 3.6 or above**. Installation can be done
 pip install river
 ```
 
-⚠️ However, we are currently [waiting](https://github.com/pypa/pypi-support/issues/651) for the name "river" to be released on PyPI.
-
 There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows, which means that you most probably won't have to build River from source.
 
 You can install the latest development version from GitHub as so:
