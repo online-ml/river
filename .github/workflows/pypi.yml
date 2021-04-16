@@ -14,8 +14,6 @@ jobs:
     env:
       CIBW_BUILD: "cp36-* cp37-* cp38-*"
       CIBW_BEFORE_BUILD: "pip install cython"
-      PYPI_USER: ${{ secrets.PYPI_USER }}
-      PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
     steps:
       - uses: actions/checkout@v2
 
@@ -41,4 +39,4 @@ jobs:
           cibuildwheel --output-dir dist
           python setup.py sdist
           ls dist
-          twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD}
+          twine upload dist/* -u ${{ secrets.pypi_user }} -p ${{ secrets.pypi_password }}
