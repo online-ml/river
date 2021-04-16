@@ -6632,12 +6632,12 @@
 
 This dataset contains features from web pages that are classified as phishing or not.
 
-    Name  Phishing                                                    
-    Task  Binary classification                                       
- Samples  1,250                                                       
-Features  9                                                           
-  Sparse  False                                                       
-    Path  /home/runner/work/river/river/river/datasets/phishing.csv.gz
+    Name  Phishing                                                        
+    Task  Binary classification                                           
+ Samples  1,250                                                           
+Features  9                                                               
+  Sparse  False                                                           
+    Path  /Users/max.halford/projects/river/river/datasets/phishing.csv.gz
 </code></pre></div>
 <p>The dataset is a streaming dataset, and therefore doesn't sit in memory. Instead, we can loop over each sample with a <code>for</code> loop:</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
@@ -6697,7 +6697,84 @@ Features  9
 
 <span class="n">model</span>
 </code></pre></div>
-<p><img alt="svg" src="../getting-started_files/getting-started_15_0.svg" /></p>
+<p><html><body><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
+{'counts': Counter(),
+ 'means': defaultdict(&lt;class 'float'&gt;, {}),
+ 'vars': defaultdict(&lt;class 'float'&gt;, {})}</p>
+<p></code></details><details class="estimator"><summary><pre class="estimator-name">LogisticRegression</pre></summary><code class="estimator-params">
+{'_weights': {},
+ '_y_name': None,
+ 'clip_gradient': 1000000000000.0,
+ 'initializer': Zeros (),
+ 'intercept': 0.0,
+ 'intercept_init': 0.0,
+ 'intercept_lr': Constant({'learning_rate': 0.01}),
+ 'l2': 0.0,
+ 'loss': Log({'weight_pos': 1.0, 'weight_neg': 1.0}),
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}</p>
+<p></code></details></div></body><style>
+.estimator {
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}</p>
+<p>.pipeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+}</p>
+<p>.union {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white
+}</p>
+<p>/<em> Vertical spacing between steps </em>/</p>
+<p>.estimator + .estimator,
+.estimator + .union,
+.union + .estimator {
+    margin-top: 2em;
+}</p>
+<p>.union &gt; .estimator {
+    margin-top: 0;
+}</p>
+<p>/<em> Spacing within a union of estimators </em>/</p>
+<p>.union &gt;
+.estimator + .estimator,
+.pipeline + .estimator,
+.estimator + .pipeline,
+.pipeline + .pipeline {
+    margin-left: 1em;
+}</p>
+<p>/<em> Typography </em>/
+.estimator-params {
+    display: block;
+    white-space: pre-wrap;
+    font-size: 120%;
+    margin-bottom: -1em;
+}</p>
+<p>.estimator &gt; code {
+    background-color: white !important;
+}</p>
+<p>.estimator-name {
+    display: inline;
+    margin: 0;
+    font-size: 130%;
+}</p>
+<p>/<em> Toggle </em>/</p>
+<p>summary {
+    display: flex;
+    align-items:center;
+    cursor: pointer;
+}</p>
+<p>summary &gt; div {
+    width: 100%;
+}
+</style></html></p>
 <div class="highlight"><pre><span></span><code><span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">():</span>

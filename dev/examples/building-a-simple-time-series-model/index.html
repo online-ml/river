@@ -6677,7 +6677,12 @@
 <p>Let's evaluate our first model.</p>
 <div class="highlight"><pre><span></span><code><span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../building-a-simple-time-series-model_files/building-a-simple-time-series-model_9_0.png" /></p>
+<div class="highlight"><pre><span></span><code>/Users/max.halford/anaconda3/envs/river/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:238: RuntimeWarning: Glyph 9 missing from current font.
+  font.set_text(s, 0.0, flags=flags)
+/Users/max.halford/anaconda3/envs/river/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:201: RuntimeWarning: Glyph 9 missing from current font.
+  font.set_text(s, 0, flags=flags)
+</code></pre></div>
+<p><img alt="png" src="../building-a-simple-time-series-model_files/building-a-simple-time-series-model_9_1.png" /></p>
 <p>The model has captured a trend but not the right one. Indeed it thinks the trend is linear whereas we can visually see that the growth of the data increases with time. In other words the second derivative of the series is positive. This is a well know problem in time series forecasting and there are thus many ways to handle it; for example by using a <a href="https://www.wikiwand.com/en/Power_transform">Box-Cox transform</a>. However we are going to do something a bit different, and instead linearly detrend the series using a <code>Detrender</code>. We'll set <code>window_size</code> to 12 in order to use a rolling mean of size 12 for detrending. The <code>Detrender</code> will center the target in 0, which means that we don't need an intercept in our linear regression. We can thus set <code>intercept_lr</code> to 0.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">time_series</span>
