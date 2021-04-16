@@ -3,7 +3,7 @@
 `river` is intended to work with **Python 3.6 or above**. Installation can be done via `pip`:
 
 ```sh
-pip install git+git://github.com/online-ml/river.git@v0.1.0
+pip install river
 ```
 
 You can install the latest development version from GitHub as so:
