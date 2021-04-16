@@ -61,6 +61,7 @@ docs_packages = dev_packages + [
     "mkdocs-material",
     "nbconvert",
     "numpydoc",
+    "spacy"
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
