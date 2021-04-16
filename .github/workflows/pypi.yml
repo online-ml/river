@@ -7,11 +7,9 @@ on:
 
 jobs:
   pypi:
-    name: Build wheels on ${{ matrix.platform }}
-      runs-on: ${{ matrix.platform }}
-      strategy:
-        matrix:
-          platform: [windows-latest]
+    strategy:
+      matrix:
+        platform: [windows-latest]
     runs-on: ${{ matrix.platform }}
     env:
       CIBW_BUILD: "cp36-* cp37-* cp38-*"
