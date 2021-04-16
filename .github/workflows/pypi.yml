@@ -9,7 +9,7 @@ jobs:
   pypi:
     strategy:
       matrix:
-        platform: [windows-latest]
+        platform: [windows-latest, macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.platform }}
     env:
       CIBW_BUILD: "cp36-* cp37-* cp38-*"
