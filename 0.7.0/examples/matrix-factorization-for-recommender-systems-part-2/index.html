@@ -6816,10 +6816,10 @@
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761778, RMSE: 0.960803 – 0:00:05.779352 – 1.16 MB
-[50,000] MAE: 0.751986, RMSE: 0.949941 – 0:00:11.797883 – 1.36 MB
-[75,000] MAE: 0.750044, RMSE: 0.948911 – 0:00:17.569553 – 1.58 MB
-[100,000] MAE: 0.748609, RMSE: 0.947994 – 0:00:23.341132 – 1.77 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761761, RMSE: 0.960662 – 0:00:06.066306 – 1.16 MB
+[50,000] MAE: 0.751922, RMSE: 0.949783 – 0:00:12.223314 – 1.36 MB
+[75,000] MAE: 0.749822, RMSE: 0.948634 – 0:00:18.344240 – 1.58 MB
+[100,000] MAE: 0.748393, RMSE: 0.94776 – 0:00:24.453248 – 1.77 MB
 </code></pre></div>
 <p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">reco.BiasedMF</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
 <h2 id="feature-engineering-for-fm-models">Feature engineering for FM models<a class="headerlink" href="#feature-engineering-for-fm-models" title="Permanent link">&para;</a></h2>
@@ -6895,10 +6895,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.759838, RMSE: 0.961281 – 0:00:14.217737 – 1.43 MB
-[50,000] MAE: 0.751307, RMSE: 0.951391 – 0:00:28.444672 – 1.68 MB
-[75,000] MAE: 0.750361, RMSE: 0.951393 – 0:00:42.586045 – 1.95 MB
-[100,000] MAE: 0.749994, RMSE: 0.951435 – 0:00:56.837536 – 2.2 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.760059, RMSE: 0.961415 – 0:00:14.665076 – 1.43 MB
+[50,000] MAE: 0.751429, RMSE: 0.951504 – 0:00:29.357417 – 1.68 MB
+[75,000] MAE: 0.750568, RMSE: 0.951592 – 0:00:44.020246 – 1.95 MB
+[100,000] MAE: 0.75018, RMSE: 0.951622 – 0:00:58.787549 – 2.2 MB
 </code></pre></div>
 <p>Note that using more variables involves factorizing a larger latent space, then increasing the number of latent factors <span class="arithmatex">\(k\)</span> often helps capturing more information.</p>
 <p>Some other feature engineering tips from <a href="https://www.kaggle.com/c/criteo-display-ad-challenge/discussion/10555">3 idiots' winning solution</a> for Kaggle <a href="https://www.kaggle.com/c/criteo-display-ad-challenge">Criteo display ads</a> competition in 2014:</p>
@@ -6940,10 +6940,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761297, RMSE: 0.962054 – 0:01:12.870833 – 2.61 MB
-[50,000] MAE: 0.751865, RMSE: 0.951499 – 0:02:25.301798 – 3.08 MB
-[75,000] MAE: 0.750853, RMSE: 0.951526 – 0:03:37.201442 – 3.6 MB
-[100,000] MAE: 0.750607, RMSE: 0.951982 – 0:04:49.464635 – 4.07 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761379, RMSE: 0.96214 – 0:01:12.262608 – 2.61 MB
+[50,000] MAE: 0.751998, RMSE: 0.951589 – 0:02:24.829779 – 3.08 MB
+[75,000] MAE: 0.750994, RMSE: 0.951616 – 0:03:36.880527 – 3.6 MB
+[100,000] MAE: 0.750849, RMSE: 0.952142 – 0:04:48.733228 – 4.07 MB
 </code></pre></div>
 <p>As said previously, high-order interactions are often hard to estimate due to too much sparsity, that's why we won't spend too much time here.</p>
 <h2 id="field-aware-factorization-machines-ffm">Field-aware Factorization Machines (FFM)<a class="headerlink" href="#field-aware-factorization-machines-ffm" title="Permanent link">&para;</a></h2>
@@ -6982,10 +6982,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.757718, RMSE: 0.958158 – 0:00:20.846266 – 3.04 MB
-[50,000] MAE: 0.749502, RMSE: 0.948065 – 0:00:41.787840 – 3.59 MB
-[75,000] MAE: 0.749275, RMSE: 0.948918 – 0:01:02.881585 – 4.19 MB
-[100,000] MAE: 0.749542, RMSE: 0.949769 – 0:01:24.010736 – 4.75 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.758339, RMSE: 0.959047 – 0:00:22.006069 – 3.04 MB
+[50,000] MAE: 0.749833, RMSE: 0.948531 – 0:00:43.944802 – 3.59 MB
+[75,000] MAE: 0.749631, RMSE: 0.949418 – 0:01:05.548826 – 4.19 MB
+[100,000] MAE: 0.749776, RMSE: 0.950131 – 0:01:27.186863 – 4.75 MB
 </code></pre></div>
 <p>Note that FFM usually needs to learn smaller number of latent factors <span class="arithmatex">\(k\)</span> than FM as each latent vector only deals with one field.</p>
 <h2 id="field-weighted-factorization-machines-fwfm">Field-weighted Factorization Machines (FwFM)<a class="headerlink" href="#field-weighted-factorization-machines-fwfm" title="Permanent link">&para;</a></h2>
@@ -7022,10 +7022,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761539, RMSE: 0.962241 – 0:00:29.122621 – 1.18 MB
-[50,000] MAE: 0.754089, RMSE: 0.953181 – 0:00:57.743211 – 1.38 MB
-[75,000] MAE: 0.754806, RMSE: 0.954979 – 0:01:26.582832 – 1.6 MB
-[100,000] MAE: 0.755404, RMSE: 0.95604 – 0:01:55.505659 – 1.79 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761435, RMSE: 0.962211 – 0:00:28.864720 – 1.18 MB
+[50,000] MAE: 0.754063, RMSE: 0.953248 – 0:00:57.510038 – 1.38 MB
+[75,000] MAE: 0.754729, RMSE: 0.95507 – 0:01:25.748034 – 1.6 MB
+[100,000] MAE: 0.755697, RMSE: 0.956542 – 0:01:54.057466 – 1.79 MB
 </code></pre></div>
                 
               

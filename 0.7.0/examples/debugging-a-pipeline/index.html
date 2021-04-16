@@ -6716,11 +6716,11 @@ def add_time_features(x):
         'day': x['moment'].weekday()
     }</p>
 <p></code></details><div class="union"><details class="estimator"><summary><pre class="estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="estimator-params">
-{'whitelist': {'temperature', 'pressure', 'clouds', 'wind', 'humidity'}}</p>
+{'whitelist': {'wind', 'clouds', 'pressure', 'humidity', 'temperature'}}</p>
 <p></code></details><details class="estimator"><summary><pre class="estimator-name">target_mean_by_station_and_hour</pre></summary><code class="estimator-params">
 {'by': ['station', 'hour'],
  'feature_name': 'target_mean_by_station_and_hour',
- 'groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7febda015310&gt;, Mean: 0.),
+ 'groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f28fdfcc310&gt;, Mean: 0.),
                        {'metro-canal-du-midi_0': Mean: 7.93981,
                         'metro-canal-du-midi_1': Mean: 8.179704,
                         'metro-canal-du-midi_10': Mean: 12.486815,
@@ -6846,7 +6846,7 @@ def add_time_features(x):
 <p></code></details><details class="estimator"><summary><pre class="estimator-name">target_ewm_0.5_by_station</pre></summary><code class="estimator-params">
 {'by': ['station'],
  'feature_name': 'target_ewm_0.5_by_station',
- 'groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7febda015310&gt;, EWMean: 0.),
+ 'groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f28fdfcc310&gt;, EWMean: 0.),
                        {'metro-canal-du-midi': EWMean: 4.690531,
                         'place-des-carmes': EWMean: 3.295317,
                         'place-esquirol': EWMean: 31.539759,
@@ -6857,11 +6857,11 @@ def add_time_features(x):
 <p></code></details></div><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
 {'counts': Counter({'target_ewm_0.5_by_station': 182470,
                     'target_mean_by_station_and_hour': 182470,
-                    'temperature': 182470,
-                    'pressure': 182470,
-                    'clouds': 182470,
                     'wind': 182470,
-                    'humidity': 182470}),
+                    'clouds': 182470,
+                    'pressure': 182470,
+                    'humidity': 182470,
+                    'temperature': 182470}),
  'means': defaultdict(&lt;class 'float'&gt;,
                       {'clouds': 30.315131254453505,
                        'humidity': 62.24244533347998,
@@ -6879,11 +6879,11 @@ def add_time_features(x):
                       'temperature': 34.70701720774977,
                       'wind': 4.473627075744674})}</p>
 <p></code></details><details class="estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
-{'_weights': {'target_ewm_0.5_by_station': 9.264175276315456, 'target_mean_by_station_and_hour': 0.19801400070497774, 'temperature': -0.42112178062192446, 'pressure': 0.1813749890913763, 'clouds': -0.3269694794458281, 'wind': -0.04087954775178994, 'humidity': 1.0125248437612877},
+{'_weights': {'target_ewm_0.5_by_station': 9.264175276315454, 'target_mean_by_station_and_hour': 0.19801400070497646, 'wind': -0.04087954775179712, 'clouds': -0.3269694794458266, 'pressure': 0.18137498909137967, 'humidity': 1.0125248437612904, 'temperature': -0.4211217806219168},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
  'initializer': Zeros (),
- 'intercept': 9.22315869068918,
+ 'intercept': 9.223158690689175,
  'intercept_init': 0.0,
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l2': 0.0,
