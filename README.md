@@ -29,7 +29,7 @@
   </a>
   <!-- PePy -->
   <a href="https://pepy.tech/project/river">
-    <img src="https://img.shields.io/badge/dynamic/json?style=flat-square&maxAge=86400&label=downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Friver" alt="pepy">
+    <img src="https://static.pepy.tech/badge/river?style=flat-square" alt="pepy">
   </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
