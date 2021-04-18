@@ -30,7 +30,7 @@ class D3(DriftDetector):
     -----
     * This method looks for drifts in multi-dimensional data.
     * It is advised to use a simple model as a discriminative classifier
-      since the goal of it is to determine if the old data and the new data 
+      since the goal of it is to determine if the old data and the new data
       are seperable, not to classify them.
     * This implementation differs from the original one in the paper,
       making the size of the old and new data windows equal, and allowing
