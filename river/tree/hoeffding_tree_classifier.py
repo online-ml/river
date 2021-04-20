@@ -95,7 +95,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 86.09%
+    Accuracy: 83.78%
     """
 
     _GINI_SPLIT = "gini"
