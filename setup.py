@@ -87,7 +87,12 @@ setuptools.setup(
     url=URL,
     packages=setuptools.find_packages(exclude=("tests",)),
     install_requires=base_packages,
-    extras_require={"dev": dev_packages, "compat": compat_packages, "docs": docs_packages},
+    extras_require={
+        "dev": dev_packages,
+        "compat": compat_packages,
+        "docs": docs_packages,
+        ":python_version == '3.6'": ["dataclasses"],
+    },
     include_package_data=True,
     license="BSD-3",
     classifiers=[
