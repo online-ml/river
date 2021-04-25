@@ -15,6 +15,8 @@ from typing import Iterable, Union
 class Branch(abc.ABC):
     """A generic tree branch."""
 
+    __slots__ = ['children']
+
     def __init__(self, *children):
         self.children = children
 
@@ -23,12 +25,9 @@ class Branch(abc.ABC):
         """Move to the next node down the tree."""
 
     def walk(self, x) -> Iterable[Union["Branch", "Leaf"]]:
-        """Iterate over the nodes that lead to the leaf which contains x."""
-        node = self
-        while isinstance(node, Branch):
-            yield node
-            node = node.next(x)
-        yield node
+        """Iterate over the nodes of the path induced by x."""
+        yield self
+        yield from self.next(x).walk(x)
 
     def traverse(self, x) -> "Leaf":
         """Return the leaf corresponding to the given input."""
@@ -85,6 +84,9 @@ class Leaf:
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+
+    def walk(self, x):
+        yield self
 
     @property
     def n_nodes(self):

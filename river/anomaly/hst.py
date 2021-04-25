@@ -10,11 +10,15 @@ __all__ = ["HalfSpaceTrees"]
 
 
 class HSTBranch(Branch):
-    def __init__(self, left, right, feature, threshold, **attributes):
+
+    __slots__ = ['feature', 'threshold', 'l_mass', 'r_mass']
+
+    def __init__(self, left, right, feature, threshold, l_mass, r_mass):
         super().__init__(left, right)
         self.feature = feature
         self.threshold = threshold
-        self.__dict__.update(attributes)
+        self.l_mass = l_mass
+        self.r_mass = r_mass
 
     def next(self, x):
         """
