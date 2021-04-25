@@ -10,12 +10,15 @@ intention is to provide utilies for walking over a tree and visualizing it.
 """
 import abc
 from typing import Iterable, Union
+from queue import Queue
+
+import pandas as pd
+
+from river.base import Base
 
 
-class Branch(abc.ABC):
+class Branch(Base, abc.ABC):
     """A generic tree branch."""
-
-    __slots__ = ['children']
 
     def __init__(self, *children):
         self.children = children
@@ -61,6 +64,20 @@ class Branch(abc.ABC):
         for child in self.children:
             yield from child.iter_dfs()
 
+    def iter_bfs(self):
+        """Iterate over nodes in breadth-first order."""
+
+        queue = Queue()
+
+        queue.put(self)
+
+        while not queue.empty():
+            node = queue.get()
+            yield node
+            if isinstance(node, Branch):
+                for child in node.children:
+                    queue.put(child)
+
     def iter_leaves(self):
         """Iterate over leaves from the left-most one to the right-most one."""
         for child in self.children:
@@ -79,7 +96,7 @@ class Branch(abc.ABC):
             yield from child.iter_edges()
 
 
-class Leaf:
+class Leaf(Base):
     """A generic tree node."""
 
     def __init__(self, **kwargs):
