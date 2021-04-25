@@ -10,7 +10,6 @@ __all__ = ["HalfSpaceTrees"]
 
 
 class HSTBranch(Branch):
-
     def __init__(self, left, right, feature, threshold, l_mass, r_mass):
         super().__init__(left, right)
         self.feature = feature
