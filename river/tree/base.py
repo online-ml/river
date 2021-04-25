@@ -9,6 +9,7 @@ intention is to provide utilies for walking over a tree and visualizing it.
 
 """
 import abc
+from collections import defaultdict
 from typing import Iterable, Union
 from queue import Queue
 
@@ -95,6 +96,33 @@ class Branch(Base, abc.ABC):
             yield self, child
             yield from child.iter_edges()
 
+    def to_dataframe(self) -> pd.DataFrame:
+        """Build a DataFrame containing one record for each node."""
+
+        node_ids = defaultdict(lambda: len(node_ids))
+        nodes = []
+
+        queue = Queue()
+        queue.put((self, None, 0))
+
+        while not queue.empty():
+            node, parent, depth = queue.get()
+            nodes.append({
+                'node': node_ids[id(node)],
+                'parent': node_ids[id(parent)] if parent else pd.NA,
+                'is_leaf': isinstance(node, Leaf),
+                'depth': depth,
+                **{
+                    k: v for k, v in node.__dict__.items() if k != 'children'
+                }
+            })
+            try:
+                for child in node.children:
+                    queue.put((child, node, depth + 1))
+            except AttributeError:
+                pass
+
+        return pd.DataFrame.from_records(nodes).set_index('node')
 
 class Leaf(Base):
     """A generic tree node."""
