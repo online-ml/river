@@ -24,7 +24,7 @@ class D3(DriftDetector):
         From 0.5 to 1.0
     discriminative_classifier
         Classifier to be used to distinguish old data from the new data.
-        Any classifier in the river.
+        Any classifier in the river can be used.
 
     Notes
     -----
