@@ -403,7 +403,7 @@ class TFIDF(BagOfWords):
         terms = self.process_text(x)
         self.dfs.update(set(terms))
 
-        # Inrivernt the global document counter
+        # Increment the global document counter
         self.n += 1
 
         return self

@@ -9,10 +9,16 @@ intention is to provide utilies for walking over a tree and visualizing it.
 
 """
 import abc
+from collections import defaultdict
+from queue import Queue
 from typing import Iterable, Union
 
+import pandas as pd
 
-class Branch(abc.ABC):
+from river.base import Base
+
+
+class Branch(Base, abc.ABC):
     """A generic tree branch."""
 
     def __init__(self, *children):
@@ -23,12 +29,9 @@ class Branch(abc.ABC):
         """Move to the next node down the tree."""
 
     def walk(self, x) -> Iterable[Union["Branch", "Leaf"]]:
-        """Iterate over the nodes that lead to the leaf which contains x."""
-        node = self
-        while isinstance(node, Branch):
-            yield node
-            node = node.next(x)
-        yield node
+        """Iterate over the nodes of the path induced by x."""
+        yield self
+        yield from self.next(x).walk(x)
 
     def traverse(self, x) -> "Leaf":
         """Return the leaf corresponding to the given input."""
@@ -62,6 +65,20 @@ class Branch(abc.ABC):
         for child in self.children:
             yield from child.iter_dfs()
 
+    def iter_bfs(self):
+        """Iterate over nodes in breadth-first order."""
+
+        queue = Queue()
+
+        queue.put(self)
+
+        while not queue.empty():
+            node = queue.get()
+            yield node
+            if isinstance(node, Branch):
+                for child in node.children:
+                    queue.put(child)
+
     def iter_leaves(self):
         """Iterate over leaves from the left-most one to the right-most one."""
         for child in self.children:
@@ -79,12 +96,43 @@ class Branch(abc.ABC):
             yield self, child
             yield from child.iter_edges()
 
+    def to_dataframe(self) -> pd.DataFrame:
+        """Build a DataFrame containing one record for each node."""
 
-class Leaf:
+        node_ids = defaultdict(lambda: len(node_ids))
+        nodes = []
+
+        queue = Queue()
+        queue.put((self, None, 0))
+
+        while not queue.empty():
+            node, parent, depth = queue.get()
+            nodes.append(
+                {
+                    "node": node_ids[id(node)],
+                    "parent": node_ids[id(parent)] if parent else pd.NA,
+                    "is_leaf": isinstance(node, Leaf),
+                    "depth": depth,
+                    **{k: v for k, v in node.__dict__.items() if k != "children"},
+                }
+            )
+            try:
+                for child in node.children:
+                    queue.put((child, node, depth + 1))
+            except AttributeError:
+                pass
+
+        return pd.DataFrame.from_records(nodes).set_index("node")
+
+
+class Leaf(Base):
     """A generic tree node."""
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+
+    def walk(self, x):
+        yield self
 
     @property
     def n_nodes(self):

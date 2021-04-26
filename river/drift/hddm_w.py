@@ -142,7 +142,7 @@ class HDDM_W(DriftDetector):
         return self._in_concept_change, self._in_warning_zone
 
     @staticmethod
-    def _detect_mean_inrivernt(sample1, sample2, confidence):
+    def _detect_mean_increment(sample1, sample2, confidence):
         if sample1.EWMA_estimator < 0 or sample2.EWMA_estimator < 0:
             return False
         ibc_sum = (
@@ -153,12 +153,12 @@ class HDDM_W(DriftDetector):
         return sample2.EWMA_estimator - sample1.EWMA_estimator > bound
 
     def _monitor_mean_incr(self, confidence):
-        return self._detect_mean_inrivernt(
+        return self._detect_mean_increment(
             self.sample1_incr_monitor, self.sample2_incr_monitor, confidence
         )
 
     def _monitor_mean_decr(self, confidence):
-        return self._detect_mean_inrivernt(
+        return self._detect_mean_increment(
             self.sample2_decr_monitor, self.sample1_decr_monitor, confidence
         )
 
