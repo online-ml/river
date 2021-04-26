@@ -818,10 +818,10 @@ class RunningTimeMeasurements(object):
         """Finish measuring testing time."""
         self._testing_time += timer() - self._testing_start
 
-    def update_time_measurements(self, inrivernt=1):
+    def update_time_measurements(self, increment=1):
         """Update the current total running time."""
-        if inrivernt > 0:
-            self._sample_count += inrivernt
+        if increment > 0:
+            self._sample_count += increment
         else:
             self._sample_count += 1
 
