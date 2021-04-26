@@ -1,8 +1,7 @@
 from copy import deepcopy
 
-from river import metrics
+from river import metrics, tree
 from river.base import DriftDetector
-from river.tree import HoeffdingTreeClassifier
 
 
 class D3(DriftDetector):
@@ -71,7 +70,7 @@ class D3(DriftDetector):
         self,
         window_size=200,
         auc_threshold=0.7,
-        discriminative_classifier=HoeffdingTreeClassifier(grace_period=40, max_depth=3),
+        discriminative_classifier=tree.HoeffdingTreeClassifier(grace_period=40, max_depth=3),
     ):
         super().__init__()
         self.auc_threshold = auc_threshold
