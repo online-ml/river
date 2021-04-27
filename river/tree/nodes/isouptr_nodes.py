@@ -47,7 +47,7 @@ class LeafMeanMultiTarget(LeafMean):
 
     def __repr__(self):
         if self.stats:
-            buffer = "Targets statistics:"
+            buffer = "Targets' statistics:"
             for t, var in self.stats.items():
                 buffer += f"\n\t{t}: {repr(var.mean)} | {repr(var)}"
             return buffer
