@@ -1,4 +1,4 @@
-from river.utils.skmultiflow_utils import normalize_values_in_dict
+from river.utils.skmultiflow_utils import normalize_values_in_dict, round_sig_fig
 
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
 from ..utils import do_naive_bayes_prediction
@@ -82,11 +82,16 @@ class LeafMajorityClass(HTLeaf):
         return count < 2
 
     def __repr__(self):
-        return (
-            f"Class {max(self.stats, key=self.stats.get)} | {self.stats}"
-            if self.stats
-            else ""
-        )
+        if not self.stats:
+            return ""
+
+        text = f"Class {max(self.stats, key=self.stats.get)}:"
+        for label, proba in sorted(
+            normalize_values_in_dict(self.stats, inplace=False).items()
+        ):
+            text += f"\n\tP({label}) = {round_sig_fig(proba)}"
+
+        return text
 
 
 class LeafNaiveBayes(LeafMajorityClass):

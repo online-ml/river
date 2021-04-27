@@ -9,7 +9,6 @@ from river import base
 from river.utils.skmultiflow_utils import (
     calculate_object_size,
     normalize_values_in_dict,
-    round_sig_fig,
 )
 
 from .nodes.branch import (
@@ -132,16 +131,17 @@ class HoeffdingTree(ABC):
         self._max_byte_size = self._max_size * (2 ** 20)
 
     @property
-    def model_measurements(self):
+    def measurements(self):
         """Collect metrics corresponding to the current status of the tree
         in a string buffer.
         """
         measurements = {
-            "Tree size (nodes)": (
+            "Number of nodes": (
                 self._n_decision_nodes + self._n_active_leaves + self._n_inactive_leaves
             ),
-            "Tree size (leaves)": self._n_active_leaves + self._n_inactive_leaves,
-            "Active learning nodes": self._n_active_leaves,
+            "Number of leaves": self._n_active_leaves + self._n_inactive_leaves,
+            "Number of active learning nodes": self._n_active_leaves,
+            "Number of inactive learning nodes": self._n_inactive_leaves,
             "Tree depth": self.depth,
             "Active leaf byte size estimate": self._active_leaf_size_estimate,
             "Inactive leaf byte size estimate": self._inactive_leaf_size_estimate,
@@ -149,21 +149,19 @@ class HoeffdingTree(ABC):
         }
         return measurements
 
-    def model_description(self):
-        """Walk the tree and return its structure in a buffer.
+    def to_dataframe(self):
+        """Return a representation of the current tree structure organized in a
+        `pandas.DataFrame` object.
+
+        In case the tree is empty or it only contains a single node (a leaf), `None` is returned.
 
         Returns
         -------
-        The description of the model.
-
+        df
+            A `pandas.DataFrame` depicting the tree structure.
         """
-        if self._root is not None:
-            buffer = [""]
-            description = ""
-            self._root.describe_subtree(self, buffer, 0)
-            for line in range(len(buffer)):
-                description += buffer[line]
-            return description
+        if self._root is not None and isinstance(self._root, HTBranch):
+            return self._root.to_dataframe()
 
     def _branch_selector(
         self, numerical_feature=True, multiway_split=False
@@ -335,6 +333,11 @@ class HoeffdingTree(ABC):
         -------
             A representation of the path followed by the tree to predict `x`; `None` if
             the tree is empty.
+
+        Notes
+        -----
+        Currently, Label Combination Hoeffding Tree Classifier (for multi-label
+        classification) is not supported.
         """
         if self._root is None:
             return
@@ -346,30 +349,14 @@ class HoeffdingTree(ABC):
 
         for node in self._root.walk(x, until_leaf=True):
             if isinstance(node, HTLeaf):
-                pred = node.prediction(x, tree=self)
-                if isinstance(self, base.Classifier):
-                    class_val = max(pred, key=pred.get)
-                    _print(f"Class {class_val} | {pred}")
-                else:
-                    # Multi-target regression case
-                    if isinstance(self, base.MultiOutputMixin):
-                        _print("Predictions:\n")
-                        for i, (t, var) in enumerate(pred.items()):
-                            _print(
-                                f"\t{t}: {pred[t]} | {repr(node.stats[t].mean)} | {repr(node.stats[t])}\n"
-                            )
-                    else:  # Single-target regression
-                        _print(
-                            f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
-                        )
-                break
+                _print(repr(node))
             else:
-                child_index = node.split_test.branch_for_instance(x)  # noqa
+                try:
+                    child_index = node.branch_no(x)  # noqa
+                except KeyError:
+                    child_index, _ = node.most_common_path()
 
-                if child_index >= 0:
-                    _print(
-                        node.split_test.describe_condition_for_branch(child_index)
-                    )  # noqa
+                _print(node.repr_split(child_index))  # noqa
 
         return buffer.getvalue()
 
@@ -409,36 +396,22 @@ class HoeffdingTree(ABC):
         .. image:: ../../docs/img/dtree_draw.svg
             :align: center
         """
+        counter = 0
 
-        def node_prediction(node):
-            if isinstance(self, base.Classifier):
-                pred = node.stats
-                text = str(max(pred, key=pred.get))
-                sum_votes = sum(pred.values())
-                if sum_votes > 0:
-                    pred = normalize_values_in_dict(
-                        pred, factor=sum_votes, inplace=False
-                    )
-                    probas = "\n".join(
-                        [
-                            f"P({c}) = {round_sig_fig(proba)}"
-                            for c, proba in pred.items()
-                        ]
-                    )
-                    text = f"{text}\n{probas}"
-                return text
-            elif isinstance(self, base.Regressor):
-                # Multi-target regression
-                if isinstance(self, base.MultiOutputMixin):
-                    return " | ".join(
-                        [
-                            f"{t} = {round_sig_fig(s.mean.get())}"
-                            for t, s in node.stats.items()
-                        ]
-                    )
-                else:  # vanilla single-target regression
-                    pred = node.stats.mean.get()
-                    return f"{round_sig_fig(pred)}"
+        def iterate(node=None):
+            if node is None:
+                yield None, None, self._root, 0, None
+                yield from iterate(self._root)
+
+            nonlocal counter
+            parent_no = counter
+
+            if isinstance(node, HTBranch):
+                for branch_index, child in enumerate(node.children):
+                    counter += 1
+                    yield parent_no, node, child, counter, branch_index
+                    if isinstance(child, HTBranch):
+                        yield from iterate(child)
 
         if max_depth is None:
             max_depth = math.inf
@@ -464,23 +437,18 @@ class HoeffdingTree(ABC):
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
         palette = collections.defaultdict(new_color)
 
-        for (parent_no, child_no, parent, child, branch_id,) in self._root.iter_edges():
-
+        for parent_no, parent, child, child_no, branch_index in iterate():
             if child.depth > max_depth:
                 continue
 
-            if not child.is_leaf():
-                text = f"{child.split_test.attrs_test_depends_on()[0]}"
-
-                if child.depth == max_depth:
-                    text = f"{text}\n{node_prediction(child)}"
+            if isinstance(child, HTBranch):
+                text = f"{child.feature}"  # noqa
             else:
-                text = f"{node_prediction(child)}\nsamples: {int(child.total_weight)}"
+                text = f"{repr(child)}\nsamples: {int(child.total_weight)}"
 
             # Pick a color, the hue depends on the class and the transparency on the distribution
             if isinstance(self, base.Classifier):
-                class_proba = {c: 0 for c in self.classes}  # noqa
-                class_proba.update(normalize_values_in_dict(child.stats, inplace=False))
+                class_proba = normalize_values_in_dict(child.stats, inplace=False)
                 mode = max(class_proba, key=class_proba.get)
                 p_mode = class_proba[mode]
                 try:
@@ -497,9 +465,7 @@ class HoeffdingTree(ABC):
                 dot.edge(
                     f"{parent_no}",
                     f"{child_no}",
-                    xlabel=parent.split_test.describe_condition_for_branch(
-                        branch_id, shorten=True
-                    ),
+                    xlabel=parent.repr_split(branch_index, shorten=True),
                 )
 
         return dot

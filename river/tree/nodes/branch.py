@@ -28,6 +28,19 @@ class HTBranch(Branch):
     def max_branches(self):
         pass
 
+    @abc.abstractmethod
+    def repr_split(self, index: int, shorten=False):
+        """Return a string representation of the test performed in the branch at `index`.
+
+        Parameters
+        ----------
+        index
+            The branch index.
+        shorten
+            If True, return a shortened version of the performed test.
+        """
+        pass
+
 
 class NumericBinaryBranch(HTBranch):
     def __init__(self, stats, feature, threshold, depth, left, right, **attributes):
@@ -51,6 +64,16 @@ class NumericBinaryBranch(HTBranch):
             return 1, right
         return 0, left
 
+    def repr_split(self, index: int, shorten=False):
+        if shorten:
+            if index == 0:
+                return f"≤ {round(self.threshold, 4)}"
+            return f"> {round(self.threshold, 4)}"
+        else:
+            if index == 0:
+                return f"{self.feature} ≤ {self.threshold}"
+            return f"{self.feature} > {self.threshold}"
+
 
 class NominalBinaryBranch(HTBranch):
     def __init__(self, stats, feature, value, depth, left, right, **attributes):
@@ -73,6 +96,17 @@ class NominalBinaryBranch(HTBranch):
         if left.total_weight < right.total_weight:
             return 1, right
         return 0, left
+
+    def repr_split(self, index: int, shorten=False):
+        if shorten:
+            if index == 0:
+                return str(self.value)
+            else:
+                return f"not {self.value}"
+        else:
+            if index == 0:
+                return f"{self.feature} = {self.value}"
+            return f"{self.feature} ≠ {self.value}"
 
 
 class NumericMultiwayBranch(HTBranch):
@@ -112,6 +146,15 @@ class NumericMultiwayBranch(HTBranch):
         self._r_mapping[len(self.children)] = slot
         self.children.append(child)
 
+    def repr_split(self, index: int, shorten=False):
+        lower = self._r_mapping[index] * self.radius
+        upper = lower + self.radius
+
+        if shorten:
+            return f"[{round(lower, 4)}, {round(upper, 4)})"
+
+        return f"{lower} ≤ {self.feature} < {upper}"
+
 
 class NominalMultiwayBranch(HTBranch):
     def __init__(self, stats, feature, feature_values, depth, *children, **attributes):
@@ -141,3 +184,11 @@ class NominalMultiwayBranch(HTBranch):
         self._mapping[feature_val] = len(self.children)
         self._r_mapping[len(self.children)] = feature_val
         self.children.append(child)
+
+    def repr_split(self, index: int, shorten=False):
+        feat_val = self._r_mapping[index]
+
+        if shorten:
+            return str(feat_val)
+
+        return f"{self.feature} = {feat_val}"
