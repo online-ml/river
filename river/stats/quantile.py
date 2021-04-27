@@ -140,7 +140,7 @@ class Quantile(base.Univariate):
             # Find cell k such that qk < Xj <= qk+i and adjust extreme values (q1 and q) if necessary
             k = self._find_k(x)
 
-            # Inrivernt all positions greater than k
+            # Increment all positions greater than k
             self.position = [j if i < k else j + 1 for i, j in enumerate(self.position)]
             self.marker_position = [
                 x + y

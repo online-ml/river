@@ -69,6 +69,14 @@ def test_iter_dfs():
         assert i == node.no
 
 
+def test_iter_bfs():
+
+    tree = BinaryBranch(BinaryBranch(Leaf(no=4), Leaf(no=5), no=2), Leaf(no=3), no=1)
+
+    for i, node in enumerate(tree.iter_bfs(), start=1):
+        assert i == node.no
+
+
 def test_iter_leaves():
 
     tree = BinaryBranch(BinaryBranch(Leaf(no=1), Leaf(no=2)), Leaf(no=3))

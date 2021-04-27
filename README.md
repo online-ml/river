@@ -29,7 +29,7 @@
   </a>
   <!-- PePy -->
   <a href="https://pepy.tech/project/river">
-    <img src="https://img.shields.io/badge/dynamic/json?style=flat-square&maxAge=86400&label=downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Friver" alt="pepy">
+    <img src="https://static.pepy.tech/badge/river?style=flat-square" alt="pepy">
   </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
@@ -102,8 +102,6 @@ River is intended to work with **Python 3.6 or above**. Installation can be done
 ```sh
 pip install river
 ```
-
-⚠️ However, we are currently [waiting](https://github.com/pypa/pypi-support/issues/651) for the name "river" to be released on PyPI.
 
 There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows, which means that you most probably won't have to build River from source.
 

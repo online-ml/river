@@ -24,7 +24,6 @@ class HTBranch(Branch):
     def next(self, x):
         return self.children[self.branch_no(x)]
 
-    @property
     @abc.abstractmethod
     def max_branches(self):
         pass
@@ -42,7 +41,6 @@ class NumericBinaryBranch(HTBranch):
             return 0
         return 1
 
-    @property
     def max_branches(self):
         return 2
 
@@ -66,7 +64,6 @@ class NominalBinaryBranch(HTBranch):
             return 0
         return 1
 
-    @property
     def max_branches(self):
         return 2
 
@@ -97,7 +94,6 @@ class NumericMultiwayBranch(HTBranch):
 
         return self._mapping[slot]
 
-    @property
     def max_branches(self):
         return -1
 
@@ -130,7 +126,6 @@ class NominalMultiwayBranch(HTBranch):
     def branch_no(self, x):
         return self._mapping[x[self.feature]]
 
-    @property
     def max_branches(self):
         return -1
 

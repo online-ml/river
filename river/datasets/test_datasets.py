@@ -19,7 +19,7 @@ def _iter_datasets():
     for _, dataset in inspect.getmembers(
         importlib.import_module("river.datasets"), inspect.isclass
     ):
-        if dataset.__class__.__name__ != "Insects":
+        if not issubclass(dataset, datasets.Insects):
             yield dataset()
 
 
@@ -35,23 +35,6 @@ def _iter_datasets():
 def test_remote_url(dataset):
     with request.urlopen(dataset.url) as r:
         assert r.status == 200
-
-
-@pytest.mark.parametrize(
-    "dataset",
-    [
-        pytest.param(dataset, id=dataset.__class__.__name__)
-        for dataset in _iter_datasets()
-        if isinstance(dataset, base.RemoteDataset)
-    ],
-)
-@pytest.mark.datasets
-def test_remote_size(dataset):
-    if dataset.path.is_file():
-        size = dataset.path.stat().st_size
-    else:
-        size = sum(f.stat().st_size for f in dataset.path.glob("**/*") if f.is_file())
-    assert size == dataset.size
 
 
 @pytest.mark.parametrize(
