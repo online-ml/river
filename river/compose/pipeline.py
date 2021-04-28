@@ -208,16 +208,17 @@ class Pipeline(base.Estimator):
         ).expandtabs(2)
 
     def _repr_html_(self):
-        from .html_repr import CSS, pipeline_to_html
+
+        from river.compose import viz
 
         html = ET.Element("html")
         body = ET.Element("body")
         html.append(body)
 
-        pipeline_div = pipeline_to_html(self)
+        pipeline_div = viz.pipeline_to_html(self)
         body.append(pipeline_div)
 
-        return f"<html>{ET.tostring(body).decode()}<style>{CSS}</style></html>"
+        return f"<html>{ET.tostring(body).decode()}<style>{viz.CSS}</style></html>"
 
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
