@@ -195,20 +195,20 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             self._n_active_leaves = 1
 
         # Sort instance X into a leaf
-        self._sort_instance_into_leaf(x, y, sample_weight)
+        self._sort_to_leaf(x, y, sample_weight)
         # Process all nodes, starting from root to the leaf where the instance x belongs.
         self._process_nodes(x, y, sample_weight, self._root, None, None)
 
         return self
 
-    def _sort_instance_into_leaf(self, x, y, sample_weight):
-        """Sort an instance into a leaf.
+    def _sort_to_leaf(self, x, y, sample_weight):
+        """For a given instance, find the corresponding leaf and update it.
 
-        Private function where leaf learn from instance
+        Private function where leaf learn from instance.
 
         1. Find the node where instance should be.
         2. If no node have been found, create new learning node.
-        3.1 Update the node with the provided instance
+        3.1 Update the node with the provided instance.
 
         Parameters
         ----------
@@ -283,7 +283,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     node,
                     parent,
                     branch_index,
+                    # The attribute observer template that will be replicated to new leaves
                     splitter=self.splitter,
+                    # Existing attribute observers that will be leveraged
                     splitters=node.splitters,
                 )
 
