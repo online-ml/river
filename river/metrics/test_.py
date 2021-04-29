@@ -201,13 +201,7 @@ def test_metric(metric, sk_metric):
                     )
                 else:
                     assert (
-                        abs(
-                            m.get()
-                            - sk_metric(
-                                y_true[: i + 1],
-                                y_pred[: i + 1],
-                            )
-                        )
+                        abs(m.get() - sk_metric(y_true[: i + 1], y_pred[: i + 1],))
                         < 1e-6
                     )
 
@@ -244,8 +238,7 @@ def test_rolling_metric(metric, sk_metric):
                         abs(
                             m.get()
                             - sk_metric(
-                                tail(y_true[: i + 1], n),
-                                tail(y_pred[: i + 1], n),
+                                tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n),
                             )
                         )
                         < 1e-10
@@ -338,8 +331,7 @@ def test_pair_confusion():
             m.update(y_true=yt, y_pred=yp)
 
             sk_pair_confusion_matrix = sk_metrics.cluster.pair_confusion_matrix(
-                labels_true=y_true[: i + 1],
-                labels_pred=y_pred[: i + 1],
+                labels_true=y_true[: i + 1], labels_pred=y_pred[: i + 1],
             )
 
             if i >= 1:
