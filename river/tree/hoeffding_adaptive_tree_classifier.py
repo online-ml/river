@@ -157,6 +157,30 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.adwin_confidence = adwin_confidence
         self.seed = seed
 
+    @property
+    def n_alternate_trees(self):
+        return self._n_alternate_trees
+
+    @property
+    def n_pruned_alternate_trees(self):
+        return self._n_pruned_alternate_trees
+
+    @property
+    def n_switch_alternate_trees(self):
+        return self._n_switch_alternate_trees
+
+    @property
+    def summary(self):
+        summ = super().summary
+        summ.update(
+            {
+                "n_alternate_trees": self.n_alternate_trees,
+                "n_pruned_alternate_trees": self.n_pruned_alternate_trees,
+                "n_switch_alternate_trees": self.n_switch_alternate_trees,
+            }
+        )
+        return summ
+
     def learn_one(self, x, y, *, sample_weight=1.0):
         # Updates the set of observed classes
         self.classes.add(y)

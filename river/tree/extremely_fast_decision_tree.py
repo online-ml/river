@@ -401,7 +401,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     self._n_active_leaves += 1
                     self._n_active_leaves -= n_active
                     self._n_inactive_leaves -= n_inactive
-                    self._n_decision_nodes -= node.n_branches
                     stop_flag = True
 
                     # Manage memory
@@ -435,8 +434,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                     self._n_active_leaves -= n_active
                     self._n_inactive_leaves -= n_inactive
-                    self._n_decision_nodes -= node.n_branches
-                    self._n_decision_nodes += 1
                     self._n_active_leaves += len(leaves)
 
                     if parent is None:
@@ -535,7 +532,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     new_split.last_split_reevaluation_at = node.total_weight
 
                     self._n_active_leaves -= 1
-                    self._n_decision_nodes += 1
                     self._n_active_leaves += len(leaves)
 
                     if parent is None:

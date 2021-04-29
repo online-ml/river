@@ -375,7 +375,6 @@ class AdaBranchClassifier(HTBranch, AdaNode):
 
                 # Recursive delete of SplitNodes
                 child.kill_tree_children(tree)  # noqa
-                tree._n_decision_nodes -= 1
             else:
                 if child.is_active():  # noqa
                     tree._n_active_leaves -= 1

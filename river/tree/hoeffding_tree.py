@@ -78,7 +78,6 @@ class HoeffdingTree(ABC):
         self.merit_preprune: bool = merit_preprune
 
         self._root: typing.Union[HTBranch, HTLeaf, None] = None
-        self._n_decision_nodes: int = 0
         self._n_active_leaves: int = 0
         self._n_inactive_leaves: int = 0
         self._inactive_leaf_size_estimate: float = 0.0
@@ -131,23 +130,48 @@ class HoeffdingTree(ABC):
         self._max_byte_size = self._max_size * (2 ** 20)
 
     @property
-    def measurements(self):
+    def height(self) -> int:
+        if self._root:
+            return self._root.height
+
+    @property
+    def n_nodes(self):
+        if self._root:
+            return self._root.n_nodes
+
+    @property
+    def n_branches(self):
+        if self._root:
+            return self._root.n_branches
+
+    @property
+    def n_leaves(self):
+        if self._root:
+            return self._root.n_leaves
+
+    @property
+    def n_active_leaves(self):
+        return self._n_active_leaves
+
+    @property
+    def n_inactive_leaves(self):
+        return self._n_inactive_leaves
+
+    @property
+    def summary(self):
         """Collect metrics corresponding to the current status of the tree
         in a string buffer.
         """
-        measurements = {
-            "Number of nodes": (
-                self._n_decision_nodes + self._n_active_leaves + self._n_inactive_leaves
-            ),
-            "Number of leaves": self._n_active_leaves + self._n_inactive_leaves,
-            "Number of active learning nodes": self._n_active_leaves,
-            "Number of inactive learning nodes": self._n_inactive_leaves,
-            "Tree depth": self.depth,
-            "Active leaf byte size estimate": self._active_leaf_size_estimate,
-            "Inactive leaf byte size estimate": self._inactive_leaf_size_estimate,
-            "Byte size estimate overhead": self._size_estimate_overhead_fraction,
+        summary = {
+            "n_nodes": self.n_nodes,
+            "n_branches": self.n_branches,
+            "n_leaves": self.n_leaves,
+            "n_active_leaves": self.n_active_leaves,
+            "n_inactive_leaves": self.n_inactive_leaves,
+            "height": self.height,
+            "total_observed_weight": self._train_weight_seen_by_model,
         }
-        return measurements
+        return summary
 
     def to_dataframe(self):
         """Return a representation of the current tree structure organized in a
@@ -197,13 +221,6 @@ class HoeffdingTree(ABC):
         -------
         A new learning node.
         """
-
-    @property
-    def depth(self) -> int:
-        """The depth of the tree."""
-        if self._root:
-            return self._root.height
-        return 0
 
     @property
     def split_criterion(self) -> str:

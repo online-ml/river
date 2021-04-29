@@ -278,7 +278,6 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     )
 
                     self._n_active_leaves -= 1
-                    self._n_decision_nodes += 1
                     self._n_active_leaves += len(leaves)
                     if parent is None:
                         self._root = new_split
