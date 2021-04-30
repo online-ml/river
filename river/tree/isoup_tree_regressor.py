@@ -185,7 +185,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             new_adaptive = LeafAdaptiveMultiTarget(
                 initial_stats, depth, self.splitter, leaf_models
             )
-            if parent is not None:
+            if parent is not None and isinstance(parent, LeafAdaptiveMultiTarget):
                 new_adaptive._fmse_mean = parent._fmse_mean.copy()  # noqa
                 new_adaptive._fmse_model = parent._fmse_model.copy()  # noqa
 

@@ -186,7 +186,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             return LeafModel(initial_stats, depth, self.splitter, leaf_model)
         else:  # adaptive learning node
             new_adaptive = LeafAdaptive(initial_stats, depth, self.splitter, leaf_model)
-            if parent is not None:
+            if parent is not None and isinstance(parent, LeafAdaptive):
                 new_adaptive._fmse_mean = parent._fmse_mean  # noqa
                 new_adaptive._fmse_model = parent._fmse_model  # noqa
 
