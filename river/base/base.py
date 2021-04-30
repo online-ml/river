@@ -1,3 +1,4 @@
+import collections
 import copy
 import inspect
 import sys
@@ -224,30 +225,31 @@ class Base:
     @property
     def _raw_memory_usage(self) -> int:
         """Return the memory usage in bytes."""
-
-        def get_size(obj, seen=None):
-            """Recursively finds size of objects"""
-            size = sys.getsizeof(obj)
-            if seen is None:
-                seen = set()
+        buffer = collections.deque([self])
+        seen = set()
+        size = 0
+        while len(buffer) > 0:
+            obj = buffer.popleft()
             obj_id = id(obj)
             if obj_id in seen:
-                return 0
-            # Important mark as seen *before* entering recursion to gracefully handle
-            # self-referential objects
+                continue
+            size += sys.getsizeof(obj)
+            # Important mark as seen to gracefully handle self-referential objects
             seen.add(obj_id)
             if isinstance(obj, dict):
-                size += sum([get_size(v, seen) for v in obj.values()])
-                size += sum([get_size(k, seen) for k in obj.keys()])
-            elif hasattr(obj, "__dict__"):
-                size += get_size(vars(obj), seen)
+                buffer.extend([k for k in obj.keys()])
+                buffer.extend([v for v in obj.values()])
+            elif hasattr(obj, "__dict__"):  # Save object contents
+                contents: dict = vars(obj)
+                size += sys.getsizeof(contents)
+                buffer.extend([k for k in contents.keys()])
+                buffer.extend([v for v in contents.values()])
             elif hasattr(obj, "__iter__") and not isinstance(
                 obj, (str, bytes, bytearray)
             ):
-                size += sum([get_size(i, seen) for i in obj])
-            return size
+                buffer.extend([i for i in obj])  # noqa
 
-        return get_size(self)
+        return size
 
     @property
     def _memory_usage(self) -> str:
