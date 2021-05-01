@@ -1,4 +1,5 @@
 import typing
+import warnings
 
 from river import base, tree
 from river.utils.skmultiflow_utils import normalize_values_in_dict
@@ -86,7 +87,7 @@ class LabelCombinationHoeffdingTreeClassifier(
         nb_threshold: int = 0,
         nominal_attributes: list = None,
         splitter: Splitter = None,
-        **kwargs
+        **kwargs,
     ):
 
         super().__init__(
@@ -99,7 +100,7 @@ class LabelCombinationHoeffdingTreeClassifier(
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
             splitter=splitter,
-            **kwargs
+            **kwargs,
         )
 
         self._next_label_code: int = 0
@@ -175,3 +176,11 @@ class LabelCombinationHoeffdingTreeClassifier(
             preds[label_id] = max(label_probas, key=label_probas.get)
 
         return preds
+
+    def debug_one(self, x: dict):
+        warnings.warn(f"'debug_one' is not supported by {self.__class__.__name__}")
+
+    def draw(self, max_depth: int = None):
+        warnings.warn(
+            f"'draw' is not supported by {self.__class__.__name__}", stacklevel=1
+        )
