@@ -52,7 +52,7 @@ class Adam(base.Optimizer):
         self.m = collections.defaultdict(float)
         self.v = collections.defaultdict(float)
 
-    def _update_after_pred(self, w, g):
+    def _update_after_pred(self, w, g, h):
 
         # Correct bias for `v`
         lr = self.learning_rate * (1 - self.beta_2 ** (self.n_iterations + 1)) ** .5

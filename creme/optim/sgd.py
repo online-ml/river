@@ -40,7 +40,7 @@ class SGD(base.Optimizer):
     def __init__(self, lr=.01):
         super().__init__(lr)
 
-    def _update_after_pred(self, w, g):
+    def _update_after_pred(self, w, g, h):
 
         if isinstance(w, utils.VectorDict) and isinstance(g, utils.VectorDict):
             w -= self.learning_rate * g

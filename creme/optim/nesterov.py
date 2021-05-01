@@ -47,7 +47,7 @@ class NesterovMomentum(base.Optimizer):
 
         return w
 
-    def _update_after_pred(self, w, g):
+    def _update_after_pred(self, w, g, h):
 
         # Move w back to it's initial position
         for i in w:

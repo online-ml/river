@@ -46,7 +46,7 @@ class AdaGrad(base.Optimizer):
         self.eps = eps
         self.g2 = collections.defaultdict(float)
 
-    def _update_after_pred(self, w, g):
+    def _update_after_pred(self, w, g, h):
 
         for i, gi in g.items():
             self.g2[i] += gi ** 2
