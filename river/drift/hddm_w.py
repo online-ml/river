@@ -139,7 +139,7 @@ class HDDM_W(DriftDetector):
             if self._monitor_mean_decr(self.drift_confidence):
                 self.reset()
                 self._in_concept_change = True
-            elif self._monitor_mean_decr(self.drift_confidence):
+            elif self._monitor_mean_decr(self.warning_confidence):
                 self._in_warning_zone = True
         
         self.estimation = self.total.EWMA_estimator
