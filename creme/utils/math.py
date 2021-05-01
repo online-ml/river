@@ -86,7 +86,7 @@ def woodbury_identity(A_inv, U, V):
     DEN = inverse(diff_mat(eye_like(V), matmul2d(matmul2d(transpose(V), A_inv), U)))
 
     for k, S in matmul2d(matmul2d(matmul2d(matmul2d(A_inv, U), DEN), transpose(V)), A_inv).items():
-        A_inv[k] = A_inv.get(k, 0.) + S
+        A_inv[k] = A_inv.get(k, 0) + S
 
     return A_inv
 
