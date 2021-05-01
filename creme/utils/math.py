@@ -24,9 +24,7 @@ __all__ = [
     'sigmoid',
     'sign',
     'sherman_morrison',
-    'softmax',
-    'woodbury_identity',
-    'eye_like'
+    'softmax'
 ]
 
 
@@ -72,73 +70,6 @@ def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
         A_inv[k] = A_inv.get(k, 0) - v / den
 
     return A_inv
-
-
-def woodbury_identity(A_inv, U, V):
-    """Woodbury identity.
-
-    This modifies ``A_inv`` inplace.
-
-    References:
-        1. `Wikipedia article <https://www.wikiwand.com/en/Sherman%E2%80%93Morrison_formula>`_
-    """
-    
-    DEN = inverse(diff_mat(eye_like(V), matmul2d(matmul2d(transpose(V), A_inv), U)))
-
-    for k, S in matmul2d(matmul2d(matmul2d(matmul2d(A_inv, U), DEN), transpose(V)), A_inv).items():
-        A_inv[k] = A_inv.get(k, 0) + S
-
-    return A_inv
-
-    
-def eye_like(A):
-    identity = {}
-    
-    for (i, j) in A:
-        if i == j:
-            identity[i ,j] = 1.
-        else:
-            identity[i, j] = 0.
-    
-    return identity
-
-
-def inverse(A):
-    """Inverse calculation of matrix.
-    
-    """
-    k1, k2 = [sorted(set([i for i, j  in set(A)])), sorted(set([j for i, j in set(A)]))]
-    A_inv_np = np.linalg.inv(np.array([[A[i, j] for i in k1] for j in k2]))
-    A_inv = {}
-    
-    for i, u in enumerate(k1):
-        for j, v in enumerate(k2):
-            A_inv[u, v] = A_inv_np[i, j]
-    
-    return A_inv
-
-
-def transpose(A):
-    A_trans = {}
-    
-    for ((i, j), x) in A.items():
-            A_trans[j, i] = x
-    
-    return A_trans
-
-
-def sum_mat(A, B):
-
-    return {
-        k: A.get(k, 0.) + B.get(k, 0.) for k in set(A).union(B)
-    }
-
-
-def diff_mat(A, B):
-
-    return {
-        k: A.get(k, 0.) - B.get(k, 0.) for k in set(A).union(B)
-    }       
 
 
 def dotvecmat(x, A):

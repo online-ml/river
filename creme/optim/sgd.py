@@ -37,7 +37,7 @@ class SGD(base.Optimizer):
     def __init__(self, lr=0.01):
         super().__init__(lr)
 
-    def _update_after_pred(self, w, g):
+    def _update_after_pred(self, w, g, x):
 
         for i, gi in g.items():
             w[i] -= self.learning_rate * gi
