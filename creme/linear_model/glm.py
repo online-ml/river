@@ -1,5 +1,5 @@
 import collections
-import itertools
+import math
 import numbers
 
 import numpy as np
@@ -82,24 +82,7 @@ class GLM:
             },
             loss_gradient
         )
-    
-    def _eval_hessian(self, x, y):
-        """Returns the hessian for a given observation.
 
-        This logic is put into a separate function for testing purposes.
-
-        """
-        
-        # Hessian = x 
-        
-        # Hessian = utils.math.outer(x, x)
-        
-        Hessian = {}
-        for (i, xi), (j, xj) in itertools.product(x.items(), x.items()):
-            Hessian[i, j] = xi * xj * self.loss.hessian(y_true=y, y_pred=self._raw_dot(x))
-
-        return Hessian
-            
     def fit_one(self, x, y, sample_weight=1.):
 
         # Some optimizers need to do something before a prediction is made
@@ -112,7 +95,7 @@ class GLM:
         self.intercept -= self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
 
         # Update the weights
-        self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient, h=self._eval_hessian(x, y))
+        self.weights = self.optimizer.update_after_pred(w=self.weights, g=gradient)
 
         return self
 

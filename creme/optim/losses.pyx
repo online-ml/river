@@ -125,8 +125,7 @@ cdef class Cauchy(RegressionLoss):
         2. `Paris Madness Kaggle kernel <https://www.kaggle.com/raddar/paris-madness>`_
 
     """
-    cdef readonly double C
-    
+
     def __init__(self, C=80):
         self.C = C
 
@@ -136,10 +135,6 @@ cdef class Cauchy(RegressionLoss):
     cpdef double gradient(self, double y_true, double y_pred):
         diff = y_pred - y_true
         return diff / ((diff / self.C) ** 2 + 1)
-    
-    cpdef double hessian(self, double y_true, double y_pred):
-        diff = y_pred - y_true
-        return -self.C ** 2 * (diff ** 2 - self.C ** 2) / (diff ** 2 + self.C ** 2)**2
 
 
 cdef class CrossEntropy(MultiClassLoss):
@@ -416,9 +411,6 @@ cdef class Squared(RegressionLoss):
 
     cpdef double gradient(self, double y_true, double y_pred):
         return 2. * (y_pred - y_true)
-    
-    cpdef double hessian(self, double y_true, double y_pred):
-        return 2.
 
 
 class BinaryFocalLoss(BinaryLoss):
@@ -480,9 +472,6 @@ cdef class Poisson(RegressionLoss):
 
     cpdef double gradient(self, double y_true, double y_pred):
         return math.exp(y_pred) - y_true
-    
-    cpdef double hessian(self, double y_true, double y_pred):
-        return math.exp(y_pred)
 
     cpdef double mean_func(self, double y_pred):
         return math.exp(y_pred)
