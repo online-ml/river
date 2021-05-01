@@ -40,8 +40,12 @@ class Optimizer(abc.ABC):
         """
         return w
 
+<<<<<<< Updated upstream
     @abc.abstractmethod
     def _update_after_pred(self, w: dict, g: dict) -> dict:
+=======
+    def _update_after_pred(self, w: dict, g: dict, h: dict = {}) -> dict:
+>>>>>>> Stashed changes
         """Updates a weight vector given a gradient."""
         raise NotImplementedError
 
