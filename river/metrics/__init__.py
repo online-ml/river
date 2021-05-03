@@ -43,15 +43,24 @@ from .fbeta import (
     WeightedF1,
     WeightedFBeta,
 )
+from .fowlkes_mallows import FowlkesMallows
 from .geometric_mean import GeometricMean
 from .hamming import Hamming, HammingLoss
-from .jaccard import Jaccard
+from .jaccard import Jaccard, SorensenDice
 from .kappa import CohenKappa, KappaM, KappaT
 from .log_loss import LogLoss
 from .mae import MAE
+from .matthews_corrcoef import MatthewsCorrCoef
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
+from .mutual_info import (
+    AdjustedMutualInfo,
+    ExpectedMutualInfo,
+    MutualInfo,
+    NormalizedMutualInfo,
+)
+from .pair_confusion import PairConfusionMatrix
 from .precision import (
     ExamplePrecision,
     MacroPrecision,
@@ -59,18 +68,27 @@ from .precision import (
     Precision,
     WeightedPrecision,
 )
+from .prevalence_threshold import PrevalenceThreshold
+from .purity import Purity
+from .q0 import Q0, Q2
 from .r2 import R2
+from .rand import AdjustedRand, Rand
 from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
 from .rolling import Rolling
 from .smape import SMAPE
 from .time_rolling import TimeRolling
+from .variation_info import VariationInfo
+from .vbeta import Completeness, Homogeneity, VBeta
 
 __all__ = [
     "Accuracy",
+    "AdjustedMutualInfo",
+    "AdjustedRand",
     "BalancedAccuracy",
     "BinaryMetric",
+    "Completeness",
     "ClassificationMetric",
     "ClassificationReport",
     "cluster",
@@ -82,11 +100,14 @@ __all__ = [
     "ExampleRecall",
     "ExampleF1",
     "ExampleFBeta",
+    "ExpectedMutualInfo",
     "F1",
     "FBeta",
+    "FowlkesMallows",
     "GeometricMean",
     "Hamming",
     "HammingLoss",
+    "Homogeneity",
     "Jaccard",
     "KappaM",
     "KappaT",
@@ -96,6 +117,7 @@ __all__ = [
     "MacroFBeta",
     "MacroPrecision",
     "MacroRecall",
+    "MatthewsCorrCoef",
     "MCC",
     "Metric",
     "Metrics",
@@ -109,7 +131,14 @@ __all__ = [
     "MultiOutputClassificationMetric",
     "MultiOutputRegressionMetric",
     "MSE",
+    "MutualInfo",
+    "NormalizedMutualInfo",
+    "PairConfusionMatrix",
     "Precision",
+    "Purity",
+    "Q0",
+    "Q2",
+    "Rand",
     "Recall",
     "RegressionMetric",
     "RegressionMultiOutput",
@@ -118,8 +147,13 @@ __all__ = [
     "ROCAUC",
     "Rolling",
     "R2",
+    "Precision",
+    "PrevalenceThreshold",
     "SMAPE",
+    "SorensenDice",
     "TimeRolling",
+    "VariationInfo",
+    "VBeta",
     "WeightedF1",
     "WeightedFBeta",
     "WeightedPrecision",
