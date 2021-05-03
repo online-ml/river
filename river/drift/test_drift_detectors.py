@@ -10,8 +10,10 @@ data_stream_1 = np.concatenate(
 
 np.random.seed(12345)
 data_stream_2 = np.concatenate(
-    [[np.random.binomial(1, .2) for _ in range(1000)],
-     [np.random.binomial(1, .8) for _ in range(1000)]]
+    [
+        [np.random.binomial(1, 0.2) for _ in range(1000)],
+        [np.random.binomial(1, 0.8) for _ in range(1000)],
+    ]
 ).astype(int)
 
 np.random.seed(12345)
