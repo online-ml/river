@@ -1492,6 +1492,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    Notes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     References
   </a>
@@ -6696,6 +6703,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    Notes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     References
   </a>
@@ -6737,7 +6751,7 @@
 <p><span class="arithmatex">\(s_i\)</span>: The standard deviation at instant <span class="arithmatex">\(i\)</span>. </p>
 </li>
 </ul>
-<p>The conditions for entering the warning zone and detecting change are as follows: </p>
+<p>The conditions for entering the warning zone and detecting change are as follows [see implementation note bellow]: </p>
 <ul>
 <li>
 <p>if <span class="arithmatex">\(p_i + s_i \geq p_{min} + 2 * s_{min}\)</span> -&gt; Warning zone </p>
@@ -6792,14 +6806,14 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">data_stream</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="c1"># Change the data distribution from index 999 to 1500, simulating an</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="c1"># increase in error rate (1 indicates error)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">data_stream</span><span class="p">[</span><span class="mi">999</span><span class="p">:</span><span class="mi">1500</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data_stream</span><span class="p">[</span><span class="mi">1000</span><span class="p">:</span><span class="mi">1200</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">)]</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="c1"># Update drift detector and verify if change is detected</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_stream</span><span class="p">):</span>
 <span class="o">...</span>     <span class="n">in_drift</span><span class="p">,</span> <span class="n">in_warning</span> <span class="o">=</span> <span class="n">ddm</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 <span class="o">...</span>     <span class="k">if</span> <span class="n">in_drift</span><span class="p">:</span>
 <span class="o">...</span>         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Change detected at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, input value: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">Change</span> <span class="n">detected</span> <span class="n">at</span> <span class="n">index</span> <span class="mi">1077</span><span class="p">,</span> <span class="nb">input</span> <span class="n">value</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">Change</span> <span class="n">detected</span> <span class="n">at</span> <span class="n">index</span> <span class="mi">1157</span><span class="p">,</span> <span class="nb">input</span> <span class="n">value</span><span class="p">:</span> <span class="mi">1</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
@@ -6813,6 +6827,12 @@
 <li><strong>value</strong>     (<em>numbers.Number</em>)    </li>
 </ul>
 </details>
+<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
+<p>In this implementation, the conditions to signal drift and warning are
+<span class="arithmatex">\(p_i + s_i &gt; thershold\)</span> instead of <span class="arithmatex">\(p_i + s_i \geq thershold\)</span>. This is to
+avoid a corner case when a classifier is consistently wrong (<code>value=1</code>)
+that results in DDM indicating a drift every <code>min_num_instances</code>. This
+modification is consistent with the implementation in MOA.</p>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <div class="footnote">
 <hr />
