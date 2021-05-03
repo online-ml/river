@@ -1,4 +1,5 @@
-import numpy as np
+import numbers
+import math
 
 from river.base import DriftDetector
 
@@ -30,7 +31,7 @@ class DDM(DriftDetector):
     * $s_i$: The standard deviation at instant $i$.
 
     The conditions for entering the warning zone and detecting change are
-    as follows:
+    as follows [see implementation note bellow]:
 
     * if $p_i + s_i \geq p_{min} + 2 * s_{min}$ -> Warning zone
 
@@ -67,14 +68,22 @@ class DDM(DriftDetector):
     >>> data_stream = np.random.randint(2, size=2000)
     >>> # Change the data distribution from index 999 to 1500, simulating an
     >>> # increase in error rate (1 indicates error)
-    >>> data_stream[999:1500] = 1
+    >>> data_stream[1000:1200] = [np.random.binomial(1, .8) for _ in range(200)]
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
     ...     in_drift, in_warning = ddm.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
-    Change detected at index 1077, input value: 1
+    Change detected at index 1157, input value: 1
+
+    Notes
+    -----
+    In this implementation, the conditions to signal drift and warning are
+    $p_i + s_i > thershold$ instead of $p_i + s_i \geq thershold$. This is to
+    avoid a corner case when a classifier is consistently wrong (`value=1`)
+    that results in DDM indicating a drift every `min_num_instances`. This
+    modification is consistent with the implementation in MOA.
 
     References
     ----------
@@ -94,7 +103,6 @@ class DDM(DriftDetector):
         self.warning_level = warning_level
         self.out_control_level = out_control_level
         self.estimation = None
-        self.delay = None
         self.reset()
 
     def reset(self):
@@ -107,7 +115,7 @@ class DDM(DriftDetector):
         self.miss_prob_min = float("inf")
         self.miss_sd_min = float("inf")
 
-    def update(self, value):
+    def update(self, value: numbers.Number):
         """Update the change detector with a single data point.
 
         Parameters
@@ -123,7 +131,7 @@ class DDM(DriftDetector):
         self.miss_prob = self.miss_prob + (value - self.miss_prob) / float(
             self.sample_count
         )
-        self.miss_std = np.sqrt(
+        self.miss_std = math.sqrt(
             self.miss_prob * (1 - self.miss_prob) / float(self.sample_count)
         )
         self.sample_count += 1
@@ -131,7 +139,6 @@ class DDM(DriftDetector):
         self.estimation = self.miss_prob
         self._in_concept_change = False
         self._in_warning_zone = False
-        self.delay = 0
 
         if self.sample_count <= self.min_num_instances:
             return self._in_concept_change, self._in_warning_zone
@@ -143,13 +150,13 @@ class DDM(DriftDetector):
 
         if (
             self.miss_prob + self.miss_std
-            >= self.miss_prob_min + self.out_control_level * self.miss_sd_min
+            > self.miss_prob_min + self.out_control_level * self.miss_sd_min
         ):
             self._in_concept_change = True
 
         elif (
             self.miss_prob + self.miss_std
-            >= self.miss_prob_min + self.warning_level * self.miss_sd_min
+            > self.miss_prob_min + self.warning_level * self.miss_sd_min
         ):
             self._in_warning_zone = True
 

@@ -10,15 +10,11 @@ data_stream_1 = np.concatenate(
 
 np.random.seed(12345)
 data_stream_2 = np.concatenate(
-    (np.random.normal(0.0, 0.1, 1000) > 0, np.random.normal(0.5, 0.1, 1000) > 0)
+    [[np.random.binomial(1, .2) for _ in range(1000)],
+     [np.random.binomial(1, .8) for _ in range(1000)]]
 ).astype(int)
 
 np.random.seed(12345)
-# np.random.seed(1)
-# mu, sigma = 0, 0.1  # mean and standard deviation
-# d_1 = np.random.normal(mu, sigma, 1000) > 0
-# mu, sigma = 0.5, 0.1  # mean and standard deviation
-# d_2 = np.random.normal(mu, sigma, 1000) > 0
 data_stream_3 = np.concatenate(
     (
         np.random.normal(0.0, 0.1, 500) > 0,
@@ -37,20 +33,20 @@ def test_adwin():
 
 
 def test_ddm():
-    expected_indices = [1089]
+    expected_indices = [1049]
     detected_indices = perform_test(DDM(), data_stream_2)
     assert detected_indices == expected_indices
 
 
 def test_eddm():
-    expected_indices = [63, 391, 447, 1089]
+    expected_indices = [681, 848, 983, 1042, 1089]
     detected_indices = perform_test(EDDM(), data_stream_2)
     assert detected_indices == expected_indices
 
 
 def test_hddm_a():
     hddm_a = HDDM_A()
-    expected_indices = [1013]
+    expected_indices = [1047]
     detected_indices = perform_test(hddm_a, data_stream_2)
     assert detected_indices == expected_indices
 
@@ -63,7 +59,7 @@ def test_hddm_a():
 
 def test_hddm_w():
     hddm_w = HDDM_W()
-    expected_indices = [1013]
+    expected_indices = [1018]
     detected_indices = perform_test(hddm_w, data_stream_2)
     assert detected_indices == expected_indices
 
