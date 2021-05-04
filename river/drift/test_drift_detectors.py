@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from river.drift import ADWIN, DDM, EDDM, HDDM_A, HDDM_W, KSWIN, PageHinkley
+from river import synth
+from river.drift import ADWIN, D3, DDM, EDDM, HDDM_A, HDDM_W, KSWIN, PageHinkley
 
 np.random.seed(12345)
 data_stream_1 = np.concatenate(
@@ -26,10 +27,22 @@ data_stream_3 = np.concatenate(
     )
 ).astype(int)
 
+stream_generator = synth.Hyperplane(
+    seed=42, n_features=5, n_drift_features=3, mag_change=0.5
+)
+data_stream_4 = [x for x, _ in stream_generator.take(500)]
+
 
 def test_adwin():
     expected_indices = [1055, 1087, 1215]
     detected_indices = perform_test(ADWIN(), data_stream_1)
+
+    assert detected_indices == expected_indices
+
+
+def test_d3():
+    detected_indices = perform_test(D3(), data_stream_4)
+    expected_indices = [299]
 
     assert detected_indices == expected_indices
 
