@@ -73,15 +73,24 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         potential replacement to the current one.
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
+    binary_split
+        If True, only allow binary splits.
+    max_size
+        The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        Interval (number of processed instances) between memory consumption checks.
+    stop_mem_management
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        If True, enable merit-based tree pre-pruning.
     seed
        If int, `seed` is the seed used by the random number generator;</br>
        If RandomState instance, `seed` is the random number generator;</br>
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
        bootstrap sampling.</br>
-    kwargs
-        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
-        for more information.
 
     Notes
     -----
@@ -149,8 +158,13 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
         adwin_confidence: float = 0.002,
+        binary_split: bool = False,
+        max_size: int = 100,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
         seed=None,
-        **kwargs
     ):
 
         super().__init__(
@@ -164,7 +178,12 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             nominal_attributes=nominal_attributes,
             splitter=splitter,
             min_samples_split=min_samples_split,
-            **kwargs
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
         )
 
         self._n_alternate_trees = 0

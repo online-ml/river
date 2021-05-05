@@ -56,9 +56,18 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         and regression splitters can be distinguished by their property `is_target_class`.
         This is an advanced option. Special care must be taken when choosing different splitters.
         By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
-    kwargs
-        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
-        for more information.
+    binary_split
+        If True, only allow binary splits.
+    max_size
+        The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        Interval (number of processed instances) between memory consumption checks.
+    stop_mem_management
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        If True, enable merit-based tree pre-pruning.
 
     Notes
     -----
@@ -111,7 +120,12 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         nb_threshold: int = 0,
         nominal_attributes: list = None,
         splitter: Splitter = None,
-        **kwargs
+        binary_split: bool = False,
+        max_size: int = 100,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
     ):
 
         super().__init__(
@@ -124,7 +138,12 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
             splitter=splitter,
-            **kwargs
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
         )
 
         self.min_samples_reevaluate = min_samples_reevaluate
