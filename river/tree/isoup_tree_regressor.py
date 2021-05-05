@@ -3,12 +3,13 @@ from copy import deepcopy
 
 from river import base, tree
 
-from ._nodes import (
-    LearningNodeAdaptiveMultiTarget,
-    LearningNodeMeanMultiTarget,
-    LearningNodeModelMultiTarget,
+from .nodes.branch import HTBranch
+from .nodes.isouptr_nodes import (
+    LeafAdaptiveMultiTarget,
+    LeafMeanMultiTarget,
+    LeafModelMultiTarget,
 )
-from ._split_criterion import IntraClusterVarianceReductionSplitCriterion
+from .split_criterion import IntraClusterVarianceReductionSplitCriterion
 from .splitter import Splitter
 
 
@@ -61,9 +62,18 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
-    kwargs
-        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
-        for more information.
+    binary_split
+        If True, only allow binary splits.
+    max_size
+        The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        Interval (number of processed instances) between memory consumption checks.
+    stop_mem_management
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        If True, enable merit-based tree pre-pruning.
 
     References
     ----------
@@ -115,7 +125,12 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         nominal_attributes: list = None,
         splitter: Splitter = None,
         min_samples_split: int = 5,
-        **kwargs
+        binary_split: bool = False,
+        max_size: int = 500,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -128,23 +143,16 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             nominal_attributes=nominal_attributes,
             splitter=splitter,
             min_samples_split=min_samples_split,
-            **kwargs
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
         )
 
         self.split_criterion: str = "icvr"  # intra cluster variance reduction
         self.targets: set = set()
-
-    @tree.HoeffdingTreeRegressor.leaf_prediction.setter
-    def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in {self._TARGET_MEAN, self._MODEL, self._ADAPTIVE}:
-            print(
-                'Invalid leaf_prediction option "{}", will use default "{}"'.format(
-                    leaf_prediction, self._MODEL
-                )
-            )
-            self._leaf_prediction = self._MODEL
-        else:
-            self._leaf_prediction = leaf_prediction
 
     @tree.HoeffdingTreeRegressor.split_criterion.setter
     def split_criterion(self, split_criterion):
@@ -166,7 +174,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             min_samples_split=self.min_samples_split
         )
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
+    def _new_leaf(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
         the tree configuration.
         """
@@ -187,16 +195,16 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
                     leaf_models = {}
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return LearningNodeMeanMultiTarget(initial_stats, depth, self.splitter)
+            return LeafMeanMultiTarget(initial_stats, depth, self.splitter)
         elif self.leaf_prediction == self._MODEL:
-            return LearningNodeModelMultiTarget(
+            return LeafModelMultiTarget(
                 initial_stats, depth, self.splitter, leaf_models
             )
         else:  # adaptive learning node
-            new_adaptive = LearningNodeAdaptiveMultiTarget(
+            new_adaptive = LeafAdaptiveMultiTarget(
                 initial_stats, depth, self.splitter, leaf_models
             )
-            if parent is not None:
+            if parent is not None and isinstance(parent, LeafAdaptiveMultiTarget):
                 new_adaptive._fmse_mean = parent._fmse_mean.copy()  # noqa
                 new_adaptive._fmse_model = parent._fmse_model.copy()  # noqa
 
@@ -251,26 +259,12 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         dict
             Predicted target values.
         """
-
-        if self._tree_root is not None:
-            found_node = self._tree_root.filter_instance_to_leaf(x, None, -1)
-            node = found_node.node
-            if node is not None:
-                if node.is_leaf():
-                    return node.leaf_prediction(x, tree=self)
-                else:
-                    # The instance sorting ended up in a Split Node, since no branch was found
-                    # for some of the instance's features. Use the mean prediction in this case
-                    return {
-                        t: node.stats[t].mean.get() if t in node.stats else 0.0
-                        for t in self.targets
-                    }
+        pred = {}
+        if self._root is not None:
+            if isinstance(self._root, HTBranch):
+                leaf = self._root.traverse(x, until_leaf=True)
             else:
-                parent = found_node.parent
-                return {
-                    t: parent.stats[t].mean.get() if t in parent.stats else 0.0
-                    for t in self.targets
-                }
-        else:
-            # Model is empty
-            return {}
+                leaf = self._root
+
+            pred = leaf.prediction(x, tree=self)
+        return pred

@@ -1,4 +1,7 @@
-from .._attribute_test import NominalBinaryTest, NominalMultiwayTest, SplitSuggestion
+import collections
+import functools
+
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -13,7 +16,10 @@ class NominalSplitterClassif(Splitter):
         super().__init__()
         self._total_weight_observed = 0.0
         self._missing_weight_observed = 0.0
-        self._att_val_dist_per_class = {}
+        self._att_dist_per_class = collections.defaultdict(
+            functools.partial(collections.defaultdict, float)
+        )
+        self._att_values = set()
 
     @property
     def is_numeric(self):
@@ -23,72 +29,61 @@ class NominalSplitterClassif(Splitter):
         if att_val is None:
             self._missing_weight_observed += sample_weight
         else:
-            try:
-                self._att_val_dist_per_class[target_val]
-            except KeyError:
-                self._att_val_dist_per_class[target_val] = {att_val: 0.0}
-                self._att_val_dist_per_class = dict(
-                    sorted(self._att_val_dist_per_class.items())
-                )
-            try:
-                self._att_val_dist_per_class[target_val][att_val] += sample_weight
-            except KeyError:
-                self._att_val_dist_per_class[target_val][att_val] = sample_weight
-                self._att_val_dist_per_class[target_val] = dict(
-                    sorted(self._att_val_dist_per_class[target_val].items())
-                )
+            self._att_values.add(att_val)
+            self._att_dist_per_class[target_val][att_val] += sample_weight
 
         self._total_weight_observed += sample_weight
 
-        return self
-
     def cond_proba(self, att_val, target_val):
-        obs = self._att_val_dist_per_class.get(target_val, None)
-        if obs is not None:
-            value = obs[att_val] if att_val in obs else 0.0
-            return (value + 1.0) / (sum(obs.values()) + len(obs))
-        return 0.0
+        class_dist = self._att_dist_per_class[target_val]
+        value = class_dist[att_val]
+        try:
+            return value / sum(class_dist.values())
+        except ZeroDivisionError:
+            return 0.0
 
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        best_suggestion = None
-        att_values = sorted(
-            set(
-                [
-                    att_val
-                    for att_val_per_class in self._att_val_dist_per_class.values()
-                    for att_val in att_val_per_class
-                ]
-            )
-        )
+        best_suggestion = BranchFactory()
+
         if not binary_only:
             post_split_dist = self._class_dist_from_multiway_split()
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
-            branch_mapping = {
-                attr_val: branch_id for branch_id, attr_val in enumerate(att_values)
-            }
-            best_suggestion = SplitSuggestion(
-                NominalMultiwayTest(att_idx, branch_mapping), post_split_dist, merit,
+
+            best_suggestion = BranchFactory(
+                merit,
+                att_idx,
+                sorted(self._att_values),
+                post_split_dist,
+                numerical_feature=False,
+                multiway_split=True,
             )
-        for att_val in att_values:
+
+        for att_val in self._att_values:
             post_split_dist = self._class_dist_from_binary_split(att_val)
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
             if best_suggestion is None or merit > best_suggestion.merit:
-                best_suggestion = SplitSuggestion(
-                    NominalBinaryTest(att_idx, att_val), post_split_dist, merit
+                best_suggestion = BranchFactory(
+                    merit,
+                    att_idx,
+                    att_val,
+                    post_split_dist,
+                    numerical_feature=False,
+                    multiway_split=False,
                 )
+
         return best_suggestion
 
     def _class_dist_from_multiway_split(self):
         resulting_dist = {}
-        for i, att_val_dist in self._att_val_dist_per_class.items():
-            for j, value in att_val_dist.items():
-                if j not in resulting_dist:
-                    resulting_dist[j] = {}
-                if i not in resulting_dist[j]:
-                    resulting_dist[j][i] = 0.0
-                resulting_dist[j][i] += value
+        for class_val, att_dist in self._att_dist_per_class.items():
+            for att_val, weight in att_dist.items():
+                if att_val not in resulting_dist:
+                    resulting_dist[att_val] = {}
+                if class_val not in resulting_dist[att_val]:
+                    resulting_dist[att_val][class_val] = 0.0
+                resulting_dist[att_val][class_val] += weight
 
         sorted_keys = sorted(resulting_dist.keys())
         distributions = [dict(sorted(resulting_dist[k].items())) for k in sorted_keys]
@@ -97,14 +92,14 @@ class NominalSplitterClassif(Splitter):
     def _class_dist_from_binary_split(self, val_idx):
         equal_dist = {}
         not_equal_dist = {}
-        for i, att_val_dist in self._att_val_dist_per_class.items():
-            for j, value in att_val_dist.items():
-                if j == val_idx:
-                    if i not in equal_dist:
-                        equal_dist[i] = 0.0
-                    equal_dist[i] += value
+        for class_val, att_dist in self._att_dist_per_class.items():
+            for att_val, weight in att_dist.items():
+                if att_val == val_idx:
+                    if class_val not in equal_dist:
+                        equal_dist[class_val] = 0.0
+                    equal_dist[class_val] += weight
                 else:
-                    if i not in not_equal_dist:
-                        not_equal_dist[i] = 0.0
-                    not_equal_dist[i] += value
+                    if class_val not in not_equal_dist:
+                        not_equal_dist[class_val] = 0.0
+                    not_equal_dist[class_val] += weight
         return [equal_dist, not_equal_dist]

@@ -9,11 +9,16 @@ from river import base
 from river.utils.skmultiflow_utils import (
     calculate_object_size,
     normalize_values_in_dict,
-    round_sig_fig,
 )
 
-from ._attribute_test import InstanceConditionalTest
-from ._nodes import FoundNode, LearningNode, Node, SplitNode
+from .nodes.branch import (
+    HTBranch,
+    NominalBinaryBranch,
+    NominalMultiwayBranch,
+    NumericBinaryBranch,
+    NumericMultiwayBranch,
+)
+from .nodes.leaf import HTLeaf
 
 try:
     import graphviz
@@ -72,8 +77,7 @@ class HoeffdingTree(ABC):
         self.remove_poor_attrs: bool = remove_poor_attrs
         self.merit_preprune: bool = merit_preprune
 
-        self._tree_root: typing.Union[Node, None] = None
-        self._n_decision_nodes: int = 0
+        self._root: typing.Union[HTBranch, HTLeaf, None] = None
         self._n_active_leaves: int = 0
         self._n_inactive_leaves: int = 0
         self._inactive_leaf_size_estimate: float = 0.0
@@ -126,52 +130,82 @@ class HoeffdingTree(ABC):
         self._max_byte_size = self._max_size * (2 ** 20)
 
     @property
-    def model_measurements(self):
+    def height(self) -> int:
+        if self._root:
+            return self._root.height
+
+    @property
+    def n_nodes(self):
+        if self._root:
+            return self._root.n_nodes
+
+    @property
+    def n_branches(self):
+        if self._root:
+            return self._root.n_branches
+
+    @property
+    def n_leaves(self):
+        if self._root:
+            return self._root.n_leaves
+
+    @property
+    def n_active_leaves(self):
+        return self._n_active_leaves
+
+    @property
+    def n_inactive_leaves(self):
+        return self._n_inactive_leaves
+
+    @property
+    def summary(self):
         """Collect metrics corresponding to the current status of the tree
         in a string buffer.
         """
-        measurements = {
-            "Tree size (nodes)": (
-                self._n_decision_nodes + self._n_active_leaves + self._n_inactive_leaves
-            ),
-            "Tree size (leaves)": self._n_active_leaves + self._n_inactive_leaves,
-            "Active learning nodes": self._n_active_leaves,
-            "Tree depth": self.depth,
-            "Active leaf byte size estimate": self._active_leaf_size_estimate,
-            "Inactive leaf byte size estimate": self._inactive_leaf_size_estimate,
-            "Byte size estimate overhead": self._size_estimate_overhead_fraction,
+        summary = {
+            "n_nodes": self.n_nodes,
+            "n_branches": self.n_branches,
+            "n_leaves": self.n_leaves,
+            "n_active_leaves": self.n_active_leaves,
+            "n_inactive_leaves": self.n_inactive_leaves,
+            "height": self.height,
+            "total_observed_weight": self._train_weight_seen_by_model,
         }
-        return measurements
+        return summary
 
-    def model_description(self):
-        """Walk the tree and return its structure in a buffer.
+    def to_dataframe(self):
+        """Return a representation of the current tree structure organized in a
+        `pandas.DataFrame` object.
+
+        In case the tree is empty or it only contains a single node (a leaf), `None` is returned.
 
         Returns
         -------
-        The description of the model.
-
+        df
+            A `pandas.DataFrame` depicting the tree structure.
         """
-        if self._tree_root is not None:
-            buffer = [""]
-            description = ""
-            self._tree_root.describe_subtree(self, buffer, 0)
-            for line in range(len(buffer)):
-                description += buffer[line]
-            return description
+        if self._root is not None and isinstance(self._root, HTBranch):
+            return self._root.to_dataframe()
 
-    def _new_split_node(
-        self,
-        split_test: InstanceConditionalTest,
-        target_stats: dict = None,
-        depth: int = 0,
-    ) -> SplitNode:
+    def _branch_selector(
+        self, numerical_feature=True, multiway_split=False
+    ) -> typing.Type[HTBranch]:
         """Create a new split node."""
-        return SplitNode(split_test, target_stats, depth)
+        if numerical_feature:
+            if not multiway_split:
+                return NumericBinaryBranch
+            else:
+                return NumericMultiwayBranch
+        else:
+            if not multiway_split:
+                return NominalBinaryBranch
+            else:
+                return NominalMultiwayBranch
 
     @abstractmethod
-    def _new_learning_node(
-        self, initial_stats: dict = None, parent: Node = None
-    ) -> LearningNode:
+    def _new_leaf(
+        self, initial_stats: dict = None, parent: typing.Union[HTLeaf, HTBranch] = None
+    ) -> HTLeaf:
         """Create a new learning node.
 
         The characteristics of the learning node depends on the tree algorithm.
@@ -187,13 +221,6 @@ class HoeffdingTree(ABC):
         -------
         A new learning node.
         """
-
-    @property
-    def depth(self) -> int:
-        """The depth of the tree."""
-        if isinstance(self._tree_root, Node):
-            return self._tree_root.subtree_depth()
-        return 0
 
     @property
     def split_criterion(self) -> str:
@@ -233,33 +260,29 @@ class HoeffdingTree(ABC):
             if self.stop_mem_management:
                 self._growth_allowed = False
                 return
-        learning_nodes = self._find_learning_nodes()
-        learning_nodes.sort(key=lambda n: n.node.calculate_promise())
+        leaves = self._find_leaves()
+        leaves.sort(key=lambda leaf: leaf.calculate_promise())
         max_active = 0
-        while max_active < len(learning_nodes):
+        while max_active < len(leaves):
             max_active += 1
             if (
                 (
                     max_active * self._active_leaf_size_estimate
-                    + (len(learning_nodes) - max_active)
-                    * self._inactive_leaf_size_estimate
+                    + (len(leaves) - max_active) * self._inactive_leaf_size_estimate
                 )
                 * self._size_estimate_overhead_fraction
             ) > self._max_byte_size:
                 max_active -= 1
                 break
-        cutoff = len(learning_nodes) - max_active
+        cutoff = len(leaves) - max_active
         for i in range(cutoff):
-            if learning_nodes[i].node.is_active():
-                learning_nodes[i].node.deactivate()
+            if leaves[i].is_active():
+                leaves[i].deactivate()
                 self._n_inactive_leaves += 1
                 self._n_active_leaves -= 1
-        for i in range(cutoff, len(learning_nodes)):
-            if (
-                not learning_nodes[i].node.is_active()
-                and learning_nodes[i].node.depth < self.max_depth
-            ):
-                learning_nodes[i].node.activate()
+        for i in range(cutoff, len(leaves)):
+            if not leaves[i].is_active() and leaves[i].depth < self.max_depth:
+                leaves[i].activate()
                 self._n_active_leaves += 1
                 self._n_inactive_leaves -= 1
 
@@ -274,18 +297,14 @@ class HoeffdingTree(ABC):
         [^1]: Kirkby, R.B., 2007. Improving hoeffding trees (Doctoral dissertation,
         The University of Waikato).
         """
-        learning_nodes = self._find_learning_nodes()
+        leaves = self._find_leaves()
         total_active_size = 0
         total_inactive_size = 0
-        for found_node in learning_nodes:
-            if (
-                not found_node.node.is_leaf()
-            ):  # Safety check for non-trivial tree structures
-                continue
-            if found_node.node.is_active():
-                total_active_size += calculate_object_size(found_node.node)
+        for leaf in leaves:
+            if leaf.is_active():
+                total_active_size += calculate_object_size(leaf)
             else:
-                total_inactive_size += calculate_object_size(found_node.node)
+                total_inactive_size += calculate_object_size(leaf)
         if total_active_size > 0:
             self._active_leaf_size_estimate = total_active_size / self._n_active_leaves
         if total_inactive_size > 0:
@@ -303,50 +322,20 @@ class HoeffdingTree(ABC):
 
     def _deactivate_all_leaves(self):
         """Deactivate all leaves. """
-        learning_nodes = self._find_learning_nodes()
-        for cur_node in learning_nodes:
-            cur_node.node.deactivate()
+        leaves = self._find_leaves()
+        for leaf in leaves:
+            leaf.deactivate()
             self._n_inactive_leaves += 1
             self._n_active_leaves -= 1
 
-    def _find_learning_nodes(self) -> typing.List[FoundNode]:
+    def _find_leaves(self) -> typing.List[HTLeaf]:
         """Find learning nodes in the tree.
 
         Returns
         -------
         List of learning nodes in the tree.
         """
-        found_list: typing.List[FoundNode] = []
-        self.__find_learning_nodes(self._tree_root, None, -1, found_list)
-        return found_list
-
-    def __find_learning_nodes(self, node, parent, parent_branch, found):
-        """Find learning nodes in the tree from a given node.
-
-        Parameters
-        ----------
-        node
-            The node to start the search.
-        parent
-            The node's parent.
-        parent_branch
-            Parent node's branch.
-        found
-            A list of found nodes.
-
-        Returns
-        -------
-        List of learning nodes.
-        """
-        if node is not None:
-            if node.is_leaf():
-                found.append(FoundNode(node, parent, parent_branch))
-            else:
-                split_node = node
-                for i in range(split_node.n_children):
-                    self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found
-                    )
+        return [leaf for leaf in self._root.iter_leaves()]
 
     # Adapted from creme's original implementation
     def debug_one(self, x: dict) -> typing.Union[str, None]:
@@ -361,8 +350,13 @@ class HoeffdingTree(ABC):
         -------
             A representation of the path followed by the tree to predict `x`; `None` if
             the tree is empty.
+
+        Notes
+        -----
+        Currently, Label Combination Hoeffding Tree Classifier (for multi-label
+        classification) is not supported.
         """
-        if self._tree_root is None:
+        if self._root is None:
             return
 
         # We'll redirect all the print statement to a buffer, we'll return the content of the
@@ -370,51 +364,16 @@ class HoeffdingTree(ABC):
         buffer = io.StringIO()
         _print = functools.partial(print, file=buffer)
 
-        for node in self._tree_root.path(x):
-            if node.is_leaf():
-                pred = node.leaf_prediction(x, tree=self)  # noqa
-                if isinstance(self, base.Classifier):
-                    class_val = max(pred, key=pred.get)
-                    _print(f"Class {class_val} | {pred}")
-                else:
-                    # Multi-target regression case
-                    if isinstance(self, base.MultiOutputMixin):
-                        _print("Predictions:\n{")
-                        for i, (t, var) in enumerate(pred.items()):
-                            _print(
-                                f"\t{t}: {pred[t]} | {repr(node.stats[t].mean)} | {repr(node.stats[t])}"
-                            )
-                        _print("}")
-                    else:  # Single-target regression
-                        _print(
-                            f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
-                        )
-                break
+        for node in self._root.walk(x, until_leaf=True):
+            if isinstance(node, HTLeaf):
+                _print(repr(node))
             else:
-                child_index = node.split_test.branch_for_instance(x)  # noqa
+                try:
+                    child_index = node.branch_no(x)  # noqa
+                except KeyError:
+                    child_index, _ = node.most_common_path()
 
-                if child_index >= 0:
-                    _print(
-                        node.split_test.describe_condition_for_branch(child_index)
-                    )  # noqa
-                else:  # Corner case where an emerging nominal feature value arrives
-                    _print("Decision node reached as final destination")
-                    pred = node.stats
-                    if isinstance(self, base.Classifier):
-                        class_val = max(pred, key=pred.get)
-                        pred = normalize_values_in_dict(pred, inplace=False)
-                        _print(f"Class {class_val} | {pred}")
-                    else:
-                        # Multi-target regression case
-                        if isinstance(self, base.MultiOutputMixin):
-                            _print("Predictions:\n{")
-                            for i, (t, var) in enumerate(pred.items()):
-                                _print(f"\t{t}: {pred[t].mean.get()} | {pred[t]}")
-                            _print("}")
-                        else:  # Single-target regression
-                            _print(
-                                f"Prediction {pred} | {repr(node.stats.mean)} | {repr(node.stats)}"
-                            )
+                _print(node.repr_split(child_index))  # noqa
 
         return buffer.getvalue()
 
@@ -454,36 +413,22 @@ class HoeffdingTree(ABC):
         .. image:: ../../docs/img/dtree_draw.svg
             :align: center
         """
+        counter = 0
 
-        def node_prediction(node):
-            if isinstance(self, base.Classifier):
-                pred = node.stats
-                text = str(max(pred, key=pred.get))
-                sum_votes = sum(pred.values())
-                if sum_votes > 0:
-                    pred = normalize_values_in_dict(
-                        pred, factor=sum_votes, inplace=False
-                    )
-                    probas = "\n".join(
-                        [
-                            f"P({c}) = {round_sig_fig(proba)}"
-                            for c, proba in pred.items()
-                        ]
-                    )
-                    text = f"{text}\n{probas}"
-                return text
-            elif isinstance(self, base.Regressor):
-                # Multi-target regression
-                if isinstance(self, base.MultiOutputMixin):
-                    return " | ".join(
-                        [
-                            f"{t} = {round_sig_fig(s.mean.get())}"
-                            for t, s in node.stats.items()
-                        ]
-                    )
-                else:  # vanilla single-target regression
-                    pred = node.stats.mean.get()
-                    return f"{round_sig_fig(pred)}"
+        def iterate(node=None):
+            if node is None:
+                yield None, None, self._root, 0, None
+                yield from iterate(self._root)
+
+            nonlocal counter
+            parent_no = counter
+
+            if isinstance(node, HTBranch):
+                for branch_index, child in enumerate(node.children):
+                    counter += 1
+                    yield parent_no, node, child, counter, branch_index
+                    if isinstance(child, HTBranch):
+                        yield from iterate(child)
 
         if max_depth is None:
             max_depth = math.inf
@@ -509,29 +454,18 @@ class HoeffdingTree(ABC):
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
         palette = collections.defaultdict(new_color)
 
-        for (
-            parent_no,
-            child_no,
-            parent,
-            child,
-            branch_id,
-        ) in self._tree_root.iter_edges():
-
+        for parent_no, parent, child, child_no, branch_index in iterate():
             if child.depth > max_depth:
                 continue
 
-            if not child.is_leaf():
-                text = f"{child.split_test.attrs_test_depends_on()[0]}"
-
-                if child.depth == max_depth:
-                    text = f"{text}\n{node_prediction(child)}"
+            if isinstance(child, HTBranch):
+                text = f"{child.feature}"  # noqa
             else:
-                text = f"{node_prediction(child)}\nsamples: {int(child.total_weight)}"
+                text = f"{repr(child)}\nsamples: {int(child.total_weight)}"
 
             # Pick a color, the hue depends on the class and the transparency on the distribution
             if isinstance(self, base.Classifier):
-                class_proba = {c: 0 for c in self.classes}  # noqa
-                class_proba.update(normalize_values_in_dict(child.stats, inplace=False))
+                class_proba = normalize_values_in_dict(child.stats, inplace=False)
                 mode = max(class_proba, key=class_proba.get)
                 p_mode = class_proba[mode]
                 try:
@@ -548,9 +482,7 @@ class HoeffdingTree(ABC):
                 dot.edge(
                     f"{parent_no}",
                     f"{child_no}",
-                    xlabel=parent.split_test.describe_condition_for_branch(
-                        branch_id, shorten=True
-                    ),
+                    xlabel=parent.repr_split(branch_index, shorten=True),
                 )
 
         return dot

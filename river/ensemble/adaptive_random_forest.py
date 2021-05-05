@@ -8,12 +8,16 @@ import numpy as np
 
 from river import base, metrics, stats, tree
 from river.drift import ADWIN
-from river.tree._nodes import RandomLearningNodeAdaptive  # noqa
-from river.tree._nodes import RandomLearningNodeMC  # noqa
-from river.tree._nodes import RandomLearningNodeMean  # noqa
-from river.tree._nodes import RandomLearningNodeModel  # noqa
-from river.tree._nodes import RandomLearningNodeNB  # noqa
-from river.tree._nodes import RandomLearningNodeNBA  # noqa
+from river.tree.nodes.arf_htc_nodes import (
+    RandomLeafMajorityClass,
+    RandomLeafNaiveBayes,
+    RandomLeafNaiveBayesAdaptive,
+)
+from river.tree.nodes.arf_htr_nodes import (
+    RandomLeafAdaptive,
+    RandomLeafMean,
+    RandomLeafModel,
+)
 from river.tree.splitter import Splitter
 from river.utils.skmultiflow_utils import check_random_state
 
@@ -156,8 +160,13 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         nb_threshold: int = 0,
         nominal_attributes: list = None,
         splitter: Splitter = None,
+        binary_split: bool = False,
+        max_size: int = 100,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
         seed=None,
-        **kwargs,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -169,14 +178,19 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
             splitter=splitter,
-            **kwargs,
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
         )
 
         self.max_features = max_features
         self.seed = seed
         self._rng = check_random_state(self.seed)
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
+    def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
 
@@ -189,15 +203,15 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         seed = self._rng.randint(0, 4294967295, dtype="u8")
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return RandomLearningNodeMC(
+            return RandomLeafMajorityClass(
                 initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return RandomLearningNodeNB(
+            return RandomLeafNaiveBayes(
                 initial_stats, depth, self.splitter, self.max_features, seed,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
-            return RandomLearningNodeNBA(
+            return RandomLeafNaiveBayesAdaptive(
                 initial_stats, depth, self.splitter, self.max_features, seed,
             )
 
@@ -231,8 +245,13 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         nominal_attributes: list = None,
         splitter: Splitter = None,
         min_samples_split: int = 5,
+        binary_split: bool = False,
+        max_size: int = 100,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
         seed=None,
-        **kwargs,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -245,14 +264,19 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
             nominal_attributes=nominal_attributes,
             splitter=splitter,
             min_samples_split=min_samples_split,
-            **kwargs,
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
         )
 
         self.max_features = max_features
         self.seed = seed
         self._rng = check_random_state(self.seed)
 
-    def _new_learning_node(self, initial_stats=None, parent=None):  # noqa
+    def _new_leaf(self, initial_stats=None, parent=None):  # noqa
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.
@@ -274,11 +298,11 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 leaf_model = copy.deepcopy(parent._leaf_model)  # noqa
 
         if self.leaf_prediction == self._TARGET_MEAN:
-            return RandomLearningNodeMean(
+            return RandomLeafMean(
                 initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self.leaf_prediction == self._MODEL:
-            return RandomLearningNodeModel(
+            return RandomLeafModel(
                 initial_stats,
                 depth,
                 self.splitter,
@@ -287,7 +311,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 leaf_model=leaf_model,
             )
         else:  # adaptive learning node
-            new_adaptive = RandomLearningNodeAdaptive(
+            new_adaptive = RandomLeafAdaptive(
                 initial_stats,
                 depth,
                 self.splitter,
@@ -383,18 +407,23 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         property `is_target_class`. This is an advanced option. Special care must be taken when
         choosing different splitters. By default, `tree.splitter.GaussianSplitter` is used
         if `splitter` is `None`.
+    binary_split
+        [*Tree parameter*] If True, only allow binary splits.
     max_size
         [*Tree parameter*] Maximum memory (MB) consumed by the tree.
     memory_estimate_period
         [*Tree parameter*] Number of instances between memory consumption checks.
+    stop_mem_management
+        [*Tree parameter*] If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        [*Tree parameter*] If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        [*Tree parameter*] If True, enable merit-based tree pre-pruning.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
-    kwargs
-        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
-        for more information.
 
     Examples
     --------
@@ -444,10 +473,13 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         nb_threshold: int = 0,
         nominal_attributes: list = None,
         splitter: Splitter = None,
+        binary_split: bool = False,
         max_size: int = 32,
-        memory_estimate_period: int = 2000000,
+        memory_estimate_period: int = 2_000_000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
         seed: int = None,
-        **kwargs,
     ):
         super().__init__(
             n_models=n_models,
@@ -473,9 +505,12 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
         self.splitter = splitter
+        self.binary_split = binary_split
         self.max_size = max_size
         self.memory_estimate_period = memory_estimate_period
-        self.kwargs = kwargs
+        self.stop_mem_management = stop_mem_management
+        self.remove_poor_attrs = remove_poor_attrs
+        self.merit_preprune = merit_preprune
 
     @classmethod
     def _unit_test_params(cls):
@@ -521,10 +556,13 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             nominal_attributes=self.nominal_attributes,
             splitter=self.splitter,
             max_depth=self.max_depth,
-            memory_estimate_period=self.memory_estimate_period,
+            binary_split=self.binary_split,
             max_size=self.max_size,
+            memory_estimate_period=self.memory_estimate_period,
+            stop_mem_management=self.stop_mem_management,
+            remove_poor_attrs=self.remove_poor_attrs,
+            merit_preprune=self.merit_preprune,
             seed=seed,
-            **self.kwargs,
         )
 
 
@@ -622,18 +660,23 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     min_samples_split
         [*Tree parameter*] The minimum number of samples every branch resulting from a split
         candidate must have to be considered valid.
+    binary_split
+        [*Tree parameter*] If True, only allow binary splits.
     max_size
         [*Tree parameter*] Maximum memory (MB) consumed by the tree.
     memory_estimate_period
         [*Tree parameter*] Number of instances between memory consumption checks.
+    stop_mem_management
+        [*Tree parameter*] If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        [*Tree parameter*] If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        [*Tree parameter*] If True, enable merit-based tree pre-pruning.
     seed
         If `int`, `seed` is used to seed the random number generator;
         If `RandomState`, `seed` is the random number generator;
         If `None`, the random number generator is the `RandomState` instance
         used by `np.random`.
-    kwargs
-        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
-        for more information.
 
     References
     ----------
@@ -693,8 +736,12 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         nominal_attributes: list = None,
         splitter: Splitter = None,
         min_samples_split: int = 5,
-        max_size: int = 100,
-        memory_estimate_period: int = 2000000,
+        binary_split: bool = False,
+        max_size: int = 500,
+        memory_estimate_period: int = 2_000_000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
         seed: int = None,
         **kwargs,
     ):
@@ -723,9 +770,12 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         self.nominal_attributes = nominal_attributes
         self.splitter = splitter
         self.min_samples_split = min_samples_split
+        self.binary_split = binary_split
         self.max_size = max_size
         self.memory_estimate_period = memory_estimate_period
-        self.kwargs = kwargs
+        self.stop_mem_management = stop_mem_management
+        self.remove_poor_attrs = remove_poor_attrs
+        self.merit_preprune = merit_preprune
 
         if aggregation_method in self._VALID_AGGREGATION_METHOD:
             self.aggregation_method = aggregation_method
@@ -787,10 +837,13 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             model_selector_decay=self.model_selector_decay,
             nominal_attributes=self.nominal_attributes,
             splitter=self.splitter,
+            binary_split=self.binary_split,
             max_size=self.max_size,
             memory_estimate_period=self.memory_estimate_period,
+            stop_mem_management=self.stop_mem_management,
+            remove_poor_attrs=self.remove_poor_attrs,
+            merit_preprune=self.merit_preprune,
             seed=seed,
-            **self.kwargs,
         )
 
     @property

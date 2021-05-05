@@ -23,7 +23,7 @@ def test_class_splitter(dataset, splitter):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model.depth > 0
+    assert model.height > 0
 
 
 @pytest.mark.parametrize(
@@ -43,7 +43,7 @@ def test_reg_splitter(dataset, splitter):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model.depth > 0
+    assert model.height > 0
 
 
 def test_nominal_reg_splitter():
@@ -53,7 +53,7 @@ def test_nominal_reg_splitter():
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model.depth > 0
+    assert model.height > 0
 
     # Evaluates nominal binary splits
     dataset = synth.Mv(seed=42).take(200)
@@ -64,4 +64,4 @@ def test_nominal_reg_splitter():
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model.depth > 0
+    assert model.height > 0

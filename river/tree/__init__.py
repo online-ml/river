@@ -6,13 +6,10 @@ and regression tasks.
 Each family of iDT will be presented in a dedicated section.
 
 At any moment, iDT might face situations where an input feature previously used to make
-a split decision is missing in an incoming sample. In this case, the river's trees follow the
-conventions:
-
-- *Learning:* choose the subtree branch most traversed so far to pass the instance on.</br>
-    * In case of nominal features, a new branch is created to accommodate the new
-    category.</br>
-- *Predicting:* Use the last "reachable" decision node to provide responses.
+a split decision is missing in an incoming sample. In this case, the most traversed path is
+selected to pass down the instance. Moreover, in the case of nominal features, if a new category
+arises and the feature is used in a decision node, a new branch is created to accommodate the new
+value.
 
 **1. Hoeffding Trees**
 
@@ -41,20 +38,6 @@ to split such a feature.
 
 * Define properties to access leaf prediction strategies, split criteria, and other
 relevant characteristics.
-
-All HTs have the following parameters, in addition to their own, that can be selected
-using `**kwargs`. The following default values are used, unless otherwise explicitly stated
-in the tree documentation.
-
-| Parameter | Description | Default |
-| :- | :- | -: |
-|`max_depth` | The maximum depth a tree can reach. If `None`, the tree will grow indefinitely. | `None` |
-| `binary_split` | If True, only allow binary splits. | `False` |
-| `max_size` | The maximum size the tree can reach, in Megabytes (MB). | `100` |
-| `memory_estimate_period` | Interval (number of processed instances) between memory consumption checks. | `1_000_000` |
-| `stop_mem_management` | If True, stop growing as soon as memory limit is hit. | `False` |
-| `remove_poor_attrs` | If True, disable poorly descriptive attributes to reduce memory usage. | `False` |
-| `merit_preprune` | If True, enable merit-based tree pre-pruning. | `True` |
 
 """
 

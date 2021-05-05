@@ -1,4 +1,5 @@
 import typing
+import warnings
 
 from river import base, tree
 from river.utils.skmultiflow_utils import normalize_values_in_dict
@@ -52,9 +53,18 @@ class LabelCombinationHoeffdingTreeClassifier(
         and regression splitters can be distinguished by their property `is_target_class`.
         This is an advanced option. Special care must be taken when choosing different splitters.
         By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
-    kwargs
-        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
-        for more information.
+    binary_split
+        If True, only allow binary splits.
+    max_size
+        The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        Interval (number of processed instances) between memory consumption checks.
+    stop_mem_management
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        If True, enable merit-based tree pre-pruning.
 
     Examples
     --------
@@ -86,7 +96,12 @@ class LabelCombinationHoeffdingTreeClassifier(
         nb_threshold: int = 0,
         nominal_attributes: list = None,
         splitter: Splitter = None,
-        **kwargs
+        binary_split: bool = False,
+        max_size: int = 100,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
     ):
 
         super().__init__(
@@ -99,7 +114,12 @@ class LabelCombinationHoeffdingTreeClassifier(
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
             splitter=splitter,
-            **kwargs
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
         )
 
         self._next_label_code: int = 0
@@ -137,7 +157,7 @@ class LabelCombinationHoeffdingTreeClassifier(
         return self
 
     def predict_proba_one(self, x):
-        if self._tree_root is None:
+        if self._root is None:
             return None
 
         enc_probas = super().predict_proba_one(x)
@@ -165,7 +185,7 @@ class LabelCombinationHoeffdingTreeClassifier(
         -------
         Predicted labels.
         """
-        if self._tree_root is None:
+        if self._root is None:
             return None
 
         probas = self.predict_proba_one(x)
@@ -175,3 +195,9 @@ class LabelCombinationHoeffdingTreeClassifier(
             preds[label_id] = max(label_probas, key=label_probas.get)
 
         return preds
+
+    def debug_one(self, x: dict):
+        warnings.warn(f"'debug_one' is not supported by {self.__class__.__name__}")
+
+    def draw(self, max_depth: int = None):
+        warnings.warn(f"'draw' is not supported by {self.__class__.__name__}")

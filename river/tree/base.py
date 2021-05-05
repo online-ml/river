@@ -5,13 +5,13 @@ tree-based model. Using these classes makes the code more DRY. The only exceptio
 would be for performance, whereby a tree-based model uses a bespoke implementation.
 
 This module defines a bunch of methods to ease the manipulation and diagnostic of trees. Its
-intention is to provide utilies for walking over a tree and visualizing it.
+intention is to provide utilities for walking over a tree and visualizing it.
 
 """
 import abc
 from collections import defaultdict
 from queue import Queue
-from typing import Iterable, Union
+from typing import Iterable, Tuple, Union
 
 import pandas as pd
 
@@ -28,14 +28,29 @@ class Branch(Base, abc.ABC):
     def next(self, x) -> Union["Branch", "Leaf"]:
         """Move to the next node down the tree."""
 
-    def walk(self, x) -> Iterable[Union["Branch", "Leaf"]]:
+    @abc.abstractmethod
+    def most_common_path(self) -> Tuple[int, Union["Leaf", "Branch"]]:
+        """Return a tuple with the branch index and the child node related to the most
+        traversed path.
+
+        Used in case the split feature is missing from an instance.
+        """
+        pass
+
+    def walk(self, x, until_leaf=True) -> Iterable[Union["Branch", "Leaf"]]:
         """Iterate over the nodes of the path induced by x."""
         yield self
-        yield from self.next(x).walk(x)
+        try:
+            yield from self.next(x).walk(x, until_leaf)
+        except KeyError:
+            if until_leaf:
+                _, node = self.most_common_path()
+                yield node
+                yield from node.walk(x, until_leaf)
 
-    def traverse(self, x) -> "Leaf":
+    def traverse(self, x, until_leaf=True) -> "Leaf":
         """Return the leaf corresponding to the given input."""
-        for node in self.walk(x):
+        for node in self.walk(x, until_leaf):
             pass
         return node
 
@@ -131,7 +146,7 @@ class Leaf(Base):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
-    def walk(self, x):
+    def walk(self, x, until_leaf=True):
         yield self
 
     @property
