@@ -116,3 +116,7 @@ class ADWIN(DriftDetector):
         """
         self._in_concept_change = self._helper.update(value)
         return self._in_concept_change, self._in_warning_zone
+
+    def reset(self):
+        """Reset the change detector."""
+        self._helper = AdaptiveWindowing(delta=self.delta)
