@@ -156,9 +156,9 @@ Here are some benefits of using River (and online machine learning in general):
 
 ## 👁️ Media
 
-- PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/river-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
-- [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/river-tds/)
-- [Machine learning for streaming data with creme](https://towardsdatascience.com/machine-learning-for-streaming-data-with-river-dacf5fb469df)
+- PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
+- [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/creme-tds)
+- [Machine learning for streaming data with creme](https://towardsdatascience.com/machine-learning-for-streaming-data-with-creme-dacf5fb469df)
 - [Hong Kong Data Science Meetup presentation](https://maxhalford.github.io/slides/hkml2020.pdf)
 
 ## 👍 Contributing
