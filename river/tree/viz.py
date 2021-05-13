@@ -1,12 +1,10 @@
 from typing import Union
-
 from xml.etree import ElementTree as ET
 
 from river.tree.base import Branch, Leaf
 
 
 def tree_to_html(tree: Branch) -> ET:
-
     def add_node(node: Union[Branch, Leaf], parent: ET):
 
         # We're building this:
