@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://riverml.xyz/api/utils/expand-param-grid/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.3">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.e35208c4.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bde7dde4.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ef6f36e2.min.css">
@@ -6696,7 +6696,7 @@
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">()</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">grid</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">),</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="o">.</span><span class="mi">01</span><span class="p">),</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="o">.</span><span class="mi">001</span><span class="p">)]}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">grid</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">.1</span><span class="p">),</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">.01</span><span class="p">),</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">.001</span><span class="p">)]}</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">models</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">expand_param_grid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
 <span class="mi">3</span>
@@ -6721,8 +6721,8 @@
 <p>You can expand parameters for multiple choices like so:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">grid</span> <span class="o">=</span> <span class="p">{</span>
 <span class="o">...</span>     <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="p">[</span>
-<span class="o">...</span>         <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">01</span><span class="p">,</span> <span class="o">.</span><span class="mi">001</span><span class="p">]}),</span>
-<span class="o">...</span>         <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">01</span><span class="p">,</span> <span class="o">.</span><span class="mi">01</span><span class="p">]})</span>
+<span class="o">...</span>         <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="mf">.001</span><span class="p">]}),</span>
+<span class="o">...</span>         <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="mf">.01</span><span class="p">]})</span>
 <span class="o">...</span>     <span class="p">]</span>
 <span class="o">...</span> <span class="p">}</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">models</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">expand_param_grid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
@@ -6743,8 +6743,8 @@
 <span class="o">...</span>     <span class="p">},</span>
 <span class="o">...</span>     <span class="s1">&#39;LinearRegression&#39;</span><span class="p">:</span> <span class="p">{</span>
 <span class="o">...</span>         <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="p">[</span>
-<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">01</span><span class="p">]}),</span>
-<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">01</span><span class="p">]})</span>
+<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">]}),</span>
+<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">]})</span>
 <span class="o">...</span>         <span class="p">]</span>
 <span class="o">...</span>     <span class="p">}</span>
 <span class="o">...</span> <span class="p">}</span>
@@ -6814,10 +6814,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.4ea5477f.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       

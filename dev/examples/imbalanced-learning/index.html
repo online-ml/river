@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://riverml.xyz/examples/imbalanced-learning/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.3">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.e35208c4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bde7dde4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
@@ -6816,7 +6816,7 @@
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
     <span class="n">imblearn</span><span class="o">.</span><span class="n">RandomUnderSampler</span><span class="p">(</span>
         <span class="n">classifier</span><span class="o">=</span><span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(),</span>
-        <span class="n">desired_dist</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">},</span>
+        <span class="n">desired_dist</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">.2</span><span class="p">},</span>
         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
     <span class="p">)</span>
 <span class="p">)</span>
@@ -7016,7 +7016,7 @@
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
     <span class="n">imblearn</span><span class="o">.</span><span class="n">RandomOverSampler</span><span class="p">(</span>
         <span class="n">classifier</span><span class="o">=</span><span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(),</span>
-        <span class="n">desired_dist</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">},</span>
+        <span class="n">desired_dist</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">.2</span><span class="p">},</span>
         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
     <span class="p">)</span>
 <span class="p">)</span>
@@ -7033,8 +7033,8 @@
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
     <span class="n">imblearn</span><span class="o">.</span><span class="n">RandomSampler</span><span class="p">(</span>
         <span class="n">classifier</span><span class="o">=</span><span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(),</span>
-        <span class="n">desired_dist</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">},</span>
-        <span class="n">sampling_rate</span><span class="o">=.</span><span class="mi">01</span><span class="p">,</span>
+        <span class="n">desired_dist</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">.2</span><span class="p">},</span>
+        <span class="n">sampling_rate</span><span class="o">=</span><span class="mf">.01</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
     <span class="p">)</span>
 <span class="p">)</span>
@@ -7053,7 +7053,7 @@
         <span class="n">classifier</span><span class="o">=</span><span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(</span>
             <span class="n">loss</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Log</span><span class="p">(</span><span class="n">weight_pos</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         <span class="p">),</span>
-        <span class="n">desired_dist</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="o">.</span><span class="mi">2</span><span class="p">},</span>
+        <span class="n">desired_dist</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">.2</span><span class="p">},</span>
         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
     <span class="p">)</span>
 <span class="p">)</span>
@@ -7125,10 +7125,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.4ea5477f.min.js"></script>
+      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
