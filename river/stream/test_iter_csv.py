@@ -1,4 +1,3 @@
-import csv
 import io
 
 from river import stream
