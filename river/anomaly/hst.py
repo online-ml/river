@@ -45,11 +45,10 @@ class HSTBranch(Branch):
 
     @property
     def repr_split(self):
-        return f'{self.feature} < {self.threshold:.5f}'
+        return f"{self.feature} < {self.threshold:.5f}"
 
 
 class HSTLeaf(Leaf):
-
     def __repr__(self):
         return str(self.r_mass)
 
