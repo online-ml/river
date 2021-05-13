@@ -12,6 +12,9 @@ class BinaryBranch(Branch):
             return self.children[0]
         return self.children[1]
 
+    def repr_split(self):
+        return f"x < {self.threshold}"
+
 
 def test_size():
 
