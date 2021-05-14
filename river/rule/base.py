@@ -7,7 +7,7 @@ from river import base
 
 
 class Literal(base.Base):
-    __slots__ = 'on, at'
+    __slots__ = "on, at"
 
     def __init__(self, on, at):
         self.on = on

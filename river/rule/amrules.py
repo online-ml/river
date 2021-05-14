@@ -1,12 +1,9 @@
 import copy
 
-from river import base
-from river import linear_model
-from river import stats
-from river import tree
+from river import base, linear_model, stats, tree
 
-from .base import BinaryLiteral, NominalLiteral, Rule
 from ..tree.splitter.nominal_splitter_reg import NominalSplitterReg
+from .base import Rule
 
 
 class MeanPredWrapper(base.Regressor):
@@ -46,7 +43,13 @@ class AMRules(base.Regressor):
     _PRED_MODEL = "model"
     _VALID_PRED = [_PRED_MEAN, _PRED_MODEL]
 
-    def __init__(self, grace_period: int = 200, pred_type: str = "model", pred_model: base.Regressor = None, splitter = None):
+    def __init__(
+        self,
+        grace_period: int = 200,
+        pred_type: str = "model",
+        pred_model: base.Regressor = None,
+        splitter=None,
+    ):
         self.grace_period = grace_period
 
         if splitter is None:
