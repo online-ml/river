@@ -8,7 +8,7 @@ from river import base
 
 
 class Literal(base.Base):
-    __slots__ = "on, at, neg"
+    __slots__ = "on", "at", "neg"
 
     def __init__(self, on, at, neg=False):
         self.on = on
@@ -146,17 +146,12 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
                 self.split_criterion.range_of_merit(self.statistics), delta
             )
 
-            # TODO (1) implement Variance Ratio split criterion to ensure the following expression
-            # TODO (2) holds for both classification and regression
             if b_split.merit - sb_split.merit > hb or hb < tau:
                 should_expand = True
 
         if should_expand:
             b_split = suggestions[-1]
-
             is_numerical = b_split.is_numerical
-
-            # TODO select which of the binary branches of the test will be kept
             branch_no = self.split_criterion.select_best_branch(b_split.children_stats)
 
             if is_numerical:
@@ -216,7 +211,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
                 else:
                     self.splitters[feat_name] = self.new_nominal_splitter()
                 splt = self.splitters[feat_name]
-            splt.update(x, y, w)
+            splt.update(feat_val, y, w)
 
     def __repr__(self):
         return f"{' and '.join([lit.describe() for lit in self.literals])}"

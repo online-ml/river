@@ -8,6 +8,9 @@ import typing
 
 from river import base, drift, linear_model, stats, tree
 
+from ..tree.split_criterion.variance_ratio_split_criterion import (
+    VarianceRatioSplitCriterion,
+)
 from ..tree.splitter.nominal_splitter_reg import NominalSplitterReg
 from .base import HoeffdingRule
 
@@ -161,6 +164,7 @@ class AMRules(base.Regressor):
         anomaly_threshold: float = -0.75,
         m_min: int = 30,
         ordered_rule_set=False,
+        min_samples_split: int = 5,
     ):
         self.n_min = n_min
         self.tau = tau
@@ -186,6 +190,7 @@ class AMRules(base.Regressor):
         self.anomaly_threshold = anomaly_threshold
         self.m_min = m_min
         self.ordered_rule_set = ordered_rule_set
+        self.min_samples_split = min_samples_split
 
         self._default_rule = self._new_rule()
         self._rules: typing.Dict[typing.Hashable, RegRule] = {}
@@ -206,7 +211,7 @@ class AMRules(base.Regressor):
             delta=self.delta,
             tau=self.tau,
             template_splitter=self.splitter,
-            split_criterion=None,  # TODO change here
+            split_criterion=VarianceRatioSplitCriterion(self.min_samples_split),
             pred_model=predictor,
             drift_detector=copy.deepcopy(self.drift_detector),
         )
