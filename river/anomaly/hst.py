@@ -46,11 +46,20 @@ class HSTBranch(Branch):
     def most_common_path(self):
         raise NotImplementedError
 
+    @property
+    def repr_split(self):
+        return f"{self.feature} < {self.threshold:.5f}"
+
+
+class HSTLeaf(Leaf):
+    def __repr__(self):
+        return str(self.r_mass)
+
 
 def make_padded_tree(limits, height, padding, rng=random, **node_params):
 
     if height == 0:
-        return Leaf(**node_params)
+        return HSTLeaf(**node_params)
 
     # Randomly pick a feature
     # We weight each feature by the gap between each feature's limits

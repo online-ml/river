@@ -12,6 +12,7 @@ import abc
 from collections import defaultdict
 from queue import Queue
 from typing import Iterable, Tuple, Union
+from xml.etree import ElementTree as ET
 
 import pandas as pd
 
@@ -36,6 +37,10 @@ class Branch(Base, abc.ABC):
         Used in case the split feature is missing from an instance.
         """
         pass
+
+    @abc.abstractproperty
+    def repr_split(self):
+        """String representation of the split condition, for visualization purposes."""
 
     def walk(self, x, until_leaf=True) -> Iterable[Union["Branch", "Leaf"]]:
         """Iterate over the nodes of the path induced by x."""
@@ -139,6 +144,17 @@ class Branch(Base, abc.ABC):
 
         return pd.DataFrame.from_records(nodes).set_index("node")
 
+    def _repr_html_(self):
+
+        from river.tree import viz
+
+        html = ET.Element("html")
+        body = ET.Element("body")
+        html.append(body)
+        body.append(viz.tree_to_html(self))
+
+        return f"<html>{ET.tostring(body).decode()}<style>{viz.CSS}</style></html>"
+
 
 class Leaf(Base):
     """A generic tree node."""
@@ -148,6 +164,10 @@ class Leaf(Base):
 
     def walk(self, x, until_leaf=True):
         yield self
+
+    @abc.abstractproperty
+    def __repr__(self):
+        """String representation for visualization purposes."""
 
     @property
     def n_nodes(self):

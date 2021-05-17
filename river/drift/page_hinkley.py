@@ -91,7 +91,7 @@ class PageHinkley(DriftDetector):
         if self.sample_count < self.min_instances:
             return False, False
 
-        if self.sum > self.threshold:
+        if self.sum >= self.threshold:
             self._in_concept_change = True
 
         return self._in_concept_change, self._in_warning_zone

@@ -15,6 +15,9 @@ class BinaryBranch(Branch):
     def most_common_path(self):
         raise NotImplementedError
 
+    def repr_split(self):
+        return f"x < {self.threshold}"
+
 
 def test_size():
 
