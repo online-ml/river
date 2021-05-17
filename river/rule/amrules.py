@@ -1,6 +1,7 @@
 import collections
 import copy
 import functools
+import io
 import math
 import numbers
 import typing
@@ -281,3 +282,52 @@ class AMRules(base.Regressor):
             return y_pred / hits
         else:
             return self._default_rule.predict_one(x)
+
+    def anomaly_score(self, x):
+        """
+
+        Parameters
+        ----------
+        x
+            The input instance.
+
+        Returns
+        -------
+        mean_anomaly_score, std_anomaly_score, support
+            The mean anomaly score, the standard deviation, and the number of rules that cover
+            the instance.
+
+        """
+        var = stats.Var()
+
+        for rule in self._rules.values():
+            if rule.covers(x):
+                var.update(rule.anomaly_score(x))
+
+        if var.mean.n > 0:
+            return var.mean.get(), math.sqrt(var.get()), var.mean.n
+
+        # No rule covers the instance. Use the default rule
+        return self._default_rule.anomaly_score(x), 0.0, 0
+
+    def debug_one(self, x):
+        buffer = io.StringIO()
+        _print = functools.partial(print, file=buffer)
+
+        any_covered = False
+        for i, rule in self._rules.values():
+            if rule.covers(x):
+                any_covered = True
+                _print(f"Rule {i}: {repr(rule)}")
+                _print(f"\tPrediction: {rule.predict_one(x)}")
+            if self.ordered_rule_set:
+                break
+
+        if any_covered:
+            if not self.ordered_rule_set:
+                _print(f"Final prediction: {self.predict_one(x)}")
+        else:
+            _print("Default rule triggered:")
+            _print(f"\tPrediction: {self._default_rule.predict_one(x)}")
+
+        return buffer.getvalue()
