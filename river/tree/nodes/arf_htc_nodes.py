@@ -2,10 +2,11 @@ import typing
 
 from river.utils.skmultiflow_utils import check_random_state
 
-from .htc_nodes import LearningNode, LearningNodeMC, LearningNodeNB, LearningNodeNBA
+from .htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
+from .leaf import HTLeaf
 
 
-class BaseRandomLearningNode(LearningNode):
+class BaseRandomLeaf(HTLeaf):
     """The Random Learning Node changes the way in which the attribute observers
     are updated (by using subsets of features).
 
@@ -52,7 +53,7 @@ class BaseRandomLearningNode(LearningNode):
         return [features[s] for s in selected]
 
 
-class RandomLearningNodeMC(BaseRandomLearningNode, LearningNodeMC):
+class RandomLeafMajorityClass(BaseRandomLeaf, LeafMajorityClass):
     """ARF learning node that always predicts the majority class.
 
     Parameters
@@ -80,7 +81,7 @@ class RandomLearningNodeMC(BaseRandomLearningNode, LearningNodeMC):
         super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
 
 
-class RandomLearningNodeNB(BaseRandomLearningNode, LearningNodeNB):
+class RandomLeafNaiveBayes(BaseRandomLeaf, LeafNaiveBayes):
     """ARF Naive Bayes learning node class.
 
     Parameters
@@ -108,7 +109,7 @@ class RandomLearningNodeNB(BaseRandomLearningNode, LearningNodeNB):
         super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
 
 
-class RandomLearningNodeNBA(BaseRandomLearningNode, LearningNodeNBA):
+class RandomLeafNaiveBayesAdaptive(BaseRandomLeaf, LeafNaiveBayesAdaptive):
     """ARF Naive Bayes Adaptive learning node class.
 
     Parameters

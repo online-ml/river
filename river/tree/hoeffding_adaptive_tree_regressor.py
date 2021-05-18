@@ -1,9 +1,21 @@
+import typing
 from copy import deepcopy
 
 from river import base
 
-from ._nodes import AdaLearningNodeRegressor, AdaSplitNodeRegressor, FoundNode
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
+from .nodes.branch import HTBranch
+from .nodes.hatr_nodes import (
+    AdaBranchRegressor,
+    AdaLeafRegAdaptive,
+    AdaLeafRegMean,
+    AdaLeafRegModel,
+    AdaLeafRegressor,
+    AdaNomBinaryBranchReg,
+    AdaNomMultiwayBranchReg,
+    AdaNumBinaryBranchReg,
+    AdaNumMultiwayBranchReg,
+)
 from .splitter import Splitter
 
 
@@ -61,15 +73,24 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         potential replacement to the current one.
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
+    binary_split
+        If True, only allow binary splits.
+    max_size
+        The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        Interval (number of processed instances) between memory consumption checks.
+    stop_mem_management
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        If True, enable merit-based tree pre-pruning.
     seed
        If int, `seed` is the seed used by the random number generator;</br>
        If RandomState instance, `seed` is the random number generator;</br>
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
        bootstrap sampling.</br>
-    kwargs
-        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
-        for more information.
 
     Notes
     -----
@@ -137,8 +158,13 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
         adwin_confidence: float = 0.002,
+        binary_split: bool = False,
+        max_size: int = 100,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
         seed=None,
-        **kwargs
     ):
 
         super().__init__(
@@ -152,7 +178,12 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             nominal_attributes=nominal_attributes,
             splitter=splitter,
             min_samples_split=min_samples_split,
-            **kwargs
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
         )
 
         self._n_alternate_trees = 0
@@ -164,15 +195,37 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self.adwin_confidence = adwin_confidence
         self.seed = seed
 
+    @property
+    def n_alternate_trees(self):
+        return self._n_alternate_trees
+
+    @property
+    def n_pruned_alternate_trees(self):
+        return self._n_pruned_alternate_trees
+
+    @property
+    def n_switch_alternate_trees(self):
+        return self._n_switch_alternate_trees
+
+    @property
+    def summary(self):
+        summ = super().summary
+        summ.update(
+            {
+                "n_alternate_trees": self.n_alternate_trees,
+                "n_pruned_alternate_trees": self.n_pruned_alternate_trees,
+                "n_switch_alternate_trees": self.n_switch_alternate_trees,
+            }
+        )
+        return summ
+
     def learn_one(self, x, y, *, sample_weight=1.0):
         self._train_weight_seen_by_model += sample_weight
 
-        if self._tree_root is None:
-            self._tree_root = self._new_learning_node()
+        if self._root is None:
+            self._root = self._new_leaf()
             self._n_active_leaves = 1
-        self._tree_root.learn_one(
-            x, y, sample_weight=sample_weight, tree=self, parent=None, parent_branch=-1
-        )
+        self._root.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -180,86 +233,84 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         return self
 
     def predict_one(self, x):
-        if self._tree_root is not None:
-            found_nodes = self._filter_instance_to_leaves(x, None, -1)
-
-            pred = 0.0
-            for fn in found_nodes:
-                # parent_branch == -999 means that the node is the root of an alternate tree.
-                # In other words, the alternate tree is a single leaf. It is probably not accurate
-                # enough to be used to predict, so skip it
-                if fn.parent_branch != -999:
-                    leaf_node = fn.node
-                    if leaf_node is None:
-                        leaf_node = fn.parent
-                    # Option Tree prediction (of sorts): combine the response of all leaves reached
-                    # by the instance
-                    pred += leaf_node.leaf_prediction(x, tree=self)
+        pred = 0.0
+        if self._root is not None:
+            found_nodes = [self._root]
+            if isinstance(self._root, HTBranch):
+                found_nodes = self._root.traverse(x, until_leaf=True)
+            for leaf in found_nodes:
+                pred += leaf.prediction(x, tree=self)
             # Mean prediction among the reached leaves
-            return pred / len(found_nodes)
-        else:
-            return 0.0
+            pred /= len(found_nodes)
 
-    def _filter_instance_to_leaves(self, x, split_parent, parent_branch):
-        nodes = []
-        self._tree_root.filter_instance_to_leaves(x, split_parent, parent_branch, nodes)
-        return nodes
+        return pred
 
-    def _new_learning_node(self, initial_stats=None, parent=None, is_active=True):
+    def _new_leaf(self, initial_stats=None, parent=None, is_active=True):
         """Create a new learning node.
 
         The type of learning node depends on the tree configuration.
         """
         if parent is not None:
             depth = parent.depth + 1
-            # Leverage ancestor's learning models
-            if parent.is_leaf():
-                leaf_model = deepcopy(parent._leaf_model)  # noqa
-            else:  # Corner case where an alternate tree is created
-                leaf_model = deepcopy(self.leaf_model)
         else:
             depth = 0
-            leaf_model = deepcopy(self.leaf_model)
 
-        new_ada_leaf = AdaLearningNodeRegressor(
-            stats=initial_stats,
-            depth=depth,
-            splitter=self.splitter,
-            leaf_model=leaf_model,
-            adwin_delta=self.adwin_confidence,
-            seed=self.seed,
-        )
-
-        if parent is not None and parent.is_leaf():
-            new_ada_leaf._fmse_mean = parent._fmse_mean  # noqa
-            new_ada_leaf._fmse_model = parent._fmse_model  # noqa
-
-        return new_ada_leaf
-
-    def _new_split_node(self, split_test, target_stats=None, depth=0, **kwargs):
-        return AdaSplitNodeRegressor(
-            split_test=split_test,
-            stats=target_stats,
-            depth=depth,
-            adwin_delta=self.adwin_confidence,
-            seed=self.seed,
-        )
-
-    # Override river.tree.BaseHoeffdingTree to include alternate trees
-    def __find_learning_nodes(self, node, parent, parent_branch, found):
-        if node is not None:
-            if node.is_leaf():
-                found.append(FoundNode(node, parent, parent_branch))
+        leaf_model = None
+        if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
+            if parent is None:
+                leaf_model = deepcopy(self.leaf_model)
             else:
-                split_node = node
-                for i in range(split_node.n_children):
-                    self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found
-                    )
-                if split_node._alternate_tree is not None:
-                    self.__find_learning_nodes(
-                        split_node._alternate_tree, split_node, -999, found
-                    )
+                try:
+                    leaf_model = deepcopy(parent._leaf_model)  # noqa
+                except AttributeError:
+                    leaf_model = deepcopy(self.leaf_model)
+
+        if self.leaf_prediction == self._TARGET_MEAN:
+            return AdaLeafRegMean(
+                initial_stats,
+                depth,
+                self.splitter,
+                adwin_delta=self.adwin_confidence,
+                seed=self.seed,
+            )
+        elif self.leaf_prediction == self._MODEL:
+            return AdaLeafRegModel(
+                initial_stats,
+                depth,
+                self.splitter,
+                adwin_delta=self.adwin_confidence,
+                seed=self.seed,
+                leaf_model=leaf_model,
+            )
+        else:  # adaptive learning node
+            new_adaptive = AdaLeafRegAdaptive(
+                initial_stats,
+                depth,
+                self.splitter,
+                adwin_delta=self.adwin_confidence,
+                seed=self.seed,
+                leaf_model=leaf_model,
+            )
+            if parent is not None and isinstance(parent, AdaLeafRegressor):
+                new_adaptive._fmse_mean = parent._fmse_mean  # noqa
+                new_adaptive._fmse_model = parent._fmse_model  # noqa
+
+            return new_adaptive
+
+    def _branch_selector(
+        self, numerical_feature=True, multiway_split=False
+    ) -> typing.Type[AdaBranchRegressor]:
+        """Create a new split node."""
+        if numerical_feature:
+            if not multiway_split:
+                return AdaNumBinaryBranchReg
+            else:
+                return AdaNumMultiwayBranchReg
+        else:
+            if not multiway_split:
+                return AdaNomBinaryBranchReg
+            else:
+                return AdaNomMultiwayBranchReg
 
     @classmethod
     def _unit_test_params(cls):

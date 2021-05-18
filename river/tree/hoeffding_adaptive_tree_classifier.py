@@ -1,13 +1,17 @@
+import typing
+
 from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
 
-from ._nodes import (
-    AdaLearningNodeClassifier,
-    AdaSplitNodeClassifier,
-    FoundNode,
-    LearningNode,
-    SplitNode,
-)
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
+from .nodes.branch import HTBranch
+from .nodes.hatc_nodes import (
+    AdaBranchClassifier,
+    AdaLeafClassifier,
+    AdaNomBinaryBranchClass,
+    AdaNomMultiwayBranchClass,
+    AdaNumBinaryBranchClass,
+    AdaNumMultiwayBranchClass,
+)
 from .splitter import Splitter
 
 
@@ -53,15 +57,25 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         potential replacement to the current one.
     adwin_confidence
         The delta parameter used in the nodes' ADWIN drift detectors.
+    binary_split
+        If True, only allow binary splits.
+    max_size
+        The max size of the tree, in Megabytes (MB).
+    memory_estimate_period
+        Interval (number of processed instances) between memory consumption checks.
+    stop_mem_management
+        If True, stop growing as soon as memory limit is hit.
+    remove_poor_attrs
+        If True, disable poor attributes to reduce memory usage.
+    merit_preprune
+        If True, enable merit-based tree pre-pruning.
     seed
        If int, `seed` is the seed used by the random number generator;</br>
        If RandomState instance, `seed` is the random number generator;</br>
        If None, the random number generator is the RandomState instance used
        by `np.random`. Only used when `bootstrap_sampling=True` to direct the
        bootstrap sampling.</br>
-    kwargs
-        Other parameters passed to `tree.HoeffdingTree`. Check the `tree` module documentation
-        for more information.
+
 
     Notes
     -----
@@ -127,8 +141,13 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
         adwin_confidence: float = 0.002,
+        binary_split: bool = False,
+        max_size: int = 100,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
         seed=None,
-        **kwargs
     ):
 
         super().__init__(
@@ -141,7 +160,12 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
             splitter=splitter,
-            **kwargs
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
         )
 
         self._n_alternate_trees = 0
@@ -153,18 +177,41 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.adwin_confidence = adwin_confidence
         self.seed = seed
 
+    @property
+    def n_alternate_trees(self):
+        return self._n_alternate_trees
+
+    @property
+    def n_pruned_alternate_trees(self):
+        return self._n_pruned_alternate_trees
+
+    @property
+    def n_switch_alternate_trees(self):
+        return self._n_switch_alternate_trees
+
+    @property
+    def summary(self):
+        summ = super().summary
+        summ.update(
+            {
+                "n_alternate_trees": self.n_alternate_trees,
+                "n_pruned_alternate_trees": self.n_pruned_alternate_trees,
+                "n_switch_alternate_trees": self.n_switch_alternate_trees,
+            }
+        )
+        return summ
+
     def learn_one(self, x, y, *, sample_weight=1.0):
         # Updates the set of observed classes
         self.classes.add(y)
 
         self._train_weight_seen_by_model += sample_weight
 
-        if self._tree_root is None:
-            self._tree_root = self._new_learning_node()
+        if self._root is None:
+            self._root = self._new_leaf()
             self._n_active_leaves = 1
-        self._tree_root.learn_one(
-            x, y, sample_weight=sample_weight, tree=self, parent=None, parent_branch=-1
-        )
+
+        self._root.learn_one(x, y, sample_weight=sample_weight, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
@@ -174,36 +221,29 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     # Override HoeffdingTreeClassifier
     def predict_proba_one(self, x):
         proba = {c: 0.0 for c in self.classes}
-        if self._tree_root is not None:
-            found_nodes = self._filter_instance_to_leaves(x, None, -1)
-            for fn in found_nodes:
-                # parent_branch == -999 means that the node is the root of an alternate tree.
-                # In other words, the alternate tree is a single leaf. It is probably not accurate
-                # enough to be used to predict, so skip it
-                if fn.parent_branch != -999:
-                    leaf_node = fn.node
-                    if leaf_node is None:
-                        leaf_node = fn.parent
-                    dist = leaf_node.leaf_prediction(x, tree=self)
-                    # Option Tree prediction (of sorts): combine the response of all leaves reached
-                    # by the instance
-                    proba = add_dict_values(proba, dist, inplace=True)
+        if self._root is not None:
+            found_nodes = [self._root]
+            if isinstance(self._root, HTBranch):
+                found_nodes = self._root.traverse(x, until_leaf=True)
+            for leaf in found_nodes:
+                dist = leaf.prediction(x, tree=self)
+                # Option Tree prediction (of sorts): combine the response of all leaves reached
+                # by the instance
+                proba = add_dict_values(proba, dist, inplace=True)
             proba = normalize_values_in_dict(proba)
 
         return proba
 
-    def _filter_instance_to_leaves(self, x, split_parent, parent_branch):
-        nodes = []
-        self._tree_root.filter_instance_to_leaves(x, split_parent, parent_branch, nodes)
-        return nodes
+    def _new_leaf(self, initial_stats=None, parent=None):
+        if initial_stats is None:
+            initial_stats = {}
 
-    def _new_learning_node(self, initial_stats=None, parent=None):
         if parent is not None:
             depth = parent.depth + 1
         else:
             depth = 0
 
-        return AdaLearningNodeClassifier(
+        return AdaLeafClassifier(
             stats=initial_stats,
             depth=depth,
             splitter=self.splitter,
@@ -211,31 +251,20 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             seed=self.seed,
         )
 
-    def _new_split_node(self, split_test, target_stats=None, depth=0, **kwargs):
-        return AdaSplitNodeClassifier(
-            split_test=split_test,
-            stats=target_stats,
-            depth=depth,
-            adwin_delta=self.adwin_confidence,
-            seed=self.seed,
-        )
-
-    # Override river.tree.BaseHoeffdingTree to include alternate trees
-    def __find_learning_nodes(self, node, parent, parent_branch, found):
-        if node is not None:
-            if isinstance(node, LearningNode):
-                found.append(FoundNode(node, parent, parent_branch))
-            if isinstance(node, SplitNode):
-                split_node = node
-
-                for i in range(split_node.n_children):
-                    self.__find_learning_nodes(
-                        split_node.get_child(i), split_node, i, found
-                    )
-                if split_node._alternate_tree is not None:  # noqa
-                    self.__find_learning_nodes(
-                        split_node._alternate_tree, split_node, -999, found  # noqa
-                    )
+    def _branch_selector(
+        self, numerical_feature=True, multiway_split=False
+    ) -> typing.Type[AdaBranchClassifier]:
+        """Create a new split node."""
+        if numerical_feature:
+            if not multiway_split:
+                return AdaNumBinaryBranchClass
+            else:
+                return AdaNumMultiwayBranchClass
+        else:
+            if not multiway_split:
+                return AdaNomBinaryBranchClass
+            else:
+                return AdaNomMultiwayBranchClass
 
     @classmethod
     def _unit_test_params(cls):
