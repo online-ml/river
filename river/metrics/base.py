@@ -350,7 +350,7 @@ class Metrics(Metric, collections.UserList):
 
     @property
     def works_with_weights(self):
-        return NotImplementedError
+        return all(m.works_with_weights for m in self)
 
     @property
     def requires_labels(self):

@@ -207,11 +207,11 @@ class Completeness(metrics.MultiClassMetric):
 
 
 class VBeta(metrics.MultiClassMetric):
-    r"""V-Measure.
+    r"""VBeta.
 
-    V-Measure [^1] is an external entropy-based cluster evaluation measure. It provides
-    an elegant solution to many problems that affect previously defined cluster
-    evaluation measures including
+    VBeta (or V-Measure) [^1] is an external entropy-based cluster evaluation measure.
+    It provides an elegant solution to many problems that affect previously defined
+    cluster evaluation measures including
 
     * Dependance of clustering algorithm or dataset,
 

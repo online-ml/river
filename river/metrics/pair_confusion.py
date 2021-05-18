@@ -38,13 +38,6 @@ class PairConfusionMatrix(metrics.MultiClassMetric):
         matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
         and computation time.
 
-    Parameters
-    ----------
-    cm
-        This parameter allows sharing the same confusion
-        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
-        and computation time.
-
     Examples
     --------
 
@@ -75,28 +68,19 @@ class PairConfusionMatrix(metrics.MultiClassMetric):
         pair_confusion_matrix = {i: collections.defaultdict(int) for i in range(2)}
 
         sum_squares = 0
+        false_positives = 0
+        false_negatives = 0
+
         for i in self.cm.classes:
             for j in self.cm.classes:
                 sum_squares += self.cm[i][j] * self.cm[i][j]
+                false_positives += self.cm[i][j] * self.cm.sum_col[j]
+                false_negatives += self.cm[j][i] * self.cm.sum_row[j]
 
         true_positives = sum_squares - self.cm.n_samples
 
-        false_positives = 0
-        for i in self.cm.classes:
-            for j in self.cm.classes:
-                try:
-                    false_positives += self.cm[i][j] * self.cm.sum_col[j]
-                except KeyError:
-                    continue
         false_positives = false_positives - sum_squares
 
-        false_negatives = 0
-        for i in self.cm.classes:
-            for j in self.cm.classes:
-                try:
-                    false_negatives += self.cm[j][i] * self.cm.sum_row[j]
-                except KeyError:
-                    continue
         false_negatives = false_negatives - sum_squares
 
         true_negatives = (

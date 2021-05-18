@@ -18,7 +18,7 @@ class MatthewsCorrCoef(base.MultiClassMetric):
     generally regarded as a balanced measure which can be used even if the classes
     are of very different sizes. It returns a value between -1 and 1, with 1 being
     a perfect prediction, 0 no better than random prediction and -1 means a total
-    disagrrement between prediction and observation.
+    disagreement between prediction and observation.
 
     The MCC can be calculated directly from the (pair) confusion matrix using the original
     formula by Matthews. Let
@@ -81,7 +81,7 @@ class MatthewsCorrCoef(base.MultiClassMetric):
 
     def get(self):
 
-        n_correct = sum(self.cm[i][i] for i in self.cm.classes)
+        n_correct = self.cm.sum_diag
 
         cov_ytrue_ypred = n_correct * self.cm.total_weight - sum(
             self.cm.sum_col[i] * self.cm.sum_row[i] for i in self.cm.classes

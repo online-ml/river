@@ -27,6 +27,9 @@ class Q0(base.MultiClassMetric):
     Q_0(C, K) = H(C|K) + \frac{1}{n} \sum_{k=1}^{|K|} \log \binom{h(c) + |C| - 1}{|C| - 1}.
     $$
 
+    Due to the complexity of the formula, this metric and its associated normalized version (Q2)
+    is one order of magnitude slower than most other implemented metrics.
+
     Examples
     --------
     >>> from river import metrics
@@ -115,6 +118,9 @@ class Q2(Q0):
 
     where $C$ is the target partition, $K$ is the hypothesized partition and $h(k)$ is
     the size of cluster $k$.
+
+    Due to the complexity of the formula, this metric is one order of magnitude slower than
+    its original version (Q0) and most other implemented metrics.
 
     Examples
     --------

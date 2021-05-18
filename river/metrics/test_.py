@@ -153,12 +153,36 @@ TEST_CASES = [
     (metrics.AdjustedRand(), sk_metrics.adjusted_rand_score),
     (metrics.MutualInfo(), sk_metrics.mutual_info_score),
     (
+        metrics.NormalizedMutualInfo(average_method="min"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="min"),
+    ),
+    (
+        metrics.NormalizedMutualInfo(average_method="max"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="max"),
+    ),
+    (
+        metrics.NormalizedMutualInfo(average_method="arithmetic"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="arithmetic"),
+    ),
+    (
         metrics.NormalizedMutualInfo(average_method="geometric"),
         partial(sk_metrics.normalized_mutual_info_score, average_method="geometric"),
     ),
     (
+        metrics.AdjustedMutualInfo(average_method="min"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="min"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="max"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="max"),
+    ),
+    (
         metrics.AdjustedMutualInfo(average_method="arithmetic"),
         partial(sk_metrics.adjusted_mutual_info_score, average_method="arithmetic"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="geometric"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="geometric"),
     ),
 ]
 

@@ -17,7 +17,7 @@ class MutualInfo(metrics.MultiClassMetric):
     r"""Mutual Information between two clusterings.
 
     The Mutual Information [^1] is a measure of the similarity between two labels of
-    the same data. Where $|U_i|$ is the number of samples in cluster $U_i$ and $V_j$
+    the same data. Where $|U_i|$ is the number of samples in cluster $U_i$ and $|V_j|$
     is the number of the samples in cluster $V_j$, the Mutual Information between
     clusterings $U$ and $V$ can be calculated as:
 
@@ -26,7 +26,7 @@ class MutualInfo(metrics.MultiClassMetric):
     $$
 
     This metric is independent of the absolute values of the labels: a permutation
-    of the class or cluster label values won't change the score in any way possible.
+    of the class or cluster label values won't change the score.
 
     This metric is furthermore symmetric: switching `y_true` and `y_pred` will return
     the same score value. This can be useful to measure the agreement of two independent
@@ -111,33 +111,21 @@ class MutualInfo(metrics.MultiClassMetric):
 
 
 class NormalizedMutualInfo(metrics.MultiClassMetric):
-    r"""Mutual Information between two clusterings.
+    r"""Normalized Mutual Information between two clusterings.
 
-    The Mutual Information [^1] is a measure of the similarity between two labels of
-    the same data. Where $|U_i|$ is the number of samples in cluster $U_i$ and $V_j$
-    is the number of the samples in cluster $V_j$, the Mutual Information between
-    clusterings $U$ and $V$ can be calculated as:
+    Normalized Mutual Information (NMI) is a normalized version of the Mutual Information (MI) score
+    to scale the results between the range of 0 (no mutual information) and 1 (perfectly mutual
+    information). In the formula, the mutual information will be normalized by a generalized mean of
+    the entropy of true and predicted labels, defined by the `average_method`.
 
-    $$
-    MI(U,V) = \sum_{i=1}^{|U|} \sum_{v=1}^{|V|} \frac{|U_i \cup V_j|}{N} \log \frac{N |U_i \cup V_j|}{|U_i| |V_j|}
-    $$
+    We note that this measure is not adjusted for chance (i.e corrected the effect of result
+    agreement solely due to chance); as a result, the Adjusted Mutual Info Score will mostly be preferred.
+    However, this metric is still symmetric, which means that switching true and predicted labels will not
+    alter the score value. This fact can be useful when the metric is used to measure the agreement between
+    two indepedent label solutions on the same dataset, when the ground truth remains unknown.
 
-    This metric is independent of the absolute values of the labels: a permutation
-    of the class or cluster label values won't change the score in any way possible.
-
-    This metric is furthermore symmetric: switching `y_true` and `y_pred` will return
-    the same score value. This can be useful to measure the agreement of two independent
-    label assignments strategies on the same dataset when the real ground truth is
-    not known.
-
-    The Mutual Information can be equivalently expressed as:
-
-    $$
-    MI(U,V) = H(U) - H(U | V) = H(V) - H(V | U)
-    $$
-
-    where $H(U)$ and $H(V)$ are the marginal entropies, $H(U | V)$ and $H(V | U)$ are the
-    conditional entropies.
+    Another advantage of the metric is that as it is based on the calculation of entropy-related measures,
+    it is independent of the permutation of class/cluster labels.
 
     Parameters
     ----------
@@ -145,6 +133,10 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
         This parameter allows sharing the same confusion
         matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
         and computation time.
+
+    average_method
+        This parameter defines how to compute the normalizer in the denominator.
+        Possible options include `min`, `max`, `arithmetic` and `geometric`.
 
     Examples
     --------
@@ -266,9 +258,10 @@ class ExpectedMutualInfo(metrics.MultiClassMetric):
 
     * $b_j$ is the sum of column j-th of the contingency table.
 
-    The Expected Mutual Information score will be used to calculate the Adjusted Mutual
-    Information score (AMI) later. Due to the complexity of this metric, the AMI will be
-    one order of magnitude slower than most other implemented metrics.
+    The Adjusted Mutual Information score (AMI) relies on the Expected Mutual Information (EMI) score.
+
+    From the formula, we note that this metric is very expensive to calculate. As such,
+    the AMI will be one order of magnitude slower than most other implemented metrics.
 
     Parameters
     ----------
@@ -391,6 +384,10 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
         This parameter allows sharing the same confusion
         matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
         and computation time.
+
+    average_method
+        This parameter defines how to compute the normalizer in the denominator.
+        Possible options include `min`, `max`, `arithmetic` and `geometric`.
 
     Examples
     --------

@@ -14,11 +14,10 @@ class FowlkesMallows(base.MultiClassMetric):
     used to determine the similarity between two clusterings, and also a mmetric
     to measure confusion matrices. The measure of similarity could be either between
     two hierarchical clusterings or a clustering and a benchmark classification. A
-    higher value for teh Fowlkes-Mallows index indicates a greater similarity between
+    higher value for the Fowlkes-Mallows index indicates a greater similarity between
     the clusters and the benchmark classifications.
 
-    The Fowlkes-Mallows Index, when results of two cluster algorithms are used to
-    evaluate the results, is defined as:
+    The Fowlkes-Mallows Index, for two cluster algorithms, is defined as:
 
     $$
     FM = \sqrt{PPV \times TPR} = \sqrt{\frac{TP}{TP+FP} \times \frac{TP}{TP+FN}}
