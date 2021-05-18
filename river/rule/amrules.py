@@ -82,15 +82,12 @@ class RegRule(HoeffdingRule, base.Regressor):
     def statistics(self, target_stats):
         self._target_stats = target_stats
 
-    @property
-    def total_weight(self):
-        return self._target_stats.mean.n
-
     def _update_target_stats(self, y, w):
         self._target_stats.update(y, w)
 
     def _update_feature_stats(self, feat_name, feat_val, w):
-        self._feat_stats[feat_name].update(feat_val, w)
+        if feat_name not in self.nominal_features:
+            self._feat_stats[feat_name].update(feat_val, w)
 
     def drift_test(self, y, y_pred):
         abs_error = abs(y - y_pred)
@@ -193,7 +190,7 @@ class AMRules(base.Regressor):
             predictor = MeanRegressor()
         elif self.pred_type == self._PRED_MODEL:
             predictor = copy.deepcopy(self.pred_model)
-        else:
+        else:  # adaptive predictor
             predictor = AdaptiveRegressor(
                 model_predictor=copy.deepcopy(self.pred_model),
                 alpha=self.model_selector_decay,
@@ -232,7 +229,11 @@ class AMRules(base.Regressor):
             rule.learn_one(x, y, w)
 
             if rule.total_weight - rule.last_expansion_attempt_at >= self.n_min:
-                rule.expand(self.delta, self.tau)
+                updated_rule, expanded = rule.expand(self.delta, self.tau)
+
+                if expanded:
+                    updated_rule.pred_model = rule.pred_model
+                    self._rules[rule_id] = updated_rule
 
             # Only the first matching rule is updated
             if self.ordered_rule_set:
@@ -247,11 +248,12 @@ class AMRules(base.Regressor):
                 - self._default_rule.last_expansion_attempt_at
                 >= self.n_min
             ):
-                expanded = self._default_rule.expand(self.delta, self.tau)
+                updated_rule, expanded = self._default_rule.expand(self.delta, self.tau)
 
             if expanded:
-                code = hash(self._default_rule)
-                self._rules[code] = self._default_rule
+                updated_rule.pred_model = self._default_rule.pred_model  # noqa
+                code = hash(updated_rule)
+                self._rules[code] = updated_rule
 
                 self._default_rule = self._new_rule()
 

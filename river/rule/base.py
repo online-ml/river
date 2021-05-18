@@ -71,7 +71,10 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
         self.literals = []
         self.splitters = {}
 
+        self._total_weight = 0
         self._last_expansion_attempt_at = 0
+
+        self.nominal_features = set()
 
         self.__dict__.update(attributes)
 
@@ -114,15 +117,35 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
         pass
 
     @property
-    @abc.abstractmethod
     def total_weight(self):
-        pass
+        return self._total_weight
 
     @property
     def last_expansion_attempt_at(self):
         return self._last_expansion_attempt_at
 
     def expand(self, delta, tau):
+        """
+        Attempt to expand a decision rule.
+
+        If the expansion succeeds, a new rule with all attributes reset and updated literals is
+        returned along a boolean flag set to `True` to indicate the expansion. If the expansion
+        fails, `self` is returned along with the boolean flag set to `False`.
+
+        Parameters
+        ----------
+        delta
+            The split test significance.
+        tau
+            The tie-breaking threshold.
+
+        Returns
+        -------
+        rule, expanded
+            The (potentially expanded) rule and an indicator of whether or not an expansion was
+            successfully performed.
+
+        """
         suggestions = []
         for att_id, splitter in self.splitters.items():
             suggestions.append(
@@ -158,19 +181,43 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
                 lit = NumericLiteral(
                     b_split.feature, b_split.split_info, branch_no != 0
                 )
+
+                literal_updated = False
+                for literal in self.literals:
+                    if lit.on == literal.on and lit.neg == literal.neg:
+                        # Update thresholds rather than adding a new literal
+                        if not literal.neg and lit.at < literal.at:
+                            literal.at = lit.at
+                            literal_updated = True
+                            break
+                        elif literal.neg and lit.at > literal.at:
+                            literal.at = lit.at
+                            literal_updated = True
+                            break
+
+                # No threshold was updated, thus a new literal is added
+                if not literal_updated:
+                    self.literals.append(lit)
             else:
                 lit = NominalLiteral(
                     b_split.feature, b_split.split_info, branch_no != 0
                 )
+                # Add a new literal
+                self.literals.append(lit)
 
-            # Add a new literal
-            self.literals.append(lit)
+            # Reset all the statistics stored in the the decision rule
+            updated_rule = self.clone()
+            # Keep the literals
+            updated_rule.literals.extend(self.literals)
 
-            # Set the rule's statistics to match the data partition that was just performed
-            self.statistics = b_split.children_stats[branch_no]
+            # # Set the rule's statistics to match the data partition that was just performed
+            # updated_rule.statistics = b_split.children_stats[branch_no]
 
+            return updated_rule, True
+
+        # If the expansion attempt failed, update the expansion tracker
         self._last_expansion_attempt_at = self.total_weight
-        return should_expand
+        return self, False
 
     def covers(self, x):
         return all(map(lambda lit: lit(x), self.literals))
@@ -199,19 +246,21 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
         pass
 
     def update(self, x, y, w):
+        self._total_weight += w
         self._update_target_stats(y, w)
 
         for feat_name, feat_val in self._iter_features(x):
-            self._update_feature_stats(feat_name, feat_val, w)
             try:
                 splt = self.splitters[feat_name]
             except KeyError:
                 if isinstance(feat_val, numbers.Number):
                     self.splitters[feat_name] = copy.deepcopy(self.template_splitter)
                 else:
+                    self.nominal_features.add(feat_name)
                     self.splitters[feat_name] = self.new_nominal_splitter()
                 splt = self.splitters[feat_name]
             splt.update(feat_val, y, w)
+            self._update_feature_stats(feat_name, feat_val, w)
 
     def __repr__(self):
         return f"{' and '.join([lit.describe() for lit in self.literals])}"
