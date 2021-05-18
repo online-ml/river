@@ -43,6 +43,9 @@ class HSTBranch(Branch):
             return left
         return right
 
+    def most_common_path(self):
+        raise NotImplementedError
+
     @property
     def repr_split(self):
         return f"{self.feature} < {self.threshold:.5f}"

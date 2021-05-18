@@ -5,6 +5,7 @@ import math
 import numpy as np
 
 from river import base, linear_model
+from river.utils.skmultiflow_utils import normalize_values_in_dict, scale_values_in_dict
 
 __all__ = ["AdaBoostClassifier"]
 
@@ -61,7 +62,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     ... )
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.37111
+    LogLoss: 0.364558
 
     >>> print(model)
     AdaBoostClassifier(HoeffdingTreeClassifier)
@@ -110,16 +111,20 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
         return self
 
     def predict_proba_one(self, x):
-        model_weights = collections.defaultdict(int)
-        predictions = {}
+        y_proba = collections.Counter()
 
         for i, model in enumerate(self):
-            epsilon = self.correct_weight[i] + 1e-16
-            epsilon /= self.wrong_weight[i] + 1e-16
-            weight = math.log(epsilon)
-            model_weights[i] += weight
-            predictions[i] = model.predict_proba_one(x)
+            epsilon = self.wrong_weight[i] + 1e-16
+            epsilon /= (self.correct_weight[i] + self.wrong_weight[i]) + 1e-16
+            if epsilon == 0 or epsilon > 0.5:
+                model_weight = 1.0
+            else:
+                beta_inv = (1 - epsilon) / epsilon
+                model_weight = math.log(beta_inv) if beta_inv != 0 else 0
+            predictions = model.predict_proba_one(x)
+            normalize_values_in_dict(predictions, inplace=True)
+            scale_values_in_dict(predictions, model_weight, inplace=True)
+            y_proba.update(predictions)
 
-        y_pred = predictions[max(model_weights, key=model_weights.get)]
-        total = sum(y_pred.values())
-        return {label: proba / total for label, proba in y_pred.items()}
+        normalize_values_in_dict(y_proba, inplace=True)
+        return y_proba
