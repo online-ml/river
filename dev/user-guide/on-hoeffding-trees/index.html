@@ -6908,8 +6908,8 @@ Features  9
 
 <span class="n">model</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>CPU times: user 121 ms, sys: 972 µs, total: 122 ms
-Wall time: 121 ms
+<div class="highlight"><pre><span></span><code>CPU times: user 167 ms, sys: 755 µs, total: 168 ms
+Wall time: 166 ms
 
 
 
@@ -6927,31 +6927,156 @@ HoeffdingTreeClassifier (
   splitter=GaussianSplitter (
     n_splits=10
   )
+  binary_split=False
+  max_size=100
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
 )
 </code></pre></div>
 <p>That's it! We are not going to enter into details about some of the available parameters of HTC here. The user can refer to the documentation page for more information about that. Let's talk about model inspection :D</p>
-<p>At any time, we can easily get some statistics about our trained model by using the <code>model_measurements</code> property:</p>
-<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">model_measurements</span>
+<p>At any time, we can easily get some statistics about our trained model by using the <code>summary</code> property:</p>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">summary</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;Tree size (nodes)&#39;: 5,
- &#39;Tree size (leaves)&#39;: 3,
- &#39;Active learning nodes&#39;: 3,
- &#39;Tree depth&#39;: 2,
- &#39;Active leaf byte size estimate&#39;: 0.0,
- &#39;Inactive leaf byte size estimate&#39;: 0.0,
- &#39;Byte size estimate overhead&#39;: 1.0}
+<div class="highlight"><pre><span></span><code>{&#39;n_nodes&#39;: 5,
+ &#39;n_branches&#39;: 2,
+ &#39;n_leaves&#39;: 3,
+ &#39;n_active_leaves&#39;: 3,
+ &#39;n_inactive_leaves&#39;: 0,
+ &#39;height&#39;: 3,
+ &#39;total_observed_weight&#39;: 1250.0}
 </code></pre></div>
-<p>This property show us the internal structure of the tree, including data concerning the memory-management routines that we are going to check later in this guide. We can also print the tree structure per se by using the <code>model_description</code> method:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model_description</span><span class="p">())</span>
+<p>This property show us the internal structure of the tree, including data concerning the memory-management routines that we are going to check later in this guide. We can also get a representation of the tree model as a <code>pandas.DataFrame</code> object:</p>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>if empty_server_form_handler &lt;= 0.5454545454545454:
-  Leaf = Class True | {True: 443.4163997711022, False: 59.87691310810303}
-if empty_server_form_handler &gt; 0.5454545454545454:
-  if popup_window &lt;= 0.09090909090909091:
-    Leaf = Class True | {False: 31.426538522574834, True: 33.0}
-  if popup_window &gt; 0.09090909090909091:
-    Leaf = Class False | {False: 250.57346147742516, True: 6.0}
-</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>parent</th>
+      <th>is_leaf</th>
+      <th>depth</th>
+      <th>stats</th>
+      <th>feature</th>
+      <th>threshold</th>
+      <th>splitter</th>
+      <th>splitters</th>
+      <th>_disabled_attrs</th>
+      <th>_last_split_attempt_at</th>
+      <th>_mc_correct_weight</th>
+      <th>_nb_correct_weight</th>
+    </tr>
+    <tr>
+      <th>node</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>&lt;NA&gt;</td>
+      <td>False</td>
+      <td>0</td>
+      <td>{True: 260.0, False: 390.0}</td>
+      <td>empty_server_form_handler</td>
+      <td>0.545455</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>True</td>
+      <td>1</td>
+      <td>{True: 443.4163997711022, False: 59.8769131081...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>GaussianSplitter</td>
+      <td>{'empty_server_form_handler': GaussianSplitter...</td>
+      <td>{}</td>
+      <td>474.293313</td>
+      <td>249.0</td>
+      <td>248.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>False</td>
+      <td>1</td>
+      <td>{True: 71.58360022889778, False: 404.123086891...</td>
+      <td>popup_window</td>
+      <td>0.090909</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2</td>
+      <td>True</td>
+      <td>2</td>
+      <td>{False: 31.426538522574834, True: 33.0}</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>GaussianSplitter</td>
+      <td>{'empty_server_form_handler': GaussianSplitter...</td>
+      <td>{}</td>
+      <td>59.426539</td>
+      <td>23.0</td>
+      <td>36.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2</td>
+      <td>True</td>
+      <td>2</td>
+      <td>{False: 250.57346147742516, True: 6.0}</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>GaussianSplitter</td>
+      <td>{'empty_server_form_handler': GaussianSplitter...</td>
+      <td>{}</td>
+      <td>241.573461</td>
+      <td>210.0</td>
+      <td>196.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
 <p>Hmm, maybe not the clearest of the representations. What about drawing the tree structure instead?</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
 </code></pre></div>
@@ -6974,11 +7099,13 @@ if empty_server_form_handler &gt; 0.5454545454545454:
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">debug_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>empty_server_form_handler &lt;= 0.5454545454545454
-Class True | {True: 0.8810297860594185, False: 0.11897021394058142}
+<div class="highlight"><pre><span></span><code>empty_server_form_handler ≤ 0.5454545454545454
+Class True:
+    P(False) = 0.1
+    P(True) = 0.9
 </code></pre></div>
 <p>Our tree got this one right! The method <code>debug_one</code> is especially useful when we are dealing with a big tree model where drawing might not be the wisest of the choices (we will end up with a tree chart that has too much information to visually understand).</p>
-<p>Some additional hints:</p>
+<p><strong>Some additional hints:</strong></p>
 <ul>
 <li>the <code>max_depth</code> parameter is our friend when building HTs that need to be constantly inspected. This parameter, which is available for every HT variant, triggers a pre-pruning mechanism that stops tree growth when the given depth is reached.</li>
 <li>we can also limit the depth when using the <code>draw</code> method.</li>
@@ -7198,7 +7325,7 @@ Class True | {True: 0.8810297860594185, False: 0.11897021394058142}
 <td align="left">Uses a hash-like structure to quantize the incoming data</td>
 <td align="left"><span class="arithmatex">\(O(1)\)</span></td>
 <td align="center"><span class="arithmatex">\(O(h)\)</span></td>
-<td align="center"><span class="arithmatex">\(O(h)\)</span></td>
+<td align="center"><span class="arithmatex">\(O(h \log h)\)</span></td>
 </tr>
 </tbody>
 </table>

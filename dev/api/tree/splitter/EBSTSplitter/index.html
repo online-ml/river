@@ -6733,13 +6733,13 @@
 <details class="- note"><summary>best_evaluated_split_suggestion</summary><p>Get the best split suggestion given a criterion and the target's statistics.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>criterion</strong>     (<em>river.tree._split_criterion.base_split_criterion.SplitCriterion</em>)    </li>
+<li><strong>criterion</strong>     (<em>river.tree.split_criterion.base_split_criterion.SplitCriterion</em>)    </li>
 <li><strong>pre_split_dist</strong>     (<em>Union[List, Dict]</em>)    </li>
 <li><strong>att_idx</strong>     (<em>Hashable</em>)    </li>
 <li><strong>binary_only</strong>     (<em>bool</em>)     – defaults to <code>True</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>SplitSuggestion</em>:     Suggestion of the best attribute split.</p>
+<p><em>BranchFactory</em>:     Suggestion of the best attribute split.</p>
 </details>
 <details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>

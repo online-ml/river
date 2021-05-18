@@ -6794,15 +6794,34 @@
 <p>The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <code>tree.splitter</code> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <code>tree.splitter.GaussianSplitter</code> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
-<p><strong>kwargs</strong></p>
-<p>Other parameters passed to <code>tree.HoeffdingTree</code>. Check the <code>tree</code> module documentation for more information.</p>
+<p><strong>binary_split</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>If True, only allow binary splits.</p>
+</li>
+<li>
+<p><strong>max_size</strong> (<em>int</em>) – defaults to <code>100</code></p>
+<p>The max size of the tree, in Megabytes (MB).</p>
+</li>
+<li>
+<p><strong>memory_estimate_period</strong> (<em>int</em>) – defaults to <code>1000000</code></p>
+<p>Interval (number of processed instances) between memory consumption checks.</p>
+</li>
+<li>
+<p><strong>stop_mem_management</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>If True, stop growing as soon as memory limit is hit.</p>
+</li>
+<li>
+<p><strong>remove_poor_attrs</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>If True, disable poor attributes to reduce memory usage.</p>
+</li>
+<li>
+<p><strong>merit_preprune</strong> (<em>bool</em>) – defaults to <code>True</code></p>
+<p>If True, enable merit-based tree pre-pruning.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>depth</strong></p>
-<p>The depth of the tree.</p>
+<p><strong>height</strong></p>
 </li>
 <li>
 <p><strong>leaf_prediction</strong></p>
@@ -6813,12 +6832,27 @@
 <p>Max allowed size tree can reach (in MB).</p>
 </li>
 <li>
-<p><strong>model_measurements</strong></p>
-<p>Collect metrics corresponding to the current status of the tree in a string buffer.</p>
+<p><strong>n_active_leaves</strong></p>
+</li>
+<li>
+<p><strong>n_branches</strong></p>
+</li>
+<li>
+<p><strong>n_inactive_leaves</strong></p>
+</li>
+<li>
+<p><strong>n_leaves</strong></p>
+</li>
+<li>
+<p><strong>n_nodes</strong></p>
 </li>
 <li>
 <p><strong>split_criterion</strong></p>
 <p>Return a string with the name of the split criterion being used by the tree.</p>
+</li>
+<li>
+<p><strong>summary</strong></p>
+<p>Collect metrics corresponding to the current status of the tree in a string buffer.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -6840,7 +6874,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">86.09</span><span class="o">%</span>
+<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">83.78</span><span class="o">%</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
@@ -6871,10 +6905,6 @@
 </ul>
 <p><strong>Returns</strong></p>
 <p>self</p>
-</details>
-<details class="- note"><summary>model_description</summary><p>Walk the tree and return its structure in a buffer.</p>
-<p><strong>Returns</strong></p>
-<p>The description of the model.</p>
 </details>
 <details class="- note"><summary>predict_many</summary><p>Predict the labels of a DataFrame <code>X</code>.</p>
 <p><strong>Parameters</strong></p>
@@ -6907,6 +6937,11 @@
 </ul>
 <p><strong>Returns</strong></p>
 <p>A dictionary that associates a probability which each label.</p>
+</details>
+<details class="- note"><summary>to_dataframe</summary><p>Return a representation of the current tree structure organized in a <code>pandas.DataFrame</code> object.</p>
+<p>In case the tree is empty or it only contains a single node (a leaf), <code>None</code> is returned.</p>
+<p><strong>Returns</strong></p>
+<p>df</p>
 </details>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
 <p>A Hoeffding Tree <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is an incremental, anytime decision tree induction algorithm that is

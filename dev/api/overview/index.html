@@ -7864,16 +7864,10 @@ the majority of these methods are infinite data generators.</p>
 and regression tasks.</p>
 <p>Each family of iDT will be presented in a dedicated section.</p>
 <p>At any moment, iDT might face situations where an input feature previously used to make
-a split decision is missing in an incoming sample. In this case, the river's trees follow the
-conventions:</p>
-<ul>
-<li><em>Learning:</em> choose the subtree branch most traversed so far to pass the instance on.</br><ul>
-<li>In case of nominal features, a new branch is created to accommodate the new
-category.</br></li>
-</ul>
-</li>
-<li><em>Predicting:</em> Use the last "reachable" decision node to provide responses.</li>
-</ul>
+a split decision is missing in an incoming sample. In this case, the most traversed path is
+selected to pass down the instance. Moreover, in the case of nominal features, if a new category
+arises and the feature is used in a decision node, a new branch is created to accommodate the new
+value.</p>
 <p><strong>1. Hoeffding Trees</strong></p>
 <p>This family of iDT algorithms use the Hoeffding Bound to determine whether or not the
 incrementally computed best split candidates would be equivalent to the ones obtained in a
@@ -7906,58 +7900,9 @@ to split such a feature.</p>
 <p>Define properties to access leaf prediction strategies, split criteria, and other
 relevant characteristics.</p>
 </li>
-</ul>
-<p>All HTs have the following parameters, in addition to their own, that can be selected
-using <code>**kwargs</code>. The following default values are used, unless otherwise explicitly stated
-in the tree documentation.</p>
-<table>
-<thead>
-<tr>
-<th align="left">Parameter</th>
-<th align="left">Description</th>
-<th align="right">Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left"><code>max_depth</code></td>
-<td align="left">The maximum depth a tree can reach. If <code>None</code>, the tree will grow indefinitely.</td>
-<td align="right"><code>None</code></td>
-</tr>
-<tr>
-<td align="left"><code>binary_split</code></td>
-<td align="left">If True, only allow binary splits.</td>
-<td align="right"><code>False</code></td>
-</tr>
-<tr>
-<td align="left"><code>max_size</code></td>
-<td align="left">The maximum size the tree can reach, in Megabytes (MB).</td>
-<td align="right"><code>100</code></td>
-</tr>
-<tr>
-<td align="left"><code>memory_estimate_period</code></td>
-<td align="left">Interval (number of processed instances) between memory consumption checks.</td>
-<td align="right"><code>1_000_000</code></td>
-</tr>
-<tr>
-<td align="left"><code>stop_mem_management</code></td>
-<td align="left">If True, stop growing as soon as memory limit is hit.</td>
-<td align="right"><code>False</code></td>
-</tr>
-<tr>
-<td align="left"><code>remove_poor_attrs</code></td>
-<td align="left">If True, disable poorly descriptive attributes to reduce memory usage.</td>
-<td align="right"><code>False</code></td>
-</tr>
-<tr>
-<td align="left"><code>merit_preprune</code></td>
-<td align="left">If True, enable merit-based tree pre-pruning.</td>
-<td align="right"><code>True</code></td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><a href="../tree/ExtremelyFastDecisionTreeClassifier">ExtremelyFastDecisionTreeClassifier</a></li>
+<li>
+<p><a href="../tree/ExtremelyFastDecisionTreeClassifier">ExtremelyFastDecisionTreeClassifier</a></p>
+</li>
 <li><a href="../tree/HoeffdingAdaptiveTreeClassifier">HoeffdingAdaptiveTreeClassifier</a></li>
 <li><a href="../tree/HoeffdingAdaptiveTreeRegressor">HoeffdingAdaptiveTreeRegressor</a></li>
 <li><a href="../tree/HoeffdingTreeClassifier">HoeffdingTreeClassifier</a></li>
