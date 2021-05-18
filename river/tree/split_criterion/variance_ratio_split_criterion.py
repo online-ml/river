@@ -1,4 +1,4 @@
-from .._split_criterion.base_split_criterion import SplitCriterion
+from .base_split_criterion import SplitCriterion
 
 
 class VarianceRatioSplitCriterion(SplitCriterion):
@@ -14,7 +14,7 @@ class VarianceRatioSplitCriterion(SplitCriterion):
         self.min_samples_split = min_samples_split
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
-        vr = 1
+        vr = 0
         n = pre_split_dist.mean.n
 
         count = 0
@@ -23,6 +23,7 @@ class VarianceRatioSplitCriterion(SplitCriterion):
             if n_i >= self.min_samples_split:
                 count += 1
         if count == len(post_split_dist):
+            vr = 1
             var = self.compute_var(pre_split_dist)
             for i in range(len(post_split_dist)):
                 n_i = post_split_dist[i].mean.n

@@ -146,12 +146,12 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
                 self.split_criterion.range_of_merit(self.statistics), delta
             )
 
-            if b_split.merit - sb_split.merit > hb or hb < tau:
+            if b_split.merit > 0 and (b_split.merit - sb_split.merit > hb or hb < tau):
                 should_expand = True
 
         if should_expand:
             b_split = suggestions[-1]
-            is_numerical = b_split.is_numerical
+            is_numerical = b_split.numerical_feature
             branch_no = self.split_criterion.select_best_branch(b_split.children_stats)
 
             if is_numerical:

@@ -195,6 +195,12 @@ class AMRules(base.Regressor):
         self._default_rule = self._new_rule()
         self._rules: typing.Dict[typing.Hashable, RegRule] = {}
 
+    def __len__(self):
+        return len(self._rules) + 1
+
+    def __getitem__(self, item):
+        return list(self._rules.values())[item]
+
     def _new_rule(self) -> RegRule:
         if self.pred_type == self._PRED_MEAN:
             predictor = MeanRegressor()
@@ -299,7 +305,7 @@ class AMRules(base.Regressor):
         Returns
         -------
         mean_anomaly_score, std_anomaly_score, support
-            The mean anomaly score, the standard deviation, and the number of rules that cover
+            The mean anomaly score, the standard deviation, and the proportion of rules that cover
             the instance.
 
         """
@@ -310,7 +316,7 @@ class AMRules(base.Regressor):
                 var.update(rule.anomaly_score(x))
 
         if var.mean.n > 0:
-            return var.mean.get(), math.sqrt(var.get()), var.mean.n
+            return var.mean.get(), math.sqrt(var.get()), var.mean.n / len(self._rules)
 
         # No rule covers the instance. Use the default rule
         return self._default_rule.anomaly_score(x), 0.0, 0
