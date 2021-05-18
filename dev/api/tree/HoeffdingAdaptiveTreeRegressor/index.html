@@ -6811,19 +6811,38 @@
 <p>The delta parameter used in the nodes' ADWIN drift detectors.</p>
 </li>
 <li>
-<p><strong>seed</strong> – defaults to <code>None</code></p>
-<p>If int, <code>seed</code> is the seed used by the random number generator;</br> If RandomState instance, <code>seed</code> is the random number generator;</br> If None, the random number generator is the RandomState instance used by <code>np.random</code>. Only used when <code>bootstrap_sampling=True</code> to direct the bootstrap sampling.</br></p>
+<p><strong>binary_split</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>If True, only allow binary splits.</p>
 </li>
 <li>
-<p><strong>kwargs</strong></p>
-<p>Other parameters passed to <code>tree.HoeffdingTree</code>. Check the <code>tree</code> module documentation for more information.</p>
+<p><strong>max_size</strong> (<em>int</em>) – defaults to <code>100</code></p>
+<p>The max size of the tree, in Megabytes (MB).</p>
+</li>
+<li>
+<p><strong>memory_estimate_period</strong> (<em>int</em>) – defaults to <code>1000000</code></p>
+<p>Interval (number of processed instances) between memory consumption checks.</p>
+</li>
+<li>
+<p><strong>stop_mem_management</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>If True, stop growing as soon as memory limit is hit.</p>
+</li>
+<li>
+<p><strong>remove_poor_attrs</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>If True, disable poor attributes to reduce memory usage.</p>
+</li>
+<li>
+<p><strong>merit_preprune</strong> (<em>bool</em>) – defaults to <code>True</code></p>
+<p>If True, enable merit-based tree pre-pruning.</p>
+</li>
+<li>
+<p><strong>seed</strong> – defaults to <code>None</code></p>
+<p>If int, <code>seed</code> is the seed used by the random number generator;</br> If RandomState instance, <code>seed</code> is the random number generator;</br> If None, the random number generator is the RandomState instance used by <code>np.random</code>. Only used when <code>bootstrap_sampling=True</code> to direct the bootstrap sampling.</br></p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>depth</strong></p>
-<p>The depth of the tree.</p>
+<p><strong>height</strong></p>
 </li>
 <li>
 <p><strong>leaf_prediction</strong></p>
@@ -6834,12 +6853,36 @@
 <p>Max allowed size tree can reach (in MB).</p>
 </li>
 <li>
-<p><strong>model_measurements</strong></p>
-<p>Collect metrics corresponding to the current status of the tree in a string buffer.</p>
+<p><strong>n_active_leaves</strong></p>
+</li>
+<li>
+<p><strong>n_alternate_trees</strong></p>
+</li>
+<li>
+<p><strong>n_branches</strong></p>
+</li>
+<li>
+<p><strong>n_inactive_leaves</strong></p>
+</li>
+<li>
+<p><strong>n_leaves</strong></p>
+</li>
+<li>
+<p><strong>n_nodes</strong></p>
+</li>
+<li>
+<p><strong>n_pruned_alternate_trees</strong></p>
+</li>
+<li>
+<p><strong>n_switch_alternate_trees</strong></p>
 </li>
 <li>
 <p><strong>split_criterion</strong></p>
 <p>Return a string with the name of the split criterion being used by the tree.</p>
+</li>
+<li>
+<p><strong>summary</strong></p>
+<p>Collect metrics corresponding to the current status of the tree in a string buffer.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -6896,10 +6939,6 @@
 <p><strong>Returns</strong></p>
 <p>self</p>
 </details>
-<details class="- note"><summary>model_description</summary><p>Walk the tree and return its structure in a buffer.</p>
-<p><strong>Returns</strong></p>
-<p>The description of the model.</p>
-</details>
 <details class="- note"><summary>predict_one</summary><p>Predict the target value using one of the leaf prediction strategies.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -6907,6 +6946,11 @@
 </ul>
 <p><strong>Returns</strong></p>
 <p>Predicted target value.</p>
+</details>
+<details class="- note"><summary>to_dataframe</summary><p>Return a representation of the current tree structure organized in a <code>pandas.DataFrame</code> object.</p>
+<p>In case the tree is empty or it only contains a single node (a leaf), <code>None</code> is returned.</p>
+<p><strong>Returns</strong></p>
+<p>df</p>
 </details>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
 <p>The Hoeffding Adaptive Tree <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> uses ADWIN <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> to monitor performance of branches on the tree

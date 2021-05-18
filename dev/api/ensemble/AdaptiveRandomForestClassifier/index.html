@@ -6807,6 +6807,10 @@
 <p>[<em>Tree parameter</em>] The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <code>tree.splitter</code> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <code>tree.splitter.GaussianSplitter</code> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
+<p><strong>binary_split</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>[<em>Tree parameter</em>] If True, only allow binary splits.</p>
+</li>
+<li>
 <p><strong>max_size</strong> (<em>int</em>) – defaults to <code>32</code></p>
 <p>[<em>Tree parameter</em>] Maximum memory (MB) consumed by the tree.</p>
 </li>
@@ -6815,12 +6819,20 @@
 <p>[<em>Tree parameter</em>] Number of instances between memory consumption checks.</p>
 </li>
 <li>
-<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
-<p>If <code>int</code>, <code>seed</code> is used to seed the random number generator; If <code>RandomState</code>, <code>seed</code> is the random number generator; If <code>None</code>, the random number generator is the <code>RandomState</code> instance used by <code>np.random</code>.</p>
+<p><strong>stop_mem_management</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>[<em>Tree parameter</em>] If True, stop growing as soon as memory limit is hit.</p>
 </li>
 <li>
-<p><strong>kwargs</strong></p>
-<p>Other parameters passed to <code>tree.HoeffdingTree</code>. Check the <code>tree</code> module documentation for more information.</p>
+<p><strong>remove_poor_attrs</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>[<em>Tree parameter</em>] If True, disable poor attributes to reduce memory usage.</p>
+</li>
+<li>
+<p><strong>merit_preprune</strong> (<em>bool</em>) – defaults to <code>True</code></p>
+<p>[<em>Tree parameter</em>] If True, enable merit-based tree pre-pruning.</p>
+</li>
+<li>
+<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p>If <code>int</code>, <code>seed</code> is used to seed the random number generator; If <code>RandomState</code>, <code>seed</code> is the random number generator; If <code>None</code>, the random number generator is the <code>RandomState</code> instance used by <code>np.random</code>.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
