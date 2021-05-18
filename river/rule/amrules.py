@@ -101,7 +101,7 @@ class RegRule(HoeffdingRule, base.Regressor):
 
         for feat_name, feat_val in x.items():
             # Skip nominal features
-            if not isinstance(feat_val, numbers.Number):
+            if feat_name in self.nominal_features:
                 continue
 
             mean = self._feat_stats[feat_name].mean.get()
