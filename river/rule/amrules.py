@@ -3,7 +3,6 @@ import copy
 import functools
 import io
 import math
-import numbers
 import typing
 
 from river import base, drift, linear_model, stats, tree
@@ -109,9 +108,8 @@ class RegRule(HoeffdingRule, base.Regressor):
             std = math.sqrt(var)
 
             if std > 0:
-                # One tailed variant of Chebyshev 's inequality
-                k = abs(feat_val - mean) / std  # noqa
-                proba = (2 * var) / (var + k * k)
+                # One tailed variant of Chebyshev's inequality: ported from the MOA code
+                proba = (2 * var) / (var + (feat_val - mean) ** 2)
 
                 if 0 < proba < 1:
                     score += math.log(proba) - math.log(1 - proba)
@@ -130,6 +128,27 @@ class RegRule(HoeffdingRule, base.Regressor):
 
 
 class AMRules(base.Regressor):
+    """Adaptive Model Rules.
+
+    Parameters
+    ----------
+    n_min
+    tau
+    delta
+    pred_type
+    pred_model
+    splitter
+    drift_detector
+    model_selector_decay
+    anomaly_threshold
+    m_min
+    ordered_rule_set
+    min_samples_split
+
+    References
+    ----------
+    """
+
     _PRED_MEAN = "mean"
     _PRED_MODEL = "model"
     _PRED_ADAPTIVE = "adaptive"
@@ -165,9 +184,7 @@ class AMRules(base.Regressor):
             self.splitter = splitter
 
         self.drift_detector = (
-            drift_detector
-            if drift_detector is not None
-            else drift.PageHinkley(threshold=35)
+            drift_detector if drift_detector is not None else drift.PageHinkley()
         )
 
         self.model_selector_decay = model_selector_decay
@@ -179,11 +196,17 @@ class AMRules(base.Regressor):
         self._default_rule = self._new_rule()
         self._rules: typing.Dict[typing.Hashable, RegRule] = {}
 
+        self._n_drifts_detected: int = 0
+
     def __len__(self):
         return len(self._rules) + 1
 
     def __getitem__(self, item):
         return list(self._rules.values())[item]
+
+    @property
+    def n_drifts_detected(self):
+        return self._n_drifts_detected
 
     def _new_rule(self) -> RegRule:
         if self.pred_type == self._PRED_MEAN:
@@ -223,6 +246,7 @@ class AMRules(base.Regressor):
             in_drift = rule.drift_test(y, y_pred)  # noqa
             if in_drift:
                 to_del.add(rule_id)
+                self._n_drifts_detected += 1
                 continue
 
             any_covered = True

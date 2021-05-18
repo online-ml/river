@@ -219,14 +219,21 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
         self._last_expansion_attempt_at = self.total_weight
         return self, False
 
-    def covers(self, x):
+    def covers(self, x: dict) -> bool:
+        """Check if all the conditions are fulfilled.
+
+        Parameters
+        ----------
+        x
+            Input instance.
+        """
         return all(map(lambda lit: lit(x), self.literals))
 
     @abc.abstractmethod
     def new_nominal_splitter(self):
         pass
 
-    def _iter_features(self, x) -> typing.Iterable:
+    def _iter_features(self, x: dict) -> typing.Iterable:
         """Determine how the input instance is looped through when updating the splitters.
 
         Parameters
