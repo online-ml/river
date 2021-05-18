@@ -124,10 +124,10 @@ def test_efdt_split_reevaluation():
     for x, y in dataset:
         model.learn_one(x, y)
 
-        if model.depth > max_depth:
-            max_depth = model.depth
+        if model.height > max_depth:
+            max_depth = model.height
 
-    assert model.depth != max_depth
+    assert model.height != max_depth
 
 
 def test_drift_adaptation_hatc():
