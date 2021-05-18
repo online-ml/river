@@ -8,9 +8,7 @@ import typing
 
 from river import base, drift, linear_model, stats, tree
 
-from ..tree.split_criterion.variance_ratio_split_criterion import (
-    VarianceRatioSplitCriterion,
-)
+from ..tree.split_criterion import VarianceRatioSplitCriterion
 from ..tree.splitter.nominal_splitter_reg import NominalSplitterReg
 from .base import HoeffdingRule
 
@@ -62,21 +60,10 @@ class AdaptiveRegressor(base.Regressor):
 
 class RegRule(HoeffdingRule, base.Regressor):
     def __init__(
-        self,
-        n_min,
-        tau,
-        delta,
-        template_splitter,
-        split_criterion,
-        pred_model,
-        drift_detector,
+        self, template_splitter, split_criterion, pred_model, drift_detector,
     ):
         super().__init__(
-            n_min=n_min,
-            delta=delta,
-            tau=tau,
-            template_splitter=template_splitter,
-            split_criterion=split_criterion,
+            template_splitter=template_splitter, split_criterion=split_criterion,
         )
         self.pred_model = pred_model
         self.drift_detector = drift_detector
@@ -213,9 +200,6 @@ class AMRules(base.Regressor):
             )
 
         return RegRule(
-            n_min=self.n_min,
-            delta=self.delta,
-            tau=self.tau,
             template_splitter=self.splitter,
             split_criterion=VarianceRatioSplitCriterion(self.min_samples_split),
             pred_model=predictor,
