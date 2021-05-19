@@ -426,12 +426,37 @@ class AMRules(base.Regressor):
         -------
         mean_anomaly_score, std_anomaly_score, support
 
+        Examples
+        --------
+        >>> from river import drift
+        >>> from river import rule
+        >>> from river import tree
+        >>> from river import synth
+
+        >>> dataset = synth.Planes2D(seed=42).take(1001)
+
+        >>> model = rule.AMRules(
+        ...     n_min=20,
+        ...     delta=0.1,
+        ...     drift_detector=drift.ADWIN(),
+        ...     splitter=tree.splitter.QOSplitter()
+        ... )
+
+        >>> for i, (x, y) in enumerate(dataset):
+        ...     if i == 1000:
+        ...         # Skip the last example
+        ...         break
+        ...     model = model.learn_one(x, y)
+
+        >>> model.anomaly_score(x)
+        (1.4678111580796012, 0.4520832077688137, 0.5)
+
         """
         var = stats.Var()
 
-        for rule in self._rules.values():
-            if rule.covers(x):
-                var.update(rule.anomaly_score(x))
+        for r in self._rules.values():
+            if r.covers(x):
+                var.update(r.anomaly_score(x))
 
         if var.mean.n > 0:
             return var.mean.get(), math.sqrt(var.get()), var.mean.n / len(self._rules)
@@ -451,12 +476,42 @@ class AMRules(base.Regressor):
         -------
         A representation of the rules that cover the input and their prediction.
 
+        Examples
+        --------
+        >>> from river import drift
+        >>> from river import rule
+        >>> from river import tree
+        >>> from river import synth
+
+        >>> dataset = synth.Planes2D(seed=42).take(1001)
+
+        >>> model = rule.AMRules(
+        ...     n_min=20,
+        ...     delta=0.1,
+        ...     drift_detector=drift.ADWIN(),
+        ...     splitter=tree.splitter.QOSplitter()
+        ... )
+
+        >>> for i, (x, y) in enumerate(dataset):
+        ...     if i == 1000:
+        ...         # Skip the last example
+        ...         break
+        ...     model = model.learn_one(x, y)
+
+        >>> print(model.debug_one(x))
+        Rule 1: 2 ≤ -0.5
+            Prediction: 0.6030438714499989
+        Rule 2: 5 ≤ -0.5
+            Prediction: 2.400319860487267
+        Final prediction: 1.5016818659686328
+        <BLANKLINE>
+
         """
         buffer = io.StringIO()
         _print = functools.partial(print, file=buffer)
 
         any_covered = False
-        for i, rule in self._rules.values():
+        for i, rule in enumerate(self._rules.values()):
             if rule.covers(x):
                 any_covered = True
                 _print(f"Rule {i}: {repr(rule)}")
