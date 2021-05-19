@@ -454,9 +454,9 @@ class AMRules(base.Regressor):
         """
         var = stats.Var()
 
-        for r in self._rules.values():
-            if r.covers(x):
-                var.update(r.anomaly_score(x))
+        for rule in self._rules.values():
+            if rule.covers(x):
+                var.update(rule.anomaly_score(x))
 
         if var.mean.n > 0:
             return var.mean.get(), math.sqrt(var.get()), var.mean.n / len(self._rules)
