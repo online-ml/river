@@ -743,7 +743,6 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
         seed: int = None,
-        **kwargs,
     ):
         super().__init__(
             n_models=n_models,
