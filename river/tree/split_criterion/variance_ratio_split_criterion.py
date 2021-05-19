@@ -4,8 +4,10 @@ from .base_split_criterion import SplitCriterion
 class VarianceRatioSplitCriterion(SplitCriterion):
     """Variance Ratio split criterion.
 
-    References
+    Parameters
     ----------
+    min_samples_split
+        The minimum number of samples per post split dist element.
 
     """
 
@@ -36,9 +38,6 @@ class VarianceRatioSplitCriterion(SplitCriterion):
 
     @staticmethod
     def range_of_merit(pre_split_dist):
-        # The VR values are unbounded, but as we compare the ratio between the attributes' VRs
-        # the actual range is between 0 (the second best candidate has a merit of zero) and 1
-        # (both compared split candidates have the same merit).
         return 1.0
 
     @staticmethod

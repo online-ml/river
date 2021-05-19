@@ -210,9 +210,6 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
             # Keep the literals
             updated_rule.literals.extend(self.literals)
 
-            # # Set the rule's statistics to match the data partition that was just performed
-            # updated_rule.statistics = b_split.children_stats[branch_no]
-
             return updated_rule, True
 
         # If the expansion attempt failed, update the expansion tracker
