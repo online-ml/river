@@ -8,6 +8,7 @@ import typing
 from river import base, drift, linear_model, stats, tree
 
 from ..tree.split_criterion import VarianceRatioSplitCriterion
+from ..tree.splitter.base_splitter import Splitter
 from ..tree.splitter.nominal_splitter_reg import NominalSplitterReg
 from .base import HoeffdingRule
 
@@ -160,8 +161,9 @@ class AMRules(base.Regressor):
     the incoming instances are anomalies. Anomalous instances are not used for training.
 
     Every time no rule is covering an incoming example, a default rule is used to learn
-    from it. The default rule is also applied for predicting examples not covered by any
-    rules from the rule set.
+    from it. A rule covers an instance when all of the rule's literals (tests joined by the
+    logical operation`and`) match the input case. The default rule is also applied for predicting
+    examples not covered by any rules from the rule set.
 
     Parameters
     ----------
@@ -173,13 +175,15 @@ class AMRules(base.Regressor):
         The tie-breaking threshold.
     pred_type
         The prediction strategy used by the decision rules. Can be either:</br>
-        - "mean": outputs the target mean within the partitions defined by the decision rules.</br>
-        - "model": always use instances of the model passed `pred_model` to make predictions.</br>
-        - "adaptive": dynamically selects between "mean" and "model" for each incoming example.
+        - `"mean"`: outputs the target mean within the partitions defined by the decision
+        rules.</br>
+        - `"model"`: always use instances of the model passed `pred_model` to make
+        predictions.</br>
+        - `"adaptive"`: dynamically selects between "mean" and "model" for each incoming example.
         The most accurate option at the moment will be used.
     pred_model
         The regression model that will be replicated for every rule when `pred_type` is either
-        "model" or "adaptive".
+        `"model"` or `"adaptive"`.
     splitter
         The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric
         features and perform splits. Splitters are available in the `tree.splitter` module.
@@ -222,7 +226,7 @@ class AMRules(base.Regressor):
 
     References
     ----------
-    [1]: Duarte, J., Gama, J. and Bifet, A., 2016. Adaptive model rules from high-speed data
+    [^1]: Duarte, J., Gama, J. and Bifet, A., 2016. Adaptive model rules from high-speed data
     streams. ACM Transactions on Knowledge Discovery from Data (TKDD), 10(3), pp.1-22.
 
     """
@@ -239,12 +243,12 @@ class AMRules(base.Regressor):
         tau: float = 0.05,
         pred_type: str = "adaptive",
         pred_model: base.Regressor = None,
-        splitter=None,
-        drift_detector=None,
+        splitter: Splitter = None,
+        drift_detector: base.DriftDetector = None,
         alpha: float = 0.99,
         anomaly_threshold: float = -0.75,
         m_min: int = 30,
-        ordered_rule_set=False,
+        ordered_rule_set: bool = False,
         min_samples_split: int = 5,
     ):
         self.n_min = n_min
@@ -283,7 +287,8 @@ class AMRules(base.Regressor):
         return list(self._rules.values())[item]
 
     @property
-    def n_drifts_detected(self):
+    def n_drifts_detected(self) -> int:
+        """The number of detected concept drifts."""
         return self._n_drifts_detected
 
     def _new_rule(self) -> RegRule:
@@ -303,7 +308,7 @@ class AMRules(base.Regressor):
             drift_detector=copy.deepcopy(self.drift_detector),
         )
 
-    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):
+    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1) -> "AMRules":
         any_covered = False
         to_del = set()
 
@@ -381,8 +386,12 @@ class AMRules(base.Regressor):
         else:
             return self._default_rule.predict_one(x)
 
-    def anomaly_score(self, x):
-        """
+    def anomaly_score(self, x) -> typing.Tuple[float, float, float]:
+        """Aggregated anomaly score computed using all the rules that cover the input instance.
+
+        Returns the mean anomaly score, the standard deviation of the score, and the proportion
+        of rules that cover the instance (support). If the support is zero, it means that the
+        default rule was used (not other rule covered `x`).
 
         Parameters
         ----------
@@ -392,8 +401,6 @@ class AMRules(base.Regressor):
         Returns
         -------
         mean_anomaly_score, std_anomaly_score, support
-            The mean anomaly score, the standard deviation, and the proportion of rules that cover
-            the instance.
 
         """
         var = stats.Var()
@@ -408,7 +415,19 @@ class AMRules(base.Regressor):
         # No rule covers the instance. Use the default rule
         return self._default_rule.anomaly_score(x), 0.0, 0
 
-    def debug_one(self, x):
+    def debug_one(self, x) -> str:
+        """Return an explanation of how `x` is predicted
+
+        Parameters
+        ----------
+        x
+            The input instance.
+
+        Returns
+        -------
+        A representation of the rules that cover the input and their prediction.
+
+        """
         buffer = io.StringIO()
         _print = functools.partial(print, file=buffer)
 
