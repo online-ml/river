@@ -95,6 +95,25 @@ class RegRule(HoeffdingRule, base.Regressor):
         return in_drift
 
     def anomaly_score(self, x):
+        """Rule anomaly score.
+
+        The more negative the score, the more anomalous is the instance regarding the subspace
+        covered by the rule. Instances whose score is greater than zero are considered normal.
+        Different threshold values can be used to decide upon discarding or using the instance
+        for training. A small negative threshold is considered to be a conservative choice,
+        whereas cutting at zero is a more aggressive choice.
+
+        Parameters
+        ----------
+        x
+            The input instance.
+
+        Returns
+        -------
+        The anomaly score.
+
+
+        """
         score = 0.0
         hits = 0
 
@@ -130,23 +149,82 @@ class RegRule(HoeffdingRule, base.Regressor):
 class AMRules(base.Regressor):
     """Adaptive Model Rules.
 
+    AMRules[^1] is rule-based algorithm for incremental regression tasks. AMRules relies on the
+    Hoeffding bound to build its rule set, similarly to Hoeffding Trees. The Variance-Ratio
+    heuristic is used to evaluate rules' splits. Moreover, this rule-based regressor has
+    additional capacities not usually found in decision trees.
+
+    Firstly, each created decision rule has a built-in drift detection mechanism. Every time a
+    drift is detected, the affected decision rule is removed. In addition, AMRules' rules also
+    have anomaly detection capabilities. After a warm-up period, each rule tests whether or not
+    the incoming instances are anomalies. Anomalous instances are not used for training.
+
+    Every time no rule is covering an incoming example, a default rule is used to learn
+    from it. The default rule is also applied for predicting examples not covered by any
+    rules from the rule set.
+
     Parameters
     ----------
     n_min
-    tau
+        The total weight that must be observed by a rule between expansion attempts.
     delta
+        The split test significance. The split confidence is given by `1 - delta`.
+    tau
+        The tie-breaking threshold.
     pred_type
+        The prediction strategy used by the decision rules. Can be either:</br>
+        - "mean": outputs the target mean within the partitions defined by the decision rules.</br>
+        - "model": always use instances of the model passed `pred_model` to make predictions.</br>
+        - "adaptive": dynamically selects between "mean" and "model" for each incoming example.
+        The most accurate option at the moment will be used.
     pred_model
+        The regression model that will be replicated for every rule when `pred_type` is either
+        "model" or "adaptive".
     splitter
+        The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric
+        features and perform splits. Splitters are available in the `tree.splitter` module.
+        Different splitters are available for classification and regression tasks. Classification
+        and regression splitters can be distinguished by their property `is_target_class`.
+        This is an advanced option. Special care must be taken when choosing different splitters.
+        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
     drift_detector
-    model_selector_decay
+        The drift detection model that is used by each rule. Care must be taken to avoid the
+        triggering of too many false alarms or delaying too much the concept drift detection.
+        By default, `drift.PageHinckley` is used if `drift_detector` is `None`.
+    alpha
+        The exponential decaying factor applied to the learning models' absolute errors, that
+        are monitored if `pred_type='adaptive'`. Must be between `0` and `1`. The closer
+        to `1`, the more importance is going to be given to past observations. On the other hand,
+        if its value approaches `0`, the recent observed errors are going to have more influence
+        on the final decision.
     anomaly_threshold
+        The threshold below which instances will be considered anomalies by the rules.
     m_min
+        The minimum total weight a rule must observe before it starts to skip anomalous
+        instances during training.
     ordered_rule_set
+        If `True`, only the first rule that covers an instance will be used for training or
+        prediction. If `False`, all the rules covering an instance will be updated during
+        training, and the predictions for an instance will be the average prediction of all
+        rules covering that example.
     min_samples_split
+        The minimum number of samples each partition of a binary split candidate must have
+        to be considered valid.
+
+    Notes
+    -----
+    AMRules treats all the non-numerical inputs as nominal features. All instances of
+    `numbers.Number` will be treated as continuous, even if they represent integer categories.
+    When using nominal features, `pred_type` should be set to "mean", otherwise errors will be
+    thrown while trying to update the underlying rules' prediction models. Prediction strategies
+    other than "mean" can be used, as long as the prediction model passed to `pred_model` supports
+    nominal features.
 
     References
     ----------
+    [1]: Duarte, J., Gama, J. and Bifet, A., 2016. Adaptive model rules from high-speed data
+    streams. ACM Transactions on Knowledge Discovery from Data (TKDD), 10(3), pp.1-22.
+
     """
 
     _PRED_MEAN = "mean"
@@ -157,21 +235,21 @@ class AMRules(base.Regressor):
     def __init__(
         self,
         n_min: int = 200,
-        tau: float = 0.05,
         delta: float = 1e-7,
+        tau: float = 0.05,
         pred_type: str = "adaptive",
         pred_model: base.Regressor = None,
         splitter=None,
         drift_detector=None,
-        model_selector_decay: float = 0.99,
+        alpha: float = 0.99,
         anomaly_threshold: float = -0.75,
         m_min: int = 30,
         ordered_rule_set=False,
         min_samples_split: int = 5,
     ):
         self.n_min = n_min
-        self.tau = tau
         self.delta = delta
+        self.tau = tau
 
         if pred_type not in self._VALID_PRED:
             raise ValueError(f"Invalid 'pred_type': {pred_type}")
@@ -187,7 +265,7 @@ class AMRules(base.Regressor):
             drift_detector if drift_detector is not None else drift.PageHinkley()
         )
 
-        self.model_selector_decay = model_selector_decay
+        self.alpha = alpha
         self.anomaly_threshold = anomaly_threshold
         self.m_min = m_min
         self.ordered_rule_set = ordered_rule_set
@@ -215,8 +293,7 @@ class AMRules(base.Regressor):
             predictor = copy.deepcopy(self.pred_model)
         else:  # adaptive predictor
             predictor = AdaptiveRegressor(
-                model_predictor=copy.deepcopy(self.pred_model),
-                alpha=self.model_selector_decay,
+                model_predictor=copy.deepcopy(self.pred_model), alpha=self.alpha,
             )
 
         return RegRule(
