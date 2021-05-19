@@ -280,9 +280,10 @@ class CluStream(base.Clusterer):
         index, _ = self._get_closest_micro_cluster(
             x, self._get_micro_clustering_result()
         )
-        y = kmeans.predict_one(micro_cluster_centers[index])
-
-        return y
+        try:
+            return kmeans.predict_one(micro_cluster_centers[index])
+        except KeyError:
+            return 0
 
 
 class CluStreamMicroCluster(metaclass=ABCMeta):
