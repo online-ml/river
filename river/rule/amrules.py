@@ -224,6 +224,30 @@ class AMRules(base.Regressor):
     other than "mean" can be used, as long as the prediction model passed to `pred_model` supports
     nominal features.
 
+    Examples
+    --------
+    >>> from river import datasets
+    >>> from river import drift
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import preprocessing
+    >>> from river import rule
+
+    >>> dataset = datasets.TrumpApproval()
+
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     rule.AMRules(
+    ...         n_min=50,
+    ...         drift_detector=drift.ADWIN()
+    ...     )
+    ... )
+
+    >>> metric = metrics.MAE()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 1.067339
+
     References
     ----------
     [^1]: Duarte, J., Gama, J. and Bifet, A., 2016. Adaptive model rules from high-speed data
