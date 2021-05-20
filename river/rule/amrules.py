@@ -238,6 +238,7 @@ class AMRules(base.Regressor):
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     rule.AMRules(
+    ...         delta=0.00001,
     ...         n_min=50,
     ...         drift_detector=drift.ADWIN()
     ...     )
@@ -246,7 +247,7 @@ class AMRules(base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.067339
+    MAE: 1.079129
 
     References
     ----------
@@ -272,7 +273,7 @@ class AMRules(base.Regressor):
         alpha: float = 0.99,
         anomaly_threshold: float = -0.75,
         m_min: int = 30,
-        ordered_rule_set: bool = False,
+        ordered_rule_set: bool = True,
         min_samples_split: int = 5,
     ):
         self.n_min = n_min
@@ -433,10 +434,10 @@ class AMRules(base.Regressor):
         >>> from river import tree
         >>> from river import synth
 
-        >>> dataset = synth.Planes2D(seed=42).take(1001)
+        >>> dataset = synth.Friedman(seed=42).take(1001)
 
         >>> model = rule.AMRules(
-        ...     n_min=20,
+        ...     n_min=50,
         ...     delta=0.1,
         ...     drift_detector=drift.ADWIN(),
         ...     splitter=tree.splitter.QOSplitter()
@@ -449,7 +450,7 @@ class AMRules(base.Regressor):
         ...     model = model.learn_one(x, y)
 
         >>> model.anomaly_score(x)
-        (1.4678111580796012, 0.4520832077688137, 0.5)
+        (1.0168907243483924, 0.13045786430817474, 1.0)
 
         """
         var = stats.Var()
@@ -483,10 +484,10 @@ class AMRules(base.Regressor):
         >>> from river import tree
         >>> from river import synth
 
-        >>> dataset = synth.Planes2D(seed=42).take(1001)
+        >>> dataset = synth.Friedman(seed=42).take(1001)
 
         >>> model = rule.AMRules(
-        ...     n_min=20,
+        ...     n_min=50,
         ...     delta=0.1,
         ...     drift_detector=drift.ADWIN(),
         ...     splitter=tree.splitter.QOSplitter()
@@ -499,11 +500,8 @@ class AMRules(base.Regressor):
         ...     model = model.learn_one(x, y)
 
         >>> print(model.debug_one(x))
-        Rule 1: 2 ≤ -0.5
-            Prediction: 0.6030438714499989
-        Rule 2: 5 ≤ -0.5
-            Prediction: 2.400319860487267
-        Final prediction: 1.5016818659686328
+        Rule 0: 3 > 0.5060027751338432 and 0 > 0.25379161985850063
+            Prediction: 18.72169583862947
         <BLANKLINE>
 
         """

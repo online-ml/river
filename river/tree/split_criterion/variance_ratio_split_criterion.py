@@ -42,6 +42,13 @@ class VarianceRatioSplitCriterion(SplitCriterion):
 
     @staticmethod
     def select_best_branch(children_stats):
-        scaled_var0 = children_stats[0].mean.n * children_stats[0].get()
-        scaled_var1 = children_stats[1].mean.n * children_stats[1].get()
-        return 1 if scaled_var0 <= scaled_var1 else 0
+        n0 = children_stats[0].mean.n
+        n1 = children_stats[1].mean.n
+
+        n = n0 + n1
+
+        vr0 = (n0 / n) * VarianceRatioSplitCriterion.compute_var(children_stats[0])
+        vr1 = (n1 / n) * VarianceRatioSplitCriterion.compute_var(children_stats[1])
+
+        # Return the branch that most minimizes the variance
+        return 0 if vr0 <= vr1 else 1
