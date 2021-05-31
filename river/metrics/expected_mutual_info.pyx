@@ -1,8 +1,3 @@
-cdivision=True
-boundscheck=False
-wraparound=False
-
-
 from libc.math cimport exp, lgamma
 
 import numpy as np
