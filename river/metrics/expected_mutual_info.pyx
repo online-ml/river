@@ -74,6 +74,8 @@ def ExpectedMutualInfo(confusion_matrix):
     a = dict2numpy(confusion_matrix.sum_row).astype(np.int32)
     b = dict2numpy(confusion_matrix.sum_col).astype(np.int32)
 
+    if N == 0: return 0.0
+
     # There are three major terms to the EMI equation, which are multiplied to
     # and then summed over varying nij values.
     # Although nijs[0] will never be used, having it simplifies the indexing.
