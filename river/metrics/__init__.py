@@ -29,6 +29,7 @@ from .base import (
 from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
+from .expected_mutual_info import ExpectedMutualInfo
 from .fbeta import (
     F1,
     ExampleF1,
@@ -53,12 +54,7 @@ from .matthews_corrcoef import MatthewsCorrCoef
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
-from .mutual_info import (
-    AdjustedMutualInfo,
-    ExpectedMutualInfo,
-    MutualInfo,
-    NormalizedMutualInfo,
-)
+from .mutual_info import AdjustedMutualInfo, MutualInfo, NormalizedMutualInfo
 from .pair_confusion import PairConfusionMatrix
 from .precision import (
     ExamplePrecision,

@@ -1,13 +1,13 @@
 import math
 
 import numpy as np
-from scipy.special import factorial
 
 from river import metrics
 
+from .expected_mutual_info import ExpectedMutualInfo
+
 __all__ = [
     "AdjustedMutualInfo",
-    "ExpectedMutualInfo",
     "MutualInfo",
     "NormalizedMutualInfo",
 ]
@@ -237,125 +237,6 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
         return mutual_info_score / normalizer
 
 
-class ExpectedMutualInfo(metrics.MultiClassMetric):
-    r"""Expected Mutual Information.
-
-    Like the Rand index, the baseline value of mutual information between two
-    random clusterings is not necessarily a constant value, and tends to become
-    larger when the two partitions have a higher number of cluster (with a fixed
-    number of samples $N$). Using a hypergeometric model of randomness, it can be
-    shown that the expected mutual information between two random clusterings [^1] is:
-
-    $$
-    E(MI(U, V)) = \sum_{i=1}^R \sum_{i=1}^C \sum{n_{ij}=(a_i+b_j-N)^+}^{\min(a_i,b_j)} \frac{n_{ij}}{N} \log(\frac{N n_{ij}}{a_i b_j}) \frac{a_i! b_j! (N-a_i)! (N-b_j)!}{N! n_{ij}! (a_i - n_{ij})! (b_j - n_{ij})! (N - a_i - b_j + n_{ij})!}}
-    $$
-
-    where
-
-    * $(a_i + b_j - N)^+$ denotes $\max(1, a_i + b_j - N)$,
-
-    * $a_i$ is the sum of row i-th of the contingency table, and
-
-    * $b_j$ is the sum of column j-th of the contingency table.
-
-    The Adjusted Mutual Information score (AMI) relies on the Expected Mutual Information (EMI) score.
-
-    From the formula, we note that this metric is very expensive to calculate. As such,
-    the AMI will be one order of magnitude slower than most other implemented metrics.
-
-    Parameters
-    ----------
-    cm
-        This parameter allows sharing the same confusion
-        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
-        and computation time.
-
-    Examples
-    --------
-
-    >>> from river import metrics
-
-    >>> y_true = [1, 1, 2, 2, 3, 3]
-    >>> y_pred = [1, 1, 1, 2, 2, 2]
-
-    >>> metric = metrics.ExpectedMutualInfo()
-    >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
-    0.0
-    0.0
-    0.0
-    0.21576155433883565
-    0.34030102034048276
-    0.2772588722239781
-
-    >>> metric
-    ExpectedMutualInfo: 0.277259
-
-    References
-    ----------
-    [^1]: Wikipedia contributors. (2021, March 17). Mutual information.
-          In Wikipedia, The Free Encyclopedia,
-          from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
-    [^2]: Andrew Rosenberg and Julia Hirschberg (2007).
-          V-Measure: A conditional entropy-based external cluster evaluation measure.
-          Proceedings of the 2007 Joing Conference on Empirical Methods in Natural Language
-          Processing and Computational Natural Language Learning, pp. 410 - 420,
-          Prague, June 2007.
-    """
-
-    def __init__(self, cm=None):
-        super().__init__(cm)
-
-    @property
-    def works_with_weights(self):
-        return False
-
-    def get(self):
-
-        expected_mutual_info = 0.0
-
-        for i in self.cm.classes:
-            for j in self.cm.classes:
-                lower_bound = int(
-                    max(1, self.cm.sum_row[i] + self.cm.sum_col[j] - self.cm.n_samples)
-                )
-                upper_bound = int(min(self.cm.sum_row[i], self.cm.sum_col[j]) + 1)
-
-                for n_ij in range(lower_bound, upper_bound):
-                    try:
-                        expected_mutual_info += (
-                            n_ij
-                            / self.cm.n_samples
-                            * math.log(
-                                self.cm.n_samples
-                                * n_ij
-                                / (self.cm.sum_row[i] * self.cm.sum_col[j])
-                            )
-                            * (
-                                factorial(self.cm.sum_row[i])
-                                * factorial(self.cm.sum_col[j])
-                                * factorial(self.cm.n_samples - self.cm.sum_row[i])
-                                * factorial(self.cm.n_samples - self.cm.sum_col[j])
-                            )
-                            / (
-                                factorial(self.cm.n_samples)
-                                * factorial(n_ij)
-                                * factorial(self.cm.sum_row[i] - n_ij)
-                                * factorial(self.cm.sum_col[j] - n_ij)
-                                * factorial(
-                                    self.cm.n_samples
-                                    - self.cm.sum_row[i]
-                                    - self.cm.sum_col[j]
-                                    + n_ij
-                                )
-                            )
-                        )
-                    except (ValueError, ZeroDivisionError):
-                        continue
-
-        return expected_mutual_info
-
-
 class AdjustedMutualInfo(metrics.MultiClassMetric):
     r"""Adjusted Mutual Information between two clusterings.
 
@@ -402,10 +283,10 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
     ...     print(metric.update(yt, yp).get())
     1.0
     1.0
-    0.0
-    0.0
-    0.10589171576292913
-    0.29879245817089006
+    4.65126289374677e-16
+    5.389698919029922e-16
+    0.10589171576292969
+    0.2987924581708901
 
     >>> metric
     AdjustedMutualInfo: 0.298792
@@ -457,7 +338,7 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
         mutual_info_score = metrics.MutualInfo(self.cm).get()
 
-        expected_mutual_info_score = metrics.ExpectedMutualInfo(self.cm).get()
+        expected_mutual_info_score = ExpectedMutualInfo(self.cm)
 
         entropy_true = entropy_pred = 0.0
 
