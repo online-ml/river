@@ -350,7 +350,7 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
                     / self.cm.n_samples
                     * math.log(self.cm.sum_row[i] / self.cm.n_samples)
                 )
-            except ValueError:
+            except (KeyError, ValueError):
                 pass
 
             try:
@@ -359,7 +359,7 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
                     / self.cm.n_samples
                     * math.log(self.cm.sum_col[i] / self.cm.n_samples)
                 )
-            except ValueError:
+            except (KeyError, ValueError):
                 pass
 
         normalizer = self._generalized_average(
