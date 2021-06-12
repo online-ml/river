@@ -76,8 +76,6 @@ def expected_mutual_info(confusion_matrix):
 
     R = C = len(confusion_matrix.classes)
 
-    if N == 0: return 0.0
-
     # There are three major terms to the EMI equation, which are multiplied to
     # and then summed over varying nij values.
     # Although nijs[0] will never be used, having it simplifies the indexing.
