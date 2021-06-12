@@ -70,13 +70,11 @@ def expected_mutual_info(confusion_matrix):
     #cdef np.ndarray[DOUBLE, ndim=2] start, end
 
     N = confusion_matrix.n_samples
-    a = dict2numpy(confusion_matrix.sum_row).astype(np.int32)
-    b = dict2numpy(confusion_matrix.sum_col).astype(np.int32)
 
-    a = a[a != 0]
-    b = b[b != 0]
-    
-    R, C = len(a), len(b)
+    a = np.array([confusion_matrix.sum_row[key] for key in confusion_matrix.classes]).astype(np.int32)
+    b = np.array([confusion_matrix.sum_col[key] for key in confusion_matrix.classes]).astype(np.int32)
+
+    R = C = len(confusion_matrix.classes)
 
     if N == 0: return 0.0
 

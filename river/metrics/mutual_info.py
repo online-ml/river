@@ -4,8 +4,6 @@ import numpy as np
 
 from river import metrics
 
-from .expected_mutual_info import expected_mutual_info
-
 __all__ = [
     "AdjustedMutualInfo",
     "MutualInfo",
