@@ -12,7 +12,7 @@ np.import_array()
 ctypedef np.float64_t DOUBLE
 
 
-def ExpectedMutualInfo(confusion_matrix):
+def expected_mutual_info(confusion_matrix):
     r"""Expected Mutual Information.
 
     Like the Rand index, the baseline value of mutual information between two
@@ -69,10 +69,14 @@ def ExpectedMutualInfo(confusion_matrix):
     cdef np.ndarray[np.int32_t] a, b
     #cdef np.ndarray[DOUBLE, ndim=2] start, end
 
-    R, C = confusion_matrix.shape
     N = confusion_matrix.n_samples
     a = dict2numpy(confusion_matrix.sum_row).astype(np.int32)
     b = dict2numpy(confusion_matrix.sum_col).astype(np.int32)
+
+    a = a[a != 0]
+    b = b[b != 0]
+    
+    R, C = len(a), len(b)
 
     if N == 0: return 0.0
 

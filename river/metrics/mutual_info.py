@@ -4,7 +4,7 @@ import numpy as np
 
 from river import metrics
 
-from .expected_mutual_info import ExpectedMutualInfo
+from .expected_mutual_info import expected_mutual_info
 
 __all__ = [
     "AdjustedMutualInfo",
@@ -338,7 +338,7 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
         mutual_info_score = metrics.MutualInfo(self.cm).get()
 
-        expected_mutual_info_score = ExpectedMutualInfo(self.cm)
+        expected_mutual_info_score = metrics.expected_mutual_info(self.cm)
 
         entropy_true = entropy_pred = 0.0
 
@@ -368,7 +368,7 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
         denominator = normalizer - expected_mutual_info_score
 
-        if denominator > 0:
+        if denominator >= 0:
             denominator = max(denominator, np.finfo("float64").eps)
         else:
             denominator = -min(denominator, -np.finfo("float64").eps)

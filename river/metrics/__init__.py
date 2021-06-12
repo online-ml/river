@@ -29,7 +29,7 @@ from .base import (
 from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .exact_match import ExactMatch
-from .expected_mutual_info import ExpectedMutualInfo
+from .expected_mutual_info import expected_mutual_info
 from .fbeta import (
     F1,
     ExampleF1,
@@ -94,7 +94,7 @@ __all__ = [
     "ExampleRecall",
     "ExampleF1",
     "ExampleFBeta",
-    "ExpectedMutualInfo",
+    "expected_mutual_info",
     "F1",
     "FBeta",
     "FowlkesMallows",
