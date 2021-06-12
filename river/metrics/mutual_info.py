@@ -367,10 +367,12 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
         denominator = normalizer - expected_mutual_info_score
 
         if denominator < 0:
-            denominator = min(denominator, -np.finfo('float64').eps)
+            denominator = min(denominator, -np.finfo("float64").eps)
         else:
-            denominator = max(denominator, np.finfo('float64').eps)
+            denominator = max(denominator, np.finfo("float64").eps)
 
-        adjusted_mutual_info_score = (mutual_info_score - expected_mutual_info_score) / denominator
+        adjusted_mutual_info_score = (
+            mutual_info_score - expected_mutual_info_score
+        ) / denominator
 
         return adjusted_mutual_info_score
