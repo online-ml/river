@@ -147,6 +147,7 @@ class SAMKNNClassifier(Classifier):
         The number of samples is halved per class.
         """
         from sklearn.cluster import KMeans
+
         logging.debug("cluster Down %d" % self.train_step_count)
         uniqueLabels = np.unique(labels)
         newSamples = np.empty(shape=(0, samples.shape[1]))
