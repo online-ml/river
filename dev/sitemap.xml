@@ -2036,6 +2036,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/releases/0.7.2/</loc>
+         <lastmod>2021-06-13</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/releases/unreleased/</loc>
          <lastmod>2021-06-13</lastmod>
          <changefreq>daily</changefreq>
