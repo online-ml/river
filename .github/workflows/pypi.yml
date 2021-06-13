@@ -39,4 +39,4 @@ jobs:
           cibuildwheel --output-dir dist
           python setup.py sdist
           ls dist
-          twine upload dist/* -u ${{ secrets.pypi_user }} -p ${{ secrets.pypi_password }}
+          twine upload dist/* -u ${{ secrets.pypi_user }} -p ${{ secrets.pypi_password }} --skip-existing

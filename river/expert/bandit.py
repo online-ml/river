@@ -5,6 +5,7 @@ import random
 import typing
 
 from river import base, compose, linear_model, metrics, optim, preprocessing
+from river.expert.exceptions import NotEnoughModels
 from river.utils.math import sigmoid
 
 __all__ = ["EpsilonGreedyRegressor", "UCBRegressor"]
@@ -64,10 +65,8 @@ class Bandit(base.EnsembleMixin):
         seed: int = None,
     ):
 
-        if len(models) <= 1:
-            raise ValueError(
-                f"You supplied {len(models)} models. At least 2 models should be supplied."
-            )
+        if len(models) < 2:
+            raise NotEnoughModels(n_expected=2, n_obtained=len(models))
 
         # Check that the model and the metric are in accordance
         for model in models:
