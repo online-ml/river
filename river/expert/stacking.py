@@ -1,6 +1,7 @@
 import typing
 
 from river import base
+from river.expert.exceptions import NotEnoughModels
 
 __all__ = ["StackingClassifier"]
 
@@ -58,6 +59,10 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
         meta_classifier: base.Classifier,
         include_features=True,
     ):
+
+        if len(classifiers) < 2:
+            raise NotEnoughModels(n_expected=2, n_obtained=len(classifiers))
+
         super().__init__(classifiers)
         self.meta_classifier = meta_classifier
         self.include_features = include_features

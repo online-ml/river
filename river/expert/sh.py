@@ -3,6 +3,7 @@ import math
 import operator
 
 from river import base, metrics
+from river.expert.exceptions import NotEnoughModels
 
 __all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
@@ -17,6 +18,9 @@ class SuccessiveHalving:
         verbose=False,
         **print_kwargs,
     ):
+
+        if len(models) < 2:
+            raise NotEnoughModels(n_expected=2, n_obtained=len(models))
 
         # Check that the model and the metric are in accordance
         for model in models:
