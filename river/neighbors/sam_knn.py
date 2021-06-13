@@ -3,7 +3,6 @@ import logging
 from collections import deque
 
 import numpy as np
-from sklearn.cluster import KMeans
 
 from river.base import Classifier
 from river.utils import dict2numpy
@@ -147,6 +146,7 @@ class SAMKNNClassifier(Classifier):
         Performs class-wise kMeans++ clustering for given samples with corresponding labels.
         The number of samples is halved per class.
         """
+        from sklearn.cluster import KMeans
         logging.debug("cluster Down %d" % self.train_step_count)
         uniqueLabels = np.unique(labels)
         newSamples = np.empty(shape=(0, samples.shape[1]))
