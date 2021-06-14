@@ -1,10 +1,10 @@
+# cython: cdivision=True
+# cython: boundscheck=False
+# cython: wraparound=False
+
 from libc.math cimport exp, lgamma
-
-import numpy as np
 from scipy.special import gammaln
-
-from river.utils import dict2numpy
-
+import numpy as np
 cimport cython
 cimport numpy as np
 
@@ -71,10 +71,12 @@ def expected_mutual_info(confusion_matrix):
 
     N = confusion_matrix.n_samples
 
-    a = np.array([confusion_matrix.sum_row[key] for key in confusion_matrix.classes]).astype(np.int32)
-    b = np.array([confusion_matrix.sum_col[key] for key in confusion_matrix.classes]).astype(np.int32)
+    a = np.array([confusion_matrix.sum_row[key] for key in confusion_matrix.classes if confusion_matrix.sum_row[key]]).astype(np.int32)
+    b = np.array([confusion_matrix.sum_col[key] for key in confusion_matrix.classes if confusion_matrix.sum_col[key]]).astype(np.int32)
 
-    R = C = len(confusion_matrix.classes)
+    cdef int val
+    R = len([val for val in confusion_matrix.sum_row.values() if val != 0])
+    C = len([val for val in confusion_matrix.sum_col.values() if val != 0])
 
     # There are three major terms to the EMI equation, which are multiplied to
     # and then summed over varying nij values.

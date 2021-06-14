@@ -61,9 +61,9 @@ class MutualInfo(metrics.MultiClassMetric):
     0.0
     0.0
     0.0
-    0.21576155433883565
-    0.39575279478527836
-    0.46209812037329684
+    0.215761
+    0.395752
+    0.462098
 
     >>> metric
     MutualInfo: 0.462098
@@ -73,11 +73,6 @@ class MutualInfo(metrics.MultiClassMetric):
     [^1]: Wikipedia contributors. (2021, March 17). Mutual information.
           In Wikipedia, The Free Encyclopedia,
           from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
-    [^2]: Andrew Rosenberg and Julia Hirschberg (2007).
-          V-Measure: A conditional entropy-based external cluster evaluation measure.
-          Proceedings of the 2007 Joing Conference on Empirical Methods in Natural Language
-          Processing and Computational Natural Language Learning, pp. 410 - 420,
-          Prague, June 2007.
     """
 
     def __init__(self, cm=None):
@@ -94,17 +89,17 @@ class MutualInfo(metrics.MultiClassMetric):
         for i in self.cm.classes:
             for j in self.cm.classes:
                 try:
-                    mutual_info_score += (
-                        self.cm[i][j]
-                        / self.cm.n_samples
-                        * math.log(
-                            (self.cm.n_samples * self.cm[i][j])
-                            / (self.cm.sum_row[i] * self.cm.sum_col[j])
-                        )
+                    temp = (
+                        self.cm[i][j] / self.cm.n_samples
+                        * (math.log(self.cm.n_samples * self.cm[i][j])
+                           - math.log(self.cm.sum_row[i] * self.cm.sum_col[j])
+                           )
                     )
                 except (ValueError, ZeroDivisionError):
                     continue
-
+                temp = 0.0 if (abs(temp) < np.finfo("float64").eps) else temp
+                # temp = 0.0 if temp < 0.0 else temp   # TODO confirm if we need to clip here
+                mutual_info_score += temp
         return mutual_info_score
 
 
@@ -150,9 +145,9 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
     1.0
     1.0
     0.0
-    0.3437110184854508
-    0.4580652856440159
-    0.5158037429793888
+    0.343711
+    0.458065
+    0.515803
 
     >>> metric
     NormalizedMutualInfo: 0.515804
@@ -162,37 +157,33 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
     [^1]: Wikipedia contributors. (2021, March 17). Mutual information.
           In Wikipedia, The Free Encyclopedia,
           from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
-    [^2]: Andrew Rosenberg and Julia Hirschberg (2007).
-          V-Measure: A conditional entropy-based external cluster evaluation measure.
-          Proceedings of the 2007 Joing Conference on Empirical Methods in Natural Language
-          Processing and Computational Natural Language Learning, pp. 410 - 420,
-          Prague, June 2007.
     """
+    _AVERAGE_MIN = 'min'
+    _AVERAGE_MAX = 'max'
+    _AVERAGE_GEOMETRIC = 'geometric'
+    _AVERAGE_ARITHMETIC = 'arithmetic'
+    _VALID_AVERAGE = [_AVERAGE_MIN, _AVERAGE_MAX, _AVERAGE_GEOMETRIC, _AVERAGE_ARITHMETIC]
 
     def __init__(self, cm=None, average_method="arithmetic"):
         super().__init__(cm)
+        if average_method not in self._VALID_AVERAGE:
+            raise ValueError(
+                f"Valid 'average_methods' are {self._VALID_AVERAGE}, "
+                f"but {average_method} was passed."
+            )
         self.average_method = average_method
+        if average_method == self._AVERAGE_MIN:
+            self._generalized_average = _average_min
+        elif average_method == self._AVERAGE_MAX:
+            self._generalized_average = _average_max
+        elif average_method == self._AVERAGE_GEOMETRIC:
+            self._generalized_average = _average_geometric
+        else:    # average_method == self._AVERAGE_ARITHMETIC
+            self._generalized_average = _average_arithmetic
 
     @property
     def works_with_weights(self):
         return False
-
-    @staticmethod
-    def _generalized_average(u, v, average_method):
-
-        if average_method == "min":
-            return min(u, v)
-        elif average_method == "max":
-            return max(u, v)
-        elif average_method == "geometric":
-            return math.sqrt(u * v)
-        elif average_method == "arithmetic":
-            return (u + v) / 2
-        else:
-            raise ValueError(
-                "'average_method' must be either 'min', 'max', "
-                "'geometric', or 'arithmetic' "
-            )
 
     def get(self):
 
@@ -204,31 +195,10 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
 
         mutual_info_score = metrics.MutualInfo(self.cm).get()
 
-        entropy_true = entropy_pred = 0.0
+        entropy_true = _entropy(cm=self.cm, y_true=True)
+        entropy_pred = _entropy(cm=self.cm, y_true=False)
 
-        for i in self.cm.classes:
-
-            try:
-                entropy_true -= (
-                    self.cm.sum_row[i]
-                    / self.cm.n_samples
-                    * math.log(self.cm.sum_row[i] / self.cm.n_samples)
-                )
-            except ValueError:
-                pass
-
-            try:
-                entropy_pred -= (
-                    self.cm.sum_col[i]
-                    / self.cm.n_samples
-                    * math.log(self.cm.sum_col[i] / self.cm.n_samples)
-                )
-            except ValueError:
-                pass
-
-        normalizer = self._generalized_average(
-            entropy_true, entropy_pred, self.average_method
-        )
+        normalizer = self._generalized_average(entropy_true, entropy_pred)
 
         normalizer = max(normalizer, np.finfo("float64").eps)
 
@@ -281,10 +251,10 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
     ...     print(metric.update(yt, yp).get())
     1.0
     1.0
-    4.65126289374677e-16
-    6.063411283908661e-16
-    0.1058917157629296
-    0.2987924581708901
+    4.651262893746769e-16
+    4.715986554151182e-16
+    0.105891
+    0.298792
 
     >>> metric
     AdjustedMutualInfo: 0.298792
@@ -294,37 +264,34 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
     [^1]: Wikipedia contributors. (2021, March 17). Mutual information.
           In Wikipedia, The Free Encyclopedia,
           from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
-    [^2]: Andrew Rosenberg and Julia Hirschberg (2007).
-          V-Measure: A conditional entropy-based external cluster evaluation measure.
-          Proceedings of the 2007 Joing Conference on Empirical Methods in Natural Language
-          Processing and Computational Natural Language Learning, pp. 410 - 420,
-          Prague, June 2007.
     """
+    _AVERAGE_MIN = 'min'
+    _AVERAGE_MAX = 'max'
+    _AVERAGE_GEOMETRIC = 'geometric'
+    _AVERAGE_ARITHMETIC = 'arithmetic'
+    _VALID_AVERAGE = [_AVERAGE_MIN, _AVERAGE_MAX, _AVERAGE_GEOMETRIC, _AVERAGE_ARITHMETIC]
 
     def __init__(self, cm=None, average_method="arithmetic"):
         super().__init__(cm)
         self.average_method = average_method
+        if average_method not in self._VALID_AVERAGE:
+            raise ValueError(
+                f"Valid 'average_methods' are {self._VALID_AVERAGE}, "
+                f"but {average_method} was passed."
+            )
+        self.average_method = average_method
+        if average_method == self._AVERAGE_MIN:
+            self._generalized_average = _average_min
+        elif average_method == self._AVERAGE_MAX:
+            self._generalized_average = _average_max
+        elif average_method == self._AVERAGE_GEOMETRIC:
+            self._generalized_average = _average_geometric
+        else:  # average_method == self._AVERAGE_ARITHMETIC
+            self._generalized_average = _average_arithmetic
 
     @property
     def works_with_weights(self):
         return False
-
-    @staticmethod
-    def _generalized_average(u, v, average_method):
-
-        if average_method == "min":
-            return min(u, v)
-        elif average_method == "max":
-            return max(u, v)
-        elif average_method == "geometric":
-            return math.sqrt(u * v)
-        elif average_method == "arithmetic":
-            return (u + v) / 2
-        else:
-            raise ValueError(
-                "'average_method' must be either 'min', 'max', "
-                "'geometric', or 'arithmetic' "
-            )
 
     def get(self):
 
@@ -338,31 +305,10 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
         expected_mutual_info_score = metrics.expected_mutual_info(self.cm)
 
-        entropy_true = entropy_pred = 0.0
+        entropy_true = _entropy(cm=self.cm, y_true=True)
+        entropy_pred = _entropy(cm=self.cm, y_true=False)
 
-        for i in self.cm.classes:
-
-            try:
-                entropy_true -= (
-                    self.cm.sum_row[i]
-                    / self.cm.n_samples
-                    * math.log(self.cm.sum_row[i] / self.cm.n_samples)
-                )
-            except (KeyError, ValueError):
-                pass
-
-            try:
-                entropy_pred -= (
-                    self.cm.sum_col[i]
-                    / self.cm.n_samples
-                    * math.log(self.cm.sum_col[i] / self.cm.n_samples)
-                )
-            except (KeyError, ValueError):
-                pass
-
-        normalizer = self._generalized_average(
-            entropy_true, entropy_pred, self.average_method
-        )
+        normalizer = self._generalized_average(entropy_true, entropy_pred)
 
         denominator = normalizer - expected_mutual_info_score
 
@@ -376,3 +322,34 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
         ) / denominator
 
         return adjusted_mutual_info_score
+
+def _entropy(cm, y_true):
+    n_samples = cm.n_samples
+    if n_samples == 0:
+        return 1.
+
+    if y_true:
+        values = cm.sum_row
+    else:
+        values = cm.sum_col
+    entropy = 0.
+    for i in cm.classes:
+        if i in values and values[i] > 0:
+            entropy -= (values[i] / n_samples) * (np.log(values[i]) - np.log(n_samples))
+    return entropy
+
+
+def _average_min(u, v):
+    return min(u, v)
+
+
+def _average_max(u, v):
+    return max(u, v)
+
+
+def _average_geometric(u, v):
+    return math.sqrt(u * v)
+
+
+def _average_arithmetic(u, v):
+    return (u + v) / 2
