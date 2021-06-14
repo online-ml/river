@@ -258,8 +258,8 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
     ...     print(metric.update(yt, yp).get())
     1.0
     1.0
-    4.651262893746769e-16
-    4.715986554151182e-16
+    0.0
+    0.0
     0.105891
     0.298792
 
