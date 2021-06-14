@@ -90,10 +90,12 @@ class MutualInfo(metrics.MultiClassMetric):
             for j in self.cm.classes:
                 try:
                     temp = (
-                        self.cm[i][j] / self.cm.n_samples
-                        * (math.log(self.cm.n_samples * self.cm[i][j])
-                           - math.log(self.cm.sum_row[i] * self.cm.sum_col[j])
-                           )
+                        self.cm[i][j]
+                        / self.cm.n_samples
+                        * (
+                            math.log(self.cm.n_samples * self.cm[i][j])
+                            - math.log(self.cm.sum_row[i] * self.cm.sum_col[j])
+                        )
                     )
                 except (ValueError, ZeroDivisionError):
                     continue
@@ -158,11 +160,16 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
           In Wikipedia, The Free Encyclopedia,
           from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
     """
-    _AVERAGE_MIN = 'min'
-    _AVERAGE_MAX = 'max'
-    _AVERAGE_GEOMETRIC = 'geometric'
-    _AVERAGE_ARITHMETIC = 'arithmetic'
-    _VALID_AVERAGE = [_AVERAGE_MIN, _AVERAGE_MAX, _AVERAGE_GEOMETRIC, _AVERAGE_ARITHMETIC]
+    _AVERAGE_MIN = "min"
+    _AVERAGE_MAX = "max"
+    _AVERAGE_GEOMETRIC = "geometric"
+    _AVERAGE_ARITHMETIC = "arithmetic"
+    _VALID_AVERAGE = [
+        _AVERAGE_MIN,
+        _AVERAGE_MAX,
+        _AVERAGE_GEOMETRIC,
+        _AVERAGE_ARITHMETIC,
+    ]
 
     def __init__(self, cm=None, average_method="arithmetic"):
         super().__init__(cm)
@@ -178,7 +185,7 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
             self._generalized_average = _average_max
         elif average_method == self._AVERAGE_GEOMETRIC:
             self._generalized_average = _average_geometric
-        else:    # average_method == self._AVERAGE_ARITHMETIC
+        else:  # average_method == self._AVERAGE_ARITHMETIC
             self._generalized_average = _average_arithmetic
 
     @property
@@ -265,11 +272,16 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
           In Wikipedia, The Free Encyclopedia,
           from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
     """
-    _AVERAGE_MIN = 'min'
-    _AVERAGE_MAX = 'max'
-    _AVERAGE_GEOMETRIC = 'geometric'
-    _AVERAGE_ARITHMETIC = 'arithmetic'
-    _VALID_AVERAGE = [_AVERAGE_MIN, _AVERAGE_MAX, _AVERAGE_GEOMETRIC, _AVERAGE_ARITHMETIC]
+    _AVERAGE_MIN = "min"
+    _AVERAGE_MAX = "max"
+    _AVERAGE_GEOMETRIC = "geometric"
+    _AVERAGE_ARITHMETIC = "arithmetic"
+    _VALID_AVERAGE = [
+        _AVERAGE_MIN,
+        _AVERAGE_MAX,
+        _AVERAGE_GEOMETRIC,
+        _AVERAGE_ARITHMETIC,
+    ]
 
     def __init__(self, cm=None, average_method="arithmetic"):
         super().__init__(cm)
@@ -323,16 +335,17 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
         return adjusted_mutual_info_score
 
+
 def _entropy(cm, y_true):
     n_samples = cm.n_samples
     if n_samples == 0:
-        return 1.
+        return 1.0
 
     if y_true:
         values = cm.sum_row
     else:
         values = cm.sum_col
-    entropy = 0.
+    entropy = 0.0
     for i in cm.classes:
         if i in values and values[i] > 0:
             entropy -= (values[i] / n_samples) * (np.log(values[i]) - np.log(n_samples))
