@@ -1,5 +1,4 @@
 import collections
-import copy
 import functools
 import io
 import math
@@ -58,7 +57,7 @@ class AdaptiveRegressor(base.Regressor):
             return self.model_predictor.predict_one(x)
 
 
-class RegRule(HoeffdingRule, base.Regressor):
+class RegRule(HoeffdingRule, base.Regressor, base.AnomalyDetector):
     def __init__(
         self, template_splitter, split_criterion, pred_model, drift_detector,
     ):
@@ -95,7 +94,7 @@ class RegRule(HoeffdingRule, base.Regressor):
 
         return in_drift
 
-    def anomaly_score(self, x):
+    def score_one(self, x) -> float:
         """Rule anomaly score.
 
         The more negative the score, the more anomalous is the instance regarding the subspace
@@ -107,11 +106,11 @@ class RegRule(HoeffdingRule, base.Regressor):
         Parameters
         ----------
         x
-            The input instance.
+            A dictionary of features.
 
         Returns
         -------
-        The anomaly score.
+        An anomaly score. The more negative the score, the more anomalous is the instance.
 
 
         """
@@ -231,13 +230,13 @@ class AMRules(base.Regressor):
     >>> from river import evaluate
     >>> from river import metrics
     >>> from river import preprocessing
-    >>> from river import rule
+    >>> from river import rules
 
     >>> dataset = datasets.TrumpApproval()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     rule.AMRules(
+    ...     rules.AMRules(
     ...         delta=0.00001,
     ...         n_min=50,
     ...         drift_detector=drift.ADWIN()
@@ -320,17 +319,17 @@ class AMRules(base.Regressor):
         if self.pred_type == self._PRED_MEAN:
             predictor = MeanRegressor()
         elif self.pred_type == self._PRED_MODEL:
-            predictor = copy.deepcopy(self.pred_model)
+            predictor = self.pred_model.clone()
         else:  # adaptive predictor
             predictor = AdaptiveRegressor(
-                model_predictor=copy.deepcopy(self.pred_model), alpha=self.alpha,
+                model_predictor=self.pred_model.clone(), alpha=self.alpha,
             )
 
         return RegRule(
             template_splitter=self.splitter,
             split_criterion=VarianceRatioSplitCriterion(self.min_samples_split),
             pred_model=predictor,
-            drift_detector=copy.deepcopy(self.drift_detector),
+            drift_detector=self.drift_detector.clone(),
         )
 
     def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1) -> "AMRules":
@@ -342,7 +341,7 @@ class AMRules(base.Regressor):
                 continue
 
             if rule.total_weight > self.m_min:
-                a_score = rule.anomaly_score(x)
+                a_score = rule.score_one(x)
 
                 # Anomaly detected skip training
                 if a_score < self.anomaly_threshold:
@@ -430,13 +429,13 @@ class AMRules(base.Regressor):
         Examples
         --------
         >>> from river import drift
-        >>> from river import rule
+        >>> from river import rules
         >>> from river import tree
         >>> from river import synth
 
         >>> dataset = synth.Friedman(seed=42).take(1001)
 
-        >>> model = rule.AMRules(
+        >>> model = rules.AMRules(
         ...     n_min=50,
         ...     delta=0.1,
         ...     drift_detector=drift.ADWIN(),
@@ -457,13 +456,13 @@ class AMRules(base.Regressor):
 
         for rule in self._rules.values():
             if rule.covers(x):
-                var.update(rule.anomaly_score(x))
+                var.update(rule.score_one(x))
 
         if var.mean.n > 0:
             return var.mean.get(), math.sqrt(var.get()), var.mean.n / len(self._rules)
 
         # No rule covers the instance. Use the default rule
-        return self._default_rule.anomaly_score(x), 0.0, 0
+        return self._default_rule.score_one(x), 0.0, 0
 
     def debug_one(self, x) -> str:
         """Return an explanation of how `x` is predicted
@@ -480,13 +479,13 @@ class AMRules(base.Regressor):
         Examples
         --------
         >>> from river import drift
-        >>> from river import rule
+        >>> from river import rules
         >>> from river import tree
         >>> from river import synth
 
         >>> dataset = synth.Friedman(seed=42).take(1001)
 
-        >>> model = rule.AMRules(
+        >>> model = rules.AMRules(
         ...     n_min=50,
         ...     delta=0.1,
         ...     drift_detector=drift.ADWIN(),

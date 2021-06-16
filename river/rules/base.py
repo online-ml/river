@@ -4,7 +4,7 @@ import math
 import numbers
 import typing
 
-from river import base
+from river import base, tree
 
 
 class Literal(base.Base):
@@ -65,7 +65,12 @@ class NominalLiteral(Literal):
 
 
 class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
-    def __init__(self, template_splitter, split_criterion, **attributes):
+    def __init__(
+        self,
+        template_splitter: tree.splitter.base_splitter.Splitter,
+        split_criterion: tree.split_criterion.base_split_criterion.SplitCriterion,
+        **attributes,
+    ):
         self.template_splitter = template_splitter
         self.split_criterion = split_criterion
         self.literals = []

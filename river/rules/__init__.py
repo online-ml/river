@@ -1,4 +1,4 @@
-"""Decision rule-based algorithms."""
+"""Decision rules-based algorithms."""
 
 from .amrules import AMRules
 
