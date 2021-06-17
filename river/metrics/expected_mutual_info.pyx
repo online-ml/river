@@ -74,6 +74,9 @@ def expected_mutual_info(confusion_matrix):
     a = np.array([confusion_matrix.sum_row[key] for key in confusion_matrix.classes if confusion_matrix.sum_row[key]]).astype(np.int32)
     b = np.array([confusion_matrix.sum_col[key] for key in confusion_matrix.classes if confusion_matrix.sum_col[key]]).astype(np.int32)
 
+    # we do not take into consideration the order of classes in numpy arrays constructed below,
+    # as they will be consistent with each other, which is enough
+
     cdef int val
     R = len([val for val in confusion_matrix.sum_row.values() if val != 0])
     C = len([val for val in confusion_matrix.sum_col.values() if val != 0])

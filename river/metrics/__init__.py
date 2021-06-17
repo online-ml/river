@@ -8,6 +8,8 @@ predictive methods over time.
 from ._performance_evaluator import _ClassificationReport  # noqa: F401
 from ._performance_evaluator import _MLClassificationReport  # noqa: F401
 from ._performance_evaluator import _MTRegressionReport  # noqa: F401
+from ._performance_evaluator import _ClusteringReport  # noqa: F401
+from ._performance_evaluator import _RollingClusteringReport  # noqa: F401
 from ._performance_evaluator import _RegressionReport  # noqa: F401
 from ._performance_evaluator import _RollingClassificationReport  # noqa: F401
 from ._performance_evaluator import _RollingMLClassificationReport  # noqa: F401
@@ -86,6 +88,7 @@ __all__ = [
     "Completeness",
     "ClassificationMetric",
     "ClassificationReport",
+    "ClusteringReport",
     "CohenKappa",
     "ConfusionMatrix",
     "CrossEntropy",
@@ -140,6 +143,7 @@ __all__ = [
     "RMSLE",
     "ROCAUC",
     "Rolling",
+    "RollingClusteringReport",
     "R2",
     "Precision",
     "PrevalenceThreshold",
