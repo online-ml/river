@@ -429,24 +429,27 @@ class _ClusteringReport:
     ...     report.add_result(y_true[i], y_pred[i])
 
     >>> report
-    n_classes:			         3
-    n_samples:			        25
+    Clustering report
+    <BLANKLINE>
+    n_classes:                       3
+    n_samples:                      25
     PairConfusionMatrix:
     {0: defaultdict(<class 'int'>, {0: 256.0, 1: 152.0}), 1: defaultdict(<class 'int'>, {0: 110.0, 1: 82.0})}
     <BLANKLINE>
-    MatthewsCorrCoef:		    0.2872
-    Completeness:			    0.1505
-    Homogeneity:			    0.1345
-    VBeta:					    0.1420
-    Q0:						1.7832
-    Q2:						0.2586
-    PrevalenceThreshold:	    0.4027
-    MutualInfo:				0.1448
-    NormalizedMutualInfo:	    0.1420
-    AdjustedMutualInfo:		0.0509
-    Rand:					    0.5633
-    AdjustedRand:			    0.0515
-    VariationInfo:			    2.5240
+    MatthewsCorrCoef:		0.2872
+    Completeness:	        0.1505
+    Homogeneity:                0.1345
+    VBeta:                      0.1420
+    Q0:                         1.7832
+    Q2:                         0.2586
+    PrevalenceThreshold:        0.4027
+    MutualInfo:                 0.1448
+    NormalizedMutualInfo:       0.1420
+    AdjustedMutualInfo:         0.0509
+    Rand:                       0.5633
+    AdjustedRand:               0.0515
+    VariationInfo:              2.5240
+    <BLANKLINE>
 
     """
 
@@ -539,8 +542,8 @@ class _ClusteringReport:
         return "".join(
             [
                 "Clustering report\n\n",
-                f"n_classes:\t\t\t{self.n_classes:>10}\n",
-                f"n_samples:\t\t\t{self.n_samples:>10}\n",
+                f"n_classes:\t\t\t\t{self.n_classes:>10}\n",
+                f"n_samples:\t\t\t\t{self.n_samples:>10}\n",
                 "PairConfusionMatrix:",
                 "\n",
                 f"{self.pair_cm.get()}",
@@ -557,12 +560,12 @@ class _ClusteringReport:
                 f"Completeness:\t\t\t{self.completeness.get():{self._fmt}}\n",
                 f"Homogeneity:\t\t\t{self.homogeneity.get():{self._fmt}}\n",
                 f"VBeta:\t\t\t\t\t{self.vbeta.get():{self._fmt}}\n",
-                f"Q0:\t\t\t\t\t{self.q0.get():{self._fmt}}\n",
-                f"Q2:\t\t\t\t\t{self.q2.get():{self._fmt}}\n",
+                f"Q0:\t\t\t\t\t\t{self.q0.get():{self._fmt}}\n",
+                f"Q2:\t\t\t\t\t\t{self.q2.get():{self._fmt}}\n",
                 f"PrevalenceThreshold:\t{self.pt.get():{self._fmt}}\n",
-                f"MutualInfo:\t\t\t{self.mutual_info.get():{self._fmt}}\n",
+                f"MutualInfo:\t\t\t\t{self.mutual_info.get():{self._fmt}}\n",
                 f"NormalizedMutualInfo:\t{self.normalized_mutual_info.get():{self._fmt}}\n",
-                f"AdjustedMutualInfo:\t{self.adjusted_mutual_info.get():{self._fmt}}\n",
+                f"AdjustedMutualInfo:\t\t{self.adjusted_mutual_info.get():{self._fmt}}\n",
                 f"Rand:\t\t\t\t\t{self.rand.get():{self._fmt}}\n",
                 f"AdjustedRand:\t\t\t{self.adjusted_rand.get():{self._fmt}}\n",
                 f"VariationInfo:\t\t\t{self.variation_info.get():{self._fmt}}\n",
@@ -600,24 +603,25 @@ class _RollingClusteringReport(_ClusteringReport):
     >>> report
     Rolling Clustering report
     <BLANKLINE>
-    n_classes:			         3
-    n_samples:			        20
+    n_classes:                      3
+    n_samples:                     20
     PairConfusionMatrix:
     {0: defaultdict(<class 'int'>, {0: 154.0, 1: 64.0}), 1: defaultdict(<class 'int'>, {0: 92.0, 1: 70.0})}
     <BLANKLINE>
-    MatthewsCorrCoef:		    0.2116
-    Completeness:			    0.2463
-    Homogeneity:			    0.2908
-    VBeta:					    0.2667
-    Q0:						1.3813
-    Q2:						0.3365
-    PrevalenceThreshold:	    0.4580
-    MutualInfo:				0.2488
-    NormalizedMutualInfo:	    0.2667
-    AdjustedMutualInfo:		0.1646
-    Rand:					    0.5895
-    AdjustedRand:			    0.1417
-
+    MatthewsCorrCoef:           0.2116
+    Completeness:               0.2463
+    Homogeneity:                0.2908
+    VBeta:                      0.2667
+    Q0:                         1.3813
+    Q2:                         0.3365
+    PrevalenceThreshold:        0.4580
+    MutualInfo:                 0.2488
+    NormalizedMutualInfo:       0.2667
+    AdjustedMutualInfo:         0.1646
+    Rand:                       0.5895
+    AdjustedRand:               0.1417
+    VariationInfo:              1.9742
+    <BLANKLINE>
     """
 
     def __init__(self, cm: "metrics.ConfusionMatrix" = None, window_size=200):
@@ -637,8 +641,8 @@ class _RollingClusteringReport(_ClusteringReport):
         return "".join(
             [
                 "Rolling Clustering report\n\n",
-                f"n_classes:\t\t\t{self.n_classes:>10}\n",
-                f"n_samples:\t\t\t{self.n_samples:>10}\n",
+                f"n_classes:\t\t\t\t{self.n_classes:>10}\n",
+                f"n_samples:\t\t\t\t{self.n_samples:>10}\n",
                 "PairConfusionMatrix:",
                 "\n",
                 f"{self.pair_cm.get()}",
