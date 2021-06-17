@@ -60,7 +60,7 @@ class NominalSplitterReg(Splitter):
     ):
         current_best = BranchFactory()
         ordered_feature_values = sorted(list(self._statistics.keys()))
-        if not binary_only:
+        if not binary_only and len(self._statistics) > 2:
             post_split_dist = [self._statistics[k] for k in ordered_feature_values]
 
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
