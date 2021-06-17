@@ -436,8 +436,8 @@ class _ClusteringReport:
     PairConfusionMatrix:
     {0: defaultdict(<class 'int'>, {0: 256.0, 1: 152.0}), 1: defaultdict(<class 'int'>, {0: 110.0, 1: 82.0})}
     <BLANKLINE>
-    MatthewsCorrCoef:		0.2872
-    Completeness:	        0.1505
+    MatthewsCorrCoef:		    0.2872
+    Completeness:	            0.1505
     Homogeneity:                0.1345
     VBeta:                      0.1420
     Q0:                         1.7832
