@@ -432,6 +432,7 @@ class _ClusteringReport:
     Clustering report
     <BLANKLINE>
     n_classes:                       3
+    n_clusters:                      3
     n_samples:                      25
     PairConfusionMatrix:
     {0: defaultdict(<class 'int'>, {0: 256.0, 1: 152.0}), 1: defaultdict(<class 'int'>, {0: 110.0, 1: 82.0})}
@@ -526,7 +527,11 @@ class _ClusteringReport:
 
     @property
     def n_classes(self):
-        return self.cm.n_classes
+        return len([i for i in self.cm.sum_row.values() if i != 0])
+
+    @property
+    def n_clusters(self):
+        return len([i for i in self.cm.sum_col.values() if i != 0])
 
     @property
     def confusion_matrix(self):
@@ -543,6 +548,7 @@ class _ClusteringReport:
             [
                 "Clustering report\n\n",
                 f"n_classes:\t\t\t\t{self.n_classes:>10}\n",
+                f"n_clusters:\t\t\t\t{self.n_clusters:>10}\n",
                 f"n_samples:\t\t\t\t{self.n_samples:>10}\n",
                 "PairConfusionMatrix:",
                 "\n",
@@ -603,8 +609,9 @@ class _RollingClusteringReport(_ClusteringReport):
     >>> report
     Rolling Clustering report
     <BLANKLINE>
-    n_classes:                      3
-    n_samples:                     20
+    n_clusters:                      3
+    n_classes:                       3
+    n_samples:                      20
     PairConfusionMatrix:
     {0: defaultdict(<class 'int'>, {0: 154.0, 1: 64.0}), 1: defaultdict(<class 'int'>, {0: 92.0, 1: 70.0})}
     <BLANKLINE>
@@ -642,6 +649,7 @@ class _RollingClusteringReport(_ClusteringReport):
             [
                 "Rolling Clustering report\n\n",
                 f"n_classes:\t\t\t\t{self.n_classes:>10}\n",
+                f"n_clusters:\t\t\t\t{self.n_clusters:>10}\n",
                 f"n_samples:\t\t\t\t{self.n_samples:>10}\n",
                 "PairConfusionMatrix:",
                 "\n",
