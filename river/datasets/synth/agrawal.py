@@ -36,7 +36,6 @@ class Agrawal(base.SyntheticDataset):
 
     * `loan` | total loan amount | uniformly distributed from 0 to 500k
 
-
     Parameters
     ----------
     classification_function
@@ -59,8 +58,28 @@ class Agrawal(base.SyntheticDataset):
 
     >>> from river import synth
 
-    >>> dataset = synth.Agrawal(classification_function=0,
-    ...                         seed=42)
+    >>> dataset = synth.Agrawal(
+    ...     classification_function=0,
+    ...     seed=42
+    ... )
+
+    >>> dataset
+    Synthetic data generator
+    <BLANKLINE>
+        Name  Agrawal
+        Task  Binary classification
+     Samples  ∞
+    Features  9
+     Outputs  1
+     Classes  2
+      Sparse  False
+    <BLANKLINE>
+    Configuration
+    -------------
+    classification_function  0
+                       seed  42
+            balance_classes  False
+               perturbation  0.0
 
     >>> for x, y in dataset.take(5):
     ...     print(list(x.values()), y)

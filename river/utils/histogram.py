@@ -147,7 +147,7 @@ class Histogram(collections.UserList):
             # x is past the right-most bin
             self.append(b)
         else:
-            # Inrivernt the bin counter if x is part of the ith bin
+            # Increment the bin counter if x is part of the ith bin
             if x >= self[i].left:
                 self[i].count += 1
             # Insert the bin if it is between bin i-1 and bin i

@@ -6,9 +6,8 @@ def configuration(parent_package="", top_path=None):
 
     # submodules which do not have their own setup.py
     config.add_subpackage("splitter")
-    config.add_subpackage("_attribute_test")
-    config.add_subpackage("_nodes")
-    config.add_subpackage("_split_criterion")
+    config.add_subpackage("nodes")
+    config.add_subpackage("split_criterion")
 
     return config
 

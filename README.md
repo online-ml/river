@@ -1,3 +1,5 @@
+</br>
+
 <p align="center">
   <img height="80px" src="docs/img/logo.svg" alt="river_logo">
 </p>
@@ -8,6 +10,10 @@
   <!-- Tests -->
   <a href="https://github.com/online-ml/river/actions?query=workflow%3Atests+branch%3Amaster">
     <img src="https://github.com/online-ml/river/workflows/tests/badge.svg?branch=master" alt="tests">
+  </a>
+  <!-- Code coverage -->
+  <a href="https://codecov.io/gh/online-ml/river">
+    <img src="https://codecov.io/gh/online-ml/river/branch/master/graph/badge.svg?token=luK6eFoMa9"/>
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
@@ -23,7 +29,7 @@
   </a>
   <!-- PePy -->
   <a href="https://pepy.tech/project/river">
-    <img src="https://img.shields.io/badge/dynamic/json?style=flat-square&maxAge=86400&label=downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Friver" alt="pepy">
+    <img src="https://static.pepy.tech/badge/river?style=flat-square" alt="pepy">
   </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
@@ -33,25 +39,9 @@
 
 </br>
 
-**In a nutshell**
-
 <p align="center">
   River is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. It is the result of a merger between <a href="https://github.com/MaxHalford/creme">creme</a> and <a href="https://github.com/scikit-multiflow/scikit-multiflow">scikit-multiflow</a>. River's ambition is to be the go-to library for doing machine learning on streaming data.
 </p>
-
-**Table of contents**
-
-- [⚡️ Quickstart](#️-quickstart)
-- [🛠 Installation](#-installation)
-- [🧠 Philosophy](#-philosophy)
-- [🔥 Features](#-features)
-- [🔗 Useful links](#-useful-links)
-- [👁️ Media](#️-media)
-- [👍 Contributing](#-contributing)
-- [❤️ They've used us](#️-theyve-used-us)
-- [🤝 Affiliations](#-affiliations)
-- [💬 Citation](#-citation)
-- [📝 License](#-license)
 
 ## ⚡️ Quickstart
 
@@ -113,8 +103,6 @@ River is intended to work with **Python 3.6 or above**. Installation can be done
 pip install river
 ```
 
-⚠️ However, we are currently [waiting](https://github.com/pypa/pypi-support/issues/651) for the name "river" to be released on PyPI.
-
 There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows, which means that you most probably won't have to build River from source.
 
 You can install the latest development version from GitHub as so:
@@ -168,19 +156,19 @@ Here are some benefits of using River (and online machine learning in general):
 
 ## 👁️ Media
 
-- PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/river-pydata/), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
-- [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/river-tds/)
-- [Machine learning for streaming data with creme](https://towardsdatascience.com/machine-learning-for-streaming-data-with-river-dacf5fb469df)
+- PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
+- [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/creme-tds)
+- [Machine learning for streaming data with creme](https://towardsdatascience.com/machine-learning-for-streaming-data-with-creme-dacf5fb469df)
 - [Hong Kong Data Science Meetup presentation](https://maxhalford.github.io/slides/hkml2020.pdf)
 
 ## 👍 Contributing
 
-Feel free to contribute in any way you like, we're always open to new ideas and approaches. 
+Feel free to contribute in any way you like, we're always open to new ideas and approaches.
 
 There are three ways for users to get involved:
 
 - [Issue tracker](https://github.com/online-ml/river/issues): this place is meant to report bugs, request for minor features, or small improvements. Issues should be short-lived and solved as fast as possible.
-- [Discussions](https://github.com/online-ml/river/discussions): you can ask for new features, submit your questions and get help, propose new ideas, or even show the community what you are achieving with River! If you have a new technique or want to port a new functionality to River, this is the place to discuss.  
+- [Discussions](https://github.com/online-ml/river/discussions): you can ask for new features, submit your questions and get help, propose new ideas, or even show the community what you are achieving with River! If you have a new technique or want to port a new functionality to River, this is the place to discuss.
 - [Roadmap](https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1): you can check what we are doing, what are the next planned milestones for River, and look for cool ideas that still need someone to make them become a reality!
 
 Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).

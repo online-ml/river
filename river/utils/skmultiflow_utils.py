@@ -63,21 +63,42 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=
     if factor is None:
         factor = sum(dictionary.values())
 
-    if raise_error and (factor == 0 or math.isnan(factor)):
-        raise ValueError(f"Can not normalize, normalization factor is {factor}")
+    if not inplace:
+        dictionary = copy.deepcopy(dictionary)
+
+    if factor == 0 or math.isnan(factor):
+        # Can not normalize
+        if raise_error:
+            raise ValueError(f"Can not normalize, normalization factor is {factor}")
+        # return gracefully
+        return dictionary
+
+    scale_values_in_dict(dictionary, 1 / factor, inplace=True)
+
+    return dictionary
+
+
+def scale_values_in_dict(dictionary, multiplier, inplace=True):
+    """Scale the values in a dictionary.
+
+        For each element in the dictionary, applies `value * multiplier`.
+
+        Parameters
+        ----------
+        dictionary
+            Dictionary to scale.
+        multiplier
+            Scaling value.
+        inplace
+            If True, perform operation in-place
+
+        """
 
     if not inplace:
         dictionary = copy.deepcopy(dictionary)
 
-    if math.isnan(factor) or factor == 0:
-        # Can not normalize, return gracefully
-        return dictionary
-
-    for (
-        key,
-        value,
-    ) in dictionary.items():  # loop over the keys, values in the dictionary
-        dictionary[key] = value / factor
+    for key, value in dictionary.items():
+        dictionary[key] = value * multiplier
 
     return dictionary
 

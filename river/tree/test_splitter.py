@@ -23,7 +23,7 @@ def test_class_splitter(dataset, splitter):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model.depth > 0
+    assert model.height > 0
 
 
 @pytest.mark.parametrize(
@@ -32,6 +32,7 @@ def test_class_splitter(dataset, splitter):
         (get_regression_data(), tree.splitter.EBSTSplitter()),
         (get_regression_data(), tree.splitter.TEBSTSplitter()),
         (get_regression_data(), tree.splitter.QOSplitter()),
+        (get_regression_data(), tree.splitter.QOSplitter(allow_multiway_splits=True)),
     ],
 )
 def test_reg_splitter(dataset, splitter):
@@ -42,4 +43,25 @@ def test_reg_splitter(dataset, splitter):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model.depth > 0
+    assert model.height > 0
+
+
+def test_nominal_reg_splitter():
+    dataset = synth.Mv(seed=42).take(200)
+    model = tree.HoeffdingTreeRegressor(grace_period=10, leaf_prediction="mean")
+
+    for x, y in dataset:
+        model.learn_one(x, y)
+
+    assert model.height > 0
+
+    # Evaluates nominal binary splits
+    dataset = synth.Mv(seed=42).take(200)
+    model = tree.HoeffdingTreeRegressor(
+        grace_period=10, leaf_prediction="mean", binary_split=True
+    )
+
+    for x, y in dataset:
+        model.learn_one(x, y)
+
+    assert model.height > 0

@@ -37,6 +37,7 @@ def iter_csv(
     converters: dict = None,
     parse_dates: dict = None,
     drop: typing.List[str] = None,
+    drop_nones=False,
     fraction=1.0,
     compression="infer",
     seed: int = None,
@@ -64,6 +65,8 @@ def iter_csv(
         method.
     drop
         Fields to ignore.
+    drop_nones
+        Whether or not to drop fields where the value is a `None`.
     fraction
         Sampling fraction.
     compression
@@ -153,6 +156,12 @@ def iter_csv(
         if converters is not None:
             for i, t in converters.items():
                 x[i] = t(x[i])
+
+        # Drop Nones
+        if drop_nones:
+            for i in list(x):
+                if x[i] is None:
+                    del x[i]
 
         # Parse the dates
         if parse_dates is not None:

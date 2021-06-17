@@ -1,3 +1,4 @@
+import functools
 import importlib
 import inspect
 import itertools
@@ -18,7 +19,7 @@ def _iter_datasets():
     for _, dataset in inspect.getmembers(
         importlib.import_module("river.datasets"), inspect.isclass
     ):
-        if dataset.__class__.__name__ != "Insects":
+        if not issubclass(dataset, datasets.Insects):
             yield dataset()
 
 
@@ -34,23 +35,6 @@ def _iter_datasets():
 def test_remote_url(dataset):
     with request.urlopen(dataset.url) as r:
         assert r.status == 200
-
-
-@pytest.mark.parametrize(
-    "dataset",
-    [
-        pytest.param(dataset, id=dataset.__class__.__name__)
-        for dataset in _iter_datasets()
-        if isinstance(dataset, base.RemoteDataset)
-    ],
-)
-@pytest.mark.datasets
-def test_remote_size(dataset):
-    if dataset.path.is_file():
-        size = dataset.path.stat().st_size
-    else:
-        size = sum(f.stat().st_size for f in dataset.path.glob("**/*") if f.is_file())
-    assert size == dataset.size
 
 
 @pytest.mark.parametrize(
@@ -83,6 +67,13 @@ def test_repr(dataset):
 
 
 def _iter_synth_datasets():
+
+    for variant in range(10):
+        dataset = functools.partial(
+            datasets.synth.Agrawal, classification_function=variant
+        )
+        functools.update_wrapper(dataset, datasets.synth.Agrawal)
+        yield dataset
 
     synth = importlib.import_module("river.datasets.synth")
     for name, dataset in inspect.getmembers(synth, inspect.isclass):

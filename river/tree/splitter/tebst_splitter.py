@@ -25,7 +25,7 @@ class TEBSTSplitter(EBSTSplitter):
             att_val = round(att_val, self.digits)
             super().update(att_val, target_val, sample_weight)
         except TypeError:  # feature value is None
-            return
+            pass
 
     def cond_proba(self, att_val, target_val):
         """Not implemented in regression splitters."""
