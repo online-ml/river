@@ -609,9 +609,10 @@ class _RollingClusteringReport(_ClusteringReport):
     >>> report
     Rolling Clustering report
     <BLANKLINE>
-    n_clusters:                      3
     n_classes:                       3
+    n_clusters:                      3
     n_samples:                      20
+    window_size:                    20
     PairConfusionMatrix:
     {0: defaultdict(<class 'int'>, {0: 154.0, 1: 64.0}), 1: defaultdict(<class 'int'>, {0: 92.0, 1: 70.0})}
     <BLANKLINE>
@@ -629,6 +630,7 @@ class _RollingClusteringReport(_ClusteringReport):
     AdjustedRand:               0.1417
     VariationInfo:              1.9742
     <BLANKLINE>
+
     """
 
     def __init__(self, cm: "metrics.ConfusionMatrix" = None, window_size=200):
@@ -651,10 +653,9 @@ class _RollingClusteringReport(_ClusteringReport):
                 f"n_classes:\t\t\t\t{self.n_classes:>10}\n",
                 f"n_clusters:\t\t\t\t{self.n_clusters:>10}\n",
                 f"n_samples:\t\t\t\t{self.n_samples:>10}\n",
-                "PairConfusionMatrix:",
-                "\n",
-                f"{self.pair_cm.get()}",
-                "\n",
+                f"window_size:\t\t\t{self.window_size:>10}\n",
+                "PairConfusionMatrix:\n",
+                f"{self.pair_cm.get()}\n",
                 "\n",
                 self._info(),
             ]
