@@ -5,7 +5,7 @@ import functools
 from river import utils
 from river.utils.histogram import Bin  # noqa
 
-from .._attribute_test import NumericBinaryTest, SplitSuggestion
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -35,8 +35,6 @@ class HistogramSplitter(Splitter):
         for _ in range(int(sample_weight)):
             self.hists[target_val].update(att_val)
 
-        return self
-
     def cond_proba(self, att_val, target_val):
         if target_val not in self.hists:
             return 0.0
@@ -62,14 +60,14 @@ class HistogramSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        best_suggestion = None
+        best_suggestion = BranchFactory()
 
         low = min(h[0].right for h in self.hists.values())
         high = min(h[-1].right for h in self.hists.values())
 
         # If only one single value has been observed, then no split can be proposed
         if low >= high:
-            return
+            return best_suggestion
 
         n_thresholds = min(self.n_splits, max(map(len, self.hists.values())) - 1)
 
@@ -84,21 +82,16 @@ class HistogramSplitter(Splitter):
 
             for y in pre_split_dist:
                 if y in cdfs:
-                    p_xy = next(cdfs[y])  # P(x < t | y)
+                    p_xy = next(cdfs[y])  # P(x <= t | y)
                     p_y = pre_split_dist[y] / total_weight  # P(y)
-                    l_dist[y] = total_weight * p_y * p_xy  # P(y | x < t)
-                    r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x >= t)
+                    l_dist[y] = total_weight * p_y * p_xy  # P(y | x <= t)
+                    r_dist[y] = total_weight * p_y * (1 - p_xy)  # P(y | x > t)
 
             post_split_dist = [l_dist, r_dist]
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
 
-            if best_suggestion is None or merit > best_suggestion.merit:
-                num_att_binary_test = NumericBinaryTest(
-                    att_idx, at, equal_passes_test=False
-                )
-                best_suggestion = SplitSuggestion(
-                    num_att_binary_test, post_split_dist, merit
-                )
+            if merit > best_suggestion.merit:
+                best_suggestion = BranchFactory(merit, att_idx, at, post_split_dist)
 
         return best_suggestion
 

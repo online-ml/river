@@ -1,6 +1,6 @@
 from collections import Counter, defaultdict
 
-from .._attribute_test import NumericBinaryTest, SplitSuggestion
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -37,8 +37,6 @@ class ExhaustiveSplitter(Splitter):
             else:
                 self._root.insert_value(att_val, target_val, sample_weight)
 
-        return self
-
     def cond_proba(self, att_val, target_val):
         """The underlying data structure used to monitor the input does not allow probability
         density estimations. Hence, it always returns zero for any given input."""
@@ -47,7 +45,7 @@ class ExhaustiveSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only
     ):
-        current_best_option = SplitSuggestion(None, [{}], -float("inf"))
+        current_best_option = BranchFactory()
 
         return self._search_for_best_split_option(
             current_node=self._root,
@@ -133,16 +131,9 @@ class ExhaustiveSplitter(Splitter):
         post_split_dists = [left_dist, right_dist]
         merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
-        if current_best_option is None or merit > current_best_option.merit:
-            num_att_binary_test = NumericBinaryTest(
-                att_idx=att_idx,
-                att_value=current_node.cut_point,
-                equal_passes_test=True,
-            )
-            current_best_option = SplitSuggestion(
-                split_test=num_att_binary_test,
-                resulting_class_distributions=post_split_dists,
-                merit=merit,
+        if merit > current_best_option.merit:
+            current_best_option = BranchFactory(
+                merit, att_idx, current_node.cut_point, post_split_dists
             )
 
         current_best_option = self._search_for_best_split_option(

@@ -4,7 +4,7 @@ import typing
 
 from river import stats, utils
 
-from .._attribute_test import NumericBinaryTest, NumericMultiwayTest, SplitSuggestion
+from ..utils import BranchFactory
 from .base_splitter import Splitter
 
 
@@ -73,21 +73,25 @@ class QOSplitter(Splitter):
     def best_evaluated_split_suggestion(
         self, criterion, pre_split_dist, att_idx, binary_only=True
     ):
-        candidate = SplitSuggestion(None, [{}], -math.inf)
+        candidate = BranchFactory()
+
+        # In case the hash carries just one element return the null split
+        if len(self._quantizer) == 1:
+            return candidate
 
         # Numeric multiway test
         if self.allow_multiway_splits and not binary_only:
             slot_ids, post_split_dists = self._quantizer.all()
             merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
-            if merit > candidate.merit:
-                branch_mapping = {
-                    slot_id: branch_id for branch_id, slot_id in enumerate(slot_ids)
-                }
-                multiway_test = NumericMultiwayTest(
-                    att_idx, self.radius, branch_mapping
-                )
-                candidate = SplitSuggestion(multiway_test, post_split_dists, merit)
+            candidate = BranchFactory(
+                merit,
+                att_idx,
+                (self.radius, slot_ids),
+                post_split_dists,
+                numerical_feature=True,
+                multiway_split=True,
+            )
 
         # The previously evaluated x value
         prev_x = None
@@ -95,9 +99,6 @@ class QOSplitter(Splitter):
         for (x, left_dist) in self._quantizer:
             # First hash element
             if prev_x is None:
-                # In case the hash carries just one element return the null split
-                if len(self._quantizer) == 1:
-                    return candidate
                 prev_x = x
                 continue
 
@@ -107,18 +108,16 @@ class QOSplitter(Splitter):
 
             if merit > candidate.merit:
                 split_point = (prev_x + x) / 2.0
-                candidate = self._update_candidate(
-                    split_point, att_idx, post_split_dists, merit
+                candidate = BranchFactory(
+                    merit,
+                    att_idx,
+                    split_point,
+                    post_split_dists,
+                    numerical_feature=True,
+                    multiway_split=False,
                 )
 
             prev_x = x
-        return candidate
-
-    @staticmethod
-    def _update_candidate(split_point, att_idx, post_split_dists, merit):
-        num_att_binary_test = NumericBinaryTest(att_idx, split_point, True)
-        candidate = SplitSuggestion(num_att_binary_test, post_split_dists, merit)
-
         return candidate
 
     @property

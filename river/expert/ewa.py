@@ -5,6 +5,7 @@ from river import base
 from river import linear_model as lm
 from river import optim
 from river import preprocessing as pp
+from river.expert.exceptions import NotEnoughModels
 
 __all__ = ["EWARegressor"]
 
@@ -86,6 +87,10 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
         loss: optim.losses.RegressionLoss = None,
         learning_rate=0.5,
     ):
+
+        if len(regressors) < 2:
+            raise NotEnoughModels(n_expected=2, n_obtained=len(regressors))
+
         super().__init__(regressors)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.learning_rate = learning_rate

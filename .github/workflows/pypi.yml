@@ -3,44 +3,40 @@ name: pypi
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 jobs:
   pypi:
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+        platform: [windows-latest, macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.platform }}
+    env:
+      CIBW_BUILD: "cp36-* cp37-* cp38-*"
+      CIBW_BEFORE_BUILD: "pip install cython"
     steps:
+      - uses: actions/checkout@v2
 
-    - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
 
-    - name: Configure cibuildwheel
-      run: |
-        CIBW_BUILD="cp36-* cp37-* cp38-*"
-        CIBW_BEFORE_BUILD="pip install cython"
+      - name: Install Python dependencies
+        run: |
+          pip install wheel
+          pip install -e ".[compat,dev]" cibuildwheel twine
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+      - name: Download datasets
+        run: python -c "from river import datasets; datasets.CreditCard().download()"
 
-    - name: Install Python dependencies
-      run: |
-        pip install wheel
-        pip install -e ".[compat,dev]" cibuildwheel twine
+      - name: pytest
+        run: |
+          pytest
 
-    - name: pytest
-      run: |
-        pytest
-        pytest -m "datasets and slow"
-
-    - name: Build wheels
-      env:
-        PYPI_USER: ${{ secrets.PYPI_USER }}
-        PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        cibuildwheel --output-dir dist
-        python setup.py sdist
-        ls dist
-        twine upload dist/* -u ${PYPI_USER} -p ${PYPI_PASSWORD}
+      - name: Build wheels
+        run: |
+          cibuildwheel --output-dir dist
+          python setup.py sdist
+          ls dist
+          twine upload dist/* -u ${{ secrets.pypi_user }} -p ${{ secrets.pypi_password }} --skip-existing

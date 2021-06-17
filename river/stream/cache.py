@@ -66,7 +66,7 @@ class Cache:
     Finally, we can clear the stream from the cache.
 
     >>> cache.clear('phishing')
-    >>> cache
+    >>> cache  # doctest: +SKIP
     /tmp
 
     There is also a `clear_all` method to remove all the items in the cache.
@@ -80,19 +80,21 @@ class Cache:
         # Guess the directory from the system
         system = platform.system()
         if directory is None:
-            directory = {"Linux": "/tmp", "Darwin": "/tmp"}.get(system)
+            directory = {"Linux": "/tmp", "Darwin": "/tmp", "Windows": "C:\\TEMP"}.get(
+                system
+            )
 
         if directory is None:
             raise ValueError(
-                "There is no default directory defined for {systems} systems, "
-                "please provide one"
+                f"There is no default directory defined for {system} systems, "
+                "please provide one manually"
             )
 
         self.directory = directory
         self.keys = set()
 
         # Check if there is anything already in the cache
-        for f in glob.glob(f"{self.directory}/*.river_cache.pkl"):
+        for f in glob.glob(os.path.join(self.directory, "*.river_cache.pkl")):
             key = os.path.basename(f).split(".")[0]
             self.keys.add(key)
 

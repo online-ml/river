@@ -5,3 +5,4 @@ scikit-learn
 tabulate
 torch
 vowpalwabbit
+watermark

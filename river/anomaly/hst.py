@@ -1,20 +1,65 @@
 import collections
 import functools
-import operator
 import random
 import typing
 
 from river import base
-
-from .base import Branch, Leaf, Split
+from river.tree.base import Branch, Leaf
 
 __all__ = ["HalfSpaceTrees"]
+
+
+class HSTBranch(Branch):
+    def __init__(self, left, right, feature, threshold, l_mass, r_mass):
+        super().__init__(left, right)
+        self.feature = feature
+        self.threshold = threshold
+        self.l_mass = l_mass
+        self.r_mass = r_mass
+
+    @property
+    def left(self):
+        return self.children[0]
+
+    @property
+    def right(self):
+        return self.children[1]
+
+    def next(self, x):
+        """
+
+        We want to handle the case where a split feature is missing. In that case, we go down the
+        child that has been the most visited in the past.
+
+        """
+        left, right = self.children
+        try:
+            value = x[self.feature]
+        except KeyError:
+            if left.l_mass < right.l_mass:
+                return right
+            return left
+        if value < self.threshold:
+            return left
+        return right
+
+    def most_common_path(self):
+        raise NotImplementedError
+
+    @property
+    def repr_split(self):
+        return f"{self.feature} < {self.threshold:.5f}"
+
+
+class HSTLeaf(Leaf):
+    def __repr__(self):
+        return str(self.r_mass)
 
 
 def make_padded_tree(limits, height, padding, rng=random, **node_params):
 
     if height == 0:
-        return Leaf(**node_params)
+        return HSTLeaf(**node_params)
 
     # Randomly pick a feature
     # We weight each feature by the gap between each feature's limits
@@ -44,8 +89,7 @@ def make_padded_tree(limits, height, padding, rng=random, **node_params):
     )
     limits[on] = tmp
 
-    split = Split(on=on, how=operator.lt, at=at)
-    return Branch(split=split, left=left, right=right, **node_params)
+    return HSTBranch(left=left, right=right, feature=on, threshold=at, **node_params)
 
 
 class HalfSpaceTrees(base.AnomalyDetector):
@@ -131,7 +175,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
     ...     auc = auc.update(y, score)
 
     >>> auc
-    ROCAUC: 0.940431
+    ROCAUC: 0.940572
 
     References
     ----------
@@ -175,27 +219,6 @@ class HalfSpaceTrees(base.AnomalyDetector):
         """The largest potential anomaly score."""
         return self.n_trees * self.window_size * (2 ** (self.height + 1) - 1)
 
-    @staticmethod
-    def _iter_tree_path(tree, x):
-        """Same as tree.path(x) but handles missing features.
-
-        Normally we could just use a tree's path function. However, we want to handle the case
-        where a split feature is missing. In that case, we go down the child that has been the most
-        visited in the past.
-
-        """
-        node = tree
-        yield node
-        while isinstance(node, Branch):
-            try:
-                node = node.next(x)
-            except KeyError:
-                if node.right.l_mass > node.left.l_mass:
-                    node = node.right
-                else:
-                    node = node.left
-            yield node
-
     def learn_one(self, x):
 
         # The trees are built when the first observation comes in
@@ -215,14 +238,14 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
         # Update each tree
         for tree in self.trees:
-            for node in self._iter_tree_path(tree, x):
+            for node in tree.walk(x):
                 node.l_mass += 1
 
         # Pivot the masses if necessary
         self.counter += 1
         if self.counter == self.window_size:
             for tree in self.trees:
-                for node, _ in tree.iter_dfs():
+                for node in tree.iter_dfs():
                     node.r_mass = node.l_mass
                     node.l_mass = 0
             self._first_window = False
@@ -237,7 +260,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
         score = 0.0
         for tree in self.trees:
-            for depth, node in enumerate(self._iter_tree_path(tree, x)):
+            for depth, node in enumerate(tree.walk(x)):
                 score += node.r_mass * 2 ** depth
                 if node.r_mass < self.size_limit:
                     break

@@ -1,8 +1,8 @@
-from .arf_htc_nodes import BaseRandomLearningNode
-from .htr_nodes import LearningNodeAdaptive, LearningNodeMean, LearningNodeModel
+from .arf_htc_nodes import BaseRandomLeaf
+from .htr_nodes import LeafAdaptive, LeafMean, LeafModel
 
 
-class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
+class RandomLeafMean(BaseRandomLeaf, LeafMean):
     """ARF learning Node for regression tasks that always use the average target
     value as response.
 
@@ -31,7 +31,7 @@ class RandomLearningNodeMean(BaseRandomLearningNode, LearningNodeMean):
         super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
 
 
-class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
+class RandomLeafModel(BaseRandomLeaf, LeafModel):
     """ARF learning Node for regression tasks that always use a learning model to provide
     responses.
 
@@ -67,7 +67,7 @@ class RandomLearningNodeModel(BaseRandomLearningNode, LearningNodeModel):
         )
 
 
-class RandomLearningNodeAdaptive(BaseRandomLearningNode, LearningNodeAdaptive):
+class RandomLeafAdaptive(BaseRandomLeaf, LeafAdaptive):
     """ARF learning node for regression tasks that dynamically selects between the
     target mean and the output of a learning model to provide responses.
 
