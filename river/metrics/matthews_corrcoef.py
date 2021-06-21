@@ -83,15 +83,17 @@ class MatthewsCorrCoef(base.MultiClassMetric):
 
         n_correct = self.cm.sum_diag
 
-        cov_ytrue_ypred = n_correct * self.cm.total_weight - sum(
+        n_samples = sum(self.cm.sum_row.values())
+
+        cov_ytrue_ypred = n_correct * n_samples - sum(
             self.cm.sum_col[i] * self.cm.sum_row[i] for i in self.cm.classes
         )
 
-        cov_ypred_ypred = self.cm.total_weight * self.cm.total_weight - sum(
+        cov_ypred_ypred = n_samples * n_samples - sum(
             self.cm.sum_col[i] * self.cm.sum_col[i] for i in self.cm.classes
         )
 
-        cov_ytrue_ytrue = self.cm.total_weight * self.cm.total_weight - sum(
+        cov_ytrue_ytrue = n_samples * n_samples - sum(
             self.cm.sum_row[i] * self.cm.sum_row[i] for i in self.cm.classes
         )
 
