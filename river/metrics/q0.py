@@ -30,6 +30,13 @@ class Q0(base.MultiClassMetric):
     Due to the complexity of the formula, this metric and its associated normalized version (Q2)
     is one order of magnitude slower than most other implemented metrics.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
     >>> from river import metrics
@@ -121,6 +128,13 @@ class Q2(Q0):
 
     Due to the complexity of the formula, this metric is one order of magnitude slower than
     its original version (Q0) and most other implemented metrics.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
