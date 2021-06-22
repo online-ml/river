@@ -144,6 +144,46 @@ TEST_CASES = [
     (metrics.MCC(), sk_metrics.matthews_corrcoef),
     (metrics.MAE(), sk_metrics.mean_absolute_error),
     (metrics.MSE(), sk_metrics.mean_squared_error),
+    (metrics.Homogeneity(), sk_metrics.homogeneity_score),
+    (metrics.Completeness(), sk_metrics.completeness_score),
+    (metrics.VBeta(beta=0.5), partial(sk_metrics.v_measure_score, beta=0.5)),
+    (metrics.MatthewsCorrCoef(), sk_metrics.matthews_corrcoef),
+    (metrics.FowlkesMallows(), sk_metrics.fowlkes_mallows_score),
+    (metrics.Rand(), sk_metrics.rand_score),
+    (metrics.AdjustedRand(), sk_metrics.adjusted_rand_score),
+    (metrics.MutualInfo(), sk_metrics.mutual_info_score),
+    (
+        metrics.NormalizedMutualInfo(average_method="min"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="min"),
+    ),
+    (
+        metrics.NormalizedMutualInfo(average_method="max"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="max"),
+    ),
+    (
+        metrics.NormalizedMutualInfo(average_method="arithmetic"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="arithmetic"),
+    ),
+    (
+        metrics.NormalizedMutualInfo(average_method="geometric"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="geometric"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="min"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="min"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="max"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="max"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="arithmetic"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="arithmetic"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="geometric"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="geometric"),
+    ),
 ]
 
 
@@ -171,17 +211,23 @@ def test_metric(metric, sk_metric):
             m.update(y_true=yt, y_pred=yp, sample_weight=w)
 
             if i >= 1:
-                assert (
-                    abs(
-                        m.get()
-                        - sk_metric(
-                            y_true=y_true[: i + 1],
-                            y_pred=y_pred[: i + 1],
-                            sample_weight=sample_weights[: i + 1],
+                if metric.works_with_weights:
+                    assert (
+                        abs(
+                            m.get()
+                            - sk_metric(
+                                y_true[: i + 1],
+                                y_pred[: i + 1],
+                                sample_weight=sample_weights[: i + 1],
+                            )
                         )
+                        < 1e-6
                     )
-                    < 1e-6
-                )
+                else:
+                    assert (
+                        abs(m.get() - sk_metric(y_true[: i + 1], y_pred[: i + 1],))
+                        < 1e-6
+                    )
 
 
 @pytest.mark.parametrize(
@@ -216,8 +262,7 @@ def test_rolling_metric(metric, sk_metric):
                         abs(
                             m.get()
                             - sk_metric(
-                                y_true=tail(y_true[: i + 1], n),
-                                y_pred=tail(y_pred[: i + 1], n),
+                                tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n),
                             )
                         )
                         < 1e-10
@@ -295,6 +340,54 @@ def test_multi_fbeta():
             multi_fbeta /= 1 + 1 + 2
 
             assert math.isclose(fbeta.get(), multi_fbeta)
+
+
+def test_pair_confusion():
+
+    metric = metrics.PairConfusionMatrix()
+
+    for y_true, y_pred, _ in generate_test_cases(metric=metric, n=30):
+
+        m = copy.deepcopy(metric)
+
+        for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
+
+            m.update(y_true=yt, y_pred=yp)
+
+            sk_pair_confusion_matrix = sk_metrics.cluster.pair_confusion_matrix(
+                labels_true=y_true[: i + 1], labels_pred=y_pred[: i + 1],
+            )
+
+            if i >= 1:
+                for j in [0, 1]:
+                    for k in [0, 1]:
+                        assert m.get()[j][k] == sk_pair_confusion_matrix[j][k]
+
+
+def test_rolling_pair_confusion():
+    def tail(iterable, n):
+        return collections.deque(iterable, maxlen=n)
+
+    metric = metrics.PairConfusionMatrix()
+
+    for n in (1, 2, 5, 10):
+        for y_true, y_pred, _ in generate_test_cases(metric=metric, n=30):
+
+            m = metrics.Rolling(metric=copy.deepcopy(metric), window_size=n)
+
+            for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
+
+                m.update(y_true=yt, y_pred=yp)
+
+                sk_pair_confusion_matrix = sk_metrics.cluster.pair_confusion_matrix(
+                    labels_true=tail(y_true[: i + 1], n),
+                    labels_pred=tail(y_pred[: i + 1], n),
+                )
+
+                if i >= 1:
+                    for j in [0, 1]:
+                        for k in [0, 1]:
+                            assert m.get()[j][k] == sk_pair_confusion_matrix[j][k]
 
 
 def test_rolling_multi_fbeta():

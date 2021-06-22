@@ -46,6 +46,11 @@ class Metric(base.Base, abc.ABC):
     def works_with(self, model: base.Estimator) -> bool:
         """Indicates whether or not a metric can work with a given model."""
 
+    @property
+    def works_with_weights(self) -> bool:
+        """Indicate whether the model takes into consideration the effect of sample weights"""
+        return True
+
     def __repr__(self):
         """Return the class name along with the current value of the metric."""
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
@@ -72,11 +77,20 @@ class ClassificationMetric(Metric):
         self.cm = cm
 
     def update(self, y_true, y_pred, sample_weight=1.0):
-        self.cm.update(y_true, y_pred, sample_weight)
+        self.cm.update(
+            y_true,
+            y_pred,
+            sample_weight=sample_weight if self.works_with_weights else 1.0,
+        )
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.0, correction=None):
-        self.cm.revert(y_true, y_pred, sample_weight, correction)
+        self.cm.revert(
+            y_true,
+            y_pred,
+            sample_weight=sample_weight if self.works_with_weights else 1.0,
+            correction=correction,
+        )
         return self
 
     @property
@@ -336,6 +350,10 @@ class Metrics(Metric, collections.UserList):
     @property
     def bigger_is_better(self):
         raise NotImplementedError
+
+    @property
+    def works_with_weights(self):
+        return all(m.works_with_weights for m in self)
 
     @property
     def requires_labels(self):
