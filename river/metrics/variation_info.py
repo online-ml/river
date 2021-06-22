@@ -32,6 +32,13 @@ class VariationInfo(base.MultiClassMetric):
     $VI(C, K) \leq \log(n)$, or with respect to the maximum number of clusters $K^*$,
     $VI(C, K) \leq 2 \log(K^*)$.
 
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
     Examples
     --------
     >>> from river import metrics
