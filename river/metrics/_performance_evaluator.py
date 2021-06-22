@@ -405,6 +405,263 @@ class _RollingMLClassificationReport(_MLClassificationReport):
         )
 
 
+class _ClusteringReport:
+    """ "Clustering report
+
+    Incrementally tracks clustering performance and provide, at any moment, updated
+    performance metrics. Note that clustering algorithms only concern single-output tasks.
+
+    Parameters
+    ----------
+    cm: ConfusionMatrix, optional (default=None)
+        Confusion matrix instance.
+
+    Examples
+    --------
+    >>> from river.metrics import _ClusteringReport
+
+    >>> y_true = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+    >>> y_pred = [0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2]
+
+    >>> report = _ClusteringReport()
+
+    >>> for i in range(len(y_true)):
+    ...     report.add_result(y_true[i], y_pred[i])
+
+    >>> report
+    Clustering report
+    <BLANKLINE>
+    n_classes:                       3
+    n_clusters:                      3
+    n_samples:                      25
+    PairConfusionMatrix:
+    {0: defaultdict(<class 'int'>, {0: 256.0, 1: 152.0}), 1: defaultdict(<class 'int'>, {0: 110.0, 1: 82.0})}
+    <BLANKLINE>
+    MatthewsCorrCoef:           0.2872
+    Completeness:               0.1505
+    Homogeneity:                0.1345
+    VBeta:                      0.1420
+    Q0:                         1.7832
+    Q2:                         0.2586
+    PrevalenceThreshold:        0.4027
+    MutualInfo:                 0.1448
+    NormalizedMutualInfo:       0.1420
+    AdjustedMutualInfo:         0.0509
+    Rand:                       0.5633
+    AdjustedRand:               0.0515
+    VariationInfo:              2.5240
+    <BLANKLINE>
+
+    """
+
+    # Define the format specification used for string representation.
+    _fmt = ">10.4f"
+
+    def __init__(self, cm: "metrics.ConfusionMatrix" = None):
+
+        self.cm = metrics.ConfusionMatrix() if cm is None else cm
+        self.pair_cm = metrics.PairConfusionMatrix(self.cm)
+
+        self.matthews_corr = metrics.MatthewsCorrCoef(cm=self.cm)
+        self.completeness = metrics.Completeness(cm=self.cm)
+        self.homogeneity = metrics.Homogeneity(cm=self.cm)
+        self.vbeta = metrics.VBeta(cm=self.cm)
+        self.q0 = metrics.Q0(cm=self.cm)
+        self.q2 = metrics.Q2(cm=self.cm)
+        self.pt = metrics.PrevalenceThreshold(cm=self.cm)
+        self.mutual_info = metrics.MutualInfo(cm=self.cm)
+        self.normalized_mutual_info = metrics.NormalizedMutualInfo(cm=self.cm)
+        self.adjusted_mutual_info = metrics.AdjustedMutualInfo(cm=self.cm)
+        self.rand = metrics.Rand(cm=self.cm)
+        self.adjusted_rand = metrics.AdjustedRand(cm=self.cm)
+        self.variation_info = metrics.VariationInfo(cm=self.cm)
+
+    def add_result(self, y_true, y_pred, sample_weight=1.0):
+        self.cm.update(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+
+    def matthews_corr_coef(self):
+        return self.matthews_corr.get()
+
+    def completeness_score(self):
+        return self.completeness.get()
+
+    def homogeneity_score(self):
+        return self.homogeneity.get()
+
+    def vbeta_score(self):
+        return self.vbeta.get()
+
+    def q0_score(self):
+        return self.q0.get()
+
+    def q2_score(self):
+        return self.q2.get()
+
+    def prevalence_threshold(self):
+        return self.pt.get()
+
+    def mutual_info_score(self):
+        return self.mutual_info.get()
+
+    def normalized_mutual_info_score(self):
+        return self.normalized_mutual_info.get()
+
+    def adjusted_mutual_info_score(self):
+        return self.adjusted_mutual_info.get()
+
+    def rand_score(self):
+        return self.rand.get()
+
+    def adjusted_rand_score(self):
+        return self.adjusted_rand.get()
+
+    def variation_info_score(self):
+        return self.variation_info.get()
+
+    def get_last(self):
+        return self.cm.last_y_true, self.cm.last_y_pred
+
+    @property
+    def n_samples(self):
+        return self.cm.n_samples
+
+    @property
+    def n_classes(self):
+        return len([i for i in self.cm.sum_row.values() if i != 0])
+
+    @property
+    def n_clusters(self):
+        return len([i for i in self.cm.sum_col.values() if i != 0])
+
+    @property
+    def confusion_matrix(self):
+        return self.cm
+
+    def pair_confusion_matrix(self):
+        return self.pair_cm.get()
+
+    def reset(self):
+        self.cm.reset()
+
+    def __repr__(self):
+        return "".join(
+            [
+                "Clustering report\n\n",
+                f"n_classes:\t\t\t\t{self.n_classes:>10}\n",
+                f"n_clusters:\t\t\t\t{self.n_clusters:>10}\n",
+                f"n_samples:\t\t\t\t{self.n_samples:>10}\n",
+                "PairConfusionMatrix:",
+                "\n",
+                f"{self.pair_cm.get()}",
+                "\n",
+                "\n",
+                self._info(),
+            ]
+        )
+
+    def _info(self):
+        return "".join(
+            [
+                f"MatthewsCorrCoef:\t\t{self.matthews_corr.get():{self._fmt}}\n",
+                f"Completeness:\t\t\t{self.completeness.get():{self._fmt}}\n",
+                f"Homogeneity:\t\t\t{self.homogeneity.get():{self._fmt}}\n",
+                f"VBeta:\t\t\t\t\t{self.vbeta.get():{self._fmt}}\n",
+                f"Q0:\t\t\t\t\t\t{self.q0.get():{self._fmt}}\n",
+                f"Q2:\t\t\t\t\t\t{self.q2.get():{self._fmt}}\n",
+                f"PrevalenceThreshold:\t{self.pt.get():{self._fmt}}\n",
+                f"MutualInfo:\t\t\t\t{self.mutual_info.get():{self._fmt}}\n",
+                f"NormalizedMutualInfo:\t{self.normalized_mutual_info.get():{self._fmt}}\n",
+                f"AdjustedMutualInfo:\t\t{self.adjusted_mutual_info.get():{self._fmt}}\n",
+                f"Rand:\t\t\t\t\t{self.rand.get():{self._fmt}}\n",
+                f"AdjustedRand:\t\t\t{self.adjusted_rand.get():{self._fmt}}\n",
+                f"VariationInfo:\t\t\t{self.variation_info.get():{self._fmt}}\n",
+            ]
+        )
+
+
+class _RollingClusteringReport(_ClusteringReport):
+    """Rolling clustering report
+
+    Incrementally tracks clustering performance over a sliding window and provide,
+    at any moment, updated performance metrics. Note that, clustering algorithms
+    only concern single-output tasks.
+
+    Parameters
+    ----------
+    cm: ConfusionMatrix, optional (default=None)
+        Confusion matrix instance.
+
+    window_size: int
+        Window size.
+
+    Examples
+    --------
+    >>> from river.metrics import _RollingClusteringReport
+
+    >>> y_true = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+    >>> y_pred = [0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2]
+
+    >>> report = _RollingClusteringReport(window_size=20)
+
+    >>> for i in range(len(y_true)):
+    ...     report.add_result(y_true[i], y_pred[i])
+
+    >>> report
+    Rolling Clustering report
+    <BLANKLINE>
+    n_classes:                       3
+    n_clusters:                      3
+    n_samples:                      20
+    window_size:                    20
+    PairConfusionMatrix:
+    {0: defaultdict(<class 'int'>, {0: 154.0, 1: 64.0}), 1: defaultdict(<class 'int'>, {0: 92.0, 1: 70.0})}
+    <BLANKLINE>
+    MatthewsCorrCoef:           0.2116
+    Completeness:               0.2463
+    Homogeneity:                0.2908
+    VBeta:                      0.2667
+    Q0:                         1.3813
+    Q2:                         0.3365
+    PrevalenceThreshold:        0.4580
+    MutualInfo:                 0.2488
+    NormalizedMutualInfo:       0.2667
+    AdjustedMutualInfo:         0.1646
+    Rand:                       0.5895
+    AdjustedRand:               0.1417
+    VariationInfo:              1.9742
+    <BLANKLINE>
+
+    """
+
+    def __init__(self, cm: "metrics.ConfusionMatrix" = None, window_size=200):
+        self.window_size = window_size
+        self._rolling_cm = metrics.Rolling(
+            metrics.ConfusionMatrix() if cm is None else cm,
+            window_size=self.window_size,
+        )
+        super().__init__(cm=self._rolling_cm.metric)
+
+    def add_result(self, y_true, y_pred, sample_weight=1.0):
+        self._rolling_cm.update(
+            y_true=y_true, y_pred=y_pred, sample_weight=sample_weight
+        )
+
+    def __repr__(self):
+        return "".join(
+            [
+                "Rolling Clustering report\n\n",
+                f"n_classes:\t\t\t\t{self.n_classes:>10}\n",
+                f"n_clusters:\t\t\t\t{self.n_clusters:>10}\n",
+                f"n_samples:\t\t\t\t{self.n_samples:>10}\n",
+                f"window_size:\t\t\t{self.window_size:>10}\n",
+                "PairConfusionMatrix:\n",
+                f"{self.pair_cm.get()}\n",
+                "\n",
+                self._info(),
+            ]
+        )
+
+
 class _RegressionReport(object):
     """Regression report.
 
