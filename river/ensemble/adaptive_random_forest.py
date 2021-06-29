@@ -295,7 +295,10 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
             if parent is None:
                 leaf_model = copy.deepcopy(self.leaf_model)
             else:
-                leaf_model = copy.deepcopy(parent._leaf_model)  # noqa
+                try:
+                    leaf_model = copy.deepcopy(parent._leaf_model)  # noqa
+                except AttributeError:
+                    leaf_model = copy.deepcopy(self.leaf_model)
 
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLeafMean(
@@ -319,7 +322,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 seed,
                 leaf_model=leaf_model,
             )
-            if parent is not None:
+            if parent is not None and isinstance(parent, RandomLeafAdaptive):
                 new_adaptive._fmse_mean = parent._fmse_mean  # noqa
                 new_adaptive._fmse_model = parent._fmse_model  # noqa
 
