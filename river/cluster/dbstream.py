@@ -388,7 +388,11 @@ class DBSTREAM(base.Clusterer):
         self._recluster()
 
         min_distance = math.inf
-        closest_cluster_index = -1
+
+        # default result of all clustering results, regardless of whether there already
+        # exists macro-clusters
+        closest_cluster_index = 0
+
         for i, center_i in self.centers.items():
             distance = self._distance(center_i, x)
             if distance < min_distance:
