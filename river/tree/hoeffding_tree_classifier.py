@@ -414,6 +414,26 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             proba.update(leaf.prediction(x, tree=self))
         return proba
 
+    def predict_one(self, x):
+        """Predict the target value using one of the leaf prediction strategies.
+        Parameters
+        ----------
+        x
+            Instance for which we want to predict the target.
+        Returns
+        -------
+        Predicted target value.
+        """
+        pred = 0.0
+        if self._root is not None:
+            if isinstance(self._root, HTBranch):
+                leaf = self._root.traverse(x, until_leaf=True)
+            else:
+                leaf = self._root
+
+            pred = leaf.prediction(x, tree=self)
+        return pred
+
     @property
     def _multiclass(self):
         return True
