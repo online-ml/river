@@ -25,6 +25,11 @@ class MeanRegressor(base.Regressor):
 
 
 class AdaptiveRegressor(base.Regressor):
+    """This predictor selects between the target mean and the the user-selected regression model
+     automatically. Faded error metrics are kept for both the predictors, and the most
+    accurate one is selected automatically for each incoming instance.
+    """
+
     def __init__(self, model_predictor: base.Regressor, alpha: float):
         self.model_predictor = model_predictor
         self.mean_predictor = MeanRegressor()
@@ -149,7 +154,7 @@ class RegRule(HoeffdingRule, base.Regressor, base.AnomalyDetector):
 class AMRules(base.Regressor):
     """Adaptive Model Rules.
 
-    AMRules[^1] is rule-based algorithm for incremental regression tasks. AMRules relies on the
+    AMRules[^1] is a rule-based algorithm for incremental regression tasks. AMRules relies on the
     Hoeffding bound to build its rule set, similarly to Hoeffding Trees. The Variance-Ratio
     heuristic is used to evaluate rules' splits. Moreover, this rule-based regressor has
     additional capacities not usually found in decision trees.
@@ -161,7 +166,7 @@ class AMRules(base.Regressor):
 
     Every time no rule is covering an incoming example, a default rule is used to learn
     from it. A rule covers an instance when all of the rule's literals (tests joined by the
-    logical operation`and`) match the input case. The default rule is also applied for predicting
+    logical operation `and`) match the input case. The default rule is also applied for predicting
     examples not covered by any rules from the rule set.
 
     Parameters
@@ -340,12 +345,12 @@ class AMRules(base.Regressor):
             if not rule.covers(x):
                 continue
 
-            if rule.total_weight > self.m_min:
-                a_score = rule.score_one(x)
-
-                # Anomaly detected skip training
-                if a_score < self.anomaly_threshold:
-                    continue
+            # Anomaly detected skip training
+            if (
+                rule.total_weight > self.m_min
+                and rule.score_one(x) < self.anomaly_threshold
+            ):
+                continue
 
             y_pred = rule.predict_one(x)
 
