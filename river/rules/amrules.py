@@ -129,9 +129,8 @@ class RegRule(HoeffdingRule, base.Regressor, base.AnomalyDetector):
 
             mean = self._feat_stats[feat_name].mean.get()
             var = self._feat_stats[feat_name].get()
-            std = math.sqrt(var)
 
-            if std > 0:
+            if var > 0:
                 # One tailed variant of Chebyshev's inequality: ported from the MOA code
                 proba = (2 * var) / (var + (feat_val - mean) ** 2)
 
@@ -227,6 +226,12 @@ class AMRules(base.Regressor):
     thrown while trying to update the underlying rules' prediction models. Prediction strategies
     other than "mean" can be used, as long as the prediction model passed to `pred_model` supports
     nominal features.
+
+    Raises
+    ------
+    TypeError
+        If one or more input features are non-numeric and the selected `pred_model` is either
+        "model" or "adaptive".
 
     Examples
     --------

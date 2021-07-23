@@ -65,6 +65,25 @@ class NominalLiteral(Literal):
 
 
 class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
+    """Base class for the decision rules based on the Hoeffding bound.
+
+    It defines properties and operations shared by all the rule-based systems, for instance, how
+    to perform rule expansion, how to monitor inputs, and whether or not a rule is currently
+    covering an input datum.
+
+    Parameters
+    ----------
+    template_splitter
+        The attribute observer algorithm used to monitor and perform split attempts in numerical
+        features. This splitter is be deep-copied to all the decision rules. The same attribute
+        observer algorithms used by the Hoeffding Trees can be used with Hoeffding rules.
+    split_criterion
+        The criterion used to rank the split candidates. The same split criteria used by the
+        Hoeffding Trees can be applied to the Hoeffding rules.
+    attributes
+        Other parameters passed to the rules via `**kwargs`.
+    """
+
     def __init__(
         self,
         template_splitter: tree.splitter.base_splitter.Splitter,
@@ -222,7 +241,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
         return self, False
 
     def covers(self, x: dict) -> bool:
-        """Check if all the conditions are fulfilled.
+        """Check if all the rule's conditions are fulfilled.
 
         Parameters
         ----------
@@ -233,6 +252,11 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def new_nominal_splitter(self):
+        """Define the attribute observer used when dealing with nominal features.
+
+        Must be defined by classification and regression decision rule-based algorithms to match
+        the target type.
+        """
         pass
 
     def _iter_features(self, x: dict) -> typing.Iterable:
