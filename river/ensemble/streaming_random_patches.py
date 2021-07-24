@@ -9,7 +9,7 @@ import pandas as pd
 
 from river import base
 from river.drift import ADWIN
-from river.metrics import Accuracy, MAE
+from river.metrics import MAE, Accuracy
 from river.metrics.base import Metric, MultiClassMetric, RegressionMetric
 from river.stats import Mean
 from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
@@ -18,6 +18,7 @@ from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
 class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
     """Base class for the sRP ensemble family
     """
+
     _TRAIN_RANDOM_SUBSPACES = "subspaces"
     _TRAIN_RESAMPLING = "resampling"
     _TRAIN_RANDOM_PATCHES = "patches"
@@ -65,7 +66,7 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         self._n_samples_seen = 0
         self._subspaces = None
 
-        self._base_learner_class = None   # defined by extended classes
+        self._base_learner_class = None  # defined by extended classes
 
     @property
     def _wrapped_model(self):
@@ -109,7 +110,7 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
                 y=y,
                 sample_weight=k,
                 n_samples_seen=self._n_samples_seen,
-                rng=self._rng
+                rng=self._rng,
             )
 
         return self
@@ -303,20 +304,21 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
           IEEE International Conference on Data Mining (ICDM), 2019.
 
     """
+
     def __init__(
-            self,
-            model: base.Estimator = None,
-            n_models: int = 100,
-            subspace_size: typing.Union[int, float, str] = 0.6,
-            training_method: str = "patches",
-            lam: float = 6.0,
-            drift_detector: base.DriftDetector = None,
-            warning_detector: base.DriftDetector = None,
-            disable_detector: str = "off",
-            disable_weighted_vote: bool = False,
-            nominal_attributes=None,
-            seed=None,
-            metric: Metric = None,
+        self,
+        model: base.Estimator = None,
+        n_models: int = 100,
+        subspace_size: typing.Union[int, float, str] = 0.6,
+        training_method: str = "patches",
+        lam: float = 6.0,
+        drift_detector: base.DriftDetector = None,
+        warning_detector: base.DriftDetector = None,
+        disable_detector: str = "off",
+        disable_weighted_vote: bool = False,
+        nominal_attributes=None,
+        seed=None,
+        metric: Metric = None,
     ):
         if model is None:
             model = HoeffdingTreeClassifier(grace_period=50, split_confidence=0.01)
@@ -343,18 +345,20 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
         if metric is None:
             metric = Accuracy()
 
-        super().__init__(model=model,
-                         n_models=n_models,
-                         subspace_size=subspace_size,
-                         training_method=training_method,
-                         lam=lam,
-                         drift_detector=drift_detector,
-                         warning_detector=warning_detector,
-                         disable_detector=disable_detector,
-                         disable_weighted_vote=disable_weighted_vote,
-                         nominal_attributes=nominal_attributes,
-                         seed=seed,
-                         metric=metric)
+        super().__init__(
+            model=model,
+            n_models=n_models,
+            subspace_size=subspace_size,
+            training_method=training_method,
+            lam=lam,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
+            disable_detector=disable_detector,
+            disable_weighted_vote=disable_weighted_vote,
+            nominal_attributes=nominal_attributes,
+            seed=seed,
+            metric=metric,
+        )
 
         self._base_learner_class = BaseSRPClassifier
 
@@ -366,8 +370,8 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
         return {
             "check_shuffle_features_no_impact",
             "check_emerging_features",
-            "check_disappearing_features"
-    }
+            "check_disappearing_features",
+        }
 
     def predict_proba_one(self, x):
         y_pred = collections.Counter()
@@ -397,6 +401,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 class BaseSRPEstimator:
     """Base class for estimators (classifiers or regressors) in SRP
     """
+
     def __init__(
         self,
         idx_original: int,
@@ -408,7 +413,7 @@ class BaseSRPEstimator:
         is_background_learner,
         rng: np.random.Generator,
         features=None,
-        nominal_attributes=None
+        nominal_attributes=None,
     ):
         self.idx_original = idx_original
         self.created_on = created_on
@@ -456,7 +461,7 @@ class BaseSRPEstimator:
         self._background_learner = (
             None
         )  # type: typing.Optional[BaseSRPClassifier, BaseSRPRegressor]
-        self._background_learner_class = None   # defined in the extended classes
+        self._background_learner_class = None  # defined in the extended classes
 
     def _trigger_warning(
         self, all_features, n_samples_seen: int, rng: np.random.Generator
@@ -527,30 +532,33 @@ class BaseSRPEstimator:
 class BaseSRPClassifier(BaseSRPEstimator):
     """Class representing the base learner of SRPClassifier.
     """
+
     def __init__(
-            self,
-            idx_original: int,
-            model: base.Classifier,
-            metric: MultiClassMetric,
-            created_on: int,
-            drift_detector: base.DriftDetector,
-            warning_detector: base.DriftDetector,
-            is_background_learner,
-            rng: np.random.Generator,
-            features=None,
-            nominal_attributes=None
+        self,
+        idx_original: int,
+        model: base.Classifier,
+        metric: MultiClassMetric,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        rng: np.random.Generator,
+        features=None,
+        nominal_attributes=None,
     ):
 
-        super().__init__(idx_original=idx_original,
-                         model=model,
-                         metric=metric,
-                         created_on=created_on,
-                         drift_detector=drift_detector,
-                         warning_detector=warning_detector,
-                         is_background_learner=is_background_learner,
-                         rng=rng,
-                         features=features,
-                         nominal_attributes=nominal_attributes)
+        super().__init__(
+            idx_original=idx_original,
+            model=model,
+            metric=metric,
+            created_on=created_on,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
+            is_background_learner=is_background_learner,
+            rng=rng,
+            features=features,
+            nominal_attributes=nominal_attributes,
+        )
 
         self._background_learner_class = BaseSRPClassifier
 
@@ -742,26 +750,29 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
           IEEE International Conference on Data Mining (ICDM), 2019.
 
     """
-    _MEAN = 'mean'
-    _MEDIAN = 'median'
-    _ERROR = 'error'
-    _PREDICTION = 'prediction'
 
-    def __init__(self,
-                 model: base.Regressor = None,
-                 n_models: int = 100,
-                 subspace_size: typing.Union[int, float, str] = 0.6,
-                 training_method: str = "patches",
-                 lam: float = 6.0,
-                 drift_detector: base.DriftDetector = None,
-                 warning_detector: base.DriftDetector = None,
-                 disable_detector: str = 'off',
-                 disable_weighted_vote: bool = True,
-                 drift_detection_criteria: str = 'error',
-                 aggregation_method: str = 'mean',
-                 nominal_attributes=None,
-                 seed=None,
-                 metric: RegressionMetric = None):
+    _MEAN = "mean"
+    _MEDIAN = "median"
+    _ERROR = "error"
+    _PREDICTION = "prediction"
+
+    def __init__(
+        self,
+        model: base.Regressor = None,
+        n_models: int = 100,
+        subspace_size: typing.Union[int, float, str] = 0.6,
+        training_method: str = "patches",
+        lam: float = 6.0,
+        drift_detector: base.DriftDetector = None,
+        warning_detector: base.DriftDetector = None,
+        disable_detector: str = "off",
+        disable_weighted_vote: bool = True,
+        drift_detection_criteria: str = "error",
+        aggregation_method: str = "mean",
+        nominal_attributes=None,
+        seed=None,
+        metric: RegressionMetric = None,
+    ):
 
         # Check arguments for parent class
         if model is None:
@@ -789,27 +800,33 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
         if metric is None:
             metric = MAE()
 
-        super().__init__(model=model,
-                         n_models=n_models,
-                         subspace_size=subspace_size,
-                         training_method=training_method,
-                         lam=lam,
-                         drift_detector=drift_detector,
-                         warning_detector=warning_detector,
-                         disable_detector=disable_detector,
-                         disable_weighted_vote=disable_weighted_vote,
-                         nominal_attributes=nominal_attributes,
-                         seed=seed,
-                         metric=metric)
+        super().__init__(
+            model=model,
+            n_models=n_models,
+            subspace_size=subspace_size,
+            training_method=training_method,
+            lam=lam,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
+            disable_detector=disable_detector,
+            disable_weighted_vote=disable_weighted_vote,
+            nominal_attributes=nominal_attributes,
+            seed=seed,
+            metric=metric,
+        )
 
         if aggregation_method not in {self._MEAN, self._MEDIAN}:
-            raise ValueError(f"Invalid aggregation_method: {aggregation_method}.\n"
-                             f"Valid options are: {[self._MEAN, self._MEDIAN]}")
+            raise ValueError(
+                f"Invalid aggregation_method: {aggregation_method}.\n"
+                f"Valid options are: {[self._MEAN, self._MEDIAN]}"
+            )
         self.aggregation_method = aggregation_method
 
         if drift_detection_criteria not in {self._ERROR, self._PREDICTION}:
-            raise ValueError(f"Invalid drift_detection_criteria: {drift_detection_criteria}.\n"
-                             f"Valid options are: {[self._ERROR, self._PREDICTION]}")
+            raise ValueError(
+                f"Invalid drift_detection_criteria: {drift_detection_criteria}.\n"
+                f"Valid options are: {[self._ERROR, self._PREDICTION]}"
+            )
         self.drift_detection_criteria = drift_detection_criteria
 
         self._base_learner_class = BaseSRPRegressor
@@ -822,8 +839,8 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
         return {
             "check_shuffle_features_no_impact",
             "check_emerging_features",
-            "check_disappearing_features"
-    }
+            "check_disappearing_features",
+        }
 
     def learn_one(self, x: dict, y: base.typing.RegTarget, **kwargs):
         return super().learn_one(x=x, y=y, **kwargs)
@@ -849,31 +866,36 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 class BaseSRPRegressor(BaseSRPEstimator):
     """Class representing the base learner of SRPClassifier.
     """
-    _ERROR = 'error'
-    _PREDICTION = 'prediction'
 
-    def __init__(self,
-                 idx_original: int,
-                 model: base.Regressor,
-                 metric: RegressionMetric,
-                 created_on: int,
-                 drift_detector: base.DriftDetector,
-                 warning_detector: base.DriftDetector,
-                 is_background_learner,
-                 rng: np.random.Generator,
-                 features=None,
-                 nominal_attributes=None,
-                 drift_detection_criteria: str = None):
-        super().__init__(idx_original=idx_original,
-                         model=model,
-                         metric=metric,
-                         created_on=created_on,
-                         drift_detector=drift_detector,
-                         warning_detector=warning_detector,
-                         is_background_learner=is_background_learner,
-                         rng=rng,
-                         features=features,
-                         nominal_attributes=nominal_attributes)
+    _ERROR = "error"
+    _PREDICTION = "prediction"
+
+    def __init__(
+        self,
+        idx_original: int,
+        model: base.Regressor,
+        metric: RegressionMetric,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        rng: np.random.Generator,
+        features=None,
+        nominal_attributes=None,
+        drift_detection_criteria: str = None,
+    ):
+        super().__init__(
+            idx_original=idx_original,
+            model=model,
+            metric=metric,
+            created_on=created_on,
+            drift_detector=drift_detector,
+            warning_detector=warning_detector,
+            is_background_learner=is_background_learner,
+            rng=rng,
+            features=features,
+            nominal_attributes=nominal_attributes,
+        )
 
         self._background_learner_class = BaseSRPRegressor
 
@@ -884,35 +906,44 @@ class BaseSRPRegressor(BaseSRPEstimator):
         # If the drift detection method is periodic-fixed,
         # then set the shift option based on the instance index
         if isinstance(self.drift_detector, PeriodicTrigger):
-            if self.drift_detector.trigger_method == PeriodicTrigger._FIXED_TRIGGER:   # noqa
-                self.drift_detector._set_params(w=self.idx_original)    # noqa
-            if self.drift_detector.trigger_method == PeriodicTrigger._RANDOM_TRIGGER:   # noqa
-                self.drift_detector._set_params(rng=self.rng)    # noqa
+            if (
+                self.drift_detector.trigger_method == PeriodicTrigger._FIXED_TRIGGER
+            ):  # noqa
+                self.drift_detector._set_params(w=self.idx_original)  # noqa
+            if (
+                self.drift_detector.trigger_method == PeriodicTrigger._RANDOM_TRIGGER
+            ):  # noqa
+                self.drift_detector._set_params(rng=self.rng)  # noqa
 
         if isinstance(self.warning_detector, PeriodicTrigger):
-            if self.warning_detector.trigger_method == PeriodicTrigger._FIXED_TRIGGER:   # noqa
-                self.warning_detector._set_params(w=self.idx_original)    # noqa
-            if self.warning_detector.trigger_method == PeriodicTrigger._RANDOM_TRIGGER:   # noqa
-                self.warning_detector._set_params(rng=self.rng)    # noqa
+            if (
+                self.warning_detector.trigger_method == PeriodicTrigger._FIXED_TRIGGER
+            ):  # noqa
+                self.warning_detector._set_params(w=self.idx_original)  # noqa
+            if (
+                self.warning_detector.trigger_method == PeriodicTrigger._RANDOM_TRIGGER
+            ):  # noqa
+                self.warning_detector._set_params(rng=self.rng)  # noqa
 
         # Only used when paired with periodic drift detectors
         self.disable_warning_detector = False
 
     def learn_one(
-            self,
-            x: dict,
-            y: base.typing.ClfTarget,
-            *,
-            sample_weight: int,
-            n_samples_seen: int,
-            rng: np.random.Generator,
+        self,
+        x: dict,
+        y: base.typing.ClfTarget,
+        *,
+        sample_weight: int,
+        n_samples_seen: int,
+        rng: np.random.Generator,
     ):
         all_features = [feature for feature in x.keys()]
         if self.features is not None:
             # Select the subset of features to use
             x_subset = {k: x[k] for k in self.features}
             if self._set_nominal_attributes and hasattr(
-                    self.model, 'nominal_attributes'):
+                self.model, "nominal_attributes"
+            ):
                 self.model.nominal_attributes = list(
                     set(self.features).intersection(set(self.nominal_attributes))
                 )
@@ -930,7 +961,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
         if self.drift_detection_criteria == self._ERROR:
             # Track absolute error
             drift_detector_input = np.abs(y_pred - y)
-        else:   # self.drift_detection_criteria == self._PREDICTION
+        else:  # self.drift_detection_criteria == self._PREDICTION
             # Track predicted target values
             drift_detector_input = y_pred
 
@@ -948,7 +979,10 @@ class BaseSRPRegressor(BaseSRPEstimator):
 
         if not self.disable_drift_detector and not self.is_background_learner:
             # Check for warnings only if the background learner is active
-            if not self.disable_background_learner and not self.disable_warning_detector:
+            if (
+                not self.disable_background_learner
+                and not self.disable_warning_detector
+            ):
                 # Update the warning detection method
                 self.warning_detector.update(drift_detector_input)
                 # Check if there was a change
@@ -1006,19 +1040,24 @@ class PeriodicTrigger(base.DriftDetector):
         Random number generator for reproducibility.
 
     """
-    _FIXED_TRIGGER = 'fixed'
-    _RANDOM_TRIGGER = 'random'
 
-    def __init__(self,
-                 trigger_method: str = 'fixed',
-                 t_0: int = 300,
-                 w: float = 0,
-                 rng: np.random.Generator = None):
+    _FIXED_TRIGGER = "fixed"
+    _RANDOM_TRIGGER = "random"
+
+    def __init__(
+        self,
+        trigger_method: str = "fixed",
+        t_0: int = 300,
+        w: float = 0,
+        rng: np.random.Generator = None,
+    ):
 
         super().__init__()
         if trigger_method not in {self._FIXED_TRIGGER, self._RANDOM_TRIGGER}:
-            raise ValueError(f"Invalid trigger_method: {trigger_method}.\n"
-                             f"Valid options are: {[self._FIXED_TRIGGER, self._RANDOM_TRIGGER]}")
+            raise ValueError(
+                f"Invalid trigger_method: {trigger_method}.\n"
+                f"Valid options are: {[self._FIXED_TRIGGER, self._RANDOM_TRIGGER]}"
+            )
         self.trigger_method = trigger_method
         self.t_0 = t_0
         self.w = w
@@ -1032,11 +1071,11 @@ class PeriodicTrigger(base.DriftDetector):
         if self.trigger_method == self._FIXED_TRIGGER:
             self._fixed_trigger()
 
-        else:   # self.trigger_method == self._RANDOM_TRIGGER
+        else:  # self.trigger_method == self._RANDOM_TRIGGER
             self._random_trigger()
 
     def _fixed_trigger(self):
-        if self.data_points_seen > (self.t_0 + (self.w * int(self.t_0 * .1))):
+        if self.data_points_seen > (self.t_0 + (self.w * int(self.t_0 * 0.1))):
             self.in_concept_change = True
             self.data_points_seen = 0
 
