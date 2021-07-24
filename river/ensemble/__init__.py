@@ -15,7 +15,10 @@ from .bagging import (
     LeveragingBaggingClassifier,
 )
 from .boosting import AdaBoostClassifier
-from .streaming_random_patches import SRPClassifier
+from .streaming_random_patches import (
+    SRPClassifier,
+    SRPRegressor
+)
 
 __all__ = [
     "AdaptiveRandomForestClassifier",
@@ -26,4 +29,5 @@ __all__ = [
     "BaggingRegressor",
     "LeveragingBaggingClassifier",
     "SRPClassifier",
+    "SRPRegressor"
 ]
