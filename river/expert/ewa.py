@@ -1,5 +1,6 @@
 import math
 import typing
+import river
 
 from river import base
 from river import linear_model as lm
@@ -109,19 +110,28 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
     def regressors(self):
         return self.models
 
-    def learn_predict_one(self, x, y):
-
+    def learn_predict_one(self, x, y,horizon=1):
+        #Added horizon to accommodate SNARIMAX models 
         y_pred_mean = 0.0
 
         # Make a prediction and update the weights accordingly for each model
         total = 0
         for i, regressor in enumerate(self):
-            y_pred = regressor.predict_one(x=x)
+            #if the regressor is an instance of SNARIMAX
+            if isinstance(regressor, river.time_series.snarimax.SNARIMAX):
+                y_pred = regressor.forecast(horizon=horizon,xs=[x])
+                y_pred = y_pred[0]
+            else:
+                y_pred = regressor.predict_one(x=x)
             y_pred_mean += self.weights[i] * (y_pred - y_pred_mean) / len(self)
             loss = self.loss(y_true=y, y_pred=y_pred)
             self.weights[i] *= math.exp(-self.learning_rate * loss)
             total += self.weights[i]
-            regressor.learn_one(x, y)
+            #if the regressor is an instance of SNARIMAX
+            if isinstance(regressor, river.time_series.snarimax.SNARIMAX):
+                regressor.learn_one(y,x)
+            else:
+                regressor.learn_one(x, y)
 
         # Normalize the weights so that they sum up to 1
         if total:
@@ -130,11 +140,13 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
 
         return y_pred_mean
 
-    def learn_one(self, x, y):
-        self.learn_predict_one(x, y)
+    def learn_one(self, x, y, horizon=1):
+         #Added horizon to accommodate SNARIMAX models 
+        self.learn_predict_one(x, y, horizon)
         return self
 
-    def predict_one(self, x):
+    def predict_one(self, x, horizon=1):
+        #updated predict one to accommodate SNARIMAX models
         return sum(
-            model.predict_one(x) * weight for model, weight in zip(self, self.weights)
+             [model.forecast(horizon=horizon,xs=[x])[0] * weight if isinstance(model,river.time_series.snarimax.SNARIMAX) else model.predict_one(x) * weight for model, weight in zip(self, self.weights)]
         )
