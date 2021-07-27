@@ -118,7 +118,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
         total = 0
         for i, regressor in enumerate(self):
             #if the regressor is an instance of SNARIMAX
-            if isinstance(regressor, river.time_series.snarimax.SNARIMAX):
+            if 'forecast' in dir(regressor):
                 y_pred = regressor.forecast(horizon=horizon,xs=[x])
                 y_pred = y_pred[0]
             else:
@@ -128,7 +128,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
             self.weights[i] *= math.exp(-self.learning_rate * loss)
             total += self.weights[i]
             #if the regressor is an instance of SNARIMAX
-            if isinstance(regressor, river.time_series.snarimax.SNARIMAX):
+            if 'forecast' in dir(regressor):
                 regressor.learn_one(y,x)
             else:
                 regressor.learn_one(x, y)
@@ -148,5 +148,5 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
     def predict_one(self, x, horizon=1):
         #updated predict one to accommodate SNARIMAX models
         return sum(
-             [model.forecast(horizon=horizon,xs=[x])[0] * weight if isinstance(model,river.time_series.snarimax.SNARIMAX) else model.predict_one(x) * weight for model, weight in zip(self, self.weights)]
+             [model.forecast(horizon=horizon,xs=[x])[0] * weight if 'forecast' in dir(regressor) else model.predict_one(x) * weight for model, weight in zip(self, self.weights)]
         )
