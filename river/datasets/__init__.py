@@ -27,12 +27,14 @@ from .solar_flare import SolarFlare
 from .taxis import Taxis
 from .trec07 import TREC07
 from .trump_approval import TrumpApproval
+from .covertype import Covertype
 
 __all__ = [
     "AirlinePassengers",
     "Bananas",
     "Bikes",
     "ChickWeights",
+    "Covertype",
     "CreditCard",
     "Elec2",
     "Higgs",
