@@ -220,6 +220,141 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         self._rng = np.random.default_rng(self.seed)
 
 
+class BaseSRPEstimator:
+    """Base class for estimators (classifiers or regressors) in SRP
+    """
+
+    def __init__(
+        self,
+        idx_original: int,
+        model: base.Estimator,
+        metric: Metric,
+        created_on: int,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
+        is_background_learner,
+        rng: np.random.Generator,
+        features=None,
+    ):
+        self.idx_original = idx_original
+        self.created_on = created_on
+        self.model = model.clone()
+        self.metric = copy.deepcopy(metric)
+        # Make sure that the metric is not initialized, e.g. when creating background learners.
+        if isinstance(self.metric, MultiClassMetric):
+            self.metric.cm.reset()
+        else:
+            self.metric.__init__()
+
+        # Store current model subspace representation of the original instances
+        self.features = features
+
+        # Drift and warning detection
+        if drift_detector is not None:
+            self.disable_drift_detector = False
+            self.drift_detector = drift_detector.clone()  # Actual detector used
+        else:
+            self.disable_drift_detector = True
+            self.drift_detector = None
+
+        if warning_detector is not None:
+            self.disable_background_learner = False
+            self.warning_detector = warning_detector.clone()  # Actual detector used
+        else:
+            self.disable_background_learner = True
+            self.warning_detector = None
+
+        # Background learner
+        self.is_background_learner = is_background_learner
+
+        # Statistics
+        self.n_drifts_detected = 0
+        self.n_warnings_detected = 0
+
+        # Random number generator (initialized)
+        self.rng = rng
+
+        # Background learner
+        self._background_learner = (
+            None
+        )  # type: typing.Optional[BaseSRPClassifier, BaseSRPRegressor]
+
+    def _trigger_warning(
+        self, all_features, n_samples_seen: int, rng: np.random.Generator
+    ):
+        # Randomly generate a new subspace from all the original features
+        subspace = (
+            None
+            if self.features is None
+            else random_subspace(
+                all_features=all_features, k=len(self.features), rng=rng
+            )
+        )
+
+        # Initialize the background learner
+        self._background_learner = self.__class__(
+            idx_original=self.idx_original,
+            model=self.model,
+            metric=self.metric,
+            created_on=n_samples_seen,
+            drift_detector=self.drift_detector,
+            warning_detector=self.warning_detector,
+            is_background_learner=True,
+            rng=self.rng,
+            features=subspace,
+        )
+        # Hard-reset the warning method
+        self.warning_detector = self.warning_detector.clone()
+
+    def reset(self, all_features: list, n_samples_seen: int, rng: np.random.Generator):
+        if not self.disable_background_learner and self._background_learner is not None:
+            # Replace model with the corresponding background model
+            self.model = self._background_learner.model
+            self.drift_detector = self._background_learner.drift_detector
+            self.warning_detector = self._background_learner.warning_detector
+            self.metric = self._background_learner.metric
+            if isinstance(self.metric, MultiClassMetric):
+                self.metric.cm.reset()
+            else:
+                self.metric.__init__()
+            self.created_on = self._background_learner.created_on
+            self.features = self._background_learner.features
+            self._background_learner = None
+        else:
+            # Randomly generate a new subspace from all the original features
+            subspace = (
+                None
+                if self.features is None
+                else random_subspace(
+                    all_features=all_features, k=len(self.features), rng=rng
+                )
+            )
+            # Reset model
+            self.model = self.model.clone()
+            if isinstance(self.metric, MultiClassMetric):
+                self.metric.cm.reset()
+            else:
+                self.metric.__init__()
+            self.created_on = n_samples_seen
+            self.drift_detector = self.drift_detector.clone()
+            self.features = subspace
+
+
+def random_subspace(all_features: list, k: int, rng: np.random.Generator):
+    """Utility function to generate a random feature subspace of length k
+
+    Parameters
+    ----------
+    all_features
+        List of possible features to select from.
+    k
+        Subspace length.
+    rng
+        Random number generator (initialized).
+    """
+    return rng.choice(all_features, k, replace=False)
+
+
 class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     """Streaming Random Patches ensemble classifier.
 
@@ -389,126 +524,6 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
         raise NotImplementedError
 
 
-class BaseSRPEstimator:
-    """Base class for estimators (classifiers or regressors) in SRP
-    """
-
-    def __init__(
-        self,
-        idx_original: int,
-        model: base.Estimator,
-        metric: Metric,
-        created_on: int,
-        drift_detector: base.DriftDetector,
-        warning_detector: base.DriftDetector,
-        is_background_learner,
-        rng: np.random.Generator,
-        features=None,
-    ):
-        self.idx_original = idx_original
-        self.created_on = created_on
-        self.model = model.clone()
-        self.metric = copy.deepcopy(metric)
-        # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.metric, MultiClassMetric):
-            self.metric.cm.reset()
-        else:
-            self.metric.__init__()
-
-        # Store current model subspace representation of the original instances
-        self.features = features
-
-        # Drift and warning detection
-        if drift_detector is not None:
-            self.disable_drift_detector = False
-            self.drift_detector = drift_detector.clone()  # Actual detector used
-        else:
-            self.disable_drift_detector = True
-            self.drift_detector = None
-
-        if warning_detector is not None:
-            self.disable_background_learner = False
-            self.warning_detector = warning_detector.clone()  # Actual detector used
-        else:
-            self.disable_background_learner = True
-            self.warning_detector = None
-
-        # Background learner
-        self.is_background_learner = is_background_learner
-
-        # Statistics
-        self.n_drifts_detected = 0
-        self.n_warnings_detected = 0
-
-        # Random number generator (initialized)
-        self.rng = rng
-
-        # Background learner
-        self._background_learner = (
-            None
-        )  # type: typing.Optional[BaseSRPClassifier, BaseSRPRegressor]
-
-    def _trigger_warning(
-        self, all_features, n_samples_seen: int, rng: np.random.Generator
-    ):
-        # Randomly generate a new subspace from all the original features
-        subspace = (
-            None
-            if self.features is None
-            else random_subspace(
-                all_features=all_features, k=len(self.features), rng=rng
-            )
-        )
-
-        # Initialize the background learner
-        self._background_learner = self.__class__(
-            idx_original=self.idx_original,
-            model=self.model,
-            metric=self.metric,
-            created_on=n_samples_seen,
-            drift_detector=self.drift_detector,
-            warning_detector=self.warning_detector,
-            is_background_learner=True,
-            rng=self.rng,
-            features=subspace,
-        )
-        # Hard-reset the warning method
-        self.warning_detector = self.warning_detector.clone()
-
-    def reset(self, all_features: list, n_samples_seen: int, rng: np.random.Generator):
-        if not self.disable_background_learner and self._background_learner is not None:
-            # Replace model with the corresponding background model
-            self.model = self._background_learner.model
-            self.drift_detector = self._background_learner.drift_detector
-            self.warning_detector = self._background_learner.warning_detector
-            self.metric = self._background_learner.metric
-            if isinstance(self.metric, MultiClassMetric):
-                self.metric.cm.reset()
-            else:
-                self.metric.__init__()
-            self.created_on = self._background_learner.created_on
-            self.features = self._background_learner.features
-            self._background_learner = None
-        else:
-            # Randomly generate a new subspace from all the original features
-            subspace = (
-                None
-                if self.features is None
-                else random_subspace(
-                    all_features=all_features, k=len(self.features), rng=rng
-                )
-            )
-            # Reset model
-            self.model = self.model.clone()
-            if isinstance(self.metric, MultiClassMetric):
-                self.metric.cm.reset()
-            else:
-                self.metric.__init__()
-            self.created_on = n_samples_seen
-            self.drift_detector = self.drift_detector.clone()
-            self.features = subspace
-
-
 class BaseSRPClassifier(BaseSRPEstimator):
     """Class representing the base learner of SRPClassifier.
     """
@@ -608,21 +623,6 @@ class BaseSRPClassifier(BaseSRPEstimator):
         if y_pred:
             return max(y_pred, key=y_pred.get)
         return 0
-
-
-def random_subspace(all_features: list, k: int, rng: np.random.Generator):
-    """Utility function to generate a random feature subspace of length k
-
-    Parameters
-    ----------
-    all_features
-        List of possible features to select from.
-    k
-        Subspace length.
-    rng
-        Random number generator (initialized).
-    """
-    return rng.choice(all_features, k, replace=False)
 
 
 class SRPRegressor(BaseSRPEnsemble, base.Regressor):
