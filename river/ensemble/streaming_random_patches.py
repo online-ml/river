@@ -43,7 +43,6 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         warning_detector: base.DriftDetector = None,
         disable_detector: str = "off",
         disable_weighted_vote: bool = False,
-        nominal_attributes=None,
         seed=None,
         metric: Metric = None,
     ):
@@ -59,7 +58,6 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         self.disable_weighted_vote = disable_weighted_vote
         self.disable_detector = disable_detector
         self.metric = metric
-        self.nominal_attributes = nominal_attributes if nominal_attributes else []
         self.seed = seed
         self._rng = np.random.default_rng(self.seed)
 
@@ -213,7 +211,6 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
                     is_background_learner=False,
                     rng=self._rng,
                     features=subspace,
-                    nominal_attributes=self.nominal_attributes,
                 )
             )
 
@@ -266,10 +263,6 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
          reset if drift is detected.<br/>
     disable_weighted_vote
         If True, disables weighted voting.
-    nominal_attributes
-        List of Nominal attributes. If empty, then assumes that all
-        attributes are numerical. Note: Only applies if the base model
-        allows to define the nominal attributes.
     seed
         Random number generator seed for reproducibility.
     metric
@@ -316,7 +309,6 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
         warning_detector: base.DriftDetector = None,
         disable_detector: str = "off",
         disable_weighted_vote: bool = False,
-        nominal_attributes=None,
         seed=None,
         metric: Metric = None,
     ):
@@ -355,7 +347,6 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
             warning_detector=warning_detector,
             disable_detector=disable_detector,
             disable_weighted_vote=disable_weighted_vote,
-            nominal_attributes=nominal_attributes,
             seed=seed,
             metric=metric,
         )
@@ -413,7 +404,6 @@ class BaseSRPEstimator:
         is_background_learner,
         rng: np.random.Generator,
         features=None,
-        nominal_attributes=None,
     ):
         self.idx_original = idx_original
         self.created_on = created_on
@@ -450,10 +440,6 @@ class BaseSRPEstimator:
         self.n_drifts_detected = 0
         self.n_warnings_detected = 0
 
-        # Nominal attributes
-        self.nominal_attributes = nominal_attributes
-        self._set_nominal_attributes = self._can_set_nominal_attributes()
-
         # Random number generator (initialized)
         self.rng = rng
 
@@ -461,7 +447,6 @@ class BaseSRPEstimator:
         self._background_learner = (
             None
         )  # type: typing.Optional[BaseSRPClassifier, BaseSRPRegressor]
-        self._background_learner_class = None  # defined in the extended classes
 
     def _trigger_warning(
         self, all_features, n_samples_seen: int, rng: np.random.Generator
@@ -476,7 +461,7 @@ class BaseSRPEstimator:
         )
 
         # Initialize the background learner
-        self._background_learner = self._background_learner_class(
+        self._background_learner = self.__class__(
             idx_original=self.idx_original,
             model=self.model,
             metric=self.metric,
@@ -486,7 +471,6 @@ class BaseSRPEstimator:
             is_background_learner=True,
             rng=self.rng,
             features=subspace,
-            nominal_attributes=self.nominal_attributes,
         )
         # Hard-reset the warning method
         self.warning_detector = self.warning_detector.clone()
@@ -523,10 +507,6 @@ class BaseSRPEstimator:
             self.created_on = n_samples_seen
             self.drift_detector = self.drift_detector.clone()
             self.features = subspace
-            self._set_nominal_attributes = self._can_set_nominal_attributes()
-
-    def _can_set_nominal_attributes(self):
-        return self.nominal_attributes is not None and len(self.nominal_attributes) > 0
 
 
 class BaseSRPClassifier(BaseSRPEstimator):
@@ -544,7 +524,6 @@ class BaseSRPClassifier(BaseSRPEstimator):
         is_background_learner,
         rng: np.random.Generator,
         features=None,
-        nominal_attributes=None,
     ):
 
         super().__init__(
@@ -557,10 +536,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
             is_background_learner=is_background_learner,
             rng=rng,
             features=features,
-            nominal_attributes=nominal_attributes,
         )
-
-        self._background_learner_class = BaseSRPClassifier
 
     def learn_one(
         self,
@@ -571,17 +547,10 @@ class BaseSRPClassifier(BaseSRPEstimator):
         n_samples_seen: int,
         rng: np.random.Generator,
     ):
-        all_features = [feature for feature in x.keys()]
+        all_features = list(x.keys())
         if self.features is not None:
             # Select the subset of features to use
             x_subset = {k: x[k] for k in self.features}
-            if self._set_nominal_attributes and hasattr(
-                self.model, "nominal_attributes"
-            ):
-                self.model.nominal_attributes = list(
-                    set(self.features).intersection(set(self.nominal_attributes))
-                )
-                self._set_nominal_attributes = False
         else:
             # Use all features
             x_subset = x
@@ -660,17 +629,17 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     """Streaming Random Patches ensemble regressor.
 
     The Streaming Random Patches [^1] ensemble method for regression trains
-    each base learner on a  subset of  features  and  instances from  the
-    original  data, namely  a  random  patch. This  strategy  to  enforce
-    diverse base  models  is  similar  to  the  one  in  the  random forest,
-    yet it  is  not  restricted to  using  decision  trees  as  base  learner.
+    each base learner on a subset of features and instances from the
+    original data, namely a random patch. This strategy to enforce
+    diverse base models is similar to the one in the random forest,
+    yet it is not restricted to using decision trees as base learner.
 
     This method is an adaptation of [^2] for regression.
 
     Parameters
     ----------
     model
-            The base estimator.
+        The base estimator.
     n_models
         Number of members in the ensemble.
     subspace_size
@@ -689,6 +658,10 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
         * 'patches' - Random patches.
     lam
         Lambda value for bagging.
+    drift_detector
+        Drift detector.
+    warning_detector
+        Warning detector.
     disable_detector
         Option to disable drift detectors:<br/>
         * If `'off'`, detectors are enabled.<br/>
@@ -705,10 +678,6 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
         The method to use to aggregate predictions in the ensemble.<br/>
         * 'mean'<br/>
         * 'median'
-    nominal_attributes
-        List of Nominal attributes. If empty, then assumes that all
-        attributes are numerical. Note: Only applies if the base model
-        allows to define the nominal attributes.
     seed
         Random number generator seed for reproducibility.
     metric
@@ -769,7 +738,6 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
         disable_weighted_vote: bool = True,
         drift_detection_criteria: str = "error",
         aggregation_method: str = "mean",
-        nominal_attributes=None,
         seed=None,
         metric: RegressionMetric = None,
     ):
@@ -810,7 +778,6 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
             warning_detector=warning_detector,
             disable_detector=disable_detector,
             disable_weighted_vote=disable_weighted_vote,
-            nominal_attributes=nominal_attributes,
             seed=seed,
             metric=metric,
         )
@@ -867,9 +834,6 @@ class BaseSRPRegressor(BaseSRPEstimator):
     """Class representing the base learner of SRPClassifier.
     """
 
-    _ERROR = "error"
-    _PREDICTION = "prediction"
-
     def __init__(
         self,
         idx_original: int,
@@ -881,7 +845,6 @@ class BaseSRPRegressor(BaseSRPEstimator):
         is_background_learner,
         rng: np.random.Generator,
         features=None,
-        nominal_attributes=None,
         drift_detection_criteria: str = None,
     ):
         super().__init__(
@@ -894,10 +857,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
             is_background_learner=is_background_learner,
             rng=rng,
             features=features,
-            nominal_attributes=nominal_attributes,
         )
-
-        self._background_learner_class = BaseSRPRegressor
 
         # The following only applies when using periodic pseudo drift detectors
 
@@ -925,29 +885,21 @@ class BaseSRPRegressor(BaseSRPEstimator):
             ):  # noqa
                 self.warning_detector._set_params(rng=self.rng)  # noqa
 
-        # Only used when paired with periodic drift detectors
         self.disable_warning_detector = False
 
     def learn_one(
         self,
         x: dict,
-        y: base.typing.ClfTarget,
+        y: base.typing.RegTarget,
         *,
         sample_weight: int,
         n_samples_seen: int,
         rng: np.random.Generator,
     ):
-        all_features = [feature for feature in x.keys()]
+        all_features = list(x.keys())
         if self.features is not None:
             # Select the subset of features to use
             x_subset = {k: x[k] for k in self.features}
-            if self._set_nominal_attributes and hasattr(
-                self.model, "nominal_attributes"
-            ):
-                self.model.nominal_attributes = list(
-                    set(self.features).intersection(set(self.nominal_attributes))
-                )
-                self._set_nominal_attributes = False
         else:
             # Use all features
             x_subset = x
@@ -958,10 +910,10 @@ class BaseSRPRegressor(BaseSRPEstimator):
 
         # Drift detection input
         y_pred = self.model.predict_one(x_subset)
-        if self.drift_detection_criteria == self._ERROR:
+        if self.drift_detection_criteria == "error":
             # Track absolute error
             drift_detector_input = np.abs(y_pred - y)
-        else:  # self.drift_detection_criteria == self._PREDICTION
+        else:  # self.drift_detection_criteria == "prediction"
             # Track predicted target values
             drift_detector_input = y_pred
 
