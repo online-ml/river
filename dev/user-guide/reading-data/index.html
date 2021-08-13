@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://riverml.xyz/user-guide/reading-data/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.4">
     
     
       
@@ -24,10 +24,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.fe914879.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.f7f47774.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ba0d045b.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.3f5d1f46.min.css">
         
           
           
@@ -6924,7 +6924,7 @@ Toulouse.
    Samples  182,470                                                       
   Features  8                                                             
     Sparse  False                                                         
-      Path  /home/runner/river_data/Bikes/toulouse_bikes.csv              
+      Path  /Users/max.halford/river_data/Bikes/toulouse_bikes.csv        
        URL  https://maxhalford.github.io/files/datasets/toulouse_bikes.zip
       Size  12.52 MB                                                      
 Downloaded  True
@@ -7004,8 +7004,33 @@ Downloaded  True
  1)
 </code></pre></div>
 <p>That's much better. We invite you to take a look at the <code>stream</code> module to see for yourself what other methods are available. Note that <code>river</code> is first and foremost a machine learning library, and therefore isn't as much concerned about reading data as it is about statistical algorithms. We do however believe that the fact that we use dictionary gives you, the user, a lot of freedom and flexibility.</p>
-<p>To conclude, let us shortly mention between <em>proactive learning</em> and <em>reactive learning</em> in the specific context of online machine learning. When we loop over a data with a <code>for</code> loop, we have the control over the data and the order in which it arrives. We are proactive in the sense that we, the user, are asking for the data to arrive.</p>
-<p>In contract, in a reactive situation, we don't have control on the data arrival. A typical example of such a situation is web server, where web requests arrive in an arbitrary order. This is a situation where <code>river</code> shines. For instance, in a <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> application, you could define a route to make predictions with a <code>river</code> model as so:</p>
+<p>The <code>stream</code> module provides helper functions to read data from different formats. For instance, you can use the <code>stream.iter_sklearn_dataset</code> function to turn any scikit-learn dataset into a stream.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_boston</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_sklearn_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+    <span class="k">break</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>({&#39;CRIM&#39;: 0.00632,
+  &#39;ZN&#39;: 18.0,
+  &#39;INDUS&#39;: 2.31,
+  &#39;CHAS&#39;: 0.0,
+  &#39;NOX&#39;: 0.538,
+  &#39;RM&#39;: 6.575,
+  &#39;AGE&#39;: 65.2,
+  &#39;DIS&#39;: 4.09,
+  &#39;RAD&#39;: 1.0,
+  &#39;TAX&#39;: 296.0,
+  &#39;PTRATIO&#39;: 15.3,
+  &#39;B&#39;: 396.9,
+  &#39;LSTAT&#39;: 4.98},
+ 24.0)
+</code></pre></div>
+<p>To conclude, let us shortly mention the difference between <em>proactive learning</em> and <em>reactive learning</em> in the specific context of online machine learning. When we loop over a data with a <code>for</code> loop, we have the control over the data and the order in which it arrives. We are proactive in the sense that we, the user, are asking for the data to arrive.</p>
+<p>In contract, in a reactive situation, we don't have control on the data arrival. A typical example of such a situation is a web server, where web requests arrive in an arbitrary order. This is a situation where <code>river</code> shines. For instance, in a <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> application, you could define a route to make predictions with a <code>river</code> model as so:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">flask</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -7086,10 +7111,10 @@ Downloaded  True
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.53c85856.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.709b4209.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.716f8af4.min.js"></script>
+      <script src="../../assets/javascripts/bundle.febc23d1.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
