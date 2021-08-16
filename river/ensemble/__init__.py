@@ -27,5 +27,5 @@ __all__ = [
     "BaggingRegressor",
     "LeveragingBaggingClassifier",
     "SRPClassifier",
-    "VotingClassifier"
+    "VotingClassifier",
 ]
