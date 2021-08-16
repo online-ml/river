@@ -2,6 +2,9 @@ import collections
 from typing import List
 
 from river import base
+from river import linear_model
+from river import naive_bayes
+from river import tree
 
 
 class VotingClassifier(base.Classifier, base.EnsembleMixin):
@@ -54,6 +57,7 @@ class VotingClassifier(base.Classifier, base.EnsembleMixin):
         super().__init__(models)
         self.use_probabilities = use_probabilities
 
+    @property
     def _multiclass(self):
         return all(model._multiclass for model in self)
 
@@ -71,3 +75,7 @@ class VotingClassifier(base.Classifier, base.EnsembleMixin):
         for vote in votes:
             agg.update(vote)
         return agg.most_common(1)[0][0]
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {"models": [linear_model.LogisticRegression(), tree.HoeffdingTreeClassifier(), naive_bayes.GaussianNB()]}
