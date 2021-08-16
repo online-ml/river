@@ -5,7 +5,6 @@ import math
 import typing
 
 import numpy as np
-import pandas as pd
 
 from river import base
 from river.drift import ADWIN
@@ -519,9 +518,6 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
         if total > 0:
             return {label: proba / total for label, proba in y_pred.items()}
         return y_pred
-
-    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        raise NotImplementedError
 
 
 class BaseSRPClassifier(BaseSRPEstimator):
