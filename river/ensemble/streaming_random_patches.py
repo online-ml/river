@@ -421,7 +421,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     ... )
     >>> metric = metrics.Accuracy()
 
-    >>> evaluate.progressive_val_score(dataset, model, metric)  # doctest: +SKIP
+    >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 74.47%
 
     References
@@ -700,7 +700,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     ...     seed=42,
     ... )
     >>> metric = metrics.R2()
-    >>> evaluate.progressive_val_score(dataset, model, metric)  # doctest: +SKIP
+    >>> evaluate.progressive_val_score(dataset, model, metric)
     R2: 0.525003
 
     References
