@@ -1,10 +1,7 @@
 import collections
 from typing import List
 
-from river import base
-from river import linear_model
-from river import naive_bayes
-from river import tree
+from river import base, linear_model, naive_bayes, tree
 
 
 class VotingClassifier(base.Classifier, base.EnsembleMixin):
@@ -78,4 +75,10 @@ class VotingClassifier(base.Classifier, base.EnsembleMixin):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"models": [linear_model.LogisticRegression(), tree.HoeffdingTreeClassifier(), naive_bayes.GaussianNB()]}
+        return {
+            "models": [
+                linear_model.LogisticRegression(),
+                tree.HoeffdingTreeClassifier(),
+                naive_bayes.GaussianNB(),
+            ]
+        }
