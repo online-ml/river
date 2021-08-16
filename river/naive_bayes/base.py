@@ -8,7 +8,7 @@ from scipy import sparse, special
 from river import base
 
 
-class BaseNB(base.Classifier):
+class BaseNB(base.MiniBatchClassifier):
     """Base Naive Bayes class."""
 
     @abc.abstractmethod

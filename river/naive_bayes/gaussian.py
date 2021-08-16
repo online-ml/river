@@ -3,15 +3,15 @@ import functools
 import math
 
 import pandas as pd
+from scipy import special
 
+from river import base
 from river import proba
-
-from . import base
 
 __all__ = ["GaussianNB"]
 
 
-class GaussianNB(base.BaseNB):
+class GaussianNB(base.Classifier):
     """Gaussian Naive Bayes.
 
     A Gaussian distribution $G_{cf}$ is maintained for each class $c$ and each feature $f$. Each
@@ -53,6 +53,14 @@ class GaussianNB(base.BaseNB):
 
         return self
 
+    def predict_proba_one(self, x):
+        """Return probabilities using the log-likelihoods."""
+        jll = self.joint_log_likelihood(x)
+        if not jll:
+            return {}
+        lse = special.logsumexp(list(jll.values()))
+        return {label: math.exp(ll - lse) for label, ll in jll.items()}
+
     def p_class(self, c):
         return self.class_counts[c] / sum(self.class_counts.values())
 
@@ -65,3 +73,7 @@ class GaussianNB(base.BaseNB):
 
     def joint_log_likelihood_many(self, X: pd.DataFrame):
         pass
+
+    @property
+    def _multiclass(self):
+        return True
