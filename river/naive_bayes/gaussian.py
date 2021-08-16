@@ -5,8 +5,7 @@ import math
 import pandas as pd
 from scipy import special
 
-from river import base
-from river import proba
+from river import base, proba
 
 __all__ = ["GaussianNB"]
 
