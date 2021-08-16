@@ -7194,7 +7194,7 @@
 <li><strong>y</strong>     (<em>pandas.core.series.Series</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>self</p>
+<p><em>MiniBatchClassifier</em>:     self</p>
 </details>
 <details class="- note"><summary>learn_one</summary><p>Updates the model with a single observation.</p>
 <p><strong>Parameters</strong></p>
@@ -7208,13 +7208,14 @@
 <details class="- note"><summary>p_class</summary></details>
 <details class="- note"><summary>p_class_many</summary></details>
 <details class="- note"><summary>p_feature_given_class</summary></details>
-<details class="- note"><summary>predict_many</summary><p>Predict the labels of a DataFrame <code>X</code>.</p>
+<details class="- note"><summary>predict_many</summary><p>Predict the outcome for each given sample.</p>
+<p>Parameters --------- X     A dataframe of features.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>Series</em>:     Series of predicted labels.</p>
+<p><em>Series</em>:     The predicted labels.</p>
 </details>
 <details class="- note"><summary>predict_one</summary><p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>

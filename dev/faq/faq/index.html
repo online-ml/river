@@ -6908,14 +6908,11 @@
 <p><strong>Do all classifiers support multi-class classification?</strong></p>
 <p>No, they don't. Although binary classification can be seen as a special case of multi-class classification, there are many optimizations that can be performed if we know that there are only two classes. It would be annoying to have to check whether this is the case in an online setting. All in all we find that separating both cases leads to much cleaner code. Note that the <code>multiclass</code> module contains wrapper models that enable you to perform multi-class classification with binary classifiers.</p>
 <p><strong>How do I know if a classifier supports multi-class classification?</strong></p>
-<p>Each classifier that is part of <code>river</code> is either a <code>base.BinaryClassifier</code> or a <code>base.MultiClassifier</code>. You can use Python's <code>isinstance</code> function to check for a particular classifier, as so:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">base</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
+<p>Each classifier in <code>river</code> inherits from the <code>base.Classifier</code> class. Each classifier therefore has a <code>_multiclass</code> property which indicates whether or not it can process a non-boolean target value.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">classifier</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">base</span><span class="o">.</span><span class="n">BinaryClassifier</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">base</span><span class="o">.</span><span class="n">MultiClassifier</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">classifier</span><span class="o">.</span><span class="n">_multiclass</span>
 <span class="kc">False</span>
 </code></pre></div>
 <p><strong>Why doesn't river do any input validation?</strong></p>

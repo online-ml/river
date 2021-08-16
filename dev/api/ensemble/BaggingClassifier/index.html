@@ -7046,14 +7046,6 @@ slightly better than when using a single logistic regression.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
 <details class="- note"><summary>learn_one</summary></details>
-<details class="- note"><summary>predict_many</summary><p>Predict the labels of a DataFrame <code>X</code>.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
-</ul>
-<p><strong>Returns</strong></p>
-<p><em>Series</em>:     Series of predicted labels.</p>
-</details>
 <details class="- note"><summary>predict_one</summary><p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -7061,14 +7053,6 @@ slightly better than when using a single logistic regression.</p>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>typing.Union[bool, str, int]</em>:     The predicted label.</p>
-</details>
-<details class="- note"><summary>predict_proba_many</summary><p>Predict the labels of a DataFrame <code>X</code>.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
-</ul>
-<p><strong>Returns</strong></p>
-<p><em>DataFrame</em>:     DataFrame that associate probabilities which each label as columns.</p>
 </details>
 <details class="- note"><summary>predict_proba_one</summary><p>Averages the predictions of each classifier.</p>
 <p><strong>Parameters</strong></p>
