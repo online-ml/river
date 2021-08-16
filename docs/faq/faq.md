@@ -6,16 +6,13 @@ No, they don't. Although binary classification can be seen as a special case of 
 
 **How do I know if a classifier supports multi-class classification?**
 
-Each classifier that is part of `river` is either a `base.BinaryClassifier` or a `base.MultiClassifier`. You can use Python's `isinstance` function to check for a particular classifier, as so:
+Each classifier in `river` inherits from the `base.Classifier` class. Each classifier therefore has a `_multiclass` property which indicates whether or not it can process a non-boolean target value.
 
 ```python
->>> from river import base
 >>> from river import linear_model
 
 >>> classifier = linear_model.LogisticRegression()
->>> isinstance(classifier, base.BinaryClassifier)
-True
->>> isinstance(classifier, base.MultiClassifier)
+>>> classifier._multiclass
 False
 ```
 
