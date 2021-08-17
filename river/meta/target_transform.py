@@ -1,8 +1,6 @@
 import math
 
-from river import base
-from river import linear_model
-from river import stats
+from river import base, linear_model, stats
 
 __all__ = ["BoxCoxRegressor", "TargetStandardScaler", "TargetTransformRegressor"]
 
@@ -157,9 +155,7 @@ class TargetStandardScaler(TargetTransformRegressor):
     def __init__(self, regressor: base.Regressor):
         self.var = stats.Var()
         super().__init__(
-            regressor=regressor,
-            func=self._scale,
-            inverse_func=self._unscale
+            regressor=regressor, func=self._scale, inverse_func=self._unscale
         )
 
     def learn_one(self, x, y):
@@ -168,9 +164,9 @@ class TargetStandardScaler(TargetTransformRegressor):
 
     def _scale(self, y):
         try:
-            return (y - self.var.mean.get()) / self.var.get() ** .5
+            return (y - self.var.mean.get()) / self.var.get() ** 0.5
         except ZeroDivisionError:
-            return 0.
+            return 0.0
 
     def _unscale(self, y):
-        return y * self.var.get() ** .5 + self.var.mean.get()
+        return y * self.var.get() ** 0.5 + self.var.mean.get()
