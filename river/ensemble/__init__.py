@@ -16,6 +16,7 @@ from .bagging import (
 )
 from .boosting import AdaBoostClassifier
 from .streaming_random_patches import SRPClassifier
+from .voting import VotingClassifier
 
 __all__ = [
     "AdaptiveRandomForestClassifier",
@@ -26,4 +27,5 @@ __all__ = [
     "BaggingRegressor",
     "LeveragingBaggingClassifier",
     "SRPClassifier",
+    "VotingClassifier",
 ]
