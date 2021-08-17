@@ -2394,8 +2394,20 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/meta/TransformedTargetRegressor/" class="md-nav__link">
-        TransformedTargetRegressor
+      <a href="../../api/meta/TargetStandardScaler/" class="md-nav__link">
+        TargetStandardScaler
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/meta/TargetTransformRegressor/" class="md-nav__link">
+        TargetTransformRegressor
       </a>
     </li>
   
@@ -6704,85 +6716,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#base" class="md-nav__link">
-    base
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#compose" class="md-nav__link">
-    compose
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#datasets" class="md-nav__link">
-    datasets
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decomposition" class="md-nav__link">
-    decomposition
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#expert" class="md-nav__link">
-    expert
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#evaluate" class="md-nav__link">
-    evaluate
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#feature_extraction" class="md-nav__link">
-    feature_extraction
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#linear_model" class="md-nav__link">
-    linear_model
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#model_selection" class="md-nav__link">
-    model_selection
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multiclass" class="md-nav__link">
-    multiclass
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#optim" class="md-nav__link">
-    optim
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#utils" class="md-nav__link">
-    utils
+  <a href="#meta" class="md-nav__link">
+    meta
   </a>
   
 </li>
@@ -7007,85 +6942,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#base" class="md-nav__link">
-    base
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#compose" class="md-nav__link">
-    compose
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#datasets" class="md-nav__link">
-    datasets
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decomposition" class="md-nav__link">
-    decomposition
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#expert" class="md-nav__link">
-    expert
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#evaluate" class="md-nav__link">
-    evaluate
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#feature_extraction" class="md-nav__link">
-    feature_extraction
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#linear_model" class="md-nav__link">
-    linear_model
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#model_selection" class="md-nav__link">
-    model_selection
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multiclass" class="md-nav__link">
-    multiclass
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#optim" class="md-nav__link">
-    optim
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#utils" class="md-nav__link">
-    utils
+  <a href="#meta" class="md-nav__link">
+    meta
   </a>
   
 </li>
@@ -7104,60 +6962,10 @@
                 
                 
                 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
-<h2 id="base">base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
+<h2 id="meta">meta<a class="headerlink" href="#meta" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The <code>base.BinaryClassifier</code> and <code>base.MultiClassifier</code> have been merge into <code>base.Classifier</code>. The <code>'binary_only'</code> tag is now used to indicate whether or not a classifier support multi-class classification or not.</li>
-</ul>
-<h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Fixed some bugs related to mini-batching in <code>compose.Pipeline</code>.</li>
-</ul>
-<h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <code>datasets.SolarFlare</code>, which is a small multi-output regression dataset.</li>
-</ul>
-<h2 id="decomposition">decomposition<a class="headerlink" href="#decomposition" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>decomposition.LDA</code> now takes as input word counts instead of raw text.</li>
-</ul>
-<h2 id="expert">expert<a class="headerlink" href="#expert" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Created this new module, which will regroup methods that perform expert learning, which boils down to managing multiple models.</li>
-<li>Moved <code>ensemble.StackingBinaryClassifier</code> to <code>expert.StackingClassifier</code>.</li>
-<li>Moved <code>model_selection.SuccessiveHalvingClassifier</code> to <code>expert.SuccessiveHalvingClassifier</code>.</li>
-<li>Moved <code>model_selection.SuccessiveHalvingRegressor</code> to <code>expert.SuccessiveHalvingRegressor</code>.</li>
-<li>Moved <code>ensemble.HedgeRegressor</code> to <code>ensemble.EWARegressor</code>.</li>
-</ul>
-<h2 id="evaluate">evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Created this new module, which will contains methods for evaluating models.</li>
-</ul>
-<h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Moved <code>preprocessing.PolynomialExtender</code> to <code>feature_extraction.PolynomialExtender</code>.</li>
-<li>Moved <code>preprocessing.RBFSampler</code> to <code>feature_extraction.RBFSampler</code>.</li>
-</ul>
-<h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <code>linear_model.Perceptron</code>, which is implemented as a special case of logistic regression.</li>
-</ul>
-<h2 id="model_selection">model_selection<a class="headerlink" href="#model_selection" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Deleted this module.</li>
-</ul>
-<h2 id="multiclass">multiclass<a class="headerlink" href="#multiclass" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>multiclass.OneVsRestClassifier</code> now supports mini-batching.</li>
-</ul>
-<h2 id="optim">optim<a class="headerlink" href="#optim" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Removed <code>optim.MiniBatcher</code>.</li>
-<li>Implemented <code>optim.Averager</code>, which allows doing averaged stochastic gradient descent.</li>
-<li>Removed <code>optim.Perceptron</code>.</li>
-</ul>
-<h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Moved <code>model_selection.expand_param_grid</code> to <code>utils.expand_param_grid</code>.</li>
+<li>Renamed <code>meta.TransformedTargetRegressor</code> to <code>meta.TargetTransformRegressor</code>.</li>
+<li>Added <code>meta.TargetStandardScaler</code>.</li>
 </ul>
                 
               
