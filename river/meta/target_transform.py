@@ -1,6 +1,6 @@
 import math
 
-from river import base, linear_model, stats
+from river import base, stats
 
 __all__ = ["BoxCoxRegressor", "TargetStandardScaler", "TargetTransformRegressor"]
 
