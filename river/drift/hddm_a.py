@@ -134,7 +134,11 @@ class HDDM_A(DriftDetector):
 
         if self.two_sided_test:
             if self._mean_decr(
-                self.c_max, self.n_max, self.total_c, self.total_n, self.drift_confidence
+                self.c_max,
+                self.n_max,
+                self.total_c,
+                self.total_n,
+                self.drift_confidence,
             ):
                 self.n_estimation = self.total_n - self.n_max
                 self.c_estimation = self.total_c - self.c_max
@@ -142,7 +146,11 @@ class HDDM_A(DriftDetector):
                 self.c_min = self.c_max = self.total_c = 0
                 self._in_concept_change = True
             elif self._mean_decr(
-                self.c_max, self.n_max, self.total_c, self.total_n, self.warning_confidence
+                self.c_max,
+                self.n_max,
+                self.total_c,
+                self.total_n,
+                self.warning_confidence,
             ):
                 self._in_warning_zone = True
 
