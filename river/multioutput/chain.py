@@ -96,6 +96,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     def _unit_test_params(cls):
         return {"model": linear_model.LogisticRegression()}
 
+    @property
     def _multiclass(self):
         return self.model._multiclass
 
