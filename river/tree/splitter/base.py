@@ -3,8 +3,8 @@ from abc import ABCMeta, abstractmethod
 
 from river import base
 
-from ..split_criterion.base_split_criterion import SplitCriterion
-from ..utils import BranchFactory
+from ..split_criterion.base import SplitCriterion
+from ..utils import BranchFactory, GradHess, GradHessStats
 
 
 class Splitter(base.Estimator, metaclass=ABCMeta):
@@ -90,3 +90,20 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
         regression trees.
         """
         return True
+
+
+class Quantizer(base.Estimator, metaclass=ABCMeta):
+    def __init__(self):
+        super().__init__()
+        self.splits = set()
+
+    def __len__(self):
+        return len(self.splits)
+
+    @abstractmethod
+    def update(self, x_val, gh: GradHess, w: float):
+        pass
+
+    @abstractmethod
+    def __iter__(self) -> typing.Iterator[GradHessStats]:
+        pass

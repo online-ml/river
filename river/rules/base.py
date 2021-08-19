@@ -86,7 +86,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
 
     def __init__(
         self,
-        template_splitter: tree.splitter.base_splitter.Splitter,
+        template_splitter: tree.splitter.base.Splitter,
         split_criterion: tree.split_criterion.base_split_criterion.SplitCriterion,
         **attributes,
     ):

@@ -10,7 +10,7 @@ if one tries to use a classification splitter in a regression tree and vice-vers
 
 """
 
-from .base_splitter import Splitter
+from .base import Splitter
 from .ebst_splitter import EBSTSplitter
 from .exhaustive_splitter import ExhaustiveSplitter
 from .gaussian_splitter import GaussianSplitter
