@@ -17,9 +17,3 @@ doc: render-notebooks
 
 livedoc: doc
 	mkdocs serve --dirtyreload
-
-.PHONY: bench
-bench:
-	asv run ${COMMIT_HASH} --config benchmarks/asv.conf.json --steps 1
-	asv run master --config benchmarks/asv.conf.json --steps 1
-	asv compare the-merge ${COMMIT_HASH} --config benchmarks/asv.conf.json
