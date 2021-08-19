@@ -93,6 +93,8 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
 
 
 class Quantizer(base.Estimator, metaclass=ABCMeta):
+    """Base class for the feature quantizers used in Stochastic Gradient Trees."""
+
     def __init__(self):
         super().__init__()
         self.splits = set()

@@ -12,7 +12,7 @@ from river.utils.skmultiflow_utils import (
 )
 
 from .nodes.branch import (
-    HTBranch,
+    DTBranch,
     NominalBinaryBranch,
     NominalMultiwayBranch,
     NumericBinaryBranch,
@@ -77,7 +77,7 @@ class HoeffdingTree(ABC):
         self.remove_poor_attrs: bool = remove_poor_attrs
         self.merit_preprune: bool = merit_preprune
 
-        self._root: typing.Union[HTBranch, HTLeaf, None] = None
+        self._root: typing.Union[DTBranch, HTLeaf, None] = None
         self._n_active_leaves: int = 0
         self._n_inactive_leaves: int = 0
         self._inactive_leaf_size_estimate: float = 0.0
@@ -184,12 +184,12 @@ class HoeffdingTree(ABC):
         df
             A `pandas.DataFrame` depicting the tree structure.
         """
-        if self._root is not None and isinstance(self._root, HTBranch):
+        if self._root is not None and isinstance(self._root, DTBranch):
             return self._root.to_dataframe()
 
     def _branch_selector(
         self, numerical_feature=True, multiway_split=False
-    ) -> typing.Type[HTBranch]:
+    ) -> typing.Type[DTBranch]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:
@@ -204,7 +204,7 @@ class HoeffdingTree(ABC):
 
     @abstractmethod
     def _new_leaf(
-        self, initial_stats: dict = None, parent: typing.Union[HTLeaf, HTBranch] = None
+        self, initial_stats: dict = None, parent: typing.Union[HTLeaf, DTBranch] = None
     ) -> HTLeaf:
         """Create a new learning node.
 
@@ -373,7 +373,7 @@ class HoeffdingTree(ABC):
                 except KeyError:
                     child_index, _ = node.most_common_path()
 
-                _print(node.repr_split(child_index))  # noqa
+                _print(node.repr_branch(child_index))  # noqa
 
         return buffer.getvalue()
 
@@ -423,11 +423,11 @@ class HoeffdingTree(ABC):
             nonlocal counter
             parent_no = counter
 
-            if isinstance(node, HTBranch):
+            if isinstance(node, DTBranch):
                 for branch_index, child in enumerate(node.children):
                     counter += 1
                     yield parent_no, node, child, counter, branch_index
-                    if isinstance(child, HTBranch):
+                    if isinstance(child, DTBranch):
                         yield from iterate(child)
 
         if max_depth is None:
@@ -458,7 +458,7 @@ class HoeffdingTree(ABC):
             if child.depth > max_depth:
                 continue
 
-            if isinstance(child, HTBranch):
+            if isinstance(child, DTBranch):
                 text = f"{child.feature}"  # noqa
             else:
                 text = f"{repr(child)}\nsamples: {int(child.total_weight)}"
@@ -482,7 +482,7 @@ class HoeffdingTree(ABC):
                 dot.edge(
                     f"{parent_no}",
                     f"{child_no}",
-                    xlabel=parent.repr_split(branch_index, shorten=True),
+                    xlabel=parent.repr_branch(branch_index, shorten=True),
                 )
 
         return dot

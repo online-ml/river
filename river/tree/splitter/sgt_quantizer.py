@@ -4,11 +4,11 @@ import typing
 
 from river import stats
 
-from .base import Quantizer
 from ..utils import GradHess, GradHessStats
+from .base import Quantizer
 
 
-class FeatureQuantizer(Quantizer):
+class DynamicQuantizer(Quantizer):
     """ Adapted version of the Quantizer Observer (QO) that is applied to SGTs [^1].
 
     Parameters
@@ -26,7 +26,7 @@ class FeatureQuantizer(Quantizer):
     perform split attempts in online tree regressors. arXiv preprint arXiv:2012.00083.
     """
 
-    def __init__(self, radius: float=0.5, std_prop: float=0.25):
+    def __init__(self, radius: float = 0.5, std_prop: float = 0.25):
         super().__init__()
         self.radius = radius
         self.std_prop = std_prop
@@ -65,6 +65,6 @@ class FeatureQuantizer(Quantizer):
         return new
 
 
-
-
-
+class StaticQuantizer(Quantizer):
+    def __init__(self):
+        super().__init__()

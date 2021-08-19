@@ -142,6 +142,27 @@ class GradHess:
         return new
 
 
+@functools.total_ordering
+@dataclasses.dataclass
+class GradHessMerit:
+    """Class used to keep the split merit of each split candidate, accordingly to its
+    gradient and hessian information.
+
+    In Stochastic Gradient Trees, the split merit is given by a combination of the loss mean and
+    variance. Additionally, the loss in each resulting tree branch is also accounted.
+    """
+
+    loss_mean: float = 0.0
+    loss_var: float = 0.0
+    delta_pred: typing.Union[float, typing.Dict] = None
+
+    def __lt__(self, other):
+        return self.loss_mean < other.loss_mean
+
+    def __eq__(self, other):
+        return self.loss_mean == other.loss_mean
+
+
 class GradHessStats:
     """ Class used to monitor and update the gradient/hessian information in Stochastic Gradient
     Trees.

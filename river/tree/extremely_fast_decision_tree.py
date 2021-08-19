@@ -1,7 +1,7 @@
 import typing
 
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
-from .nodes.branch import HTBranch
+from .nodes.branch import DTBranch
 from .nodes.efdtc_nodes import (
     BaseEFDTBranch,
     EFDTLeafMajorityClass,
@@ -165,7 +165,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
     def _branch_selector(
         self, numerical_feature=True, multiway_split=False
-    ) -> typing.Type[HTBranch]:
+    ) -> typing.Type[DTBranch]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:
@@ -240,11 +240,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         """
         node = self._root
-        if isinstance(self._root, HTBranch):
+        if isinstance(self._root, DTBranch):
             node = self._root.traverse(x, until_leaf=False)
             # Something went wrong in the way: a missing split feature or emerging category
             # Let's deal with these situations
-            if isinstance(node, HTBranch):
+            if isinstance(node, DTBranch):
                 while True:
                     if node.max_branches() == -1 and node.feature in x:
                         # Emerging feature in nominal feature: create a new branch
@@ -256,7 +256,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                         # Missing split feature: select the most traversed path to continue the
                         # walk
                         _, node = node.most_common_path()
-                        if isinstance(node, HTBranch):
+                        if isinstance(node, DTBranch):
                             node = node.traverse(x, until_leaf=False)
                     if isinstance(node, HTLeaf):
                         break

@@ -38,9 +38,10 @@ class Branch(Base, abc.ABC):
         """
         pass
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def repr_split(self):
-        """String representation of the split condition, for visualization purposes."""
+        """String representation of the split."""
 
     def walk(self, x, until_leaf=True) -> Iterable[Union["Branch", "Leaf"]]:
         """Iterate over the nodes of the path induced by x."""
@@ -57,7 +58,7 @@ class Branch(Base, abc.ABC):
         """Return the leaf corresponding to the given input."""
         for node in self.walk(x, until_leaf):
             pass
-        return node
+        return node  # noqa
 
     @property
     def n_nodes(self):
@@ -162,10 +163,11 @@ class Leaf(Base):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
-    def walk(self, x, until_leaf=True):
+    def walk(self, x, until_leaf=True):  # noqa
         yield self
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def __repr__(self):
         """String representation for visualization purposes."""
 
@@ -191,8 +193,8 @@ class Leaf(Base):
     def iter_leaves(self):
         yield self
 
-    def iter_branches(self):
+    def iter_branches(self):  # noqa
         yield from ()
 
-    def iter_edges(self):
+    def iter_edges(self):  # noqa
         yield from ()

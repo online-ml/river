@@ -4,7 +4,7 @@ import math
 from ..base import Branch
 
 
-class HTBranch(Branch):
+class DTBranch(Branch):
     def __init__(self, stats, *children, **attributes):
         super().__init__(*children)
         # The number of branches can increase in runtime
@@ -29,7 +29,7 @@ class HTBranch(Branch):
         pass
 
     @abc.abstractmethod
-    def repr_split(self, index: int, shorten=False):
+    def repr_branch(self, index: int, shorten=False):
         """Return a string representation of the test performed in the branch at `index`.
 
         Parameters
@@ -42,7 +42,7 @@ class HTBranch(Branch):
         pass
 
 
-class NumericBinaryBranch(HTBranch):
+class NumericBinaryBranch(DTBranch):
     def __init__(self, stats, feature, threshold, depth, left, right, **attributes):
         super().__init__(stats, left, right, **attributes)
         self.feature = feature
@@ -64,7 +64,7 @@ class NumericBinaryBranch(HTBranch):
             return 1, right
         return 0, left
 
-    def repr_split(self, index: int, shorten=False):
+    def repr_branch(self, index: int, shorten=False):
         if shorten:
             if index == 0:
                 return f"≤ {round(self.threshold, 4)}"
@@ -74,8 +74,12 @@ class NumericBinaryBranch(HTBranch):
                 return f"{self.feature} ≤ {self.threshold}"
             return f"{self.feature} > {self.threshold}"
 
+    @property
+    def repr_split(self):
+        return f"{self.feature} ≤ {self.threshold}"
 
-class NominalBinaryBranch(HTBranch):
+
+class NominalBinaryBranch(DTBranch):
     def __init__(self, stats, feature, value, depth, left, right, **attributes):
         super().__init__(stats, left, right, **attributes)
         self.feature = feature
@@ -97,7 +101,7 @@ class NominalBinaryBranch(HTBranch):
             return 1, right
         return 0, left
 
-    def repr_split(self, index: int, shorten=False):
+    def repr_branch(self, index: int, shorten=False):
         if shorten:
             if index == 0:
                 return str(self.value)
@@ -108,8 +112,12 @@ class NominalBinaryBranch(HTBranch):
                 return f"{self.feature} = {self.value}"
             return f"{self.feature} ≠ {self.value}"
 
+    @property
+    def repr_split(self):
+        return f"{self.feature} {{=, ≠}} {self.value}"
 
-class NumericMultiwayBranch(HTBranch):
+
+class NumericMultiwayBranch(DTBranch):
     def __init__(
         self, stats, feature, radius_and_slots, depth, *children, **attributes
     ):
@@ -146,7 +154,7 @@ class NumericMultiwayBranch(HTBranch):
         self._r_mapping[len(self.children)] = slot
         self.children.append(child)
 
-    def repr_split(self, index: int, shorten=False):
+    def repr_branch(self, index: int, shorten=False):
         lower = self._r_mapping[index] * self.radius
         upper = lower + self.radius
 
@@ -155,8 +163,12 @@ class NumericMultiwayBranch(HTBranch):
 
         return f"{lower} ≤ {self.feature} < {upper}"
 
+    @property
+    def repr_split(self):
+        return f"{self.feature} ÷ {self.radius}"
 
-class NominalMultiwayBranch(HTBranch):
+
+class NominalMultiwayBranch(DTBranch):
     def __init__(self, stats, feature, feature_values, depth, *children, **attributes):
         super().__init__(stats, *children, **attributes)
         self.feature = feature
@@ -185,10 +197,14 @@ class NominalMultiwayBranch(HTBranch):
         self._r_mapping[len(self.children)] = feature_val
         self.children.append(child)
 
-    def repr_split(self, index: int, shorten=False):
+    def repr_branch(self, index: int, shorten=False):
         feat_val = self._r_mapping[index]
 
         if shorten:
             return str(feat_val)
 
         return f"{self.feature} = {feat_val}"
+
+    @property
+    def repr_split(self):
+        return f"{self.feature} in {set(self._mapping.keys())}"
