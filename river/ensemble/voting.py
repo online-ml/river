@@ -17,6 +17,8 @@ class VotingClassifier(base.Classifier, base.EnsembleMixin):
     ----------
     models
         The classifiers.
+    use_probabilities
+        Whether or to weight each prediction with its associated probability.
 
     Examples
     --------
