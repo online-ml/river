@@ -15,6 +15,9 @@
 
 - Added `rules.AMRules`
 
+## stats
+- Make `stats.RollingQuantile` match the default behavior of Numpy's `quantile` function.
+
 ## tree
 
 - Unifed base class structure applied to all tree models.
