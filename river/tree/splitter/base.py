@@ -93,19 +93,25 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
 
 
 class Quantizer(base.Estimator, metaclass=ABCMeta):
-    """Base class for the feature quantizers used in Stochastic Gradient Trees."""
+    """Base class for the feature quantizers used in Stochastic Gradient Trees[^1].
+
+    References
+    ----------
+    [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
+    In Asian Conference on Machine Learning (pp. 1094-1109).
+    """
 
     def __init__(self):
         super().__init__()
-        self.splits = set()
 
+    @abstractmethod
     def __len__(self):
-        return len(self.splits)
+        pass
 
     @abstractmethod
     def update(self, x_val, gh: GradHess, w: float):
         pass
 
     @abstractmethod
-    def __iter__(self) -> typing.Iterator[GradHessStats]:
+    def __iter__(self) -> typing.Tuple[float, typing.Iterator[GradHessStats]]:
         pass

@@ -58,23 +58,20 @@ class SGTLeaf(Leaf):
                 # Update the set of nominal features
                 sgt.nominal_attributes.add(idx)
                 try:
-                    self._split_stats[idx][x_val].update(gh, w=w)
+                    self._split_stats[idx][x_val].update(gh, w)
                 except KeyError:
                     if idx not in self._split_stats:
                         # Categorical features are treated with a simple dict structure
                         self._split_stats[idx] = {}
                     self._split_stats[idx][x_val] = GradHessStats()
-                    self._split_stats[idx][x_val].update(gh, w=w)
+                    self._split_stats[idx][x_val].update(gh, w)
             else:
                 try:
                     self._split_stats[idx].update(x_val, gh, w)
                 except KeyError:
-
-                    # TODO check here
                     # Create a new quantizer
-                    quantization_radius = sgt._get_quantization_radius(idx)
-                    self._split_stats[idx] = DynamicQuantizer(
-                        radius=quantization_radius
+                    self._split_stats[idx] = sgt.feature_quantizer._set_params(
+                        self.split_params[idx]
                     )
                     self._split_stats[idx].update(x_val, gh, w)
 
@@ -199,11 +196,17 @@ class SGTLeaf(Leaf):
         )
         child_depth = self.depth + 1
         leaves = tuple(
-            SGTLeaf(self._prediction + delta_pred, depth=child_depth)
+            SGTLeaf(
+                self._prediction + delta_pred,
+                depth=child_depth,
+                split_params=self.split_params.copy(),
+            )
             for delta_pred in split.merit.delta_pred.values()
         )
 
-        new_split = split.assemble(branch, self.split_params, self.depth, *leaves)
+        new_split = split.assemble(
+            branch=branch, stats=self.split_params.copy(), depth=self.depth, *leaves
+        )
 
         if p_branch is None:
             sgt._root = new_split

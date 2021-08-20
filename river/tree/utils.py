@@ -5,7 +5,7 @@ import math
 import typing
 
 from river.base.typing import FeatureName
-from river.stats import Cov, Mean, Var
+from river.stats import Cov, Var
 
 
 def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: dict):
@@ -172,18 +172,11 @@ class GradHessStats:
     """
 
     def __init__(self):
-        self.x_mean = Mean()
         self.g_var = Var()
         self.h_var = Var()
         self.gh_cov = Cov()
 
-    @property
-    def centroid_x(self) -> float:
-        """ Get the centroid x data that represents all the observations inside a bin. """
-        return self.x_mean.get()
-
     def __iadd__(self, other):
-        self.x_mean += other.x_mean
         self.g_var += other.g_var
         self.h_var += other.h_var
         self.gh_cov += other.gh_cov
@@ -191,7 +184,6 @@ class GradHessStats:
         return self
 
     def __isub__(self, other):
-        self.x_mean -= other.x_mean
         self.g_var -= other.g_var
         self.h_var -= other.h_var
         self.gh_cov -= other.gh_cov
@@ -210,11 +202,7 @@ class GradHessStats:
 
         return new
 
-    def update(self, gh: GradHess, x=None, w: float = 1.0):
-        # Update x values in the case of numerical features (binning strategy)
-        if x is not None:
-            self.x_mean.update(x, w)
-
+    def update(self, gh: GradHess, w: float = 1.0):
         self.g_var.update(gh.gradient, w)
         self.h_var.update(gh.hessian, w)
         self.gh_cov.update(gh.gradient, gh.hessian, w)

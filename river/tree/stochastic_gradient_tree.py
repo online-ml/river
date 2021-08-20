@@ -4,7 +4,7 @@ import typing
 
 from scipy.stats import f as f_dist
 
-from river import base
+from river import base, tree
 
 from .losses import BinaryCrossEntropyLoss, SquaredErrorLoss
 from .nodes.branch import DTBranch
@@ -20,11 +20,6 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
     """
 
-    _STD_DIV = "stddiv"
-    _CONSTANT_RAD = "constant"
-
-    _VALID_QUANTIZATION_POLICIES = [_STD_DIV, _CONSTANT_RAD]
-
     def __init__(
         self,
         loss_func,
@@ -35,7 +30,7 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         lambda_value,
         gamma,
         nominal_attributes,
-        quantization_strategy,
+        feature_quantizer,
     ):
         # What really defines how a SGT works is its loss function
         self.loss_func = loss_func
@@ -54,6 +49,11 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         self.gamma = gamma
         self.nominal_attributes = (
             set(nominal_attributes) if nominal_attributes else set()
+        )
+        self.feature_quantizer = (
+            feature_quantizer
+            if feature_quantizer is not None
+            else tree.splitter.StaticQuantizer()
         )
 
         self._root: SGTLeaf = SGTLeaf(prediction=self.init_pred)
@@ -102,7 +102,7 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
                 #  test), so there is no branch to sort the instance to
                 if node.max_branches() == -1 and node.feature in x:
                     # Create a new branch to the new categorical value
-                    leaf = SGTLeaf(depth=node.depth + 1, split_params=node.stats)
+                    leaf = SGTLeaf(depth=node.depth + 1, split_params=node.stats.copy())
                     #
                     node.add_child(x[node.feature], leaf)
                     node = leaf
@@ -201,13 +201,13 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
 
 class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
-    """Stochastic Gradient Tree for classification.
+    """Stochastic Gradient Tree[^1] for binary classification.
 
     Binary decision tree classifier that minimizes the binary cross-entropy to guide its growth.
 
     Stochastic Gradient Trees (SGT) directly minimize a loss function to guide tree growth and
     update their predictions. Thus, they differ from other incrementally tree learners that do
-    not directly optimize the loss, but a data impurity-related heuristic.
+    not directly optimize the loss, but data impurity-related heuristics.
 
     Parameters
     ----------
@@ -232,7 +232,8 @@ class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
     nominal_attributes
         List with identifiers of the nominal attributes. If None, all features containing
         numbers are assumed to be numeric.
-    quantization_strategy
+    feature_quantizer
+
 
 
     Examples
@@ -249,22 +250,10 @@ class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 82.32%
 
-    Notes
-    -----
-    This implementation enhances the original proposal [^1] by using an incremental strategy to
-    discretize numerical features dynamically, rather than relying on a calibration set and
-    parameterized number of bins. The strategy used is an adaptation of the Quantization Observer
-    (QO) [^2]. Different bin size setting policies are available for selection.
-    They directly related to number of split candidates the tree is going to explore, and thus,
-    how accurate its split decisions are going to be. Besides, the number of stored bins per
-    feature is directly related to the tree's memory usage and runtime.
-
     References
     ---------
     [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
     In Asian Conference on Machine Learning (pp. 1094-1109).
-    [^2]: Mastelini, S.M. and de Leon Ferreira, A.C.P., 2021. Using dynamical quantization
-    to perform split attempts in online tree regressors. Pattern Recognition Letters.
 
     """
 
@@ -277,10 +266,7 @@ class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
         lambda_value: float = 0.1,
         gamma: float = 1.0,
         nominal_attributes: typing.Optional[typing.List] = None,
-        quantization_strategy: typing.Tuple[str, float, typing.Optional[float]] = (
-            "stddiv",
-            3.0,
-        ),
+        feature_quantizer: tree.splitter.Quantizer = None,
     ):
 
         super().__init__(
@@ -292,7 +278,7 @@ class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
             lambda_value=lambda_value,
             gamma=gamma,
             nominal_attributes=nominal_attributes,
-            quantization_strategy=quantization_strategy,
+            feature_quantizer=feature_quantizer,
         )
 
     def _target_transform(self, y):
@@ -385,10 +371,7 @@ class StochasticGradientTreeRegressor(StochasticGradientTree, base.Regressor):
         lambda_value: float = 0.1,
         gamma: float = 1.0,
         nominal_attributes: typing.Optional[typing.List] = None,
-        quantization_strategy: typing.Tuple[str, float, typing.Optional[float]] = (
-            "stddiv",
-            3.0,
-        ),
+        feature_quantizer: tree.splitter.Quantizer = None,
     ):
 
         super().__init__(
@@ -400,7 +383,7 @@ class StochasticGradientTreeRegressor(StochasticGradientTree, base.Regressor):
             lambda_value=lambda_value,
             gamma=gamma,
             nominal_attributes=nominal_attributes,
-            quantization_strategy=quantization_strategy,
+            feature_quantizer=feature_quantizer,
         )
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
