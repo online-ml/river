@@ -39,6 +39,10 @@ to split such a feature.
 * Define properties to access leaf prediction strategies, split criteria, and other
 relevant characteristics.
 
+**2. Stochastic Gradient Trees**
+
+TODO
+
 """
 
 from . import splitter
@@ -49,6 +53,10 @@ from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
 from .label_combination_hoeffding_tree import LabelCombinationHoeffdingTreeClassifier
+from .stochastic_gradient_tree import (
+    StochasticGradientTreeClassifier,
+    StochasticGradientTreeRegressor,
+)
 
 __all__ = [
     "splitter",
@@ -59,4 +67,6 @@ __all__ = [
     "HoeffdingAdaptiveTreeRegressor",
     "iSOUPTreeRegressor",
     "LabelCombinationHoeffdingTreeClassifier",
+    "StochasticGradientTreeClassifier",
+    "StochasticGradientTreeRegressor",
 ]

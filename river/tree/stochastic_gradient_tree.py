@@ -7,7 +7,7 @@ from scipy.stats import f as f_dist
 from river import base, tree
 
 from .losses import BinaryCrossEntropyLoss, SquaredErrorLoss
-from .nodes.branch import DTBranch
+from .nodes.branch import DTBranch, NominalMultiwayBranch, NumericBinaryBranch
 from .nodes.sgt_nodes import SGTLeaf
 from .utils import BranchFactory, GradHessMerit
 
@@ -63,7 +63,6 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         self._n_splits = 0
         self._n_node_updates = 0
         self._n_observations = 0
-        self._height = 0
 
     def _target_transform(self, y):
         """Apply transformation to the raw target input.
@@ -79,6 +78,8 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         return y
 
     def learn_one(self, x, y, *, w=1.0):
+        self._n_observations += w
+
         """ Update Stochastic Gradient Tree with a single instance. """
         y_true_trs = self._target_transform(y)
 
@@ -96,7 +97,7 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
             node = self._root
 
         # A leaf could not be reached in a single attempt let's deal with that
-        if isinstance(node, DTBranch):
+        if isinstance(node, (NumericBinaryBranch, NominalMultiwayBranch)):
             while True:
                 # Split node encountered a previously unseen categorical value (in a multi-way
                 #  test), so there is no branch to sort the instance to
@@ -126,7 +127,7 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
             node.update(x, grad_hess, self, w)
 
             if node.total_weight - node.last_split_attempt_at < self.grace_period:
-                return
+                return self
 
             # Update split attempt data
             node.last_split_attempt_at = node.total_weight
@@ -154,6 +155,8 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
                 p_branch = p_node.branch_no(x) if isinstance(p_node, DTBranch) else None
                 node.apply_split(best_split, p_node, p_branch, self)
 
+        return self
+
     @staticmethod
     def _compute_p_value(merit, n_observations):
         # Null hypothesis: expected loss is zero
@@ -170,19 +173,6 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
 
         return 1 - f_dist.cdf(f_value, 1, n_observations - 1)
 
-    # @property
-    # def n_nodes(self):
-    #     n = 0
-    #     to_visit = [self._root]
-    #     while len(to_visit) > 0:
-    #         node = to_visit.pop(0)
-    #         n += 1
-    #
-    #         if node.children is not None:
-    #             for child in node.children.values():
-    #                 to_visit.append(child)
-    #     return n
-
     @property
     def n_splits(self):
         return self._n_splits
@@ -196,8 +186,24 @@ class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
         return self._n_observations
 
     @property
-    def height(self):
-        return self._height
+    def height(self) -> int:
+        if self._root:
+            return self._root.height
+
+    @property
+    def n_nodes(self):
+        if self._root:
+            return self._root.n_nodes
+
+    @property
+    def n_branches(self):
+        if self._root:
+            return self._root.n_branches
+
+    @property
+    def n_leaves(self):
+        if self._root:
+            return self._root.n_leaves
 
 
 class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
@@ -233,8 +239,12 @@ class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
         List with identifiers of the nominal attributes. If None, all features containing
         numbers are assumed to be numeric.
     feature_quantizer
-
-
+        The algorithm used to quantize numeric features. Either a static quantizer (as in the
+        original implementation) or a dynamic quantizer can be used. The correct choice and setup
+        of the feature quantizer is a crucial step to determine the performance of SGTs.
+        Feature quantizers are akin to the attribute observers used in Hoeffding Trees. By
+        default, an instance of `tree.splitter.StaticQuantizer` (with default parameters) is
+        used if this parameter is not set.
 
     Examples
     --------
@@ -244,11 +254,15 @@ class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
     >>> from river import tree
 
     >>> dataset = datasets.Phishing()
-    >>> model = tree.StochasticGradientTreeClassifier()
+    >>> model = tree.StochasticGradientTreeClassifier(
+    ...     feature_quantizer=tree.splitter.StaticQuantizer(
+    ...         n_bins=32, warm_start=10
+    ...     )
+    ... )
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 82.32%
+    Accuracy: 82.24%
 
     References
     ---------
@@ -327,7 +341,13 @@ class StochasticGradientTreeRegressor(StochasticGradientTree, base.Regressor):
     nominal_attributes
         List with identifiers of the nominal attributes. If None, all features containing
         numbers are assumed to be numeric.
-    quantization_strategy
+    feature_quantizer
+        The algorithm used to quantize numeric features. Either a static quantizer (as in the
+        original implementation) or a dynamic quantizer can be used. The correct choice and setup
+        of the feature quantizer is a crucial step to determine the performance of SGTs.
+        Feature quantizers are akin to the attribute observers used in Hoeffding Trees. By
+        default, an instance of `tree.splitter.StaticQuantizer` (with default parameters) is
+        used if this parameter is not set.
 
     Examples
     --------
@@ -337,11 +357,14 @@ class StochasticGradientTreeRegressor(StochasticGradientTree, base.Regressor):
     >>> from river import tree
 
     >>> dataset = datasets.TrumpApproval()
-    >>> model = tree.StochasticGradientTreeRegressor(grace_period=20)
+    >>> model = tree.StochasticGradientTreeRegressor(
+    ...     grace_period=20,
+    ...     feature_quantizer=tree.splitter.DynamicQuantizer(std_prop=0.1)
+    ... )
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.828504
+    MAE: 1.819874
 
     Notes
     -----

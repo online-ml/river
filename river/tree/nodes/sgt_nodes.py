@@ -130,7 +130,6 @@ class SGTLeaf(Leaf):
                 self.split_params[feature_idx].update(quantizer._get_params())
 
                 # TODO check here
-                half_radius = quantizer.radius / 2.0
                 n_bins = len(quantizer)
                 if n_bins == 1:  # Insufficient number of bins to perform splits
                     continue
@@ -141,7 +140,7 @@ class SGTLeaf(Leaf):
                 # Auxiliary gradient and hessian statistics
                 left_ghs = GradHessStats()
                 left_dlms = stats.Var()
-                for i, ghs in enumerate(quantizer):
+                for thresh, ghs in quantizer:
                     left_ghs += ghs
                     left_delta_pred = self.delta_prediction(
                         left_ghs.mean, sgt.lambda_value
@@ -167,13 +166,7 @@ class SGTLeaf(Leaf):
                         candidate.merit.delta_pred[0] = left_delta_pred
                         candidate.merit.delta_pred[1] = right_delta_pred
 
-                        # TODO check that too
-
-                        # Define split point
-                        if i == n_bins - 1:  # Last bin
-                            candidate.split_info = ghs.centroid_x
-                        else:  # Use middle point between bins
-                            candidate.split_info = ghs.centroid_x + half_radius
+                        candidate.split_info = thresh
 
             if candidate.merit.loss_mean < best_split.merit.loss_mean:
                 best_split = candidate
@@ -183,13 +176,13 @@ class SGTLeaf(Leaf):
     def apply_split(self, split, p_node, p_branch, sgt):
         # Null split: update tree prediction and reset learning node
         if split.feature is None:
-            self._prediction += split.delta_pred
+            self._prediction += split.merit.delta_pred
             sgt._n_node_updates += 1
             self.reset()
             return
 
         sgt._n_splits += 1
-        sgt._split_features.add(split.feature_idx)
+        sgt._split_features.add(split.feature)
 
         branch = (
             NumericBinaryBranch if split.numerical_feature else NominalMultiwayBranch
@@ -205,7 +198,7 @@ class SGTLeaf(Leaf):
         )
 
         new_split = split.assemble(
-            branch=branch, stats=self.split_params.copy(), depth=self.depth, *leaves
+            branch, self.split_params.copy(), self.depth, *leaves
         )
 
         if p_branch is None:
@@ -225,3 +218,6 @@ class SGTLeaf(Leaf):
     def delta_prediction(gh: GradHess, lambda_value: float):
         # Add small constant value to avoid division by zero
         return -gh.gradient / (gh.hessian + sys.float_info.min + lambda_value)
+
+    def __repr__(self):
+        return f"{self.prediction()}"

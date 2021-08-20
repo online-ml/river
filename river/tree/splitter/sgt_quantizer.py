@@ -61,7 +61,10 @@ class DynamicQuantizer(Quantizer):
 
     def _get_params(self):
         params = super()._get_params()
-        params["radius"] = self.std_prop * math.sqrt(self.feat_var.get())
+        new_radius = self.std_prop * math.sqrt(self.feat_var.get())
+
+        if new_radius > 0:
+            params["radius"] = new_radius
 
         return params
 
@@ -97,7 +100,7 @@ class StaticQuantizer(Quantizer):
     ):
         super().__init__()
 
-        self.n_splits = n_bins
+        self.n_bins = n_bins
         self.warm_start = warm_start
         self.buckets = buckets
 
@@ -118,23 +121,26 @@ class StaticQuantizer(Quantizer):
             if len(self._buffer) < self.warm_start:
                 return
 
-            self._min = min(self._buffer, key=lambda t: t[0])
-            _max = max(self._buffer, key=lambda t: t[0])
+            self._min = min(self._buffer, key=lambda t: t[0])[0]
+            _max = max(self._buffer, key=lambda t: t[0])[0]
+            self._radius = (_max - self._min) / self.n_bins
 
-            self._radius = (_max - self._min) / self.n_splits
             splits = (
                 [-math.inf]
-                + [self._min + i * self._radius for i in range(1, self.n_splits)]
+                + [self._min + i * self._radius for i in range(1, self.n_bins)]
                 + [math.inf]
             )
+
             self.buckets = [
                 ((splits[i], splits[i + 1]), GradHessStats())
-                for i in range(self.n_splits)
+                for i in range(self.n_bins)
             ]
 
             # Replay buffer
             for x_val, gh, w in self._buffer:
                 pos = math.floor((x_val - self._min) / self._radius)
+                if pos >= self.n_bins:
+                    pos = self.n_bins - 1
                 self.buckets[pos][1].update(gh, w)
 
             # And empty it
@@ -144,8 +150,8 @@ class StaticQuantizer(Quantizer):
         pos = math.floor((x_val - self._min) / self._radius)
         if pos < 0:
             pos = 0
-        if pos >= self.n_splits:
-            pos = self.n_splits - 1
+        if pos >= self.n_bins:
+            pos = self.n_bins - 1
 
         # Update the corresponding bucket
         self.buckets[pos][1].update(gh, w)
@@ -161,13 +167,16 @@ class StaticQuantizer(Quantizer):
             return
 
         for x_range, ghs in self.buckets:
+            if ghs.total_weight == 0:
+                continue
             yield x_range[1], ghs
 
     def _get_params(self):
         params = super()._get_params()
 
-        # Create buckets with empty stats: only the tuples with data range are kept
-        buckets = [(b[0], GradHessStats()) for b in self.buckets]
+        if self.buckets is not None:
+            # Create buckets with empty stats: only the tuples with data range are kept
+            buckets = [(b[0], GradHessStats()) for b in self.buckets]
 
-        params["buckets"] = buckets
+            params["buckets"] = buckets
         return params

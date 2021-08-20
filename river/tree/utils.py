@@ -89,7 +89,7 @@ class BranchFactory:
 
     def assemble(
         self,
-        branch,  # : typing.Type[HTBranch],
+        branch,  # typing.Type[DTBranch],
         stats: typing.Union[typing.Dict, Var],
         depth: int,
         *children,
