@@ -12,7 +12,7 @@ render-notebooks:
 	jupyter nbconvert --to markdown docs/examples/*.ipynb --output-dir docs/examples
 
 doc: render-notebooks
-	python docs/scripts/index.py
+	yamp river --out docs/api
 	mkdocs build
 
 livedoc: doc
