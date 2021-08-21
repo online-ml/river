@@ -1,6 +1,6 @@
+import abc
 import math
 import typing
-from abc import ABCMeta, abstractmethod
 
 from river.drift import ADWIN
 from river.utils.skmultiflow_utils import check_random_state, normalize_values_in_dict
@@ -17,25 +17,25 @@ from .htc_nodes import LeafNaiveBayesAdaptive
 from .leaf import HTLeaf
 
 
-class AdaNode(metaclass=ABCMeta):
+class AdaNode(abc.ABC):
     """Abstract Class to create a new Node for the Hoeffding Adaptive Tree
     Classifier/Regressor"""
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def error_estimation(self):
         pass
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def error_width(self):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def error_is_null(self):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def kill_tree_children(self, hat):
         pass
 

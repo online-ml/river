@@ -12,7 +12,7 @@ from .nodes.sgt_nodes import SGTLeaf
 from .utils import BranchFactory, GradHessMerit
 
 
-class StochasticGradientTree(base.Estimator, metaclass=abc.ABCMeta):
+class StochasticGradientTree(base.Estimator, abc.ABC):
     """ Base Stochastic Gradient Tree (SGT) class.
 
     This class defines the main characteristics that are shared by the different SGT

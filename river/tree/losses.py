@@ -1,10 +1,10 @@
+import abc
 import math
-from abc import ABCMeta
 
 from .utils import GradHess
 
 
-class Loss(metaclass=ABCMeta):
+class Loss(abc.ABC):
     """Base class to implement optimization objectives used in Stochastic Gradient Trees. """
 
     def compute_derivatives(self, y_true: float, y_pred: float) -> GradHess:

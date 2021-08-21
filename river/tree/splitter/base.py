@@ -1,5 +1,5 @@
+import abc
 import typing
-from abc import ABCMeta, abstractmethod
 
 from river import base
 
@@ -7,7 +7,7 @@ from ..split_criterion.base import SplitCriterion
 from ..utils import BranchFactory, GradHess, GradHessStats
 
 
-class Splitter(base.Estimator, metaclass=ABCMeta):
+class Splitter(base.Estimator, abc.ABC):
     """Base class for the tree splitters.
 
     Each Attribute Observer (AO) or Splitter monitors one input feature and finds the best
@@ -20,7 +20,7 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
     def __init__(self):
         super().__init__()
 
-    @abstractmethod
+    @abc.abstractmethod
     def update(self, att_val, target_val: base.typing.Target, sample_weight: float):
         """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
@@ -35,7 +35,7 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
             The weight of the instance.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def cond_proba(self, att_val, target_val: base.typing.ClfTarget) -> float:
         """Get the probability for an attribute value given a class.
 
@@ -51,7 +51,7 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
             Probability for an attribute value given a class.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def best_evaluated_split_suggestion(
         self,
         criterion: SplitCriterion,
@@ -92,7 +92,7 @@ class Splitter(base.Estimator, metaclass=ABCMeta):
         return True
 
 
-class Quantizer(base.Estimator, metaclass=ABCMeta):
+class Quantizer(base.Estimator, abc.ABC):
     """Base class for the feature quantizers used in Stochastic Gradient Trees[^1].
 
     References
@@ -104,14 +104,14 @@ class Quantizer(base.Estimator, metaclass=ABCMeta):
     def __init__(self):
         super().__init__()
 
-    @abstractmethod
+    @abc.abstractmethod
     def __len__(self):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def update(self, x_val, gh: GradHess, w: float):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def __iter__(self) -> typing.Tuple[float, typing.Iterator[GradHessStats]]:
         pass

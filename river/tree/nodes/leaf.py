@@ -7,7 +7,7 @@ from ..base import Leaf
 from ..utils import BranchFactory
 
 
-class HTLeaf(Leaf, metaclass=abc.ABCMeta):
+class HTLeaf(Leaf, abc.ABC):
     """Base leaf class to be used in Hoeffding Trees.
 
     Parameters
