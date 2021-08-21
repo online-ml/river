@@ -24,14 +24,14 @@ from .sgt_quantizer import DynamicQuantizer, StaticQuantizer
 from .tebst_splitter import TEBSTSplitter
 
 __all__ = [
-    "Splitter",
-    "Quantizer",
+    "DynamicQuantizer",
+    "EBSTSplitter",
     "ExhaustiveSplitter",
     "GaussianSplitter",
     "HistogramSplitter",
-    "EBSTSplitter",
     "QOSplitter",
-    "TEBSTSplitter",
-    "DynamicQuantizer",
+    "Quantizer",
+    "Splitter",
     "StaticQuantizer",
+    "TEBSTSplitter",
 ]
