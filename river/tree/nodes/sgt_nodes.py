@@ -2,6 +2,7 @@ import collections
 import math
 import numbers
 import sys
+import typing
 from typing import Dict, Hashable, Optional, Union
 
 from river import stats
@@ -52,9 +53,13 @@ class SGTLeaf(Leaf):
         self._split_stats = {}
         self._update_stats = GradHessStats()
 
+    @staticmethod
+    def is_categorical(idx, x_val, nominal_attributes):
+        return not isinstance(x_val, numbers.Number) or idx in nominal_attributes
+
     def update(self, x: dict, gh: GradHess, sgt, w: float = 1.0):
         for idx, x_val in x.items():
-            if not isinstance(x_val, numbers.Number) or idx in sgt.nominal_attributes:
+            if self.is_categorical(idx, x_val, sgt.nominal_attributes):
                 # Update the set of nominal features
                 sgt.nominal_attributes.add(idx)
                 try:
@@ -80,6 +85,83 @@ class SGTLeaf(Leaf):
     def prediction(self) -> float:
         return self._prediction
 
+    def _eval_categorical_splits(
+        self, feature_idx, candidate, sgt
+    ) -> typing.Tuple[BranchFactory, bool]:
+        skip_candidate = True
+
+        # Nominal attribute has been already used in a previous split
+        if feature_idx in sgt._split_features:
+            return candidate, skip_candidate
+
+        skip_candidate = False
+        candidate.numerical_feature = False
+        candidate.merit.delta_pred = {}
+        all_dlms = stats.Var()
+
+        cat_collection = self._split_stats[feature_idx]
+        candidate.split_info = list(cat_collection.keys())
+        for category in cat_collection:
+            dp = self.delta_prediction(cat_collection[category].mean, sgt.lambda_value)
+
+            dlms = cat_collection[category].delta_loss_mean_var(dp)
+            candidate.merit.delta_pred[category] = dp
+
+            all_dlms += dlms
+
+        candidate.merit.loss_mean = (
+            all_dlms.mean.get() + len(cat_collection) * sgt.gamma / self.total_weight
+        )
+        candidate.merit.loss_var = all_dlms.get()
+
+        return candidate, skip_candidate
+
+    def _eval_numerical_splits(
+        self, feature_idx, candidate, sgt
+    ) -> typing.Tuple[BranchFactory, bool]:
+        skip_candidate = True
+        quantizer = self._split_stats[feature_idx]
+
+        # Get updated quantizer params
+        self.split_params[feature_idx].update(quantizer._get_params())
+
+        n_bins = len(quantizer)
+        if n_bins == 1:  # Insufficient number of bins to perform splits
+            return candidate, skip_candidate
+
+        skip_candidate = False
+        candidate.merit.loss_mean = math.inf
+        candidate.merit.delta_pred = {}
+
+        # Auxiliary gradient and hessian statistics
+        left_ghs = GradHessStats()
+        left_dlms = stats.Var()
+        for thresh, ghs in quantizer:
+            left_ghs += ghs
+            left_delta_pred = self.delta_prediction(left_ghs.mean, sgt.lambda_value)
+            left_dlms += left_ghs.delta_loss_mean_var(left_delta_pred)
+
+            right_ghs = self._update_stats - left_ghs
+            right_delta_pred = self.delta_prediction(right_ghs.mean, sgt.lambda_value)
+            right_dlms = right_ghs.delta_loss_mean_var(right_delta_pred)
+
+            all_dlms = left_dlms + right_dlms
+
+            loss_mean = all_dlms.mean.get()
+            loss_var = all_dlms.get()
+
+            if loss_mean < candidate.merit.loss_mean:
+                candidate.merit.loss_mean = (
+                    loss_mean + 2.0 * sgt.gamma / self.total_weight
+                )
+                candidate.merit.loss_var = loss_var
+                candidate.merit.delta_pred[0] = left_delta_pred
+                candidate.merit.delta_pred[1] = right_delta_pred
+
+                candidate.split_info = thresh
+
+        return candidate, skip_candidate
+
     def find_best_split(self, sgt) -> BranchFactory:
         best_split = BranchFactory()
         best_split.merit = GradHessMerit()
@@ -98,75 +180,16 @@ class SGTLeaf(Leaf):
             candidate.feature = feature_idx
 
             if feature_idx in sgt.nominal_attributes:
-                # Nominal attribute has been already used in a previous split
-                if feature_idx in sgt._split_features:
-                    continue
-
-                candidate.numerical_feature = False
-                candidate.merit.delta_pred = {}
-                all_dlms = stats.Var()
-
-                cat_collection = self._split_stats[feature_idx]
-                candidate.split_info = list(cat_collection.keys())
-                for category in cat_collection:
-                    dp = self.delta_prediction(
-                        cat_collection[category].mean, sgt.lambda_value
-                    )
-
-                    dlms = cat_collection[category].delta_loss_mean_var(dp)
-                    candidate.merit.delta_pred[category] = dp
-
-                    all_dlms += dlms
-
-                candidate.merit.loss_mean = (
-                    all_dlms.mean.get()
-                    + len(cat_collection) * sgt.gamma / self.total_weight
+                candidate, skip_candidate = self._eval_categorical_splits(
+                    feature_idx, candidate, sgt
                 )
-                candidate.merit.loss_var = all_dlms.get()
             else:  # Numerical features
-                quantizer = self._split_stats[feature_idx]
+                candidate, skip_candidate = self._eval_numerical_splits(
+                    feature_idx, candidate, sgt
+                )
 
-                # Get updated quantizer params
-                self.split_params[feature_idx].update(quantizer._get_params())
-
-                # TODO check here
-                n_bins = len(quantizer)
-                if n_bins == 1:  # Insufficient number of bins to perform splits
-                    continue
-
-                candidate.merit.loss_mean = math.inf
-                candidate.merit.delta_pred = {}
-
-                # Auxiliary gradient and hessian statistics
-                left_ghs = GradHessStats()
-                left_dlms = stats.Var()
-                for thresh, ghs in quantizer:
-                    left_ghs += ghs
-                    left_delta_pred = self.delta_prediction(
-                        left_ghs.mean, sgt.lambda_value
-                    )
-                    left_dlms += left_ghs.delta_loss_mean_var(left_delta_pred)
-
-                    right_ghs = self._update_stats - left_ghs
-                    right_delta_pred = self.delta_prediction(
-                        right_ghs.mean, sgt.lambda_value
-                    )
-                    right_dlms = right_ghs.delta_loss_mean_var(right_delta_pred)
-
-                    all_dlms = left_dlms + right_dlms
-
-                    loss_mean = all_dlms.mean.get()
-                    loss_var = all_dlms.get()
-
-                    if loss_mean < candidate.merit.loss_mean:
-                        candidate.merit.loss_mean = (
-                            loss_mean + 2.0 * sgt.gamma / self.total_weight
-                        )
-                        candidate.merit.loss_var = loss_var
-                        candidate.merit.delta_pred[0] = left_delta_pred
-                        candidate.merit.delta_pred[1] = right_delta_pred
-
-                        candidate.split_info = thresh
+            if skip_candidate:
+                continue
 
             if candidate.merit.loss_mean < best_split.merit.loss_mean:
                 best_split = candidate
@@ -220,4 +243,4 @@ class SGTLeaf(Leaf):
         return -gh.gradient / (gh.hessian + sys.float_info.min + lambda_value)
 
     def __repr__(self):
-        return f"{self.prediction()}"
+        return str(self.prediction())
