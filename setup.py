@@ -61,7 +61,7 @@ docs_packages = dev_packages + [
     "mkdocs-material",
     "nbconvert",
     "spacy",
-    "yamp @ git+ssh://git@github.com/MaxHalford/yamp.git",
+    "yamp @ git+https://github.com/MaxHalford/yamp",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
