@@ -162,7 +162,6 @@ class StaticQuantizer(Quantizer):
         return 0
 
     def __iter__(self):
-        # TODO check that: in this case the null split should be choice
         if self.buckets is None:
             return
 

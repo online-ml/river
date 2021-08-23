@@ -206,7 +206,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
             return self._root.n_leaves
 
 
-class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
+class SGTClassifier(StochasticGradientTree, base.Classifier):
     """Stochastic Gradient Tree[^1] for binary classification.
 
     Binary decision tree classifier that minimizes the binary cross-entropy to guide its growth.
@@ -254,7 +254,7 @@ class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
     >>> from river import tree
 
     >>> dataset = datasets.Phishing()
-    >>> model = tree.StochasticGradientTreeClassifier(
+    >>> model = tree.SGTClassifier(
     ...     feature_quantizer=tree.splitter.StaticQuantizer(
     ...         n_bins=32, warm_start=10
     ...     )
@@ -309,7 +309,7 @@ class StochasticGradientTreeClassifier(StochasticGradientTree, base.Classifier):
         return {True: t_proba, False: 1 - t_proba}
 
 
-class StochasticGradientTreeRegressor(StochasticGradientTree, base.Regressor):
+class SGTRegressor(StochasticGradientTree, base.Regressor):
     """Stochastic Gradient Tree for regression.
 
     Incremental decision tree regressor that minimizes the mean square error to guide its growth.
@@ -357,7 +357,7 @@ class StochasticGradientTreeRegressor(StochasticGradientTree, base.Regressor):
     >>> from river import tree
 
     >>> dataset = datasets.TrumpApproval()
-    >>> model = tree.StochasticGradientTreeRegressor(
+    >>> model = tree.SGTRegressor(
     ...     grace_period=20,
     ...     feature_quantizer=tree.splitter.DynamicQuantizer(std_prop=0.1)
     ... )
