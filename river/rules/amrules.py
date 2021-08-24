@@ -7,7 +7,7 @@ import typing
 from river import base, drift, linear_model, stats, tree
 
 from ..tree.split_criterion import VarianceRatioSplitCriterion
-from ..tree.splitter.base_splitter import Splitter
+from ..tree.splitter.base import Splitter
 from ..tree.splitter.nominal_splitter_reg import NominalSplitterReg
 from .base import HoeffdingRule
 

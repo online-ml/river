@@ -22,3 +22,4 @@
 
 - Unifed base class structure applied to all tree models.
 - Bug fixes.
+- Added `tree.SGTClassifier` and `tree.SGTRegressor`.

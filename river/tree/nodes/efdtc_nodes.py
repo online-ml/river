@@ -5,7 +5,7 @@ from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
 from .branch import (
-    HTBranch,
+    DTBranch,
     NominalBinaryBranch,
     NominalMultiwayBranch,
     NumericBinaryBranch,
@@ -66,7 +66,7 @@ class BaseEFDTLeaf(HTLeaf):
         return best_suggestions
 
 
-class BaseEFDTBranch(HTBranch):
+class BaseEFDTBranch(DTBranch):
     """Node that splits the data in a EFDT.
 
     This node is an exception among the tree's nodes. EFDTSplitNode is both a split node

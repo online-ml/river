@@ -1,7 +1,7 @@
 from river import base
 
 from .hoeffding_tree import HoeffdingTree
-from .nodes.branch import HTBranch
+from .nodes.branch import DTBranch
 from .nodes.htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
 from .nodes.leaf import HTLeaf
 from .split_criterion import (
@@ -217,7 +217,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         return split_criterion
 
     def _attempt_to_split(
-        self, leaf: HTLeaf, parent: HTBranch, parent_branch: int, **kwargs
+        self, leaf: HTLeaf, parent: DTBranch, parent_branch: int, **kwargs
     ):
         """Attempt to split a leaf.
 
@@ -346,7 +346,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
         p_node = None
         node = None
-        if isinstance(self._root, HTBranch):
+        if isinstance(self._root, DTBranch):
             path = iter(self._root.walk(x, until_leaf=False))
             while True:
                 aux = next(path, None)
@@ -370,7 +370,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     if weight_diff >= self.grace_period:
                         p_branch = (
                             p_node.branch_no(x)
-                            if isinstance(p_node, HTBranch)
+                            if isinstance(p_node, DTBranch)
                             else None
                         )
                         self._attempt_to_split(node, p_node, p_branch)
@@ -390,7 +390,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                 else:
                     _, node = node.most_common_path()
                     # And we keep trying to reach a leaf
-                    if isinstance(node, HTBranch):
+                    if isinstance(node, DTBranch):
                         node = node.traverse(x, until_leaf=False)
                 # Once a leaf is reached, the traversal can stop
                 if isinstance(node, HTLeaf):
@@ -406,7 +406,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     def predict_proba_one(self, x):
         proba = {c: 0.0 for c in self.classes}
         if self._root is not None:
-            if isinstance(self._root, HTBranch):
+            if isinstance(self._root, DTBranch):
                 leaf = self._root.traverse(x, until_leaf=True)
             else:
                 leaf = self._root
