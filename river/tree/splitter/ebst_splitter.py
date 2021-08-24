@@ -5,7 +5,7 @@ from river.stats import Var
 from river.utils import VectorDict
 
 from ..utils import BranchFactory
-from .base_splitter import Splitter
+from .base import Splitter
 
 
 class EBSTSplitter(Splitter):

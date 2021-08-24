@@ -1,6 +1,6 @@
 import math
 
-from .base_split_criterion import SplitCriterion
+from .base import SplitCriterion
 
 
 class InfoGainSplitCriterion(SplitCriterion):

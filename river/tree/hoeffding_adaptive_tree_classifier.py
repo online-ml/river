@@ -3,7 +3,7 @@ import typing
 from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
 
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
-from .nodes.branch import HTBranch
+from .nodes.branch import DTBranch
 from .nodes.hatc_nodes import (
     AdaBranchClassifier,
     AdaLeafClassifier,
@@ -223,7 +223,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         proba = {c: 0.0 for c in self.classes}
         if self._root is not None:
             found_nodes = [self._root]
-            if isinstance(self._root, HTBranch):
+            if isinstance(self._root, DTBranch):
                 found_nodes = self._root.traverse(x, until_leaf=True)
             for leaf in found_nodes:
                 dist = leaf.prediction(x, tree=self)

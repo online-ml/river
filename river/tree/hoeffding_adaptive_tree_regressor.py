@@ -4,7 +4,7 @@ from copy import deepcopy
 from river import base
 
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
-from .nodes.branch import HTBranch
+from .nodes.branch import DTBranch
 from .nodes.hatr_nodes import (
     AdaBranchRegressor,
     AdaLeafRegAdaptive,
@@ -236,7 +236,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         pred = 0.0
         if self._root is not None:
             found_nodes = [self._root]
-            if isinstance(self._root, HTBranch):
+            if isinstance(self._root, DTBranch):
                 found_nodes = self._root.traverse(x, until_leaf=True)
             for leaf in found_nodes:
                 pred += leaf.prediction(x, tree=self)
