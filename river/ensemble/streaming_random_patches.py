@@ -400,7 +400,9 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     seed
         Random number generator seed for reproducibility.
     metric
-        Metric to track members performance within the ensemble.
+        Metric to track members performance within the ensemble. This
+        implementation assumes that larger values are better when using
+        weighted votes.
 
     Examples
     --------
@@ -697,7 +699,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     >>> model = ensemble.SRPRegressor(
     ...     model=base_model,
     ...     n_models=3,
-    ...     seed=42,
+    ...     seed=42, disable_weighted_vote=False,
     ... )
     >>> metric = metrics.R2()
     >>> evaluate.progressive_val_score(dataset, model, metric)
@@ -809,19 +811,24 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
         return super().learn_one(x=x, y=y, **kwargs)
 
     def predict_one(self, x):
-        y_pred = [0.0] * self.n_models
-        weights = [1.0] * self.n_models
-        mean = Mean() if self.aggregation_method == self._MEAN else None
+        y_pred = np.zeros(self.n_models)
+        weights = np.ones(self.n_models)
 
         for i, model in enumerate(self.models):
             y_pred[i] = model.predict_one(x)
             if not self.disable_weighted_vote:
-                weights[i] = model.metric.get()
-            if mean is not None:
-                mean.update(y_pred[i], weights[i])
+                metric_value = model.metric.get()
+                weights[i] = metric_value if metric_value >= 0 else 0.
 
         if self.aggregation_method == self._MEAN:
-            return mean.get()
+            if not self.disable_weighted_vote:
+                if not self.metric.bigger_is_better:
+                    # Invert weights so smaller values have larger influence
+                    weights = -(weights - max(weights))
+                if sum(weights) == 0:
+                    # Average is undefined
+                    return 0.
+            return np.average(y_pred, weights=weights)
         else:  # self.aggregation_method == self._MEDIAN:
             return np.median(y_pred)
 
