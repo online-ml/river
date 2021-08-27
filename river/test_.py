@@ -41,7 +41,6 @@ def get_all_estimators():
         compose.Grouper,
         ensemble.AdaptiveRandomForestClassifier,
         ensemble.AdaptiveRandomForestRegressor,
-        ensemble.SRPClassifier,
         expert.StackingClassifier,
         expert.SuccessiveHalvingClassifier,
         expert.SuccessiveHalvingRegressor,
