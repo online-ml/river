@@ -39,6 +39,15 @@ to split such a feature.
 * Define properties to access leaf prediction strategies, split criteria, and other
 relevant characteristics.
 
+**2. Stochastic Gradient Trees**
+
+Stochastic Gradient Trees (SGT) directly optimize a loss function, rather than relying on split
+heuristics to guide the tree growth. F-tests are performed do decide whether a leaf should be
+expanded or its prediction value should be updated.
+
+SGTs can deal with binary classification and single-target regression. They also support
+dynamic and static feature quantizers to deal with numerical inputs.
+
 """
 
 from . import splitter
@@ -49,6 +58,7 @@ from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
 from .label_combination_hoeffding_tree import LabelCombinationHoeffdingTreeClassifier
+from .stochastic_gradient_tree import SGTClassifier, SGTRegressor
 
 __all__ = [
     "splitter",
@@ -59,4 +69,6 @@ __all__ = [
     "HoeffdingAdaptiveTreeRegressor",
     "iSOUPTreeRegressor",
     "LabelCombinationHoeffdingTreeClassifier",
+    "SGTClassifier",
+    "SGTRegressor",
 ]

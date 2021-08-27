@@ -2,7 +2,7 @@ import collections
 import functools
 
 from ..utils import BranchFactory
-from .base_splitter import Splitter
+from .base import Splitter
 
 
 class NominalSplitterClassif(Splitter):

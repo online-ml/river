@@ -1,7 +1,7 @@
 from collections import Counter, defaultdict
 
 from ..utils import BranchFactory
-from .base_splitter import Splitter
+from .base import Splitter
 
 
 class ExhaustiveSplitter(Splitter):

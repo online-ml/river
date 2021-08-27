@@ -1,11 +1,11 @@
 import math
 
-from river import base
+from river import base, stats
 
-__all__ = ["BoxCoxRegressor", "TransformedTargetRegressor"]
+__all__ = ["BoxCoxRegressor", "TargetStandardScaler", "TargetTransformRegressor"]
 
 
-class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
+class TargetTransformRegressor(base.Regressor, base.WrapperMixin):
     """Modifies the target before training.
 
     The user is expected to check that `func` and `inverse_func` are coherent with each other.
@@ -33,7 +33,7 @@ class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
     >>> dataset = datasets.TrumpApproval()
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     meta.TransformedTargetRegressor(
+    ...     meta.TargetTransformRegressor(
     ...         regressor=linear_model.LinearRegression(intercept_lr=0.15),
     ...         func=math.log,
     ...         inverse_func=math.exp
@@ -66,7 +66,7 @@ class TransformedTargetRegressor(base.Regressor, base.WrapperMixin):
         return self.inverse_func(y_pred)
 
 
-class BoxCoxRegressor(TransformedTargetRegressor):
+class BoxCoxRegressor(TargetTransformRegressor):
     """Applies the Box-Cox transform to the target before training.
 
     Box-Cox transform is useful when the target variable is heteroscedastic (i.e. there are
@@ -117,3 +117,56 @@ class BoxCoxRegressor(TransformedTargetRegressor):
             if power > 0
             else math.exp,
         )
+
+
+class TargetStandardScaler(TargetTransformRegressor):
+    """Applies standard scaling to the target.
+
+    Parameters
+    ----------
+    regressor
+        Regression model to wrap.
+
+    Examples
+    --------
+
+    >>> import math
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import linear_model
+    >>> from river import meta
+    >>> from river import metrics
+    >>> from river import preprocessing
+
+    >>> dataset = datasets.TrumpApproval()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     meta.TargetStandardScaler(
+    ...         regressor=linear_model.LinearRegression(intercept_lr=0.15)
+    ...     )
+    ... )
+    >>> metric = metrics.MSE()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MSE: 2.003724
+
+    """
+
+    def __init__(self, regressor: base.Regressor):
+        self.var = stats.Var()
+        super().__init__(
+            regressor=regressor, func=self._scale, inverse_func=self._unscale
+        )
+
+    def learn_one(self, x, y):
+        self.var.update(y)
+        return super().learn_one(x, y)
+
+    def _scale(self, y):
+        try:
+            return (y - self.var.mean.get()) / self.var.get() ** 0.5
+        except ZeroDivisionError:
+            return 0.0
+
+    def _unscale(self, y):
+        return y * self.var.get() ** 0.5 + self.var.mean.get()

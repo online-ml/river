@@ -77,24 +77,24 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
     >>> rolling_iqr = stats.RollingIQR(
     ...     q_inf=0.25,
     ...     q_sup=0.75,
-    ...     window_size=100
+    ...     window_size=101
     ... )
 
     >>> for i in range(0, 1001):
     ...     rolling_iqr = rolling_iqr.update(i)
     ...     if i % 100 == 0:
     ...         print(rolling_iqr.get())
-    0
-    50
-    50
-    50
-    50
-    50
-    50
-    50
-    50
-    50
-    50
+    0.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
 
     """
 

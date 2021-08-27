@@ -6,7 +6,7 @@ from river import utils
 from river.utils.histogram import Bin  # noqa
 
 from ..utils import BranchFactory
-from .base_splitter import Splitter
+from .base import Splitter
 
 
 class HistogramSplitter(Splitter):

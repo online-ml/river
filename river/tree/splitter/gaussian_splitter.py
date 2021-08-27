@@ -5,7 +5,7 @@ from river.base.typing import ClfTarget
 from river.proba import Gaussian
 
 from ..utils import BranchFactory
-from .base_splitter import Splitter
+from .base import Splitter
 
 
 class GaussianSplitter(Splitter):

@@ -6,7 +6,7 @@ from river.stats import Var
 from river.utils.skmultiflow_utils import check_random_state
 
 from .branch import (
-    HTBranch,
+    DTBranch,
     NominalBinaryBranch,
     NominalMultiwayBranch,
     NumericBinaryBranch,
@@ -108,7 +108,7 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
                 self.last_split_attempt_at = weight_seen
 
 
-class AdaBranchRegressor(HTBranch, AdaNode):
+class AdaBranchRegressor(DTBranch, AdaNode):
     """Node that splits the data in a Hoeffding Adaptive Tree Regression.
 
     Parameters
@@ -261,7 +261,7 @@ class AdaBranchRegressor(HTBranch, AdaNode):
                         tree._root = tree._root._alternate_tree
                     tree._n_switch_alternate_trees += 1
                 elif bound < alt_error_rate - old_error_rate:
-                    if isinstance(self._alternate_tree, HTBranch):
+                    if isinstance(self._alternate_tree, DTBranch):
                         self._alternate_tree.kill_tree_children(tree)  # noqa
                     self._alternate_tree = None
                     tree._n_pruned_alternate_trees += 1
@@ -322,7 +322,7 @@ class AdaBranchRegressor(HTBranch, AdaNode):
     def kill_tree_children(self, tree):
         for child in self.children:
             # Delete alternate tree if it exists
-            if isinstance(child, HTBranch):
+            if isinstance(child, DTBranch):
                 if child._alternate_tree is not None:
                     child._alternate_tree.kill_tree_children(tree)
                     tree._n_pruned_alternate_trees += 1

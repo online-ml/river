@@ -132,13 +132,27 @@ class HDDM_A(DriftDetector):
             self._in_concept_change = False
             self._in_warning_zone = False
 
-        if self.two_sided_test and self._mean_decr(
-            self.c_max, self.n_max, self.total_c, self.total_n
-        ):
-            self.n_estimation = self.total_n - self.n_max
-            self.c_estimation = self.total_c - self.c_max
-            self.n_min = self.n_max = self.total_n = 0
-            self.c_min = self.c_max = self.total_c = 0
+        if self.two_sided_test:
+            if self._mean_decr(
+                self.c_max,
+                self.n_max,
+                self.total_c,
+                self.total_n,
+                self.drift_confidence,
+            ):
+                self.n_estimation = self.total_n - self.n_max
+                self.c_estimation = self.total_c - self.c_max
+                self.n_min = self.n_max = self.total_n = 0
+                self.c_min = self.c_max = self.total_c = 0
+                self._in_concept_change = True
+            elif self._mean_decr(
+                self.c_max,
+                self.n_max,
+                self.total_c,
+                self.total_n,
+                self.warning_confidence,
+            ):
+                self._in_warning_zone = True
 
         self._update_estimations()
 
@@ -153,12 +167,12 @@ class HDDM_A(DriftDetector):
         cota = sqrt(m / 2 * log(2.0 / confidence))
         return total_c / total_n - c_min / n_min >= cota
 
-    def _mean_decr(self, c_max, n_max, total_c, total_n):
+    def _mean_decr(self, c_max, n_max, total_c, total_n, confidence):
         if n_max == total_n:
             return False
 
         m = (total_n - n_max) / n_max * (1.0 / total_n)
-        cota = sqrt(m / 2 * log(2.0 / self.drift_confidence))
+        cota = sqrt(m / 2 * log(2.0 / confidence))
         return c_max / n_max - total_c / total_n >= cota
 
     def reset(self):

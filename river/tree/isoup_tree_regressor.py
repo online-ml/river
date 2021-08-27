@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from river import base, tree
 
-from .nodes.branch import HTBranch
+from .nodes.branch import DTBranch
 from .nodes.isouptr_nodes import (
     LeafAdaptiveMultiTarget,
     LeafMeanMultiTarget,
@@ -261,7 +261,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         """
         pred = {}
         if self._root is not None:
-            if isinstance(self._root, HTBranch):
+            if isinstance(self._root, DTBranch):
                 leaf = self._root.traverse(x, until_leaf=True)
             else:
                 leaf = self._root
