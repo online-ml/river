@@ -6,6 +6,8 @@
 ## ensemble
 
 - Implemented `ensemble.VotingClassifier`.
+- Implemented `ensemble.SRPRegressor`.
+
 ## meta
 
 - Renamed `meta.TransformedTargetRegressor` to `meta.TargetTransformRegressor`.

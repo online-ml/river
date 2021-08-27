@@ -10,7 +10,6 @@ from river import base
 from river.drift import ADWIN
 from river.metrics import MAE, Accuracy
 from river.metrics.base import Metric, MultiClassMetric, RegressionMetric
-from river.stats import Mean
 from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
 
 
@@ -426,6 +425,12 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 74.47%
 
+    Notes
+    -----
+    This implementation uses `n_models=10` as default given the impact on
+    processing time. The optimal number of models depends on the data and
+    resources available.
+
     References
     ----------
     [^1]: Heitor Murilo Gomes, Jesse Read, Albert Bifet.
@@ -437,7 +442,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     def __init__(
         self,
         model: base.Estimator = None,
-        n_models: int = 100,
+        n_models: int = 10,
         subspace_size: typing.Union[int, float, str] = 0.6,
         training_method: str = "patches",
         lam: float = 6.0,
@@ -705,6 +710,12 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     R2: 0.525003
 
+    Notes
+    -----
+    This implementation uses `n_models=10` as default given the impact on
+    processing time. The optimal number of models depends on the data and
+    resources available.
+
     References
     ----------
     [^1]: Heitor Gomes, Jacob Montiel, Saulo Martiello Mastelini,
@@ -726,7 +737,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     def __init__(
         self,
         model: base.Regressor = None,
-        n_models: int = 100,
+        n_models: int = 10,
         subspace_size: typing.Union[int, float, str] = 0.6,
         training_method: str = "patches",
         lam: float = 6.0,
