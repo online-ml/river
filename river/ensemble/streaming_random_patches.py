@@ -818,7 +818,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
             y_pred[i] = model.predict_one(x)
             if not self.disable_weighted_vote:
                 metric_value = model.metric.get()
-                weights[i] = metric_value if metric_value >= 0 else 0.
+                weights[i] = metric_value if metric_value >= 0 else 0.0
 
         if self.aggregation_method == self._MEAN:
             if not self.disable_weighted_vote:
@@ -827,7 +827,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
                     weights = -(weights - max(weights))
                 if sum(weights) == 0:
                     # Average is undefined
-                    return 0.
+                    return 0.0
             return np.average(y_pred, weights=weights)
         else:  # self.aggregation_method == self._MEDIAN:
             return np.median(y_pred)
