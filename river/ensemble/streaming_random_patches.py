@@ -704,7 +704,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     >>> model = ensemble.SRPRegressor(
     ...     model=base_model,
     ...     n_models=3,
-    ...     seed=42, disable_weighted_vote=False,
+    ...     seed=42
     ... )
     >>> metric = metrics.R2()
     >>> evaluate.progressive_val_score(dataset, model, metric)
