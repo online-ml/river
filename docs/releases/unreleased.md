@@ -3,6 +3,7 @@
 ## base
 
 - The `predict_many` and `predict_proba_many` methods have been removed from `base.Classifier`. They're part of `base.MiniBatchClassifier`.
+
 ## ensemble
 
 - Implemented `ensemble.VotingClassifier`.
@@ -13,11 +14,16 @@
 - Renamed `meta.TransformedTargetRegressor` to `meta.TargetTransformRegressor`.
 - Added `meta.TargetStandardScaler`.
 
+## preprocessing
+
+- Added a `with_std` parameter to `StandardScaler`.
+
 ## rules
 
 - Added `rules.AMRules`
 
 ## stats
+
 - Make `stats.RollingQuantile` match the default behavior of Numpy's `quantile` function.
 
 ## tree
