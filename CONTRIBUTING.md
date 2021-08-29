@@ -142,3 +142,11 @@ You don't have to worry too much about these, as we only check them before each 
 ```sh
 $ make execute-notebooks
 ```
+
+## Making a new release
+
+1. Checkout `master`
+2. Bump the version in `river/__version__.py`
+3. Commit
+4. Tag the commit with the version (e.g. `0.4.2`)
+5. Push
