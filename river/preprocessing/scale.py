@@ -1,6 +1,6 @@
 import collections
-import itertools
 import functools
+import itertools
 import numbers
 
 import numpy as np
