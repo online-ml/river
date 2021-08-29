@@ -229,7 +229,9 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
 
     >>> sh.best_model
     Pipeline (
-      StandardScaler (),
+      StandardScaler (
+        with_std=True
+      ),
       LinearRegression (
         optimizer=Adam (
           lr=Constant (
@@ -375,7 +377,9 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
 
     >>> sh.best_model
     Pipeline (
-      StandardScaler (),
+      StandardScaler (
+        with_std=True
+      ),
       LogisticRegression (
         optimizer=Adam (
           lr=Constant (

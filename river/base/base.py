@@ -125,7 +125,9 @@ class Base:
 
         >>> model._set_params(new_params)
         Pipeline (
-          StandardScaler (),
+          StandardScaler (
+            with_std=True
+          ),
           LinearRegression (
             optimizer=SGD (
               lr=Constant (
