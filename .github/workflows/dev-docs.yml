@@ -45,7 +45,7 @@ jobs:
           git config pull.rebase false
 
           git add --all
-          git commit -m "Release dev docs"
+          git commit -m "Release dev docs" --allow-empty
 
           git fetch
           git checkout gh-pages
