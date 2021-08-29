@@ -149,4 +149,4 @@ $ make execute-notebooks
 2. Bump the version in `river/__version__.py`
 3. Commit
 4. Tag the commit with the version (e.g. `0.4.2`)
-5. Push
+5. Push the tag (i.e. `git push origin 0.4.2`)

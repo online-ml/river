@@ -148,7 +148,7 @@ class StandardScaler(base.Transformer):
 
     """
 
-    def __init__(self, with_std=False):
+    def __init__(self, with_std=True):
         self.with_std = with_std
         self.counts = collections.Counter()
         self.means = collections.defaultdict(float)
