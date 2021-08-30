@@ -35,10 +35,11 @@ extra:
       - icon: fontawesome/brands/github-alt
         link: https://github.com/online-ml/river
 
-# Google Analytics
-google_analytics:
-  - UA-63302552-3
-  - auto
+# Analytics
+extra:
+  analytics:
+    provider: google
+    property: UA-63302552-3
 
 # Extensions
 markdown_extensions:
