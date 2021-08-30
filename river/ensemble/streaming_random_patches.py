@@ -574,7 +574,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
             x_subset = x
 
         # TODO Find a way to verify if the model natively supports sample_weight
-        for _ in range(sample_weight):
+        for _ in range(int(sample_weight)):
             self.model.learn_one(x=x_subset, y=y)
 
         if self._background_learner:
@@ -919,7 +919,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
             x_subset = x
 
         # TODO Find a way to verify if the model natively supports sample_weight
-        for _ in range(sample_weight):
+        for _ in range(int(sample_weight)):
             self.model.learn_one(x=x_subset, y=y)
 
         # Drift detection input
