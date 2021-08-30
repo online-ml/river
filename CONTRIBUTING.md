@@ -95,6 +95,7 @@ To build the documentation, you need to install some extra dependencies:
 
 ```sh
 $ pip install -e ".[docs]"
+$ pip install git+https://github.com/MaxHalford/yamp
 ```
 
 From the root of the repository, you can then run the `make livedoc` command to take a look at the documentation in your browser. This will run a custom script which parses all the docstrings and generate MarkDown files that [MkDocs](https://www.mkdocs.org/) can render.
