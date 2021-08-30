@@ -14,40 +14,37 @@ copyright: Copyright &copy; 2019 - 2020
 
 # Configuration
 theme:
-    name: material
-    custom_dir: docs/overrides
-    language: en
-    palette:
-        primary: indigo
-        accent: indigo
-    font:
-        text: Roboto
-        code: Roboto Mono
-    logo: img/river_square.svg
-    favicon: img/favicon.ico
-    features:
-        - navigation.tabs
-        - navigation.instant
+  name: material
+  custom_dir: docs/overrides
+  language: en
+  palette:
+    primary: indigo
+    accent: indigo
+  font:
+    text: Roboto
+    code: Roboto Mono
+  logo: img/river_square.svg
+  favicon: img/favicon.ico
+  features:
+    - navigation.tabs
+    - navigation.instant
 
 # Extras
-extra:
-    social:
-      - icon: fontawesome/brands/github-alt
-        link: https://github.com/online-ml/river
-
-# Analytics
 extra:
   analytics:
     provider: google
     property: UA-63302552-3
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/online-ml/river
 
 # Extensions
 markdown_extensions:
   - admonition
   - footnotes
   - toc:
-        permalink: true
-        toc_depth: "1-3"
+      permalink: true
+      toc_depth: "1-3"
   - pymdownx.details
   - pymdownx.arithmatex:
       generic: true
