@@ -6,7 +6,11 @@ import torch
 
 from .. import base
 
-__all__ = ["PyTorch2RiverRegressor"]
+__all__ = [
+    "PyTorch2RiverBase",
+    "PyTorch2RiverRegressor",
+    "PyTorch2RiverClassifier"
+]
 
 
 class PyTorch2RiverBase(base.Estimator):
