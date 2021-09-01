@@ -91,6 +91,7 @@ class PyTorch2RiverBase(base.Estimator):
 
 
 class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
+    """A river classifier that integrates neural Networks from PyTorch."""
     def __init__(
         self,
         build_fn,
@@ -167,14 +168,13 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
 
 
 class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
-    """Compatibility layer from PyTorch to River for classification.
+    """Compatibility layer from PyTorch to River for regression.
 
     Parameters
     ----------
     net
     loss_fn
-    optimizer
-    batch_size
+    optimizer_fn
 
     Examples
     --------
@@ -188,23 +188,23 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     >>> from torch import nn
     >>> from torch import optim
 
+    >>> _ = torch.manual_seed(0)
+
     >>> dataset = datasets.TrumpApproval()
 
-    >>> def mlp_net(n_features, width):
-    ...     net = nn.Sequential(
-    ...         nn.Linear(n_features, width),
-    ...         nn.Linear(width, 1)
-    ...     )
-    ...     return net
+    >>> n_features = 6
+    >>> net = nn.Sequential(
+    ...     nn.Linear(n_features, 3),
+    ...     nn.Linear(3, 1)
     ... )
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     compat.PyTorch2RiverRegressor(
     ...         net=net,
-    ...         loss_fn=nn.MSELoss,
-    ...         optimizer=optim.SGD,
-    ...         width=5
+    ...         loss_fn=nn.MSELoss(),
+    ...         optimizer_fn=optim.SGD(net.parameters(), lr=1e-3),
+    ...         batch_size=2
     ...     )
     ... )
     >>> metric = metrics.MAE()
@@ -215,21 +215,22 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     """
 
     def __init__(
-        self,
-        net: torch.nn.Sequential,
-        loss_fn: torch.nn.modules.loss._Loss,
-        optimizer: torch.optim.Optimizer = torch.optim.Adam,
-        batch_size=1,
-    ):
+            self,
+            build_fn,
+            loss_fn: typing.Type[torch.nn.modules.loss._Loss],
+            optimizer_fn: typing.Type[torch.optim.Optimizer],
+            learning_rate=1e-3,
+            **net_params):
         super().__init__(
-            net=net,
+            build_fn=build_fn,
             loss_fn=loss_fn,
-            optimizer=optimizer,
-            batch_size=batch_size,
-            x_tensor=torch.Tensor,
-            y_tensor=torch.Tensor,
+            optimizer_fn=optimizer_fn,
+            learning_rate=learning_rate,
+            **net_params
         )
 
     def predict_one(self, x):
-        x = self.x_tensor(list(x.values()))
+        if self.net is None:
+            self._init_net(len(x))
+        x = torch.Tensor(list(x.values()))
         return self.net(x).item()
