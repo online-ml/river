@@ -6,11 +6,7 @@ import torch
 
 from .. import base
 
-__all__ = [
-    "PyTorch2RiverBase",
-    "PyTorch2RiverRegressor",
-    "PyTorch2RiverClassifier"
-]
+__all__ = ["PyTorch2RiverBase", "PyTorch2RiverRegressor", "PyTorch2RiverClassifier"]
 
 
 class PyTorch2RiverBase(base.Estimator):
@@ -36,7 +32,7 @@ class PyTorch2RiverBase(base.Estimator):
         self.net = None
 
     def _unit_test_params(self):
-        #todo check if that works with Jupyter
+        # todo check if that works with Jupyter
         def build_torch_linear_regressor(n_features):
             net = torch.nn.Sequential(torch.nn.Linear(n_features, 1))
             return net
@@ -92,6 +88,7 @@ class PyTorch2RiverBase(base.Estimator):
 
 class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     """A river classifier that integrates neural Networks from PyTorch."""
+
     def __init__(
         self,
         build_fn,
@@ -215,18 +212,19 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     """
 
     def __init__(
-            self,
-            build_fn,
-            loss_fn: typing.Type[torch.nn.modules.loss._Loss],
-            optimizer_fn: typing.Type[torch.optim.Optimizer],
-            learning_rate=1e-3,
-            **net_params):
+        self,
+        build_fn,
+        loss_fn: typing.Type[torch.nn.modules.loss._Loss],
+        optimizer_fn: typing.Type[torch.optim.Optimizer],
+        learning_rate=1e-3,
+        **net_params,
+    ):
         super().__init__(
             build_fn=build_fn,
             loss_fn=loss_fn,
             optimizer_fn=optimizer_fn,
             learning_rate=learning_rate,
-            **net_params
+            **net_params,
         )
 
     def predict_one(self, x):
