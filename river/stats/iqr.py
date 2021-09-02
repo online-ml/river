@@ -55,7 +55,11 @@ class IQR(base.Univariate):
         return self
 
     def get(self):
-        return self.quantile_sup.get() - self.quantile_inf.get()
+        if (q_sup := self.quantile_sup.get()) is None:
+            return None
+        if (q_inf := self.quantile_inf.get()) is None:
+            return None
+        return q_sup - q_inf
 
 
 class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
@@ -121,4 +125,8 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
         return self
 
     def get(self):
-        return self.quantile_sup.get() - self.quantile_inf.get()
+        if (q_sup := self.quantile_sup.get()) is None:
+            return None
+        if (q_inf := self.quantile_inf.get()) is None:
+            return None
+        return q_sup - q_inf

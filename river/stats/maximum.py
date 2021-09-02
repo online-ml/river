@@ -81,7 +81,10 @@ class RollingMax(base.RollingUnivariate, utils.SortedWindow):
         return self
 
     def get(self):
-        return self[-1]
+        try:
+            return self[-1]
+        except IndexError:
+            return None
 
 
 class AbsMax(base.Univariate):
@@ -160,4 +163,7 @@ class RollingAbsMax(base.RollingUnivariate, utils.SortedWindow):
         return self
 
     def get(self):
-        return self[-1]
+        try:
+            return self[-1]
+        except IndexError:
+            return None

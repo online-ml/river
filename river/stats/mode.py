@@ -62,7 +62,7 @@ class Mode(base.Univariate):
         return self
 
     def get(self):
-        return max(self.counts, key=self.counts.get)
+        return max(self.counts, key=self.counts.get, default=None)
 
 
 class RollingMode(base.RollingUnivariate, utils.Window):
@@ -134,4 +134,4 @@ class RollingMode(base.RollingUnivariate, utils.Window):
         return self
 
     def get(self):
-        return max(self.counts, key=self.counts.get)
+        return max(self.counts, key=self.counts.get, default=None)
