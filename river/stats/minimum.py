@@ -66,6 +66,6 @@ class RollingMin(base.RollingUnivariate, utils.SortedWindow):
 
     def get(self):
         try:
-            return self[-1]
+            return self[0]
         except IndexError:
             return None
