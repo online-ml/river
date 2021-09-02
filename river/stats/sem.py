@@ -39,7 +39,10 @@ class SEM(var.Var):
     """
 
     def get(self):
-        return (super().get() / self.mean.n) ** 0.5
+        try:
+            return (super().get() / self.mean.n) ** 0.5
+        except ZeroDivisionError:
+            return None
 
 
 class RollingSEM(var.RollingVar):
@@ -82,4 +85,7 @@ class RollingSEM(var.RollingVar):
     """
 
     def get(self):
-        return (super().get() / len(self.rolling_mean)) ** 0.5
+        try:
+            return (super().get() / len(self.rolling_mean)) ** 0.5
+        except ZeroDivisionError:
+            return None

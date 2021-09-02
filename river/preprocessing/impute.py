@@ -205,6 +205,7 @@ class StatImputer(base.Transformer):
     """
 
     def __init__(self, *imputers):
+        self.imputers = imputers
         self.stats = {
             feature: stat if isinstance(stat, stats.Univariate) else Constant(stat)
             for feature, stat in imputers
