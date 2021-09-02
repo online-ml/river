@@ -67,8 +67,8 @@ class Discard(base.Transformer):
 class Select(base.Transformer):
     """Selects features according to a whitelist.
 
-    This can be used in a pipeline when you want to remove certain features. The `transform_one`
-    method is pure, and therefore returns a fresh new dictionary instead of removing the specified
+    This can be used in a pipeline when you want to select certain features. The `transform_one`
+    method is pure, and therefore returns a fresh new dictionary instead of filtering the specified
     keys from the input.
 
     Parameters
