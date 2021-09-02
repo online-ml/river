@@ -161,7 +161,7 @@ class Quantile(base.Univariate):
             length = len(self.heights)
             return self.heights[int(min(max(length - 1, 0), length * self.q))]
 
-        return 0
+        return None
 
 
 class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
@@ -239,4 +239,7 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
 
     def get(self):
         lower, higher, frac = self._prepare()
-        return self[lower] + (self[higher] - self[lower]) * frac
+        try:
+            return self[lower] + (self[higher] - self[lower]) * frac
+        except IndexError:
+            return None

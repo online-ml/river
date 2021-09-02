@@ -21,6 +21,9 @@ def load_stats():
     ):
         try:
 
+            if inspect.isabstract(obj):
+                continue
+
             if issubclass(obj, stats.Link):
                 yield obj(stats.Shift(1), stats.Mean())
                 continue
@@ -46,6 +49,12 @@ def test_pickling(stat):
 
     if isinstance(stat, stats.Univariate):
         assert isinstance(stat.name, str)
+
+
+@pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
+def test_repr_with_no_updates(stat):
+    assert isinstance(repr(stat), str)
+    assert isinstance(str(stat), str)
 
 
 @pytest.mark.parametrize(

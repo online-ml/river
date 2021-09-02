@@ -95,4 +95,8 @@ class RollingPeakToPeak(base.RollingUnivariate):
         return self
 
     def get(self):
-        return self.max.get() - self.min.get()
+        if (maximum := self.max.get()) is None:
+            return None
+        if (minimum := self.min.get()) is None:
+            return None
+        return maximum - minimum

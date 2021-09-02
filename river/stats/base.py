@@ -1,4 +1,5 @@
 import abc
+from typing import Optional
 
 from river import base
 
@@ -9,12 +10,17 @@ class Statistic(base.Base):
     # Define the format specification used for string representation.
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
-    def get(self):
+    def get(self) -> Optional[float]:
         """Return the current value of the statistic."""
         raise NotImplementedError
 
     def __repr__(self):
-        return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
+        try:
+            value = self.get()
+        except NotImplementedError:
+            value = None
+        fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
+        return f"{self.__class__.__name__}: {fmt_value}"
 
 
 class Univariate(Statistic):
