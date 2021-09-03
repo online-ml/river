@@ -7099,7 +7099,7 @@ MAE: 3.933498
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
 <p><html><body><div class="pipeline"><div class="union"><details class="estimator"><summary><pre class="estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="estimator-params">
-{'whitelist': {'pressure', 'wind', 'humidity', 'temperature', 'clouds'}}</p>
+{'whitelist': {'pressure', 'temperature', 'humidity', 'wind', 'clouds'}}</p>
 <p></code></details><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">get_hour</pre></summary><code class="estimator-params">
 def get_hour(x):
     x['hour'] = x['moment'].hour
@@ -7107,7 +7107,7 @@ def get_hour(x):
 <p></code></details><details class="estimator"><summary><pre class="estimator-name">target_mean_by_station_and_hour</pre></summary><code class="estimator-params">
 {'by': ['station', 'hour'],
  'feature_name': 'target_mean_by_station_and_hour',
- 'groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7feefcfb3700&gt;, Mean: 0.),
+ 'groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7ffeb9fb5700&gt;, Mean: 0.),
                        {'metro-canal-du-midi_0': Mean: 7.93981,
                         'metro-canal-du-midi_1': Mean: 8.179704,
                         'metro-canal-du-midi_10': Mean: 12.486815,
@@ -7233,9 +7233,9 @@ def get_hour(x):
 <p></code></details></div></div><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
 {'counts': Counter({'target_mean_by_station_and_hour': 182470,
                     'pressure': 182470,
-                    'wind': 182470,
-                    'humidity': 182470,
                     'temperature': 182470,
+                    'humidity': 182470,
+                    'wind': 182470,
                     'clouds': 182470}),
  'means': defaultdict(&lt;class 'float'&gt;,
                       {'clouds': 30.315131254453505,
@@ -7250,13 +7250,14 @@ def get_hour(x):
                       'pressure': 33.298307526514115,
                       'target_mean_by_station_and_hour': 33.720872727055365,
                       'temperature': 34.70701720774977,
-                      'wind': 4.473627075744674})}</p>
+                      'wind': 4.473627075744674}),
+ 'with_std': True}</p>
 <p></code></details><details class="estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
-{'_weights': {'target_mean_by_station_and_hour': 3.871921823842874, 'pressure': 2.1481948468090253, 'wind': -0.26121936045271543, 'humidity': 3.881792987494524, 'temperature': -2.7950777648287284, 'clouds': -0.6106470619450347},
+{'_weights': {'target_mean_by_station_and_hour': 3.871921823842874, 'pressure': 2.148194846809029, 'temperature': -2.795077764828726, 'humidity': 3.8817929874945247, 'wind': -0.2612193604527132, 'clouds': -0.610647061945034},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
  'initializer': Zeros (),
- 'intercept': 6.096564954881427,
+ 'intercept': 6.096564954881429,
  'intercept_init': 0.0,
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l2': 0.0,

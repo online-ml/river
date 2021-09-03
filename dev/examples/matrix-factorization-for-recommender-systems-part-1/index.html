@@ -7168,9 +7168,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;x = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">y = </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">break</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Downloading https://maxhalford.github.io/files/datasets/ml_100k.zip (1.83 MB)
-Uncompressing into /Users/max.halford/river_data/MovieLens100K
-x = {
+<div class="highlight"><pre><span></span><code>x = {
     &quot;user&quot;: &quot;259&quot;,
     &quot;item&quot;: &quot;255&quot;,
     &quot;timestamp&quot;: 874731910000000000,
@@ -7245,10 +7243,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761844, RMSE: 0.960972 – 0:00:00.962592 – 169.99 KB
-[50,000] MAE: 0.753292, RMSE: 0.951223 – 0:00:02.222282 – 238.63 KB
-[75,000] MAE: 0.754177, RMSE: 0.953376 – 0:00:03.443442 – 282.43 KB
-[100,000] MAE: 0.754651, RMSE: 0.954148 – 0:00:04.465794 – 306.03 KB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761844, RMSE: 0.960972 – 0:00:00.909401 – 169.99 KB
+[50,000] MAE: 0.753292, RMSE: 0.951223 – 0:00:01.827196 – 238.63 KB
+[75,000] MAE: 0.754177, RMSE: 0.953376 – 0:00:02.751044 – 282.43 KB
+[100,000] MAE: 0.754651, RMSE: 0.954148 – 0:00:03.716453 – 306.03 KB
 </code></pre></div>
 <p>We won two tenth of MAE compared to our naive prediction (0.7546 vs 0.9421) meaning that significant information has been learnt by the model.</p>
 <h2 id="funk-matrix-factorization-funkmf">Funk Matrix Factorization (FunkMF)<a class="headerlink" href="#funk-matrix-factorization-funkmf" title="Permanent link">&para;</a></h2>
@@ -7273,10 +7271,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 1.070136, RMSE: 1.397014 – 0:00:01.990650 – 938.01 KB
-[50,000] MAE: 0.99174, RMSE: 1.290666 – 0:00:04.081581 – 1.13 MB
-[75,000] MAE: 0.961072, RMSE: 1.250842 – 0:00:06.099587 – 1.33 MB
-[100,000] MAE: 0.944883, RMSE: 1.227688 – 0:00:08.139818 – 1.5 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 1.070136, RMSE: 1.397014 – 0:00:01.705144 – 938.07 KB
+[50,000] MAE: 0.99174, RMSE: 1.290666 – 0:00:03.466905 – 1.13 MB
+[75,000] MAE: 0.961072, RMSE: 1.250842 – 0:00:05.205363 – 1.33 MB
+[100,000] MAE: 0.944883, RMSE: 1.227688 – 0:00:06.934770 – 1.5 MB
 </code></pre></div>
 <p>Results are equivalent to our naive prediction (0.9448 vs 0.9421). By only focusing on the users preferences and the items characteristics, the model is limited in his ability to capture different views of the problem. Despite its poor performance alone, this algorithm is quite useful combined in other models or when we need to build dense representations for other tasks.</p>
 <h2 id="biased-matrix-factorization-biasedmf">Biased Matrix Factorization (BiasedMF)<a class="headerlink" href="#biased-matrix-factorization-biasedmf" title="Permanent link">&para;</a></h2>
@@ -7304,10 +7302,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761818, RMSE: 0.961057 – 0:00:02.215027 – 1.01 MB
-[50,000] MAE: 0.751667, RMSE: 0.949443 – 0:00:04.477109 – 1.28 MB
-[75,000] MAE: 0.749653, RMSE: 0.948723 – 0:00:06.553924 – 1.51 MB
-[100,000] MAE: 0.748559, RMSE: 0.947854 – 0:00:08.727386 – 1.69 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761818, RMSE: 0.961057 – 0:00:01.917323 – 1.01 MB
+[50,000] MAE: 0.751667, RMSE: 0.949443 – 0:00:03.825794 – 1.28 MB
+[75,000] MAE: 0.749653, RMSE: 0.948723 – 0:00:05.737369 – 1.51 MB
+[100,000] MAE: 0.748559, RMSE: 0.947854 – 0:00:07.666314 – 1.69 MB
 </code></pre></div>
 <p>Results improved (0.7485 vs 0.7546) demonstrating that users and items latent representations bring additional information.</p>
 <p>To conclude this first tutorial about factorization models, let's review the important parameters to tune when dealing with this family of methods:</p>
