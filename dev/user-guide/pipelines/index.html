@@ -7029,7 +7029,90 @@
 <p>A pipeline has a <code>draw</code> method that can be used to visualize it:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<p><img alt="svg" src="../pipelines_files/pipelines_8_0.svg" /></p>
+<p><html><body><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
+{'counts': Counter(),
+ 'means': defaultdict(&lt;class 'float'&gt;, {}),
+ 'vars': defaultdict(&lt;class 'float'&gt;, {}),
+ 'with_std': True}</p>
+<p></code></details><details class="estimator"><summary><pre class="estimator-name">PolynomialExtender</pre></summary><code class="estimator-params">
+{'bias_name': 'bias',
+ 'degree': 2,
+ 'include_bias': False,
+ 'interaction_only': False}</p>
+<p></code></details><details class="estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
+{'_weights': {},
+ '_y_name': None,
+ 'clip_gradient': 1000000000000.0,
+ 'initializer': Zeros (),
+ 'intercept': 0.0,
+ 'intercept_init': 0.0,
+ 'intercept_lr': Constant({'learning_rate': 0.01}),
+ 'l2': 0.0,
+ 'loss': Squared({}),
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}</p>
+<p></code></details></div></body><style>
+.estimator {
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}</p>
+<p>.pipeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+}</p>
+<p>.union {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white
+}</p>
+<p>/<em> Vertical spacing between steps </em>/</p>
+<p>.estimator + .estimator,
+.estimator + .union,
+.union + .estimator {
+    margin-top: 2em;
+}</p>
+<p>.union &gt; .estimator {
+    margin-top: 0;
+}</p>
+<p>/<em> Spacing within a union of estimators </em>/</p>
+<p>.union &gt;
+.estimator + .estimator,
+.pipeline + .estimator,
+.estimator + .pipeline,
+.pipeline + .pipeline {
+    margin-left: 1em;
+}</p>
+<p>/<em> Typography </em>/
+.estimator-params {
+    display: block;
+    white-space: pre-wrap;
+    font-size: 120%;
+    margin-bottom: -1em;
+}</p>
+<p>.estimator &gt; code {
+    background-color: white !important;
+}</p>
+<p>.estimator-name {
+    display: inline;
+    margin: 0;
+    font-size: 130%;
+}</p>
+<p>/<em> Toggle </em>/</p>
+<p>summary {
+    display: flex;
+    align-items:center;
+    cursor: pointer;
+}</p>
+<p>summary &gt; div {
+    width: 100%;
+}
+</style></html></p>
 <p><code>compose.Pipeline</code> inherits from <code>base.Estimator</code>, which means that it has a <code>learn_one</code> method. You would expect <code>learn_one</code> to update each estimator, but <strong>that's not actually what happens</strong>. Instead, the transformers are updated when <code>predict_one</code> (or <code>predict_proba_one</code> for that matter) is called. Indeed, in online machine learning, we can update the unsupervised parts of our model when a sample arrives. We don't have to wait for the ground truth to arrive in order to update unsupervised estimators that don't depend on it. In other words, in a pipeline, <code>learn_one</code> updates the supervised parts, whilst <code>predict_one</code> updates the unsupervised parts. It's important to be aware of this behavior, as it is quite different to what is done in other libraries that rely on batch machine learning.</p>
 <p>Here is a small example to illustrate the previous point:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
@@ -7103,7 +7186,200 @@
 
 <span class="n">model</span>
 </code></pre></div>
-<p><img alt="svg" src="../pipelines_files/pipelines_18_0.svg" /></p>
+<p><html><body><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
+{'counts': Counter(),
+ 'means': defaultdict(&lt;class 'float'&gt;, {}),
+ 'vars': defaultdict(&lt;class 'float'&gt;, {}),
+ 'with_std': True}</p>
+<p></code></details><div class="union"><details class="estimator"><summary><pre class="estimator-name">PolynomialExtender</pre></summary><code class="estimator-params">
+{'bias_name': 'bias',
+ 'degree': 2,
+ 'include_bias': False,
+ 'interaction_only': False}</p>
+<p></code></details><details class="estimator"><summary><pre class="estimator-name">RBFSampler</pre></summary><code class="estimator-params">
+{'gamma': 1.0,
+ 'n_components': 100,
+ 'offsets': [5.40319886163907,
+             1.6410242429846016,
+             2.9102505212582352,
+             1.2502497289471197,
+             1.6599819506345908,
+             0.9905000367712694,
+             2.733090767224682,
+             4.620746211242217,
+             2.852398674434833,
+             2.476005155469144,
+             3.7388007297528816,
+             5.646400674828576,
+             3.6227497381819425,
+             4.749089309393084,
+             1.4884201177246816,
+             0.6620783374639668,
+             5.373190414753098,
+             5.275452969586568,
+             3.2621017095010485,
+             5.393146766246767,
+             1.223265495606927,
+             2.0411736263752953,
+             5.553580538930083,
+             4.10986679876461,
+             6.235554966861734,
+             0.4643626338300455,
+             0.7817900181257065,
+             0.8011940519896001,
+             4.052099753388222,
+             2.909807284332097,
+             3.34510955200856,
+             0.3493140121007998,
+             5.402607818879578,
+             3.3087431285569493,
+             1.8770747192053943,
+             4.01284630848113,
+             2.474480980660175,
+             0.2501484424124193,
+             5.8711331722594995,
+             4.057584696495738,
+             3.8164961475303794,
+             0.06634520341680332,
+             5.8565647315792235,
+             0.1847353689415499,
+             5.382451632052383,
+             3.011163589617232,
+             1.7522981577704155,
+             4.2331865374090984,
+             2.9867710560333927,
+             4.433570469239939,
+             2.4306908395425553,
+             4.410215591556303,
+             5.380236343065923,
+             2.640146753638325,
+             3.2230721786004044,
+             4.287528278000641,
+             3.7882931545627048,
+             4.667545445964917,
+             2.921414671761127,
+             1.625105282481997,
+             5.351157082446773,
+             2.2249830555738033,
+             0.41897902600140907,
+             4.798923547622566,
+             0.5031333518481544,
+             3.2612135038369066,
+             2.9675308240998395,
+             1.1389886230155741,
+             0.6804135746493921,
+             5.001111709332776,
+             1.3026367122959899,
+             5.442518462695327,
+             2.6475839991470536,
+             3.2467017672206873,
+             2.5583103981305917,
+             4.121664457069394,
+             1.6644131911945859,
+             5.635212438790749,
+             2.0520138088916995,
+             2.7215315131799485,
+             1.2082918732869392,
+             0.6419157988676313,
+             5.355430804977489,
+             3.863611291623673,
+             5.493444748277504,
+             3.9141646461679795,
+             4.702303680693544,
+             2.6397887943831235,
+             3.4407364580864517,
+             0.7644840870081152,
+             5.025314138394125,
+             3.1860810516030793,
+             0.6846299445357678,
+             3.901352049120776,
+             0.7555553455686381,
+             3.7131726729981533,
+             2.0153584522084187,
+             5.571985454181369,
+             0.006569980732336922,
+             2.7015961406802824],
+ 'rng': &lt;random.Random object at 0x7fb947bf3610&gt;,
+ 'seed': None,
+ 'weights': defaultdict(&lt;bound method RBFSampler._random_weights of RBFSampler (
+  gamma=1.
+  n_components=100
+  seed=None
+)&gt;, {})}</p>
+<p></code></details></div><details class="estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
+{'_weights': {},
+ '_y_name': None,
+ 'clip_gradient': 1000000000000.0,
+ 'initializer': Zeros (),
+ 'intercept': 0.0,
+ 'intercept_init': 0.0,
+ 'intercept_lr': Constant({'learning_rate': 0.01}),
+ 'l2': 0.0,
+ 'loss': Squared({}),
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}</p>
+<p></code></details></div></body><style>
+.estimator {
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}</p>
+<p>.pipeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+}</p>
+<p>.union {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white
+}</p>
+<p>/<em> Vertical spacing between steps </em>/</p>
+<p>.estimator + .estimator,
+.estimator + .union,
+.union + .estimator {
+    margin-top: 2em;
+}</p>
+<p>.union &gt; .estimator {
+    margin-top: 0;
+}</p>
+<p>/<em> Spacing within a union of estimators </em>/</p>
+<p>.union &gt;
+.estimator + .estimator,
+.pipeline + .estimator,
+.estimator + .pipeline,
+.pipeline + .pipeline {
+    margin-left: 1em;
+}</p>
+<p>/<em> Typography </em>/
+.estimator-params {
+    display: block;
+    white-space: pre-wrap;
+    font-size: 120%;
+    margin-bottom: -1em;
+}</p>
+<p>.estimator &gt; code {
+    background-color: white !important;
+}</p>
+<p>.estimator-name {
+    display: inline;
+    margin: 0;
+    font-size: 130%;
+}</p>
+<p>/<em> Toggle </em>/</p>
+<p>summary {
+    display: flex;
+    align-items:center;
+    cursor: pointer;
+}</p>
+<p>summary &gt; div {
+    width: 100%;
+}
+</style></html></p>
 <p>Note that the <code>+</code> symbol acts as a shorthand notation for creating a <code>compose.TransformerUnion</code>, which means that we could have declared the above pipeline as so:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>

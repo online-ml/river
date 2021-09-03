@@ -7255,12 +7255,12 @@
 
 This dataset contains features from web pages that are classified as phishing or not.
 
-    Name  Phishing                                                            
-    Task  Binary classification                                               
- Samples  1,250                                                               
-Features  9                                                                   
-  Sparse  False                                                               
-    Path  /home/smastelini/Documents/river_main/river/datasets/phishing.csv.gz
+    Name  Phishing                                                        
+    Task  Binary classification                                           
+ Samples  1,250                                                           
+Features  9                                                               
+  Sparse  False                                                           
+    Path  /Users/max.halford/projects/river/river/datasets/phishing.csv.gz
 </code></pre></div>
 <p>We are going to train an instance of <code>HoeffdingTreeClassifier</code> using this dataset. As everything else in <code>river</code>, training an iDT is a piece of cake!</p>
 <div class="highlight"><pre><span></span><code><span class="o">%%</span><span class="n">time</span>
@@ -7272,8 +7272,8 @@ Features  9
 
 <span class="n">model</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>CPU times: user 167 ms, sys: 755 µs, total: 168 ms
-Wall time: 166 ms
+<div class="highlight"><pre><span></span><code>CPU times: user 128 ms, sys: 1.28 ms, total: 129 ms
+Wall time: 130 ms
 
 
 
@@ -7382,7 +7382,7 @@ HoeffdingTreeClassifier (
       <td>0</td>
       <td>True</td>
       <td>1</td>
-      <td>{True: 443.4163997711022, False: 59.8769131081...</td>
+      <td>{True: 443.41639977110225, False: 59.876913108...</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>GaussianSplitter</td>
@@ -7397,7 +7397,7 @@ HoeffdingTreeClassifier (
       <td>0</td>
       <td>False</td>
       <td>1</td>
-      <td>{True: 71.58360022889778, False: 404.123086891...</td>
+      <td>{True: 71.58360022889775, False: 404.123086891...</td>
       <td>popup_window</td>
       <td>0.090909</td>
       <td>NaN</td>

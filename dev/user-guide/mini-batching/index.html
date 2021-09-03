@@ -7022,13 +7022,7 @@
     <span class="n">dataset</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
 <span class="n">dataset</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Downloading https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz (2.62 GB)
-
-
-
-
-
-Higgs dataset.
+<div class="highlight"><pre><span></span><code>Higgs dataset.
 
 The data has been produced using Monte Carlo simulations. The first 21 features (columns 2-22)
 are kinematic properties measured by the particle detectors in the accelerator. The last seven
@@ -7040,7 +7034,7 @@ physicists to help discriminate between the two classes.
    Samples  11,000,000                                                                  
   Features  28                                                                          
     Sparse  False                                                                       
-      Path  /home/runner/river_data/Higgs/HIGGS.csv.gz                                  
+      Path  /Users/max.halford/river_data/Higgs/HIGGS.csv.gz                            
        URL  https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz
       Size  2.62 GB                                                                     
 Downloaded  True
@@ -7087,10 +7081,16 @@ MiniBatchRegressor
 SKL2RiverClassifier
 SKL2RiverRegressor
 Pipeline
+BagOfWords
+TFIDF
 LinearRegression
 LogisticRegression
 Perceptron
 OneVsRestClassifier
+BernoulliNB
+ComplementNB
+MultinomialNB
+MLPRegressor
 StandardScaler
 </code></pre></div>
 <p>Because mini-batch learning isn't treated as a first-class citizen, some of the river's functionalities require some work in order to play nicely with mini-batches. For instance, the objects from the <code>metrics</code> module have an <code>update</code> method that take as input a single pair <code>(y_true, y_pred)</code>. This might change in the future, depending on the demand.</p>
