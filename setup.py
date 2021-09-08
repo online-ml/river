@@ -91,6 +91,7 @@ setuptools.setup(
         "dev": dev_packages,
         "compat": compat_packages,
         "docs": docs_packages,
+        "extra": [f"river_extra=={about['__version__']}"],
         ":python_version == '3.6'": ["dataclasses"],
     },
     include_package_data=True,
