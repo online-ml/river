@@ -40,6 +40,7 @@ class PyTorch2RiverBase(base.Estimator):
         return {
             "build_fn": build_torch_linear_regressor,
             "loss_fn": torch.nn.MSELoss,
+            "optimizer_fn" : torch.optim.SGD
         }
 
     def _learn_one(self, x: torch.Tensor, y: torch.Tensor):
