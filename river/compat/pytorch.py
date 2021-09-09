@@ -88,7 +88,61 @@ class PyTorch2RiverBase(base.Estimator):
 
 
 class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
-    """A river classifier that integrates neural Networks from PyTorch."""
+    """A river classifier that integrates neural Networks from PyTorch.
+
+    Parameters
+    ----------
+    build_fn
+    loss_fn
+    optimizer_fn
+    learning_rate
+    net_params
+
+    Examples
+    --------
+
+    >>> from river import compat
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import preprocessing
+    >>> from torch import nn
+    >>> from torch import optim
+
+    >>> _ = torch.manual_seed(0)
+
+    >>> dataset = datasets.TrumpApproval()
+
+    >>> def build_torch_mlp_classifier(n_features):
+    ...     net = nn.Sequential(
+    ...         nn.Linear(n_features, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 1),
+    ...         nn.Sigmoid()
+    ...     )
+    ...     return net
+    ...
+
+
+    >>> model = compat.PyTorch2RiverClassifier(
+    ...     build_fn= build_torch_mlp_classifier,
+    ...     loss_fn=nn.BCELoss,
+    ...     optimizer_fn=optim.Adam,
+    ...     learning_rate=1e-3
+    ...     )
+
+    >>> dataset = datasets.Elec2()
+
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric).get()
+    0.6974244664650968
+
+    """
+
+
 
     def __init__(
         self,
@@ -170,9 +224,11 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
 
     Parameters
     ----------
-    net
+    build_fn
     loss_fn
     optimizer_fn
+    learning_rate
+    net_params
 
     Examples
     --------
@@ -182,7 +238,6 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     >>> from river import evaluate
     >>> from river import metrics
     >>> from river import preprocessing
-    >>> import torch
     >>> from torch import nn
     >>> from torch import optim
 
@@ -190,25 +245,28 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
 
     >>> dataset = datasets.TrumpApproval()
 
-    >>> n_features = 6
-    >>> net = nn.Sequential(
-    ...     nn.Linear(n_features, 3),
-    ...     nn.Linear(3, 1)
-    ... )
-
-    >>> model = (
-    ...     preprocessing.StandardScaler() |
-    ...     compat.PyTorch2RiverRegressor(
-    ...         net=net,
-    ...         loss_fn=nn.MSELoss(),
-    ...         optimizer_fn=optim.SGD(net.parameters(), lr=1e-3),
-    ...         batch_size=2
+    >>> def build_torch_mlp_regressor(n_features):
+    ...     net = nn.Sequential(
+    ...         nn.Linear(n_features, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 1)
     ...     )
-    ... )
+    ...     return net
+    ...
+
+
+    >>> model = compat.PyTorch2RiverRegressor(
+    ...     build_fn= build_torch_mlp_regressor,
+    ...     loss_fn=nn.MSELoss,
+    ...     optimizer_fn=optim.Adam,
+    ...     )
+
     >>> metric = metrics.MAE()
 
-    >>> evaluate.progressive_val_score(dataset, model, metric).get()
-    2.78258
+    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric).get()
+    78.98022362619766
 
     """
 
