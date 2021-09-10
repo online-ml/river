@@ -73,15 +73,20 @@ class PyTorch2RiverBase(base.Estimator):
         return self
 
     def _filter_torch_params(self, fn, override=None):
-        """Filters `sk_params` and returns those in `fn`'s arguments.
+        """Filters `torch_params` and returns those in `fn`'s arguments.
 
-        # Arguments
-            fn : arbitrary function
-            override: dictionary, values to override `torch_params`
+        Parameters
+        ----------
+        fn
+            arbitrary function
+        override
+            dictionary, values to override `torch_params`
 
-        # Returns
-            res : dictionary containing variables
-                in both `sk_params` and `fn`'s arguments.
+        Returns
+        -------
+        res
+            dictionary containing variables in both and fn's arguments
+
         """
         override = override or {}
         res = {}
@@ -309,5 +314,3 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
             self._init_net(len(x))
         x = torch.Tensor(list(x.values()))
         return self.net(x).item()
-
-
