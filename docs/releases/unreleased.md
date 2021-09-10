@@ -57,5 +57,5 @@
 
 ## compat
 
-- Added `compat.pytorch.PyTorch2RiverClassifier`
-- Refactored `compat.pytorch.PyTorch2RiverRegressor`
+- Added `compat.PyTorch2RiverClassifier`
+- Refactored `compat.PyTorch2RiverRegressor`
