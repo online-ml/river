@@ -1,7 +1,7 @@
 import collections
 import inspect
 import typing
-
+import pandas as pd
 import torch
 
 from .. import base
@@ -49,12 +49,49 @@ class PyTorch2RiverBase(base.Estimator):
         loss.backward()
         self.optimizer.step()
 
-    def learn_one(self, x, y):
+    def learn_one(self, x: dict, y: base.typing.ClfTarget):
+        """Update the model with a set of features `x` and a label `y`.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        y
+            A label.
+
+        Returns
+        -------
+        self
+
+        """
         if self.net is None:
             self._init_net(n_features=len(list(x.values())))
 
         x = torch.Tensor([list(x.values())])
         y = torch.Tensor([[y]])
+        self._learn_one(x=x, y=y)
+        return self
+
+    def learn_many(self, X: pd.DataFrame, y: typing.List[base.typing.ClfTarget]):
+        """Update the model with a set of features `x` and a label `y`.
+
+        Parameters
+        ----------
+        x
+           A dictionary of features.
+        y
+           A label.
+
+        Returns
+        -------
+        self
+
+        """
+        if self.net is None:
+            self._init_net(n_features=len(X.columns))
+
+        x = torch.Tensor(X.to_numpy())
+        y = torch.Tensor([y])
         self._learn_one(x=x, y=y)
         return self
 
