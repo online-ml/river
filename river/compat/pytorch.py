@@ -1,6 +1,7 @@
 import collections
 import inspect
 import typing
+
 import pandas as pd
 import torch
 
@@ -188,12 +189,10 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
             new_layer.weight[-1:, :] = torch.mean(layer_to_convert.weight, 0)
         new_net.append(new_layer)
         if i + 1 < -1:
-            for layer in layers[i + 2:]:
+            for layer in layers[i + 2 :]:
                 new_net.append(layer)
         self.net = torch.nn.Sequential(*new_net)
-        self.optimizer = self.optimizer_fn(
-            self.net.parameters(), self.learning_rate
-        )
+        self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
 
     def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> base.Classifier:
         self.classes.update([y])
