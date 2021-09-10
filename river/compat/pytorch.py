@@ -149,6 +149,33 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
             **net_params,
         )
 
+    def _update_classes(self):
+        self.n_classes = len(self.classes)
+        layers = list(self.net.children())
+        i = -1
+        layer_to_convert = layers[i]
+        while not hasattr(layer_to_convert, "weight"):
+            layer_to_convert = layers[i]
+            i -= 1
+
+        removed = list(self.net.children())[: i + 1]
+        new_net = removed
+        new_layer = torch.nn.Linear(
+            in_features=layer_to_convert.in_features, out_features=self.n_classes
+        )
+        # copy the original weights back
+        with torch.no_grad():
+            new_layer.weight[:-1, :] = layer_to_convert.weight
+            new_layer.weight[-1:, :] = torch.mean(layer_to_convert.weight, 0)
+        new_net.append(new_layer)
+        if i + 1 < -1:
+            for layer in layers[i + 2:]:
+                new_net.append(layer)
+        self.net = torch.nn.Sequential(*new_net)
+        self.optimizer = self.optimizer_fn(
+            self.net.parameters(), self.learning_rate
+        )
+
     def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> base.Classifier:
         self.classes.update([y])
 
@@ -158,31 +185,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
 
         # check last layer and update if needed
         if len(self.classes) != self.n_classes:
-            self.n_classes = len(self.classes)
-            layers = list(self.net.children())
-            i = -1
-            layer_to_convert = layers[i]
-            while not hasattr(layer_to_convert, "weight"):
-                layer_to_convert = layers[i]
-                i -= 1
-
-            removed = list(self.net.children())[: i + 1]
-            new_net = removed
-            new_layer = torch.nn.Linear(
-                in_features=layer_to_convert.in_features, out_features=self.n_classes
-            )
-            # copy the original weights back
-            with torch.no_grad():
-                new_layer.weight[:-1, :] = layer_to_convert.weight
-                new_layer.weight[-1:, :] = torch.mean(layer_to_convert.weight, 0)
-            new_net.append(new_layer)
-            if i + 1 < -1:
-                for layer in layers[i + 2 :]:
-                    new_net.append(layer)
-            self.net = torch.nn.Sequential(*new_net)
-            self.optimizer = self.optimizer_fn(
-                self.net.parameters(), self.learning_rate
-            )
+            self._update_classes()
 
         # training process
         proba = {c: 0.0 for c in self.classes}
