@@ -54,3 +54,8 @@
 ## utils
 
 - Moved `model_selection.expand_param_grid` to `utils.expand_param_grid`.
+
+## compat
+
+- Added `compat.pytorch.PyTorch2RiverClassifier`
+- Refactored `compat.pytorch.PyTorch2RiverRegressor`
