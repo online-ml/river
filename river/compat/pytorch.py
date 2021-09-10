@@ -238,7 +238,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
         return pd.DataFrame(proba)
 
 
-class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
+class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
     """Compatibility layer from PyTorch to River for regression.
 
     Parameters
@@ -296,21 +296,7 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
             **net_params,
         )
 
-    def learn_many(self, X: pd.DataFrame, y: typing.List[base.typing.ClfTarget]):
-        """Update the model with a set of features `x` and a label `y`.
-
-        Parameters
-        ----------
-        x
-           A dictionary of features.
-        y
-           A label.
-
-        Returns
-        -------
-        self
-
-        """
+    def learn_many(self, X: pd.DataFrame, y: pd.Series, **kwargs):
         if self.net is None:
             self._init_net(n_features=len(X.columns))
 
@@ -325,3 +311,8 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
         x = torch.Tensor(list(x.values()))
         return self.net(x).item()
 
+    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+        if self.net is None:
+            self._init_net(len(X.columns))
+        x = torch.Tensor(X.to_numpy())
+        return pd.Series(self.net(x).item())
