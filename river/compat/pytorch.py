@@ -227,6 +227,16 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
             proba[val] = yp[idx]
         return proba
 
+    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        if self.net is None:
+            self._init_net(len(X.columns))
+        x = torch.Tensor(list(X.to_numpy()))
+        yp = self.net(x).detach().numpy()
+        proba = {c: [0.0] * len(X) for c in self.classes}
+        for idx, val in enumerate(self.classes):
+            proba[val] = yp[idx]
+        return pd.DataFrame(proba)
+
 
 class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     """Compatibility layer from PyTorch to River for regression.
@@ -314,3 +324,4 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
             self._init_net(len(x))
         x = torch.Tensor(list(x.values()))
         return self.net(x).item()
+
