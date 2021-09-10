@@ -32,7 +32,6 @@ class PyTorch2RiverBase(base.Estimator):
         self.net = None
 
     def _unit_test_params(self):
-        # todo check if that works with Jupyter
         def build_torch_linear_regressor(n_features):
             net = torch.nn.Sequential(torch.nn.Linear(n_features, 1))
             return net
@@ -100,7 +99,6 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
 
     Examples
     --------
-
     >>> from river import compat
     >>> from river import datasets
     >>> from river import evaluate
@@ -108,11 +106,8 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
-
     >>> _ = torch.manual_seed(0)
-
     >>> dataset = datasets.TrumpApproval()
-
     >>> def build_torch_mlp_classifier(n_features):
     ...     net = nn.Sequential(
     ...         nn.Linear(n_features, 5),
@@ -124,22 +119,16 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     ...     )
     ...     return net
     ...
-
-
     >>> model = compat.PyTorch2RiverClassifier(
     ...     build_fn= build_torch_mlp_classifier,
     ...     loss_fn=nn.BCELoss,
     ...     optimizer_fn=optim.Adam,
     ...     learning_rate=1e-3
     ...     )
-
     >>> dataset = datasets.Elec2()
-
     >>> metric = metrics.Accuracy()
-
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric).get()
     0.6974244664650968
-
     """
 
     def __init__(
@@ -230,7 +219,6 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
 
     Examples
     --------
-
     >>> from river import compat
     >>> from river import datasets
     >>> from river import evaluate
@@ -238,11 +226,8 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
-
     >>> _ = torch.manual_seed(0)
-
     >>> dataset = datasets.TrumpApproval()
-
     >>> def build_torch_mlp_regressor(n_features):
     ...     net = nn.Sequential(
     ...         nn.Linear(n_features, 5),
@@ -253,19 +238,14 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     ...     )
     ...     return net
     ...
-
-
     >>> model = compat.PyTorch2RiverRegressor(
     ...     build_fn= build_torch_mlp_regressor,
     ...     loss_fn=nn.MSELoss,
     ...     optimizer_fn=optim.Adam,
     ...     )
-
     >>> metric = metrics.MAE()
-
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric).get()
     78.98022362619766
-
     """
 
     def __init__(
