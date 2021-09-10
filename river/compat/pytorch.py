@@ -1,7 +1,7 @@
 import collections
 import inspect
 import typing
-
+import pandas as pd
 import torch
 
 from .. import base
@@ -49,7 +49,21 @@ class PyTorch2RiverBase(base.Estimator):
         loss.backward()
         self.optimizer.step()
 
-    def learn_one(self, x, y):
+    def learn_one(self, x: dict, y: base.typing.ClfTarget):
+        """Update the model with a set of features `x` and a label `y`.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        y
+            A label.
+
+        Returns
+        -------
+        self
+
+        """
         if self.net is None:
             self._init_net(n_features=len(list(x.values())))
 
@@ -59,15 +73,20 @@ class PyTorch2RiverBase(base.Estimator):
         return self
 
     def _filter_torch_params(self, fn, override=None):
-        """Filters `sk_params` and returns those in `fn`'s arguments.
+        """Filters `torch_params` and returns those in `fn`'s arguments.
 
-        # Arguments
-            fn : arbitrary function
-            override: dictionary, values to override `torch_params`
+        Parameters
+        ----------
+        fn
+            arbitrary function
+        override
+            dictionary, values to override `torch_params`
 
-        # Returns
-            res : dictionary containing variables
-                in both `sk_params` and `fn`'s arguments.
+        Returns
+        -------
+        res
+            dictionary containing variables in both and fn's arguments
+
         """
         override = override or {}
         res = {}
@@ -99,7 +118,6 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
 
     Examples
     --------
-
     >>> from river import compat
     >>> from river import datasets
     >>> from river import evaluate
@@ -107,11 +125,8 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
-
     >>> _ = torch.manual_seed(0)
-
     >>> dataset = datasets.TrumpApproval()
-
     >>> def build_torch_mlp_classifier(n_features):
     ...     net = nn.Sequential(
     ...         nn.Linear(n_features, 5),
@@ -123,22 +138,16 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     ...     )
     ...     return net
     ...
-
-
     >>> model = compat.PyTorch2RiverClassifier(
     ...     build_fn= build_torch_mlp_classifier,
     ...     loss_fn=nn.BCELoss,
     ...     optimizer_fn=optim.Adam,
     ...     learning_rate=1e-3
     ...     )
-
     >>> dataset = datasets.Elec2()
-
     >>> metric = metrics.Accuracy()
-
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric).get()
     0.6974244664650968
-
     """
 
     def __init__(
@@ -159,6 +168,31 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
             **net_params,
         )
 
+    def _update_classes(self):
+        self.n_classes = len(self.classes)
+        layers = list(self.net.children())
+        i = -1
+        layer_to_convert = layers[i]
+        while not hasattr(layer_to_convert, "weight"):
+            layer_to_convert = layers[i]
+            i -= 1
+
+        removed = list(self.net.children())[: i + 1]
+        new_net = removed
+        new_layer = torch.nn.Linear(
+            in_features=layer_to_convert.in_features, out_features=self.n_classes
+        )
+        # copy the original weights back
+        with torch.no_grad():
+            new_layer.weight[:-1, :] = layer_to_convert.weight
+            new_layer.weight[-1:, :] = torch.mean(layer_to_convert.weight, 0)
+        new_net.append(new_layer)
+        if i + 1 < -1:
+            for layer in layers[i + 2 :]:
+                new_net.append(layer)
+        self.net = torch.nn.Sequential(*new_net)
+        self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
+
     def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> base.Classifier:
         self.classes.update([y])
 
@@ -168,31 +202,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
 
         # check last layer and update if needed
         if len(self.classes) != self.n_classes:
-            self.n_classes = len(self.classes)
-            layers = list(self.net.children())
-            i = -1
-            layer_to_convert = layers[i]
-            while not hasattr(layer_to_convert, "weight"):
-                layer_to_convert = layers[i]
-                i -= 1
-
-            removed = list(self.net.children())[: i + 1]
-            new_net = removed
-            new_layer = torch.nn.Linear(
-                in_features=layer_to_convert.in_features, out_features=self.n_classes
-            )
-            # copy the original weights back
-            with torch.no_grad():
-                new_layer.weight[:-1, :] = layer_to_convert.weight
-                new_layer.weight[-1:, :] = torch.mean(layer_to_convert.weight, 0)
-            new_net.append(new_layer)
-            if i + 1 < -1:
-                for layer in layers[i + 2 :]:
-                    new_net.append(layer)
-            self.net = torch.nn.Sequential(*new_net)
-            self.optimizer = self.optimizer_fn(
-                self.net.parameters(), self.learning_rate
-            )
+            self._update_classes()
 
         # training process
         proba = {c: 0.0 for c in self.classes}
@@ -215,8 +225,18 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
             proba[val] = yp[idx]
         return proba
 
+    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        if self.net is None:
+            self._init_net(len(X.columns))
+        x = torch.Tensor(list(X.to_numpy()))
+        yp = self.net(x).detach().numpy()
+        proba = {c: [0.0] * len(X) for c in self.classes}
+        for idx, val in enumerate(self.classes):
+            proba[val] = yp[idx]
+        return pd.DataFrame(proba)
 
-class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
+
+class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
     """Compatibility layer from PyTorch to River for regression.
 
     Parameters
@@ -229,7 +249,6 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
 
     Examples
     --------
-
     >>> from river import compat
     >>> from river import datasets
     >>> from river import evaluate
@@ -237,11 +256,8 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
-
     >>> _ = torch.manual_seed(0)
-
     >>> dataset = datasets.TrumpApproval()
-
     >>> def build_torch_mlp_regressor(n_features):
     ...     net = nn.Sequential(
     ...         nn.Linear(n_features, 5),
@@ -252,19 +268,14 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     ...     )
     ...     return net
     ...
-
-
     >>> model = compat.PyTorch2RiverRegressor(
     ...     build_fn= build_torch_mlp_regressor,
     ...     loss_fn=nn.MSELoss,
     ...     optimizer_fn=optim.Adam,
     ...     )
-
     >>> metric = metrics.MAE()
-
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric).get()
     78.98022362619766
-
     """
 
     def __init__(
@@ -283,8 +294,23 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
             **net_params,
         )
 
+    def learn_many(self, X: pd.DataFrame, y: pd.Series, **kwargs):
+        if self.net is None:
+            self._init_net(n_features=len(X.columns))
+
+        x = torch.Tensor(X.to_numpy())
+        y = torch.Tensor([y])
+        self._learn_one(x=x, y=y)
+        return self
+
     def predict_one(self, x):
         if self.net is None:
             self._init_net(len(x))
         x = torch.Tensor(list(x.values()))
         return self.net(x).item()
+
+    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+        if self.net is None:
+            self._init_net(len(X.columns))
+        x = torch.Tensor(X.to_numpy())
+        return pd.Series(self.net(x).item())
