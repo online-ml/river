@@ -72,29 +72,6 @@ class PyTorch2RiverBase(base.Estimator):
         self._learn_one(x=x, y=y)
         return self
 
-    def learn_many(self, X: pd.DataFrame, y: typing.List[base.typing.ClfTarget]):
-        """Update the model with a set of features `x` and a label `y`.
-
-        Parameters
-        ----------
-        x
-           A dictionary of features.
-        y
-           A label.
-
-        Returns
-        -------
-        self
-
-        """
-        if self.net is None:
-            self._init_net(n_features=len(X.columns))
-
-        x = torch.Tensor(X.to_numpy())
-        y = torch.Tensor([y])
-        self._learn_one(x=x, y=y)
-        return self
-
     def _filter_torch_params(self, fn, override=None):
         """Filters `sk_params` and returns those in `fn`'s arguments.
 
@@ -304,8 +281,33 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
             **net_params,
         )
 
+    def learn_many(self, X: pd.DataFrame, y: typing.List[base.typing.ClfTarget]):
+        """Update the model with a set of features `x` and a label `y`.
+
+        Parameters
+        ----------
+        x
+           A dictionary of features.
+        y
+           A label.
+
+        Returns
+        -------
+        self
+
+        """
+        if self.net is None:
+            self._init_net(n_features=len(X.columns))
+
+        x = torch.Tensor(X.to_numpy())
+        y = torch.Tensor([y])
+        self._learn_one(x=x, y=y)
+        return self
+
     def predict_one(self, x):
         if self.net is None:
             self._init_net(len(x))
         x = torch.Tensor(list(x.values()))
         return self.net(x).item()
+
+
