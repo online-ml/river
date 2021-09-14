@@ -51,7 +51,7 @@ class evoStream(base.Clusterer):
 
     **Offline generation of macro clusters (evolutionary step)**
 
-    The offline generation of macro clusters is based upon the original GA clustering algirthm,
+    The offline generation of macro clusters is based upon the original GA clustering algorithm,
     as follows:
 
     * Using the roulette wheel algorithm, choose 2 arbitrary cluster solutions proportionally
@@ -59,8 +59,9 @@ class evoStream(base.Clusterer):
 
     * Generate two offsprings using binary crossover.
 
-    * Generate a random number `delta` within the range `[0,1]`. If `delta < P_m`, each gene `g_i`
-    within these two offsprings will be mutated with the following rules
+    * Generate a random number `delta` within the range `[0,1]`. If `delta < P_m`, with `P_m` being
+    the mutation probability, each gene `g_i` within these two offsprings will be mutated with
+    the following rules:
 
         - If `g_i = 0`, `g_i` will be equal to either `-2 * delta` or `2 * delta`, with equal probability
 
@@ -78,6 +79,7 @@ class evoStream(base.Clusterer):
     decay_rate
         Parameter that controls the importance of historical data to current cluster.
         Note that `decay_rate` is usually sufficiently small and has to be different from `0`.
+        We also note that `decay_rate` should be sufficiently small and greater than `0`.
     cleanup_interval
         The time interval between two consecutive time points when the cleanup process is
         conducted.
@@ -101,7 +103,7 @@ class evoStream(base.Clusterer):
     clusters
         A set of final clusters of type `evoStreamMicroCluster`, i.e clusters with structure
         `(center, last_update, weight)`. These clusters are formed by choosing the cluster solution
-        with highest fitness.
+        with the highest fitness.
     centers
         Final clusters' centers.
 
@@ -111,7 +113,7 @@ class evoStream(base.Clusterer):
           Big Data Research, 14, 101-111. DOI: 10.1016/j.bdr.2018.05.005
     [^2]: Maulik, U., Bandyopadhyay, S. (2000). Genetic algorithm-based clustering technique.
           Pattern Recognition, 33(9), 1455-1465. DOI: 10.1016/s0031-3203(99)00137-5
-    [^3]: Hahsler, M., Bolanos, M. Clsutering Data Streams Based on Shared Density between Micro-Clusters,
+    [^3]: Hahsler, M., Bolanos, M. Clustering Data Streams Based on Shared Density between Micro-Clusters,
           IEEE Transactions on Knowledge and Data Engineering 28(6), 2016, 1449-1461.
           In Proceedings of the Sixth SIAM International Conference on Data Mining,
           April 20–22, 2006, Bethesda, MD, USA.
@@ -175,7 +177,7 @@ class evoStream(base.Clusterer):
     @staticmethod
     def _binary_crossover(cluster_sol_1, cluster_sol_2):
         dim = len(cluster_sol_1[0].center)
-        cutoff = math.floor(dim / 2)
+        cutoff = random.randint(0, dim-1)
         for i in cluster_sol_1:
             for j in range(cutoff, dim):
                 cluster_sol_1[i].center[j], cluster_sol_2[i].center[j] = (
