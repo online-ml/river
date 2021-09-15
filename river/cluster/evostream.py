@@ -152,6 +152,7 @@ class evoStream(base.Clusterer):
         mutation_probability: float = 0.5,
         population_size: int = 4,
         n_clusters: int = 2,
+        seed: int = None,
     ):
         super().__init__()
         self.time_stamp = 0
@@ -164,6 +165,7 @@ class evoStream(base.Clusterer):
         self.mutation_probability = mutation_probability
         self.population_size = population_size
         self.n_clusters = n_clusters
+        self.seed = seed
         self.initialized = False
 
         self.clusters = {}
@@ -173,11 +175,11 @@ class evoStream(base.Clusterer):
         self._micro_clusters = {}
         self._cluster_population = {}
         self._fitness_cluster_population = {}
+        self._rng = random.Random(self.seed)
 
-    @staticmethod
-    def _binary_crossover(cluster_sol_1, cluster_sol_2):
+    def _binary_crossover(self, cluster_sol_1, cluster_sol_2):
         dim = len(cluster_sol_1[0].center)
-        cutoff = random.randint(0, dim-1)
+        cutoff = self._rng.randint(0, dim - 1)
         for i in cluster_sol_1:
             for j in range(cutoff, dim):
                 cluster_sol_1[i].center[j], cluster_sol_2[i].center[j] = (
@@ -258,11 +260,17 @@ class evoStream(base.Clusterer):
             )
             distance = self._distance(point_i, clusters[closest_cluster_index_i].center)
             ssq += distance * distance
-        return 1 / ssq
+        try:
+            return 1 / ssq
+        except ZeroDivisionError:
+            return 0.0
 
     def _roulette_wheel_selection(self, fitness_clusters):
         sum_fitness = sum(fitness_clusters.values())
-        pick_1, pick_2 = random.uniform(0, sum_fitness), random.uniform(0, sum_fitness)
+        pick_1, pick_2 = (
+            self._rng.uniform(0, sum_fitness),
+            self._rng.uniform(0, sum_fitness),
+        )
         key_1, key_2 = -1, -1
         current = 0
 
@@ -277,6 +285,16 @@ class evoStream(base.Clusterer):
 
         return self._cluster_population[key_1], self._cluster_population[key_2]
 
+    def _mutate(self, g, delta):
+        for i in g:
+            if g[i] == 0:
+                g[i] = 2 * delta if self._rng.random() < 0.5 else -2 * delta
+            else:
+                g[i] = (
+                    2 * delta * g[i] if self._rng.random() < 0.5 else -2 * delta * g[i]
+                )
+            return g
+
     def _evolution(self):
         self._fitness_cluster_population = {
             i: self._fitness(self._evolution_batch, self._cluster_population[i])
@@ -285,24 +303,12 @@ class evoStream(base.Clusterer):
 
         p_1, p_2 = self._roulette_wheel_selection(self._fitness_cluster_population)
         o_1, o_2 = self._binary_crossover(p_1, p_2)
-        delta = random.uniform(0, 1)
-
-        def mutate(g):
-            for i in g:
-                if g[i] == 0:
-                    g[i] = 2 * delta if random.uniform(0, 1) < 0.5 else -2 * delta
-                else:
-                    g[i] = (
-                        2 * delta * g[i]
-                        if random.uniform(0, 1) < 0.5
-                        else -2 * delta * g[i]
-                    )
-                return g
+        delta = self._rng.uniform(0, 1)
 
         if delta < self.mutation_probability:
             for i in o_1:
-                o_1[i].center = mutate(o_1[i].center)
-                o_2[i].center = mutate(o_2[i].center)
+                o_1[i].center = self._mutate(o_1[i].center, delta)
+                o_2[i].center = self._mutate(o_2[i].center, delta)
 
         fitness_o_1 = self._fitness(self._evolution_batch, o_1)
         fitness_o_2 = self._fitness(self._evolution_batch, o_2)
@@ -351,7 +357,7 @@ class evoStream(base.Clusterer):
             if self._micro_clusters[i].weight < 2 ** (
                 -self.decay_rate * self.cleanup_interval
             ):
-                self._micro_clusters.pop(i)
+                del self._micro_clusters[i]
 
         self._micro_clusters = {
             i: v for i, v in enumerate(self._micro_clusters.values())
@@ -359,11 +365,12 @@ class evoStream(base.Clusterer):
 
         self._micro_clusters = self._merge_micro_clusters(self._micro_clusters)
 
-    @staticmethod
-    def _generate_population(micro_clusters, population_size, n_clusters):
+    def _generate_population(self, micro_clusters, population_size, n_clusters):
         cluster_population = {}
         for i in range(population_size):
-            cluster_population_i_keys = random.sample(micro_clusters.keys(), n_clusters)
+            cluster_population_i_keys = self._rng.sample(
+                micro_clusters.keys(), n_clusters
+            )
             cluster_population[i] = {
                 i: micro_clusters[cluster_population_i_keys[i]]
                 for i in range(n_clusters)
@@ -408,7 +415,7 @@ class evoStream(base.Clusterer):
 
 
 class evoStreamMicroCluster(metaclass=ABCMeta):
-    """ evoStream Micro-cluster class """
+    """evoStream Micro-cluster class"""
 
     def __init__(self, x=None, last_update=None, weight=None):
 
