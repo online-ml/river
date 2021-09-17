@@ -311,12 +311,12 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
                 self.linear_sum[key] = x[key] * sample_weight
                 self.squared_sum[key] = x[key] * x[key] * sample_weight
             self.linear_sum_timestamp = timestamp * sample_weight
-            self.squared_sum_timestamp = timestamp * timestamp * sample_weight
+            self.squared_sum_timestamp = timestamp * sample_weight * timestamp * sample_weight
         elif micro_cluster is not None:
             # Initialize with micro-cluster
             self.n_samples = micro_cluster.n_samples
-            self.linear_sum = micro_cluster.p_vals.copy()
-            self.squared_sum = micro_cluster.p_vals_squared.copy()
+            self.linear_sum = micro_cluster.linear_sum.copy()
+            self.squared_sum = micro_cluster.squared_sum.copy()
             self.linear_sum_timestamp = micro_cluster.linear_sum_timestamp
             self.squared_sum_timestamp = micro_cluster.squared_sum_timestamp
 
@@ -367,10 +367,10 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
     def insert(self, x, sample_weight, timestamp):
         self.n_samples += 1
         self.linear_sum_timestamp += timestamp * sample_weight
-        self.squared_sum_timestamp += timestamp * sample_weight
+        self.squared_sum_timestamp += timestamp * sample_weight * timestamp * sample_weight
         for x_idx, x_val in x.items():
             self.linear_sum[x_idx] += x_val * sample_weight
-            self.squared_sum[x_idx] += x_val * x_val * sample_weight
+            self.squared_sum[x_idx] += x_val * sample_weight * x_val * sample_weight
 
     @property
     def relevance_stamp(self):
@@ -427,8 +427,8 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
         self.linear_sum_timestamp += micro_cluster.linear_sum_timestamp
         self.squared_sum_timestamp += micro_cluster.squared_sum_timestamp
         utils.skmultiflow_utils.add_dict_values(
-            self.linear_sum, micro_cluster.p_vals, inplace=True
+            self.linear_sum, micro_cluster.linear_sum, inplace=True
         )
         utils.skmultiflow_utils.add_dict_values(
-            self.squared_sum, micro_cluster.p_vals_squared, inplace=True
+            self.squared_sum, micro_cluster.squared_sum, inplace=True
         )
