@@ -156,7 +156,6 @@ class DenStream(base.Clusterer):
         # on p-micro-cluster centers and their centers
         self.n_clusters = 0
         self.clusters = {}
-        self.centers = {}
         self.p_micro_clusters = {}
         self.o_micro_clusters = {}
 
@@ -167,25 +166,30 @@ class DenStream(base.Clusterer):
         self._init_buffer = deque()
         self._n_samples_seen = 0
 
+    @property
+    def centers(self):
+        if self.clusters:
+            return {
+                k: cluster.calc_center(self.timestamp)
+                for k, cluster in self.clusters.items()
+            }
+        else:
+            return {}
+
     @staticmethod
     def _distance(point_a, point_b):
         return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
 
-    def _get_closest_cluster_key(self, point, clusters, return_centers=False):
+    def _get_closest_cluster_key(self, point, clusters):
         min_distance = math.inf
         key = -1
-        centers = {}
         for k, cluster in clusters.items():
             center = cluster.calc_center(self.timestamp)
             distance = self._distance(center, point)
             if distance < min_distance:
                 min_distance = distance
                 key = k
-            centers[k] = center
-        if return_centers:
-            return key, centers
-        else:
-            return key
+        return key
 
     def _merge(self, point):
         # initiate merged status
@@ -384,11 +388,7 @@ class DenStream(base.Clusterer):
 
         self.n_clusters, self.clusters = self._generate_clusters_for_labels(labels)
 
-        y, self.centers = self._get_closest_cluster_key(
-            x, self.clusters, return_centers=True
-        )
-
-        return y
+        return self._get_closest_cluster_key(x, self.clusters)
 
 
 class DenStreamMicroCluster(metaclass=ABCMeta):
@@ -403,16 +403,16 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
 
         self.N = 1
         self.feature_keys = set(x.keys())
-        self.p_vals = x
-        self.p_vals_squared = {i: (x_val * x_val) for i, x_val in x.items()}
+        self.liner_sum = x
+        self.squared_sum = {i: (x_val * x_val) for i, x_val in x.items()}
 
     def calc_norm_cf1_cf2(self, fading_factor):
         # |CF1| and |CF2| in the paper
         sum_of_squares_cf1 = 0
         sum_of_squares_cf2 = 0
-        for key in self.p_vals.keys():
-            val_ls = self.p_vals[key]
-            val_ss = self.p_vals_squared[key]
+        for key in self.liner_sum.keys():
+            val_ls = self.liner_sum[key]
+            val_ss = self.squared_sum[key]
             sum_of_squares_cf1 += fading_factor * val_ls * fading_factor * val_ls
             sum_of_squares_cf2 += fading_factor * val_ss * fading_factor * val_ss
         # return |CF1| and |CF2|
@@ -427,7 +427,7 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
     def calc_center(self, timestamp):
         ff = self.fading_function(timestamp - self.last_edit_time)
         weight = self._weight(ff)
-        center = {key: (ff * val) / weight for key, val in self.p_vals.items()}
+        center = {key: (ff * val) / weight for key, val in self.liner_sum.items()}
         return center
 
     def calc_radius(self, timestamp):
@@ -447,8 +447,8 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
         self.N += 1
         self.last_edit_time = timestamp
         for k in self.feature_keys:
-            self.p_vals[k] += x[k]
-            self.p_vals_squared[k] += x[k] * x[k]
+            self.liner_sum[k] += x[k]
+            self.squared_sum[k] += x[k] * x[k]
 
     def merge(self, cluster):
         if self.feature_keys != cluster.feature_keys:
@@ -458,8 +458,8 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
             )
         self.N += cluster.N
         for k in self.feature_keys:
-            self.p_vals[k] += cluster.p_vals[k]
-            self.p_vals_squared[k] += cluster.p_vals_squared[k]
+            self.liner_sum[k] += cluster.liner_sum[k]
+            self.squared_sum[k] += cluster.squared_sum[k]
         if self.last_edit_time < cluster.creation_time:
             self.last_edit_time = cluster.creation_time
 
