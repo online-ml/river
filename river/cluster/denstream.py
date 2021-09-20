@@ -168,13 +168,10 @@ class DenStream(base.Clusterer):
 
     @property
     def centers(self):
-        if self.clusters:
-            return {
-                k: cluster.calc_center(self.timestamp)
-                for k, cluster in self.clusters.items()
-            }
-        else:
-            return {}
+        return {
+            k: cluster.calc_center(self.timestamp)
+            for k, cluster in self.clusters.items()
+        }
 
     @staticmethod
     def _distance(point_a, point_b):
