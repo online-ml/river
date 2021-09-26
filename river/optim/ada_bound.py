@@ -75,7 +75,7 @@ class AdaBound(base.Optimizer):
         self.m = collections.defaultdict(float)
         self.v = collections.defaultdict(float)
 
-    def _step(self, w, g):
+    def _step_with_dict(self, w, g):
 
         bias_1 = 1 - self.beta_1 ** (self.n_iterations + 1)
         bias_2 = 1 - self.beta_2 ** (self.n_iterations + 1)

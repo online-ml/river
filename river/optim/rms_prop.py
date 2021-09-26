@@ -47,7 +47,7 @@ class RMSProp(base.Optimizer):
         self.eps = eps
         self.g2 = collections.defaultdict(float)
 
-    def _step(self, w, g):
+    def _step_with_dict(self, w, g):
 
         for i, gi in g.items():
             self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi ** 2

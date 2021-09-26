@@ -57,7 +57,7 @@ class Averager(base.Optimizer):
     def look_ahead(self, w):
         return self.optimizer.look_ahead(w)
 
-    def _step(self, w, g):
+    def _step_with_dict(self, w, g):
 
         w = self.optimizer.step(w, g)
 

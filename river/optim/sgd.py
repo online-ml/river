@@ -44,7 +44,7 @@ class SGD(base.Optimizer):
     def __init__(self, lr=0.01):
         super().__init__(lr)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict((self, w, g):
         for i, gi in g.items():
             w[i] -= self.learning_rate * gi
 

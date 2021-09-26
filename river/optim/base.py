@@ -50,7 +50,7 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: dict, g: dict) -> dict:
+    def _step_with_dict((self, w: dict, g: dict) -> dict:
         raise NotImplementedError
 
     def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
