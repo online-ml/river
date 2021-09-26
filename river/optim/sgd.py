@@ -1,6 +1,6 @@
-import numpy as np
+import functools
 
-from river import utils
+import numpy as np
 
 from . import base
 
@@ -44,14 +44,9 @@ class SGD(base.Optimizer):
     def __init__(self, lr=0.01):
         super().__init__(lr)
 
-    def _step(self, w, g):
+    def _step_with_dict(self, w, g):
+        for i, gi in g.items():
+            w[i] -= self.learning_rate * gi
 
-        if isinstance(w, utils.VectorDict) and isinstance(g, utils.VectorDict):
-            w -= self.learning_rate * g
-        elif isinstance(w, np.ndarray) and isinstance(g, np.ndarray):
-            w -= self.learning_rate * g
-        else:
-            for i, gi in g.items():
-                w[i] -= self.learning_rate * gi
-
-        return w
+    def _step_with_vector(self, w, g):
+        w -= self.learning_rate * g

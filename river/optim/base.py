@@ -1,13 +1,18 @@
-import abc
 import numbers
-import typing
+from typing import Union
+
+import numpy as np
 
 from river import base
+from river import utils
 
 from . import schedulers
 
 
-class Optimizer(base.Base, abc.ABC):
+VectorLike = Union[utils.VectorDict, np.ndarray]
+
+
+class Optimizer(base.Base):
     """Optimizer interface.
 
     Every optimizer inherits from this base interface.
@@ -23,7 +28,7 @@ class Optimizer(base.Base, abc.ABC):
 
     """
 
-    def __init__(self, lr: typing.Union[schedulers.Scheduler, float]):
+    def __init__(self, lr: Union[schedulers.Scheduler, float]):
         if isinstance(lr, numbers.Number):
             lr = schedulers.Constant(lr)
         self.lr = lr
@@ -45,12 +50,15 @@ class Optimizer(base.Base, abc.ABC):
         """
         return w
 
-    @abc.abstractmethod
-    def _step(self, w: dict, g: dict) -> dict:
-        """Updates a weight vector given a gradient."""
+    def _step_with_dict(self, w: dict, g: dict) -> dict:
         raise NotImplementedError
 
-    def step(self, w: dict, g: dict) -> dict:
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
+        raise NotImplementedError
+
+    def step(
+        self, w: Union[dict, VectorLike], g: Union[dict, VectorLike]
+    ) -> Union[dict, VectorLike]:
         """Updates a weight vector given a gradient.
 
         Parameters:
@@ -63,7 +71,11 @@ class Optimizer(base.Base, abc.ABC):
         """
 
         # Update the weights
-        w = self._step(w, g)
+        # TODO: use functools.singledispatchmethod once support for Python 3.7 is dropped
+        if isinstance(w, dict):
+            w = self._step_with_dict(w, g)
+        else:
+            w = self._step_with_vector(w, g)
 
         # Update the iteration counter
         self.n_iterations += 1
