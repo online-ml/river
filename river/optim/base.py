@@ -59,26 +59,28 @@ class Optimizer(base.Base):
     ) -> Union[dict, VectorLike]:
         """Updates a weight vector given a gradient.
 
-        Parameters:
-            w (dict): A dictionary of weight parameters. The weights are modified in-place.
-            g (dict): A dictionary of gradients.
+        Parameters
+        ----------
+        w
+            A vector-like object containing weights. The weights are modified in-place.
+        g
+            A vector-like object of gradients.
 
-        Returns:
-            The updated weights.
+        Returns
+        -------
+        The updated weights.
 
         """
 
-        # Update the weights
-        # TODO: use functools.singledispatchmethod once support for Python 3.7 is dropped
-        if isinstance(w, dict):
-            w = self._step_with_dict(w, g)
-        else:
-            w = self._step_with_vector(w, g)
-
-        # Update the iteration counter
         self.n_iterations += 1
 
-        return w
+        if isinstance(w, VectorLike.__args__) and isinstance(g, VectorLike.__args__):
+            try:
+                return self._step_with_vector(w, g)
+            except NotImplementedError:
+                pass
+
+        return self._step_with_dict(w, g)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({vars(self)})"
