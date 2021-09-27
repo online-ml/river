@@ -48,7 +48,7 @@ class NesterovMomentum(base.Optimizer):
 
         return w
 
-    def _step(self, w, g):
+    def _step_with_dict(self, w, g):
 
         # Move w back to it's initial position
         for i in w:
