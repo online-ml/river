@@ -72,15 +72,17 @@ class Optimizer(base.Base):
 
         """
 
-        self.n_iterations += 1
-
         if isinstance(w, VectorLike.__args__) and isinstance(g, VectorLike.__args__):
             try:
-                return self._step_with_vector(w, g)
+                w = self._step_with_vector(w, g)
+                self.n_iterations += 1
+                return w
             except NotImplementedError:
                 pass
 
-        return self._step_with_dict(w, g)
+        w = self._step_with_dict(w, g)
+        self.n_iterations += 1
+        return w
 
     def __repr__(self):
         return f"{self.__class__.__name__}({vars(self)})"
