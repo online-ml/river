@@ -1,8 +1,8 @@
 import collections
 import math
-import numbers
 
-from .. import utils
+from river import utils
+
 from . import base
 
 __all__ = ["AdaBound"]
@@ -56,15 +56,6 @@ class AdaBound(base.Optimizer):
     def __init__(
         self, lr=1e-3, beta_1=0.9, beta_2=0.999, eps=1e-8, gamma=1e-3, final_lr=0.1
     ):
-
-        if not isinstance(lr, numbers.Number):
-            raise ValueError(f"lr in AdaBound should be numeric but got {type(lr)}")
-
-        if not isinstance(final_lr, numbers.Number):
-            raise ValueError(
-                f"final_lr in AdaBound should be numeric but got {type(final_lr)}"
-            )
-
         super().__init__(lr)
         self.base_lr = lr
         self.final_lr = final_lr
@@ -75,7 +66,7 @@ class AdaBound(base.Optimizer):
         self.m = collections.defaultdict(float)
         self.v = collections.defaultdict(float)
 
-    def _step(self, w, g):
+    def _step_with_dict(self, w, g):
 
         bias_1 = 1 - self.beta_1 ** (self.n_iterations + 1)
         bias_2 = 1 - self.beta_2 ** (self.n_iterations + 1)

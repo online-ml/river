@@ -49,7 +49,7 @@ class AdaGrad(base.Optimizer):
         self.eps = eps
         self.g2 = collections.defaultdict(float)
 
-    def _step(self, w, g):
+    def _step_with_dict(self, w, g):
 
         for i, gi in g.items():
             self.g2[i] += gi ** 2

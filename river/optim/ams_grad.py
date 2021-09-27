@@ -68,7 +68,7 @@ class AMSGrad(base.Optimizer):
         self.v = collections.defaultdict(float)
         self.v_hat = collections.defaultdict(float)
 
-    def _step(self, w, g):
+    def _step_with_dict(self, w, g):
 
         lr = self.learning_rate
 
