@@ -63,7 +63,7 @@ def test_optimizer_step_with_dict_same_as_step_with_vector_dict(optimizer):
 
     w_dict = optimizer._step_with_dict(w_dict, g_dict)
     try:
-        w_vector = optimizer._step_with_vector(w_vector, g_vector)
+        w_vector = optimizer.clone()._step_with_vector(w_vector, g_vector)
     except NotImplementedError:
         pytest.skip("step_with_vector not implemented")
 
@@ -88,7 +88,7 @@ def test_optimizer_step_with_dict_same_as_step_with_numpy_array(optimizer):
 
     w_dict = optimizer._step_with_dict(w_dict, g_dict)
     try:
-        w_vector = optimizer._step_with_vector(w_vector, g_vector)
+        w_vector = optimizer.clone()._step_with_vector(w_vector, g_vector)
     except NotImplementedError:
         pytest.skip("step_with_vector not implemented")
 

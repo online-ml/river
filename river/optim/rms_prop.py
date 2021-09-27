@@ -1,5 +1,9 @@
 import collections
 
+import numpy as np
+
+from river import utils
+
 from . import base
 
 __all__ = ["RMSProp"]
@@ -45,12 +49,28 @@ class RMSProp(base.Optimizer):
         super().__init__(lr)
         self.rho = rho
         self.eps = eps
-        self.g2 = collections.defaultdict(float)
+        self.g2 = None
 
     def _step_with_dict(self, w, g):
+
+        if self.g2 is None:
+            self.g2 = collections.defaultdict(float)
 
         for i, gi in g.items():
             self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi ** 2
             w[i] -= self.learning_rate / (self.g2[i] + self.eps) ** 0.5 * gi
+
+        return w
+
+    def _step_with_vector(self, w, g):
+
+        if self.g2 is None:
+            if isinstance(w, np.ndarray):
+                self.g2 = np.zeros_like(w)
+            else:
+                self.g2 = utils.VectorDict()
+
+        self.g2 = self.rho * self.g2 + (1 - self.rho) * g ** 2
+        w -= self.learning_rate / (self.g2 + self.eps) ** 0.5 * g
 
         return w
