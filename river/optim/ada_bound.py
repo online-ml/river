@@ -1,8 +1,8 @@
 import collections
 import math
-import numbers
 
-from .. import utils
+from river import utils
+
 from . import base
 
 __all__ = ["AdaBound"]

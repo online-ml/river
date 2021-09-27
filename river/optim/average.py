@@ -1,7 +1,6 @@
 import collections
 
-from . import base
-from . import sgd
+from . import base, sgd
 
 
 class Averager(base.Optimizer):

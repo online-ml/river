@@ -7,8 +7,7 @@ import typing
 import numpy as np
 import pytest
 
-from river import optim
-from river import utils
+from river import optim, utils
 
 
 def losses() -> typing.Iterable[optim.losses.Loss]:
@@ -22,8 +21,7 @@ def losses() -> typing.Iterable[optim.losses.Loss]:
 
 
 @pytest.mark.parametrize(
-    "loss",
-    [pytest.param(loss, id=loss.__class__.__name__) for loss in losses()],
+    "loss", [pytest.param(loss, id=loss.__class__.__name__) for loss in losses()],
 )
 def test_loss_batch_online_equivalence(loss):
 
@@ -39,7 +37,7 @@ def optimizers() -> typing.Iterable[optim.Optimizer]:
         importlib.import_module("river.optim"),
         lambda x: inspect.isclass(x)
         and issubclass(x, optim.Optimizer)
-        and not x is optim.Optimizer,
+        and x is not optim.Optimizer,
     ):
         params = optimizer._unit_test_params()
         print(optimizer)

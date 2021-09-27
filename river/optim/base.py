@@ -3,11 +3,9 @@ from typing import Union
 
 import numpy as np
 
-from river import base
-from river import utils
+from river import base, utils
 
 from . import schedulers
-
 
 VectorLike = Union[utils.VectorDict, np.ndarray]
 
