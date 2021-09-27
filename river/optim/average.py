@@ -1,9 +1,11 @@
 import collections
 
 from . import base
+from . import sgd
 
 
 class Averager(base.Optimizer):
+
     """Averaged stochastic gradient descent.
 
     This is a wrapper that can be applied to any stochastic gradient descent optimiser. Note that
@@ -69,3 +71,7 @@ class Averager(base.Optimizer):
             self.avg_w[i] += (wi - self.avg_w[i]) / (self.n_iterations - self.start + 1)
 
         return self.avg_w
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {"optimizer": sgd.SGD()}

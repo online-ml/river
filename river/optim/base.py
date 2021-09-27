@@ -50,7 +50,7 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict((self, w: dict, g: dict) -> dict:
+    def _step_with_dict(self, w: dict, g: dict) -> dict:
         raise NotImplementedError
 
     def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
@@ -84,3 +84,7 @@ class Optimizer(base.Base):
 
     def __repr__(self):
         return f"{self.__class__.__name__}({vars(self)})"
+
+    @classmethod
+    def _unit_test_params(cls):
+        return {}
