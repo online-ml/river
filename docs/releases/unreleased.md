@@ -12,3 +12,7 @@
 
 - Fixed an issue where some statistics could not be printed if they had not seen any data yet.
 - Implemented median absolute deviation in `stats.MAD`.
+
+## time_series
+
+- `time_series.Detrender` and `time_series.GroupDetrender` have been removed as they overlap with `meta.TargetStandardScaler`.
