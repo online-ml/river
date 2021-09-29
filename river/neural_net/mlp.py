@@ -1,3 +1,5 @@
+import collections
+import copy
 import typing
 
 import numpy as np
@@ -54,6 +56,7 @@ class MLP:
         self.loss = loss
         self.optimizer = optimizer
         self.seed = seed
+        self._optimizers = collections.defaultdict(lambda: copy.deepcopy(optimizer))
 
     @property
     def n_layers(self) -> int:
@@ -127,8 +130,8 @@ class MLP:
 
         # Update the parameters
         for i, (dw, delta) in update_params.items():
-            self.optimizer.step(w=self.w[i], g=dw)
-            self.optimizer.step(w=self.b[i], g=np.mean(delta, axis=0))
+            self._optimizers[i, 0].step(w=self.w[i], g=dw)
+            self._optimizers[i, 1].step(w=self.b[i], g=np.mean(delta, axis=0))
 
     def learn_many(self, X: pd.DataFrame, y: pd.DataFrame):
         """Train the network.
