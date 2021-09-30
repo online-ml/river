@@ -399,16 +399,15 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
         self.decaying_factor = decaying_factor
 
         self.N = 1
-        self.feature_keys = set(x.keys())
-        self.liner_sum = x
+        self.linear_sum = x
         self.squared_sum = {i: (x_val * x_val) for i, x_val in x.items()}
 
     def calc_norm_cf1_cf2(self, fading_factor):
         # |CF1| and |CF2| in the paper
         sum_of_squares_cf1 = 0
         sum_of_squares_cf2 = 0
-        for key in self.liner_sum.keys():
-            val_ls = self.liner_sum[key]
+        for key in self.linear_sum.keys():
+            val_ls = self.linear_sum[key]
             val_ss = self.squared_sum[key]
             sum_of_squares_cf1 += fading_factor * val_ls * fading_factor * val_ls
             sum_of_squares_cf2 += fading_factor * val_ss * fading_factor * val_ss
@@ -424,7 +423,7 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
     def calc_center(self, timestamp):
         ff = self.fading_function(timestamp - self.last_edit_time)
         weight = self._weight(ff)
-        center = {key: (ff * val) / weight for key, val in self.liner_sum.items()}
+        center = {key: (ff * val) / weight for key, val in self.linear_sum.items()}
         return center
 
     def calc_radius(self, timestamp):
@@ -436,27 +435,25 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
         return radius
 
     def insert(self, x, timestamp):
-        if set(x.keys()) != self.feature_keys:
-            raise KeyError(
-                f"Features mismatch. Expected {self.feature_keys}",
-                f"got {set(x.keys())}",
-            )
         self.N += 1
         self.last_edit_time = timestamp
-        for k in self.feature_keys:
-            self.liner_sum[k] += x[k]
-            self.squared_sum[k] += x[k] * x[k]
+        for key, val in x.items():
+            try:
+                self.linear_sum[key] += val
+                self.squared_sum[key] += val * val
+            except KeyError:
+                self.linear_sum[key] = val
+                self.squared_sum[key] = val * val
 
     def merge(self, cluster):
-        if self.feature_keys != cluster.feature_keys:
-            raise KeyError(
-                f"Features mismatch. Expected {self.feature_keys}",
-                f"got {cluster.feature_keys}",
-            )
         self.N += cluster.N
-        for k in self.feature_keys:
-            self.liner_sum[k] += cluster.liner_sum[k]
-            self.squared_sum[k] += cluster.squared_sum[k]
+        for key in cluster.linear_sum.keys():
+            try:
+                self.linear_sum[key] += cluster.linear_sum[key]
+                self.squared_sum[key] += cluster.squared_sum[key]
+            except KeyError:
+                self.linear_sum[key] = cluster.linear_sum[key]
+                self.squared_sum[key] = cluster.squared_sum[key]
         if self.last_edit_time < cluster.creation_time:
             self.last_edit_time = cluster.creation_time
 
