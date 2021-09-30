@@ -1,5 +1,9 @@
 # Unreleased
 
+## compose
+
+- You can now use a `list` as a shorthand to build a `TransformerUnion`.
+
 ## ensemble
 
 - Bug fixes in `SRPClassifier` and `SRPRegressor`.
