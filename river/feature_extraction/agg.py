@@ -5,8 +5,6 @@ import typing
 
 from river import base, stats
 
-__all__ = ["Agg", "TargetAgg"]
-
 
 class Agg(base.Transformer):
     """Computes a streaming aggregate.
@@ -136,15 +134,15 @@ class Agg(base.Transformer):
         self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
         self.feature_name = f'{self.on}_{self.how.name}_by_{"_and_".join(self.by)}'
 
-    def _get_key(self, x):
-        return "_".join(str(x[k]) for k in self.by)
+    def _make_key(self, x):
+        return tuple(x[k] for k in self.by)
 
     def learn_one(self, x):
-        self.groups[self._get_key(x)].update(x[self.on])
+        self.groups[self._make_key(x)].update(x[self.on])
         return self
 
     def transform_one(self, x):
-        return {self.feature_name: self.groups[self._get_key(x)].get()}
+        return {self.feature_name: self.groups[self._make_key(x)].get()}
 
     def __str__(self):
         return self.feature_name
@@ -166,13 +164,6 @@ class TargetAgg(base.SupervisedTransformer):
         The statistic to compute.
     target_name
         The target name which is used in the result.
-
-    Attributes
-    ----------
-    groups
-        Maps group keys to univariate statistics.
-    feature_name
-        The name of the feature in the output.
 
     Examples
     --------
@@ -256,18 +247,19 @@ class TargetAgg(base.SupervisedTransformer):
         self.by = by if isinstance(by, list) else [by]
         self.how = how
         self.target_name = target_name
-        self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
-        self.feature_name = f'{target_name}_{how.name}_by_{"_and_".join(self.by)}'
 
-    def _get_key(self, x):
-        return "_".join(str(x[k]) for k in self.by)
+        self._feature_name = f'{target_name}_{how.name}_by_{"_and_".join(self.by)}'
+        self._groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
+
+    def _make_key(self, x):
+        return tuple(x[k] for k in self.by)
 
     def learn_one(self, x, y):
-        self.groups[self._get_key(x)].update(y)
+        self._groups[self._make_key(x)].update(y)
         return self
 
     def transform_one(self, x):
-        return {self.feature_name: self.groups[self._get_key(x)].get()}
+        return {self._feature_name: self._groups[self._make_key(x)].get()}
 
     def __str__(self):
-        return self.feature_name
+        return self._feature_name
