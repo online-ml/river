@@ -1,5 +1,6 @@
 import math
 from abc import ABCMeta
+from collections import defaultdict
 
 from river import base, cluster, utils
 
@@ -117,7 +118,6 @@ class CluStream(base.Clusterer):
         self.micro_clusters = {n: None for n in range(max_micro_clusters)}
         self.initialized = False
         self.buffer = {}
-        self.max_micro_clusters = max_micro_clusters
         self.centers = {}
         self.micro_cluster_r_factor = micro_cluster_r_factor
         self.max_micro_clusters = max_micro_clusters
@@ -265,8 +265,8 @@ class CluStream(base.Clusterer):
     def predict_one(self, x):
 
         micro_cluster_centers = {
-            i: self._get_micro_clustering_result()[i].center
-            for i in range(len(self._get_micro_clustering_result()))
+            i: result.center
+            for i, result in self._get_micro_clustering_result().items()
         }
 
         kmeans = cluster.KMeans(
@@ -305,13 +305,15 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
         if x is not None and sample_weight is not None:
             # Initialize with sample x
             self.n_samples = 1
-            self.linear_sum = {}
-            self.squared_sum = {}
+            self.linear_sum = defaultdict(float)
+            self.squared_sum = defaultdict(float)
             for key in x.keys():
                 self.linear_sum[key] = x[key] * sample_weight
                 self.squared_sum[key] = x[key] * x[key] * sample_weight
             self.linear_sum_timestamp = timestamp * sample_weight
-            self.squared_sum_timestamp = timestamp * timestamp * sample_weight
+            self.squared_sum_timestamp = (
+                timestamp * sample_weight * timestamp * sample_weight
+            )
         elif micro_cluster is not None:
             # Initialize with micro-cluster
             self.n_samples = micro_cluster.n_samples
@@ -340,10 +342,9 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
     def _deviation(self):
         variance = self._variance_vector
         sum_of_deviation = 0
-        for i in range(len(variance)):
-            d = math.sqrt(variance[i])
-            sum_of_deviation += d
-        return sum_of_deviation / len(variance)
+        for var in variance.values():
+            sum_of_deviation += math.sqrt(var)
+        return sum_of_deviation / len(variance) if len(variance) > 0 else math.inf
 
     @property
     def _variance_vector(self):
@@ -368,10 +369,12 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
     def insert(self, x, sample_weight, timestamp):
         self.n_samples += 1
         self.linear_sum_timestamp += timestamp * sample_weight
-        self.squared_sum_timestamp += timestamp * sample_weight
-        for i in range(len(x)):
-            self.linear_sum[i] += x[i] * sample_weight
-            self.squared_sum[i] += x[i] * x[i] * sample_weight
+        self.squared_sum_timestamp += (
+            timestamp * sample_weight * timestamp * sample_weight
+        )
+        for x_idx, x_val in x.items():
+            self.linear_sum[x_idx] += x_val * sample_weight
+            self.squared_sum[x_idx] += x_val * sample_weight * x_val * sample_weight
 
     @property
     def relevance_stamp(self):
