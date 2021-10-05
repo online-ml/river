@@ -8,6 +8,11 @@
 
 - Bug fixes in `SRPClassifier` and `SRPRegressor`.
 
+## feature_extraction
+
+- Implemented `feature_extraction.Lagger`.
+- - Implemented `feature_extraction.TargetLagger`.
+
 ## optim
 
 - `optim.Adam` and `optim.RMSProp` now work with `utils.VectorDict`s as well as `numpy.ndarray`s.

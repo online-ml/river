@@ -15,7 +15,7 @@ class Memento(collections.namedtuple("Memento", "i x y t_expire")):
 
 
 def simulate_qa(
-    dataset: base.typing.Stream,
+    dataset: base.typing.Dataset,
     moment: typing.Union[str, typing.Callable],
     delay: typing.Union[str, int, dt.timedelta, typing.Callable],
     copy: bool = True,
