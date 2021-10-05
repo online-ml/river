@@ -32,7 +32,8 @@ class PyTorch2RiverBase(base.Estimator):
         torch.manual_seed(seed)
         self.net = None
 
-    def _unit_test_params(self):
+    @classmethod
+    def _unit_test_params(cls):
         def build_torch_linear_regressor(n_features):
             net = torch.nn.Sequential(torch.nn.Linear(n_features, 1))
             return net
