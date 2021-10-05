@@ -55,7 +55,13 @@ class IQR(base.Univariate):
         return self
 
     def get(self):
-        return self.quantile_sup.get() - self.quantile_inf.get()
+        q_sup = self.quantile_sup.get()
+        if q_sup is None:
+            return None
+        q_inf = self.quantile_inf.get()
+        if q_inf is None:
+            return None
+        return q_sup - q_inf
 
 
 class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
@@ -77,24 +83,24 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
     >>> rolling_iqr = stats.RollingIQR(
     ...     q_inf=0.25,
     ...     q_sup=0.75,
-    ...     window_size=100
+    ...     window_size=101
     ... )
 
     >>> for i in range(0, 1001):
     ...     rolling_iqr = rolling_iqr.update(i)
     ...     if i % 100 == 0:
     ...         print(rolling_iqr.get())
-    0
-    50
-    50
-    50
-    50
-    50
-    50
-    50
-    50
-    50
-    50
+    0.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
+    50.0
 
     """
 
@@ -121,4 +127,10 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
         return self
 
     def get(self):
-        return self.quantile_sup.get() - self.quantile_inf.get()
+        q_sup = self.quantile_sup.get()
+        if q_sup is None:
+            return None
+        q_inf = self.quantile_inf.get()
+        if q_inf is None:
+            return None
+        return q_sup - q_inf

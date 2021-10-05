@@ -54,7 +54,7 @@ def test_hddm_a():
 
     # Second test, more abrupt drifts
     hddm_a = HDDM_A(two_sided_test=True)
-    expected_indices = [531, 1545]
+    expected_indices = [531, 1015, 1545]
     detected_indices = perform_test(hddm_a, data_stream_3)
     assert detected_indices == expected_indices
 

@@ -135,8 +135,13 @@ class HDDM_W(DriftDetector):
             self._in_warning_zone = False
 
         self._update_decr_statistics(value, self.drift_confidence)
-        if self.two_sided_test and self._monitor_mean_decr(self.drift_confidence):
-            self.reset()
+        if self.two_sided_test:
+            if self._monitor_mean_decr(self.drift_confidence):
+                self.reset()
+                self._in_concept_change = True
+            elif self._monitor_mean_decr(self.warning_confidence):
+                self._in_warning_zone = True
+
         self.estimation = self.total.EWMA_estimator
 
         return self._in_concept_change, self._in_warning_zone

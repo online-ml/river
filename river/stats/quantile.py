@@ -161,7 +161,7 @@ class Quantile(base.Univariate):
             length = len(self.heights)
             return self.heights[int(min(max(length - 1, 0), length * self.q))]
 
-        return 0
+        return None
 
 
 class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
@@ -181,24 +181,24 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
 
     >>> rolling_quantile = stats.RollingQuantile(
     ...     q=.5,
-    ...     window_size=100,
+    ...     window_size=101,
     ... )
 
-    >>> for i in range(0, 1001):
+    >>> for i in range(1001):
     ...     rolling_quantile = rolling_quantile.update(i)
     ...     if i % 100 == 0:
     ...         print(rolling_quantile.get())
-    0
-    50
-    150
-    250
-    350
-    450
-    550
-    650
-    750
-    850
-    950
+    0.0
+    50.0
+    150.0
+    250.0
+    350.0
+    450.0
+    550.0
+    650.0
+    750.0
+    850.0
+    950.0
 
     References
     ----------
@@ -209,7 +209,25 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
     def __init__(self, q, window_size):
         super().__init__(size=window_size)
         self.q = q
-        self.idx = int(round(self.q * self.size + 0.5)) - 1
+        idx = self.q * (self.size - 1)
+
+        self._lower = int(math.floor(idx))
+        self._higher = self._lower + 1
+        if self._higher > self.size - 1:
+            self._higher = self.size - 1
+        self._frac = idx - self._lower
+
+    def _prepare(self):
+        if len(self) < self.size:
+            idx = self.q * (len(self) - 1)
+            lower = int(math.floor(idx))
+            higher = lower + 1
+            if higher > len(self) - 1:
+                higher = len(self) - 1
+            frac = idx - lower
+            return lower, higher, frac
+
+        return self._lower, self._higher, self._frac
 
     @property
     def window_size(self):
@@ -220,7 +238,8 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
         return self
 
     def get(self):
-        if len(self) < self.size:
-            idx = int(round(self.q * len(self) + 0.5)) - 1
-            return self[idx]
-        return self[self.idx]
+        lower, higher, frac = self._prepare()
+        try:
+            return self[lower] + (self[higher] - self[lower]) * frac
+        except IndexError:
+            return None

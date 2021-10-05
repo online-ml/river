@@ -1,5 +1,6 @@
 import collections
 import functools
+import itertools
 import numbers
 
 import numpy as np
@@ -86,6 +87,11 @@ class StandardScaler(base.Transformer):
     calls. In other words, this transformer will keep working even if you add and/or remove
     features every time you call `learn_many` and `transform_many`.
 
+    Parameters
+    ----------
+    with_std
+        Whether or not each feature should be divided by its standard deviation.
+
     Examples
     --------
 
@@ -142,7 +148,8 @@ class StandardScaler(base.Transformer):
 
     """
 
-    def __init__(self):
+    def __init__(self, with_std=True):
+        self.with_std = with_std
         self.counts = collections.Counter()
         self.means = collections.defaultdict(float)
         self.vars = collections.defaultdict(float)
@@ -153,16 +160,20 @@ class StandardScaler(base.Transformer):
             self.counts[i] += 1
             old_mean = self.means[i]
             self.means[i] += (xi - old_mean) / self.counts[i]
-            self.vars[i] += (
-                (xi - old_mean) * (xi - self.means[i]) - self.vars[i]
-            ) / self.counts[i]
+            if self.with_std:
+                self.vars[i] += (
+                    (xi - old_mean) * (xi - self.means[i]) - self.vars[i]
+                ) / self.counts[i]
 
         return self
 
     def transform_one(self, x):
-        return {
-            i: safe_div(xi - self.means[i], self.vars[i] ** 0.5) for i, xi in x.items()
-        }
+        if self.with_std:
+            return {
+                i: safe_div(xi - self.means[i], self.vars[i] ** 0.5)
+                for i, xi in x.items()
+            }
+        return {i: xi - self.means[i] for i, xi in x.items()}
 
     def learn_many(self, X: pd.DataFrame):
         """Update with a mini-batch of features.
@@ -187,10 +198,13 @@ class StandardScaler(base.Transformer):
 
         new_means = np.nanmean(X, axis=0)
         # We could call np.var, but we already have the mean so we can be smart
-        new_vars = np.einsum("ij,ij->j", X, X) / len(X) - new_means ** 2
+        if self.with_std:
+            new_vars = np.einsum("ij,ij->j", X, X) / len(X) - new_means ** 2
+        else:
+            new_vars = []
         new_counts = np.sum(~np.isnan(X), axis=0)
 
-        for col, new_mean, new_var, new_count in zip(
+        for col, new_mean, new_var, new_count in itertools.zip_longest(
             columns, new_means, new_vars, new_counts
         ):
 
@@ -202,9 +216,10 @@ class StandardScaler(base.Transformer):
             b = new_count / (old_count + new_count)
 
             self.means[col] = a * old_mean + b * new_mean
-            self.vars[col] = (
-                a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
-            )
+            if self.with_std:
+                self.vars[col] = (
+                    a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
+                )
             self.counts[col] += new_count
 
         return self
@@ -221,10 +236,11 @@ class StandardScaler(base.Transformer):
         """
 
         means = np.array([self.means[c] for c in X.columns])
-        stds = np.array([self.vars[c] ** 0.5 for c in X.columns])
-
         Xt = X.values - means
-        np.divide(Xt, stds, where=stds > 0, out=Xt)
+
+        if self.with_std:
+            stds = np.array([self.vars[c] ** 0.5 for c in X.columns])
+            np.divide(Xt, stds, where=stds > 0, out=Xt)
 
         return pd.DataFrame(Xt, index=X.index, columns=X.columns, copy=False)
 

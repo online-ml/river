@@ -41,7 +41,6 @@ def get_all_estimators():
         compose.Grouper,
         ensemble.AdaptiveRandomForestClassifier,
         ensemble.AdaptiveRandomForestRegressor,
-        ensemble.SRPClassifier,
         expert.StackingClassifier,
         expert.SuccessiveHalvingClassifier,
         expert.SuccessiveHalvingRegressor,
@@ -57,7 +56,7 @@ def get_all_estimators():
         feature_extraction.TargetAgg,
         feature_selection.PoissonInclusion,
         meta.PredClipper,
-        meta.TransformedTargetRegressor,
+        meta.TargetTransformRegressor,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
@@ -111,6 +110,10 @@ def get_all_estimators():
             linear_model.LogisticRegression(),
             preprocessing.StandardScaler() | linear_model.LinearRegression(),
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
+            (
+                preprocessing.StandardScaler()
+                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
+            ),
             (
                 preprocessing.StandardScaler()
                 | multiclass.OneVsRestClassifier(linear_model.LogisticRegression())

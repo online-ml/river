@@ -95,6 +95,7 @@ To build the documentation, you need to install some extra dependencies:
 
 ```sh
 $ pip install -e ".[docs]"
+$ pip install git+https://github.com/MaxHalford/yamp
 ```
 
 From the root of the repository, you can then run the `make livedoc` command to take a look at the documentation in your browser. This will run a custom script which parses all the docstrings and generate MarkDown files that [MkDocs](https://www.mkdocs.org/) can render.
@@ -142,3 +143,11 @@ You don't have to worry too much about these, as we only check them before each 
 ```sh
 $ make execute-notebooks
 ```
+
+## Making a new release
+
+1. Checkout `master`
+2. Bump the version in `river/__version__.py`
+3. Commit
+4. Tag the commit with the version (e.g. `0.4.2`)
+5. Push the tag (i.e. `git push origin 0.4.2`)

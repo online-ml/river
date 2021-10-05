@@ -21,6 +21,9 @@ def load_stats():
     ):
         try:
 
+            if inspect.isabstract(obj):
+                continue
+
             if issubclass(obj, stats.Link):
                 yield obj(stats.Shift(1), stats.Mean())
                 continue
@@ -46,6 +49,12 @@ def test_pickling(stat):
 
     if isinstance(stat, stats.Univariate):
         assert isinstance(stat.name, str)
+
+
+@pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
+def test_repr_with_no_updates(stat):
+    assert isinstance(repr(stat), str)
+    assert isinstance(str(stat), str)
 
 
 @pytest.mark.parametrize(
@@ -80,6 +89,26 @@ def test_univariate(stat, func):
         (stats.RollingMean(10), statistics.mean),
         (stats.RollingVar(3, ddof=0), np.var),
         (stats.RollingVar(10, ddof=0), np.var),
+        (
+            stats.RollingQuantile(0.0, 10),
+            functools.partial(np.quantile, q=0.0, interpolation="linear"),
+        ),
+        (
+            stats.RollingQuantile(0.25, 10),
+            functools.partial(np.quantile, q=0.25, interpolation="linear"),
+        ),
+        (
+            stats.RollingQuantile(0.5, 10),
+            functools.partial(np.quantile, q=0.5, interpolation="linear"),
+        ),
+        (
+            stats.RollingQuantile(0.75, 10),
+            functools.partial(np.quantile, q=0.75, interpolation="linear"),
+        ),
+        (
+            stats.RollingQuantile(1, 10),
+            functools.partial(np.quantile, q=1, interpolation="linear"),
+        ),
     ],
 )
 def test_rolling_univariate(stat, func):

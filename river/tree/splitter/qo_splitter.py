@@ -5,7 +5,7 @@ import typing
 from river import stats, utils
 
 from ..utils import BranchFactory
-from .base_splitter import Splitter
+from .base import Splitter
 
 
 class QOSplitter(Splitter):

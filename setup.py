@@ -36,7 +36,7 @@ compat_packages = base_packages + [
     "scikit-surprise",
     "sqlalchemy>=1.4",
     "torch",
-    "vaex"
+    "vaex",
 ]
 
 dev_packages = base_packages + [
@@ -60,8 +60,7 @@ docs_packages = dev_packages + [
     "mkdocs-awesome-pages-plugin",
     "mkdocs-material",
     "nbconvert",
-    "numpydoc",
-    "spacy"
+    "spacy",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -92,6 +91,7 @@ setuptools.setup(
         "dev": dev_packages,
         "compat": compat_packages,
         "docs": docs_packages,
+        "extra": [f"river_extra=={about['__version__']}"],
         ":python_version == '3.6'": ["dataclasses"],
     },
     include_package_data=True,
@@ -115,22 +115,30 @@ setuptools.setup(
                 sources=["**/*.pyx"],
                 include_dirs=[get_include()],
                 libraries=[] if platform.system() == "Windows" else ["m"],
-                define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
+                define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
             )
         ],
-        compiler_directives={"language_level": 3, "binding": True, "embedsignature": True},
+        compiler_directives={
+            "language_level": 3,
+            "binding": True,
+            "embedsignature": True,
+        },
     )
     + [
         setuptools.Extension(
             "river.neighbors.libNearestNeighbor",
             sources=[
                 os.path.join(
-                    "river", "neighbors", "src", "libNearestNeighbor", "nearestNeighbor.cpp"
+                    "river",
+                    "neighbors",
+                    "src",
+                    "libNearestNeighbor",
+                    "nearestNeighbor.cpp",
                 )
             ],
             include_dirs=[get_include()],
             libraries=[] if platform.system() == "Windows" else ["m"],
-            language="c++"
+            language="c++",
         )
     ],
 )

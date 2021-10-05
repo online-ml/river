@@ -1,7 +1,7 @@
-from abc import ABCMeta, abstractmethod
+import abc
 
 
-class SplitCriterion(metaclass=ABCMeta):
+class SplitCriterion(abc.ABC):
     """SplitCriterion
 
     Abstract class for computing splitting criteria with respect to distributions of class values.
@@ -14,7 +14,7 @@ class SplitCriterion(metaclass=ABCMeta):
     def __init__(self):
         super().__init__()
 
-    @abstractmethod
+    @abc.abstractmethod
     def merit_of_split(self, pre_split_dist, post_split_dist):
         """Compute the merit of splitting for a given distribution before the split and after it.
 
@@ -31,7 +31,7 @@ class SplitCriterion(metaclass=ABCMeta):
         """
 
     @staticmethod
-    @abstractmethod
+    @abc.abstractmethod
     def range_of_merit(pre_split_dist):
         """Compute the range of splitting merit.
 

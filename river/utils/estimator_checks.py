@@ -275,6 +275,10 @@ def check_seeding_is_idempotent(model, dataset):
         B.learn_one(x, y)
 
 
+def check_multiclass_is_bool(model):
+    assert isinstance(model._multiclass, bool)
+
+
 def wrapped_partial(func, *args, **kwargs):
     """
 
@@ -316,6 +320,9 @@ def yield_checks(model):
     yield check_init_default_params_are_not_mutable
     yield check_doc
     yield check_clone
+
+    if utils.inspect.isclassifier(model):
+        yield check_multiclass_is_bool
 
     # Checks that make use of datasets
     checks = [

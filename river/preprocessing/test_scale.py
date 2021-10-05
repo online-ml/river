@@ -9,20 +9,22 @@ from river import datasets, preprocessing, stream
 def test_standard_scaler_one_many_consistent():
     """Checks that using learn_one or learn_many produces the same result."""
 
-    X = pd.read_csv(datasets.TrumpApproval().path)
+    for with_std in (False, True):
 
-    one = preprocessing.StandardScaler()
-    for x, _ in stream.iter_pandas(X):
-        one.learn_one(x)
+        X = pd.read_csv(datasets.TrumpApproval().path)
 
-    many = preprocessing.StandardScaler()
-    for xb in np.array_split(X, 10):
-        many.learn_many(xb)
+        one = preprocessing.StandardScaler(with_std=with_std)
+        for x, _ in stream.iter_pandas(X):
+            one.learn_one(x)
 
-    for i in X:
-        assert math.isclose(one.counts[i], many.counts[i])
-        assert math.isclose(one.means[i], many.means[i])
-        assert math.isclose(one.vars[i], many.vars[i])
+        many = preprocessing.StandardScaler(with_std=with_std)
+        for xb in np.array_split(X, 10):
+            many.learn_many(xb)
+
+        for i in X:
+            assert math.isclose(one.counts[i], many.counts[i])
+            assert math.isclose(one.means[i], many.means[i])
+            assert math.isclose(one.vars[i], many.vars[i])
 
 
 def test_standard_scaler_shuffle_columns():
