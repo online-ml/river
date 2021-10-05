@@ -1,53 +1,121 @@
+import collections
+import inspect
+import typing
+
+import pandas as pd
 import torch
 
-from .. import base
+from river import base
 
-__all__ = ["PyTorch2RiverRegressor"]
+__all__ = ["PyTorch2RiverBase", "PyTorch2RiverRegressor", "PyTorch2RiverClassifier"]
 
 
-class PyTorch2RiverBase:
-    def __init__(self, net, loss_fn, optimizer, batch_size, x_tensor, y_tensor):
-        self.net = net
+class PyTorch2RiverBase(base.Estimator):
+    """An estimator that integrates neural Networks from PyTorch."""
+
+    def __init__(
+        self,
+        build_fn,
+        loss_fn: typing.Type[torch.nn.modules.loss._Loss],
+        optimizer_fn: typing.Type[torch.optim.Optimizer] = torch.optim.Adam,
+        learning_rate=1e-3,
+        seed=42,
+        **net_params,
+    ):
+        self.build_fn = build_fn
         self.loss_fn = loss_fn
-        self.optimizer = optimizer
-        self.batch_size = batch_size
-        self.x_tensor = x_tensor
-        self.y_tensor = y_tensor
-        self._x_batch = [None] * batch_size
-        self._y_batch = [None] * batch_size
-        self._batch_i = 0
+        self.loss = loss_fn()
+        self.optimizer_fn = optimizer_fn
+        self.learning_rate = learning_rate
+        self.net_params = net_params
+        self.seed = seed
+        torch.manual_seed(seed)
+        self.net = None
 
-    def learn_one(self, x, y):
+    def _unit_test_params(self):
+        def build_torch_linear_regressor(n_features):
+            net = torch.nn.Sequential(torch.nn.Linear(n_features, 1))
+            return net
 
-        self._x_batch[self._batch_i] = list(x.values())
-        self._y_batch[self._batch_i] = [y]
+        return {
+            "build_fn": build_torch_linear_regressor,
+            "loss_fn": torch.nn.MSELoss,
+            "optimizer_fn": torch.optim.SGD,
+        }
 
-        self._batch_i += 1
+    def _learn_one(self, x: torch.Tensor, y: torch.Tensor):
+        self.net.zero_grad()
+        y_pred = self.net(x)
+        loss = self.loss(y_pred, y)
+        loss.backward()
+        self.optimizer.step()
 
-        if self._batch_i == self.batch_size:
+    def learn_one(self, x: dict, y: base.typing.ClfTarget):
+        """Update the model with a set of features `x` and a label `y`.
 
-            x = self.x_tensor(self._x_batch)
-            y = self.y_tensor(self._y_batch)
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        y
+            A label.
 
-            self.optimizer.zero_grad()
-            y_pred = self.net(x)
-            loss = self.loss_fn(y_pred, y)
-            loss.backward()
-            self.optimizer.step()
-            self._batch_i = 0
+        Returns
+        -------
+        self
 
+        """
+        if self.net is None:
+            self._init_net(n_features=len(list(x.values())))
+
+        x = torch.Tensor([list(x.values())])
+        y = torch.Tensor([[y]])
+        self._learn_one(x=x, y=y)
         return self
 
+    def _filter_torch_params(self, fn, override=None):
+        """Filters `torch_params` and returns those in `fn`'s arguments.
 
-class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
-    """Compatibility layer from PyTorch to River for regression.
+        Parameters
+        ----------
+        fn
+            arbitrary function
+        override
+            dictionary, values to override `torch_params`
+
+        Returns
+        -------
+        res
+            dictionary containing variables in both and fn's arguments
+
+        """
+        override = override or {}
+        res = {}
+        for name, value in self.net_params.items():
+            args = list(inspect.signature(fn).parameters)
+            if name in args:
+                res.update({name: value})
+        res.update(override)
+        return res
+
+    def _init_net(self, n_features):
+        self.net = self.build_fn(
+            n_features=n_features, **self._filter_torch_params(self.build_fn)
+        )
+        # Only optimizers with learning rate as parameter are supported, needs to be fixed
+        self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
+
+
+class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
+    """A river classifier that integrates neural Networks from PyTorch.
 
     Parameters
     ----------
-    net
+    build_fn
     loss_fn
-    optimizer
-    batch_size
+    optimizer_fn
+    learning_rate
+    net_params
 
     Examples
     --------
@@ -57,7 +125,141 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
     >>> from river import evaluate
     >>> from river import metrics
     >>> from river import preprocessing
-    >>> import torch
+    >>> from torch import nn
+    >>> from torch import optim
+
+    >>> _ = torch.manual_seed(0)
+
+    >>> def build_torch_mlp_classifier(n_features):
+    ...     net = nn.Sequential(
+    ...         nn.Linear(n_features, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 1),
+    ...         nn.Sigmoid()
+    ...     )
+    ...     return net
+    ...
+    >>> model = compat.PyTorch2RiverClassifier(
+    ...     build_fn= build_torch_mlp_classifier,
+    ...     loss_fn=nn.BCELoss,
+    ...     optimizer_fn=optim.Adam,
+    ...     learning_rate=1e-3
+    ... )
+    >>> dataset = datasets.Elec2()
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
+    Accuracy: 69.74%
+
+    """
+
+    def __init__(
+        self,
+        build_fn,
+        loss_fn: typing.Type[torch.nn.modules.loss._Loss],
+        optimizer_fn: typing.Type[torch.optim.Optimizer] = torch.optim.Adam,
+        learning_rate=1e-3,
+        **net_params,
+    ):
+        self.classes = collections.Counter()
+        self.n_classes = 1
+        super().__init__(
+            build_fn=build_fn,
+            loss_fn=loss_fn,
+            optimizer_fn=optimizer_fn,
+            learning_rate=learning_rate,
+            **net_params,
+        )
+
+    def _update_classes(self):
+        self.n_classes = len(self.classes)
+        layers = list(self.net.children())
+        i = -1
+        layer_to_convert = layers[i]
+        while not hasattr(layer_to_convert, "weight"):
+            layer_to_convert = layers[i]
+            i -= 1
+
+        removed = list(self.net.children())[: i + 1]
+        new_net = removed
+        new_layer = torch.nn.Linear(
+            in_features=layer_to_convert.in_features, out_features=self.n_classes
+        )
+        # copy the original weights back
+        with torch.no_grad():
+            new_layer.weight[:-1, :] = layer_to_convert.weight
+            new_layer.weight[-1:, :] = torch.mean(layer_to_convert.weight, 0)
+        new_net.append(new_layer)
+        if i + 1 < -1:
+            for layer in layers[i + 2 :]:
+                new_net.append(layer)
+        self.net = torch.nn.Sequential(*new_net)
+        self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
+
+    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> base.Classifier:
+        self.classes.update([y])
+
+        # check if model is initialized
+        if self.net is None:
+            self._init_net(len(list(x.values())))
+
+        # check last layer and update if needed
+        if len(self.classes) != self.n_classes:
+            self._update_classes()
+
+        # training process
+        proba = {c: 0.0 for c in self.classes}
+        proba[y] = 1.0
+        x = list(x.values())
+        y = list(proba.values())
+
+        x = torch.Tensor([x])
+        y = torch.Tensor([y])
+        self._learn_one(x=x, y=y)
+        return self
+
+    def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
+        if self.net is None:
+            self._init_net(len(list(x.values())))
+        x = torch.Tensor(list(x.values()))
+        yp = self.net(x).detach().numpy()
+        proba = {c: 0.0 for c in self.classes}
+        for idx, val in enumerate(self.classes):
+            proba[val] = yp[idx]
+        return proba
+
+    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        if self.net is None:
+            self._init_net(len(X.columns))
+        x = torch.Tensor(list(X.to_numpy()))
+        yp = self.net(x).detach().numpy()
+        proba = {c: [0.0] * len(X) for c in self.classes}
+        for idx, val in enumerate(self.classes):
+            proba[val] = yp[idx]
+        return pd.DataFrame(proba)
+
+
+class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
+    """Compatibility layer from PyTorch to River for regression.
+
+    Parameters
+    ----------
+    build_fn
+    loss_fn
+    optimizer_fn
+    learning_rate
+    net_params
+
+    Examples
+    --------
+
+    >>> from river import compat
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
 
@@ -65,44 +267,62 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.Regressor):
 
     >>> dataset = datasets.TrumpApproval()
 
-    >>> n_features = 6
-    >>> net = nn.Sequential(
-    ...     nn.Linear(n_features, 3),
-    ...     nn.Linear(3, 1)
+    >>> def build_torch_mlp_regressor(n_features):
+    ...     net = nn.Sequential(
+    ...         nn.Linear(n_features, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 5),
+    ...         nn.Linear(5, 1)
+    ...     )
+    ...     return net
+    ...
+    >>> model = compat.PyTorch2RiverRegressor(
+    ...     build_fn= build_torch_mlp_regressor,
+    ...     loss_fn=nn.MSELoss,
+    ...     optimizer_fn=optim.Adam,
     ... )
 
-    >>> model = (
-    ...     preprocessing.StandardScaler() |
-    ...     compat.PyTorch2RiverRegressor(
-    ...         net=net,
-    ...         loss_fn=nn.MSELoss(),
-    ...         optimizer=optim.SGD(net.parameters(), lr=1e-3),
-    ...         batch_size=2
-    ...     )
-    ... )
     >>> metric = metrics.MAE()
 
-    >>> evaluate.progressive_val_score(dataset, model, metric).get()
-    2.78258
+    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
+    MAE: 78.98022
 
     """
 
     def __init__(
         self,
-        net: torch.nn.Sequential,
-        loss_fn: torch.nn.modules.loss._Loss,
-        optimizer: torch.optim.Optimizer,
-        batch_size=1,
+        build_fn,
+        loss_fn: typing.Type[torch.nn.modules.loss._Loss],
+        optimizer_fn: typing.Type[torch.optim.Optimizer],
+        learning_rate=1e-3,
+        **net_params,
     ):
         super().__init__(
-            net=net,
+            build_fn=build_fn,
             loss_fn=loss_fn,
-            optimizer=optimizer,
-            batch_size=batch_size,
-            x_tensor=torch.Tensor,
-            y_tensor=torch.Tensor,
+            optimizer_fn=optimizer_fn,
+            learning_rate=learning_rate,
+            **net_params,
         )
 
+    def learn_many(self, X: pd.DataFrame, y: pd.Series, **kwargs):
+        if self.net is None:
+            self._init_net(n_features=len(X.columns))
+
+        x = torch.Tensor(X.to_numpy())
+        y = torch.Tensor([y])
+        self._learn_one(x=x, y=y)
+        return self
+
     def predict_one(self, x):
-        x = self.x_tensor(list(x.values()))
+        if self.net is None:
+            self._init_net(len(x))
+        x = torch.Tensor(list(x.values()))
         return self.net(x).item()
+
+    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+        if self.net is None:
+            self._init_net(len(X.columns))
+        x = torch.Tensor(X.to_numpy())
+        return pd.Series(self.net(x).item())
