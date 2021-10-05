@@ -4,7 +4,7 @@ import typing
 import pandas as pd
 import torch
 
-from .. import base
+from river import base
 
 __all__ = ["PyTorch2RiverBase", "PyTorch2RiverRegressor", "PyTorch2RiverClassifier"]
 
@@ -118,6 +118,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
 
     Examples
     --------
+
     >>> from river import compat
     >>> from river import datasets
     >>> from river import evaluate
@@ -125,8 +126,9 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
+
     >>> _ = torch.manual_seed(0)
-    >>> dataset = datasets.TrumpApproval()
+
     >>> def build_torch_mlp_classifier(n_features):
     ...     net = nn.Sequential(
     ...         nn.Linear(n_features, 5),
@@ -143,11 +145,13 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     ...     loss_fn=nn.BCELoss,
     ...     optimizer_fn=optim.Adam,
     ...     learning_rate=1e-3
-    ...     )
+    ... )
     >>> dataset = datasets.Elec2()
     >>> metric = metrics.Accuracy()
-    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric).get()
-    0.6974244664650968
+
+    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
+    Accuracy: 69.74%
+
     """
 
     def __init__(
@@ -249,6 +253,7 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
 
     Examples
     --------
+
     >>> from river import compat
     >>> from river import datasets
     >>> from river import evaluate
@@ -256,8 +261,11 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
     >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
+
     >>> _ = torch.manual_seed(0)
+
     >>> dataset = datasets.TrumpApproval()
+
     >>> def build_torch_mlp_regressor(n_features):
     ...     net = nn.Sequential(
     ...         nn.Linear(n_features, 5),
@@ -272,10 +280,13 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
     ...     build_fn= build_torch_mlp_regressor,
     ...     loss_fn=nn.MSELoss,
     ...     optimizer_fn=optim.Adam,
-    ...     )
+    ... )
+
     >>> metric = metrics.MAE()
-    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric).get()
-    78.98022362619766
+
+    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
+    MAE: 78.98022
+
     """
 
     def __init__(
