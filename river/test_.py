@@ -29,11 +29,13 @@ from river import (
 )
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
+from river.compat.pytorch import PyTorch2RiverBase
 
 
 def get_all_estimators():
 
     ignored = (
+        PyTorch2RiverBase,
         River2SKLBase,
         SKL2RiverBase,
         compose.FuncTransformer,
@@ -112,7 +114,9 @@ def get_all_estimators():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
+                | meta.TargetStandardScaler(
+                    regressor=linear_model.LinearRegression(),
+                )
             ),
             (
                 preprocessing.StandardScaler()
