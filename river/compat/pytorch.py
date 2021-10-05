@@ -32,15 +32,35 @@ class PyTorch2RiverBase(base.Estimator):
         torch.manual_seed(seed)
         self.net = None
 
+    @classmethod
     def _unit_test_params(self):
         def build_torch_linear_regressor(n_features):
-            net = torch.nn.Sequential(torch.nn.Linear(n_features, 1))
+            net = torch.nn.Sequential(
+                torch.nn.Linear(n_features, 1), torch.nn.Sigmoid()
+            )
             return net
 
         return {
             "build_fn": build_torch_linear_regressor,
             "loss_fn": torch.nn.MSELoss,
             "optimizer_fn": torch.optim.SGD,
+        }
+
+    @classmethod
+    def _unit_test_skips(self):
+        """Indicates which checks to skip during unit testing.
+
+        Most estimators pass the full test suite. However, in some cases, some estimators might not
+        be able to pass certain checks.
+
+        """
+        return {
+            "check_pickling",
+            "check_shuffle_features_no_impact",
+            "check_emerging_features",
+            "check_disappearing_features",
+            "check_predict_proba_one",
+            "check_predict_proba_one_binary",
         }
 
     def _learn_one(self, x: torch.Tensor, y: torch.Tensor):
