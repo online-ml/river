@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://riverml.xyz/releases/unreleased/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.1">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8b42a75e.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1c75ef36.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -7952,6 +7952,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#compat" class="md-nav__link">
+    compat
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -8237,6 +8244,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#compat" class="md-nav__link">
+    compat
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -8261,8 +8275,14 @@
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Fixed an issue where some statistics could not be printed if they had not seen any data yet.</li>
+<li>Moved <code>model_selection.expand_param_grid</code> to <code>utils.expand_param_grid</code>.</li>
+</ul>
+<h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <code>compat.PyTorch2RiverClassifier</code></li>
 <li>Implemented median absolute deviation in <code>stats.MAD</code>.</li>
+<li>Refactored <code>compat.PyTorch2RiverRegressor</code></li>
+<li>Fixed an issue where some statistics could not be printed if they had not seen any data yet.</li>
 </ul>
                 
               
@@ -8325,10 +8345,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.f8263e09.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.e99e714c.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.4fc53ad4.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c7d1b464.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
