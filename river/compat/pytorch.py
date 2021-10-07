@@ -1,9 +1,11 @@
 import collections
 import inspect
 import typing
+
 import numpy as np
 import pandas as pd
 import torch
+
 from river import base
 
 __all__ = ["PyTorch2RiverBase", "PyTorch2RiverRegressor", "PyTorch2RiverClassifier"]
