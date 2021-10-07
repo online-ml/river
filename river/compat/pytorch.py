@@ -306,7 +306,7 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
-    MAE: 78.98022
+    MAE: 78.980473
 
     """
 
