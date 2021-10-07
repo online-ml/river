@@ -1,10 +1,9 @@
 import collections
 import inspect
 import typing
-
+import numpy as np
 import pandas as pd
 import torch
-
 from river import base
 
 __all__ = ["PyTorch2RiverBase", "PyTorch2RiverRegressor", "PyTorch2RiverClassifier"]
@@ -30,6 +29,8 @@ class PyTorch2RiverBase(base.Estimator):
         self.net_params = net_params
         self.seed = seed
         torch.manual_seed(seed)
+        np.random.seed(seed)
+
         self.net = None
 
     @classmethod
@@ -172,6 +173,8 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
+    Downloading https://maxhalford.github.io/files/datasets/electricity.zip (697.72 KB)
+    Uncompressing into /home/runner/river_data/Elec2
     Accuracy: 69.74%
 
     """
