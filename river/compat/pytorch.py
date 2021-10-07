@@ -151,8 +151,9 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
+    >>> from torch import manual_seed
 
-    >>> _ = torch.manual_seed(0)
+    >>> _ = manual_seed(0)
 
     >>> def build_torch_mlp_classifier(n_features):
     ...     net = nn.Sequential(
@@ -175,8 +176,6 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
-    Downloading https://maxhalford.github.io/files/datasets/electricity.zip (697.72 KB)
-    Uncompressing into /home/runner/river_data/Elec2
     Accuracy: 69.74%
 
     """

@@ -45,6 +45,7 @@ jobs:
 
       - name: Download datasets
         run: python -c "from river import datasets; datasets.CreditCard().download()"
+        run: python -c "from river import datasets; datasets.Elec2().download()"
 
       - name: pytest
         run: pytest --cov=river -m "not datasets"
