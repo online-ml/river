@@ -58,7 +58,6 @@ class PyTorch2RiverBase(base.Estimator):
 
         """
         return {
-            "doctest",
             "check_doc",
             "check_pickling",
             "check_shuffle_features_no_impact",
