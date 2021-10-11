@@ -247,7 +247,7 @@ class AMRules(base.Regressor):
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     rules.AMRules(
-    ...         delta=0.00001,
+    ...         delta=0.01,
     ...         n_min=50,
     ...         drift_detector=drift.ADWIN()
     ...     )
@@ -256,7 +256,7 @@ class AMRules(base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.079129
+    MAE: 0.930966
 
     References
     ----------
@@ -459,7 +459,7 @@ class AMRules(base.Regressor):
         ...     model = model.learn_one(x, y)
 
         >>> model.anomaly_score(x)
-        (1.0168907243483924, 0.13045786430817474, 1.0)
+        (1.0168907243483933, 0.13045786430817402, 1.0)
 
         """
         var = stats.Var()
