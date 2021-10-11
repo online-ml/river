@@ -27,6 +27,7 @@ from river import (
     time_series,
     utils,
 )
+from river.compat.pytorch import PyTorch2RiverBase
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
 
@@ -34,6 +35,7 @@ from river.compat.sklearn_to_river import SKL2RiverBase
 def get_all_estimators():
 
     ignored = (
+        PyTorch2RiverBase,
         River2SKLBase,
         SKL2RiverBase,
         compose.FuncTransformer,
