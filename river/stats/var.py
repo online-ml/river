@@ -63,6 +63,15 @@ class Var(base.Univariate):
             return self._S / (self.mean.n - self.ddof)
         return 0.0
 
+    @classmethod
+    def _from_state(cls, n, m, sig, *, ddof=1):
+        new = cls(ddof=ddof)
+        new.mean = mean.Mean._from_state(n, m)  # noqa
+        # scale the second order statistic
+        new._S = (n - ddof) * sig
+
+        return new
+
     def __iadd__(self, other):
 
         S = (

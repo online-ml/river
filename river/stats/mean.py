@@ -59,6 +59,14 @@ class Mean(base.Univariate):
     def get(self):
         return self._mean
 
+    @classmethod
+    def _from_state(cls, n, mean):
+        new = cls()
+        new.n = n
+        new._mean = mean
+
+        return new
+
     def __iadd__(self, other):
         old_n = self.n
         self.n += other.n
