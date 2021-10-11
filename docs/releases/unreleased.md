@@ -15,7 +15,7 @@
 ## ensemble
 
 - Bug fixes in `ensemble.SRPClassifier` and `ensemble.SRPRegressor`.
-- All models which inherit from `ensemble.Ensemble` now need to be passed models as a variadic argument.
+- Some estimators have been moved into the `ensemble` module.
 
 ## optim
 

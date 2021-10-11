@@ -7,7 +7,9 @@ from .base import ModelSelector
 
 
 class GreedySelectionRegressor(ModelSelector, Regressor):
-    """
+    """Greedy selection regressor.
+
+    This selection method simply updates each model at each time step.
 
     Examples
     --------
