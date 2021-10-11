@@ -37,11 +37,9 @@ class VotingClassifier(base.Classifier, base.EnsembleMixin):
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     ensemble.VotingClassifier(
-    ...         models=[
-    ...             linear_model.LogisticRegression(),
-    ...             tree.HoeffdingTreeClassifier(),
-    ...             naive_bayes.GaussianNB()
-    ...         ]
+    ...         linear_model.LogisticRegression(),
+    ...         tree.HoeffdingTreeClassifier(),
+    ...         naive_bayes.GaussianNB()
     ...     )
     ... )
 

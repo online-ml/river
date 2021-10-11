@@ -14,7 +14,7 @@ class EnsembleMixin(UserList):
     """
 
     def __init__(self, *models: List[Estimator]):
-        super().__init__(*models)
+        super().__init__(models)
 
     @property
     def models(self):

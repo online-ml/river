@@ -74,7 +74,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     """
 
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
-        super().__init__(copy.deepcopy(model) for _ in range(n_models))
+        super().__init__(*[copy.deepcopy(model) for _ in range(n_models)])
         self.n_models = n_models
         self.model = model
         self.seed = seed

@@ -17,7 +17,7 @@ __all__ = [
 
 class BaseBagging(base.WrapperMixin, base.EnsembleMixin):
     def __init__(self, model, n_models=10, seed=None):
-        super().__init__(copy.deepcopy(model) for _ in range(n_models))
+        super().__init__(*[copy.deepcopy(model) for _ in range(n_models)])
         self.n_models = n_models
         self.model = model
         self.seed = seed
