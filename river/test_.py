@@ -8,7 +8,6 @@ import pytest
 from river import (
     base,
     cluster,
-    compat,
     compose,
     ensemble,
     expert,
@@ -27,7 +26,13 @@ from river import (
     time_series,
     utils,
 )
-from river.compat.pytorch import PyTorch2RiverBase
+
+try:
+    from river.compat.pytorch import PyTorch2RiverBase
+
+    PYTORCH_INSTALLED = True
+except ImportError:
+    PYTORCH_INSTALLED = False
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
 
@@ -35,7 +40,6 @@ from river.compat.sklearn_to_river import SKL2RiverBase
 def get_all_estimators():
 
     ignored = (
-        PyTorch2RiverBase,
         River2SKLBase,
         SKL2RiverBase,
         compose.FuncTransformer,
@@ -75,10 +79,8 @@ def get_all_estimators():
         time_series.SNARIMAX,
     )
 
-    try:
-        ignored = (*ignored, compat.PyTorch2RiverRegressor)
-    except AttributeError:
-        pass
+    if PYTORCH_INSTALLED:
+        ignored = (*ignored, PyTorch2RiverBase)
 
     def is_estimator(obj):
         return inspect.isclass(obj) and issubclass(obj, base.Estimator)
