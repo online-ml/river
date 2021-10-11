@@ -8370,7 +8370,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
 <span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
 <span class="o">...</span>     <span class="n">rules</span><span class="o">.</span><span class="n">AMRules</span><span class="p">(</span>
-<span class="o">...</span>         <span class="n">delta</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span>
+<span class="o">...</span>         <span class="n">delta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
 <span class="o">...</span>         <span class="n">n_min</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
 <span class="o">...</span>         <span class="n">drift_detector</span><span class="o">=</span><span class="n">drift</span><span class="o">.</span><span class="n">ADWIN</span><span class="p">()</span>
 <span class="o">...</span>     <span class="p">)</span>
@@ -8379,7 +8379,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">1.079129</span>
+<span class="n">MAE</span><span class="p">:</span> <span class="mf">0.930966</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note"><summary>anomaly_score</summary><p>Aggregated anomaly score computed using all the rules that cover the input instance.</p>
