@@ -8276,17 +8276,19 @@
 </li>
 <li>
 <p><strong>ddof</strong> – defaults to <code>1</code></p>
-<p>Delta Degrees of Freedom for the variance.</p>
+<p>Delta Degrees of Freedom. The divisor used in calculations is <code>n - ddof</code>, where <code>n</code> represents the number of seen elements.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>sos</strong> (<em>float</em>)</p>
-<p>Sum of squares over the current window.</p>
+<p><strong>correction_factor</strong></p>
 </li>
 <li>
-<p><strong>rmean</strong> (<em>stats.RollingMean</em>)</p>
+<p><strong>name</strong></p>
+</li>
+<li>
+<p><strong>window_size</strong></p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>

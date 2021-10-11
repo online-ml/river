@@ -8365,13 +8365,15 @@
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">SGTRegressor</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">delta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">lambda_value</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">grace_period</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">feature_quantizer</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">DynamicQuantizer</span><span class="p">(</span><span class="n">std_prop</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 <span class="o">...</span> <span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">1.819874</span>
+<span class="n">MAE</span><span class="p">:</span> <span class="mf">1.721818</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
