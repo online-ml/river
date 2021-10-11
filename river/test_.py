@@ -10,7 +10,6 @@ from river import (
     cluster,
     compose,
     ensemble,
-    selection,
     facto,
     feature_extraction,
     feature_selection,
@@ -22,6 +21,7 @@ from river import (
     neural_net,
     preprocessing,
     reco,
+    selection,
     stats,
     time_series,
     utils,
@@ -115,9 +115,7 @@ def get_all_estimators():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(
-                    regressor=linear_model.LinearRegression(),
-                )
+                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
             ),
             (
                 preprocessing.StandardScaler()

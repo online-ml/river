@@ -1,7 +1,8 @@
 from copy import deepcopy
 from typing import List
+
 from river.base import Classifier, Regressor
-from river.metrics import RegressionMetric, MAE
+from river.metrics import MAE, RegressionMetric
 
 from .base import ModelSelector
 

@@ -1,5 +1,6 @@
 from abc import abstractproperty
 from typing import Iterator
+
 from river.base import Classifier, Ensemble, Estimator
 from river.metrics import Metric
 
