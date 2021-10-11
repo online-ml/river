@@ -96,7 +96,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.852902
+    MAE: 0.782258
     """
 
     _TARGET_MEAN = "mean"

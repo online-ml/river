@@ -709,7 +709,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.870913
+    MAE: 1.874094
 
     """
 
