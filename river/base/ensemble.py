@@ -1,5 +1,5 @@
 class EnsembleMixin:
-    """An ensemble model.
+    """An ensemble is a model which is composed of a list of models.
 
     Parameters
     ----------
