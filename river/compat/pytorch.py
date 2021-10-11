@@ -2,6 +2,7 @@ import collections
 import inspect
 import typing
 
+import numpy as np
 import pandas as pd
 import torch
 
@@ -30,18 +31,39 @@ class PyTorch2RiverBase(base.Estimator):
         self.net_params = net_params
         self.seed = seed
         torch.manual_seed(seed)
+        np.random.seed(seed)
+
         self.net = None
 
     @classmethod
     def _unit_test_params(cls):
         def build_torch_linear_regressor(n_features):
-            net = torch.nn.Sequential(torch.nn.Linear(n_features, 1))
+            net = torch.nn.Sequential(
+                torch.nn.Linear(n_features, 1), torch.nn.Sigmoid()
+            )
             return net
 
         return {
             "build_fn": build_torch_linear_regressor,
             "loss_fn": torch.nn.MSELoss,
             "optimizer_fn": torch.optim.SGD,
+        }
+
+    @classmethod
+    def _unit_test_skips(self):
+        """Indicates which checks to skip during unit testing.
+
+        Most estimators pass the full test suite. However, in some cases, some estimators might not
+        be able to pass certain checks.
+
+        """
+        return {
+            "check_pickling",
+            "check_shuffle_features_no_impact",
+            "check_emerging_features",
+            "check_disappearing_features",
+            "check_predict_proba_one",
+            "check_predict_proba_one_binary",
         }
 
     def _learn_one(self, x: torch.Tensor, y: torch.Tensor):
@@ -128,8 +150,9 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     >>> from river import preprocessing
     >>> from torch import nn
     >>> from torch import optim
+    >>> from torch import manual_seed
 
-    >>> _ = torch.manual_seed(0)
+    >>> _ = manual_seed(0)
 
     >>> def build_torch_mlp_classifier(n_features):
     ...     net = nn.Sequential(
@@ -148,11 +171,11 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     ...     optimizer_fn=optim.Adam,
     ...     learning_rate=1e-3
     ... )
-    >>> dataset = datasets.Elec2()
+    >>> dataset = datasets.Phishing()
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
-    Accuracy: 69.74%
+    Accuracy: 74.38%
 
     """
 
@@ -286,8 +309,9 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
 
     >>> metric = metrics.MAE()
 
-    >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
-    MAE: 78.98022
+    >>> metric = evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
+    >>> round(metric.get(), 2)
+    78.98
 
     """
 
