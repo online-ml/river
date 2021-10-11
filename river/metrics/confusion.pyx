@@ -294,6 +294,8 @@ cdef class MultiLabelConfusionMatrix:
         self.last_y_true = y_true
         self.last_y_pred = y_pred
 
+        return self
+
 
     def revert(self, y_true, y_pred, sample_weight=1., correction=None):
         self.n_samples -= 1
