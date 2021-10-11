@@ -1,8 +1,5 @@
 import collections
-import copy
 import math
-
-import numpy as np
 
 from river import base, linear_model
 from river.utils import poisson

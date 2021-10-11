@@ -2,8 +2,6 @@ import collections
 import copy
 import statistics
 
-import numpy as np
-
 from river import base, linear_model
 from river.drift import ADWIN
 from river.utils import poisson
