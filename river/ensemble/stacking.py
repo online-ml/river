@@ -1,12 +1,11 @@
 import typing
 
 from river import base
-from river.selection.exceptions import NotEnoughModels
 
 __all__ = ["StackingClassifier"]
 
 
-class StackingClassifier(base.EnsembleMixin, base.Classifier):
+class StackingClassifier(base.Ensemble, base.Classifier):
     """Stacking for binary classification.
 
     Parameters
@@ -22,8 +21,8 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
 
     >>> from river import compose
     >>> from river import datasets
+    >>> from river import ensemble
     >>> from river import evaluate
-    >>> from river import selection
     >>> from river import linear_model as lm
     >>> from river import metrics
     >>> from river import preprocessing as pp
@@ -32,11 +31,11 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
 
     >>> model = compose.Pipeline(
     ...     ('scale', pp.StandardScaler()),
-    ...     ('stack', selection.StackingClassifier(
-    ...         classifiers=[
+    ...     ('stack', ensemble.StackingClassifier(
+    ...         [
     ...             lm.LogisticRegression(),
     ...             lm.PAClassifier(mode=1, C=0.01),
-    ...             lm.PAClassifier(mode=2, C=0.01)
+    ...             lm.PAClassifier(mode=2, C=0.01),
     ...         ],
     ...         meta_classifier=lm.LogisticRegression()
     ...     ))
@@ -55,15 +54,11 @@ class StackingClassifier(base.EnsembleMixin, base.Classifier):
 
     def __init__(
         self,
-        *models: typing.List[base.Classifier],
+        models: typing.List[base.Classifier],
         meta_classifier: base.Classifier,
         include_features=True,
     ):
-
-        if len(models) < 2:
-            raise NotEnoughModels(n_expected=2, n_obtained=len(models))
-
-        super().__init__(*models)
+        super().__init__(models)
         self.meta_classifier = meta_classifier
         self.include_features = include_features
 

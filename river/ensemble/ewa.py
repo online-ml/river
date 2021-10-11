@@ -5,12 +5,11 @@ from river import base
 from river import linear_model as lm
 from river import optim
 from river import preprocessing as pp
-from river.selection.exceptions import NotEnoughModels
 
 __all__ = ["EWARegressor"]
 
 
-class EWARegressor(base.EnsembleMixin, base.Regressor):
+class EWARegressor(base.Ensemble, base.Regressor):
     """Exponentially Weighted Average regressor.
 
     Parameters
@@ -26,8 +25,8 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
     --------
 
     >>> from river import datasets
+    >>> from river import ensemble
     >>> from river import evaluate
-    >>> from river import selection
     >>> from river import linear_model
     >>> from river import metrics
     >>> from river import optim
@@ -61,8 +60,8 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
     >>> metric = metrics.MAE()
     >>> hedge = (
     ...     preprocessing.StandardScaler() |
-    ...     selection.EWARegressor(
-    ...         regressors=[
+    ...     ensemble.EWARegressor(
+    ...         [
     ...             linear_model.LinearRegression(optimizer=o, intercept_lr=.1)
     ...             for o in optimizers
     ...         ],
@@ -83,12 +82,11 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
 
     def __init__(
         self,
-        *models: typing.List[base.Regressor],
+        models: typing.List[base.Regressor],
         loss: optim.losses.RegressionLoss = None,
         learning_rate=0.5,
     ):
-
-        super().__init__(*models)
+        super().__init__(models)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.learning_rate = learning_rate
         self.weights = [1.0] * len(models)
@@ -96,7 +94,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
     @classmethod
     def _unit_test_params(cls):
         return {
-            "regressors": [
+            "models": [
                 pp.StandardScaler() | lm.LinearRegression(intercept_lr=0.1),
                 pp.StandardScaler() | lm.PARegressor(),
             ]

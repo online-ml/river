@@ -5,8 +5,9 @@ import random
 import typing
 
 from river import base, compose, linear_model, metrics, optim, preprocessing
-from river.selection.exceptions import NotEnoughModels
 from river.utils.math import sigmoid
+
+from .base import ModelSelector
 
 __all__ = ["EpsilonGreedyRegressor", "UCBRegressor"]
 
@@ -32,7 +33,7 @@ def argmax(lst: list, rng: random.Random = None):
     return arg_max
 
 
-class Bandit(base.EnsembleMixin):
+class Bandit(ModelSelector):
     """Bandit base class.
 
     The bandit implementations must inherit from this class and override the abstract method
@@ -64,19 +65,7 @@ class Bandit(base.EnsembleMixin):
         start_after: int,
         seed: int = None,
     ):
-
-        if len(models) < 2:
-            raise NotEnoughModels(n_expected=2, n_obtained=len(models))
-
-        # Check that the model and the metric are in accordance
-        for model in models:
-            if not metric.works_with(model):
-                raise ValueError(
-                    f"{metric.__class__.__name__} metric can't be used to evaluate a "
-                    + f"{model.__class__.__name__}"
-                )
-        super().__init__(models)
-        self.metric = copy.deepcopy(metric)
+        super().__init__(models, metric)
         self._y_scaler = copy.deepcopy(preprocessing.StandardScaler())
 
         # Initializing bandits internals
@@ -159,7 +148,7 @@ class Bandit(base.EnsembleMixin):
 
     def add_models(self, new_models: typing.List[base.Estimator]):
         length_new_models = len(new_models)
-        self.models += new_models
+        self.extend(new_models)
         self._n_arms += length_new_models
         self._N += [0] * length_new_models
         self.average_reward += [0.0] * length_new_models
@@ -289,7 +278,7 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     metric
         Metric used for comparing models with.
     epsilon
-        Exploration parameter (default : 0.1).
+        Exploration parameter.
     epsilon_decay
         Exponential decay factor applied to epsilon.
     explore_each_arm
@@ -306,8 +295,8 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
     >>> from river import compose
     >>> from river import linear_model
-    >>> from river import preprocessing
     >>> from river import optim
+    >>> from river import preprocessing
 
     >>> models = [
     ...     compose.Pipeline(
@@ -325,12 +314,12 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
     The chosen bandit is epsilon-greedy:
 
     >>> from river.selection import EpsilonGreedyRegressor
-    >>> bandit = EpsilonGreedyRegressor(models=models, seed=1)
+    >>> bandit = EpsilonGreedyRegressor(models, seed=1)
 
     The models in the bandit can then be trained in an online fashion.
 
     >>> for x, y in dataset:
-    ...     bandit = bandit.learn_one(x=x, y=y)
+    ...     bandit = bandit.learn_one(x, y)
 
     We can inspect the number of times (in percentage) each arm has been pulled.
 
@@ -494,8 +483,8 @@ class UCBRegressor(UCBBandit, base.Regressor):
 
     >>> from river import compose
     >>> from river import linear_model
-    >>> from river import preprocessing
     >>> from river import optim
+    >>> from river import preprocessing
 
     >>> models = [
     ...     compose.Pipeline(
@@ -513,12 +502,12 @@ class UCBRegressor(UCBBandit, base.Regressor):
     We use the UCB bandit:
 
     >>> from river.selection import UCBRegressor
-    >>> bandit = UCBRegressor(models=models, seed=1)
+    >>> bandit = UCBRegressor(models, seed=1)
 
     The models in the bandit can be trained in an online fashion.
 
     >>> for x, y in dataset:
-    ...     bandit = bandit.learn_one(x=x, y=y)
+    ...     bandit = bandit.learn_one(x, y)
 
     We can inspect the number of times (in percentage) each arm has been pulled.
 

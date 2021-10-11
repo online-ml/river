@@ -3,12 +3,13 @@ import math
 import operator
 
 from river import base, metrics
-from river.selection.exceptions import NotEnoughModels
+
+from .base import ModelSelector
 
 __all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
 
-class SuccessiveHalving:
+class SuccessiveHalving(ModelSelector):
     def __init__(
         self,
         models,
@@ -19,19 +20,7 @@ class SuccessiveHalving:
         **print_kwargs,
     ):
 
-        if len(models) < 2:
-            raise NotEnoughModels(n_expected=2, n_obtained=len(models))
-
-        # Check that the model and the metric are in accordance
-        for model in models:
-            if not metric.works_with(model):
-                raise ValueError(
-                    f"{metric.__class__.__name__} metric can't be used to evaluate a "
-                    + f"{model.__class__.__name__}"
-                )
-
-        self.models = models
-        self.metric = metric
+        super().__init__(models=models, metric=metric)
         self.budget = budget
         self.eta = eta
         self.verbose = verbose
@@ -47,7 +36,7 @@ class SuccessiveHalving:
         self._n_iterations = 0
         self._best_model_idx = 0
 
-        if isinstance(model, base.Classifier) and not metric.requires_labels:
+        if isinstance(models[0], base.Classifier) and not metric.requires_labels:
             self._pred_func = lambda model: model.predict_proba_one
         else:
             self._pred_func = lambda model: model.predict_one
@@ -199,7 +188,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     >>> from river import selection
 
     >>> sh = selection.SuccessiveHalvingRegressor(
-    ...     models=models,
+    ...     models,
     ...     metric=metrics.MAE(),
     ...     budget=2000,
     ...     eta=2,
@@ -347,7 +336,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     >>> from river import selection
 
     >>> sh = selection.SuccessiveHalvingClassifier(
-    ...     models=models,
+    ...     models,
     ...     metric=metrics.Accuracy(),
     ...     budget=2000,
     ...     eta=2,

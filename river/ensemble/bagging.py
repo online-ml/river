@@ -6,6 +6,7 @@ import numpy as np
 
 from river import base, linear_model
 from river.drift import ADWIN
+from river.utils import poisson
 
 __all__ = [
     "BaggingClassifier",
@@ -15,22 +16,11 @@ __all__ = [
 ]
 
 
-class BaseBagging(base.WrapperMixin, base.EnsembleMixin):
-    def __init__(self, model, n_models=10, seed=None):
-        super().__init__(*[copy.deepcopy(model) for _ in range(n_models)])
-        self.n_models = n_models
-        self.model = model
-        self.seed = seed
-        self._rng = np.random.RandomState(seed)
-
-    @property
-    def _wrapped_model(self):
-        return self.model
-
+class BaseBagging(base.WrapperEnsemble):
     def learn_one(self, x, y):
 
         for model in self:
-            for _ in range(self._rng.poisson(1)):
+            for _ in range(poisson(1, self._rng)):
                 model.learn_one(x, y)
 
         return self
@@ -82,7 +72,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.877788
+    F1: 0.878269
 
     >>> print(model)
     BaggingClassifier(StandardScaler | LogisticRegression)
@@ -157,7 +147,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.641799
+    MAE: 0.68886
 
     References
     ----------
@@ -218,7 +208,7 @@ class ADWINBaggingClassifier(BaggingClassifier):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.878788
+    F1: 0.878269
 
     References
     ----------
@@ -241,7 +231,7 @@ class ADWINBaggingClassifier(BaggingClassifier):
 
         change_detected = False
         for i, model in enumerate(self):
-            for _ in range(self._rng.poisson(1)):
+            for _ in range(poisson(1, self._rng)):
                 model.learn_one(x, y)
 
             try:
@@ -328,7 +318,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.886282
+    F1: 0.887286
 
     """
 
@@ -371,7 +361,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
 
     def _leveraging_bag(self, **kwargs):
         # Leveraging bagging
-        return self._rng.poisson(self.w)
+        return poisson(self.w, self._rng)
 
     def _leveraging_bag_me(self, **kwargs):
         # Miss-classification error using weight=1 if misclassified.

@@ -22,7 +22,7 @@ from river.tree.splitter import Splitter
 from river.utils.skmultiflow_utils import check_random_state
 
 
-class BaseForest(base.EnsembleMixin):
+class BaseForest(base.Ensemble):
 
     _FEATURES_SQRT = "sqrt"
     _FEATURES_LOG2 = "log2"
@@ -38,7 +38,7 @@ class BaseForest(base.EnsembleMixin):
         disable_weighted_vote,
         seed,
     ):
-        super().__init__()  # List of models is properly initialized later
+        super().__init__([])  # List of models is properly initialized later
         self.n_models = n_models
         self.max_features = max_features
         self.lambda_value = lambda_value
@@ -52,6 +52,10 @@ class BaseForest(base.EnsembleMixin):
         # Internal parameters
         self._n_samples_seen = 0
         self._base_member_class = None
+
+    @property
+    def _min_number_of_models(self):
+        return 0
 
     def learn_one(self, x: dict, y: base.typing.Target, **kwargs):
         self._n_samples_seen += 1

@@ -6,11 +6,12 @@ import numpy as np
 
 from river import base, linear_model
 from river.utils.skmultiflow_utils import normalize_values_in_dict, scale_values_in_dict
+from river.utils import poisson
 
 __all__ = ["AdaBoostClassifier"]
 
 
-class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier):
+class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
     """Boosting for classification
 
     For each incoming observation, each model's `learn_one` method is called `k` times where
@@ -62,7 +63,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     ... )
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.364558
+    LogLoss: 0.370805
 
     >>> print(model)
     AdaBoostClassifier(HoeffdingTreeClassifier)
@@ -74,17 +75,9 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
     """
 
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
-        super().__init__(*[copy.deepcopy(model) for _ in range(n_models)])
-        self.n_models = n_models
-        self.model = model
-        self.seed = seed
-        self._rng = np.random.RandomState(seed)
+        super().__init__(model, n_models, seed)
         self.wrong_weight = collections.defaultdict(int)
         self.correct_weight = collections.defaultdict(int)
-
-    @property
-    def _wrapped_model(self):
-        return self.model
 
     @classmethod
     def _unit_test_params(cls):
@@ -94,7 +87,7 @@ class AdaBoostClassifier(base.WrapperMixin, base.EnsembleMixin, base.Classifier)
         lambda_poisson = 1
 
         for i, model in enumerate(self):
-            for _ in range(self._rng.poisson(lambda_poisson)):
+            for _ in range(poisson(lambda_poisson, self._rng)):
                 model.learn_one(x, y)
 
             if model.predict_one(x) == y:
