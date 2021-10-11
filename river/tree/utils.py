@@ -229,18 +229,13 @@ class GradHessStats:
     # to significantly impact on the obtained results.
     def delta_loss_mean_var(self, delta_pred: float) -> Var:
         m = self.mean
-        dlms = Var()
         n = self.total_weight
-        mean = (
-            delta_pred * m.gradient + 0.5 * m.hessian * delta_pred * delta_pred
-        )
+        mean = delta_pred * m.gradient + 0.5 * m.hessian * delta_pred * delta_pred
 
         variance = self.variance
         covariance = self.covariance
 
         grad_term_var = delta_pred * delta_pred * variance.gradient
         hess_term_var = 0.25 * variance.hessian * (delta_pred ** 4.0)
-        sigma = max(
-            0.0, grad_term_var + hess_term_var + (delta_pred ** 3) * covariance
-        )
-        return Var._from_state(n, mean, sigma)
+        sigma = max(0.0, grad_term_var + hess_term_var + (delta_pred ** 3) * covariance)
+        return Var._from_state(n, mean, sigma)  # noqa

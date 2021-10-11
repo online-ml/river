@@ -2,7 +2,6 @@ import copy
 import functools
 import math
 import random
-import statistics
 
 import numpy as np
 import pytest
