@@ -8,8 +8,6 @@ class Mean(base.Univariate):
 
     Attributes
     ----------
-    mean : float
-        The current value of the mean.
     n : float
         The current sum of weights. If each passed weight was 1, then this is equal to the number
         of seen observations.
@@ -40,12 +38,12 @@ class Mean(base.Univariate):
 
     def __init__(self):
         self.n = 0
-        self.mean = 0.0
+        self._mean = 0.0
 
     def update(self, x, w=1.0):
         self.n += w
         if self.n > 0:
-            self.mean += w * (x - self.mean) / self.n
+            self._mean += w * (x - self._mean) / self.n
         return self
 
     def revert(self, x, w=1.0):
@@ -53,18 +51,26 @@ class Mean(base.Univariate):
         if self.n < 0:
             raise ValueError("Cannot go below 0")
         elif self.n == 0:
-            self.mean = 0.0
+            self._mean = 0.0
         else:
-            self.mean -= w * (x - self.mean) / self.n
+            self._mean -= w * (x - self._mean) / self.n
         return self
 
     def get(self):
-        return self.mean
+        return self._mean
+
+    @classmethod
+    def _from_state(cls, n, mean):
+        new = cls()
+        new.n = n
+        new._mean = mean
+
+        return new
 
     def __iadd__(self, other):
         old_n = self.n
         self.n += other.n
-        self.mean = (old_n * self.mean + other.n * other.mean) / self.n
+        self._mean = (old_n * self._mean + other.n * other._mean) / self.n
 
         return self
 
@@ -79,10 +85,10 @@ class Mean(base.Univariate):
         self.n -= other.n
 
         if self.n > 0:
-            self.mean = (old_n * self.mean - other.n * other.mean) / self.n
+            self._mean = (old_n * self._mean - other.n * other._mean) / self.n
         else:
             self.n = 0.0
-            self.mean = 0.0
+            self._mean = 0.0
 
         return self
 
@@ -153,25 +159,25 @@ class BayesianMean(base.Univariate):
     def __init__(self, prior: float, prior_weight: float):
         self.prior = prior
         self.prior_weight = prior_weight
-        self.mean = Mean()
+        self._mean = Mean()
 
     @property
     def name(self):
         return "bayes_mean"
 
     def update(self, x):
-        self.mean.update(x)
+        self._mean.update(x)
         return self
 
     def revert(self, x):
-        self.mean.revert(x)
+        self._mean.revert(x)
         return self
 
     def get(self):
 
         # Uses the notation from https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators
-        R = self.mean.get()
-        v = self.mean.n
+        R = self._mean.get()
+        v = self._mean.n
         m = self.prior_weight
         C = self.prior
 
