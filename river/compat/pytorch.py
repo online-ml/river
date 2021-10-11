@@ -172,11 +172,11 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     ...     optimizer_fn=optim.Adam,
     ...     learning_rate=1e-3
     ... )
-    >>> dataset = datasets.Elec2()
+    >>> dataset = datasets.Phishing()
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset=dataset, model=model, metric=metric)
-    Accuracy: 69.74%
+    Accuracy: 74.38%
 
     """
 
