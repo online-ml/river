@@ -3,10 +3,17 @@
 ## ensemble
 
 - Bug fixes in `SRPClassifier` and `SRPRegressor`.
+- All models which inherit from `EnsembleMixin` now need to be passed models as a variadic argument.
 
 ## optim
 
 - `optim.Adam` and `optim.RMSProp` now work with `utils.VectorDict`s as well as `numpy.ndarray`s.
+
+## selection
+
+- This new module replaces the `expert` module.
+- Implemented `GreedyExpertRegressor`.
+- Implemented `GreedyExpertClassifier`.
 
 ## stats
 

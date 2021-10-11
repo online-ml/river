@@ -14,8 +14,7 @@ from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
 
 
 class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
-    """Base class for the sRP ensemble family
-    """
+    """Base class for the sRP ensemble family"""
 
     _TRAIN_RANDOM_SUBSPACES = "subspaces"
     _TRAIN_RESAMPLING = "resampling"
@@ -44,8 +43,7 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         seed=None,
         metric: Metric = None,
     ):
-        super().__init__([None])  # List of models is properly initialized later
-        self.models = []
+        super().__init__()  # List of models is properly initialized later
         self.model = model  # Not restricted to a specific base estimator.
         self.n_models = n_models
         self.subspace_size = subspace_size
@@ -78,10 +76,10 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
     def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs):
         self._n_samples_seen += 1
 
-        if not self.models:
+        if not self:
             self._init_ensemble(list(x.keys()))
 
-        for model in self.models:
+        for model in self:
             # Get prediction for instance
             y_pred = model.predict_one(x)
             if y_pred is None:
@@ -198,7 +196,7 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         for i in range(self.n_models):
             # If self.training_method == self._TRAIN_RESAMPLING then subspace is None
             subspace = self._subspaces[subspace_indexes[i]]
-            self.models.append(
+            self.append(
                 self._base_learner_class(
                     idx_original=i,
                     model=self.model,
@@ -213,14 +211,13 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
             )
 
     def reset(self):
-        self.models = []
+        self.data = []
         self._n_samples_seen = 0
         self._rng = np.random.default_rng(self.seed)
 
 
 class BaseSRPEstimator:
-    """Base class for estimators (classifiers or regressors) in SRP
-    """
+    """Base class for estimators (classifiers or regressors) in SRP"""
 
     def __init__(
         self,
@@ -528,8 +525,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
 
 class BaseSRPClassifier(BaseSRPEstimator):
-    """Class representing the base learner of SRPClassifier.
-    """
+    """Class representing the base learner of SRPClassifier."""
 
     def __init__(
         self,
@@ -845,8 +841,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
 
 class BaseSRPRegressor(BaseSRPEstimator):
-    """Class representing the base learner of SRPClassifier.
-    """
+    """Class representing the base learner of SRPClassifier."""
 
     def __init__(
         self,
@@ -983,7 +978,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
 
 
 class PeriodicTrigger(base.DriftDetector):
-    """ Generates pseudo drift detection signals.
+    """Generates pseudo drift detection signals.
 
     There are two approaches:
 

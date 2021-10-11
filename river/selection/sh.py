@@ -3,7 +3,7 @@ import math
 import operator
 
 from river import base, metrics
-from river.expert.exceptions import NotEnoughModels
+from river.selection.exceptions import NotEnoughModels
 
 __all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
@@ -196,9 +196,9 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     metric to compare the models, and a budget which indicates how many iterations to run
     before picking the best model and discarding the rest.
 
-    >>> from river import expert
+    >>> from river import selection
 
-    >>> sh = expert.SuccessiveHalvingRegressor(
+    >>> sh = selection.SuccessiveHalvingRegressor(
     ...     models=models,
     ...     metric=metrics.MAE(),
     ...     budget=2000,
@@ -344,9 +344,9 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     metric to compare the models, and a budget which indicates how many iterations to run
     before picking the best model and discarding the rest.
 
-    >>> from river import expert
+    >>> from river import selection
 
-    >>> sh = expert.SuccessiveHalvingClassifier(
+    >>> sh = selection.SuccessiveHalvingClassifier(
     ...     models=models,
     ...     metric=metrics.Accuracy(),
     ...     budget=2000,

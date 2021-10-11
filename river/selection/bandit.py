@@ -5,7 +5,7 @@ import random
 import typing
 
 from river import base, compose, linear_model, metrics, optim, preprocessing
-from river.expert.exceptions import NotEnoughModels
+from river.selection.exceptions import NotEnoughModels
 from river.utils.math import sigmoid
 
 __all__ = ["EpsilonGreedyRegressor", "UCBRegressor"]
@@ -324,7 +324,7 @@ class EpsilonGreedyRegressor(EpsilonGreedyBandit, base.Regressor):
 
     The chosen bandit is epsilon-greedy:
 
-    >>> from river.expert import EpsilonGreedyRegressor
+    >>> from river.selection import EpsilonGreedyRegressor
     >>> bandit = EpsilonGreedyRegressor(models=models, seed=1)
 
     The models in the bandit can then be trained in an online fashion.
@@ -512,7 +512,7 @@ class UCBRegressor(UCBBandit, base.Regressor):
 
     We use the UCB bandit:
 
-    >>> from river.expert import UCBRegressor
+    >>> from river.selection import UCBRegressor
     >>> bandit = UCBRegressor(models=models, seed=1)
 
     The models in the bandit can be trained in an online fashion.

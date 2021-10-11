@@ -1,4 +1,10 @@
-class EnsembleMixin:
+from collections import UserList
+from typing import List
+
+from .estimator import Estimator
+
+
+class EnsembleMixin(UserList):
     """An ensemble is a model which is composed of a list of models.
 
     Parameters
@@ -7,14 +13,9 @@ class EnsembleMixin:
 
     """
 
-    def __init__(self, models):
-        self.models = list(models)
+    def __init__(self, *models: List[Estimator]):
+        super().__init__(*models)
 
-    def __len__(self):
-        return len(self.models)
-
-    def __iter__(self):
-        return iter(self.models)
-
-    def __getitem__(self, index):
-        return self.models[index]
+    @property
+    def models(self):
+        return self.data

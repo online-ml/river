@@ -32,14 +32,13 @@ class BaseForest(base.EnsembleMixin):
         n_models: int,
         max_features: typing.Union[bool, str, int],
         lambda_value: int,
-        drift_detector: typing.Union[base.DriftDetector, None],
-        warning_detector: typing.Union[base.DriftDetector, None],
+        drift_detector: typing.Optional[base.DriftDetector],
+        warning_detector: typing.Optional[base.DriftDetector],
         metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
         disable_weighted_vote,
         seed,
     ):
-        super().__init__([None])  # List of models is properly initialized later
-        self.models = []
+        super().__init__()  # List of models is properly initialized later
         self.n_models = n_models
         self.max_features = max_features
         self.lambda_value = lambda_value
@@ -57,10 +56,10 @@ class BaseForest(base.EnsembleMixin):
     def learn_one(self, x: dict, y: base.typing.Target, **kwargs):
         self._n_samples_seen += 1
 
-        if not self.models:
+        if not self:
             self._init_ensemble(list(x.keys()))
 
-        for model in self.models:
+        for model in self:
             # Get prediction for instance
             y_pred = model.predict_one(x)
 
@@ -82,7 +81,7 @@ class BaseForest(base.EnsembleMixin):
         # Generate a different random seed per tree
         seeds = self._rng.randint(0, 4294967295, size=self.n_models, dtype="u8")
 
-        self.models = [
+        self.data = [
             self._base_member_class(
                 index_original=i,
                 model=self._new_base_model(seed=seeds[i]),
@@ -204,15 +203,27 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLeafMajorityClass(
-                initial_stats, depth, self.splitter, self.max_features, seed,
+                initial_stats,
+                depth,
+                self.splitter,
+                self.max_features,
+                seed,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return RandomLeafNaiveBayes(
-                initial_stats, depth, self.splitter, self.max_features, seed,
+                initial_stats,
+                depth,
+                self.splitter,
+                self.max_features,
+                seed,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return RandomLeafNaiveBayesAdaptive(
-                initial_stats, depth, self.splitter, self.max_features, seed,
+                initial_stats,
+                depth,
+                self.splitter,
+                self.max_features,
+                seed,
             )
 
     def new_instance(self):
@@ -302,7 +313,11 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
 
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLeafMean(
-                initial_stats, depth, self.splitter, self.max_features, seed,
+                initial_stats,
+                depth,
+                self.splitter,
+                self.max_features,
+                seed,
             )
         elif self.leaf_prediction == self._MODEL:
             return RandomLeafModel(

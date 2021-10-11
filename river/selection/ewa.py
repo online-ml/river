@@ -5,7 +5,7 @@ from river import base
 from river import linear_model as lm
 from river import optim
 from river import preprocessing as pp
-from river.expert.exceptions import NotEnoughModels
+from river.selection.exceptions import NotEnoughModels
 
 __all__ = ["EWARegressor"]
 
@@ -27,7 +27,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
 
     >>> from river import datasets
     >>> from river import evaluate
-    >>> from river import expert
+    >>> from river import selection
     >>> from river import linear_model
     >>> from river import metrics
     >>> from river import optim
@@ -61,7 +61,7 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
     >>> metric = metrics.MAE()
     >>> hedge = (
     ...     preprocessing.StandardScaler() |
-    ...     expert.EWARegressor(
+    ...     selection.EWARegressor(
     ...         regressors=[
     ...             linear_model.LinearRegression(optimizer=o, intercept_lr=.1)
     ...             for o in optimizers
@@ -83,18 +83,15 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
 
     def __init__(
         self,
-        regressors: typing.List[base.Regressor],
+        *models: typing.List[base.Regressor],
         loss: optim.losses.RegressionLoss = None,
         learning_rate=0.5,
     ):
 
-        if len(regressors) < 2:
-            raise NotEnoughModels(n_expected=2, n_obtained=len(regressors))
-
-        super().__init__(regressors)
+        super().__init__(*models)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.learning_rate = learning_rate
-        self.weights = [1.0] * len(regressors)
+        self.weights = [1.0] * len(models)
 
     @classmethod
     def _unit_test_params(cls):
@@ -104,10 +101,6 @@ class EWARegressor(base.EnsembleMixin, base.Regressor):
                 pp.StandardScaler() | lm.PARegressor(),
             ]
         }
-
-    @property
-    def regressors(self):
-        return self.models
 
     def learn_predict_one(self, x, y):
 

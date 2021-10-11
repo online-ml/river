@@ -52,8 +52,8 @@ class VotingClassifier(base.Classifier, base.EnsembleMixin):
 
     """
 
-    def __init__(self, models: List[base.Classifier], use_probabilities=True):
-        super().__init__(models)
+    def __init__(self, *models: List[base.Classifier], use_probabilities=True):
+        super().__init__(*models)
         self.use_probabilities = use_probabilities
 
     @property

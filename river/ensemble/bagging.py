@@ -409,7 +409,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
             for _ in range(k):
                 model.learn_one(x, y)
 
-            y_pred = self.models[i].predict_one(x)
+            y_pred = self[i].predict_one(x)
             if y_pred is not None:
                 incorrectly_classifies = int(y_pred != y)
                 error = self._drift_detectors[i].estimation
@@ -424,7 +424,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
                 range(len(self._drift_detectors)),
                 key=lambda j: self._drift_detectors[j].estimation,
             )
-            self.models[max_error_idx] = copy.deepcopy(self.model)
+            self[max_error_idx] = copy.deepcopy(self.model)
             self._drift_detectors[max_error_idx] = ADWIN(delta=self.adwin_delta)
 
         return self
