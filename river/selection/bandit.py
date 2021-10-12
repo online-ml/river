@@ -28,11 +28,6 @@ class Arm:
     metric: metrics.Metric
     n_pulls: int = 0
 
-    def __gt__(self, other):
-        if self.metric.bigger_is_better:
-            return self.metric.get() > other.metric.get()
-        return self.metric.get() < other.metric.get()
-
 
 class Bandit(ABC):
     """(Multi-armed) bandit (MAB) solver.
@@ -52,7 +47,9 @@ class Bandit(ABC):
         arm.n_pulls += 1
         arm.metric.update(y_true, y_pred)
         # Check for a new best arm
-        if arm.index != self.best_arm.index and arm > self.best_arm:
+        if arm.index != self.best_arm.index and arm.metric.is_better_than(
+            self.best_arm.metric
+        ):
             self.best_arm = arm
 
     def __repr__(self):
