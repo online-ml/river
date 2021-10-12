@@ -42,8 +42,7 @@ class Mean(base.Univariate):
 
     def update(self, x, w=1.0):
         self.n += w
-        if self.n > 0:
-            self._mean += w * (x - self._mean) / self.n
+        self._mean += (w / self.n) * (x - self._mean)
         return self
 
     def revert(self, x, w=1.0):
@@ -53,7 +52,7 @@ class Mean(base.Univariate):
         elif self.n == 0:
             self._mean = 0.0
         else:
-            self._mean -= w * (x - self._mean) / self.n
+            self._mean -= (w / self.n) * (x - self._mean)
         return self
 
     def get(self):
