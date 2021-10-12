@@ -1,6 +1,5 @@
 import copy
 import math
-import operator
 
 from river import base, metrics
 
