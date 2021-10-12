@@ -13,9 +13,10 @@ __all__ = ["EpsilonGreedyRegressor", "UCBRegressor"]
 
 
 def argmax(lst: list, rng: random.Random = None):
-    """Argmax function that randomize the returned index in case multiple maxima.
+    """Argmax function that randomize the returned index in case of ties.
 
-    Mainly used for bandit to avoid exploration bias towards the 1st model in the first iterations.
+    Mainly used for bandits to avoid exploration bias towards the 1st model in the first
+    iterations.
 
     Parameters
     ----------

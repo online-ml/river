@@ -99,7 +99,6 @@ def get_all_estimators():
             importlib.import_module(submodule),
             lambda x: is_estimator(x) and not issubclass(x, ignored),
         ):
-            print(obj)
             yield obj(**obj._unit_test_params())
 
 
@@ -115,7 +114,9 @@ def get_all_estimators():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
+                | meta.TargetStandardScaler(
+                    regressor=linear_model.LinearRegression(),
+                )
             ),
             (
                 preprocessing.StandardScaler()

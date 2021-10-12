@@ -3,6 +3,7 @@ from typing import List
 
 from river.base import Regressor
 from river.metrics import MAE, RegressionMetric
+from river import compose, linear_model, optim, preprocessing
 
 from .base import ModelSelector
 
@@ -11,6 +12,13 @@ class GreedySelectionRegressor(ModelSelector, Regressor):
     """Greedy selection regressor.
 
     This selection method simply updates each model at each time step.
+
+    Parameters
+    ----------
+    models
+        The models to select from.
+    metric
+        The metric that is used to measure the performance of each model.
 
     Examples
     --------
@@ -59,6 +67,3 @@ class GreedySelectionRegressor(ModelSelector, Regressor):
     def best_model(self):
         best_model_idx = min(range(len(self)), key=lambda i: self.metrics[i].get())
         return self.models[best_model_idx]
-
-    def predict_one(self, x):
-        return self.best_model.predict_one(x)
