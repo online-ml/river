@@ -187,7 +187,10 @@ class EpsilonGreedyRegressor(BanditRegressor):
             models=models,
             metric=metric,
             solver=EpsilonGreedy(
-                bandit=Bandit(n_arms=len(models), metric=metric,),
+                bandit=Bandit(
+                    n_arms=len(models),
+                    metric=metric,
+                ),
                 epsilon=epsilon,
                 decay=decay,
                 seed=seed,
@@ -196,12 +199,12 @@ class EpsilonGreedyRegressor(BanditRegressor):
 
     @property
     def epsilon(self):
-        return self.bandit.epsilon
+        return self.solver.epsilon
 
     @property
     def decay(self):
-        return self.bandit.decay
+        return self.solver.decay
 
     @property
     def seed(self):
-        return self.bandit.seed
+        return self.solver.seed

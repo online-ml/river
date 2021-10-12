@@ -4,10 +4,10 @@ from typing import List
 from river.base import Regressor
 from river.metrics import MAE, RegressionMetric
 
-from .base import ModelSelector
+from .base import ModelSelectionRegressor
 
 
-class GreedySelectionRegressor(ModelSelector, Regressor):
+class GreedySelectionRegressor(ModelSelectionRegressor):
     """Greedy selection regressor.
 
     This selection method simply updates each model at each time step.
@@ -40,11 +40,11 @@ class GreedySelectionRegressor(ModelSelector, Regressor):
     ... ]
 
     >>> dataset = datasets.TrumpApproval()
-    >>> model = selection.GreedySelectionRegressor(models, metric)
     >>> metric = metrics.MAE()
+    >>> model = selection.GreedySelectionRegressor(models, metric)
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.416792
+    MAE: 1.732357
 
     """
 
@@ -53,15 +53,20 @@ class GreedySelectionRegressor(ModelSelector, Regressor):
             metric = MAE()
         super().__init__(models, metric)
         self.metrics = [deepcopy(metric) for _ in range(len(self))]
+        self._best_model = self[0]
+        self._best_metric = self.metrics[0]
 
     def learn_one(self, x, y):
         for model, metric in zip(self, self.metrics):
             y_pred = model.predict_one(x)
             metric.update(y, y_pred)
             model.learn_one(x, y)
+
+            if metric.is_better_than(self._best_metric):
+                self._best_model = model
+
         return self
 
     @property
     def best_model(self):
-        best_model_idx = min(range(len(self)), key=lambda i: self.metrics[i].get())
-        return self.models[best_model_idx]
+        return self._best_model

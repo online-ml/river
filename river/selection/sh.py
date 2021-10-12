@@ -56,12 +56,8 @@ class SuccessiveHalving(ModelSelector):
             model.learn_one(x, y)
 
             # Check for a new best model
-            if i != self._best_model_idx:
-                op = operator.gt if self.metric.bigger_is_better else operator.lt
-                if op(
-                    self._metrics[i].get(), self._metrics[self._best_model_idx].get()
-                ):
-                    self._best_model_idx = i
+            if metric.is_better_than(self._metrics[self._best_model_idx]):
+                self._best_model_idx = i
 
         self._n_iterations += 1
 
