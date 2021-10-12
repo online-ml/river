@@ -41,7 +41,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/api/base/EnsembleMixin/</loc>
+         <loc>https://riverml.xyz/api/base/Ensemble/</loc>
          <lastmod>2021-10-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -77,6 +77,11 @@
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/Transformer/</loc>
+         <lastmod>2021-10-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/base/WrapperEnsemble/</loc>
          <lastmod>2021-10-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -376,6 +381,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/api/ensemble/EWARegressor/</loc>
+         <lastmod>2021-10-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/api/ensemble/LeveragingBaggingClassifier/</loc>
          <lastmod>2021-10-12</lastmod>
          <changefreq>daily</changefreq>
@@ -387,6 +397,11 @@
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/SRPRegressor/</loc>
+         <lastmod>2021-10-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/ensemble/StackingClassifier/</loc>
          <lastmod>2021-10-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -407,36 +422,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/api/evaluate/progressive-val-score/</loc>
-         <lastmod>2021-10-12</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/expert/EWARegressor/</loc>
-         <lastmod>2021-10-12</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/expert/EpsilonGreedyRegressor/</loc>
-         <lastmod>2021-10-12</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/expert/StackingClassifier/</loc>
-         <lastmod>2021-10-12</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/expert/SuccessiveHalvingClassifier/</loc>
-         <lastmod>2021-10-12</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/expert/SuccessiveHalvingRegressor/</loc>
-         <lastmod>2021-10-12</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/expert/UCBRegressor/</loc>
          <lastmod>2021-10-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -1441,6 +1426,26 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/api/selection/EpsilonGreedyRegressor/</loc>
+         <lastmod>2021-10-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/selection/GreedySelectionRegressor/</loc>
+         <lastmod>2021-10-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/selection/SuccessiveHalvingClassifier/</loc>
+         <lastmod>2021-10-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/selection/SuccessiveHalvingRegressor/</loc>
+         <lastmod>2021-10-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/api/stats/AbsMax/</loc>
          <lastmod>2021-10-12</lastmod>
          <changefreq>daily</changefreq>
@@ -1942,6 +1947,11 @@
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/numpy2dict/</loc>
+         <lastmod>2021-10-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/utils/poisson/</loc>
          <lastmod>2021-10-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
