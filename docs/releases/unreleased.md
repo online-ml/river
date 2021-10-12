@@ -11,6 +11,7 @@
 ## stats
 
 - Moved `model_selection.expand_param_grid` to `utils.expand_param_grid`.
+- The `stats.Mean` and `stats.Var` implementations have been made more numerically stable.
 
 ## compat
 
