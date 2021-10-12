@@ -39,10 +39,6 @@ class Bandit(ABC):
 
     A bandit is composed of multiple arms. A solver is in charge of determining the best one.
 
-    To use a solver, first call `pull` to pick an arm. This method is specific to each solver.
-    Then call `update` to update the arm, as well as determine if the arm is the best arm. This
-    method is common to all solvers.
-
     """
 
     def __init__(self, n_arms: int, metric: metrics.Metric):
@@ -72,6 +68,16 @@ class Bandit(ABC):
 
 
 class BanditSolver:
+    """A solver for bandit problems.
+
+    A solver is in charge of solving a bandit problem.
+
+    To use a solver, first call `pull` to pick an arm. This method is specific to each solver.
+    Then call `update` to update the arm, as well as determine if the arm is the best arm. This
+    method is common to all solvers.
+
+    """
+
     def __init__(self, bandit, seed: int):
         self.bandit = bandit
         self.seed = seed
