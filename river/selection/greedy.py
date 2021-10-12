@@ -3,7 +3,6 @@ from typing import List
 
 from river.base import Regressor
 from river.metrics import MAE, RegressionMetric
-from river import compose, linear_model, optim, preprocessing
 
 from .base import ModelSelector
 

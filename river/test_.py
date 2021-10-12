@@ -114,9 +114,7 @@ def get_all_estimators():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(
-                    regressor=linear_model.LinearRegression(),
-                )
+                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
             ),
             (
                 preprocessing.StandardScaler()
