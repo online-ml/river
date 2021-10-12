@@ -13,14 +13,14 @@
         <meta name="author" content="The river developers">
       
       
-        <link rel="canonical" href="https://riverml.xyz/api/expert/UCBRegressor/">
+        <link rel="canonical" href="https://riverml.xyz/api/selection/EpsilonGreedyRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.3">
     
     
       
-        <title>UCBRegressor - River</title>
+        <title>EpsilonGreedyRegressor - River</title>
       
     
     
@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ucbregressor" class="md-skip">
+        <a href="#epsilongreedyregressor" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              UCBRegressor
+              EpsilonGreedyRegressor
             
           </span>
         </div>
@@ -744,8 +744,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../base/EnsembleMixin/" class="md-nav__link">
-        EnsembleMixin
+      <a href="../../base/Ensemble/" class="md-nav__link">
+        Ensemble
       </a>
     </li>
   
@@ -844,6 +844,20 @@
     <li class="md-nav__item">
       <a href="../../base/Transformer/" class="md-nav__link">
         Transformer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/WrapperEnsemble/" class="md-nav__link">
+        WrapperEnsemble
       </a>
     </li>
   
@@ -1913,6 +1927,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../ensemble/EWARegressor/" class="md-nav__link">
+        EWARegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../ensemble/LeveragingBaggingClassifier/" class="md-nav__link">
         LeveragingBaggingClassifier
       </a>
@@ -1943,6 +1971,20 @@
     <li class="md-nav__item">
       <a href="../../ensemble/SRPRegressor/" class="md-nav__link">
         SRPRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ensemble/StackingClassifier/" class="md-nav__link">
+        StackingClassifier
       </a>
     </li>
   
@@ -2049,210 +2091,23 @@
               
   
   
-    
-  
-  
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_12" type="checkbox" id="__nav_4_12" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4_12">
-          expert
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="expert" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_12">
-          <span class="md-nav__icon md-icon"></span>
-          expert
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../EWARegressor/" class="md-nav__link">
-        EWARegressor
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../EpsilonGreedyRegressor/" class="md-nav__link">
-        EpsilonGreedyRegressor
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../StackingClassifier/" class="md-nav__link">
-        StackingClassifier
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../SuccessiveHalvingClassifier/" class="md-nav__link">
-        SuccessiveHalvingClassifier
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../SuccessiveHalvingRegressor/" class="md-nav__link">
-        SuccessiveHalvingRegressor
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          UCBRegressor
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        UCBRegressor
-      </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    Methods
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
   
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_13" type="checkbox" id="__nav_4_13" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_12" type="checkbox" id="__nav_4_12" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_13">
+        <label class="md-nav__link" for="__nav_4_12">
           facto
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="facto" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_13">
+        <label class="md-nav__title" for="__nav_4_12">
           <span class="md-nav__icon md-icon"></span>
           facto
         </label>
@@ -2386,18 +2241,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_14" type="checkbox" id="__nav_4_14" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_13" type="checkbox" id="__nav_4_13" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_14">
+        <label class="md-nav__link" for="__nav_4_13">
           feature_extraction
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="feature_extraction" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_14">
+        <label class="md-nav__title" for="__nav_4_13">
           <span class="md-nav__icon md-icon"></span>
           feature_extraction
         </label>
@@ -2503,18 +2358,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_15" type="checkbox" id="__nav_4_15" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_14" type="checkbox" id="__nav_4_14" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_15">
+        <label class="md-nav__link" for="__nav_4_14">
           feature_selection
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="feature_selection" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_15">
+        <label class="md-nav__title" for="__nav_4_14">
           <span class="md-nav__icon md-icon"></span>
           feature_selection
         </label>
@@ -2578,18 +2433,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_16" type="checkbox" id="__nav_4_16" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_15" type="checkbox" id="__nav_4_15" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_16">
+        <label class="md-nav__link" for="__nav_4_15">
           imblearn
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="imblearn" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_16">
+        <label class="md-nav__title" for="__nav_4_15">
           <span class="md-nav__icon md-icon"></span>
           imblearn
         </label>
@@ -2681,18 +2536,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_17" type="checkbox" id="__nav_4_17" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_16" type="checkbox" id="__nav_4_16" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_17">
+        <label class="md-nav__link" for="__nav_4_16">
           linear_model
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="linear_model" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_17">
+        <label class="md-nav__title" for="__nav_4_16">
           <span class="md-nav__icon md-icon"></span>
           linear_model
         </label>
@@ -2812,18 +2667,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18" type="checkbox" id="__nav_4_18" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_17" type="checkbox" id="__nav_4_17" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_18">
+        <label class="md-nav__link" for="__nav_4_17">
           meta
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="meta" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_18">
+        <label class="md-nav__title" for="__nav_4_17">
           <span class="md-nav__icon md-icon"></span>
           meta
         </label>
@@ -2901,18 +2756,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_19" type="checkbox" id="__nav_4_19" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18" type="checkbox" id="__nav_4_18" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_19">
+        <label class="md-nav__link" for="__nav_4_18">
           metrics
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="metrics" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_19">
+        <label class="md-nav__title" for="__nav_4_18">
           <span class="md-nav__icon md-icon"></span>
           metrics
         </label>
@@ -3949,18 +3804,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_19_74" type="checkbox" id="__nav_4_19_74" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18_74" type="checkbox" id="__nav_4_18_74" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_19_74">
+        <label class="md-nav__link" for="__nav_4_18_74">
           cluster
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="cluster" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_19_74">
+        <label class="md-nav__title" for="__nav_4_18_74">
           <span class="md-nav__icon md-icon"></span>
           cluster
         </label>
@@ -4297,18 +4152,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_20" type="checkbox" id="__nav_4_20" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_19" type="checkbox" id="__nav_4_19" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_20">
+        <label class="md-nav__link" for="__nav_4_19">
           multiclass
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="multiclass" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_20">
+        <label class="md-nav__title" for="__nav_4_19">
           <span class="md-nav__icon md-icon"></span>
           multiclass
         </label>
@@ -4372,18 +4227,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_21" type="checkbox" id="__nav_4_21" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_20" type="checkbox" id="__nav_4_20" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_21">
+        <label class="md-nav__link" for="__nav_4_20">
           multioutput
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="multioutput" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_21">
+        <label class="md-nav__title" for="__nav_4_20">
           <span class="md-nav__icon md-icon"></span>
           multioutput
         </label>
@@ -4461,18 +4316,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22" type="checkbox" id="__nav_4_22" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_21" type="checkbox" id="__nav_4_21" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_22">
+        <label class="md-nav__link" for="__nav_4_21">
           naive_bayes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="naive_bayes" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_22">
+        <label class="md-nav__title" for="__nav_4_21">
           <span class="md-nav__icon md-icon"></span>
           naive_bayes
         </label>
@@ -4550,18 +4405,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23" type="checkbox" id="__nav_4_23" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22" type="checkbox" id="__nav_4_22" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_23">
+        <label class="md-nav__link" for="__nav_4_22">
           neighbors
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="neighbors" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_23">
+        <label class="md-nav__title" for="__nav_4_22">
           <span class="md-nav__icon md-icon"></span>
           neighbors
         </label>
@@ -4639,18 +4494,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24" type="checkbox" id="__nav_4_24" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23" type="checkbox" id="__nav_4_23" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_24">
+        <label class="md-nav__link" for="__nav_4_23">
           neural_net
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="neural_net" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_24">
+        <label class="md-nav__title" for="__nav_4_23">
           <span class="md-nav__icon md-icon"></span>
           neural_net
         </label>
@@ -4679,18 +4534,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_2" type="checkbox" id="__nav_4_24_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_2" type="checkbox" id="__nav_4_23_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_24_2">
+        <label class="md-nav__link" for="__nav_4_23_2">
           activations
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="activations" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_24_2">
+        <label class="md-nav__title" for="__nav_4_23_2">
           <span class="md-nav__icon md-icon"></span>
           activations
         </label>
@@ -4761,18 +4616,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25" type="checkbox" id="__nav_4_25" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24" type="checkbox" id="__nav_4_24" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_25">
+        <label class="md-nav__link" for="__nav_4_24">
           optim
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="optim" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_25">
+        <label class="md-nav__title" for="__nav_4_24">
           <span class="md-nav__icon md-icon"></span>
           optim
         </label>
@@ -4983,18 +4838,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25_15" type="checkbox" id="__nav_4_25_15" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_15" type="checkbox" id="__nav_4_24_15" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_25_15">
+        <label class="md-nav__link" for="__nav_4_24_15">
           initializers
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="initializers" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_25_15">
+        <label class="md-nav__title" for="__nav_4_24_15">
           <span class="md-nav__icon md-icon"></span>
           initializers
         </label>
@@ -5058,18 +4913,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25_16" type="checkbox" id="__nav_4_25_16" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_16" type="checkbox" id="__nav_4_24_16" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_25_16">
+        <label class="md-nav__link" for="__nav_4_24_16">
           losses
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="losses" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_25_16">
+        <label class="md-nav__title" for="__nav_4_24_16">
           <span class="md-nav__icon md-icon"></span>
           losses
         </label>
@@ -5273,18 +5128,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25_17" type="checkbox" id="__nav_4_25_17" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_17" type="checkbox" id="__nav_4_24_17" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_25_17">
+        <label class="md-nav__link" for="__nav_4_24_17">
           schedulers
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="schedulers" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_25_17">
+        <label class="md-nav__title" for="__nav_4_24_17">
           <span class="md-nav__icon md-icon"></span>
           schedulers
         </label>
@@ -5369,18 +5224,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_26" type="checkbox" id="__nav_4_26" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25" type="checkbox" id="__nav_4_25" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_26">
+        <label class="md-nav__link" for="__nav_4_25">
           preprocessing
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="preprocessing" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_26">
+        <label class="md-nav__title" for="__nav_4_25">
           <span class="md-nav__icon md-icon"></span>
           preprocessing
         </label>
@@ -5570,18 +5425,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27" type="checkbox" id="__nav_4_27" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_26" type="checkbox" id="__nav_4_26" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_27">
+        <label class="md-nav__link" for="__nav_4_26">
           proba
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="proba" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_27">
+        <label class="md-nav__title" for="__nav_4_26">
           <span class="md-nav__icon md-icon"></span>
           proba
         </label>
@@ -5631,18 +5486,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28" type="checkbox" id="__nav_4_28" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27" type="checkbox" id="__nav_4_27" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_28">
+        <label class="md-nav__link" for="__nav_4_27">
           reco
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="reco" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_28">
+        <label class="md-nav__title" for="__nav_4_27">
           <span class="md-nav__icon md-icon"></span>
           reco
         </label>
@@ -5720,18 +5575,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_29" type="checkbox" id="__nav_4_29" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28" type="checkbox" id="__nav_4_28" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_29">
+        <label class="md-nav__link" for="__nav_4_28">
           rules
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="rules" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_29">
+        <label class="md-nav__title" for="__nav_4_28">
           <span class="md-nav__icon md-icon"></span>
           rules
         </label>
@@ -5745,6 +5600,158 @@
     <li class="md-nav__item">
       <a href="../../rules/AMRules/" class="md-nav__link">
         AMRules
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_29" type="checkbox" id="__nav_4_29" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_29">
+          selection
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="selection" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_29">
+          <span class="md-nav__icon md-icon"></span>
+          selection
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          EpsilonGreedyRegressor
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        EpsilonGreedyRegressor
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GreedySelectionRegressor/" class="md-nav__link">
+        GreedySelectionRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SuccessiveHalvingClassifier/" class="md-nav__link">
+        SuccessiveHalvingClassifier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SuccessiveHalvingRegressor/" class="md-nav__link">
+        SuccessiveHalvingRegressor
       </a>
     </li>
   
@@ -7401,22 +7408,36 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../utils/poisson/" class="md-nav__link">
+        poisson
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_11" type="checkbox" id="__nav_4_35_11" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_12" type="checkbox" id="__nav_4_35_12" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_35_11">
+        <label class="md-nav__link" for="__nav_4_35_12">
           math
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="math" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_35_11">
+        <label class="md-nav__title" for="__nav_4_35_12">
           <span class="md-nav__icon md-icon"></span>
           math
         </label>
@@ -7634,18 +7655,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_12" type="checkbox" id="__nav_4_35_12" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_13" type="checkbox" id="__nav_4_35_13" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_35_12">
+        <label class="md-nav__link" for="__nav_4_35_13">
           pretty
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="pretty" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_35_12">
+        <label class="md-nav__title" for="__nav_4_35_13">
           <span class="md-nav__icon md-icon"></span>
           pretty
         </label>
@@ -8260,13 +8281,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -8280,58 +8294,57 @@
               
                 
                 
-                <h1 id="ucbregressor">UCBRegressor<a class="headerlink" href="#ucbregressor" title="Permanent link">&para;</a></h1>
-<p>Upper Confidence Bound bandit for regression.</p>
-<p>The class offers 2 implementations of UCB: </p>
-<ul>
-<li>UCB1 from <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, when the parameter delta has value None - UCB(delta) from <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>, when the parameter delta is in (0, 1) </li>
-</ul>
-<p>For this bandit, rewards are supposed to be 1-subgaussian (see Lattimore and Szepesvári, chapter 6, p. 91) hence the use of the <code>StandardScaler</code> and <code>MaxAbsScaler</code> as <code>reward_scaler</code>.</p>
+                <h1 id="epsilongreedyregressor">EpsilonGreedyRegressor<a class="headerlink" href="#epsilongreedyregressor" title="Permanent link">&para;</a></h1>
+<p>Model selection based on the <span class="arithmatex">\(\eps\)</span>-greedy bandit strategy.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>models</strong> (<em>List[<a href="../../base/Estimator">base.Estimator</a>]</em>)</p>
-<p>The models to compare.</p>
+<p><strong>models</strong></p>
 </li>
 <li>
-<p><strong>metric</strong> (<em>river.metrics.base.RegressionMetric</em>) – defaults to <code>None</code></p>
-<p>Metric used for comparing models with.</p>
+<p><strong>epsilon</strong> – defaults to <code>0.1</code></p>
 </li>
 <li>
-<p><strong>delta</strong> (<em>float</em>) – defaults to <code>None</code></p>
-<p>For UCB(delta) implementation. Lower value means more exploration.</p>
+<p><strong>decay</strong> – defaults to <code>0.0</code></p>
 </li>
 <li>
-<p><strong>explore_each_arm</strong> (<em>int</em>) – defaults to <code>1</code></p>
-<p>The number of times each arm should explored first.</p>
+<p><strong>metric</strong> – defaults to <code>None</code></p>
 </li>
 <li>
-<p><strong>start_after</strong> (<em>int</em>) – defaults to <code>20</code></p>
-<p>The number of iteration after which the bandit mechanism should begin.</p>
-</li>
-<li>
-<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
-<p>The seed for the algorithm (since not deterministic).</p>
+<p><strong>seed</strong> – defaults to <code>None</code></p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>best_model</strong></p>
-<p>Returns the best model, defined as the one who maximises average reward.</p>
+<p><strong>bandit</strong></p>
 </li>
 <li>
-<p><strong>percentage_pulled</strong></p>
-<p>Returns the number of times (in %) each arm has been pulled.</p>
+<p><strong>best_model</strong></p>
+<p>The current best model.</p>
+</li>
+<li>
+<p><strong>decay</strong></p>
+</li>
+<li>
+<p><strong>epsilon</strong></p>
+</li>
+<li>
+<p><strong>models</strong></p>
+</li>
+<li>
+<p><strong>seed</strong></p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p>Let's use <code>UCBRegressor</code> to select the best learning rate for a linear regression model. First,
-we define the grid of models:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">selection</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">models</span> <span class="o">=</span> <span class="p">[</span>
 <span class="o">...</span>     <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
@@ -8340,75 +8353,96 @@ we define the grid of models:</p>
 <span class="o">...</span>     <span class="p">)</span>
 <span class="o">...</span>     <span class="k">for</span> <span class="n">lr</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">]</span>
 <span class="o">...</span> <span class="p">]</span>
-</code></pre></div>
-<p>We decide to use TrumpApproval dataset:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
-</code></pre></div>
-<p>We use the UCB bandit:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river.expert</span> <span class="kn">import</span> <span class="n">UCBRegressor</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">bandit</span> <span class="o">=</span> <span class="n">UCBRegressor</span><span class="p">(</span><span class="n">models</span><span class="o">=</span><span class="n">models</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</code></pre></div>
-<p>The models in the bandit can be trained in an online fashion.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
-<span class="o">...</span>     <span class="n">bandit</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-</code></pre></div>
-<p>We can inspect the number of times (in percentage) each arm has been pulled.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">pct</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bandit</span><span class="o">.</span><span class="n">models</span><span class="p">,</span> <span class="n">bandit</span><span class="o">.</span><span class="n">percentage_pulled</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">lr</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s2">&quot;LinearRegression&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">learning_rate</span>
-<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lr</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">pct</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="mf">1.0e-04</span> <span class="err">—</span> <span class="mf">2.45</span><span class="o">%</span>
-<span class="mf">1.0e-03</span> <span class="err">—</span> <span class="mf">2.45</span><span class="o">%</span>
-<span class="mf">1.0e-02</span> <span class="err">—</span> <span class="mf">92.25</span><span class="o">%</span>
-<span class="mf">1.0e-01</span> <span class="err">—</span> <span class="mf">2.85</span><span class="o">%</span>
-</code></pre></div>
-<p>The average reward of each model is also available:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">avg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bandit</span><span class="o">.</span><span class="n">models</span><span class="p">,</span> <span class="n">bandit</span><span class="o">.</span><span class="n">average_reward</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">lr</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s2">&quot;LinearRegression&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">learning_rate</span>
-<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lr</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">avg</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="mf">1.0e-04</span> <span class="err">—</span> <span class="mf">0.00</span>
-<span class="mf">1.0e-03</span> <span class="err">—</span> <span class="mf">0.00</span>
-<span class="mf">1.0e-02</span> <span class="err">—</span> <span class="mf">0.74</span>
-<span class="mf">1.0e-01</span> <span class="err">—</span> <span class="mf">0.05</span>
-</code></pre></div>
-<p>We can also select the best model (the one with the highest average reward).</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">best_model</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">best_model</span>
-</code></pre></div>
-<p>The learning rate chosen by the bandit is:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">best_model</span><span class="p">[</span><span class="s2">&quot;LinearRegression&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">intercept_lr</span><span class="o">.</span><span class="n">learning_rate</span>
-<span class="mf">0.01</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">selector</span> <span class="o">=</span> <span class="n">EpsilonGreedyRegressor</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">selector</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+<span class="n">MAE</span><span class="p">:</span> <span class="mf">2.797875</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">selector</span><span class="o">.</span><span class="n">bandit</span>
+<span class="n">Index</span>   <span class="n">MAE</span>              <span class="n">Pulls</span>   <span class="n">Share</span>
+    <span class="mi">0</span>        <span class="mf">32.114043</span>      <span class="mi">23</span>    <span class="mf">2.30</span><span class="o">%</span>
+    <span class="mi">1</span>        <span class="mf">28.959042</span>      <span class="mi">23</span>    <span class="mf">2.30</span><span class="o">%</span>
+    <span class="mi">2</span>         <span class="mf">1.576562</span>     <span class="mi">929</span>   <span class="mf">92.81</span><span class="o">%</span>
+    <span class="mi">3</span>   <span class="mi">623</span><span class="p">,</span><span class="mf">644.303637</span>      <span class="mi">26</span>    <span class="mf">2.60</span><span class="o">%</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">selector</span><span class="o">.</span><span class="n">best_model</span><span class="p">[</span><span class="s2">&quot;LinearRegression&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span>
+<span class="n">Constant</span><span class="p">({</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">})</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>add_models</summary></details>
+<details class="- note"><summary>append</summary><p>S.append(value) -- append value to the end of the sequence</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>item</strong>    </li>
+</ul>
+</details>
+<details class="- note"><summary>clear</summary><p>S.clear() -&gt; None -- remove all items from S</p>
+</details>
 <details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>learn_one</summary><p>Updates the chosen model and the arm internals (the actual implementation is in Bandit._learn_one).</p>
+<details class="- note"><summary>copy</summary></details>
+<details class="- note"><summary>count</summary><p>S.count(value) -&gt; integer -- return number of occurrences of value</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>item</strong>    </li>
+</ul>
+</details>
+<details class="- note"><summary>extend</summary><p>S.extend(iterable) -- extend sequence by appending elements from the iterable</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>other</strong>    </li>
+</ul>
+</details>
+<details class="- note"><summary>index</summary><p>S.index(value, [start, [stop]]) -&gt; integer -- return first index of value. Raises ValueError if the value is not present.</p>
+<p>Supporting start and stop arguments is optional, but recommended.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>item</strong>    </li>
+<li><strong>args</strong>    </li>
+</ul>
+</details>
+<details class="- note"><summary>insert</summary><p>S.insert(index, value) -- insert value before index</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>i</strong>    </li>
+<li><strong>item</strong>    </li>
+</ul>
+</details>
+<details class="- note"><summary>learn_one</summary><p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>y</strong>     (<em>numbers.Number</em>)    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>Regressor</em>:     self</p>
+</details>
+<details class="- note"><summary>pop</summary><p>S.pop([index]) -&gt; item -- remove and return item at index (default last). Raise IndexError if list is empty or index is out of range.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>i</strong>     – defaults to <code>-1</code>    </li>
+</ul>
+</details>
+<details class="- note"><summary>predict_one</summary><p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>
-<li><strong>y</strong>    </li>
 </ul>
+<p><strong>Returns</strong></p>
+<p>The prediction.</p>
 </details>
-<details class="- note"><summary>predict_one</summary><p>Return the prediction of the best model (defined as the one who maximises average reward).</p>
+<details class="- note"><summary>remove</summary><p>S.remove(value) -- remove first occurrence of value. Raise ValueError if the value is not present.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
+<li><strong>item</strong>    </li>
 </ul>
 </details>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p><a href="https://link.springer.com/content/pdf/10.1023/A:1013689704352.pdf">Auer, P., Cesa-Bianchi, N., &amp; Fischer, P. (2002). Finite-time analysis of the multiarmed bandit problem. Machine learning, 47(2-3), 235-256.</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p><a href="https://tor-lattimore.com/downloads/book/book.pdf">Lattimore, T., &amp; Szepesvári, C. (2020). Bandit algorithms. Cambridge University Press.</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-</li>
-<li id="fn:3"></li>
-</ol>
-</div>
+<details class="- note"><summary>reverse</summary><p>S.reverse() -- reverse <em>IN PLACE</em></p>
+</details>
+<details class="- note"><summary>sort</summary></details>
                 
               
               
