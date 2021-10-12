@@ -61,10 +61,11 @@ class Bandit(ABC):
 
     def __repr__(self):
         return utils.pretty.print_table(
-            headers=["Index", self.metric.__class__.__name__, "Share of pulls"],
+            headers=["Index", self.metric.__class__.__name__, "Pulls", "Share"],
             columns=[
                 [str(arm.index) for arm in self.arms],
                 [f"{arm.metric.get():{self.metric._fmt}}" for arm in self.arms],
+                [f"{arm.n_pulls:,d}" for arm in self.arms],
                 [f"{arm.n_pulls / self.n_pulls:.2%}" for arm in self.arms],
             ],
         )
@@ -169,11 +170,11 @@ class EpsilonGreedyRegressor(BanditRegressor):
     MAE: 2.797875
 
     >>> selector.bandit
-    Index   MAE              Share of pulls
-        0        32.114043            2.30%
-        1        28.959042            2.30%
-        2         1.576562           92.81%
-        3   623,644.303637            2.60%
+    Index   MAE              Pulls   Share
+        0        32.114043      23    2.30%
+        1        28.959042      23    2.30%
+        2         1.576562     929   92.81%
+        3   623,644.303637      26    2.60%
 
     >>> selector.best_model["LinearRegression"].optimizer.lr
     Constant({'learning_rate': 0.01})
@@ -187,7 +188,10 @@ class EpsilonGreedyRegressor(BanditRegressor):
             models=models,
             metric=metric,
             solver=EpsilonGreedy(
-                bandit=Bandit(n_arms=len(models), metric=metric,),
+                bandit=Bandit(
+                    n_arms=len(models),
+                    metric=metric,
+                ),
                 epsilon=epsilon,
                 decay=decay,
                 seed=seed,
