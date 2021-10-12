@@ -10,7 +10,6 @@ from river import (
     cluster,
     compose,
     ensemble,
-    expert,
     facto,
     feature_extraction,
     feature_selection,
@@ -22,6 +21,7 @@ from river import (
     neural_net,
     preprocessing,
     reco,
+    selection,
     stats,
     time_series,
     utils,
@@ -47,9 +47,7 @@ def get_all_estimators():
         compose.Grouper,
         ensemble.AdaptiveRandomForestClassifier,
         ensemble.AdaptiveRandomForestRegressor,
-        expert.StackingClassifier,
-        expert.SuccessiveHalvingClassifier,
-        expert.SuccessiveHalvingRegressor,
+        ensemble.StackingClassifier,
         facto.FFMClassifier,
         facto.FFMRegressor,
         facto.FMClassifier,
@@ -74,6 +72,8 @@ def get_all_estimators():
         imblearn.RandomOverSampler,
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,
+        selection.SuccessiveHalvingClassifier,
+        selection.SuccessiveHalvingRegressor,
         time_series.Detrender,
         time_series.GroupDetrender,
         time_series.SNARIMAX,
@@ -96,12 +96,10 @@ def get_all_estimators():
         submodule = f"river.{submodule}"
 
         for _, obj in inspect.getmembers(
-            importlib.import_module(submodule), is_estimator
+            importlib.import_module(submodule),
+            lambda x: is_estimator(x) and not issubclass(x, ignored),
         ):
-            if issubclass(obj, ignored):
-                continue
-            params = obj._unit_test_params()
-            yield obj(**params)
+            yield obj(**obj._unit_test_params())
 
 
 @pytest.mark.parametrize(

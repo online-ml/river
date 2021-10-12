@@ -4,7 +4,7 @@ from typing import List
 from river import base, linear_model, naive_bayes, tree
 
 
-class VotingClassifier(base.Classifier, base.EnsembleMixin):
+class VotingClassifier(base.Classifier, base.Ensemble):
     """Voting classifier.
 
     A classification is made by aggregating the predictions of each model in the ensemble. The
@@ -36,13 +36,11 @@ class VotingClassifier(base.Classifier, base.EnsembleMixin):
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     ensemble.VotingClassifier(
-    ...         models=[
-    ...             linear_model.LogisticRegression(),
-    ...             tree.HoeffdingTreeClassifier(),
-    ...             naive_bayes.GaussianNB()
-    ...         ]
-    ...     )
+    ...     ensemble.VotingClassifier([
+    ...         linear_model.LogisticRegression(),
+    ...         tree.HoeffdingTreeClassifier(),
+    ...         naive_bayes.GaussianNB()
+    ...     ])
     ... )
 
     >>> metric = metrics.F1()
