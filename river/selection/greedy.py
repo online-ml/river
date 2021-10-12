@@ -32,10 +32,6 @@ class GreedySelectionRegressor(ModelSelector, Regressor):
     >>> from river import preprocessing
     >>> from river import selection
 
-    >>> dataset = datasets.TrumpApproval()
-
-    >>> metric = metrics.MAE()
-
     >>> models = [
     ...     compose.Pipeline(
     ...         preprocessing.StandardScaler(),
@@ -43,7 +39,10 @@ class GreedySelectionRegressor(ModelSelector, Regressor):
     ...     )
     ...     for lr in [1e-4, 1e-3, 1e-2, 1e-1]
     ... ]
+
+    >>> dataset = datasets.TrumpApproval()
     >>> model = selection.GreedySelectionRegressor(models, metric)
+    >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
     MAE: 1.416792
