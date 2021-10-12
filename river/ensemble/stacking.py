@@ -10,7 +10,7 @@ class StackingClassifier(base.Ensemble, base.Classifier):
 
     Parameters
     ----------
-    classifiers
+    models
     meta_classifier
     include_features
         Indicates whether or not the original features should be provided to the meta-model along

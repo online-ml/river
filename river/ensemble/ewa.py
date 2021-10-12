@@ -14,7 +14,7 @@ class EWARegressor(base.Ensemble, base.Regressor):
 
     Parameters
     ----------
-    regressors
+    models
         The regressors to hedge.
     loss
         The loss function that has to be minimized. Defaults to `optim.losses.Squared`.

@@ -64,6 +64,7 @@ class GreedySelectionRegressor(ModelSelectionRegressor):
 
             if metric.is_better_than(self._best_metric):
                 self._best_model = model
+                self._best_metric = metric
 
         return self
 
