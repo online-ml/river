@@ -17,7 +17,7 @@ from .base import Base
 from .classifier import Classifier, MiniBatchClassifier
 from .clusterer import Clusterer
 from .drift_detector import DriftDetector
-from .ensemble import EnsembleMixin
+from .ensemble import Ensemble, WrapperEnsemble
 from .estimator import Estimator
 from .multi_output import MultiOutputMixin
 from .regressor import MiniBatchRegressor, Regressor
@@ -30,7 +30,7 @@ __all__ = [
     "Classifier",
     "Clusterer",
     "DriftDetector",
-    "EnsembleMixin",
+    "Ensemble",
     "Estimator",
     "MiniBatchClassifier",
     "MiniBatchRegressor",
@@ -40,5 +40,6 @@ __all__ = [
     "tags",
     "Transformer",
     "typing",
+    "WrapperEnsemble",
     "WrapperMixin",
 ]

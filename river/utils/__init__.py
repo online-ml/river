@@ -4,6 +4,7 @@ from .data_conversion import dict2numpy, numpy2dict
 from .estimator_checks import check_estimator
 from .histogram import Histogram
 from .param_grid import expand_param_grid
+from .random import poisson
 from .sdft import SDFT
 from .skyline import Skyline
 from .vectordict import VectorDict
@@ -15,6 +16,7 @@ __all__ = [
     "expand_param_grid",
     "inspect",
     "math",
+    "poisson",
     "pretty",
     "Histogram",
     "numpy2dict",

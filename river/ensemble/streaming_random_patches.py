@@ -13,9 +13,8 @@ from river.metrics.base import Metric, MultiClassMetric, RegressionMetric
 from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
 
 
-class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
-    """Base class for the sRP ensemble family
-    """
+class BaseSRPEnsemble(base.WrapperMixin, base.Ensemble):
+    """Base class for the sRP ensemble family"""
 
     _TRAIN_RANDOM_SUBSPACES = "subspaces"
     _TRAIN_RESAMPLING = "resampling"
@@ -44,8 +43,7 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         seed=None,
         metric: Metric = None,
     ):
-        super().__init__([None])  # List of models is properly initialized later
-        self.models = []
+        super().__init__([])  # List of models is properly initialized later
         self.model = model  # Not restricted to a specific base estimator.
         self.n_models = n_models
         self.subspace_size = subspace_size
@@ -65,6 +63,10 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         self._base_learner_class = None  # defined by extended classes
 
     @property
+    def _min_number_of_models(self):
+        return 0
+
+    @property
     def _wrapped_model(self):
         return self.model
 
@@ -78,10 +80,10 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
     def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs):
         self._n_samples_seen += 1
 
-        if not self.models:
+        if not self:
             self._init_ensemble(list(x.keys()))
 
-        for model in self.models:
+        for model in self:
             # Get prediction for instance
             y_pred = model.predict_one(x)
             if y_pred is None:
@@ -198,7 +200,7 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
         for i in range(self.n_models):
             # If self.training_method == self._TRAIN_RESAMPLING then subspace is None
             subspace = self._subspaces[subspace_indexes[i]]
-            self.models.append(
+            self.append(
                 self._base_learner_class(
                     idx_original=i,
                     model=self.model,
@@ -213,14 +215,13 @@ class BaseSRPEnsemble(base.WrapperMixin, base.EnsembleMixin):
             )
 
     def reset(self):
-        self.models = []
+        self.data = []
         self._n_samples_seen = 0
         self._rng = np.random.default_rng(self.seed)
 
 
 class BaseSRPEstimator:
-    """Base class for estimators (classifiers or regressors) in SRP
-    """
+    """Base class for estimators (classifiers or regressors) in SRP"""
 
     def __init__(
         self,
@@ -405,14 +406,19 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
     Examples
     --------
-    >>> from river import synth
+
     >>> from river import ensemble
-    >>> from river import tree
     >>> from river import evaluate
     >>> from river import metrics
+    >>> from river import synth
+    >>> from river import tree
 
-    >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
-    ...                                    width=50).take(1000)
+    >>> dataset = synth.ConceptDriftStream(
+    ...     seed=42,
+    ...     position=500,
+    ...     width=50
+    ... ).take(1000)
+
     >>> base_model = tree.HoeffdingTreeClassifier(
     ...     grace_period=50, split_confidence=0.01,
     ...     nominal_attributes=['age', 'car', 'zipcode']
@@ -420,6 +426,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     >>> model = ensemble.SRPClassifier(
     ...     model=base_model, n_models=3, seed=42,
     ... )
+
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
@@ -528,8 +535,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
 
 class BaseSRPClassifier(BaseSRPEstimator):
-    """Class representing the base learner of SRPClassifier.
-    """
+    """Class representing the base learner of SRPClassifier."""
 
     def __init__(
         self,
@@ -688,25 +694,30 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
     Examples
     --------
-    >>> from river import synth
+
     >>> from river import ensemble
-    >>> from river import tree
     >>> from river import evaluate
     >>> from river import metrics
     >>> from river import neighbors
+    >>> from river import synth
+    >>> from river import tree
+
     >>> dataset = synth.FriedmanDrift(
     ...     drift_type='gsg',
     ...     position=(350, 750),
     ...     transition_window=200,
     ...     seed=42
     ... ).take(1000)
+
     >>> base_model = neighbors.KNNRegressor()
     >>> model = ensemble.SRPRegressor(
     ...     model=base_model,
     ...     n_models=3,
     ...     seed=42
     ... )
+
     >>> metric = metrics.R2()
+
     >>> evaluate.progressive_val_score(dataset, model, metric)
     R2: 0.525003
 
@@ -845,8 +856,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
 
 class BaseSRPRegressor(BaseSRPEstimator):
-    """Class representing the base learner of SRPClassifier.
-    """
+    """Class representing the base learner of SRPClassifier."""
 
     def __init__(
         self,
@@ -983,7 +993,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
 
 
 class PeriodicTrigger(base.DriftDetector):
-    """ Generates pseudo drift detection signals.
+    """Generates pseudo drift detection signals.
 
     There are two approaches:
 

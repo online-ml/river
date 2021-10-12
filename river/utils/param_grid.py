@@ -17,7 +17,7 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
 
     Typically, this method can be used to create copies of a given model with different parameter
     choices. The models can then be used as part of a model selection process, such as a
-    `expert.SuccessiveHalvingClassifier` or a `expert.EWARegressor`.
+    `selection.SuccessiveHalvingClassifier` or a `selection.EWARegressor`.
 
     The syntax for the parameter grid is quite flexible. It allows nesting parameters and can
     therefore be used to generate parameters for a pipeline.

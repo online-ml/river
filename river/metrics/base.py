@@ -1,6 +1,7 @@
 import abc
 import collections
 import numbers
+import operator
 import typing
 
 from river import base, stats, utils
@@ -50,6 +51,10 @@ class Metric(base.Base, abc.ABC):
     def works_with_weights(self) -> bool:
         """Indicate whether the model takes into consideration the effect of sample weights"""
         return True
+
+    def is_better_than(self, other) -> bool:
+        op = operator.gt if self.bigger_is_better else operator.lt
+        return op(self.get(), other.get())
 
     def __repr__(self):
         """Return the class name along with the current value of the metric."""
