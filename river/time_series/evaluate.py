@@ -18,6 +18,43 @@ TimeSeries = Iterator[
 
 
 def _iter_with_horizon(dataset: Dataset, horizon: int) -> TimeSeries:
+    """
+
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river.time_series.evaluate import _iter_with_horizon
+
+    >>> dataset = datasets.AirlinePassengers()
+
+    >>> for x, y, x_horizon, y_horizon in _iter_with_horizon(dataset.take(8), horizon=3):
+    ...     print(x['month'].strftime('%Y-%m-%d'), y)
+    ...     print([x['month'].strftime('%Y-%m-%d') for x in x_horizon])
+    ...     print(list(y_horizon))
+    ...     print('---')
+    1949-01-01 112
+    ['1949-02-01', '1949-03-01', '1949-04-01']
+    [118, 132, 129]
+    ---
+    1949-02-01 118
+    ['1949-03-01', '1949-04-01', '1949-05-01']
+    [132, 129, 121]
+    ---
+    1949-03-01 132
+    ['1949-04-01', '1949-05-01', '1949-06-01']
+    [129, 121, 135]
+    ---
+    1949-04-01 129
+    ['1949-05-01', '1949-06-01', '1949-07-01']
+    [121, 135, 148]
+    ---
+    1949-05-01 121
+    ['1949-06-01', '1949-07-01', '1949-08-01']
+    [135, 148, 148]
+    ---
+
+    """
 
     x_horizon = collections.deque(maxlen=horizon)
     y_horizon = collections.deque(maxlen=horizon)
