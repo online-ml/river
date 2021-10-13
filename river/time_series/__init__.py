@@ -2,4 +2,4 @@
 from .base import Forecaster
 from .snarimax import SNARIMAX
 
-__all__ = ["SNARIMAX"]
+__all__ = ["Forecaster", "SNARIMAX"]

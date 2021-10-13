@@ -14,6 +14,9 @@ class Lagger(base.Transformer):
     drop_nones
         Whether or not features should be included with a `None` value if not enough values have
         been seen yet.
+    lags
+        Indicates which lags to compute for each feature. This may be specified as a single number,
+        or as a tuple of numbers.
 
     Examples
     --------
@@ -183,6 +186,9 @@ class TargetLagger(base.SupervisedTransformer):
 
     Parameters
     ----------
+    lags
+        Indicates which lags to compute for each feature. This may be specified as a single number,
+        or as a tuple of numbers.
     by
         An optional feature by which to group the lagged values.
     drop_nones
