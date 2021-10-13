@@ -191,7 +191,7 @@ class EpsilonGreedyRegressor(BanditRegressor):
             models=models,
             metric=metric,
             solver=EpsilonGreedy(
-                bandit=Bandit(n_arms=len(models), metric=metric,),
+                bandit=Bandit(n_arms=len(models), metric=metric),
                 epsilon=epsilon,
                 decay=decay,
                 seed=seed,
