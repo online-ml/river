@@ -3,6 +3,7 @@
 ## compose
 
 - You can now use a `list` as a shorthand to build a `TransformerUnion`.
+- Fixed a visualization issue when using a pipeline with multiple feature unions.
 
 ## ensemble
 
@@ -11,7 +12,7 @@
 ## feature_extraction
 
 - Implemented `feature_extraction.Lagger`.
-- - Implemented `feature_extraction.TargetLagger`.
+- Implemented `feature_extraction.TargetLagger`.
 
 ## optim
 
@@ -25,3 +26,4 @@
 ## time_series
 
 - `time_series.Detrender` and `time_series.GroupDetrender` have been removed as they overlap with `meta.TargetStandardScaler`.
+- Implemented an `evaluate` method, which performs progressive validation for time series scenarios.
