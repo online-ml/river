@@ -7,8 +7,8 @@ be processed by a particular machine learning algorithm.
 
 """
 from .agg import Agg, TargetAgg
-from .lag import Lagger, TargetLagger
 from .kernel_approx import RBFSampler
+from .lag import Lagger, TargetLagger
 from .poly import PolynomialExtender
 from .vectorize import TFIDF, BagOfWords
 

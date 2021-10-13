@@ -1,6 +1,7 @@
 import abc
 from numbers import Number
 from typing import List
+
 from river.base import Base
 from river.metrics import RegressionMetric
 
