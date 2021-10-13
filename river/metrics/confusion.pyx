@@ -1,4 +1,6 @@
 import functools
+import itertools
+import math
 from collections import defaultdict
 
 import numpy as np
@@ -64,9 +66,12 @@ cdef class ConfusionMatrix:
         # Auxiliary variables
         self.last_y_true = 0
         self.last_y_pred = 0
-        self.sample_correction = dict()             # Used to apply corrections during revert
+        self.sample_correction = dict()            # Used to apply corrections during revert
         self.weight_majority_classifier = 0.        # Correctly classified: majority class
         self.weight_no_change_classifier = 0.       # Correctly classified: no-change
+        if self._init_classes:
+            for yt, yp in itertools.product(self._init_classes, self._init_classes):
+                self._update_matrix(yt, yp, sample_weight=0.0)
 
     def __getitem__(self, key):
         """Syntactic sugar for accessing the counts directly."""
@@ -76,7 +81,7 @@ cdef class ConfusionMatrix:
         self.n_samples += 1
         self.total_weight += sample_weight
         self._update_matrix(y_true, y_pred, sample_weight)
-        self.sample_correction = dict()
+        self.sample_correction = dict()    # create a new instance to store data for last update
 
         self.sample_correction['MCC'] = 0           # MCC: majority-class classifier correction
         if self.majority_class == y_true:
@@ -110,19 +115,20 @@ cdef class ConfusionMatrix:
         # Revert is equal to subtracting so we pass the negative sample_weight
         self._update_matrix(y_true, y_pred, -sample_weight)
 
-        if correction['MCC'] == 1:
-            self.weight_majority_classifier -= sample_weight
+        if correction:
+            if correction['MCC'] == 1:
+                self.weight_majority_classifier -= sample_weight
 
-        if correction['NCC'] == 1:
-            self.weight_no_change_classifier -= sample_weight
+            if correction['NCC'] == 1:
+                self.weight_no_change_classifier -= sample_weight
 
         return self
 
     @property
     def classes(self):
         return list(
-            set(c for c, n in self.sum_row.items() if n) |
-            set(c for c, n in self.sum_col.items() if n)
+            set(c for c, w in self.sum_row.items() if w) |
+            set(c for c, w in self.sum_col.items() if w)
         )
 
     @property
@@ -223,18 +229,10 @@ cdef class MultiLabelConfusionMatrix:
     """
     def __init__(self, labels=None):
         self._init_labels = set() if labels is None else set(labels)
-        self.labels = self._init_labels
-        self.n_labels = len(self.labels)
-        if self.n_labels > 2:
-            self.data = np.zeros((self.n_labels, 2, 2))
-        else:
-            # default to 2 labels
-            self.data = np.zeros((2, 2, 2))
-        self._label_dict = dict()
-        self._label_idx_cnt = 0
-        for label in self.labels:
-            self._add_label(label)
+        self.data = defaultdict(functools.partial(ConfusionMatrix, classes=[0, 1]))
         self.n_samples = 0
+        for label in self._init_labels:
+            exec("self.data[label]")
         # Auxiliary variables
         self.last_y_true = 0
         self.last_y_pred = 0
@@ -252,7 +250,7 @@ cdef class MultiLabelConfusionMatrix:
         cdef double ones_true_cnt = 0.
         cdef double ones_pred_cnt = 0.
         cdef double val = 0.
-        self.sample_correction = dict()
+        self.sample_correction = dict()    # create a new instance to store data for last update
 
         if not y_pred:
             # Corner case where the predictions are empty, e.g. if the model is empty.
@@ -261,15 +259,17 @@ cdef class MultiLabelConfusionMatrix:
         self.n_samples += 1
 
         for label in y_true.keys():
-            label_idx = self._map_label(label, add_label=True)
-            self.data[label_idx, y_true[label], y_pred[label]] += sample_weight
-            if y_true[label] != y_pred[label]:
+            # Make sure we are using integers when updating the 2x2 matrix
+            yt = int(y_true[label])
+            yp = int(y_pred[label])
+            self.data[label].update(yt, yp, sample_weight)
+            if yt != yp:
                 is_equal = 0        # Not equal
-            inter_cnt += float(y_true[label] and y_pred[label])
-            union_cnt += float(y_true[label] or y_pred[label])
-            if y_true[label] == 1:
+            inter_cnt += float(yt and yp)
+            union_cnt += float(yt or yp)
+            if yt == 1:
                 ones_true_cnt += 1.
-            if y_pred[label] == 1:
+            if yp == 1:
                 ones_pred_cnt += 1.
 
 
@@ -301,49 +301,36 @@ cdef class MultiLabelConfusionMatrix:
         self.n_samples -= 1
         # Revert is equal to subtracting so we pass the negative sample_weight
         for label in y_true.keys():
-            label_idx = self._map_label(label, add_label=True)
-            self.data[label_idx, y_true[label], y_pred[label]] += -sample_weight
+            # Make sure we are using integers when updating the 2x2 matrix
+            yt = int(y_true[label])
+            yp = int(y_pred[label])
+            self.data[label].revert(yt, yp, sample_weight)
 
-        # Update auxiliary variables
-        self.exact_match_cnt -= correction['IS_EQUAL']
-        self.precision_sum -= correction['P_SUM']
-        self.recall_sum -= correction['R_SUM']
-        self.jaccard_sum -= correction['J_SUM']
+        if correction:
+            # Update auxiliary variables
+            self.exact_match_cnt -= correction['IS_EQUAL']
+            self.precision_sum -= correction['P_SUM']
+            self.recall_sum -= correction['R_SUM']
+            self.jaccard_sum -= correction['J_SUM']
 
         return self
 
     def __getitem__(self, label):
-        if label in self.labels:
-            label_idx = self._map_label(label, add_label=False)
-            return self.data[label_idx]
+        if label in self.data:
+            return self.data[label]
         raise KeyError(f'Unknown label: {label}')
 
-    cdef int _map_label(self, label, bint add_label):
-        try:
-            label_key = self._label_dict[label]
-        except KeyError:
-            if add_label:
-                self._add_label(label)
-                label_key = self._label_dict[label]
-            else:
-                label_key = -1
-                raise KeyError(f'Unknown label: {label}')
-        return label_key
+    @property
+    def labels(self):
+        return list(self.data.keys())
 
-    cdef void _add_label(self, label):
-        self._label_dict[label] = self._label_idx_cnt
-        if self._label_idx_cnt > self.data.shape[0] - 1:
-            self._reshape()
-        self._label_idx_cnt += 1
-        self.labels.add(label)
-        self.n_labels = len(self.labels)
-
-    cdef void _reshape(self):
-        self.data = np.vstack((self.data, np.zeros((1, 2, 2))))
+    @property
+    def n_labels(self):
+        return len(self.data)
 
     @property
     def shape(self):
-        return self.data.shape
+        return (long(self.n_labels), 2, 2) if self.n_labels > 0 else (0, 0, 0)
 
     def reset(self):
         self.__init__(labels=self._init_labels)
@@ -360,25 +347,35 @@ cdef class MultiLabelConfusionMatrix:
 
         # Determine the required width of each column in the table
         largest_label_len = max(len(str(label)) for label in labels)
-        largest_value_len = len(str(self.data[:].max()))
+        max_value = 0
+        classes = [0, 1]
+        for label in self.data.keys():
+            for r, c in itertools.product(classes, classes):
+                max_value = max(max_value, self.data[label][r][c])
+        largest_value_len = len(str(max_value))
         width = max(5, largest_label_len, largest_value_len) + 2   # Min value is 5=len('label')
 
         # Make a template to print out rows one by one
-        row_format = '{:>{width}}' * 5    # Label, TP, FP, FN, TN
+        row_format = '{:>{width}}' * 3    # Label, {TN, FP} | {FN, TP}
 
         # Write down the header
-        table = row_format.format('Label', 'TP', 'FP', 'FN', 'TN', width=width) + '\n'
+        table = row_format.format('Label', 'TN', 'FP', width=width) + '\n'
+        table += row_format.format('', 'FN', 'TP', width=width) + '\n'
 
         # Write down the values per labels row by row
         for label in labels:
-            label_idx = self._map_label(label, add_label=False)
             table += ''.join(
                 row_format.format(
-                    str(label),                         # Label
-                    self.data[label_idx][1][1],         # TP
-                    self.data[label_idx][0][1],         # FP
-                    self.data[label_idx][1][0],         # FN
-                    self.data[label_idx][0][0],         # TN
+                    str(label),                     # Label
+                    self.data[label][0][0],         # TN
+                    self.data[label][0][1],         # FP
+                    width=width))
+            table += '\n'
+            table += ''.join(
+                row_format.format(
+                    '',                      # Label
+                    self.data[label][1][0],  # FN
+                    self.data[label][1][1],  # TP
                     width=width))
             table += '\n'
 

@@ -11,7 +11,7 @@ cdef class ConfusionMatrix:
     cdef readonly sum_col                       # Sum per column
     cdef readonly data                          # The actual data (dictionary)
     cdef readonly int n_samples                 # Number of samples seen
-    cdef readonly float total_weight            # Sum of sample_weights seen
+    cdef readonly float total_weight             # Sum of sample_weights seen
     cdef readonly last_y_true                   # Last y_true value seen
     cdef readonly last_y_pred                   # Last y_pred value seen
     cdef readonly sample_correction             # Used to apply corrections during revert
@@ -27,11 +27,7 @@ cdef class MultiLabelConfusionMatrix:
 
     # Internal variables
     cdef readonly set _init_labels              # Initial set of labels
-    cdef readonly set labels                    # Set of labels
-    cdef readonly int n_labels                  # Number of labels
     cdef readonly data                          # The actual data (3D np.ndarray)
-    cdef readonly dict _label_dict              # Dictionary to map labels and their label-index
-    cdef readonly int _label_idx_cnt            # Internal label-index counter
     cdef readonly last_y_true                   # Last y_true value seen
     cdef readonly last_y_pred                   # Last y_pred value seen
     cdef readonly int n_samples                 # Number of samples seen
@@ -40,8 +36,3 @@ cdef class MultiLabelConfusionMatrix:
     cdef readonly double precision_sum          # Precision sum
     cdef readonly double recall_sum             # Recall sum
     cdef readonly double jaccard_sum            # Jaccard-index sum
-
-    # Methods
-    cdef int _map_label(self, label, bint add_label)
-    cdef void _add_label(self, label)
-    cdef void _reshape(self)

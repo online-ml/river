@@ -1,5 +1,3 @@
-import numpy as np
-
 from . import base
 
 __all__ = ["Hamming"]
@@ -53,14 +51,14 @@ class Hamming(base.MultiOutputClassificationMetric):
     def get(self):
 
         try:
-            return np.sum(self.cm.data[:, 1, 1]) / (
+            return sum([m[1][1] for m in self.cm.data.values()]) / (
                 self.cm.n_samples * self.cm.n_labels
             )
         except ZeroDivisionError:
             return 0.0
 
 
-class HammingLoss(base.MultiOutputClassificationMetric):
+class HammingLoss(Hamming):
     """Hamming loss score.
 
     The Hamming loss is the complement of the Hamming score.
@@ -97,19 +95,6 @@ class HammingLoss(base.MultiOutputClassificationMetric):
 
     """
 
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
     def get(self):
 
-        try:
-            return 1.0 - np.sum(self.cm.data[:, 1, 1]) / (
-                self.cm.n_samples * self.cm.n_labels
-            )
-        except ZeroDivisionError:
-            return 0.0
+        return 1.0 - super().get()
