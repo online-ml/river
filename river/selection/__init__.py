@@ -2,7 +2,7 @@
 
 This module regroups a variety of methods that may be used for performing model selection. An
 model selector is provided with a list of models. These are called "experts" in the expert learning
-litterature. The model selector's goal is to perform at least as well as the best model. Indeed,
+literature. The model selector's goal is to perform at least as well as the best model. Indeed,
 initially, the best model is not known. The performance of each model becomes more apparent as time
 goes by. Different strategies are possible, each one offering a different tradeoff in terms of
 accuracy and computational performance.
