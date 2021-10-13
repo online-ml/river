@@ -1,8 +1,9 @@
 import collections
 from typing import Any, Iterable, Iterator, List, Optional, Tuple
+
+from river import base, utils
 from river.base.typing import Dataset
 from river.metrics import RegressionMetric
-from river import base, utils
 
 from .base import Forecaster
 from .metric import HorizonMetric
