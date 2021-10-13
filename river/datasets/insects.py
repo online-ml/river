@@ -65,7 +65,7 @@ class Insects(base.RemoteDataset):
             n_samples=n_samples,
             n_features=33,
             task=base.MULTI_CLF,
-            url=f"https://sites.labic.icmc.usp.br/vsouza/repository/river/INSECTS-{variant}_norm.arff",
+            url=f"http://sites.labic.icmc.usp.br/vsouza/repository/creme/INSECTS-{variant}_norm.arff",
             size=size,
             unpack=False,
         )
