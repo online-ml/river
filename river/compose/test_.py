@@ -170,8 +170,6 @@ def test_list_of_funcs():
     def times_2(x):
         return {k: v * 2 for k, v in x.items()}
 
-    assert compose.Pipeline([f, g], times_2).transform_one(None) == {"f": 2, "g": 4}
-    assert ([f, g] | compose.FuncTransformer(times_2)).transform_one(None) == {
-        "f": 2,
-        "g": 4,
-    }
+    expected = {"f": 2, "g": 4}
+    assert compose.Pipeline([f, g], times_2).transform_one(None) == expected
+    assert ([f, g] | compose.FuncTransformer(times_2)).transform_one(None) == expected
