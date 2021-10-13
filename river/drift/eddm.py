@@ -32,7 +32,7 @@ class EDDM(DriftDetector):
 
     $\alpha$ and $\beta$ are set to 0.95 and 0.9, respectively.
 
-    **Input:** `value` must be a binary signal, where 0 indicates error.
+    **Input:** `value` must be a binary signal, where 1 indicates error.
     For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
     true target label $y$:
 

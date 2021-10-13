@@ -37,7 +37,7 @@ class DDM(DriftDetector):
 
     * if $p_i + s_i \geq p_{min} + 3 * s_{min}$ -> Change detected
 
-    **Input:** `value` must be a binary signal, where 0 indicates error.
+    **Input:** `value` must be a binary signal, where 1 indicates error.
     For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
     true target label $y$:
 
