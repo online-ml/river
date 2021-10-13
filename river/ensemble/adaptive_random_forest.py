@@ -22,7 +22,7 @@ from river.tree.splitter import Splitter
 from river.utils.skmultiflow_utils import check_random_state
 
 
-class BaseForest(base.EnsembleMixin):
+class BaseForest(base.Ensemble):
 
     _FEATURES_SQRT = "sqrt"
     _FEATURES_LOG2 = "log2"
@@ -32,14 +32,13 @@ class BaseForest(base.EnsembleMixin):
         n_models: int,
         max_features: typing.Union[bool, str, int],
         lambda_value: int,
-        drift_detector: typing.Union[base.DriftDetector, None],
-        warning_detector: typing.Union[base.DriftDetector, None],
+        drift_detector: typing.Optional[base.DriftDetector],
+        warning_detector: typing.Optional[base.DriftDetector],
         metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
         disable_weighted_vote,
         seed,
     ):
-        super().__init__([None])  # List of models is properly initialized later
-        self.models = []
+        super().__init__([])  # List of models is properly initialized later
         self.n_models = n_models
         self.max_features = max_features
         self.lambda_value = lambda_value
@@ -54,13 +53,17 @@ class BaseForest(base.EnsembleMixin):
         self._n_samples_seen = 0
         self._base_member_class = None
 
+    @property
+    def _min_number_of_models(self):
+        return 0
+
     def learn_one(self, x: dict, y: base.typing.Target, **kwargs):
         self._n_samples_seen += 1
 
-        if not self.models:
+        if not self:
             self._init_ensemble(list(x.keys()))
 
-        for model in self.models:
+        for model in self:
             # Get prediction for instance
             y_pred = model.predict_one(x)
 
@@ -82,7 +85,7 @@ class BaseForest(base.EnsembleMixin):
         # Generate a different random seed per tree
         seeds = self._rng.randint(0, 4294967295, size=self.n_models, dtype="u8")
 
-        self.models = [
+        self.data = [
             self._base_member_class(
                 index_original=i,
                 model=self._new_base_model(seed=seeds[i]),
@@ -709,7 +712,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.870913
+    MAE: 1.874094
 
     """
 

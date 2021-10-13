@@ -1,7 +1,7 @@
+import copy
 import functools
 import math
 import random
-import statistics
 
 import numpy as np
 import pytest
@@ -10,55 +10,80 @@ from river import stats
 
 
 @pytest.mark.parametrize(
-    "stat1, stat2, func",
+    "stat",
     [
-        (stats.Mean(), stats.Mean(), statistics.mean),
-        (stats.Var(ddof=0), stats.Var(ddof=0), np.var),
-        (stats.Var(), stats.Var(), functools.partial(np.var, ddof=1)),
+        pytest.param(stat, id=stat.__class__.__name__)
+        for stat in [stats.Mean(), stats.Var(ddof=0), stats.Var(ddof=1)]
     ],
 )
-def test_add_mean_var(stat1, stat2, func):
+def test_add(stat):
+    A = copy.deepcopy(stat)
+    B = copy.deepcopy(stat)
+    C = copy.deepcopy(stat)
+
     X = [random.random() for _ in range(30)]
     Y = [random.random() for _ in range(30)]
+    W = [random.random() for _ in range(30)]
 
-    for i, (x, y) in enumerate(zip(X, Y)):
-        stat1.update(x)
-        stat2.update(y)
-        if i >= 1:
-            assert math.isclose(
-                (stat1 + stat2).get(), func(X[: i + 1] + Y[: i + 1]), abs_tol=1e-10
-            )
+    for x, y, w in zip(X, Y, W):
+        A.update(x, w)
+        B.update(y, w)
+        C.update(x, w).update(y, w)
 
-    stat1 += stat2
-    assert math.isclose(stat1.get(), func(X + Y), abs_tol=1e-10)
+    D = A + B
+    assert math.isclose(C.get(), D.get())
+
+    A += B
+    assert math.isclose(C.get(), A.get())
 
 
 @pytest.mark.parametrize(
-    "stat1, stat2, func",
+    "stat",
     [
-        (stats.Mean(), stats.Mean(), statistics.mean),
-        (stats.Var(ddof=0), stats.Var(ddof=0), np.var),
-        (stats.Var(), stats.Var(), functools.partial(np.var, ddof=1)),
+        pytest.param(stat, id=stat.__class__.__name__)
+        for stat in [stats.Mean(), stats.Var(ddof=0), stats.Var(ddof=1)]
     ],
 )
-def test_sub_mean_var(stat1, stat2, func):
+def test_sub(stat):
+    A = copy.deepcopy(stat)
+    B = copy.deepcopy(stat)
+    C = copy.deepcopy(stat)
+
     X = [random.random() for _ in range(30)]
+    Y = [random.random() for _ in range(30)]
+    W = [random.random() for _ in range(30)]
 
-    for x in X:
-        stat1.update(x)
+    for x, y, w in zip(X, Y, W):
+        A.update(x, w)
+        B.update(y, w)
+        C.update(x, w).update(y, w)
 
-    for i, x in enumerate(X):
-        stat2.update(x)
-        if i < len(X) - 2:
-            assert math.isclose((stat1 - stat2).get(), func(X[i + 1 :]), abs_tol=1e-10)
+    D = C - B
+    assert math.isclose(D.get(), A.get())
 
-    # Test inplace subtraction
-    X.extend(random.random() for _ in range(3))
-    for i in range(30, 33):
-        stat1.update(X[i])
+    C -= B
+    assert math.isclose(C.get(), A.get())
 
-    stat1 -= stat2
-    assert math.isclose(stat1.get(), func(X[30:33]), abs_tol=1e-10)
+
+@pytest.mark.parametrize(
+    "stat",
+    [
+        pytest.param(stat, id=stat.__class__.__name__)
+        for stat in [stats.Mean(), stats.Var(ddof=0), stats.Var(ddof=1)]
+    ],
+)
+def test_sub_back_to_zero(stat):
+
+    A = copy.deepcopy(stat)
+    B = copy.deepcopy(stat)
+    C = copy.deepcopy(stat)
+
+    x = random.random()
+    A.update(x)
+    B.update(x)
+
+    D = A - B
+    assert math.isclose(D.get(), C.get())
 
 
 @pytest.mark.parametrize(

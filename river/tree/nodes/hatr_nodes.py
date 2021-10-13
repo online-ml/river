@@ -383,7 +383,7 @@ def normalize_error(y_true, y_pred, node):
     if node._error_normalizer.mean.n == 1:
         return 0.5  # The expected error is the normalized mean error
 
-    sd = math.sqrt(node._error_normalizer.sigma)
+    sd = math.sqrt(node._error_normalizer.get())
 
     # We assume the error follows a normal distribution -> (empirical rule) 99.73% of the values
     # lie  between [mean - 3*sd, mean + 3*sd]. We assume this range for the normalized data.

@@ -358,13 +358,15 @@ class SGTRegressor(StochasticGradientTree, base.Regressor):
 
     >>> dataset = datasets.TrumpApproval()
     >>> model = tree.SGTRegressor(
+    ...     delta=0.01,
+    ...     lambda_value=0.01,
     ...     grace_period=20,
     ...     feature_quantizer=tree.splitter.DynamicQuantizer(std_prop=0.1)
     ... )
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.819874
+    MAE: 1.721818
 
     Notes
     -----

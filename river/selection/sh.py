@@ -1,14 +1,14 @@
 import copy
 import math
-import operator
 
 from river import base, metrics
-from river.expert.exceptions import NotEnoughModels
+
+from .base import ModelSelector
 
 __all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
 
-class SuccessiveHalving:
+class SuccessiveHalving(ModelSelector):
     def __init__(
         self,
         models,
@@ -19,19 +19,7 @@ class SuccessiveHalving:
         **print_kwargs,
     ):
 
-        if len(models) < 2:
-            raise NotEnoughModels(n_expected=2, n_obtained=len(models))
-
-        # Check that the model and the metric are in accordance
-        for model in models:
-            if not metric.works_with(model):
-                raise ValueError(
-                    f"{metric.__class__.__name__} metric can't be used to evaluate a "
-                    + f"{model.__class__.__name__}"
-                )
-
-        self.models = models
-        self.metric = metric
+        super().__init__(models=models, metric=metric)
         self.budget = budget
         self.eta = eta
         self.verbose = verbose
@@ -47,7 +35,7 @@ class SuccessiveHalving:
         self._n_iterations = 0
         self._best_model_idx = 0
 
-        if isinstance(model, base.Classifier) and not metric.requires_labels:
+        if isinstance(models[0], base.Classifier) and not metric.requires_labels:
             self._pred_func = lambda model: model.predict_proba_one
         else:
             self._pred_func = lambda model: model.predict_one
@@ -67,12 +55,8 @@ class SuccessiveHalving:
             model.learn_one(x, y)
 
             # Check for a new best model
-            if i != self._best_model_idx:
-                op = operator.gt if self.metric.bigger_is_better else operator.lt
-                if op(
-                    self._metrics[i].get(), self._metrics[self._best_model_idx].get()
-                ):
-                    self._best_model_idx = i
+            if metric.is_better_than(self._metrics[self._best_model_idx]):
+                self._best_model_idx = i
 
         self._n_iterations += 1
 
@@ -196,10 +180,10 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
     metric to compare the models, and a budget which indicates how many iterations to run
     before picking the best model and discarding the rest.
 
-    >>> from river import expert
+    >>> from river import selection
 
-    >>> sh = expert.SuccessiveHalvingRegressor(
-    ...     models=models,
+    >>> sh = selection.SuccessiveHalvingRegressor(
+    ...     models,
     ...     metric=metrics.MAE(),
     ...     budget=2000,
     ...     eta=2,
@@ -344,10 +328,10 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     metric to compare the models, and a budget which indicates how many iterations to run
     before picking the best model and discarding the rest.
 
-    >>> from river import expert
+    >>> from river import selection
 
-    >>> sh = expert.SuccessiveHalvingClassifier(
-    ...     models=models,
+    >>> sh = selection.SuccessiveHalvingClassifier(
+    ...     models,
     ...     metric=metrics.Accuracy(),
     ...     budget=2000,
     ...     eta=2,
