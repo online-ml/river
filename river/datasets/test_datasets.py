@@ -12,15 +12,14 @@ from . import base
 
 
 def _iter_datasets():
-
-    for variant in datasets.Insects.variants:
-        yield datasets.Insects(variant=variant)
-
     for _, dataset in inspect.getmembers(
         importlib.import_module("river.datasets"), inspect.isclass
     ):
-        if not issubclass(dataset, datasets.Insects):
-            yield dataset()
+        if issubclass(dataset, datasets.Insects):
+            for variant in dataset.variants:
+                yield dataset(variant=variant)
+            continue
+        yield dataset()
 
 
 @pytest.mark.parametrize(
