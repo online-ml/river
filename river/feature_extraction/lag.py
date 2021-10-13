@@ -223,12 +223,12 @@ class TargetLagger(base.SupervisedTransformer):
     ...     lagger = lagger.learn_one(x, y)
     {}
     {}
-    {'target-1': 42}
-    {'target-1': 16, 'target-2': 42}
-    {'target-1': 24, 'target-2': 16}
-    {'target-1': 58, 'target-2': 24}
-    {'target-1': 20, 'target-2': 58}
-    {'target-1': 50, 'target-2': 20}
+    {'y-1': 42}
+    {'y-1': 16, 'y-2': 42}
+    {'y-1': 24, 'y-2': 16}
+    {'y-1': 58, 'y-2': 24}
+    {'y-1': 20, 'y-2': 58}
+    {'y-1': 50, 'y-2': 20}
 
     We can also calculate the lags with different groups:
 

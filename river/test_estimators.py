@@ -37,7 +37,14 @@ from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
 
 
-def get_all_estimators():
+def iter_estimators():
+    for submodule in importlib.import_module("river").__all__:
+        if submodule == "synth":
+            submodule = "datasets.synth"
+        yield from inspect.getmembers(importlib.import_module(f"river.{submodule}"))
+
+
+def iter_estimators_which_can_be_tested():
 
     ignored = (
         River2SKLBase,
@@ -82,31 +89,18 @@ def get_all_estimators():
     if PYTORCH_INSTALLED:
         ignored = (*ignored, PyTorch2RiverBase)
 
-    def is_estimator(obj):
-        return inspect.isclass(obj) and issubclass(obj, base.Estimator)
+    def can_be_tested(obj):
+        return not inspect.isabstract(obj) and not issubclass(obj, ignored)
 
-    for submodule in importlib.import_module("river").__all__:
-
-        if submodule == "base":
-            continue
-
-        if submodule == "synth":
-            submodule = "datasets.synth"
-
-        submodule = f"river.{submodule}"
-
-        for _, obj in inspect.getmembers(
-            importlib.import_module(submodule),
-            lambda x: is_estimator(x) and not issubclass(x, ignored),
-        ):
-            yield obj(**obj._unit_test_params())
+    for estimator in filter(can_be_tested, iter_estimators()):
+        yield obj(**obj._unit_test_params())
 
 
 @pytest.mark.parametrize(
     "estimator, check",
     [
         pytest.param(estimator, check, id=f"{estimator}:{check.__name__}")
-        for estimator in list(get_all_estimators())
+        for estimator in list(iter_estimators_which_can_be_tested())
         + [
             feature_extraction.TFIDF(),
             linear_model.LogisticRegression(),
