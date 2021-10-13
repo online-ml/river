@@ -4,6 +4,7 @@
 
 - Renamed `base.WrapperMixin` to `base.Wrapper`.
 - Introduced `base.WrapperEnsemble`.
+- Clarified the difference between a `base.typing.Dataset` and a `base.typing.Stream`. A `Stream` is an instance of a `Dataset` and is stateful. A `Dataset` is stateless. It's essentially the same difference between an `Iterable` and an `Iterator` in the Python standard library.
 
 ## compat
 
