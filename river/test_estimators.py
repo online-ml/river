@@ -41,7 +41,14 @@ def iter_estimators():
     for submodule in importlib.import_module("river").__all__:
         if submodule == "synth":
             submodule = "datasets.synth"
-        yield from inspect.getmembers(importlib.import_module(f"river.{submodule}"))
+
+        def is_estimator(obj):
+            return inspect.isclass(obj) and issubclass(obj, base.Estimator)
+
+        for _, obj in inspect.getmembers(
+            importlib.import_module(f"river.{submodule}"), is_estimator
+        ):
+            yield obj
 
 
 def iter_estimators_which_can_be_tested():
@@ -89,11 +96,11 @@ def iter_estimators_which_can_be_tested():
     if PYTORCH_INSTALLED:
         ignored = (*ignored, PyTorch2RiverBase)
 
-    def can_be_tested(obj):
-        return not inspect.isabstract(obj) and not issubclass(obj, ignored)
+    def can_be_tested(estimator):
+        return not inspect.isabstract(estimator) and not issubclass(estimator, ignored)
 
     for estimator in filter(can_be_tested, iter_estimators()):
-        yield obj(**obj._unit_test_params())
+        yield estimator(**estimator._unit_test_params())
 
 
 @pytest.mark.parametrize(
