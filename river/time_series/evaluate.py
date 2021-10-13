@@ -1,7 +1,6 @@
 import collections
-from typing import Any, Iterable, Iterator, List, Optional, Tuple
+from typing import Any, Iterable, Iterator, Optional, Tuple
 
-from river import base, utils
 from river.base.typing import Dataset
 from river.metrics import RegressionMetric
 
