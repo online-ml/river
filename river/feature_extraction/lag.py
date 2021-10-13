@@ -234,10 +234,10 @@ class TargetLagger(base.SupervisedTransformer):
     {}
     {}
     {}
-    {'target-1_by_country': 16}
-    {'target-1_by_country': 42}
-    {'target-1_by_country': 24, 'target-2_by_country': 42}
-    {'target-1_by_country': 58, 'target-2_by_country': 16}
+    {'y-1_by_country': 16}
+    {'y-1_by_country': 42}
+    {'y-1_by_country': 24, 'y-2_by_country': 42}
+    {'y-1_by_country': 58, 'y-2_by_country': 16}
 
     """
 
@@ -246,7 +246,7 @@ class TargetLagger(base.SupervisedTransformer):
         lags: Union[int, Tuple[int]],
         by: Optional[Union[str, List[str]]] = None,
         drop_nones=True,
-        target_name="target",
+        target_name="y",
     ):
 
         if isinstance(lags, int):

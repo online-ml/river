@@ -200,14 +200,14 @@ class TargetAgg(base.SupervisedTransformer):
     >>> for x, y in dataset:
     ...     print(agg.transform_one(x))
     ...     agg = agg.learn_one(x, y)
-    {'target_bayes_mean_by_place': 3.0}
-    {'target_bayes_mean_by_place': 3.0}
-    {'target_bayes_mean_by_place': 9.5}
-    {'target_bayes_mean_by_place': 22.5}
-    {'target_bayes_mean_by_place': 14.333}
-    {'target_bayes_mean_by_place': 34.333}
-    {'target_bayes_mean_by_place': 15.75}
-    {'target_bayes_mean_by_place': 38.25}
+    {'y_bayes_mean_by_place': 3.0}
+    {'y_bayes_mean_by_place': 3.0}
+    {'y_bayes_mean_by_place': 9.5}
+    {'y_bayes_mean_by_place': 22.5}
+    {'y_bayes_mean_by_place': 14.333}
+    {'y_bayes_mean_by_place': 34.333}
+    {'y_bayes_mean_by_place': 15.75}
+    {'y_bayes_mean_by_place': 38.25}
 
     Just like with `feature_extraction.Agg`, we can specify multiple features on which to
     group the data:
@@ -223,14 +223,14 @@ class TargetAgg(base.SupervisedTransformer):
     >>> for x, y in dataset:
     ...     print(agg.transform_one(x))
     ...     agg = agg.learn_one(x, y)
-    {'target_bayes_mean_by_place_and_country': 3.0}
-    {'target_bayes_mean_by_place_and_country': 3.0}
-    {'target_bayes_mean_by_place_and_country': 3.0}
-    {'target_bayes_mean_by_place_and_country': 3.0}
-    {'target_bayes_mean_by_place_and_country': 9.5}
-    {'target_bayes_mean_by_place_and_country': 22.5}
-    {'target_bayes_mean_by_place_and_country': 13.5}
-    {'target_bayes_mean_by_place_and_country': 30.5}
+    {'y_bayes_mean_by_place_and_country': 3.0}
+    {'y_bayes_mean_by_place_and_country': 3.0}
+    {'y_bayes_mean_by_place_and_country': 3.0}
+    {'y_bayes_mean_by_place_and_country': 3.0}
+    {'y_bayes_mean_by_place_and_country': 9.5}
+    {'y_bayes_mean_by_place_and_country': 22.5}
+    {'y_bayes_mean_by_place_and_country': 13.5}
+    {'y_bayes_mean_by_place_and_country': 30.5}
 
     References
     ----------
@@ -242,7 +242,7 @@ class TargetAgg(base.SupervisedTransformer):
         self,
         by: typing.Union[str, typing.List[str]],
         how: stats.Univariate,
-        target_name="target",
+        target_name="y",
     ):
         self.by = by if isinstance(by, list) else [by]
         self.how = how
