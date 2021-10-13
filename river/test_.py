@@ -58,6 +58,8 @@ def get_all_estimators():
         facto.HOFMRegressor,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
+        feature_extraction.Lagger,
+        feature_extraction.TargetLagger,
         feature_selection.PoissonInclusion,
         meta.PredClipper,
         meta.TargetTransformRegressor,
@@ -74,8 +76,6 @@ def get_all_estimators():
         imblearn.RandomSampler,
         selection.SuccessiveHalvingClassifier,
         selection.SuccessiveHalvingRegressor,
-        time_series.Detrender,
-        time_series.GroupDetrender,
         time_series.SNARIMAX,
     )
 
@@ -114,7 +114,9 @@ def get_all_estimators():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
+                | meta.TargetStandardScaler(
+                    regressor=linear_model.LinearRegression(),
+                )
             ),
             (
                 preprocessing.StandardScaler()
