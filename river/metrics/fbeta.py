@@ -15,6 +15,8 @@ __all__ = [
     "WeightedFBeta",
     "ExampleF1",
     "ExampleFBeta",
+    "PerClassFBeta",
+    "PerClassF1",
 ]
 
 
@@ -401,6 +403,72 @@ class ExampleFBeta(metrics.MultiOutputClassificationMetric):
             return 0.0
 
 
+class PerClassFBeta(metrics.MultiClassMetric):
+    """Per-class F-Beta score.
+
+    Parameters
+    ----------
+    beta
+        Weight of precision in the harmonic mean.
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [True, False, True, True, True]
+    >>> y_pred = [True, True, False, True, True]
+
+    >>> metric = metrics.PerClassFBeta(beta=2)
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    PerClassFBeta: {True: 1.}
+    PerClassFBeta: {False: 0., True: 0.833333}
+    PerClassFBeta: {False: 0., True: 0.5}
+    PerClassFBeta: {False: 0., True: 0.666667}
+    PerClassFBeta: {False: 0., True: 0.75}
+
+    """
+
+    def __init__(self, beta, cm=None):
+        super().__init__(cm)
+        self.beta = beta
+
+    def get(self):
+        result = {}
+        b2 = self.beta ** 2
+
+        for c in self.cm.classes:
+
+            try:
+                p = self.cm[c][c] / self.cm.sum_col[c]
+            except ZeroDivisionError:
+                p = 0.0
+
+            try:
+                r = self.cm[c][c] / self.cm.sum_row[c]
+            except ZeroDivisionError:
+                r = 0.0
+
+            try:
+                result[c] = (1 + b2) * p * r / (b2 * p + r)
+            except ZeroDivisionError:
+                result[c] = 0.0
+
+        return result
+
+    def __repr__(self):
+        """Return the class name along with the current value of the metric."""
+        text = ", ".join(
+            [f"{c}: {v:{self._fmt}}".rstrip("0") for c, v in self.get().items()]
+        )
+        return f"{self.__class__.__name__}: {{{text}}}"
+
+
 class F1(FBeta):
     """Binary F1 score.
 
@@ -581,6 +649,39 @@ class ExampleF1(ExampleFBeta):
 
     >>> metric
     ExampleF1: 0.860215
+
+    """
+
+    def __init__(self, cm=None):
+        super().__init__(beta=1.0, cm=cm)
+
+
+class PerClassF1(PerClassFBeta):
+    """Per-class F1 score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [True, False, True, True, True]
+    >>> y_pred = [True, True, False, True, True]
+
+    >>> metric = metrics.PerClassF1()
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    PerClassF1: {True: 1.}
+    PerClassF1: {False: 0., True: 0.666667}
+    PerClassF1: {False: 0., True: 0.5}
+    PerClassF1: {False: 0., True: 0.666667}
+    PerClassF1: {False: 0., True: 0.75}
 
     """
 

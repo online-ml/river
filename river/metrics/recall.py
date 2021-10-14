@@ -1,6 +1,13 @@
 from river import metrics
 
-__all__ = ["MacroRecall", "MicroRecall", "Recall", "WeightedRecall", "ExampleRecall"]
+__all__ = [
+    "MacroRecall",
+    "MicroRecall",
+    "Recall",
+    "WeightedRecall",
+    "ExampleRecall",
+    "PerClassRecall",
+]
 
 
 class Recall(metrics.BinaryMetric):
@@ -216,3 +223,48 @@ class ExampleRecall(metrics.MultiOutputClassificationMetric):
             return self.cm.recall_sum / self.cm.n_samples
         except ZeroDivisionError:
             return 0.0
+
+
+class PerClassRecall(metrics.MultiClassMetric):
+    """Per-class recall score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [True, False, True, True, True]
+    >>> y_pred = [True, True, False, True, True]
+
+    >>> metric = metrics.PerClassRecall()
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    PerClassRecall: {True: 1.}
+    PerClassRecall: {False: 0., True: 1.}
+    PerClassRecall: {False: 0., True: 0.5}
+    PerClassRecall: {False: 0., True: 0.666667}
+    PerClassRecall: {False: 0., True: 0.75}
+
+    """
+
+    def get(self):
+        result = {}
+        for c in self.cm.classes:
+            tp = self.cm.true_positives(c)
+            fn = self.cm.false_negatives(c)
+            result[c] = tp / (tp + fn) if tp + fn > 0.0 else 0.0
+        return result
+
+    def __repr__(self):
+        """Return the class name along with the current value of the metric."""
+        text = ", ".join(
+            [f"{c}: {v:{self._fmt}}".rstrip("0") for c, v in self.get().items()]
+        )
+        return f"{self.__class__.__name__}: {{{text}}}"

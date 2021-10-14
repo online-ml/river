@@ -62,7 +62,7 @@ def generate_test_cases(metric, n):
 
     sample_weights = [random.random() for _ in range(n)]
 
-    if isinstance(metric, base.ClassificationMetric):
+    if isinstance(metric, base.BinaryMetric):
         y_true = [random.choice([False, True]) for _ in range(n)]
         if metric.requires_labels:
             y_pred = [random.choice([False, True]) for _ in range(n)]
@@ -269,6 +269,86 @@ def test_rolling_metric(metric, sk_metric):
                     )
 
 
+TEST_CASES_PER_CLASS = [
+    (
+        metrics.PerClassPrecision(),
+        partial(sk_metrics.precision_score, average=None, zero_division=0),
+    ),
+    (
+        metrics.PerClassRecall(),
+        partial(sk_metrics.recall_score, average=None, zero_division=0),
+    ),
+    (
+        metrics.PerClassFBeta(beta=2),
+        partial(sk_metrics.fbeta_score, beta=2, average=None, zero_division=0),
+    ),
+    (metrics.PerClassF1(), partial(sk_metrics.f1_score, average=None, zero_division=0)),
+]
+
+
+@pytest.mark.parametrize(
+    "metric, sk_metric",
+    [
+        pytest.param(metric, sk_metric, id=f"{metric.__class__.__name__}")
+        for metric, sk_metric in TEST_CASES_PER_CLASS
+    ],
+)
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_metric_per_class(metric, sk_metric):
+
+    # Check str works
+    str(metric)
+
+    for y_true, y_pred, sample_weights in generate_test_cases(metric=metric, n=30):
+
+        m = copy.deepcopy(metric)
+        for i, (yt, yp, w) in enumerate(zip(y_true, y_pred, sample_weights)):
+
+            m.update(y_true=yt, y_pred=yp, sample_weight=w)
+
+            if m.cm.n_classes == 3:
+                per_class = m.get()
+                if metric.works_with_weights:
+                    per_class_skm = sk_metric(
+                        y_true[: i + 1],
+                        y_pred[: i + 1],
+                        sample_weight=sample_weights[: i + 1],
+                    )
+                else:
+                    per_class_skm = sk_metric(y_true[: i + 1], y_pred[: i + 1])
+                for c in range(len(per_class_skm)):
+                    assert abs(per_class[c] - per_class_skm[c]) < 1e-6
+
+
+@pytest.mark.parametrize(
+    "metric, sk_metric",
+    [
+        pytest.param(metric, sk_metric, id=f"{metric.__class__.__name__}")
+        for metric, sk_metric in TEST_CASES_PER_CLASS
+    ],
+)
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_rolling_metric_per_class(metric, sk_metric):
+    def tail(iterable, n):
+        return collections.deque(iterable, maxlen=n)
+
+    for n in (1, 2, 5, 10):
+        for y_true, y_pred, _ in generate_test_cases(metric=metric, n=30):
+
+            m = metrics.Rolling(metric=copy.deepcopy(metric), window_size=n)
+
+            # Check str works
+            str(m)
+
+            for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
+
+                if m.metric.cm.n_classes == 3:
+                    per_class = m.get()
+                    per_class_skm = sk_metric(y_true[: i + 1], y_pred[: i + 1])
+                    for c in range(len(per_class_skm)):
+                        assert abs(per_class[c] - per_class_skm[c]) < 1e-6
+
+
 def test_log_loss():
 
     metric = metrics.LogLoss()
@@ -342,6 +422,37 @@ def test_multi_fbeta():
             assert math.isclose(fbeta.get(), multi_fbeta)
 
 
+def test_rolling_multi_fbeta():
+    def tail(iterable, n):
+        return collections.deque(iterable, maxlen=n)
+
+    fbeta = metrics.Rolling(
+        metric=metrics.MultiFBeta(
+            betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}
+        ),
+        window_size=3,
+    )
+    n = fbeta.window_size
+    sk_fbeta = sk_metrics.fbeta_score
+    y_true = [0, 1, 2, 2, 2]
+    y_pred = [0, 1, 0, 2, 1]
+
+    for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
+
+        fbeta.update(yt, yp)
+
+        if i >= 2:
+            sk_y_true, sk_y_pred = tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n)
+            fbeta_0, _, _ = sk_fbeta(sk_y_true, sk_y_pred, beta=0.25, average=None)
+            _, fbeta_1, _ = sk_fbeta(sk_y_true, sk_y_pred, beta=1, average=None)
+            _, _, fbeta_2 = sk_fbeta(sk_y_true, sk_y_pred, beta=4, average=None)
+
+            multi_fbeta = fbeta_0 * 1 + fbeta_1 * 1 + fbeta_2 * 2
+            multi_fbeta /= 1 + 1 + 2
+
+            assert math.isclose(fbeta.get(), multi_fbeta)
+
+
 def test_pair_confusion():
 
     metric = metrics.PairConfusionMatrix()
@@ -388,37 +499,6 @@ def test_rolling_pair_confusion():
                     for j in [0, 1]:
                         for k in [0, 1]:
                             assert m.get()[j][k] == sk_pair_confusion_matrix[j][k]
-
-
-def test_rolling_multi_fbeta():
-    def tail(iterable, n):
-        return collections.deque(iterable, maxlen=n)
-
-    fbeta = metrics.Rolling(
-        metric=metrics.MultiFBeta(
-            betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}
-        ),
-        window_size=3,
-    )
-    n = fbeta.window_size
-    sk_fbeta = sk_metrics.fbeta_score
-    y_true = [0, 1, 2, 2, 2]
-    y_pred = [0, 1, 0, 2, 1]
-
-    for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
-
-        fbeta.update(yt, yp)
-
-        if i >= 2:
-            sk_y_true, sk_y_pred = tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n)
-            fbeta_0, _, _ = sk_fbeta(sk_y_true, sk_y_pred, beta=0.25, average=None)
-            _, fbeta_1, _ = sk_fbeta(sk_y_true, sk_y_pred, beta=1, average=None)
-            _, _, fbeta_2 = sk_fbeta(sk_y_true, sk_y_pred, beta=4, average=None)
-
-            multi_fbeta = fbeta_0 * 1 + fbeta_1 * 1 + fbeta_2 * 2
-            multi_fbeta /= 1 + 1 + 2
-
-            assert math.isclose(fbeta.get(), multi_fbeta)
 
 
 def test_r2():

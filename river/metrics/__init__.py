@@ -43,6 +43,8 @@ from .fbeta import (
     MicroF1,
     MicroFBeta,
     MultiFBeta,
+    PerClassF1,
+    PerClassFBeta,
     WeightedF1,
     WeightedFBeta,
 )
@@ -63,6 +65,7 @@ from .precision import (
     ExamplePrecision,
     MacroPrecision,
     MicroPrecision,
+    PerClassPrecision,
     Precision,
     WeightedPrecision,
 )
@@ -71,7 +74,14 @@ from .purity import Purity
 from .q0 import Q0, Q2
 from .r2 import R2
 from .rand import AdjustedRand, Rand
-from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
+from .recall import (
+    ExampleRecall,
+    MacroRecall,
+    MicroRecall,
+    PerClassRecall,
+    Recall,
+    WeightedRecall,
+)
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
 from .rolling import Rolling
@@ -89,7 +99,6 @@ __all__ = [
     "Completeness",
     "ClassificationMetric",
     "ClassificationReport",
-    "ClusteringReport",
     "cluster",
     "CohenKappa",
     "ConfusionMatrix",
@@ -133,6 +142,10 @@ __all__ = [
     "MutualInfo",
     "NormalizedMutualInfo",
     "PairConfusionMatrix",
+    "PerClassPrecision",
+    "PerClassRecall",
+    "PerClassFBeta",
+    "PerClassF1",
     "Precision",
     "Purity",
     "Q0",
@@ -145,7 +158,6 @@ __all__ = [
     "RMSLE",
     "ROCAUC",
     "Rolling",
-    "RollingClusteringReport",
     "R2",
     "Precision",
     "PrevalenceThreshold",

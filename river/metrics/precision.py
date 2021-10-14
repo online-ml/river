@@ -6,6 +6,7 @@ __all__ = [
     "Precision",
     "WeightedPrecision",
     "ExamplePrecision",
+    "PerClassPrecision",
 ]
 
 
@@ -236,3 +237,48 @@ class ExamplePrecision(metrics.MultiOutputClassificationMetric):
             return self.cm.precision_sum / self.cm.n_samples
         except ZeroDivisionError:
             return 0.0
+
+
+class PerClassPrecision(metrics.MultiClassMetric):
+    """Per-class precision score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [True, False, True, True, True]
+    >>> y_pred = [True, True, False, True, True]
+
+    >>> metric = metrics.PerClassPrecision()
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    PerClassPrecision: {True: 1.}
+    PerClassPrecision: {False: 0., True: 0.5}
+    PerClassPrecision: {False: 0., True: 0.5}
+    PerClassPrecision: {False: 0., True: 0.666667}
+    PerClassPrecision: {False: 0., True: 0.75}
+
+    """
+
+    def get(self):
+        result = {}
+        for c in self.cm.classes:
+            tp = self.cm.true_positives(c)
+            fp = self.cm.false_positives(c)
+            result[c] = tp / (tp + fp) if tp + fp > 0.0 else 0.0
+        return result
+
+    def __repr__(self):
+        """Return the class name along with the current value of the metric."""
+        text = ", ".join(
+            [f"{c}: {v:{self._fmt}}".rstrip("0") for c, v in self.get().items()]
+        )
+        return f"{self.__class__.__name__}: {{{text}}}"
