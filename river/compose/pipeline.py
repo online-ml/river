@@ -259,23 +259,23 @@ class Pipeline(base.Estimator):
         if isinstance(obj, tuple):
             name, obj = obj
 
-        def _convert_to_estimator(obj: typing.Any) -> base.Estimator:
+        def _coerce_to_estimator(obj: typing.Any) -> base.Estimator:
             if isinstance(obj, (types.FunctionType, types.LambdaType)):
                 return func.FuncTransformer(obj)
             if isinstance(obj, list):
                 return union.TransformerUnion(
-                    *[_convert_to_estimator(part) for part in obj]
+                    *[_coerce_to_estimator(part) for part in obj]
                 )
             return obj
 
-        estimator = _convert_to_estimator(obj)
+        estimator = _coerce_to_estimator(obj)
 
         def infer_name(estimator: base.Estimator) -> str:
             if isinstance(estimator, func.FuncTransformer):
                 return infer_name(estimator.func)
-            elif isinstance(estimator, (types.FunctionType, types.LambdaType)):
+            if isinstance(estimator, (types.FunctionType, types.LambdaType)):
                 return estimator.__name__
-            elif hasattr(estimator, "__class__"):
+            if hasattr(estimator, "__class__"):
                 return estimator.__class__.__name__
             return str(estimator)
 
