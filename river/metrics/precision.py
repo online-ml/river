@@ -271,8 +271,10 @@ class PerClassPrecision(metrics.MultiClassMetric):
 
     def get(self) -> dict:
         return {
-            class_label: self.cm.true_positives(class_label) / self.cm.sum_col[class_label]
-            if self.cm.sum_col[class_label] > 0.0 else 0.0
+            class_label: self.cm.true_positives(class_label)
+            / self.cm.sum_col[class_label]
+            if self.cm.sum_col[class_label] > 0.0
+            else 0.0
             for class_label in self.cm.classes
         }
 
@@ -325,10 +327,11 @@ class PerLabelPrecision(metrics.MultiOutputClassificationMetric):
 
     def get(self) -> dict:
         return {
-                label: matrix.true_positives(1) / matrix.sum_col[1]
-                if matrix.sum_col[1] > 0.0 else 0.0
-                for label, matrix in self.cm.data.items()
-            }
+            label: matrix.true_positives(1) / matrix.sum_col[1]
+            if matrix.sum_col[1] > 0.0
+            else 0.0
+            for label, matrix in self.cm.data.items()
+        }
 
     def __repr__(self):
         """Return the class name along with the current value of the metric."""
