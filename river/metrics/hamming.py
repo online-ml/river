@@ -1,6 +1,6 @@
 from . import base
 
-__all__ = ["Hamming"]
+__all__ = ["Hamming", "HammingLoss"]
 
 
 class Hamming(base.MultiOutputClassificationMetric):
