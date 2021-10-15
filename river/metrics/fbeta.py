@@ -17,6 +17,8 @@ __all__ = [
     "ExampleFBeta",
     "PerClassFBeta",
     "PerClassF1",
+    "PerLabelFBeta",
+    "PerLabelF1",
 ]
 
 
@@ -438,7 +440,7 @@ class PerClassFBeta(metrics.MultiClassMetric):
         super().__init__(cm)
         self.beta = beta
 
-    def get(self):
+    def get(self) -> dict:
         result = {}
         b2 = self.beta ** 2
 
@@ -465,6 +467,85 @@ class PerClassFBeta(metrics.MultiClassMetric):
         """Return the class name along with the current value of the metric."""
         text = ", ".join(
             [f"{c}: {v:{self._fmt}}".rstrip("0") for c, v in self.get().items()]
+        )
+        return f"{self.__class__.__name__}: {{{text}}}"
+
+
+class PerLabelFBeta(metrics.MultiOutputClassificationMetric):
+    """Per-label F-Beta score.
+
+    Parameters
+    ----------
+    beta
+        Weight of precision in the harmonic mean.
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
+
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
+
+    >>> metric = metrics.PerLabelFBeta(2)
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    PerLabelFBeta: {0: 0., 1: 1., 2: 1.}
+    PerLabelFBeta: {0: 0.833333, 1: 0.555556, 2: 1.}
+    PerLabelFBeta: {0: 0.909091, 1: 0.714286, 2: 1.}
+
+    """
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    def __init__(self, beta, cm=None):
+        super().__init__(cm)
+        self.beta = beta
+
+    def get(self) -> dict:
+        result = {}
+        b2 = self.beta ** 2
+
+        for label in self.cm.labels:
+
+            try:
+                p = self.cm[label][1][1] / self.cm[label].sum_col[1]
+            except ZeroDivisionError:
+                p = 0.0
+
+            try:
+                r = self.cm[label][1][1] / self.cm[label].sum_row[1]
+            except ZeroDivisionError:
+                r = 0.0
+
+            try:
+                result[label] = (1 + b2) * p * r / (b2 * p + r)
+            except ZeroDivisionError:
+                result[label] = 0.0
+
+        return result
+
+    def __repr__(self):
+        """Return the class name along with the current value of the metric."""
+        text = ", ".join(
+            [
+                f"{label}: {val:{self._fmt}}".rstrip("0")
+                for label, val in self.get().items()
+            ]
         )
         return f"{self.__class__.__name__}: {{{text}}}"
 
@@ -682,6 +763,45 @@ class PerClassF1(PerClassFBeta):
     PerClassF1: {False: 0., True: 0.5}
     PerClassF1: {False: 0., True: 0.666667}
     PerClassF1: {False: 0., True: 0.75}
+
+    """
+
+    def __init__(self, cm=None):
+        super().__init__(beta=1.0, cm=cm)
+
+
+class PerLabelF1(PerLabelFBeta):
+    """Per-label F1 score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
+
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
+
+    >>> metric = metrics.PerLabelF1()
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    PerLabelF1: {0: 0., 1: 1., 2: 1.}
+    PerLabelF1: {0: 0.666667, 1: 0.666667, 2: 1.}
+    PerLabelF1: {0: 0.8, 1: 0.8, 2: 1.}
 
     """
 

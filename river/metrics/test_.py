@@ -78,12 +78,21 @@ def generate_test_cases(metric, n):
             y_pred = [np.random.dirichlet(np.ones(3)).tolist() for _ in range(n)]
         yield y_true, y_pred, sample_weights
 
+    if isinstance(metric, metrics.MultiOutputClassificationMetric):
+        n_labels = 3
+        y_true = [[random.choice([0, 1]) for _ in range(n_labels)] for _ in range(n)]
+        y_pred = [[random.choice([0, 1]) for _ in range(n_labels)] for _ in range(n)]
+
     if isinstance(metric, base.RegressionMetric):
         yield (
             [random.random() for _ in range(n)],
             [random.random() for _ in range(n)],
             sample_weights,
         )
+
+
+def tail(iterable, n):
+    return collections.deque(iterable, maxlen=n)
 
 
 def partial(f, **kwargs):
@@ -329,8 +338,6 @@ def test_metric_per_class(metric, sk_metric):
 )
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
 def test_rolling_metric_per_class(metric, sk_metric):
-    def tail(iterable, n):
-        return collections.deque(iterable, maxlen=n)
 
     for n in (1, 2, 5, 10):
         for y_true, y_pred, _ in generate_test_cases(metric=metric, n=30):
@@ -347,6 +354,85 @@ def test_rolling_metric_per_class(metric, sk_metric):
                     per_class_skm = sk_metric(y_true[: i + 1], y_pred[: i + 1])
                     for c in range(len(per_class_skm)):
                         assert abs(per_class[c] - per_class_skm[c]) < 1e-6
+
+
+TEST_CASES_PER_LABEL = [
+    (
+        metrics.PerLabelPrecision(),
+        partial(sk_metrics.precision_score, average=None, zero_division=0),
+    ),
+    (
+        metrics.PerLabelRecall(),
+        partial(sk_metrics.recall_score, average=None, zero_division=0),
+    ),
+    (
+        metrics.PerLabelFBeta(beta=2),
+        partial(sk_metrics.fbeta_score, beta=2, average=None, zero_division=0),
+    ),
+    (metrics.PerLabelF1(), partial(sk_metrics.f1_score, average=None, zero_division=0)),
+]
+
+
+@pytest.mark.parametrize(
+    "metric, sk_metric",
+    [
+        pytest.param(metric, sk_metric, id=f"{metric.__class__.__name__}")
+        for metric, sk_metric in TEST_CASES_PER_LABEL
+    ],
+)
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_metric_per_label(metric, sk_metric):
+    # Check str works
+    str(metric)
+
+    for y_true, y_pred, sample_weights in generate_test_cases(metric=metric, n=30):
+
+        m = copy.deepcopy(metric)
+        for i, (yt, yp, w) in enumerate(zip(y_true, y_pred, sample_weights)):
+
+            m.update(
+                y_true=dict(enumerate(yt)), y_pred=dict(enumerate(yp)), sample_weight=w
+            )
+
+            if m.cm.n_labels == 3:
+                per_label = m.get()
+                if metric.works_with_weights:
+                    per_label_skm = sk_metric(
+                        y_true[: i + 1],
+                        y_pred[: i + 1],
+                        sample_weight=sample_weights[: i + 1],
+                    )
+                else:
+                    per_label_skm = sk_metric(y_true[: i + 1], y_pred[: i + 1])
+                for label in range(len(per_label_skm)):
+                    assert abs(per_label[label] - per_label_skm[label]) < 1e-6
+
+
+@pytest.mark.parametrize(
+    "metric, sk_metric",
+    [
+        pytest.param(metric, sk_metric, id=f"{metric.__class__.__name__}")
+        for metric, sk_metric in TEST_CASES_PER_LABEL
+    ],
+)
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_rolling_metric_per_label(metric, sk_metric):
+
+    for n in (1, 2, 5, 10):
+        for y_true, y_pred, _ in generate_test_cases(metric=metric, n=30):
+
+            m = metrics.Rolling(metric=copy.deepcopy(metric), window_size=n)
+
+            # Check str works
+            str(m)
+
+            for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
+
+                if m.metric.cm.n_labels == 3:
+                    per_label = m.get()
+                    per_label_skm = sk_metric(y_true[: i + 1], y_pred[: i + 1])
+                    for label in range(len(per_label_skm)):
+                        assert abs(per_label[label] - per_label_skm[label]) < 1e-6
 
 
 def test_log_loss():

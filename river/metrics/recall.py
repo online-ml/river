@@ -7,6 +7,7 @@ __all__ = [
     "WeightedRecall",
     "ExampleRecall",
     "PerClassRecall",
+    "PerLabelRecall",
 ]
 
 
@@ -254,7 +255,7 @@ class PerClassRecall(metrics.MultiClassMetric):
 
     """
 
-    def get(self):
+    def get(self) -> dict:
         result = {}
         for c in self.cm.classes:
             tp = self.cm.true_positives(c)
@@ -266,5 +267,63 @@ class PerClassRecall(metrics.MultiClassMetric):
         """Return the class name along with the current value of the metric."""
         text = ", ".join(
             [f"{c}: {v:{self._fmt}}".rstrip("0") for c, v in self.get().items()]
+        )
+        return f"{self.__class__.__name__}: {{{text}}}"
+
+
+class PerLabelRecall(metrics.MultiOutputClassificationMetric):
+    """Per-class recall score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [
+    ...     {0: False, 1: True, 2: True},
+    ...     {0: True, 1: True, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
+
+    >>> y_pred = [
+    ...     {0: True, 1: True, 2: True},
+    ...     {0: True, 1: False, 2: False},
+    ...     {0: True, 1: True, 2: False},
+    ... ]
+
+    >>> metric = metrics.PerLabelRecall()
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    PerLabelRecall: {0: 0., 1: 1., 2: 1.}
+    PerLabelRecall: {0: 1., 1: 0.5, 2: 1.}
+    PerLabelRecall: {0: 1., 1: 0.666667, 2: 1.}
+
+    """
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    def get(self) -> dict:
+        result = {}
+        for label in self.cm.labels:
+            tp = self.cm.data[label].true_positives(1)
+            fn = self.cm.data[label].false_negatives(1)
+            result[label] = tp / (tp + fn) if tp + fn > 0.0 else 0.0
+        return result
+
+    def __repr__(self):
+        """Return the class name along with the current value of the metric."""
+        text = ", ".join(
+            [
+                f"{label}: {val:{self._fmt}}".rstrip("0")
+                for label, val in self.get().items()
+            ]
         )
         return f"{self.__class__.__name__}: {{{text}}}"

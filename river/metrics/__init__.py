@@ -45,6 +45,8 @@ from .fbeta import (
     MultiFBeta,
     PerClassF1,
     PerClassFBeta,
+    PerLabelF1,
+    PerLabelFBeta,
     WeightedF1,
     WeightedFBeta,
 )
@@ -66,6 +68,7 @@ from .precision import (
     MacroPrecision,
     MicroPrecision,
     PerClassPrecision,
+    PerLabelPrecision,
     Precision,
     WeightedPrecision,
 )
@@ -79,6 +82,7 @@ from .recall import (
     MacroRecall,
     MicroRecall,
     PerClassRecall,
+    PerLabelRecall,
     Recall,
     WeightedRecall,
 )
@@ -146,6 +150,10 @@ __all__ = [
     "PerClassRecall",
     "PerClassFBeta",
     "PerClassF1",
+    "PerLabelPrecision",
+    "PerLabelRecall",
+    "PerLabelF1",
+    "PerLabelFBeta",
     "Precision",
     "Purity",
     "Q0",
