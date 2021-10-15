@@ -256,12 +256,11 @@ class PerClassRecall(metrics.MultiClassMetric):
     """
 
     def get(self) -> dict:
-        result = {}
-        for c in self.cm.classes:
-            tp = self.cm.true_positives(c)
-            fn = self.cm.false_negatives(c)
-            result[c] = tp / (tp + fn) if tp + fn > 0.0 else 0.0
-        return result
+        return {
+            class_label: self.cm.true_positives(class_label) / self.cm.sum_row[class_label]
+            if self.cm.sum_row[class_label] > 0.0 else 0.0
+            for class_label in self.cm.classes
+        }
 
     def __repr__(self):
         """Return the class name along with the current value of the metric."""
@@ -311,12 +310,11 @@ class PerLabelRecall(metrics.MultiOutputClassificationMetric):
         return True
 
     def get(self) -> dict:
-        result = {}
-        for label in self.cm.labels:
-            tp = self.cm.data[label].true_positives(1)
-            fn = self.cm.data[label].false_negatives(1)
-            result[label] = tp / (tp + fn) if tp + fn > 0.0 else 0.0
-        return result
+        return {
+                label: matrix.true_positives(1) / matrix.sum_row[1]
+                if matrix.sum_row[1] > 0.0 else 0.0
+                for label, matrix in self.cm.data.items()
+            }
 
     def __repr__(self):
         """Return the class name along with the current value of the metric."""
