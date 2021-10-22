@@ -79,10 +79,27 @@ class HoltWinters(Forecaster):
 
     """
 
-    def __init__(self, alpha, beta=None, gamma=None, seasonality: int = None, multiplicative=False):
-        self.level = MultiplicativeLevel(alpha) if multiplicative else AdditiveLevel(alpha)
+    def __init__(
+        self,
+        alpha,
+        beta=None,
+        gamma=None,
+        seasonality: int = None,
+        multiplicative=False,
+    ):
+        self.level = (
+            MultiplicativeLevel(alpha) if multiplicative else AdditiveLevel(alpha)
+        )
         self.trend = Trend(beta) if beta else None
-        self.season = (MultiplicativeSeason(gamma, seasonality) if multiplicative else AdditiveSeason(gamma, seasonality)) if (gamma or seasonality) else None
+        self.season = (
+            (
+                MultiplicativeSeason(gamma, seasonality)
+                if multiplicative
+                else AdditiveSeason(gamma, seasonality)
+            )
+            if (gamma or seasonality)
+            else None
+        )
         self.seasonality = seasonality
         self.multiplicative = multiplicative
         self._first_values = []
@@ -122,7 +139,7 @@ class HoltWinters(Forecaster):
                     self.season[-self.seasonality + h % self.seasonality]
                     if self.seasonality
                     else 0
-                )
+                ),
             )
             for h in range(horizon)
         ]

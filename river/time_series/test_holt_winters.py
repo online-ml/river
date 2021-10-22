@@ -47,10 +47,33 @@ def oil():
 @pytest.fixture
 def ausair():
     return [
-        17.55340, 21.86010, 23.88660, 26.92930, 26.88850, 28.83140, 30.07510, 30.95350,
-        30.18570, 31.57970, 32.57757, 33.47740, 39.02158, 41.38643, 41.59655, 44.65732,
-        46.95177, 48.72884, 51.48843, 50.02697, 60.64091, 63.36031, 66.35527, 68.19795,
-        68.12324, 69.77935, 72.59770,
+        17.55340,
+        21.86010,
+        23.88660,
+        26.92930,
+        26.88850,
+        28.83140,
+        30.07510,
+        30.95350,
+        30.18570,
+        31.57970,
+        32.57757,
+        33.47740,
+        39.02158,
+        41.38643,
+        41.59655,
+        44.65732,
+        46.95177,
+        48.72884,
+        51.48843,
+        50.02697,
+        60.64091,
+        63.36031,
+        66.35527,
+        68.19795,
+        68.12324,
+        69.77935,
+        72.59770,
     ]
 
 
@@ -161,8 +184,8 @@ def test_ausair(printer, ausair):
     model._initialized = True
 
     template = "{:>2d} | {:>8.2f} | {:>8.2f} | {:>8.2f} | {:>8.2f}"
-    printer('t  | y        | level    | trend    | y_pred')
-    printer('----------------------------------------------')
+    printer("t  | y        | level    | trend    | y_pred")
+    printer("----------------------------------------------")
 
     for t, y in enumerate(ausair, start=1):
         y_pred = model.forecast(1)[0]
@@ -170,7 +193,7 @@ def test_ausair(printer, ausair):
         printer(template.format(t, y, model.level[-1], model.trend[-1], y_pred))
 
     for h, y_pred in enumerate(model.forecast(5), start=1):
-        printer(f'{t + h:>2d} |          |          |          |    {y_pred:.2f}')
+        printer(f"{t + h:>2d} |          |          |          |    {y_pred:.2f}")
 
     expected = """
 t  | y        | level    | trend    | y_pred
@@ -210,6 +233,7 @@ t  | y        | level    | trend    | y_pred
 """
 
     assert repr(printer).strip() == expected.strip()
+
 
 def test_austourists_additive(printer, austourists):
     """https://otexts.com/fpp2/holt-winters.html#example-international-tourist-visitor-nights-in-australia"""
@@ -296,10 +320,13 @@ t  | y        | level    | trend    | seasonality | y_pred
 
     assert repr(printer).strip() == expected.strip()
 
+
 def test_austourists_multiplicative(printer, austourists):
     """https://otexts.com/fpp2/holt-winters.html#example-international-tourist-visitor-nights-in-australia"""
 
-    model = HoltWinters(alpha=0.441, beta=0.03, gamma=0.002, seasonality=4, multiplicative=True)
+    model = HoltWinters(
+        alpha=0.441, beta=0.03, gamma=0.002, seasonality=4, multiplicative=True
+    )
     model.level.append(32.4875)
     model.trend.append(0.6974)
     model.season.extend([1.2442, 0.7704, 0.9618, 1.0237])
