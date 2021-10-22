@@ -48,6 +48,7 @@
 - `time_series.Detrender` and `time_series.GroupDetrender` have been removed as they overlap with `meta.TargetStandardScaler`.
 - Implemented a `time_series.evaluate` method, which performs progressive validation for time series scenarios.
 - Implemented `time_series.HorizonMetric` class to evaluate the performance of a forecasting model at each time step along a horizon.
+- Implemented `time_series.HoltWinters`.
 
 ## utils
 
