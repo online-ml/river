@@ -1,5 +1,5 @@
 import statistics
-from collections import UserList, deque
+from collections import deque
 
 from .base import Forecaster
 
