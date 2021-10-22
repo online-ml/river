@@ -177,6 +177,7 @@ t  | y        | level    | y_pred
 
 
 def test_ausair(printer, ausair):
+    """https://otexts.com/fpp2/holt.html#example-air-passengers"""
 
     model = HoltWinters(alpha=0.8302, beta=1e-04)
     model.level.append(15.5715)

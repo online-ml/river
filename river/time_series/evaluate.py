@@ -129,11 +129,6 @@ def evaluate(
         which need a warming up period to start producing meaningful forecasts. The first forecast
         is skipped by default.
 
-    Examples
-    --------
-
-    TODO: waiting for exponential smoothing
-
     """
 
     horizon_metric = None

@@ -71,7 +71,79 @@ class MultiplicativeSeason(Component):
 
 
 class HoltWinters(Forecaster):
-    """
+    r"""Holt-Winters forecaster.
+
+    This is a standard implementation of the Holt-Winters forecasting method. Certain
+    parametrisations result in special cases, such as simple exponential smoothing.
+
+    Optimal parameters and initialisation values can be determined in a batch setting. However, in
+    an online setting, it is necessary to wait and observe enough values. The first
+    `k = max(2, seasonality)` values are indeed used to initialize the components.
+
+    **Level initialization**
+
+    $$l = \frac{1}{k} \sum_{i=1}{k} y_i$$
+
+    **Trend initialization**
+
+    $$t = \frac{1}{k - 1} \sum_{i=2}{k} y_i - y_{i-1}$$
+
+    **Trend initialization**
+
+    $$s_i = \frac{y_i}{k}$$
+
+    Parameters
+    ----------
+    alpha
+        Smoothing parameter for the level.
+    beta
+        Smoothing parameter for the trend.
+    gamma
+        Smoothing parameter for the seasonality.
+    seasonality
+        The number of periods in a season. For instance, this should be 4 for quarterly data,
+        and 12 for yearly data.
+    multiplicative
+        Whether or not to use a multiplicative formulation.
+
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import metrics
+    >>> from river import time_series
+
+    >>> dataset = datasets.AirlinePassengers()
+
+    >>> model = time_series.HoltWinters(
+    ...     alpha=0.3,
+    ...     beta=0.1,
+    ...     gamma=0.6,
+    ...     seasonality=12,
+    ...     multiplicative=True
+    ... )
+
+    >>> metric = metrics.MAE()
+
+    >>> time_series.evaluate(
+    ...     dataset,
+    ...     model,
+    ...     metric,
+    ...     horizon=12,
+    ...     grace_period=12
+    ... )
+    +1  MAE: 25.899087
+    +2  MAE: 26.26131
+    +3  MAE: 25.735903
+    +4  MAE: 25.625678
+    +5  MAE: 26.093842
+    +6  MAE: 26.90249
+    +7  MAE: 28.634398
+    +8  MAE: 29.284769
+    +9  MAE: 31.018351
+    +10 MAE: 32.252349
+    +11 MAE: 33.518946
+    +12 MAE: 33.975057
 
     References
     ----------
@@ -84,7 +156,7 @@ class HoltWinters(Forecaster):
         alpha,
         beta=None,
         gamma=None,
-        seasonality: int = None,
+        seasonality=0,
         multiplicative=False,
     ):
         self.level = (
@@ -120,11 +192,9 @@ class HoltWinters(Forecaster):
 
         # The components can be initialized now that enough values have been observed
         self.level.append(statistics.mean(self._first_values))
-        self.trend.append(
-            statistics.mean(
-                [b - a for a, b in zip(self._first_values[:-1], self._first_values[1:])]
-            )
-        )
+        diffs = [b - a for a, b in zip(self._first_values[:-1], self._first_values[1:])]
+        self.trend.append(statistics.mean(diffs))
+        self.season.extend([y / self.level[-1] for y in self._first_values])
 
         self._initialized = True
 
