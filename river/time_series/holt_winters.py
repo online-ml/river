@@ -1,8 +1,7 @@
-from collections import deque, UserList
 import statistics
+from collections import UserList, deque
 
 from .base import Forecaster
-
 
 __all__ = ["HoltWinters"]
 
@@ -12,20 +11,18 @@ class Component(deque):
 
 
 class Level(Component):
-
     def __init__(self, alpha):
         super().__init__([], maxlen=2)
         self.alpha = alpha
 
     def update(self, y, trend, season):
         self.append(
-            self.alpha * (y - (season[-season.seasonality] if season else 0)) +
-            (1 - self.alpha) * (self[-1] + (trend[-1] if trend else 0))
+            self.alpha * (y - (season[-season.seasonality] if season else 0))
+            + (1 - self.alpha) * (self[-1] + (trend[-1] if trend else 0))
         )
 
 
 class Trend(Component):
-
     def __init__(self, beta):
         super().__init__([], maxlen=2)
         self.beta = beta
@@ -35,14 +32,16 @@ class Trend(Component):
 
 
 class Season(Component):
-
     def __init__(self, gamma, seasonality):
         super().__init__([], maxlen=seasonality + 1)
         self.gamma = gamma
         self.seasonality = seasonality
 
     def update(self, y, level, trend):
-        self.append(self.gamma * (y - level[-2] - trend[-2]) + (1 - self.gamma) * self[-self.seasonality])
+        self.append(
+            self.gamma * (y - level[-2] - trend[-2])
+            + (1 - self.gamma) * self[-self.seasonality]
+        )
 
 
 class HoltWinters(Forecaster):
@@ -53,6 +52,7 @@ class HoltWinters(Forecaster):
     [^1] [Wikipedia page on exponential smoothing](https://www.wikiwand.com/en/Exponential_smoothing)
 
     """
+
     def __init__(self, alpha, beta=None, gamma=None, seasonality: int = None):
         self.level = Level(alpha)
         self.trend = Trend(beta) if beta else None
@@ -76,7 +76,11 @@ class HoltWinters(Forecaster):
 
         # The components can be initialized now that enough values have been observed
         self.level.append(statistics.mean(self._first_values))
-        self.trend.append(statistics.mean([b - a for a, b in zip(self._first_values[:-1], self._first_values[1:])]))
+        self.trend.append(
+            statistics.mean(
+                [b - a for a, b in zip(self._first_values[:-1], self._first_values[1:])]
+            )
+        )
 
         self._initialized = True
 
@@ -86,6 +90,10 @@ class HoltWinters(Forecaster):
         return [
             self.level[-1]
             + ((h + 1) * self.trend[-1] if self.trend else 0)
-            + (self.season[-self.seasonality + h % self.seasonality] if self.seasonality else 0)
+            + (
+                self.season[-self.seasonality + h % self.seasonality]
+                if self.seasonality
+                else 0
+            )
             for h in range(horizon)
         ]

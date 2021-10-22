@@ -75,7 +75,11 @@ def _iter_with_horizon(dataset: Dataset, horizon: int) -> TimeSeries:
 
 
 def _evaluate(
-    dataset: Dataset, model: Forecaster, metric: RegressionMetric, horizon: int, grace_period: int
+    dataset: Dataset,
+    model: Forecaster,
+    metric: RegressionMetric,
+    horizon: int,
+    grace_period: int,
 ) -> HorizonMetric:
 
     horizon_metric = HorizonMetric(metric)
@@ -93,7 +97,11 @@ def _evaluate(
 
 
 def evaluate(
-    dataset: Dataset, model: Forecaster, metric: RegressionMetric, horizon: int, grace_period=1
+    dataset: Dataset,
+    model: Forecaster,
+    metric: RegressionMetric,
+    horizon: int,
+    grace_period=1,
 ) -> HorizonMetric:
     """Evaluates the performance of a forecaster on a time series dataset.
 

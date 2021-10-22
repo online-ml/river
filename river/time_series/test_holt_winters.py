@@ -4,11 +4,10 @@ import pytest
 
 from river.time_series import HoltWinters
 
+
 @pytest.fixture
 def printer():
-
     class Printer:
-
         def __init__(self):
             self.buffer = io.StringIO()
 
@@ -20,28 +19,80 @@ def printer():
 
     return Printer()
 
+
 @pytest.fixture
 def australia():
     return [
-        42.20566, 24.64917, 32.66734, 37.25735,
-        45.24246, 29.35048, 36.34421, 41.78208,
-        49.27660, 31.27540, 37.85063, 38.83704,
-        51.23690, 31.83855, 41.32342, 42.79900,
-        55.70836, 33.40714, 42.31664, 45.15712,
-        59.57608, 34.83733, 44.84168, 46.97125,
-        60.01903, 38.37118, 46.97586, 50.73380,
-        61.64687, 39.29957, 52.67121, 54.33232,
-        66.83436, 40.87119, 51.82854, 57.49191,
-        65.25147, 43.06121, 54.76076, 59.83447,
-        73.25703, 47.69662, 61.09777, 66.05576
+        42.20566,
+        24.64917,
+        32.66734,
+        37.25735,
+        45.24246,
+        29.35048,
+        36.34421,
+        41.78208,
+        49.27660,
+        31.27540,
+        37.85063,
+        38.83704,
+        51.23690,
+        31.83855,
+        41.32342,
+        42.79900,
+        55.70836,
+        33.40714,
+        42.31664,
+        45.15712,
+        59.57608,
+        34.83733,
+        44.84168,
+        46.97125,
+        60.01903,
+        38.37118,
+        46.97586,
+        50.73380,
+        61.64687,
+        39.29957,
+        52.67121,
+        54.33232,
+        66.83436,
+        40.87119,
+        51.82854,
+        57.49191,
+        65.25147,
+        43.06121,
+        54.76076,
+        59.83447,
+        73.25703,
+        47.69662,
+        61.09777,
+        66.05576,
     ]
+
 
 @pytest.fixture
 def oil():
     return [
-        445.3641, 453.1950, 454.409, 422.3789, 456.0371, 440.3866, 425.1944, 486.2052, 500.4291,
-        521.2759, 508.9476, 488.8889, 509.8706, 456.7229, 473.8166, 525.9509, 549.8338, 542.3405,
+        445.3641,
+        453.1950,
+        454.409,
+        422.3789,
+        456.0371,
+        440.3866,
+        425.1944,
+        486.2052,
+        500.4291,
+        521.2759,
+        508.9476,
+        488.8889,
+        509.8706,
+        456.7229,
+        473.8166,
+        525.9509,
+        549.8338,
+        542.3405,
     ]
+
 
 def test_oil(printer, oil):
 
@@ -50,8 +101,8 @@ def test_oil(printer, oil):
     model._initialized = True
 
     template = "{:>2d} | {:>8.2f} | {:>8.2f} | {:>8.2f}"
-    printer('t  | y        | level    | y_pred')
-    printer('-----------------------------------')
+    printer("t  | y        | level    | y_pred")
+    printer("-----------------------------------")
 
     for t, y in enumerate(oil, start=1):
         y_pred = model.forecast(1)[0]
@@ -59,7 +110,7 @@ def test_oil(printer, oil):
         printer(template.format(t, y, model.level[-1], y_pred))
 
     for h, y_pred in enumerate(model.forecast(8), start=1):
-        printer(f'{t + h:>2d} |          |          |   {y_pred:.2f}')
+        printer(f"{t + h:>2d} |          |          |   {y_pred:.2f}")
 
     expected = """
 t  | y        | level    | y_pred
@@ -104,16 +155,22 @@ def test_australia_additive(printer, australia):
     model._initialized = True
 
     template = "{:>2d} | {:>8.2f} | {:>8.2f} | {:>8.2f} | {:>11.2f} | {:>8.2f}"
-    printer('t  | y        | level    | trend    | seasonality | y_pred')
-    printer('------------------------------------------------------------')
+    printer("t  | y        | level    | trend    | seasonality | y_pred")
+    printer("------------------------------------------------------------")
 
     for t, y in enumerate(australia, start=1):
         y_pred = model.forecast(1)[0]
         model.learn_one(y)
-        printer(template.format(t, y, model.level[-1], model.trend[-1], model.season[-1], y_pred))
+        printer(
+            template.format(
+                t, y, model.level[-1], model.trend[-1], model.season[-1], y_pred
+            )
+        )
 
     for h, y_pred in enumerate(model.forecast(8), start=1):
-        printer(f'{t + h:>2d} |          |          |          |             |    {y_pred:.2f}')
+        printer(
+            f"{t + h:>2d} |          |          |          |             |    {y_pred:.2f}"
+        )
 
     expected = """
 t  | y        | level    | trend    | seasonality | y_pred
