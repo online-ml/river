@@ -75,21 +75,25 @@ def _iter_with_horizon(dataset: Dataset, horizon: int) -> TimeSeries:
 
 
 def _evaluate(
-    dataset: Dataset, model: Forecaster, metric: RegressionMetric, horizon: int
+    dataset: Dataset, model: Forecaster, metric: RegressionMetric, horizon: int, grace_period: int
 ) -> HorizonMetric:
 
     horizon_metric = HorizonMetric(metric)
+    steps = _iter_with_horizon(dataset, horizon)
 
-    for x, y, x_horizon, y_horizon in _iter_with_horizon(dataset, horizon):
+    for _ in range(grace_period):
+        x, y, x_horizon, y_horizon = next(steps)
         model.learn_one(y=y, x=x)
+
+    for x, y, x_horizon, y_horizon in steps:
         y_pred = model.forecast(horizon, xs=x_horizon)
         horizon_metric.update(y_horizon, y_pred)
-
+        model.learn_one(y=y, x=x)
         yield y_pred, horizon_metric
 
 
 def evaluate(
-    dataset: Dataset, model: Forecaster, metric: RegressionMetric, horizon: int
+    dataset: Dataset, model: Forecaster, metric: RegressionMetric, horizon: int, grace_period=1
 ) -> HorizonMetric:
     """Evaluates the performance of a forecaster on a time series dataset.
 
@@ -112,6 +116,10 @@ def evaluate(
     metric
         A regression metric.
     horizon
+    grace_period
+        Initial period during which the metric is not updated. This is to fairly evaluate models
+        which need a warming up period to start producing meaningful forecasts. The first forecast
+        is skipped by default.
 
     Examples
     --------
@@ -121,7 +129,7 @@ def evaluate(
     """
 
     horizon_metric = None
-    steps = _evaluate(dataset, model, metric, horizon)
+    steps = _evaluate(dataset, model, metric, horizon, grace_period)
     for _, horizon_metric in steps:
         pass
 

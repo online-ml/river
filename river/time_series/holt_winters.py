@@ -1,5 +1,10 @@
-from collections import deque
+from collections import deque, UserList
+import statistics
+
 from .base import Forecaster
+
+
+__all__ = ["HoltWinters"]
 
 
 class Component(deque):
@@ -8,56 +13,79 @@ class Component(deque):
 
 class Level(Component):
 
-    def __init__(self, alpha, damping):
-        super().__init__([32.2597], maxlen=2)
+    def __init__(self, alpha):
+        super().__init__([], maxlen=2)
         self.alpha = alpha
-        self.damping = damping
 
-    def update(self, y, trend, seasonality):
+    def update(self, y, trend, season):
         self.append(
-            self.alpha * (y - seasonality[-seasonality.m]) +
-            (1 - self.alpha) * (self[-1] + self.damping * trend[-1])
+            self.alpha * (y - (season[-season.seasonality] if season else 0)) +
+            (1 - self.alpha) * (self[-1] + (trend[-1] if trend else 0))
         )
 
 
 class Trend(Component):
 
-    def __init__(self, beta, damping):
-        super().__init__([0.7014], maxlen=2)
+    def __init__(self, beta):
+        super().__init__([], maxlen=2)
         self.beta = beta
-        self.damping = damping
 
     def update(self, y, level):
-        self.append(self.beta * (level[-1] - level[-2]) + (1 - self.beta) * self.damping * self[-1])
+        self.append(self.beta * (level[-1] - level[-2]) + (1 - self.beta) * self[-1])
 
 
-class Seasonality(Component):
+class Season(Component):
 
-    def __init__(self, gamma, m):
-        super().__init__([9.6962, -9.3132, -1.6935, 1.3106], maxlen=m + 1)
+    def __init__(self, gamma, seasonality):
+        super().__init__([], maxlen=seasonality + 1)
         self.gamma = gamma
-        self.m = m
+        self.seasonality = seasonality
 
     def update(self, y, level, trend):
-        self.append(self.gamma * (y - level[-1] - trend[-1]) + (1 - self.gamma) * self[-self.m])
+        self.append(self.gamma * (y - level[-2] - trend[-2]) + (1 - self.gamma) * self[-self.seasonality])
 
 
 class HoltWinters(Forecaster):
-    def __init__(self, alpha, beta, gamma, m, damping=1):
-        self.level = Level(alpha, damping)
-        self.trend = Trend(beta, damping)
-        self.seasonality = Seasonality(gamma, m)
-        self.damping = damping
-        self.m = m
+    """
 
-    def learn_one(self, y):
-        self.seasonality.update(y, self.level, self.trend)
-        self.level.update(y, self.trend, self.seasonality)
-        self.trend.update(y, self.level)
+    References
+    ----------
+    [^1] [Wikipedia page on exponential smoothing](https://www.wikiwand.com/en/Exponential_smoothing)
+
+    """
+    def __init__(self, alpha, beta=None, gamma=None, seasonality: int = None):
+        self.level = Level(alpha)
+        self.trend = Trend(beta) if beta else None
+        self.season = Season(gamma, seasonality) if (gamma or seasonality) else None
+        self.seasonality = seasonality
+        self._first_values = []
+        self._initialized = False
+
+    def learn_one(self, y, x=None):
+        if self._initialized:
+            self.level.update(y, self.trend, self.season)
+            if self.trend:
+                self.trend.update(y, self.level)
+            if self.season:
+                self.season.update(y, self.level, self.trend)
+            return self
+
+        self._first_values.append(y)
+        if len(self._first_values) < max(2, self.seasonality):
+            return self
+
+        # The components can be initialized now that enough values have been observed
+        self.level.append(statistics.mean(self._first_values))
+        self.trend.append(statistics.mean([b - a for a, b in zip(self._first_values[:-1], self._first_values[1:])]))
+
+        self._initialized = True
+
         return self
 
-    def forecast(self, horizon):
+    def forecast(self, horizon, xs=None):
         return [
-            self.level[-1] + (h + 1) * self.trend[-1] + self.seasonality[-self.m + 1]
+            self.level[-1]
+            + ((h + 1) * self.trend[-1] if self.trend else 0)
+            + (self.season[-self.seasonality + h % self.seasonality] if self.seasonality else 0)
             for h in range(horizon)
         ]
