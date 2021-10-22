@@ -90,6 +90,7 @@ def iter_estimators_which_can_be_tested():
         imblearn.RandomSampler,
         selection.SuccessiveHalvingClassifier,
         selection.SuccessiveHalvingRegressor,
+        time_series.HoltWinters,
         time_series.SNARIMAX,
     )
 
@@ -115,7 +116,9 @@ def iter_estimators_which_can_be_tested():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
+                | meta.TargetStandardScaler(
+                    regressor=linear_model.LinearRegression(),
+                )
             ),
             (
                 preprocessing.StandardScaler()

@@ -161,6 +161,11 @@ class HoltWinters(Forecaster):
         seasonality=0,
         multiplicative=False,
     ):
+        self.alpha = alpha
+        self.beta = beta
+        self.gamma = gamma
+        self.seasonality = seasonality
+        self.multiplicative = multiplicative
         self.level = (
             MultiplicativeLevel(alpha) if multiplicative else AdditiveLevel(alpha)
         )
@@ -174,8 +179,6 @@ class HoltWinters(Forecaster):
             if (gamma or seasonality)
             else None
         )
-        self.seasonality = seasonality
-        self.multiplicative = multiplicative
         self._first_values = []
         self._initialized = False
 
