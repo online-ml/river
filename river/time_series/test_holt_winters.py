@@ -21,7 +21,41 @@ def printer():
 
 
 @pytest.fixture
-def australia():
+def oil():
+    return [
+        445.3641,
+        453.1950,
+        454.409,
+        422.3789,
+        456.0371,
+        440.3866,
+        425.1944,
+        486.2052,
+        500.4291,
+        521.2759,
+        508.9476,
+        488.8889,
+        509.8706,
+        456.7229,
+        473.8166,
+        525.9509,
+        549.8338,
+        542.3405,
+    ]
+
+
+@pytest.fixture
+def ausair():
+    return [
+        17.55340, 21.86010, 23.88660, 26.92930, 26.88850, 28.83140, 30.07510, 30.95350,
+        30.18570, 31.57970, 32.57757, 33.47740, 39.02158, 41.38643, 41.59655, 44.65732,
+        46.95177, 48.72884, 51.48843, 50.02697, 60.64091, 63.36031, 66.35527, 68.19795,
+        68.12324, 69.77935, 72.59770,
+    ]
+
+
+@pytest.fixture
+def austourists():
     return [
         42.20566,
         24.64917,
@@ -70,31 +104,8 @@ def australia():
     ]
 
 
-@pytest.fixture
-def oil():
-    return [
-        445.3641,
-        453.1950,
-        454.409,
-        422.3789,
-        456.0371,
-        440.3866,
-        425.1944,
-        486.2052,
-        500.4291,
-        521.2759,
-        508.9476,
-        488.8889,
-        509.8706,
-        456.7229,
-        473.8166,
-        525.9509,
-        549.8338,
-        542.3405,
-    ]
-
-
 def test_oil(printer, oil):
+    """https://otexts.com/fpp2/ses.html#example-oil-production"""
 
     model = HoltWinters(alpha=0.8339)
     model.level.append(446.5868)
@@ -109,7 +120,7 @@ def test_oil(printer, oil):
         model.learn_one(y)
         printer(template.format(t, y, model.level[-1], y_pred))
 
-    for h, y_pred in enumerate(model.forecast(8), start=1):
+    for h, y_pred in enumerate(model.forecast(5), start=1):
         printer(f"{t + h:>2d} |          |          |   {y_pred:.2f}")
 
     expected = """
@@ -137,15 +148,70 @@ t  | y        | level    | y_pred
 20 |          |          |   542.68
 21 |          |          |   542.68
 22 |          |          |   542.68
-23 |          |          |   542.68
-24 |          |          |   542.68
-25 |          |          |   542.68
-26 |          |          |   542.68"""
+23 |          |          |   542.68"""
 
     assert repr(printer).strip() == expected.strip()
 
 
-def test_australia_additive(printer, australia):
+def test_ausair(printer, ausair):
+
+    model = HoltWinters(alpha=0.8302, beta=1e-04)
+    model.level.append(15.5715)
+    model.trend.append(2.1017)
+    model._initialized = True
+
+    template = "{:>2d} | {:>8.2f} | {:>8.2f} | {:>8.2f} | {:>8.2f}"
+    printer('t  | y        | level    | trend    | y_pred')
+    printer('----------------------------------------------')
+
+    for t, y in enumerate(ausair, start=1):
+        y_pred = model.forecast(1)[0]
+        model.learn_one(y)
+        printer(template.format(t, y, model.level[-1], model.trend[-1], y_pred))
+
+    for h, y_pred in enumerate(model.forecast(5), start=1):
+        printer(f'{t + h:>2d} |          |          |          |    {y_pred:.2f}')
+
+    expected = """
+t  | y        | level    | trend    | y_pred
+----------------------------------------------
+ 1 |    17.55 |    17.57 |     2.10 |    17.67
+ 2 |    21.86 |    21.49 |     2.10 |    19.68
+ 3 |    23.89 |    23.84 |     2.10 |    23.59
+ 4 |    26.93 |    26.76 |     2.10 |    25.94
+ 5 |    26.89 |    27.22 |     2.10 |    28.86
+ 6 |    28.83 |    28.92 |     2.10 |    29.33
+ 7 |    30.08 |    30.24 |     2.10 |    31.02
+ 8 |    30.95 |    31.19 |     2.10 |    32.34
+ 9 |    30.19 |    30.71 |     2.10 |    33.29
+10 |    31.58 |    31.79 |     2.10 |    32.81
+11 |    32.58 |    32.80 |     2.10 |    33.89
+12 |    33.48 |    33.72 |     2.10 |    34.90
+13 |    39.02 |    38.48 |     2.10 |    35.82
+14 |    41.39 |    41.25 |     2.10 |    40.58
+15 |    41.60 |    41.89 |     2.10 |    43.35
+16 |    44.66 |    44.54 |     2.10 |    44.00
+17 |    46.95 |    46.90 |     2.10 |    46.65
+18 |    48.73 |    48.78 |     2.10 |    49.00
+19 |    51.49 |    51.38 |     2.10 |    50.88
+20 |    50.03 |    50.61 |     2.10 |    53.49
+21 |    60.64 |    59.30 |     2.10 |    52.72
+22 |    63.36 |    63.03 |     2.10 |    61.40
+23 |    66.36 |    66.15 |     2.10 |    65.13
+24 |    68.20 |    68.21 |     2.10 |    68.25
+25 |    68.12 |    68.49 |     2.10 |    70.31
+26 |    69.78 |    69.92 |     2.10 |    70.60
+27 |    72.60 |    72.50 |     2.10 |    72.02
+28 |          |          |          |    74.60
+29 |          |          |          |    76.70
+30 |          |          |          |    78.80
+31 |          |          |          |    80.91
+32 |          |          |          |    83.01
+"""
+
+    assert repr(printer).strip() == expected.strip()
+
+def test_austourists_additive(printer, austourists):
     """https://otexts.com/fpp2/holt-winters.html#example-international-tourist-visitor-nights-in-australia"""
 
     model = HoltWinters(alpha=0.3063, beta=1e-04, gamma=0.4263, seasonality=4)
@@ -158,7 +224,7 @@ def test_australia_additive(printer, australia):
     printer("t  | y        | level    | trend    | seasonality | y_pred")
     printer("------------------------------------------------------------")
 
-    for t, y in enumerate(australia, start=1):
+    for t, y in enumerate(austourists, start=1):
         y_pred = model.forecast(1)[0]
         model.learn_one(y)
         printer(
