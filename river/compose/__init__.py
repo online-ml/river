@@ -9,6 +9,7 @@ from .grouper import Grouper
 from .pipeline import Pipeline
 from .rename import Renamer
 from .select import Discard, Select, SelectType
+from .target_transform import TargetTransformRegressor
 from .union import TransformerUnion
 
 __all__ = [
@@ -17,7 +18,8 @@ __all__ = [
     "Grouper",
     "Pipeline",
     "Renamer",
-    "TransformerUnion",
     "Select",
     "SelectType",
+    "TargetTransformRegressor",
+    "TransformerUnion",
 ]

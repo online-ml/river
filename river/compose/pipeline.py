@@ -247,7 +247,7 @@ class Pipeline(base.Estimator):
     def _multiclass(self):
         return list(self.steps.values())[-1]._multiclass
 
-    def _add_step(self, estimator, at_start: bool):
+    def _add_step(self, obj: typing.Any, at_start: bool):
         """Add a step to either end of the pipeline.
 
         This method takes care of sanitizing the input. For instance, if a function is passed,
@@ -256,19 +256,26 @@ class Pipeline(base.Estimator):
         """
 
         name = None
-        if isinstance(estimator, tuple):
-            name, estimator = estimator
+        if isinstance(obj, tuple):
+            name, obj = obj
 
-        # If the step is a function then wrap it in a FuncTransformer
-        if isinstance(estimator, (types.FunctionType, types.LambdaType)):
-            estimator = func.FuncTransformer(estimator)
+        def _coerce_to_estimator(obj: typing.Any) -> base.Estimator:
+            if isinstance(obj, (types.FunctionType, types.LambdaType)):
+                return func.FuncTransformer(obj)
+            if isinstance(obj, list):
+                return union.TransformerUnion(
+                    *[_coerce_to_estimator(part) for part in obj]
+                )
+            return obj
 
-        def infer_name(estimator):
+        estimator = _coerce_to_estimator(obj)
+
+        def infer_name(estimator: base.Estimator) -> str:
             if isinstance(estimator, func.FuncTransformer):
                 return infer_name(estimator.func)
-            elif isinstance(estimator, (types.FunctionType, types.LambdaType)):
+            if isinstance(estimator, (types.FunctionType, types.LambdaType)):
                 return estimator.__name__
-            elif hasattr(estimator, "__class__"):
+            if hasattr(estimator, "__class__"):
                 return estimator.__class__.__name__
             return str(estimator)
 
@@ -276,6 +283,7 @@ class Pipeline(base.Estimator):
         if name is None:
             name = infer_name(estimator)
 
+        # Make sure the name doesn't already exist
         if name in self.steps:
             counter = 1
             while f"{name}{counter}" in self.steps:

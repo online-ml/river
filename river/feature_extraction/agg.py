@@ -5,8 +5,6 @@ import typing
 
 from river import base, stats
 
-__all__ = ["Agg", "TargetAgg"]
-
 
 class Agg(base.Transformer):
     """Computes a streaming aggregate.
@@ -136,15 +134,15 @@ class Agg(base.Transformer):
         self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
         self.feature_name = f'{self.on}_{self.how.name}_by_{"_and_".join(self.by)}'
 
-    def _get_key(self, x):
-        return "_".join(str(x[k]) for k in self.by)
+    def _make_key(self, x):
+        return tuple(x[k] for k in self.by)
 
     def learn_one(self, x):
-        self.groups[self._get_key(x)].update(x[self.on])
+        self.groups[self._make_key(x)].update(x[self.on])
         return self
 
     def transform_one(self, x):
-        return {self.feature_name: self.groups[self._get_key(x)].get()}
+        return {self.feature_name: self.groups[self._make_key(x)].get()}
 
     def __str__(self):
         return self.feature_name
@@ -166,13 +164,6 @@ class TargetAgg(base.SupervisedTransformer):
         The statistic to compute.
     target_name
         The target name which is used in the result.
-
-    Attributes
-    ----------
-    groups
-        Maps group keys to univariate statistics.
-    feature_name
-        The name of the feature in the output.
 
     Examples
     --------
@@ -209,14 +200,14 @@ class TargetAgg(base.SupervisedTransformer):
     >>> for x, y in dataset:
     ...     print(agg.transform_one(x))
     ...     agg = agg.learn_one(x, y)
-    {'target_bayes_mean_by_place': 3.0}
-    {'target_bayes_mean_by_place': 3.0}
-    {'target_bayes_mean_by_place': 9.5}
-    {'target_bayes_mean_by_place': 22.5}
-    {'target_bayes_mean_by_place': 14.333}
-    {'target_bayes_mean_by_place': 34.333}
-    {'target_bayes_mean_by_place': 15.75}
-    {'target_bayes_mean_by_place': 38.25}
+    {'y_bayes_mean_by_place': 3.0}
+    {'y_bayes_mean_by_place': 3.0}
+    {'y_bayes_mean_by_place': 9.5}
+    {'y_bayes_mean_by_place': 22.5}
+    {'y_bayes_mean_by_place': 14.333}
+    {'y_bayes_mean_by_place': 34.333}
+    {'y_bayes_mean_by_place': 15.75}
+    {'y_bayes_mean_by_place': 38.25}
 
     Just like with `feature_extraction.Agg`, we can specify multiple features on which to
     group the data:
@@ -232,14 +223,14 @@ class TargetAgg(base.SupervisedTransformer):
     >>> for x, y in dataset:
     ...     print(agg.transform_one(x))
     ...     agg = agg.learn_one(x, y)
-    {'target_bayes_mean_by_place_and_country': 3.0}
-    {'target_bayes_mean_by_place_and_country': 3.0}
-    {'target_bayes_mean_by_place_and_country': 3.0}
-    {'target_bayes_mean_by_place_and_country': 3.0}
-    {'target_bayes_mean_by_place_and_country': 9.5}
-    {'target_bayes_mean_by_place_and_country': 22.5}
-    {'target_bayes_mean_by_place_and_country': 13.5}
-    {'target_bayes_mean_by_place_and_country': 30.5}
+    {'y_bayes_mean_by_place_and_country': 3.0}
+    {'y_bayes_mean_by_place_and_country': 3.0}
+    {'y_bayes_mean_by_place_and_country': 3.0}
+    {'y_bayes_mean_by_place_and_country': 3.0}
+    {'y_bayes_mean_by_place_and_country': 9.5}
+    {'y_bayes_mean_by_place_and_country': 22.5}
+    {'y_bayes_mean_by_place_and_country': 13.5}
+    {'y_bayes_mean_by_place_and_country': 30.5}
 
     References
     ----------
@@ -251,23 +242,24 @@ class TargetAgg(base.SupervisedTransformer):
         self,
         by: typing.Union[str, typing.List[str]],
         how: stats.Univariate,
-        target_name="target",
+        target_name="y",
     ):
         self.by = by if isinstance(by, list) else [by]
         self.how = how
         self.target_name = target_name
-        self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
-        self.feature_name = f'{target_name}_{how.name}_by_{"_and_".join(self.by)}'
 
-    def _get_key(self, x):
-        return "_".join(str(x[k]) for k in self.by)
+        self._feature_name = f'{target_name}_{how.name}_by_{"_and_".join(self.by)}'
+        self._groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
+
+    def _make_key(self, x):
+        return tuple(x[k] for k in self.by)
 
     def learn_one(self, x, y):
-        self.groups[self._get_key(x)].update(y)
+        self._groups[self._make_key(x)].update(y)
         return self
 
     def transform_one(self, x):
-        return {self.feature_name: self.groups[self._get_key(x)].get()}
+        return {self._feature_name: self._groups[self._make_key(x)].get()}
 
     def __str__(self):
-        return self.feature_name
+        return self._feature_name

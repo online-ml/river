@@ -82,7 +82,8 @@ CSS = """
 
 .estimator + .estimator,
 .estimator + .union,
-.union + .estimator {
+.union + .estimator,
+.union + .union {
     margin-top: 2em;
 }
 
@@ -101,6 +102,7 @@ CSS = """
 }
 
 /* Typography */
+
 .estimator-params {
     display: block;
     white-space: pre-wrap;
