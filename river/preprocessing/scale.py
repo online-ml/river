@@ -6,7 +6,7 @@ import numbers
 import numpy as np
 import pandas as pd
 
-from river import base, stats, utils
+from river import base, compose, stats, utils
 
 __all__ = [
     "AdaptiveStandardScaler",
@@ -554,7 +554,7 @@ class AdaptiveStandardScaler(base.Transformer):
         }
 
 
-class TargetStandardScaler(base.TargetTransformRegressor):
+class TargetStandardScaler(compose.TargetTransformRegressor):
     """Applies standard scaling to the target.
 
     Parameters
@@ -568,14 +568,13 @@ class TargetStandardScaler(base.TargetTransformRegressor):
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model
-    >>> from river import meta
     >>> from river import metrics
     >>> from river import preprocessing
 
     >>> dataset = datasets.TrumpApproval()
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     meta.TargetStandardScaler(
+    ...     preprocessing.TargetStandardScaler(
     ...         regressor=linear_model.LinearRegression(intercept_lr=0.15)
     ...     )
     ... )
