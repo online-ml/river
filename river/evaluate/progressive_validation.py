@@ -9,7 +9,7 @@ __all__ = ["progressive_val_score"]
 
 
 def _progressive_validation(
-    dataset: base.typing.Stream,
+    dataset: base.typing.Dataset,
     model,
     metric: metrics.Metric,
     checkpoints: typing.Iterator[int],
@@ -68,7 +68,7 @@ def _progressive_validation(
 
 
 def progressive_val_score(
-    dataset: base.typing.Stream,
+    dataset: base.typing.Dataset,
     model,
     metric: metrics.Metric,
     moment: typing.Union[str, typing.Callable] = None,

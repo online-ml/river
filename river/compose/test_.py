@@ -158,3 +158,18 @@ def test_learn_unsupervised_learn_many():
 
         assert counts_pre != counts_post
         assert counts_post == counts_no_learn
+
+
+def test_list_of_funcs():
+    def f(x):
+        return {"f": 1}
+
+    def g(x):
+        return {"g": 2}
+
+    def times_2(x):
+        return {k: v * 2 for k, v in x.items()}
+
+    expected = {"f": 2, "g": 4}
+    assert compose.Pipeline([f, g], times_2).transform_one(None) == expected
+    assert ([f, g] | compose.FuncTransformer(times_2)).transform_one(None) == expected

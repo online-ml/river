@@ -1,5 +1,8 @@
 COMMIT_HASH := $(shell eval git rev-parse HEAD)
 
+format:
+	pre-commit run --all-files
+
 cython:
 	python setup.py build_ext --inplace --force
 

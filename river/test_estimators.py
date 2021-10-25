@@ -15,7 +15,6 @@ from river import (
     feature_selection,
     imblearn,
     linear_model,
-    meta,
     multiclass,
     naive_bayes,
     neural_net,
@@ -37,14 +36,29 @@ from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
 
 
-def get_all_estimators():
+def iter_estimators():
+    for submodule in importlib.import_module("river").__all__:
+        if submodule == "synth":
+            submodule = "datasets.synth"
+
+        def is_estimator(obj):
+            return inspect.isclass(obj) and issubclass(obj, base.Estimator)
+
+        for _, obj in inspect.getmembers(
+            importlib.import_module(f"river.{submodule}"), is_estimator
+        ):
+            yield obj
+
+
+def iter_estimators_which_can_be_tested():
 
     ignored = (
         River2SKLBase,
         SKL2RiverBase,
         compose.FuncTransformer,
-        compose.Pipeline,
         compose.Grouper,
+        compose.Pipeline,
+        compose.TargetTransformRegressor,
         ensemble.AdaptiveRandomForestClassifier,
         ensemble.AdaptiveRandomForestRegressor,
         ensemble.StackingClassifier,
@@ -58,9 +72,9 @@ def get_all_estimators():
         facto.HOFMRegressor,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
+        feature_extraction.Lagger,
+        feature_extraction.TargetLagger,
         feature_selection.PoissonInclusion,
-        meta.PredClipper,
-        meta.TargetTransformRegressor,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
@@ -74,39 +88,25 @@ def get_all_estimators():
         imblearn.RandomSampler,
         selection.SuccessiveHalvingClassifier,
         selection.SuccessiveHalvingRegressor,
-        time_series.Detrender,
-        time_series.GroupDetrender,
+        time_series.HoltWinters,
         time_series.SNARIMAX,
     )
 
     if PYTORCH_INSTALLED:
         ignored = (*ignored, PyTorch2RiverBase)
 
-    def is_estimator(obj):
-        return inspect.isclass(obj) and issubclass(obj, base.Estimator)
+    def can_be_tested(estimator):
+        return not inspect.isabstract(estimator) and not issubclass(estimator, ignored)
 
-    for submodule in importlib.import_module("river").__all__:
-
-        if submodule == "base":
-            continue
-
-        if submodule == "synth":
-            submodule = "datasets.synth"
-
-        submodule = f"river.{submodule}"
-
-        for _, obj in inspect.getmembers(
-            importlib.import_module(submodule),
-            lambda x: is_estimator(x) and not issubclass(x, ignored),
-        ):
-            yield obj(**obj._unit_test_params())
+    for estimator in filter(can_be_tested, iter_estimators()):
+        yield estimator(**estimator._unit_test_params())
 
 
 @pytest.mark.parametrize(
     "estimator, check",
     [
         pytest.param(estimator, check, id=f"{estimator}:{check.__name__}")
-        for estimator in list(get_all_estimators())
+        for estimator in list(iter_estimators_which_can_be_tested())
         + [
             feature_extraction.TFIDF(),
             linear_model.LogisticRegression(),
@@ -114,7 +114,9 @@ def get_all_estimators():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
+                | preprocessing.TargetStandardScaler(
+                    regressor=linear_model.LinearRegression(),
+                )
             ),
             (
                 preprocessing.StandardScaler()
