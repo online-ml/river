@@ -5,6 +5,7 @@ organised, the bandit logic is agnostic of the model selection aspect.
 
 """
 import math
+import operator
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
@@ -52,11 +53,27 @@ class Bandit(ABC):
         ):
             self.best_arm = arm
 
+    @property
+    def ranking(self):
+        return [
+            arm.index
+            for arm in sorted(
+                self.arms,
+                key=lambda arm: arm.metric.get(),
+                reverse=self.metric.bigger_is_better,
+            )
+        ]
+
     def __repr__(self):
         return utils.pretty.print_table(
-            headers=["Index", self.metric.__class__.__name__, "Pulls", "Share"],
+            headers=[
+                "Ranking",
+                self.metric.__class__.__name__,
+                "Pulls",
+                "Share",
+            ],
             columns=[
-                [str(arm.index) for arm in self.arms],
+                [str(r) for r in self.ranking],
                 [f"{arm.metric.get():{self.metric._fmt}}" for arm in self.arms],
                 [f"{arm.n_pulls:,d}" for arm in self.arms],
                 [f"{arm.n_pulls / self.n_pulls:.2%}" for arm in self.arms],
