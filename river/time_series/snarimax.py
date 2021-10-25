@@ -211,6 +211,7 @@ class SNARIMAX(base.Forecaster):
 
     >>> import calendar
     >>> import datetime as dt
+    >>> import math
     >>> from river import compose
     >>> from river import datasets
     >>> from river import linear_model
@@ -286,9 +287,9 @@ class SNARIMAX(base.Forecaster):
 
     References
     ----------
-    [^1]: [Wikipedia page on ARMA](https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model)
-    [^2]: [Wikipedia page on NARX](https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model)
-    [^3]: [ARIMA models](https://otexts.com/fpp2/arima.html)
+    [^1]: [ARMA - Wikipedia](https://www.wikiwand.com/en/Autoregressive%E2%80%93moving-average_model)
+    [^2]: [NARX - Wikipedia](https://www.wikiwand.com/en/Nonlinear_autoregressive_exogenous_model)
+    [^3]: [ARIMA - Forecasting: Principles and Practice](https://otexts.com/fpp2/arima.html)
     [^4]: [Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184)](https://arxiv.org/pdf/1302.6927.pdf)
 
     """
@@ -356,32 +357,13 @@ class SNARIMAX(base.Forecaster):
 
         return x
 
-    def _learn_predict_one(self, y: float, x: dict = None):
-        """Updates the model and returns the prediction for the next time step.
-
-        Parameters
-        ----------
-        x
-            Optional additional features to learn from. In the literature these are called the
-            exogenous variables.
-        y
-            In the literature this is called the endogenous variable.
-
-        """
-
-        # Check there are enough observations so that differencing can happen
+    def learn_one(self, y, x=None):
         y = self.differencer.diff(y=y, y_previous=self.y_trues)
         x = self._add_lag_features(x=x, y_trues=self.y_trues, errors=self.errors)
         y_pred = self.regressor.predict_one(x)
         self.regressor.learn_one(x, y)
-
         self.y_trues.appendleft(y)
         self.errors.appendleft(y - y_pred)
-
-        return y_pred
-
-    def learn_one(self, y, x=None):
-        self._learn_predict_one(y=y, x=x)
         return self
 
     def forecast(self, horizon, xs=None):

@@ -552,3 +552,55 @@ class AdaptiveStandardScaler(base.Transformer):
             i: safe_div(xi - self.vars[i].mean.get(), self.vars[i].get() ** 0.5)
             for i, xi in x.items()
         }
+
+
+class TargetStandardScaler(base.TargetTransformRegressor):
+    """Applies standard scaling to the target.
+
+    Parameters
+    ----------
+    regressor
+        Regression model to wrap.
+
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import linear_model
+    >>> from river import meta
+    >>> from river import metrics
+    >>> from river import preprocessing
+
+    >>> dataset = datasets.TrumpApproval()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     meta.TargetStandardScaler(
+    ...         regressor=linear_model.LinearRegression(intercept_lr=0.15)
+    ...     )
+    ... )
+    >>> metric = metrics.MSE()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MSE: 2.003724
+
+    """
+
+    def __init__(self, regressor: base.Regressor):
+        self.var = stats.Var()
+        super().__init__(
+            regressor=regressor, func=self._scale, inverse_func=self._unscale
+        )
+
+    def learn_one(self, x, y):
+        self.var.update(y)
+        return super().learn_one(x, y)
+
+    def _scale(self, y):
+        try:
+            return (y - self.var.mean.get()) / self.var.get() ** 0.5
+        except ZeroDivisionError:
+            return 0.0
+
+    def _unscale(self, y):
+        return y * self.var.get() ** 0.5 + self.var.mean.get()

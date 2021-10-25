@@ -38,6 +38,7 @@ class Rolling(base.WrapperMetric, utils.Window):
     MSE: 0.25   (rolling 2)
     MSE: 0.125  (rolling 2)
     MSE: 0.5    (rolling 2)
+
     """
 
     def __init__(self, metric: base.Metric, window_size: int):

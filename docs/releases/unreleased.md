@@ -28,6 +28,15 @@
 - Implemented `feature_extraction.Lagger`.
 - Implemented `feature_extraction.TargetLagger`.
 
+## meta
+
+This module has been deleted.
+
+- Removed `meta.PredClipper`.
+- Removed `meta.BoxCoxRegressor`.
+- Moved `meta.TargetTransformRegressor` to `compose.TargetTransformRegressor`.
+- Moved `meta.TargetStandardScaler` to `preprocessing.TargetStandardScaler`.
+
 ## optim
 
 - `optim.Adam` and `optim.RMSProp` now work with `utils.VectorDict`s as well as `numpy.ndarray`s.

@@ -116,9 +116,7 @@ def iter_estimators_which_can_be_tested():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(
-                    regressor=linear_model.LinearRegression(),
-                )
+                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
             ),
             (
                 preprocessing.StandardScaler()

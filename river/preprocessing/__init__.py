@@ -18,6 +18,7 @@ from .scale import (
     Normalizer,
     RobustScaler,
     StandardScaler,
+    TargetStandardScaler,
 )
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "RobustScaler",
     "StandardScaler",
     "StatImputer",
+    "TargetStandardScaler",
 ]
