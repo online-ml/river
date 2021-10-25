@@ -154,12 +154,7 @@ class HoltWinters(Forecaster):
     """
 
     def __init__(
-        self,
-        alpha,
-        beta=None,
-        gamma=None,
-        seasonality=0,
-        multiplicative=False,
+        self, alpha, beta=None, gamma=None, seasonality=0, multiplicative=False,
     ):
         self.alpha = alpha
         self.beta = beta

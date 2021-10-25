@@ -9,8 +9,8 @@ from .grouper import Grouper
 from .pipeline import Pipeline
 from .rename import Renamer
 from .select import Discard, Select, SelectType
-from .union import TransformerUnion
 from .target_transform import TargetTransformRegressor
+from .union import TransformerUnion
 
 __all__ = [
     "Discard",
