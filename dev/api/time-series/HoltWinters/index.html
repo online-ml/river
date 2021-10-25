@@ -13,18 +13,18 @@
         <meta name="author" content="The river developers">
       
       
-        <link rel="canonical" href="https://riverml.xyz/api/meta/TargetTransformRegressor/">
+        <link rel="canonical" href="https://riverml.xyz/api/time-series/HoltWinters/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.4">
     
     
       
-        <title>TargetTransformRegressor - River</title>
+        <title>HoltWinters - River</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.5143246d.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.db9e7362.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#targettransformregressor" class="md-skip">
+        <a href="#holtwinters" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              TargetTransformRegressor
+              HoltWinters
             
           </span>
         </div>
@@ -1263,6 +1263,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../compose/TargetTransformRegressor/" class="md-nav__link">
+        TargetTransformRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../compose/TransformerUnion/" class="md-nav__link">
         TransformerUnion
       </a>
@@ -2292,6 +2306,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../feature-extraction/Lagger/" class="md-nav__link">
+        Lagger
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../feature-extraction/PolynomialExtender/" class="md-nav__link">
         PolynomialExtender
       </a>
@@ -2336,6 +2364,20 @@
     <li class="md-nav__item">
       <a href="../../feature-extraction/TargetAgg/" class="md-nav__link">
         TargetAgg
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-extraction/TargetLagger/" class="md-nav__link">
+        TargetLagger
       </a>
     </li>
   
@@ -2662,168 +2704,23 @@
               
   
   
-    
-  
-  
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_17" type="checkbox" id="__nav_4_17" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4_17">
-          meta
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="meta" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_17">
-          <span class="md-nav__icon md-icon"></span>
-          meta
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../BoxCoxRegressor/" class="md-nav__link">
-        BoxCoxRegressor
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../PredClipper/" class="md-nav__link">
-        PredClipper
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../TargetStandardScaler/" class="md-nav__link">
-        TargetStandardScaler
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          TargetTransformRegressor
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        TargetTransformRegressor
-      </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    Methods
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
   
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18" type="checkbox" id="__nav_4_18" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_17" type="checkbox" id="__nav_4_17" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_18">
+        <label class="md-nav__link" for="__nav_4_17">
           metrics
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="metrics" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_18">
+        <label class="md-nav__title" for="__nav_4_17">
           <span class="md-nav__icon md-icon"></span>
           metrics
         </label>
@@ -3860,18 +3757,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18_74" type="checkbox" id="__nav_4_18_74" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_17_74" type="checkbox" id="__nav_4_17_74" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_18_74">
+        <label class="md-nav__link" for="__nav_4_17_74">
           cluster
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="cluster" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_18_74">
+        <label class="md-nav__title" for="__nav_4_17_74">
           <span class="md-nav__icon md-icon"></span>
           cluster
         </label>
@@ -4208,18 +4105,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_19" type="checkbox" id="__nav_4_19" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18" type="checkbox" id="__nav_4_18" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_19">
+        <label class="md-nav__link" for="__nav_4_18">
           multiclass
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="multiclass" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_19">
+        <label class="md-nav__title" for="__nav_4_18">
           <span class="md-nav__icon md-icon"></span>
           multiclass
         </label>
@@ -4283,18 +4180,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_20" type="checkbox" id="__nav_4_20" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_19" type="checkbox" id="__nav_4_19" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_20">
+        <label class="md-nav__link" for="__nav_4_19">
           multioutput
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="multioutput" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_20">
+        <label class="md-nav__title" for="__nav_4_19">
           <span class="md-nav__icon md-icon"></span>
           multioutput
         </label>
@@ -4372,18 +4269,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_21" type="checkbox" id="__nav_4_21" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_20" type="checkbox" id="__nav_4_20" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_21">
+        <label class="md-nav__link" for="__nav_4_20">
           naive_bayes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="naive_bayes" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_21">
+        <label class="md-nav__title" for="__nav_4_20">
           <span class="md-nav__icon md-icon"></span>
           naive_bayes
         </label>
@@ -4461,18 +4358,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22" type="checkbox" id="__nav_4_22" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_21" type="checkbox" id="__nav_4_21" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_22">
+        <label class="md-nav__link" for="__nav_4_21">
           neighbors
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="neighbors" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_22">
+        <label class="md-nav__title" for="__nav_4_21">
           <span class="md-nav__icon md-icon"></span>
           neighbors
         </label>
@@ -4550,18 +4447,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23" type="checkbox" id="__nav_4_23" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22" type="checkbox" id="__nav_4_22" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_23">
+        <label class="md-nav__link" for="__nav_4_22">
           neural_net
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="neural_net" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_23">
+        <label class="md-nav__title" for="__nav_4_22">
           <span class="md-nav__icon md-icon"></span>
           neural_net
         </label>
@@ -4590,18 +4487,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_2" type="checkbox" id="__nav_4_23_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22_2" type="checkbox" id="__nav_4_22_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_23_2">
+        <label class="md-nav__link" for="__nav_4_22_2">
           activations
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="activations" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_23_2">
+        <label class="md-nav__title" for="__nav_4_22_2">
           <span class="md-nav__icon md-icon"></span>
           activations
         </label>
@@ -4672,18 +4569,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24" type="checkbox" id="__nav_4_24" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23" type="checkbox" id="__nav_4_23" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_24">
+        <label class="md-nav__link" for="__nav_4_23">
           optim
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="optim" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_24">
+        <label class="md-nav__title" for="__nav_4_23">
           <span class="md-nav__icon md-icon"></span>
           optim
         </label>
@@ -4894,18 +4791,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_15" type="checkbox" id="__nav_4_24_15" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_15" type="checkbox" id="__nav_4_23_15" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_24_15">
+        <label class="md-nav__link" for="__nav_4_23_15">
           initializers
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="initializers" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_24_15">
+        <label class="md-nav__title" for="__nav_4_23_15">
           <span class="md-nav__icon md-icon"></span>
           initializers
         </label>
@@ -4969,18 +4866,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_16" type="checkbox" id="__nav_4_24_16" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_16" type="checkbox" id="__nav_4_23_16" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_24_16">
+        <label class="md-nav__link" for="__nav_4_23_16">
           losses
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="losses" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_24_16">
+        <label class="md-nav__title" for="__nav_4_23_16">
           <span class="md-nav__icon md-icon"></span>
           losses
         </label>
@@ -5184,18 +5081,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_17" type="checkbox" id="__nav_4_24_17" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_17" type="checkbox" id="__nav_4_23_17" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_24_17">
+        <label class="md-nav__link" for="__nav_4_23_17">
           schedulers
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="schedulers" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_24_17">
+        <label class="md-nav__title" for="__nav_4_23_17">
           <span class="md-nav__icon md-icon"></span>
           schedulers
         </label>
@@ -5280,18 +5177,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25" type="checkbox" id="__nav_4_25" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24" type="checkbox" id="__nav_4_24" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_25">
+        <label class="md-nav__link" for="__nav_4_24">
           preprocessing
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="preprocessing" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_25">
+        <label class="md-nav__title" for="__nav_4_24">
           <span class="md-nav__icon md-icon"></span>
           preprocessing
         </label>
@@ -5465,6 +5362,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/TargetStandardScaler/" class="md-nav__link">
+        TargetStandardScaler
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -5481,18 +5392,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_26" type="checkbox" id="__nav_4_26" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25" type="checkbox" id="__nav_4_25" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_26">
+        <label class="md-nav__link" for="__nav_4_25">
           proba
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="proba" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_26">
+        <label class="md-nav__title" for="__nav_4_25">
           <span class="md-nav__icon md-icon"></span>
           proba
         </label>
@@ -5542,18 +5453,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27" type="checkbox" id="__nav_4_27" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_26" type="checkbox" id="__nav_4_26" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_27">
+        <label class="md-nav__link" for="__nav_4_26">
           reco
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="reco" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_27">
+        <label class="md-nav__title" for="__nav_4_26">
           <span class="md-nav__icon md-icon"></span>
           reco
         </label>
@@ -5631,18 +5542,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28" type="checkbox" id="__nav_4_28" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27" type="checkbox" id="__nav_4_27" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_28">
+        <label class="md-nav__link" for="__nav_4_27">
           rules
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="rules" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_28">
+        <label class="md-nav__title" for="__nav_4_27">
           <span class="md-nav__icon md-icon"></span>
           rules
         </label>
@@ -5678,18 +5589,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_29" type="checkbox" id="__nav_4_29" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28" type="checkbox" id="__nav_4_28" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_29">
+        <label class="md-nav__link" for="__nav_4_28">
           selection
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="selection" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_29">
+        <label class="md-nav__title" for="__nav_4_28">
           <span class="md-nav__icon md-icon"></span>
           selection
         </label>
@@ -5767,18 +5678,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_30" type="checkbox" id="__nav_4_30" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_29" type="checkbox" id="__nav_4_29" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_30">
+        <label class="md-nav__link" for="__nav_4_29">
           stats
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="stats" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_30">
+        <label class="md-nav__title" for="__nav_4_29">
           <span class="md-nav__icon md-icon"></span>
           stats
         </label>
@@ -6360,18 +6271,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_31" type="checkbox" id="__nav_4_31" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_30" type="checkbox" id="__nav_4_30" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_31">
+        <label class="md-nav__link" for="__nav_4_30">
           stream
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="stream" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_31">
+        <label class="md-nav__title" for="__nav_4_30">
           <span class="md-nav__icon md-icon"></span>
           stream
         </label>
@@ -6533,18 +6444,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_32" type="checkbox" id="__nav_4_32" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_31" type="checkbox" id="__nav_4_31" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_32">
+        <label class="md-nav__link" for="__nav_4_31">
           synth
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="synth" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_32">
+        <label class="md-nav__title" for="__nav_4_31">
           <span class="md-nav__icon md-icon"></span>
           synth
         </label>
@@ -6827,23 +6738,25 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33" type="checkbox" id="__nav_4_33" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_32" type="checkbox" id="__nav_4_32" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_33">
+        <label class="md-nav__link" for="__nav_4_32">
           time_series
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="time_series" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_33">
+        <label class="md-nav__title" for="__nav_4_32">
           <span class="md-nav__icon md-icon"></span>
           time_series
         </label>
@@ -6855,9 +6768,84 @@
   
   
     <li class="md-nav__item">
-      <a href="../../time-series/Detrender/" class="md-nav__link">
-        Detrender
+      <a href="../Forecaster/" class="md-nav__link">
+        Forecaster
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          HoltWinters
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        HoltWinters
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -6869,22 +6857,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../../time-series/GroupDetrender/" class="md-nav__link">
-        GroupDetrender
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../time-series/SNARIMAX/" class="md-nav__link">
+      <a href="../SNARIMAX/" class="md-nav__link">
         SNARIMAX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluate/" class="md-nav__link">
+        evaluate
       </a>
     </li>
   
@@ -6907,18 +6895,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34" type="checkbox" id="__nav_4_34" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33" type="checkbox" id="__nav_4_33" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_34">
+        <label class="md-nav__link" for="__nav_4_33">
           tree
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="tree" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_34">
+        <label class="md-nav__title" for="__nav_4_33">
           <span class="md-nav__icon md-icon"></span>
           tree
         </label>
@@ -7059,18 +7047,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_10" type="checkbox" id="__nav_4_34_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33_10" type="checkbox" id="__nav_4_33_10" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_34_10">
+        <label class="md-nav__link" for="__nav_4_33_10">
           splitter
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="splitter" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_34_10">
+        <label class="md-nav__title" for="__nav_4_33_10">
           <span class="md-nav__icon md-icon"></span>
           splitter
         </label>
@@ -7239,18 +7227,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35" type="checkbox" id="__nav_4_35" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34" type="checkbox" id="__nav_4_34" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_35">
+        <label class="md-nav__link" for="__nav_4_34">
           utils
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="utils" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_35">
+        <label class="md-nav__title" for="__nav_4_34">
           <span class="md-nav__icon md-icon"></span>
           utils
         </label>
@@ -7419,18 +7407,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_12" type="checkbox" id="__nav_4_35_12" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_12" type="checkbox" id="__nav_4_34_12" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_35_12">
+        <label class="md-nav__link" for="__nav_4_34_12">
           math
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="math" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_35_12">
+        <label class="md-nav__title" for="__nav_4_34_12">
           <span class="md-nav__icon md-icon"></span>
           math
         </label>
@@ -7648,18 +7636,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_13" type="checkbox" id="__nav_4_35_13" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_13" type="checkbox" id="__nav_4_34_13" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_35_13">
+        <label class="md-nav__link" for="__nav_4_34_13">
           pretty
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="pretty" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_35_13">
+        <label class="md-nav__title" for="__nav_4_34_13">
           <span class="md-nav__icon md-icon"></span>
           pretty
         </label>
@@ -7775,8 +7763,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../examples/building-a-simple-time-series-model/" class="md-nav__link">
-        Building a simple time series model
+      <a href="../../../examples/building-a-simple-nowcasting-model/" class="md-nav__link">
+        Building a simple nowcasting model
       </a>
     </li>
   
@@ -8267,6 +8255,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -8280,68 +8275,109 @@
               
                 
                 
-                <h1 id="targettransformregressor">TargetTransformRegressor<a class="headerlink" href="#targettransformregressor" title="Permanent link">&para;</a></h1>
-<p>Modifies the target before training.</p>
-<p>The user is expected to check that <code>func</code> and <code>inverse_func</code> are coherent with each other.</p>
+                <h1 id="holtwinters">HoltWinters<a class="headerlink" href="#holtwinters" title="Permanent link">&para;</a></h1>
+<p>Holt-Winters forecaster.</p>
+<p>This is a standard implementation of the Holt-Winters forecasting method. Certain parametrisations result in special cases, such as simple exponential smoothing. </p>
+<p>Optimal parameters and initialisation values can be determined in a batch setting. However, in an online setting, it is necessary to wait and observe enough values. The first <code>k = max(2, seasonality)</code> values are indeed used to initialize the components. </p>
+<p><strong>Level initialization</strong> </p>
+<div class="arithmatex">\[l = \frac{1}{k} \sum_{i=1}{k} y_i\]</div>
+<p><strong>Trend initialization</strong> </p>
+<div class="arithmatex">\[t = \frac{1}{k - 1} \sum_{i=2}{k} y_i - y_{i-1}\]</div>
+<p><strong>Trend initialization</strong> </p>
+<div class="arithmatex">\[s_i = \frac{y_i}{k}\]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>regressor</strong> (<em><a href="../../base/Regressor">base.Regressor</a></em>)</p>
-<p>Regression model to wrap.</p>
+<p><strong>alpha</strong></p>
+<p>Smoothing parameter for the level.</p>
 </li>
 <li>
-<p><strong>func</strong> (<em><built-in function callable></em>)</p>
-<p>A function modifying the target before training.</p>
+<p><strong>beta</strong> – defaults to <code>None</code></p>
+<p>Smoothing parameter for the trend.</p>
 </li>
 <li>
-<p><strong>inverse_func</strong> (<em><built-in function callable></em>)</p>
-<p>A function to return to the target's original space.</p>
+<p><strong>gamma</strong> – defaults to <code>None</code></p>
+<p>Smoothing parameter for the seasonality.</p>
+</li>
+<li>
+<p><strong>seasonality</strong> – defaults to <code>0</code></p>
+<p>The number of periods in a season. For instance, this should be 4 for quarterly data, and 12 for yearly data.</p>
+</li>
+<li>
+<p><strong>multiplicative</strong> – defaults to <code>False</code></p>
+<p>Whether or not to use a multiplicative formulation.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">math</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">meta</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">time_series</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
-<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
-<span class="o">...</span>     <span class="n">meta</span><span class="o">.</span><span class="n">TargetTransformRegressor</span><span class="p">(</span>
-<span class="o">...</span>         <span class="n">regressor</span><span class="o">=</span><span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">intercept_lr</span><span class="o">=</span><span class="mf">0.15</span><span class="p">),</span>
-<span class="o">...</span>         <span class="n">func</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
-<span class="o">...</span>         <span class="n">inverse_func</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span>
-<span class="o">...</span>     <span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">AirlinePassengers</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">HoltWinters</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">beta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">gamma</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">seasonality</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">multiplicative</span><span class="o">=</span><span class="kc">True</span>
 <span class="o">...</span> <span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MSE</span><span class="p">()</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">MSE</span><span class="p">:</span> <span class="mf">8.759624</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">time_series</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">dataset</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">model</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">metric</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">horizon</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">grace_period</span><span class="o">=</span><span class="mi">12</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="o">+</span><span class="mi">1</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">25.899087</span>
+<span class="o">+</span><span class="mi">2</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">26.26131</span>
+<span class="o">+</span><span class="mi">3</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">25.735903</span>
+<span class="o">+</span><span class="mi">4</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">25.625678</span>
+<span class="o">+</span><span class="mi">5</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">26.093842</span>
+<span class="o">+</span><span class="mi">6</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">26.90249</span>
+<span class="o">+</span><span class="mi">7</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">28.634398</span>
+<span class="o">+</span><span class="mi">8</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">29.284769</span>
+<span class="o">+</span><span class="mi">9</span>  <span class="n">MAE</span><span class="p">:</span> <span class="mf">31.018351</span>
+<span class="o">+</span><span class="mi">10</span> <span class="n">MAE</span><span class="p">:</span> <span class="mf">32.252349</span>
+<span class="o">+</span><span class="mi">11</span> <span class="n">MAE</span><span class="p">:</span> <span class="mf">33.518946</span>
+<span class="o">+</span><span class="mi">12</span> <span class="n">MAE</span><span class="p">:</span> <span class="mf">33.975057</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>learn_one</summary><p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
+<details class="- note"><summary>forecast</summary><p>Makes forecast at each step of the given horizon.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
-<li><strong>y</strong>     (<em>numbers.Number</em>)    </li>
+<li><strong>horizon</strong>     (<em>int</em>)    </li>
+<li><strong>xs</strong>     (<em>list</em>)     – defaults to <code>None</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Regressor</em>:     self</p>
 </details>
-<details class="- note"><summary>predict_one</summary><p>Predicts the target value of a set of features <code>x</code>.</p>
+<details class="- note"><summary>learn_one</summary><p>Updates the model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>y</strong>     (<em>float</em>)    </li>
+<li><strong>x</strong>     (<em>dict</em>)     – defaults to <code>None</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Number</em>:     The prediction.</p>
 </details>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><a href="https://www.wikiwand.com/en/Exponential_smoothing">Exponential smoothing — Wikipedia</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://otexts.com/fpp2/expsmooth.html">Exponential smoothing — Forecasting: Principles and Practice</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc43.htm">What is Exponential Smoothing? — Engineering statistics handbook</a>&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
                 
               
               
@@ -8406,7 +8442,7 @@
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.f89c2efe.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.1e84347e.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
