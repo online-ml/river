@@ -15,7 +15,6 @@ from river import (
     feature_selection,
     imblearn,
     linear_model,
-    meta,
     multiclass,
     naive_bayes,
     neural_net,
@@ -57,8 +56,9 @@ def iter_estimators_which_can_be_tested():
         River2SKLBase,
         SKL2RiverBase,
         compose.FuncTransformer,
-        compose.Pipeline,
         compose.Grouper,
+        compose.Pipeline,
+        compose.TargetTransformRegressor,
         ensemble.AdaptiveRandomForestClassifier,
         ensemble.AdaptiveRandomForestRegressor,
         ensemble.StackingClassifier,
@@ -75,8 +75,6 @@ def iter_estimators_which_can_be_tested():
         feature_extraction.Lagger,
         feature_extraction.TargetLagger,
         feature_selection.PoissonInclusion,
-        meta.PredClipper,
-        meta.TargetTransformRegressor,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
@@ -116,7 +114,9 @@ def iter_estimators_which_can_be_tested():
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
                 preprocessing.StandardScaler()
-                | meta.TargetStandardScaler(regressor=linear_model.LinearRegression(),)
+                | preprocessing.TargetStandardScaler(
+                    regressor=linear_model.LinearRegression(),
+                )
             ),
             (
                 preprocessing.StandardScaler()
