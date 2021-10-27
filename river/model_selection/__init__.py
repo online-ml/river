@@ -13,13 +13,15 @@ The `utils.expand_param_grid` function can be used for this purpose.
 
 """
 
+from .base import ModelSelectionRegressor
 from .bandit import EpsilonGreedyRegressor
-from .greedy import GreedySelectionRegressor
+from .greedy import GreedyRegressor
 from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
 
 __all__ = [
     "EpsilonGreedyRegressor",
-    "GreedySelectionRegressor",
+    "GreedyRegressor",
+    "ModelSelectionRegressor",
     "SuccessiveHalvingClassifier",
     "SuccessiveHalvingRegressor",
 ]

@@ -54,7 +54,6 @@ __all__ = [
     "drift",
     "ensemble",
     "evaluate",
-    "selection",
     "facto",
     "feature_extraction",
     "feature_selection",

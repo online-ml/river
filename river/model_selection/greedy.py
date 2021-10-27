@@ -7,7 +7,7 @@ from river.metrics import MAE, RegressionMetric
 from .base import ModelSelectionRegressor
 
 
-class GreedySelectionRegressor(ModelSelectionRegressor):
+class GreedyRegressor(ModelSelectionRegressor):
     """Greedy selection regressor.
 
     This selection method simply updates each model at each time step.
@@ -41,7 +41,7 @@ class GreedySelectionRegressor(ModelSelectionRegressor):
 
     >>> dataset = datasets.TrumpApproval()
     >>> metric = metrics.MAE()
-    >>> model = model_selection.GreedySelectionRegressor(models, metric)
+    >>> model = model_selection.GreedyRegressor(models, metric)
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
     MAE: 1.491112

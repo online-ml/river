@@ -53,7 +53,8 @@ This module has been deleted.
 ## model_selection
 
 - This new module replaces the `expert` module.
-- Implemented `model_selection.GreedyExpertRegressor`.
+- Implemented `model_selection.GreedyRegressor`.
+- Added `ModelSelectionRegressor` base class.
 
 ## optim
 

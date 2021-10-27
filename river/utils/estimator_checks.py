@@ -241,6 +241,22 @@ def check_clone(model):
     assert dir(clone) == dir(model)
 
 
+def check_regression_selector_performance(model: "ModelSelectionRegressor", dataset):
+    from itertools import tee
+    from river.evaluate import progressive_val_score
+    from river.metrics import MAE
+    from river.model_selection import GreedyRegressor
+
+    dataset_1, dataset_2 = tee(dataset, 2)
+
+    greedy = GreedyRegressor(models=[model.clone() for model in model.models])
+    greedy_metric = progressive_val_score(dataset_1, greedy, MAE())
+
+    metric = progressive_val_score(dataset_2, model, MAE())
+
+    assert greedy_metric.is_better_than(metric)
+
+
 def seed_params(params, seed):
     """Looks for "seed" keys and sets the value."""
 
@@ -312,6 +328,7 @@ def yield_checks(model):
     """
 
     from river import utils
+    from river import model_selection
 
     # General checks
     yield check_repr
@@ -349,6 +366,13 @@ def yield_checks(model):
             checks.append(
                 allow_exception(check_predict_proba_one_binary, NotImplementedError)
             )
+
+    # Model selection checks
+    if isinstance(
+        utils.inspect.extract_relevant(model), model_selection.ModelSelectionRegressor
+    ):
+        for dataset in yield_datasets(model):
+            checks.append(check_regression_selector_performance)
 
     for check in checks:
         for dataset in yield_datasets(model):
