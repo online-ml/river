@@ -109,8 +109,6 @@ def iter_estimators_which_can_be_tested():
         pytest.param(estimator, check, id=f"{estimator}:{check.__name__}")
         for estimator in list(iter_estimators_which_can_be_tested())
         + [
-            feature_extraction.TFIDF(),
-            linear_model.LogisticRegression(),
             preprocessing.StandardScaler() | linear_model.LinearRegression(),
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
@@ -127,19 +125,12 @@ def iter_estimators_which_can_be_tested():
                 preprocessing.StandardScaler()
                 | multiclass.OneVsRestClassifier(linear_model.PAClassifier())
             ),
-            naive_bayes.GaussianNB(),
-            preprocessing.StandardScaler(),
-            cluster.KMeans(n_clusters=5, seed=42),
-            preprocessing.MinMaxScaler(),
             preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
-            feature_extraction.PolynomialExtender(),
             (
                 feature_extraction.PolynomialExtender()
                 | preprocessing.StandardScaler()
                 | linear_model.LinearRegression()
             ),
-            feature_selection.VarianceThreshold(),
-            feature_selection.SelectKBest(similarity=stats.PearsonCorr()),
         ]
         for check in utils.estimator_checks.yield_checks(estimator)
         if check.__name__ not in estimator._unit_test_skips()
