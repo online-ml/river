@@ -94,7 +94,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"model": linear_model.LogisticRegression()}
+        yield {"model": linear_model.LogisticRegression()}
 
     @property
     def _multiclass(self):
@@ -211,7 +211,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"model": linear_model.LinearRegression()}
+        yield {"model": linear_model.LinearRegression()}
 
     def learn_one(self, x, y):
 

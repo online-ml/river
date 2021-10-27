@@ -21,7 +21,8 @@ def losses() -> typing.Iterable[optim.losses.Loss]:
 
 
 @pytest.mark.parametrize(
-    "loss", [pytest.param(loss, id=loss.__class__.__name__) for loss in losses()],
+    "loss",
+    [pytest.param(loss, id=loss.__class__.__name__) for loss in losses()],
 )
 def test_loss_batch_online_equivalence(loss):
 
@@ -39,9 +40,8 @@ def optimizers() -> typing.Iterable[optim.Optimizer]:
         and issubclass(x, optim.Optimizer)
         and x is not optim.Optimizer,
     ):
-        params = optimizer._unit_test_params()
-        print(optimizer)
-        yield optimizer(**params)
+        for params in optimizer._unit_test_params():
+            yield optimizer(**params)
 
 
 @pytest.mark.parametrize(

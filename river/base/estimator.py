@@ -72,7 +72,7 @@ class Estimator(base.Base, abc.ABC):
         such as the number of base models in an ensemble.
 
         """
-        return {}
+        yield {}
 
     def _unit_test_skips(self):
         """Indicates which checks to skip during unit testing.

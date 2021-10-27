@@ -2,6 +2,7 @@
 import copy
 import functools
 import inspect
+import itertools
 import math
 import pickle
 import random
@@ -213,8 +214,8 @@ def check_set_params_idempotent(model):
 
 
 def check_init_has_default_params_for_tests(model):
-    params = model._unit_test_params()
-    assert isinstance(model.__class__(**params), model.__class__)
+    for params in model._unit_test_params():
+        assert isinstance(model.__class__(**params), model.__class__)
 
 
 def check_init_default_params_are_not_mutable(model):
@@ -241,13 +242,13 @@ def check_clone(model):
     assert dir(clone) == dir(model)
 
 
-def check_regression_selector_performance(model: "ModelSelectionRegressor", dataset):
-    from itertools import tee
+def check_model_selection_performance(model: "ModelSelector", dataset):
+    """Checks that a model selector always performs worse than a greedy selection scheme."""
     from river.evaluate import progressive_val_score
     from river.metrics import MAE
     from river.model_selection import GreedyRegressor
 
-    dataset_1, dataset_2 = tee(dataset, 2)
+    dataset_1, dataset_2 = itertools.tee(dataset, 2)
 
     greedy = GreedyRegressor(models=[model.clone() for model in model.models])
     greedy_metric = progressive_val_score(dataset_1, greedy, MAE())
@@ -255,6 +256,28 @@ def check_regression_selector_performance(model: "ModelSelectionRegressor", data
     metric = progressive_val_score(dataset_2, model, MAE())
 
     assert greedy_metric.is_better_than(metric)
+
+
+def check_order_does_not_matter_in_model_selection(model: "ModelSelector", dataset):
+    from river.evaluate import progressive_val_score
+    from river.metrics import MAE
+
+    best_params = []
+    permutations = list(itertools.permutations(model.models))
+    datasets = itertools.tee(dataset, len(permutations))
+
+    print(len(permutations), len(datasets))
+
+    for permutation, dataset in zip(permutations, datasets):
+        clone = model._set_params(new_params={"models": permutation})
+        progressive_val_score(dataset, clone, MAE())
+        best_params.append(clone.best_model._get_params())
+
+    print(best_params)
+
+    assert False
+
+    assert all(params == best_params[0] for params in best_params)
 
 
 def seed_params(params, seed):
@@ -367,12 +390,9 @@ def yield_checks(model):
                 allow_exception(check_predict_proba_one_binary, NotImplementedError)
             )
 
-    # Model selection checks
-    if isinstance(
-        utils.inspect.extract_relevant(model), model_selection.ModelSelectionRegressor
-    ):
-        for dataset in yield_datasets(model):
-            checks.append(check_regression_selector_performance)
+    if isinstance(utils.inspect.extract_relevant(model), model_selection.ModelSelector):
+        checks.append(check_model_selection_performance)
+        checks.append(check_order_does_not_matter_in_model_selection)
 
     for check in checks:
         for dataset in yield_datasets(model):

@@ -28,7 +28,7 @@ class ModelSelectionRegressor(ModelSelector, Regressor):
 
     @classmethod
     def _unit_test_params(cls):
-        return {
+        yield {
             "models": [
                 compose.Pipeline(
                     preprocessing.StandardScaler(),

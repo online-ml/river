@@ -99,7 +99,8 @@ def iter_estimators_which_can_be_tested():
         return not inspect.isabstract(estimator) and not issubclass(estimator, ignored)
 
     for estimator in filter(can_be_tested, iter_estimators()):
-        yield estimator(**estimator._unit_test_params())
+        for params in estimator._unit_test_params():
+            yield estimator(**params)
 
 
 @pytest.mark.parametrize(

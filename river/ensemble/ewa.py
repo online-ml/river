@@ -93,7 +93,7 @@ class EWARegressor(base.Ensemble, base.Regressor):
 
     @classmethod
     def _unit_test_params(cls):
-        return {
+        yield {
             "models": [
                 pp.StandardScaler() | lm.LinearRegression(intercept_lr=0.1),
                 pp.StandardScaler() | lm.PARegressor(),

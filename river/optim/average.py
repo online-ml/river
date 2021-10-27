@@ -73,4 +73,4 @@ class Averager(base.Optimizer):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"optimizer": sgd.SGD()}
+        yield {"optimizer": sgd.SGD()}
