@@ -50,15 +50,15 @@ This module has been deleted.
 - Moved `meta.TargetTransformRegressor` to `compose.TargetTransformRegressor`.
 - Moved `meta.TargetStandardScaler` to `preprocessing.TargetStandardScaler`.
 
+## model_selection
+
+- This new module replaces the `expert` module.
+- Implemented `model_selection.GreedyExpertRegressor`.
+
 ## optim
 
 - `optim.Adam` and `optim.RMSProp` now work with `utils.VectorDict`s as well as `numpy.ndarray`s.
 - Added `optim.losses.Huber`.
-
-## selection
-
-- This new module replaces the `expert` module.
-- Implemented `selection.GreedyExpertRegressor`.
 
 ## stats
 

@@ -170,9 +170,9 @@ class EpsilonGreedyRegressor(BanditRegressor):
     >>> from river import evaluate
     >>> from river import linear_model
     >>> from river import metrics
+    >>> from river import model_selection
     >>> from river import optim
     >>> from river import preprocessing
-    >>> from river import selection
 
     >>> models = [
     ...     compose.Pipeline(
@@ -183,18 +183,23 @@ class EpsilonGreedyRegressor(BanditRegressor):
     ... ]
 
     >>> dataset = datasets.TrumpApproval()
-    >>> selector = EpsilonGreedyRegressor(models, epsilon=0.8, decay=0.01, seed=1)
+    >>> selector = model_selection.EpsilonGreedyRegressor(
+    ...     models,
+    ...     epsilon=0.8,
+    ...     decay=0.01,
+    ...     seed=1
+    ... )
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, selector, metric)
     MAE: 2.797875
 
     >>> selector.bandit
-    Index   MAE              Pulls   Share
-        0        32.114043      23    2.30%
-        1        28.959042      23    2.30%
-        2         1.576562     929   92.81%
-        3   623,644.303637      26    2.60%
+    Ranking   MAE              Pulls   Share
+          2        32.114043      23    2.30%
+          1        28.959042      23    2.30%
+          0         1.576562     929   92.81%
+          3   623,644.303637      26    2.60%
 
     >>> selector.best_model["LinearRegression"].optimizer.lr
     Constant({'learning_rate': 0.01})
