@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-class BaseChain(base.WrapperMixin, collections.UserDict):
+class BaseChain(base.Wrapper, collections.UserDict):
     def __init__(self, model, order: list = None):
         super().__init__()
         self.model = model

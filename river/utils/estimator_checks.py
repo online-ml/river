@@ -242,41 +242,20 @@ def check_clone(model):
     assert dir(clone) == dir(model)
 
 
-def check_model_selection_performance(model: "ModelSelector", dataset):
-    """Checks that a model selector always performs worse than a greedy selection scheme."""
-    from river.evaluate import progressive_val_score
-    from river.metrics import MAE
-    from river.model_selection import GreedyRegressor
-
-    dataset_1, dataset_2 = itertools.tee(dataset, 2)
-
-    greedy = GreedyRegressor(models=[model.clone() for model in model.models])
-    greedy_metric = progressive_val_score(dataset_1, greedy, MAE())
-
-    metric = progressive_val_score(dataset_2, model, MAE())
-
-    assert greedy_metric.is_better_than(metric)
-
-
-def check_order_does_not_matter_in_model_selection(model: "ModelSelector", dataset):
-    from river.evaluate import progressive_val_score
-    from river.metrics import MAE
-
+def check_model_selection_order_does_not_matter(model: "ModelSelector", dataset):
     best_params = []
     permutations = list(itertools.permutations(model.models))
     datasets = itertools.tee(dataset, len(permutations))
 
-    print(len(permutations), len(datasets))
-
     for permutation, dataset in zip(permutations, datasets):
-        clone = model._set_params(new_params={"models": permutation})
-        progressive_val_score(dataset, clone, MAE())
+        models = [model.clone() for model in permutation]
+        clone = model._set_params(new_params={"models": models})
+        for x, y in dataset:
+            clone.predict_one(x)
+            clone.learn_one(x, y)
         best_params.append(clone.best_model._get_params())
 
-    print(best_params)
-
-    assert False
-
+    # Check that the best params are always the same
     assert all(params == best_params[0] for params in best_params)
 
 
@@ -391,8 +370,7 @@ def yield_checks(model):
             )
 
     if isinstance(utils.inspect.extract_relevant(model), model_selection.ModelSelector):
-        checks.append(check_model_selection_performance)
-        checks.append(check_order_does_not_matter_in_model_selection)
+        checks.append(check_model_selection_order_does_not_matter)
 
     for check in checks:
         for dataset in yield_datasets(model):

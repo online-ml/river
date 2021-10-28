@@ -76,7 +76,6 @@ def iter_estimators_which_can_be_tested():
         feature_extraction.TargetLagger,
         feature_selection.PoissonInclusion,
         model_selection.SuccessiveHalvingClassifier,
-        model_selection.SuccessiveHalvingRegressor,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,

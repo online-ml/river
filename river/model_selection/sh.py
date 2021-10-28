@@ -1,14 +1,15 @@
+import abc
 import copy
 import math
 
 from river import base, metrics
 
-from .base import ModelSelector
+from .base import ModelSelectionClassifier, ModelSelectionRegressor
 
 __all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
 
-class SuccessiveHalving(ModelSelector):
+class SuccessiveHalving(abc.ABC):
     def __init__(
         self,
         models,
@@ -35,10 +36,9 @@ class SuccessiveHalving(ModelSelector):
         self._n_iterations = 0
         self._best_model_idx = 0
 
-        if isinstance(models[0], base.Classifier) and not metric.requires_labels:
-            self._pred_func = lambda model: model.predict_proba_one
-        else:
-            self._pred_func = lambda model: model.predict_one
+    @abc.abstractmethod
+    def _pred_func(self, model):
+        ...
 
     @property
     def best_model(self):
@@ -100,7 +100,7 @@ class SuccessiveHalving(ModelSelector):
         return self
 
 
-class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
+class SuccessiveHalvingRegressor(SuccessiveHalving, ModelSelectionRegressor):
     r"""Successive halving algorithm for regression.
 
     Successive halving is a method for performing model selection without having to train each
@@ -244,11 +244,20 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, base.Regressor):
 
     """
 
+    def _pred_func(self, model):
+        return model.predict_one
+
     def predict_one(self, x):
         return self.best_model.predict_one(x)
 
+    @classmethod
+    def _unit_test_params(cls):
+        for params in super()._unit_test_params():
+            print(params)
+            yield {**params, "budget": 500}
 
-class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
+
+class SuccessiveHalvingClassifier(SuccessiveHalving, ModelSelectionClassifier):
     r"""Successive halving algorithm for classification.
 
     Successive halving is a method for performing model selection without having to train each
@@ -394,6 +403,11 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, base.Classifier):
     [^3]: [Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. Hyperband: A novel bandit-based approach to hyperparameter optimization. The Journal of Machine Learning Research, 18(1), pp.6765-6816.](https://arxiv.org/pdf/1603.06560.pdf)
 
     """
+
+    def _pred_func(self, model):
+        if self.metric.requires_labels:
+            return model.predict_one
+        return model.predict_proba_one
 
     def predict_proba_one(self, x):
         return self.best_model.predict_proba_one(x)

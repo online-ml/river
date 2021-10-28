@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
 from random import Random
-from typing import Any, List
+from typing import Any, Iterator, List
 
 from river import base, metrics, utils
 
@@ -30,7 +30,7 @@ class Arm:
     n_pulls: int = 0
 
 
-class Bandit(ABC):
+class Bandit:
     """(Multi-armed) bandit (MAB) solver.
 
     A bandit is composed of multiple arms. A solver is in charge of determining the best one.
@@ -81,7 +81,7 @@ class Bandit(ABC):
         )
 
 
-class BanditSolver:
+class BanditSolver(ABC):
     """A solver for bandit problems.
 
     A solver is in charge of solving a bandit problem.
@@ -92,21 +92,30 @@ class BanditSolver:
 
     """
 
-    def __init__(self, bandit, seed: int):
-        self.bandit = bandit
+    def __init__(self, burn_in: int, seed: int):
+        self.burn_in = burn_in
         self.seed = seed
         self.rng = Random(seed)
 
+    def pull(self, bandit: Bandit) -> Iterator[Arm]:
+        burn_in_over = True
+        for arm in bandit.arms:
+            if arm.n_pulls < self.burn_in:
+                yield arm
+                burn_in_over = False
+        if burn_in_over:
+            yield from self._pull(bandit)
+
     @abstractmethod
-    def pull(self) -> Arm:
+    def _pull(self, bandit: Bandit) -> Iterator[Arm]:
         ...
 
 
 class EpsilonGreedy(BanditSolver):
     r"""$\eps$-greedy strategy."""
 
-    def __init__(self, bandit, epsilon: float, decay=0.0, seed=None):
-        super().__init__(bandit, seed)
+    def __init__(self, epsilon: float, decay: float, burn_in, seed):
+        super().__init__(burn_in, seed)
         self.epsilon = epsilon
         self.decay = decay
 
@@ -116,48 +125,59 @@ class EpsilonGreedy(BanditSolver):
             return self.epsilon * math.exp(-self.bandit.n_pulls * self.decay)
         return self.epsilon
 
-    def pull(self):
-        return (
-            self.rng.choice(self.bandit.arms)  # explore
+    def _pull(self, bandit: Bandit):
+        yield (
+            self.rng.choice(bandit.arms)  # explore
             if self.rng.random() < self.current_epsilon
-            else self.bandit.best_arm  # exploit
+            else bandit.best_arm  # exploit
         )
 
 
 class BanditRegressor(ModelSelectionRegressor):
     def __init__(
-        self,
-        models: List[base.Regressor],
-        solver: BanditSolver,
-        metric: metrics.RegressionMetric = None,
+        self, models: List[base.Regressor], bandit: Bandit, solver: BanditSolver
     ):
-        super().__init__(models, metric)
+        super().__init__(models, bandit.metric)
+        self.bandit = bandit
         self.solver = solver
-
-    @property
-    def bandit(self):
-        return self.solver.bandit
 
     @property
     def best_model(self):
         return self[self.bandit.best_arm.index]
 
+    @property
+    def metrics(self):
+        return [arm.metric for arm in self.bandit.arms]
+
     def learn_one(self, x, y):
-        arm = self.solver.pull()
-        model = self[arm.index]
-        y_pred = model.predict_one(x)
-        self.bandit.update(arm, y, y_pred)
-        model.learn_one(x, y)
+        for arm in self.solver.pull(self.bandit):
+            model = self[arm.index]
+            y_pred = model.predict_one(x)
+            self.bandit.update(arm, y, y_pred)
+            model.learn_one(x, y)
         return self
 
 
 class EpsilonGreedyRegressor(BanditRegressor):
     r"""Model selection based on the $\eps$-greedy bandit strategy.
 
+    Performs model selection by using an $\eps$-greedy bandit strategy. A model is selected for
+    each learning step. The best model is selected (1 - $\eps$%) of the time.
+
+    Bandits work by selecting one or more models for each observation. A selected model gets to
+    learn, which improve its performance. It's possible that the best model does not get picked in
+    favor of a worse model, simply because the latter got picked more at the beginning by chance.
+
+    Selection bias is a common problem when using bandits for online model selection. This bias can
+    be mitigated by using a burn-in phase. Each model is given the chance to learn during this
+    burn-in phase.
+
     Parameters
     ----------
     models
+        The models to choose from.
     epsilon
+        The fraction of time the best model is selected.
     decay
     metric
     seed
@@ -206,16 +226,24 @@ class EpsilonGreedyRegressor(BanditRegressor):
 
     """
 
-    def __init__(self, models, epsilon=0.1, decay=0.0, metric=None, seed=None):
+    def __init__(
+        self,
+        models,
+        epsilon=0.1,
+        decay=0.0,
+        burn_in=100,
+        metric=None,
+        seed: int = None,
+    ):
         if metric is None:
             metric = metrics.MAE()
         super().__init__(
             models=models,
-            metric=metric,
+            bandit=Bandit(n_arms=len(models), metric=metric),
             solver=EpsilonGreedy(
-                bandit=Bandit(n_arms=len(models), metric=metric),
                 epsilon=epsilon,
                 decay=decay,
+                burn_in=burn_in,
                 seed=seed,
             ),
         )
@@ -227,6 +255,10 @@ class EpsilonGreedyRegressor(BanditRegressor):
     @property
     def decay(self):
         return self.solver.decay
+
+    @property
+    def burn_in(self):
+        return self.solver.burn_in
 
     @property
     def seed(self):

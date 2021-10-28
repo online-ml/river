@@ -13,7 +13,7 @@ from river.metrics.base import Metric, MultiClassMetric, RegressionMetric
 from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
 
 
-class BaseSRPEnsemble(base.WrapperMixin, base.Ensemble):
+class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
     """Base class for the sRP ensemble family"""
 
     _TRAIN_RANDOM_SUBSPACES = "subspaces"

@@ -7,7 +7,7 @@ from river import base, linear_model
 __all__ = ["OneVsOneClassifier"]
 
 
-class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
+class OneVsOneClassifier(base.Wrapper, base.Classifier):
     """One-vs-One (OvO) multiclass strategy.
 
     This strategy consists in fitting one binary classifier for each pair of classes. Because we

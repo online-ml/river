@@ -7,7 +7,7 @@ from river import base, linear_model
 __all__ = ["OneVsRestClassifier"]
 
 
-class OneVsRestClassifier(base.WrapperMixin, base.Classifier):
+class OneVsRestClassifier(base.Wrapper, base.Classifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a

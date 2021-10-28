@@ -1,7 +1,7 @@
 import abc
 
 
-class WrapperMixin:
+class Wrapper:
     """A wrapper model."""
 
     @abc.abstractproperty

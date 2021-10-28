@@ -10,7 +10,7 @@ class Triplet(collections.namedtuple("Triplet", "x y loss")):
         return self.loss < other.loss
 
 
-class HardSampling(base.WrapperMixin):
+class HardSampling(base.Wrapper):
     """Hard sampler."""
 
     def __init__(self, model, loss, size, p, seed=None):

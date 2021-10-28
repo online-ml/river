@@ -5,7 +5,7 @@ import numpy as np
 from river import base
 
 
-class ClassificationSampler(base.WrapperMixin, base.Classifier):
+class ClassificationSampler(base.Wrapper, base.Classifier):
     def __init__(self, classifier, seed=None):
         self.classifier = classifier
         self.seed = seed

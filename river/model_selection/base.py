@@ -2,7 +2,7 @@ from abc import abstractproperty
 from typing import Iterator
 
 from river import compose, linear_model, metrics, optim, preprocessing
-from river.base import Ensemble, Estimator, Regressor
+from river.base import Classifier, Ensemble, Estimator, Regressor
 from river.metrics import Metric
 
 
@@ -32,12 +32,27 @@ class ModelSelectionRegressor(ModelSelector, Regressor):
             "models": [
                 compose.Pipeline(
                     preprocessing.StandardScaler(),
-                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.01)),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=1e-2)),
                 ),
                 compose.Pipeline(
                     preprocessing.StandardScaler(),
-                    linear_model.LinearRegression(optimizer=optim.SGD(lr=0.1)),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=1e-1)),
                 ),
             ],
             "metric": metrics.MAE(),
         }
+        yield {
+            "models": [
+                compose.Pipeline(
+                    preprocessing.StandardScaler(),
+                    linear_model.LinearRegression(optimizer=optim.SGD(lr=lr)),
+                )
+                for lr in [1e-4, 1e-3, 1e-2, 1e-1]
+            ],
+            "metric": metrics.MAE(),
+        }
+
+
+class ModelSelectionClassifier(ModelSelector, Classifier):
+    def predict_proba_one(self, x):
+        return self.best_model.predict_proba_one(x)
