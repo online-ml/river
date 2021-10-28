@@ -89,7 +89,6 @@ __all__ = [
     "Completeness",
     "ClassificationMetric",
     "ClassificationReport",
-    "ClusteringReport",
     "cluster",
     "CohenKappa",
     "ConfusionMatrix",
