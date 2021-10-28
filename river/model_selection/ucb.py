@@ -102,23 +102,14 @@ class UCBRegressor(BanditRegressor):
     """
 
     def __init__(
-        self,
-        models,
-        metric=None,
-        delta=1,
-        burn_in=100,
-        seed: int = None,
+        self, models, metric=None, delta=1, burn_in=100, seed: int = None,
     ):
         if metric is None:
             metric = metrics.MAE()
         super().__init__(
             models=models,
             metric=metric,
-            policy=UCB(
-                delta=delta,
-                burn_in=burn_in,
-                seed=seed,
-            ),
+            policy=UCB(delta=delta, burn_in=burn_in, seed=seed,),
         )
 
     @property
