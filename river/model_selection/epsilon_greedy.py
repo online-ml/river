@@ -107,6 +107,10 @@ class EpsilonGreedyRegressor(BanditRegressor):
       initializer=Zeros ()
     )
 
+    References
+    ----------
+    [^1]: [ε-Greedy Algorithm - The Multi-Armed Bandit Problem and Its Solutions - Lilian Weng](https://lilianweng.github.io/lil-log/2018/01/23/the-multi-armed-bandit-problem-and-its-solutions.html#%CE%B5-greedy-algorithm)
+
     """
 
     def __init__(
