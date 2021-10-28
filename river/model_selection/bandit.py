@@ -119,16 +119,15 @@ class EpsilonGreedy(BanditSolver):
         self.epsilon = epsilon
         self.decay = decay
 
-    @property
-    def current_epsilon(self):
+    def current_epsilon(self, n: int):
         if self.decay:
-            return self.epsilon * math.exp(-self.bandit.n_pulls * self.decay)
+            return self.epsilon * math.exp(-n * self.decay)
         return self.epsilon
 
     def _pull(self, bandit: Bandit):
         yield (
             self.rng.choice(bandit.arms)  # explore
-            if self.rng.random() < self.current_epsilon
+            if self.rng.random() < self.current_epsilon(n=bandit.n_pulls)
             else bandit.best_arm  # exploit
         )
 
@@ -164,13 +163,9 @@ class EpsilonGreedyRegressor(BanditRegressor):
     Performs model selection by using an $\eps$-greedy bandit strategy. A model is selected for
     each learning step. The best model is selected (1 - $\eps$%) of the time.
 
-    Bandits work by selecting one or more models for each observation. A selected model gets to
-    learn, which improve its performance. It's possible that the best model does not get picked in
-    favor of a worse model, simply because the latter got picked more at the beginning by chance.
-
     Selection bias is a common problem when using bandits for online model selection. This bias can
-    be mitigated by using a burn-in phase. Each model is given the chance to learn during this
-    burn-in phase.
+    be mitigated by using a burn-in phase. Each model is given the chance to learn during the first
+    `burn_in` steps.
 
     Parameters
     ----------
@@ -179,8 +174,11 @@ class EpsilonGreedyRegressor(BanditRegressor):
     epsilon
         The fraction of time the best model is selected.
     decay
+        The rate at which `epsilon` decays.
     metric
+        The metric that is used to compare models with each other.
     seed
+        Random number generator seed for reproducibility.
 
     Examples
     --------
@@ -199,30 +197,50 @@ class EpsilonGreedyRegressor(BanditRegressor):
     ...         preprocessing.StandardScaler(),
     ...         linear_model.LinearRegression(optimizer=optim.SGD(lr=lr))
     ...     )
-    ...     for lr in [1e-4, 1e-3, 1e-2, 1e-1]
+    ...     for lr in [1e-5, 1e-4, 1e-3, 1e-2]
     ... ]
 
     >>> dataset = datasets.TrumpApproval()
     >>> selector = model_selection.EpsilonGreedyRegressor(
     ...     models,
-    ...     epsilon=0.8,
-    ...     decay=0.01,
+    ...     epsilon=0.1,
+    ...     decay=0.001,
+    ...     burn_in=100,
     ...     seed=1
     ... )
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, selector, metric)
-    MAE: 2.797875
+    MAE: 1.370979
 
     >>> selector.bandit
-    Ranking   MAE              Pulls   Share
-          2        32.114043      23    2.30%
-          1        28.959042      23    2.30%
-          0         1.576562     929   92.81%
-          3   623,644.303637      26    2.60%
+    Ranking   MAE         Pulls   Share
+          3   16.197726     111    8.53%
+          2   15.022596     117    8.99%
+          1   14.036779     109    8.38%
+          0    1.425602     964   74.10%
 
-    >>> selector.best_model["LinearRegression"].optimizer.lr
-    Constant({'learning_rate': 0.01})
+    >>> selector.best_model
+    Pipeline (
+      StandardScaler (
+        with_std=True
+      ),
+      LinearRegression (
+        optimizer=SGD (
+          lr=Constant (
+            learning_rate=0.01
+          )
+        )
+        loss=Squared ()
+        l2=0.
+        intercept_init=0.
+        intercept_lr=Constant (
+          learning_rate=0.01
+        )
+        clip_gradient=1e+12
+        initializer=Zeros ()
+      )
+    )
 
     """
 
