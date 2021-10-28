@@ -242,7 +242,7 @@ def check_clone(model):
     assert dir(clone) == dir(model)
 
 
-def check_model_selection_order_does_not_matter(model: "ModelSelector", dataset):
+def check_model_selection_order_does_not_matter(model, dataset):
     best_params = []
     permutations = list(itertools.permutations(model.models))
     datasets = itertools.tee(dataset, len(permutations))

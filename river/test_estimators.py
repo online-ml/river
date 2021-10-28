@@ -7,7 +7,6 @@ import pytest
 
 from river import (
     base,
-    cluster,
     compose,
     ensemble,
     facto,
@@ -17,11 +16,9 @@ from river import (
     linear_model,
     model_selection,
     multiclass,
-    naive_bayes,
     neural_net,
     preprocessing,
     reco,
-    stats,
     time_series,
     utils,
 )

@@ -2,7 +2,7 @@ import abc
 import copy
 import math
 
-from river import base, metrics
+from river import metrics
 
 from .base import ModelSelectionClassifier, ModelSelectionRegressor
 

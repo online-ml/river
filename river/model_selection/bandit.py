@@ -4,11 +4,10 @@ This module contains model selection logic based on multi-armed bandits (MAB). T
 organised, the bandit logic is agnostic of the model selection aspect.
 
 """
-import operator
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from random import Random
-from typing import Any, Iterator, List
+from typing import Iterator, List
 
 from river import base, metrics, utils
 
