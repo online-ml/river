@@ -61,7 +61,6 @@ def iter_estimators_which_can_be_tested():
         compose.TargetTransformRegressor,
         ensemble.AdaptiveRandomForestClassifier,
         ensemble.AdaptiveRandomForestRegressor,
-        ensemble.StackingClassifier,
         facto.FFMClassifier,
         facto.FFMRegressor,
         facto.FMClassifier,
