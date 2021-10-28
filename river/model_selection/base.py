@@ -7,6 +7,14 @@ from river.metrics import Metric
 
 
 class ModelSelector(Ensemble, ABC):
+    """
+
+    Parameters
+    ----------
+    metric
+
+    """
+
     def __init__(self, models: Iterator[Estimator], metric: Metric):
         super().__init__(models)
         for model in models:
