@@ -39,7 +39,8 @@ class Metric(base.Base, abc.ABC):
     def get(self) -> float:
         """Return the current value of the metric."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def bigger_is_better(self) -> bool:
         """Indicate if a high value is better than a low one or not."""
 
@@ -381,7 +382,8 @@ class WrapperMetric(Metric):
     def _fmt(self):
         return self.metric._fmt
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def metric(self):
         """Gives access to the wrapped metric."""
 

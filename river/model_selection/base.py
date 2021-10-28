@@ -1,4 +1,4 @@
-from abc import abstractproperty
+from abc import ABC, abstractmethod
 from typing import Iterator
 
 from river import compose, linear_model, metrics, optim, preprocessing
@@ -6,7 +6,7 @@ from river.base import Classifier, Ensemble, Estimator, Regressor
 from river.metrics import Metric
 
 
-class ModelSelector(Ensemble):
+class ModelSelector(Ensemble, ABC):
     def __init__(self, models: Iterator[Estimator], metric: Metric):
         super().__init__(models)
         for model in models:
@@ -17,7 +17,8 @@ class ModelSelector(Ensemble):
                 )
         self.metric = metric
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def best_model(self):
         """The current best model."""
 

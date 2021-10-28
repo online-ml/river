@@ -1,10 +1,11 @@
-import abc
+from abc import ABC, abstractmethod
 
 
-class Wrapper:
+class Wrapper(ABC):
     """A wrapper model."""
 
-    @abc.abstractproperty
+    @property
+    @abstractmethod
     def _wrapped_model(self):
         """Provides access to the wrapped model."""
 
