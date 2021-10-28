@@ -11,6 +11,7 @@ class ModelSelector(Ensemble, ABC):
 
     Parameters
     ----------
+    models
     metric
 
     """
