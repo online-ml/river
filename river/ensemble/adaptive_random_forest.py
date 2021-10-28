@@ -207,27 +207,15 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLeafMajorityClass(
-                initial_stats,
-                depth,
-                self.splitter,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return RandomLeafNaiveBayes(
-                initial_stats,
-                depth,
-                self.splitter,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return RandomLeafNaiveBayesAdaptive(
-                initial_stats,
-                depth,
-                self.splitter,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
 
     def new_instance(self):
@@ -317,11 +305,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
 
         if self.leaf_prediction == self._TARGET_MEAN:
             return RandomLeafMean(
-                initial_stats,
-                depth,
-                self.splitter,
-                self.max_features,
-                seed,
+                initial_stats, depth, self.splitter, self.max_features, seed,
             )
         elif self.leaf_prediction == self._MODEL:
             return RandomLeafModel(

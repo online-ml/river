@@ -21,8 +21,7 @@ def losses() -> typing.Iterable[optim.losses.Loss]:
 
 
 @pytest.mark.parametrize(
-    "loss",
-    [pytest.param(loss, id=loss.__class__.__name__) for loss in losses()],
+    "loss", [pytest.param(loss, id=loss.__class__.__name__) for loss in losses()],
 )
 def test_loss_batch_online_equivalence(loss):
 

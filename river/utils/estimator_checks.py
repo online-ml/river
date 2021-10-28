@@ -329,8 +329,7 @@ def yield_checks(model):
 
     """
 
-    from river import utils
-    from river import model_selection
+    from river import model_selection, utils
 
     # General checks
     yield check_repr

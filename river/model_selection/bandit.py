@@ -64,12 +64,7 @@ class Bandit:
 
     def __repr__(self):
         return utils.pretty.print_table(
-            headers=[
-                "Ranking",
-                self.metric.__class__.__name__,
-                "Pulls",
-                "Share",
-            ],
+            headers=["Ranking", self.metric.__class__.__name__, "Pulls", "Share",],
             columns=[
                 [str(r) for r in self.ranking],
                 [f"{arm.metric.get():{self.metric._fmt}}" for arm in self.arms],
