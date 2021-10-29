@@ -91,7 +91,7 @@ class GLM:
         )
 
         return (
-            loss_gradient * utils.VectorDict(x) + 2.0 * self.l2 * self._weights,
+            loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
             loss_gradient,
         )
 
