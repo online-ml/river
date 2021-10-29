@@ -12,7 +12,7 @@ jobs:
         platform: [windows-latest, macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.platform }}
     env:
-      CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-*"
+      CIBW_BUILD: "cp37-* cp38-* cp39-*"
       CIBW_BEFORE_BUILD: "pip install cython"
     steps:
       - uses: actions/checkout@v2
