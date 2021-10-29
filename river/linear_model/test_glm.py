@@ -175,10 +175,12 @@ class ScikitLearnSquaredLoss:
 @pytest.mark.parametrize(
     "river_params, sklearn_params",
     [
+        # Vanilla
         (
             {"optimizer": optim.SGD(1e-2), "loss": ScikitLearnSquaredLoss()},
             {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0},
         ),
+        # L2 regu
         (
             {
                 "optimizer": optim.SGD(1e-2),
@@ -193,27 +195,29 @@ def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
 
     ss = preprocessing.StandardScaler()
-    cr = lm.LinearRegression(**river_params)
+    rv = lm.LinearRegression(**river_params)
     sk = sklm.SGDRegressor(**sklearn_params)
 
-    for x, y in datasets.TrumpApproval():
+    for x, y in datasets.TrumpApproval().take(100):
         x = ss.learn_one(x).transform_one(x)
-        cr.learn_one(x, y)
+        rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y])
 
-    for i, w in enumerate(cr.weights.values()):
+    for i, w in enumerate(rv.weights.values()):
         assert math.isclose(w, sk.coef_[i])
 
-    assert math.isclose(cr.intercept, sk.intercept_[0])
+    assert math.isclose(rv.intercept, sk.intercept_[0])
 
 
 @pytest.mark.parametrize(
     "river_params, sklearn_params",
     [
+        # Vanilla
         (
             {"optimizer": optim.SGD(1e-2)},
             {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0, "loss": "log"},
         ),
+        # L2 regu
         (
             {
                 "optimizer": optim.SGD(1e-2),
@@ -226,33 +230,43 @@ def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
                 "loss": "log",
             },
         ),
+        # Inverse-scaling learning rate
+        (
+            {
+                "optimizer": optim.SGD(optim.schedulers.InverseScaling(1e-2)),
+                "intercept_lr": optim.schedulers.InverseScaling(1e-2),
+            },
+            {"eta0": 1e-2, "alpha": 0, "learning_rate": "invscaling", "loss": "log"},
+        ),
     ],
 )
 def test_log_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
 
     ss = preprocessing.StandardScaler()
-    cr = lm.LogisticRegression(**river_params)
+    rv = lm.LogisticRegression(**river_params)
     sk = sklm.SGDClassifier(**sklearn_params)
 
-    for x, y in datasets.Bananas():
+    for x, y in datasets.Bananas().take(100):
         x = ss.learn_one(x).transform_one(x)
-        cr.learn_one(x, y)
+        rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
-    for i, w in enumerate(cr.weights.values()):
+    for i, w in enumerate(rv.weights.values()):
         assert math.isclose(w, sk.coef_[0][i])
 
-    assert math.isclose(cr.intercept, sk.intercept_[0])
+    assert math.isclose(rv.intercept, sk.intercept_[0])
 
 
 @pytest.mark.parametrize(
     "river_params, sklearn_params",
     [
+        # Vanilla
         (
             {},
             {},
         ),
+        # L2 regu
         (
             {
                 "l2": 1e-3,
@@ -268,15 +282,15 @@ def test_perceptron_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
 
     ss = preprocessing.StandardScaler()
-    cr = lm.Perceptron(**river_params)
+    rv = lm.Perceptron(**river_params)
     sk = sklm.Perceptron(**sklearn_params)
 
-    for x, y in datasets.Bananas():
+    for x, y in datasets.Bananas().take(100):
         x = ss.learn_one(x).transform_one(x)
-        cr.learn_one(x, y)
+        rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
-    for i, w in enumerate(cr.weights.values()):
+    for i, w in enumerate(rv.weights.values()):
         assert math.isclose(w, sk.coef_[0][i])
 
-    assert math.isclose(cr.intercept, sk.intercept_[0])
+    assert math.isclose(rv.intercept, sk.intercept_[0])
