@@ -1,5 +1,8 @@
 # Unreleased
 
+- Wheels for Python 3.6 have been dropped.
+- Wheels for Python 3.9 have been added.
+
 ## base
 
 - Renamed `base.WrapperMixin` to `base.Wrapper`.
