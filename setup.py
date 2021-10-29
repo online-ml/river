@@ -47,7 +47,7 @@ dev_packages = base_packages + [
     "pre-commit>=2.9.2",
     "pytest>=4.5.0",
     "pytest-cov>=2.6.1",
-    "scikit-learn>=0.22.1",
+    "scikit-learn>=1.0.1",
     "sqlalchemy>=1.4",
 ]
 

@@ -171,7 +171,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     >>> for x, y in datasets.CreditCard().take(8000):
     ...     score = model.score_one(x)
-    ...     model = model.learn_one(x, y)
+    ...     model = model.learn_one(x)
     ...     auc = auc.update(y, score)
 
     >>> auc
