@@ -216,6 +216,10 @@ log_reg_tests = {
         {"optimizer": optim.SGD(1e-2)},
         {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0, "loss": "log"},
     ),
+    "Hinge": (
+        {"optimizer": optim.SGD(1e-2), "loss": optim.losses.Hinge()},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0},
+    ),
     "No intercept": (
         {"optimizer": optim.SGD(1e-2), "intercept_lr": 0},
         {
