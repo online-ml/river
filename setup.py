@@ -26,7 +26,7 @@ LONG_DESCRIPTION_CONTENT_TYPE = "text/markdown"
 URL = "https://github.com/online-ml/river"
 EMAIL = "maxhalford25@gmail.com"
 AUTHOR = "Max Halford"
-REQUIRES_PYTHON = ">=3.6.0"
+REQUIRES_PYTHON = ">=3.7.0"
 
 # Package requirements.
 base_packages = ["numpy>=1.18.1", "scipy>=1.4.1", "pandas>=1.0.1"]
