@@ -4,6 +4,7 @@
 
 - Moved `base.AnomalyDetector` to `anomaly.AnomalyDetector`.
 - Implemented `anomaly.ConstantThresholder`.
+- Implemented `anomaly.QuantileThresholder`.
 
 ## base
 

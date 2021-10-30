@@ -11,6 +11,11 @@ and 1s.
 """
 from .base import AnomalyDetector
 from .hst import HalfSpaceTrees
-from .threshold import ConstantThresholder
+from .threshold import ConstantThresholder, QuantileThresholder
 
-__all__ = ["AnomalyDetector", "ConstantThresholder", "HalfSpaceTrees"]
+__all__ = [
+    "AnomalyDetector",
+    "ConstantThresholder",
+    "HalfSpaceTrees",
+    "QuantileThresholder",
+]
