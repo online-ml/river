@@ -2,7 +2,6 @@ import collections
 import functools
 import io
 import itertools
-import re
 import types
 import typing
 from xml.etree import ElementTree as ET
