@@ -11,7 +11,7 @@ class HDDM_A(DriftDetector):
     values and returns the estimated status of the stream: STABLE, WARNING or
     DRIFT.
 
-    **Input:** `value` must be a binary signal, where 0 indicates error.
+    **Input:** `value` must be a binary signal, where 1 indicates error.
     For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
     true target label $y$:
 
