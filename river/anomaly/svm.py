@@ -1,6 +1,7 @@
-from river import base
 from river.linear_model.glm import GLM
 
+from .base import AnomalyDetector
 
-class OneClassSVM(base.AnomalyDetector, GLM):
+
+class OneClassSVM(AnomalyDetector, GLM):
     ...

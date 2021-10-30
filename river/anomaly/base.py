@@ -1,9 +1,9 @@
 import abc
 
-from . import estimator
+from river import base
 
 
-class AnomalyDetector(estimator.Estimator):
+class AnomalyDetector(base.Estimator):
     """An anomaly detector."""
 
     @property

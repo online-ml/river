@@ -1,11 +1,16 @@
 """Anomaly detection.
 
-The estimators in the `anomaly` module have a slightly different API. Instead of a `predict_one`
-method, each anomaly detector has a `score_one`. The latter returns an anomaly score for a given
-set of features. High scores indicate anomalies, whereas low scores indicate normal observations.
-Note that the range of the scores is relative to each estimator.
+Estimators in the `anomaly` module have a bespoke API. Each anomaly detector has a `score_one`
+method instead of a `predict_one` method. This method returns an anomaly score. A high score
+indicates an anomaly, whereas a low score is indicative of a normal observation. The range of the
+scores is relative to each estimator.
+
+An anomaly detector can be combined with a thresholding method to turn its anomaly scores into 0s
+and 1s.
 
 """
+from .base import AnomalyDetector
 from .hst import HalfSpaceTrees
+from .threshold import ConstantThresholder
 
-__all__ = ["HalfSpaceTrees"]
+__all__ = ["AnomalyDetector", "ConstantThresholder", "HalfSpaceTrees"]

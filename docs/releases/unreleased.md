@@ -1,5 +1,10 @@
 # Unreleased
 
+## anomaly
+
+- Moved `base.AnomalyDetector` to `anomaly.AnomalyDetector`.
+- Implemented `anomaly.ConstantThresholder`.
+
 ## base
 
 - Renamed `base.WrapperMixin` to `base.Wrapper`.
