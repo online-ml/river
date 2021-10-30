@@ -2,6 +2,7 @@ import collections
 import functools
 import io
 import itertools
+import re
 import types
 import typing
 from xml.etree import ElementTree as ET
@@ -210,17 +211,10 @@ class Pipeline(base.Estimator):
         ).expandtabs(2)
 
     def _repr_html_(self):
-
         from river.compose import viz
 
-        html = ET.Element("html")
-        body = ET.Element("body")
-        html.append(body)
-
-        pipeline_div = viz.pipeline_to_html(self)
-        body.append(pipeline_div)
-
-        return f"<html>{ET.tostring(body).decode()}<style>{viz.CSS}</style></html>"
+        div = viz.pipeline_to_html(self)
+        return f"<div>{ET.tostring(div, encoding='unicode')}<style scoped>{viz.CSS}</style></div>"
 
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
