@@ -8296,7 +8296,7 @@
                 <h1 id="hddm_a">HDDM_A<a class="headerlink" href="#hddm_a" title="Permanent link">&para;</a></h1>
 <p>Drift Detection Method based on Hoeffding’s bounds with moving average-test.</p>
 <p>HDDM_A is a drift detection method based on the Hoeffding’s inequality. HDDM_A uses the average as estimator. It receives as input a stream of real values and returns the estimated status of the stream: STABLE, WARNING or DRIFT. </p>
-<p><strong>Input:</strong> <code>value</code> must be a binary signal, where 0 indicates error. For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t the true target label <span class="arithmatex">\(y\)</span>: </p>
+<p><strong>Input:</strong> <code>value</code> must be a binary signal, where 1 indicates error. For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t the true target label <span class="arithmatex">\(y\)</span>: </p>
 <ul>
 <li>
 <p>0: Correct, <span class="arithmatex">\(y=y'\)</span> </p>
