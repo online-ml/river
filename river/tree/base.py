@@ -146,15 +146,10 @@ class Branch(Base, abc.ABC):
         return pd.DataFrame.from_records(nodes).set_index("node")
 
     def _repr_html_(self):
-
         from river.tree import viz
 
-        html = ET.Element("html")
-        body = ET.Element("body")
-        html.append(body)
-        body.append(viz.tree_to_html(self))
-
-        return f"<html>{ET.tostring(body).decode()}<style>{viz.CSS}</style></html>"
+        div = viz.tree_to_html(self)
+        return f"<div>{ET.tostring(div, encoding='unicode')}<style scoped>{viz.CSS}</style></div>"
 
 
 class Leaf(Base):
