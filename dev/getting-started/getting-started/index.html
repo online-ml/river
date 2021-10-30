@@ -8275,12 +8275,13 @@ Features  9
 
 <span class="n">model</span>
 </code></pre></div>
-<p><html><body><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
+<div><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
 {'counts': Counter(),
  'means': defaultdict(&lt;class 'float'&gt;, {}),
  'vars': defaultdict(&lt;class 'float'&gt;, {}),
- 'with_std': True}</p>
-<p></code></details><details class="estimator"><summary><pre class="estimator-name">LogisticRegression</pre></summary><code class="estimator-params">
+ 'with_std': True}
+
+</code></details><details class="component estimator"><summary><pre class="estimator-name">LogisticRegression</pre></summary><code class="estimator-params">
 {'_weights': {},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
@@ -8290,20 +8291,23 @@ Features  9
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l2': 0.0,
  'loss': Log({'weight_pos': 1.0, 'weight_neg': 1.0}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}</p>
-<p></code></details></div></body><style>
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}
+
+</code></details></div><style scoped>
 .estimator {
     padding: 1em;
     border-style: solid;
     background: white;
-}</p>
-<p>.pipeline {
+}
+
+.pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
-}</p>
-<p>.union {
+}
+
+.union {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -8311,49 +8315,71 @@ Features  9
     padding: 1em;
     border-style: solid;
     background: white
-}</p>
-<p>/<em> Vertical spacing between steps </em>/</p>
-<p>.estimator + .estimator,
-.estimator + .union,
-.union + .estimator {
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.wrapper > .estimator {
+    margin-top: 1em;
+}
+
+/* Vertical spacing between steps */
+
+.component + .component {
     margin-top: 2em;
-}</p>
-<p>.union &gt; .estimator {
+}
+
+.union > .estimator {
     margin-top: 0;
-}</p>
-<p>/<em> Spacing within a union of estimators </em>/</p>
-<p>.union &gt;
-.estimator + .estimator,
-.pipeline + .estimator,
-.estimator + .pipeline,
-.pipeline + .pipeline {
+}
+
+/* Spacing within a union of estimators */
+
+.union > .component + .component {
     margin-left: 1em;
-}</p>
-<p>/<em> Typography </em>/
+}
+
+/* Typography */
+
 .estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
-}</p>
-<p>.estimator &gt; code {
+}
+
+.estimator > code,
+.wrapper > details > code {
     background-color: white !important;
-}</p>
-<p>.estimator-name {
+}
+
+.estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
-}</p>
-<p>/<em> Toggle </em>/</p>
-<p>summary {
+}
+
+/* Toggle */
+
+summary {
     display: flex;
     align-items:center;
     cursor: pointer;
-}</p>
-<p>summary &gt; div {
+}
+
+summary > div {
     width: 100%;
 }
-</style></html></p>
+</style></div>
+
 <div class="highlight"><pre><span></span><code><span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">():</span>
