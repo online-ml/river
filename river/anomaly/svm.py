@@ -11,6 +11,9 @@ from .base import AnomalyDetector
 class OneClassSVM(GLM, AnomalyDetector):
     """One-class SVM for anomaly detection.
 
+    This is a stochastic implementation of the one-class SVM algorithm, and will not exactly match
+    its batch formulation.
+
     It is encouraged to scale the data upstream with `preprocessing.StandardScaler`, as well as use
     `feature_extraction.RBFSampler` to capture non-linearities.
 

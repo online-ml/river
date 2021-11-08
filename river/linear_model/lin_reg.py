@@ -135,7 +135,7 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
             copy=False,
         )
 
-    def debug_one(self, x: dict, decimals=5) -> str:
+    def debug_one(self, x: dict, decimals: int = 5) -> str:
         """Debugs the output of the linear regression.
 
         Parameters
