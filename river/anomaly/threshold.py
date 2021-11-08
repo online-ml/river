@@ -69,6 +69,12 @@ class ConstantThresholder(Thresholder):
         super().__init__(anomaly_detector)
         self.threshold = threshold
 
+    @classmethod
+    def _unit_test_params(cls):
+        from .hst import HalfSpaceTrees
+
+        return {"anomaly_detector": HalfSpaceTrees(), "threshold": 0.5}
+
     def score_one(self, x):
         return 1 if self.anomaly_detector.score_one(x) > self.threshold else 0
 
@@ -126,6 +132,12 @@ class QuantileThresholder(Thresholder):
     def __init__(self, anomaly_detector: AnomalyDetector, q: float):
         super().__init__(anomaly_detector)
         self.quantile = Quantile(q=q)
+
+    @classmethod
+    def _unit_test_params(cls):
+        from .hst import HalfSpaceTrees
+
+        return {"anomaly_detector": HalfSpaceTrees(), "q": 0.5}
 
     @property
     def q(self):
