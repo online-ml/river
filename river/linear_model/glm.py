@@ -5,9 +5,7 @@ import typing
 import numpy as np
 import pandas as pd
 
-from river import base, optim, utils
-
-__all__ = ["LinearRegression", "LogisticRegression", "Perceptron"]
+from river import optim, utils
 
 
 class GLM:
@@ -84,8 +82,6 @@ class GLM:
         return self._weights @ utils.VectorDict(x) + self.intercept
 
     def _eval_gradient_one(self, x: dict, y: float, w: float) -> (dict, float):
-
-        from pprint import pprint
 
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w

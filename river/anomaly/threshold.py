@@ -3,7 +3,6 @@ from river.stats import Quantile
 
 from .base import AnomalyDetector
 
-
 __all__ = ["ConstantThresholder", "QuantileThresholder"]
 
 

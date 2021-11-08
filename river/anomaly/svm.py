@@ -1,5 +1,7 @@
 import typing
 
+import pandas as pd
+
 from river import optim
 from river.linear_model.glm import GLM
 
@@ -105,7 +107,7 @@ class OneClassSVM(GLM, AnomalyDetector):
         return super().learn_one(x, y=1)
 
     def learn_many(self, X):
-        return super().learn_many(x, y=pd.Series(True, index=X.index))
+        return super().learn_many(X, y=pd.Series(True, index=X.index))
 
     def score_one(self, x):
         return self._raw_dot_one(x) - self.intercept

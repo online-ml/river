@@ -5,7 +5,6 @@ from sklearn import linear_model as sklm
 
 from river import anomaly, datasets, optim
 
-
 tests = {
     "Vanilla": (
         {"optimizer": optim.SGD(1e-2), "nu": 0.5},
@@ -19,9 +18,7 @@ tests = {
 
 
 @pytest.mark.parametrize(
-    "river_params, sklearn_params",
-    tests.values(),
-    ids=tests.keys(),
+    "river_params, sklearn_params", tests.values(), ids=tests.keys(),
 )
 def test_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
