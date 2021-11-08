@@ -110,7 +110,8 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
     >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
 
     >>> evaluate.progressive_val_score(dataset, pipeline, metric)
-    MAE: 0.425929
+    MAE: 0.426177
+
     """
 
     def __init__(
