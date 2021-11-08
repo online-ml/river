@@ -11,6 +11,7 @@ and 1s.
 """
 from .base import AnomalyDetector
 from .hst import HalfSpaceTrees
+from .svm import OneClassSVM
 from .threshold import ConstantThresholder, QuantileThresholder
 
 __all__ = [
@@ -18,4 +19,5 @@ __all__ = [
     "ConstantThresholder",
     "HalfSpaceTrees",
     "QuantileThresholder",
+    "OneClassSVM",
 ]

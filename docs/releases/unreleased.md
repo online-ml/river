@@ -5,6 +5,7 @@
 - Moved `base.AnomalyDetector` to `anomaly.AnomalyDetector`.
 - Implemented `anomaly.ConstantThresholder`.
 - Implemented `anomaly.QuantileThresholder`.
+- Implemented `anomaly.OneClassSVM`.
 
 ## base
 
@@ -46,6 +47,7 @@ This module has been deleted.
 ## optim
 
 - `optim.Adam` and `optim.RMSProp` now work with `utils.VectorDict`s as well as `numpy.ndarray`s.
+- Added `optim.losses.Huber`.
 
 ## selection
 

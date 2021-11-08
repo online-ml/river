@@ -59,6 +59,9 @@ class GLM:
         finally:
             self._weights = weights
 
+    def _get_intercept_update(self, loss_gradient):
+        return self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
+
     def _fit(self, x, y, w, get_grad):
 
         # Some optimizers need to do something before a prediction is made
@@ -68,9 +71,7 @@ class GLM:
         gradient, loss_gradient = get_grad(x, y, w)
 
         # Update the intercept
-        self.intercept -= (
-            self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
-        )
+        self.intercept -= self._get_intercept_update(loss_gradient)
 
         # Update the weights
         self.optimizer.step(w=self._weights, g=gradient)
@@ -83,6 +84,8 @@ class GLM:
         return self._weights @ utils.VectorDict(x) + self.intercept
 
     def _eval_gradient_one(self, x: dict, y: float, w: float) -> (dict, float):
+
+        from pprint import pprint
 
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w

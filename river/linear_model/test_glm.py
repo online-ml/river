@@ -177,6 +177,19 @@ lin_reg_tests = {
         {"optimizer": optim.SGD(1e-2), "loss": ScikitLearnSquaredLoss()},
         {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0},
     ),
+    "Huber": (
+        {"optimizer": optim.SGD(1e-2), "loss": optim.losses.Huber()},
+        {"loss": "huber", "learning_rate": "constant", "eta0": 1e-2, "alpha": 0},
+    ),
+    "No intercept": (
+        {"optimizer": optim.SGD(1e-2), "intercept_lr": 0, "loss": ScikitLearnSquaredLoss()},
+        {
+            "learning_rate": "constant",
+            "eta0": 1e-2,
+            "alpha": 0,
+            "fit_intercept": False,
+        },
+    ),
     "L2 regu": (
         {
             "optimizer": optim.SGD(1e-2),
@@ -248,6 +261,28 @@ log_reg_tests = {
             "intercept_lr": optim.schedulers.InverseScaling(1e-2),
         },
         {"eta0": 1e-2, "alpha": 0, "learning_rate": "invscaling", "loss": "log"},
+    ),
+    "Optimal": (
+        {
+            "optimizer": optim.SGD(
+                optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3)
+            ),
+            "loss": optim.losses.Hinge(),
+            "intercept_lr": optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3),
+            "l2": 1e-3,
+        },
+        {"learning_rate": "optimal", "alpha": 1e-3},
+    ),
+    "Optimal no intercept": (
+        {
+            "optimizer": optim.SGD(
+                optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3)
+            ),
+            "loss": optim.losses.Hinge(),
+            "intercept_lr": 0,
+            "l2": 1e-3,
+        },
+        {"learning_rate": "optimal", "alpha": 1e-3, "fit_intercept": False},
     ),
 }
 

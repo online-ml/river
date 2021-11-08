@@ -171,13 +171,13 @@ class HalfSpaceTrees(AnomalyDetector):
 
     >>> auc = metrics.ROCAUC()
 
-    >>> for x, y in datasets.CreditCard().take(8000):
+    >>> for x, y in datasets.CreditCard().take(2500):
     ...     score = model.score_one(x)
     ...     model = model.learn_one(x)
     ...     auc = auc.update(y, score)
 
     >>> auc
-    ROCAUC: 0.940572
+    ROCAUC: 0.939452
 
     References
     ----------
