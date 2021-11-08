@@ -523,6 +523,15 @@ class Huber(RegressionLoss):
 
     def __call__(self, y_true, y_pred):
         r = y_pred - y_true
+
+        if isinstance(y_true, np.ndarray):
+            abs_r = np.abs(r)
+            return np.where(
+                abs_r <= self.epsilon,
+                0.5 * r * r,
+                self.epsilon * abs_r - (0.5 * self.epsilon * self.epsilon),
+            )
+
         abs_r = abs(r)
         if abs_r <= self.epsilon:
             return 0.5 * r * r
@@ -530,6 +539,13 @@ class Huber(RegressionLoss):
 
     def gradient(self, y_true, y_pred):
         r = y_pred - y_true
+
+        if isinstance(y_true, np.ndarray):
+            abs_r = np.abs(r)
+            return np.where(
+                abs_r <= self.epsilon, r, np.where(r > 0.0, self.epsilon, -self.epsilon)
+            )
+
         abs_r = abs(r)
         if abs_r <= self.epsilon:
             return r
