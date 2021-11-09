@@ -165,61 +165,163 @@ def test_add_remove_columns():
         lin_reg.learn_many(xb[cols], yb)
 
 
-def test_lin_reg_sklearn_coherence():
+class ScikitLearnSquaredLoss:
+    """sklearn removes the leading 2 from the gradient of the squared loss."""
+
+    def gradient(self, y_true, y_pred):
+        return y_pred - y_true
+
+
+lin_reg_tests = {
+    "Vanilla": (
+        {"optimizer": optim.SGD(1e-2), "loss": ScikitLearnSquaredLoss()},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0},
+    ),
+    "Huber": (
+        {"optimizer": optim.SGD(1e-2), "loss": optim.losses.Huber()},
+        {"loss": "huber", "learning_rate": "constant", "eta0": 1e-2, "alpha": 0},
+    ),
+    "No intercept": (
+        {
+            "optimizer": optim.SGD(1e-2),
+            "intercept_lr": 0,
+            "loss": ScikitLearnSquaredLoss(),
+        },
+        {
+            "learning_rate": "constant",
+            "eta0": 1e-2,
+            "alpha": 0,
+            "fit_intercept": False,
+        },
+    ),
+    "L2 regu": (
+        {"optimizer": optim.SGD(1e-2), "loss": ScikitLearnSquaredLoss(), "l2": 1e-3,},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 1e-3},
+    ),
+}
+
+
+@pytest.mark.parametrize(
+    "river_params, sklearn_params", lin_reg_tests.values(), ids=lin_reg_tests.keys(),
+)
+def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
 
-    class SquaredLoss:
-        """sklearn removes the leading 2 from the gradient of the squared loss."""
-
-        def gradient(self, y_true, y_pred):
-            return y_pred - y_true
-
     ss = preprocessing.StandardScaler()
-    cr = lm.LinearRegression(optimizer=optim.SGD(0.01), loss=SquaredLoss())
-    sk = sklm.SGDRegressor(learning_rate="constant", eta0=0.01, alpha=0.0)
+    rv = lm.LinearRegression(**river_params)
+    sk = sklm.SGDRegressor(**sklearn_params)
 
-    for x, y in datasets.TrumpApproval():
+    for x, y in datasets.TrumpApproval().take(100):
         x = ss.learn_one(x).transform_one(x)
-        cr.learn_one(x, y)
+        rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y])
 
-    for i, w in enumerate(cr.weights.values()):
+    for i, w in enumerate(rv.weights.values()):
         assert math.isclose(w, sk.coef_[i])
 
-    assert math.isclose(cr.intercept, sk.intercept_[0])
+    assert math.isclose(rv.intercept, sk.intercept_[0])
 
 
-def test_log_reg_sklearn_coherence():
+log_reg_tests = {
+    "Vanilla": (
+        {"optimizer": optim.SGD(1e-2)},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0, "loss": "log"},
+    ),
+    "Hinge": (
+        {"optimizer": optim.SGD(1e-2), "loss": optim.losses.Hinge()},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0},
+    ),
+    "No intercept": (
+        {"optimizer": optim.SGD(1e-2), "intercept_lr": 0},
+        {
+            "learning_rate": "constant",
+            "eta0": 1e-2,
+            "alpha": 0,
+            "loss": "log",
+            "fit_intercept": False,
+        },
+    ),
+    "L2 regu": (
+        {"optimizer": optim.SGD(1e-2), "l2": 1e-3,},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 1e-3, "loss": "log",},
+    ),
+    "Inverse-scaling": (
+        {
+            "optimizer": optim.SGD(optim.schedulers.InverseScaling(1e-2)),
+            "intercept_lr": optim.schedulers.InverseScaling(1e-2),
+        },
+        {"eta0": 1e-2, "alpha": 0, "learning_rate": "invscaling", "loss": "log"},
+    ),
+    "Optimal": (
+        {
+            "optimizer": optim.SGD(
+                optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3)
+            ),
+            "loss": optim.losses.Hinge(),
+            "intercept_lr": optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3),
+            "l2": 1e-3,
+        },
+        {"learning_rate": "optimal", "alpha": 1e-3},
+    ),
+    "Optimal no intercept": (
+        {
+            "optimizer": optim.SGD(
+                optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3)
+            ),
+            "loss": optim.losses.Hinge(),
+            "intercept_lr": 0,
+            "l2": 1e-3,
+        },
+        {"learning_rate": "optimal", "alpha": 1e-3, "fit_intercept": False},
+    ),
+}
+
+
+@pytest.mark.parametrize(
+    "river_params, sklearn_params", log_reg_tests.values(), ids=log_reg_tests.keys(),
+)
+def test_log_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
 
     ss = preprocessing.StandardScaler()
-    cr = lm.LogisticRegression(optimizer=optim.SGD(0.01))
-    sk = sklm.SGDClassifier(learning_rate="constant", eta0=0.01, alpha=0.0, loss="log")
+    rv = lm.LogisticRegression(**river_params)
+    sk = sklm.SGDClassifier(**sklearn_params)
 
-    for x, y in datasets.Bananas():
+    for x, y in datasets.Bananas().take(100):
         x = ss.learn_one(x).transform_one(x)
-        cr.learn_one(x, y)
+        rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
-    for i, w in enumerate(cr.weights.values()):
+    for i, w in enumerate(rv.weights.values()):
         assert math.isclose(w, sk.coef_[0][i])
 
-    assert math.isclose(cr.intercept, sk.intercept_[0])
+    assert math.isclose(rv.intercept, sk.intercept_[0])
 
 
-def test_perceptron_sklearn_coherence():
+perceptron_tests = {
+    "Vanilla": ({}, {},),
+    "L2 regu": ({"l2": 1e-3,}, {"alpha": 1e-3, "penalty": "l2",},),
+}
+
+
+@pytest.mark.parametrize(
+    "river_params, sklearn_params",
+    perceptron_tests.values(),
+    ids=perceptron_tests.keys(),
+)
+def test_perceptron_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
 
     ss = preprocessing.StandardScaler()
-    cr = lm.Perceptron()
-    sk = sklm.Perceptron()
+    rv = lm.Perceptron(**river_params)
+    sk = sklm.Perceptron(**sklearn_params)
 
-    for x, y in datasets.Bananas():
+    for x, y in datasets.Bananas().take(100):
         x = ss.learn_one(x).transform_one(x)
-        cr.learn_one(x, y)
+        rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
-    for i, w in enumerate(cr.weights.values()):
+    for i, w in enumerate(rv.weights.values()):
         assert math.isclose(w, sk.coef_[0][i])
 
-    assert math.isclose(cr.intercept, sk.intercept_[0])
+    assert math.isclose(rv.intercept, sk.intercept_[0])

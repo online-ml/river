@@ -24,13 +24,13 @@ class Pipeline(base.Estimator):
     at the [user guide](../../user-guide/pipelines.md) for further information and
     practical examples.
 
-    One special thing to take notice to is the way transformers are handled. In a typical scenario,
-    it is usual to predict something for a sample and wait for the ground truth to arrive. In such
-    a case, the features are seen before the ground truth arrives. Therefore, the unsupervised
-    parts of the pipeline are updated when `predict_one` and `predict_proba_one` are called.
-    Usually the unsupervised parts of the pipeline are all the steps that precede the final step,
-    which is a supervised model. However, some transformers are supervised and are therefore
-    obtained during calls to `learn_one`.
+    One special thing to take notice to is the way transformers are handled. It is usual to predict
+    something for a sample and wait for the ground truth to arrive. In such a scenario, the
+    features are seen before the ground truth arrives. Therefore, the unsupervised parts of the
+    pipeline are updated when `predict_one` and `predict_proba_one` are called. Usually the
+    unsupervised parts of the pipeline are all the steps that precede the final step, which is a
+    supervised model. However, some transformers are supervised and are therefore also updated
+    during calls to `learn_one`.
 
     Parameters
     ----------

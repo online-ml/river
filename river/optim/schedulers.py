@@ -84,7 +84,7 @@ class Optimal(Scheduler):
         self.alpha = alpha
 
         typw = math.sqrt(1.0 / math.sqrt(self.alpha))
-        initial_eta0 = typw / max(1.0, self.loss.gradient(-typw, 1.0))
+        initial_eta0 = typw / max(1.0, self.loss.gradient(True, -typw))
         self.t0 = 1.0 / (initial_eta0 * self.alpha)
 
     def get(self, t):

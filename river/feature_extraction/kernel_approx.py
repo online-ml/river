@@ -70,7 +70,7 @@ class RBFSampler(base.Transformer):
         self.seed = seed
         self.rng = random.Random(seed)
         self.weights = collections.defaultdict(self._random_weights)
-        self.offsets = [random.uniform(0, 2 * math.pi) for _ in range(n_components)]
+        self.offsets = [self.rng.uniform(0, 2 * math.pi) for _ in range(n_components)]
 
     def _random_weights(self):
         return [
