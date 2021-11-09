@@ -3,6 +3,13 @@
 - Wheels for Python 3.6 have been dropped.
 - Wheels for Python 3.9 have been added.
 
+## anomaly
+
+- Moved `base.AnomalyDetector` to `anomaly.AnomalyDetector`.
+- Implemented `anomaly.ConstantThresholder`.
+- Implemented `anomaly.QuantileThresholder`.
+- Implemented `anomaly.OneClassSVM`.
+
 ## base
 
 - Renamed `base.WrapperMixin` to `base.Wrapper`.
@@ -43,6 +50,7 @@ This module has been deleted.
 ## optim
 
 - `optim.Adam` and `optim.RMSProp` now work with `utils.VectorDict`s as well as `numpy.ndarray`s.
+- Added `optim.losses.Huber`.
 
 ## selection
 
