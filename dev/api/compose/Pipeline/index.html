@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://riverml.xyz/api/compose/Pipeline/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.5">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.cdeb8541.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.a57b2b03.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -627,8 +627,64 @@
   
   
     <li class="md-nav__item">
+      <a href="../../anomaly/AnomalyDetector/" class="md-nav__link">
+        AnomalyDetector
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../anomaly/ConstantThresholder/" class="md-nav__link">
+        ConstantThresholder
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../anomaly/HalfSpaceTrees/" class="md-nav__link">
         HalfSpaceTrees
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../anomaly/OneClassSVM/" class="md-nav__link">
+        OneClassSVM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../anomaly/QuantileThresholder/" class="md-nav__link">
+        QuantileThresholder
       </a>
     </li>
   
@@ -667,20 +723,6 @@
           base
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../base/AnomalyDetector/" class="md-nav__link">
-        AnomalyDetector
-      </a>
-    </li>
-  
-
-            
           
             
               
@@ -5045,6 +5087,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../optim/losses/Huber/" class="md-nav__link">
+        Huber
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../optim/losses/Log/" class="md-nav__link">
         Log
       </a>
@@ -8268,7 +8324,7 @@
                 <h1 id="pipeline">Pipeline<a class="headerlink" href="#pipeline" title="Permanent link">&para;</a></h1>
 <p>A pipeline of estimators.</p>
 <p>Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or a classifier. It is highly recommended to use pipelines with <code>river</code>. Indeed, in an online learning setting, it is very practical to have a model defined as a single object. Take a look at the <a href="../../../user-guide/pipelines/">user guide</a> for further information and practical examples. </p>
-<p>One special thing to take notice to is the way transformers are handled. In a typical scenario, it is usual to predict something for a sample and wait for the ground truth to arrive. In such a case, the features are seen before the ground truth arrives. Therefore, the unsupervised parts of the pipeline are updated when <code>predict_one</code> and <code>predict_proba_one</code> are called. Usually the unsupervised parts of the pipeline are all the steps that precede the final step, which is a supervised model. However, some transformers are supervised and are therefore obtained during calls to <code>learn_one</code>.</p>
+<p>One special thing to take notice to is the way transformers are handled. It is usual to predict something for a sample and wait for the ground truth to arrive. In such a scenario, the features are seen before the ground truth arrives. Therefore, the unsupervised parts of the pipeline are updated when <code>predict_one</code> and <code>predict_proba_one</code> are called. Usually the unsupervised parts of the pipeline are all the steps that precede the final step, which is a supervised model. However, some transformers are supervised and are therefore also updated during calls to <code>learn_one</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -8534,10 +8590,10 @@ flows and changes throughout the pipeline.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.fcfe8b6d.min.js", "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.1e84347e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.b1047164.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       

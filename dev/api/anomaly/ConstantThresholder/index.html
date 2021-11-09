@@ -13,18 +13,18 @@
         <meta name="author" content="The river developers">
       
       
-        <link rel="canonical" href="https://riverml.xyz/api/base/AnomalyDetector/">
+        <link rel="canonical" href="https://riverml.xyz/api/anomaly/ConstantThresholder/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.5">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6">
     
     
       
-        <title>AnomalyDetector - River</title>
+        <title>ConstantThresholder - River</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.cdeb8541.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.a57b2b03.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anomalydetector" class="md-skip">
+        <a href="#constantthresholder" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              AnomalyDetector
+              ConstantThresholder
             
           </span>
         </div>
@@ -599,12 +599,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
       
       
       
@@ -627,48 +629,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../../anomaly/HalfSpaceTrees/" class="md-nav__link">
-        HalfSpaceTrees
+      <a href="../AnomalyDetector/" class="md-nav__link">
+        AnomalyDetector
       </a>
     </li>
   
 
             
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4_3">
-          base
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="base" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_3">
-          <span class="md-nav__icon md-icon"></span>
-          base
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
           
             
               
@@ -686,12 +653,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          AnomalyDetector
+          ConstantThresholder
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        AnomalyDetector
+        ConstantThresholder
       </a>
       
         
@@ -709,6 +676,20 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#methods" class="md-nav__link">
@@ -732,7 +713,82 @@
   
   
     <li class="md-nav__item">
-      <a href="../Base/" class="md-nav__link">
+      <a href="../HalfSpaceTrees/" class="md-nav__link">
+        HalfSpaceTrees
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OneClassSVM/" class="md-nav__link">
+        OneClassSVM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../QuantileThresholder/" class="md-nav__link">
+        QuantileThresholder
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3">
+          base
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="base" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          base
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/Base/" class="md-nav__link">
         Base
       </a>
     </li>
@@ -746,7 +802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Classifier/" class="md-nav__link">
+      <a href="../../base/Classifier/" class="md-nav__link">
         Classifier
       </a>
     </li>
@@ -760,7 +816,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Clusterer/" class="md-nav__link">
+      <a href="../../base/Clusterer/" class="md-nav__link">
         Clusterer
       </a>
     </li>
@@ -774,7 +830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../DriftDetector/" class="md-nav__link">
+      <a href="../../base/DriftDetector/" class="md-nav__link">
         DriftDetector
       </a>
     </li>
@@ -788,7 +844,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Ensemble/" class="md-nav__link">
+      <a href="../../base/Ensemble/" class="md-nav__link">
         Ensemble
       </a>
     </li>
@@ -802,7 +858,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Estimator/" class="md-nav__link">
+      <a href="../../base/Estimator/" class="md-nav__link">
         Estimator
       </a>
     </li>
@@ -816,7 +872,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MiniBatchClassifier/" class="md-nav__link">
+      <a href="../../base/MiniBatchClassifier/" class="md-nav__link">
         MiniBatchClassifier
       </a>
     </li>
@@ -830,7 +886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MiniBatchRegressor/" class="md-nav__link">
+      <a href="../../base/MiniBatchRegressor/" class="md-nav__link">
         MiniBatchRegressor
       </a>
     </li>
@@ -844,7 +900,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MultiOutputMixin/" class="md-nav__link">
+      <a href="../../base/MultiOutputMixin/" class="md-nav__link">
         MultiOutputMixin
       </a>
     </li>
@@ -858,7 +914,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Regressor/" class="md-nav__link">
+      <a href="../../base/Regressor/" class="md-nav__link">
         Regressor
       </a>
     </li>
@@ -872,7 +928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../SupervisedTransformer/" class="md-nav__link">
+      <a href="../../base/SupervisedTransformer/" class="md-nav__link">
         SupervisedTransformer
       </a>
     </li>
@@ -886,7 +942,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Transformer/" class="md-nav__link">
+      <a href="../../base/Transformer/" class="md-nav__link">
         Transformer
       </a>
     </li>
@@ -900,7 +956,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../WrapperEnsemble/" class="md-nav__link">
+      <a href="../../base/WrapperEnsemble/" class="md-nav__link">
         WrapperEnsemble
       </a>
     </li>
@@ -914,7 +970,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../WrapperMixin/" class="md-nav__link">
+      <a href="../../base/WrapperMixin/" class="md-nav__link">
         WrapperMixin
       </a>
     </li>
@@ -5031,6 +5087,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../optim/losses/Huber/" class="md-nav__link">
+        Huber
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../optim/losses/Log/" class="md-nav__link">
         Log
       </a>
@@ -8218,6 +8288,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#methods" class="md-nav__link">
     Methods
   </a>
@@ -8237,8 +8321,54 @@
               
                 
                 
-                <h1 id="anomalydetector">AnomalyDetector<a class="headerlink" href="#anomalydetector" title="Permanent link">&para;</a></h1>
-<p>An anomaly detector.</p>
+                <h1 id="constantthresholder">ConstantThresholder<a class="headerlink" href="#constantthresholder" title="Permanent link">&para;</a></h1>
+<p>Constant thresholder.</p>
+<p>Each anomaly score is thresholded into a 0 or a 1.</p>
+<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>anomaly_detector</strong> (<em>river.anomaly.base.AnomalyDetector</em>)</p>
+<p>The anomaly detector that will learn and produce scores.</p>
+</li>
+<li>
+<p><strong>threshold</strong> (<em>float</em>)</p>
+<p>The threshold to apply.</p>
+</li>
+</ul>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">anomaly</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">(),</span>
+<span class="o">...</span>     <span class="n">anomaly</span><span class="o">.</span><span class="n">ConstantThresholder</span><span class="p">(</span>
+<span class="o">...</span>         <span class="n">anomaly</span><span class="o">.</span><span class="n">HalfSpaceTrees</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+<span class="o">...</span>         <span class="n">threshold</span><span class="o">=</span><span class="mf">0.8</span>
+<span class="o">...</span>     <span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">report</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ClassificationReport</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">8000</span><span class="p">):</span>
+<span class="o">...</span>     <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">report</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">report</span>
+<span class="n">Precision</span>   <span class="n">Recall</span>   <span class="n">F1</span>      <span class="n">Support</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+       <span class="mi">0</span>       <span class="mf">0.999</span>    <span class="mf">0.939</span>   <span class="mf">0.968</span>      <span class="mi">7975</span>
+       <span class="mi">1</span>       <span class="mf">0.038</span>    <span class="mf">0.760</span>   <span class="mf">0.072</span>        <span class="mi">25</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+   <span class="n">Macro</span>       <span class="mf">0.519</span>    <span class="mf">0.850</span>   <span class="mf">0.520</span>
+   <span class="n">Micro</span>       <span class="mf">0.939</span>    <span class="mf">0.939</span>   <span class="mf">0.939</span>
+<span class="n">Weighted</span>       <span class="mf">0.996</span>    <span class="mf">0.939</span>   <span class="mf">0.966</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+                 <span class="mf">93.9</span><span class="o">%</span> <span class="n">accuracy</span>
+</code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
@@ -8321,10 +8451,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.fcfe8b6d.min.js", "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.1e84347e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.b1047164.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
