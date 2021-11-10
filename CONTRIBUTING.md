@@ -10,11 +10,11 @@ Of course, you're welcome to propose and contribute new ideas. We encourage you 
 
 The typical workflow for contributing to `river` is:
 
-1. Fork the `master` branch from the [GitHub repository](https://github.com/online-ml/river/).
+1. Fork the `main` branch from the [GitHub repository](https://github.com/online-ml/river/).
 2. Clone your fork locally.
 3. Commit changes.
 4. Push the changes to your fork.
-5. Send a pull request from your fork back to the original `master` branch.
+5. Send a pull request from your fork back to the original `main` branch.
 
 ## Local setup
 
@@ -146,7 +146,7 @@ $ make execute-notebooks
 
 ## Making a new release
 
-1. Checkout `master`
+1. Checkout `main`
 2. Bump the version in `river/__version__.py`
 3. Commit
 4. Tag the commit with the version (e.g. `0.4.2`)
