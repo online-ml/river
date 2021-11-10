@@ -27,7 +27,7 @@
 
 - You can now use a `list` as a shorthand to build a `TransformerUnion`.
 - Fixed a visualization issue when using a pipeline with multiple feature unions.
-- The controversial terms `blacklist` and `whitelist` have both been renamed to `keys`.
+- The prejudiced terms `blacklist` and `whitelist` have both been renamed to `keys`.
 
 ## ensemble
 
