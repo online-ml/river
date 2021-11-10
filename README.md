@@ -8,12 +8,12 @@
 
 <p align="center">
   <!-- Tests -->
-  <a href="https://github.com/online-ml/river/actions?query=workflow%3Atests+branch%3Amaster">
-    <img src="https://github.com/online-ml/river/workflows/tests/badge.svg?branch=master" alt="tests">
+  <a href="https://github.com/online-ml/river/actions?query=workflow%3Atests+branch%3Amain">
+    <img src="https://github.com/online-ml/river/workflows/tests/badge.svg?branch=main" alt="tests">
   </a>
   <!-- Code coverage -->
   <a href="https://codecov.io/gh/online-ml/river">
-    <img src="https://codecov.io/gh/online-ml/river/branch/master/graph/badge.svg?token=luK6eFoMa9"/>
+    <img src="https://codecov.io/gh/online-ml/river/branch/main/graph/badge.svg?token=luK6eFoMa9"/>
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
@@ -150,7 +150,7 @@ Here are some benefits of using River (and online machine learning in general):
 ## 🔗 Useful links
 
 - [Documentation](https://riverml.xyz)
-- [Benchmarks](https://github.com/online-ml/river/tree/master/benchmarks)
+- [Benchmarks](https://github.com/online-ml/river/tree/main/benchmarks)
 - [Issue tracker](https://github.com/online-ml/river/issues)
 - [Package releases](https://pypi.org/project/river/#history)
 
@@ -171,7 +171,7 @@ There are three ways for users to get involved:
 - [Discussions](https://github.com/online-ml/river/discussions): you can ask for new features, submit your questions and get help, propose new ideas, or even show the community what you are achieving with River! If you have a new technique or want to port a new functionality to River, this is the place to discuss.
 - [Roadmap](https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1): you can check what we are doing, what are the next planned milestones for River, and look for cool ideas that still need someone to make them become a reality!
 
-Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/master/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).
+Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/main/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).
 
 ## ❤️ They've used us
 
@@ -217,4 +217,4 @@ If `river` has been useful for your research and you would like to cite it in an
 
 ## 📝 License
 
-River is free and open-source software licensed under the [3-clause BSD license](https://github.com/online-ml/river/blob/master/LICENSE).
+River is free and open-source software licensed under the [3-clause BSD license](https://github.com/online-ml/river/blob/main/LICENSE).

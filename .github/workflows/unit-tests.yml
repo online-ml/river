@@ -3,7 +3,7 @@ name: unit-tests
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test:
