@@ -3,7 +3,7 @@ name: dev-docs
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   ubuntu:
@@ -52,5 +52,5 @@ jobs:
           git checkout gh-pages
           git pull
 
-          git checkout master
+          git checkout main
           mike deploy dev --push --remote https://github.com/online-ml/river.git

@@ -6,7 +6,7 @@ __all__ = ["Discard", "Select", "SelectType"]
 
 
 class Discard(base.Transformer):
-    """Removes features according to a blacklist.
+    """Removes features.
 
     This can be used in a pipeline when you want to remove certain features. The `transform_one`
     method is pure, and therefore returns a fresh new dictionary instead of removing the specified
@@ -14,7 +14,7 @@ class Discard(base.Transformer):
 
     Parameters
     ----------
-    blacklist
+    keys
         Key(s) to discard.
 
     Examples
@@ -42,30 +42,28 @@ class Discard(base.Transformer):
 
     """
 
-    def __init__(self, *blacklist: typing.Tuple[base.typing.FeatureName]):
-        self.blacklist = set(blacklist)
+    def __init__(self, *keys: typing.Tuple[base.typing.FeatureName]):
+        self.keys = set(keys)
 
     def transform_one(self, x):
-        return {i: xi for i, xi in x.items() if i not in self.blacklist}
+        return {i: xi for i, xi in x.items() if i not in self.keys}
 
     def __str__(self):
-        return "~" + str(sorted(self.blacklist))
+        return "~" + str(sorted(self.keys))
 
     def __repr__(self):
-        if self.blacklist:
-            return (
-                "Discard (\n  " + "\n  ".join(map(str, sorted(self.blacklist))) + "\n)"
-            )
+        if self.keys:
+            return "Discard (\n  " + "\n  ".join(map(str, sorted(self.keys))) + "\n)"
         return "Discard ()"
 
-    def _set_params(self, blacklist=None):
-        if not blacklist:
-            blacklist = self.blacklist
-        return Discard(*blacklist)
+    def _set_params(self, keys=None):
+        if not keys:
+            keys = self.keys
+        return Discard(*keys)
 
 
 class Select(base.Transformer):
-    """Selects features according to a whitelist.
+    """Selects features.
 
     This can be used in a pipeline when you want to select certain features. The `transform_one`
     method is pure, and therefore returns a fresh new dictionary instead of filtering the specified
@@ -73,7 +71,7 @@ class Select(base.Transformer):
 
     Parameters
     ----------
-    whitelist
+    keys
         Key(s) to keep.
 
     Examples
@@ -101,29 +99,27 @@ class Select(base.Transformer):
 
     """
 
-    def __init__(self, *whitelist: typing.Tuple[base.typing.FeatureName]):
-        self.whitelist = set(whitelist)
+    def __init__(self, *keys: typing.Tuple[base.typing.FeatureName]):
+        self.keys = set(keys)
 
     def transform_one(self, x):
-        return {i: x[i] for i in self.whitelist}
+        return {i: x[i] for i in self.keys}
 
     def __str__(self):
-        return str(sorted(self.whitelist))
+        return str(sorted(self.keys))
 
     def __repr__(self):
-        if self.whitelist:
-            return (
-                "Select (\n  " + "\n  ".join(map(str, sorted(self.whitelist))) + "\n)"
-            )
+        if self.keys:
+            return "Select (\n  " + "\n  ".join(map(str, sorted(self.keys))) + "\n)"
         return "Select ()"
 
     def _get_params(self):
-        return self.whitelist
+        return self.keys
 
-    def _set_params(self, whitelist=None):
-        if not whitelist:
-            whitelist = self.whitelist
-        return Select(*whitelist)
+    def _set_params(self, keys=None):
+        if not keys:
+            keys = self.keys
+        return Select(*keys)
 
 
 class SelectType(base.Transformer):
