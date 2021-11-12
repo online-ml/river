@@ -88,7 +88,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
             # Perform bootstrap-sampling
             k = self._rng.poisson(1.0)
             if k > 0:
-                sample_weight = sample_weight * k
+                sample_weight *= k
 
         aux = self.prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None

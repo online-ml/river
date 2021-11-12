@@ -351,7 +351,7 @@ class LDA(base.Transformer):
 
         phi = self.rng.random((self.n_components, size_vocab))
 
-        phi = phi / np.sum(phi, axis=0)
+        phi /= np.sum(phi, axis=0)
 
         phi_sum = np.sum(phi, axis=1)
 

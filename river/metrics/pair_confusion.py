@@ -79,9 +79,9 @@ class PairConfusionMatrix(metrics.MultiClassMetric):
 
         true_positives = sum_squares - self.cm.n_samples
 
-        false_positives = false_positives - sum_squares
+        false_positives -= sum_squares
 
-        false_negatives = false_negatives - sum_squares
+        false_negatives -= sum_squares
 
         true_negatives = (
             self.cm.n_samples * self.cm.n_samples
