@@ -8,8 +8,8 @@
 
 <p align="center">
   <!-- Tests -->
-  <a href="https://github.com/online-ml/river/actions?query=workflow%3Atests+branch%3Amain">
-    <img src="https://github.com/online-ml/river/workflows/tests/badge.svg?branch=main" alt="tests">
+  <a href="https://github.com/online-ml/river/actions/workflows/unit-tests.yml">
+    <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.yml/badge.svg" alt="tests">
   </a>
   <!-- Code coverage -->
   <a href="https://codecov.io/gh/online-ml/river">
