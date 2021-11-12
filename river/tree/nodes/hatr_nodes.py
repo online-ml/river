@@ -72,7 +72,7 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
             # Perform bootstrap-sampling
             k = self._rng.poisson(1.0)
             if k > 0:
-                sample_weight = sample_weight * k
+                sample_weight *= k
 
         if self._adwin is None:
             self._adwin = ADWIN(delta=self.adwin_delta)

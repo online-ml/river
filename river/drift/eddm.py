@@ -142,9 +142,7 @@ class EDDM(DriftDetector):
                 self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
             )
             self.estimation = self.m_mean
-            self.m_std_temp = self.m_std_temp + (distance - self.m_mean) * (
-                distance - old_mean
-            )
+            self.m_std_temp += (distance - self.m_mean) * (distance - old_mean)
             std = np.sqrt(self.m_std_temp / self.m_num_errors)
             m2s = self.m_mean + 2 * std
 

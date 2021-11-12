@@ -817,7 +817,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                 # The higher the error, the worse is the tree
                 weights = sum_weights - weights
                 # Normalize weights to sum up to 1
-                weights = weights / weights.sum()
+                weights /= weights.sum()
                 y_pred *= weights
         else:
             for idx, model in enumerate(self.models):
