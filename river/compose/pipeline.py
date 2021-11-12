@@ -14,7 +14,7 @@ from . import func, union
 __all__ = ["Pipeline"]
 
 
-class Pipeline(base.Estimator):
+class Pipeline(base.Estimator, collections.OrderedDict):
     """A pipeline of estimators.
 
     Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised
@@ -171,17 +171,9 @@ class Pipeline(base.Estimator):
     """
 
     def __init__(self, *steps):
-        self.steps = collections.OrderedDict()
+        super().__init__()
         for step in steps:
             self |= step
-
-    def __getitem__(self, key):
-        """Just for convenience."""
-        return self.steps[key]
-
-    def __len__(self):
-        """Just for convenience."""
-        return len(self.steps)
 
     def __or__(self, other):
         """Insert a step at the end of the pipeline."""
@@ -200,12 +192,12 @@ class Pipeline(base.Estimator):
         return union.TransformerUnion(self, other)
 
     def __str__(self):
-        return " | ".join(map(str, self.steps.values()))
+        return " | ".join(map(str, self.values()))
 
     def __repr__(self):
         return (
             "Pipeline (\n\t"
-            + "\t".join(",\n".join(map(repr, self.steps.values())).splitlines(True))
+            + "\t".join(",\n".join(map(repr, self.values())).splitlines(True))
             + "\n)"
         ).expandtabs(2)
 
@@ -216,7 +208,7 @@ class Pipeline(base.Estimator):
         return f"<div>{ET.tostring(div, encoding='unicode')}<style scoped>{viz.CSS}</style></div>"
 
     def _get_params(self):
-        return {name: step._get_params() for name, step in self.steps.items()}
+        return {name: step._get_params() for name, step in self.items()}
 
     def _set_params(self, new_params: dict = None):
 
@@ -228,17 +220,17 @@ class Pipeline(base.Estimator):
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)
                 else (name, step._set_params(new_params.get(name, {})))
-                for name, step in self.steps.items()
+                for name, step in self.items()
             ]
         )
 
     @property
     def _supervised(self):
-        return any(step._supervised for step in self.steps.values())
+        return any(step._supervised for step in self.values())
 
     @property
     def _multiclass(self):
-        return list(self.steps.values())[-1]._multiclass
+        return list(self.values())[-1]._multiclass
 
     def _add_step(self, obj: typing.Any, at_start: bool):
         """Add a step to either end of the pipeline.
@@ -277,9 +269,9 @@ class Pipeline(base.Estimator):
             name = infer_name(estimator)
 
         # Make sure the name doesn't already exist
-        if name in self.steps:
+        if name in self:
             counter = 1
-            while f"{name}{counter}" in self.steps:
+            while f"{name}{counter}" in self:
                 counter += 1
             name = f"{name}{counter}"
 
@@ -288,11 +280,11 @@ class Pipeline(base.Estimator):
             estimator = estimator()
 
         # Store the step
-        self.steps[name] = estimator
+        self[name] = estimator
 
         # Move the step to the start of the pipeline if so instructed
         if at_start:
-            self.steps.move_to_end(name, last=False)
+            self.move_to_end(name, last=False)
 
     # Single instance methods
 
@@ -311,10 +303,10 @@ class Pipeline(base.Estimator):
 
         """
 
-        steps = iter(self.steps.values())
+        steps = iter(self.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
-        for t in itertools.islice(steps, len(self.steps) - 1):
+        for t in itertools.islice(steps, len(self) - 1):
             x_pre = x
             x = t.transform_one(x=x)
 
@@ -350,9 +342,9 @@ class Pipeline(base.Estimator):
 
         """
 
-        steps = iter(self.steps.values())
+        steps = iter(self.values())
 
-        for t in itertools.islice(steps, len(self.steps) - 1):
+        for t in itertools.islice(steps, len(self) - 1):
 
             # The unsupervised transformers are updated during transform. We do this because
             # typically transform_one is called before learn_one, and therefore we might as well use
@@ -448,7 +440,7 @@ class Pipeline(base.Estimator):
         """
         if xs is not None:
             xs = [self._transform_one(x)[0] for x in xs]
-        final_step = list(self.steps.values())[-1]
+        final_step = list(self.values())[-1]
         return final_step.forecast(horizon=horizon, xs=xs)
 
     def debug_one(self, x: dict, show_types=True, n_decimals=5) -> str:
@@ -500,8 +492,8 @@ class Pipeline(base.Estimator):
         print_dict(x, show_types=show_types)
 
         # Print the state of x at each step
-        steps = iter(self.steps.values())
-        for i, t in enumerate(itertools.islice(steps, len(self.steps) - 1)):
+        steps = iter(self.values())
+        for i, t in enumerate(itertools.islice(steps, len(self) - 1)):
 
             if isinstance(t, union.TransformerUnion):
                 print_title(f"{i+1}. Transformer union")
@@ -559,10 +551,10 @@ class Pipeline(base.Estimator):
 
         """
 
-        steps = iter(self.steps.values())
+        steps = iter(self.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
-        for t in itertools.islice(steps, len(self.steps) - 1):
+        for t in itertools.islice(steps, len(self) - 1):
             X_pre = X
             X = t.transform_many(X=X)
 
@@ -598,9 +590,9 @@ class Pipeline(base.Estimator):
 
         """
 
-        steps = iter(self.steps.values())
+        steps = iter(self.values())
 
-        for t in itertools.islice(steps, len(self.steps) - 1):
+        for t in itertools.islice(steps, len(self) - 1):
 
             # The unsupervised transformers are updated during transform. We do this because
             # typically transform_one is called before learn_one, and therefore we might as well use
