@@ -31,7 +31,7 @@ def extract_relevant(model: base.Estimator):
     """
 
     if isinstance(model, compose.Pipeline):
-        return extract_relevant(list(model.values())[-1])  # look at last step
+        return extract_relevant(self._last_step)
     return model
 
 

@@ -229,8 +229,12 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         return any(step._supervised for step in self.values())
 
     @property
+    def _last_step(self):
+        return list(self.values())[-1]
+
+    @property
     def _multiclass(self):
-        return list(self.values())[-1]._multiclass
+        return self._last_step._multiclass
 
     def _add_step(self, obj: typing.Any, at_start: bool):
         """Add a step to either end of the pipeline.
@@ -440,8 +444,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         """
         if xs is not None:
             xs = [self._transform_one(x)[0] for x in xs]
-        final_step = list(self.values())[-1]
-        return final_step.forecast(horizon=horizon, xs=xs)
+        return self._last_step.forecast(horizon=horizon, xs=xs)
 
     def debug_one(self, x: dict, show_types=True, n_decimals=5) -> str:
         """Displays the state of a set of features as it goes through the pipeline.
