@@ -40,8 +40,9 @@ class GaussianNB(base.Classifier):
 
     def __init__(self):
         self.class_counts = collections.Counter()
-        defaultdict = collections.defaultdict
-        self.gaussians = defaultdict(functools.partial(defaultdict, proba.Gaussian))
+        self.gaussians = collections.defaultdict(
+            functools.partial(collections.defaultdict, proba.Gaussian)
+        )
 
     def learn_one(self, x, y):
 

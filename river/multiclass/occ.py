@@ -82,7 +82,7 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
 
         self.classifiers = {i: copy.deepcopy(classifier) for i in range(code_size)}
 
-        # We don't how many classes there are, therefore we can't generate the code book
+        # We don't know how many classes there are, therefore we can't generate the code book
         # from the start. Therefore, we define a random queue of integers. When a new class
         # appears, we get the next integer and convert it to a code.
         integers = list(range(2 ** code_size))
@@ -114,6 +114,11 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
 
         for i, c in enumerate(code):
             self.classifiers[i].learn_one(x, c)
+            from pprint import pprint
+
+            # pprint(x)
+            # print(y, i, c)
+            # pprint(self.classifiers[i].weights)
 
         return self
 
@@ -126,5 +131,10 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
 
         for i, clf in self.classifiers.items():
             output[i] = clf.predict_proba_one(x).get(True, 0.0)
+
+        # print(output)
+
+        # for c in self.code_book:
+        #     print(self.code_book[c], l1_dist(self.code_book[c], output), c)
 
         return min(self.code_book, key=lambda c: l1_dist(self.code_book[c], output))

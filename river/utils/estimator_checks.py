@@ -123,6 +123,8 @@ def check_shuffle_features_no_impact(model, dataset):
 
     from river import utils
 
+    params = seed_params(model._get_params(), seed=42)
+    model = model._set_params(params)
     shuffled = copy.deepcopy(model)
 
     for x, y in dataset:
