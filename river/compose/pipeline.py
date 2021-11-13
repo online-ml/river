@@ -92,7 +92,7 @@ def warm_up_mode():
         Pipeline.WARM_UP = False
 
 
-class Pipeline(base.Estimator, collections.OrderedDict):
+class Pipeline(base.Estimator):
     """A pipeline of estimators.
 
     Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised
@@ -251,9 +251,17 @@ class Pipeline(base.Estimator, collections.OrderedDict):
     WARM_UP = False
 
     def __init__(self, *steps):
-        super().__init__()
+        self.steps = collections.OrderedDict()
         for step in steps:
             self |= step
+
+    def __getitem__(self, key):
+        """Just for convenience."""
+        return self.steps[key]
+
+    def __len__(self):
+        """Just for convenience."""
+        return len(self.steps)
 
     def __or__(self, other):
         """Insert a step at the end of the pipeline."""
@@ -272,12 +280,12 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         return union.TransformerUnion(self, other)
 
     def __str__(self):
-        return " | ".join(map(str, self.values()))
+        return " | ".join(map(str, self.steps.values()))
 
     def __repr__(self):
         return (
             "Pipeline (\n\t"
-            + "\t".join(",\n".join(map(repr, self.values())).splitlines(True))
+            + "\t".join(",\n".join(map(repr, self.steps.values())).splitlines(True))
             + "\n)"
         ).expandtabs(2)
 
@@ -288,7 +296,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         return f"<div>{ET.tostring(div, encoding='unicode')}<style scoped>{viz.CSS}</style></div>"
 
     def _get_params(self):
-        return {name: step._get_params() for name, step in self.items()}
+        return {name: step._get_params() for name, step in self.steps.items()}
 
     def _set_params(self, new_params: dict = None):
 
@@ -300,17 +308,17 @@ class Pipeline(base.Estimator, collections.OrderedDict):
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)
                 else (name, step._set_params(new_params.get(name, {})))
-                for name, step in self.items()
+                for name, step in self.steps.items()
             ]
         )
 
     @property
     def _supervised(self):
-        return any(step._supervised for step in self.values())
+        return any(step._supervised for step in self.steps.values())
 
     @property
     def _last_step(self):
-        return list(self.values())[-1]
+        return list(self.steps.values())[-1]
 
     @property
     def _multiclass(self):
@@ -353,9 +361,9 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             name = infer_name(estimator)
 
         # Make sure the name doesn't already exist
-        if name in self:
+        if name in self.steps:
             counter = 1
-            while f"{name}{counter}" in self:
+            while f"{name}{counter}" in self.steps:
                 counter += 1
             name = f"{name}{counter}"
 
@@ -364,11 +372,11 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             estimator = estimator()
 
         # Store the step
-        self[name] = estimator
+        self.steps[name] = estimator
 
         # Move the step to the start of the pipeline if so instructed
         if at_start:
-            self.move_to_end(name, last=False)
+            self.steps.move_to_end(name, last=False)
 
     # Single instance methods
 
@@ -384,7 +392,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         """
 
-        steps = iter(self.values())
+        steps = iter(self.steps.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
@@ -425,7 +433,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         """
 
-        steps = iter(self.values())
+        steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):
 
@@ -560,7 +568,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         print_dict(x, show_types=show_types)
 
         # Print the state of x at each step
-        steps = iter(self.values())
+        steps = iter(self.steps.values())
         for i, t in enumerate(itertools.islice(steps, len(self) - 1)):
 
             if isinstance(t, union.TransformerUnion):
@@ -614,7 +622,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         """
 
-        steps = iter(self.values())
+        steps = iter(self.steps.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
@@ -655,7 +663,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         """
 
-        steps = iter(self.values())
+        steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):
 
