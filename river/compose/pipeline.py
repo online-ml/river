@@ -644,7 +644,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         if last_step._supervised:
             last_step.learn_many(X=X, y=y, **params)
         else:
-            last_step.learn_many(x, **params)
+            last_step.learn_many(X=X, **params)
 
         return self
 

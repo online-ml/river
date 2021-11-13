@@ -1,7 +1,6 @@
 import pandas as pd
-import pytest
 
-from river import anomaly, compose, linear_model, preprocessing, utils
+from river import compose, linear_model, preprocessing, utils
 
 
 def test_pipeline_funcs():
