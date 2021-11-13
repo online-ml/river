@@ -623,9 +623,9 @@ class Pipeline(base.Estimator, collections.OrderedDict):
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:
-                            sub_t.learn_many(x)
+                            sub_t.learn_many(X)
                 elif not t._supervised:
-                    t.learn_many(x)
+                    t.learn_many(X)
 
             X_pre = X
             X = t.transform_many(X=X)
@@ -639,9 +639,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
             elif t._supervised:
                 t.learn_many(X=X_pre, y=y)
-
-            else:
-                t.learn_many(X=X_pre)
 
         last_step = next(steps)
         if last_step._supervised:
