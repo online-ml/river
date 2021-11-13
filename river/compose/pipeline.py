@@ -381,9 +381,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             A dictionary of features.
         y
             A target value.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
 
@@ -432,10 +429,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         for t in itertools.islice(steps, len(self) - 1):
 
-            # The unsupervised transformers are updated during transform. We do this because
-            # typically transform_one is called before learn_one, and therefore we might as well use
-            # the available information as soon as possible. Note that way of proceeding is very
-            # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
                     if not sub_t._supervised:
@@ -471,9 +464,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         ----------
         x
             A dictionary of features.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
         x, last_step = self._transform_one(x)
@@ -486,9 +476,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         ----------
         x
             A dictionary of features.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
         x, last_step = self._transform_one(x)
@@ -501,9 +488,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         ----------
         x
             A dictionary of features.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
         x, last_step = self._transform_one(x)
@@ -618,9 +602,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
     # Mini-batch methods
 
-    def learn_many(
-        self, X: pd.DataFrame, y: pd.Series = None, learn_unsupervised=False, **params
-    ):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
         """Fit to a mini-batch.
 
         Parameters
@@ -629,9 +611,6 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             A dataframe of features. Columns can be added and/or removed between successive calls.
         y
             A series of target values.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
 
@@ -639,6 +618,15 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
+
+            if self.WARM_UP:
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.transformers.values():
+                        if not sub_t._supervised:
+                            sub_t.learn_many(x)
+                elif not t._supervised:
+                    t.learn_many(x)
+
             X_pre = X
             X = t.transform_many(X=X)
 
@@ -648,22 +636,18 @@ class Pipeline(base.Estimator, collections.OrderedDict):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
                         sub_t.learn_many(X=X_pre, y=y)
-                    elif learn_unsupervised:
-                        sub_t.learn_many(X=X_pre)
 
             elif t._supervised:
                 t.learn_many(X=X_pre, y=y)
 
-            elif learn_unsupervised:
+            else:
                 t.learn_many(X=X_pre)
 
-        # At this point steps contains a single step, which is therefore the final step of the
-        # pipeline
-        final = next(steps)
-        if final._supervised:
-            final.learn_many(X=X, y=y, **params)
-        elif learn_unsupervised:
-            final.learn_many(X=X, **params)
+        last_step = next(steps)
+        if last_step._supervised:
+            last_step.learn_many(X=X, y=y, **params)
+        else:
+            last_step.learn_many(x, **params)
 
         return self
 
@@ -678,21 +662,18 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         for t in itertools.islice(steps, len(self) - 1):
 
-            # The unsupervised transformers are updated during transform. We do this because
-            # typically transform_one is called before learn_one, and therefore we might as well use
-            # the available information as soon as possible. Note that way of proceeding is very
-            # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._supervised and learn_unsupervised:
+                    if not sub_t._supervised:
                         sub_t.learn_many(X=X)
 
-            elif not t._supervised and learn_unsupervised:
+            elif not t._supervised:
                 t.learn_many(X=X)
 
             X = t.transform_many(X=X)
 
-        return X, next(steps)
+        last_step = next(steps)
+        return X, last_step
 
     def transform_many(self, X: pd.DataFrame):
         """Apply each transformer in the pipeline to some features.
@@ -704,7 +685,9 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         """
         X, last_step = self._transform_many(X=X)
         if isinstance(last_step, base.Transformer):
-            return last_step.transform_many(X=X)
+            if not last_step._supervised:
+                last_step.learn_many(X)
+            return last_step.transform_many(X)
         return X
 
     def predict_many(self, X: pd.DataFrame):
