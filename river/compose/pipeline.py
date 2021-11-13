@@ -14,16 +14,82 @@ from . import func, union
 
 __all__ = ["Pipeline"]
 
-WARM_UP = False
-
 
 @contextlib.contextmanager
 def warm_up_mode():
-    WARM_UP = True
+    """A context manager for training pipelines during a warm-up phase.
+
+    You don't have to worry about anything when you call `predict_one` and `learn_one` with a
+    pipeline during in a training loop. The methods at each step of the pipeline will be called in
+    the correct order.
+
+    However, during a warm-up phase, you might just be calling `learn_one` because you don't need
+    the out-of-sample predictions. In this case the unsupervised estimators in the pipeline won't
+    be updated, because they are usually updated when `predict_one` is called.
+
+    This context manager allows you to override that behavior and make it so that unsupervised
+    estimators are updated when `learn_one` is called.
+
+    Examples
+    --------
+
+    Let's first see what methods are called if we just call `learn_one`.
+
+    >>> import io
+    >>> import logging
+    >>> from river import anomaly
+    >>> from river import compose
+    >>> from river import datasets
+    >>> from river import preprocessing
+    >>> from river import utils
+
+    >>> model = compose.Pipeline(
+    ...     preprocessing.MinMaxScaler(),
+    ...     anomaly.HalfSpaceTrees(seed=42)
+    ... )
+
+    >>> class_condition = lambda x: x.__class__.__name__ in ('MinMaxScaler', 'HalfSpaceTrees')
+
+    >>> logger = logging.getLogger()
+    >>> logger.setLevel(logging.DEBUG)
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition):
+    ...     for x, y in datasets.CreditCard().take(1):
+    ...         model = model.learn_one(x)
+
+    >>> print(logs.getvalue())
+    MinMaxScaler.transform_one
+    HalfSpaceTrees.learn_one
+
+    Now let's use the context manager and see what methods get called.
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition), utils.warm_up_mode():
+    ...     for x, y in datasets.CreditCard().take(1):
+    ...         model = model.learn_one(x)
+
+    >>> print(logs.getvalue())
+    MinMaxScaler.learn_one
+    MinMaxScaler.transform_one
+    HalfSpaceTrees.learn_one
+
+    We can see that the scaler got updated before transforming the data.
+
+    """
+    Pipeline.WARM_UP = True
     try:
         yield
     finally:
-        WARM_UP = False
+        Pipeline.WARM_UP = False
 
 
 class Pipeline(base.Estimator, collections.OrderedDict):
@@ -182,6 +248,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
     """
 
+    WARM_UP = False
+
     def __init__(self, *steps):
         super().__init__()
         for step in steps:
@@ -304,7 +372,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
     # Single instance methods
 
-    def learn_one(self, x: dict, y=None, learn_unsupervised=False, **params):
+    def learn_one(self, x: dict, y=None, **params):
         """Fit to a single instance.
 
         Parameters
@@ -323,6 +391,15 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
+
+            if self.WARM_UP:
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.transformers.values():
+                        if not sub_t._supervised:
+                            sub_t.learn_one(x)
+                elif not t._supervised:
+                    t.learn_one(x)
+
             x_pre = x
             x = t.transform_one(x)
 
@@ -332,14 +409,9 @@ class Pipeline(base.Estimator, collections.OrderedDict):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
                         sub_t.learn_one(x_pre, y)
-                    elif learn_unsupervised:
-                        sub_t.learn_one(x_pre)
 
             elif t._supervised:
                 t.learn_one(x_pre, y)
-
-            elif learn_unsupervised:
-                t.learn_one(x_pre)
 
         last_step = next(steps)
         if last_step._supervised:
@@ -349,7 +421,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         return self
 
-    def _transform_one(self, x: dict, learn_unsupervised=True):
+    def _transform_one(self, x: dict):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -366,10 +438,10 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._supervised and learn_unsupervised:
+                    if not sub_t._supervised:
                         sub_t.learn_one(x)
 
-            elif not t._supervised and learn_unsupervised:
+            elif not t._supervised:
                 t.learn_one(x)
 
             x = t.transform_one(x)
@@ -392,7 +464,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             return last_step.transform_one(x)
         return x
 
-    def predict_one(self, x: dict, learn_unsupervised=True):
+    def predict_one(self, x: dict):
         """Call `transform_one` on the first steps and `predict_one` on the last step.
 
         Parameters
@@ -404,10 +476,10 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             docstring of this class for more information.
 
         """
-        x, last_step = self._transform_one(x, learn_unsupervised=learn_unsupervised)
+        x, last_step = self._transform_one(x)
         return last_step.predict_one(x)
 
-    def predict_proba_one(self, x: dict, learn_unsupervised=True):
+    def predict_proba_one(self, x: dict):
         """Call `transform_one` on the first steps and `predict_proba_one` on the last step.
 
         Parameters
@@ -419,10 +491,10 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             docstring of this class for more information.
 
         """
-        x, last_step = self._transform_one(x, learn_unsupervised=learn_unsupervised)
+        x, last_step = self._transform_one(x)
         return last_step.predict_proba_one(x)
 
-    def score_one(self, x: dict, learn_unsupervised=True):
+    def score_one(self, x: dict):
         """Call `transform_one` on the first steps and `score_one` on the last step.
 
         Parameters
@@ -434,7 +506,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             docstring of this class for more information.
 
         """
-        x, last_step = self._transform_one(x, learn_unsupervised=learn_unsupervised)
+        x, last_step = self._transform_one(x)
         return last_step.score_one(x)
 
     def forecast(self, horizon: int, xs: typing.List[dict] = None):
@@ -595,7 +667,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         return self
 
-    def _transform_many(self, X: pd.DataFrame, learn_unsupervised=True):
+    def _transform_many(self, X: pd.DataFrame):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -635,10 +707,10 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             return last_step.transform_many(X=X)
         return X
 
-    def predict_many(self, X: pd.DataFrame, learn_unsupervised=True):
-        X, last_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
+    def predict_many(self, X: pd.DataFrame):
+        X, last_step = self._transform_many(X=X)
         return last_step.predict_many(X=X)
 
-    def predict_proba_many(self, X: pd.DataFrame, learn_unsupervised=True):
-        X, last_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
+    def predict_proba_many(self, X: pd.DataFrame):
+        X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)

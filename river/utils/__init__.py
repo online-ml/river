@@ -1,6 +1,6 @@
 """Utility classes and functions."""
 from . import inspect, math, pretty, skmultiflow_utils
-from .context_managers import log_method_calls
+from .context_managers import log_method_calls, warm_up_mode
 from .data_conversion import dict2numpy, numpy2dict
 from .estimator_checks import check_estimator
 from .histogram import Histogram
@@ -27,5 +27,6 @@ __all__ = [
     "Skyline",
     "SortedWindow",
     "VectorDict",
+    "warm_up_mode",
     "Window",
 ]

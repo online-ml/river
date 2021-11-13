@@ -294,7 +294,6 @@ def log_method_calls(
     >>> from river import anomaly
     >>> from river import compose
     >>> from river import datasets
-    >>> from river import metrics
     >>> from river import preprocessing
     >>> from river import utils
 
@@ -302,8 +301,6 @@ def log_method_calls(
     ...     preprocessing.MinMaxScaler(),
     ...     anomaly.HalfSpaceTrees(seed=42)
     ... )
-
-    >>> auc = metrics.ROCAUC()
 
     >>> class_condition = lambda x: x.__class__.__name__ in ('MinMaxScaler', 'HalfSpaceTrees')
 
@@ -319,7 +316,6 @@ def log_method_calls(
     ...     for x, y in datasets.CreditCard().take(1):
     ...         score = model.score_one(x)
     ...         model = model.learn_one(x)
-    ...         auc = auc.update(y, score)
 
     >>> print(logs.getvalue())
     MinMaxScaler.learn_one
