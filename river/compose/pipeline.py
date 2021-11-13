@@ -85,11 +85,11 @@ def warm_up_mode():
     We can see that the scaler got updated before transforming the data.
 
     """
-    Pipeline.WARM_UP = True
+    Pipeline._WARM_UP = True
     try:
         yield
     finally:
-        Pipeline.WARM_UP = False
+        Pipeline._WARM_UP = False
 
 
 class Pipeline(base.Estimator):
@@ -248,7 +248,7 @@ class Pipeline(base.Estimator):
 
     """
 
-    WARM_UP = False
+    _WARM_UP = False
 
     def __init__(self, *steps):
         self.steps = collections.OrderedDict()
@@ -397,7 +397,7 @@ class Pipeline(base.Estimator):
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
 
-            if self.WARM_UP:
+            if self._WARM_UP:
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:
@@ -627,7 +627,7 @@ class Pipeline(base.Estimator):
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
 
-            if self.WARM_UP:
+            if self._WARM_UP:
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:
