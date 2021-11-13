@@ -1,5 +1,6 @@
 """Utility classes and functions."""
 from . import inspect, math, pretty, skmultiflow_utils
+from .context_managers import log_method_calls
 from .data_conversion import dict2numpy, numpy2dict
 from .estimator_checks import check_estimator
 from .histogram import Histogram
@@ -15,6 +16,7 @@ __all__ = [
     "dict2numpy",
     "expand_param_grid",
     "inspect",
+    "log_method_calls",
     "math",
     "poisson",
     "pretty",

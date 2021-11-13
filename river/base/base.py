@@ -1,6 +1,8 @@
 import collections
+import contextlib
 import copy
 import inspect
+import logging
 import sys
 import types
 import typing
@@ -259,6 +261,86 @@ class Base:
         from river import utils
 
         return utils.pretty.humanize_bytes(self._raw_memory_usage)
+
+
+def _log_method_calls(self, name, class_condition, method_condition):
+    method = object.__getattribute__(self, name)
+    if inspect.ismethod(method) and class_condition(self) and method_condition(method):
+        logging.debug(f"{self.__class__.__name__}.{name}")
+    return method
+
+
+@contextlib.contextmanager
+def log_method_calls(
+    class_condition: typing.Callable[[typing.Any], bool] = None,
+    method_condition: typing.Callable[[typing.Any], bool] = None,
+):
+    """A context manager to log method calls.
+
+    All method calls will be logged by default. This behavior can be overriden by passing filtering
+    functions.
+
+    Parameters
+    ----------
+    class_condition
+        A function which determines if a class should be logged or not.
+    method_condition
+        A function which determines if a method should be logged or not.
+
+    Examples
+    --------
+    >>> import io
+    >>> import logging
+    >>> from river import anomaly
+    >>> from river import compose
+    >>> from river import datasets
+    >>> from river import metrics
+    >>> from river import preprocessing
+    >>> from river import utils
+
+    >>> model = compose.Pipeline(
+    ...     preprocessing.MinMaxScaler(),
+    ...     anomaly.HalfSpaceTrees(seed=42)
+    ... )
+
+    >>> auc = metrics.ROCAUC()
+
+    >>> class_condition = lambda x: x.__class__.__name__ in ('MinMaxScaler', 'HalfSpaceTrees')
+
+    >>> logger = logging.getLogger()
+    >>> logger.setLevel(logging.DEBUG)
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition):
+    ...     for x, y in datasets.CreditCard().take(1):
+    ...         score = model.score_one(x)
+    ...         model = model.learn_one(x)
+    ...         auc = auc.update(y, score)
+
+    >>> print(logs.getvalue())
+    MinMaxScaler.learn_one
+    MinMaxScaler.transform_one
+    HalfSpaceTrees.score_one
+    MinMaxScaler.transform_one
+    HalfSpaceTrees.learn_one
+
+    >>> logs.close()
+
+    """
+    old = Base.__getattribute__
+    class_condition = class_condition or (lambda x: True)
+    method_condition = method_condition or (lambda x: True)
+    Base.__getattribute__ = lambda self, name: _log_method_calls(
+        self, name, class_condition, method_condition
+    )
+    try:
+        yield
+    finally:
+        Base.__getattribute__ = old
 
 
 def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:

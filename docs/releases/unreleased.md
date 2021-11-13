@@ -75,3 +75,4 @@ This module has been deleted.
 
 - Moved `model_selection.expand_param_grid` to `utils.expand_param_grid`.
 - Added `utils.poisson`.
+- Added the `utils.log_method_calls` context manager.
