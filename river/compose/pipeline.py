@@ -312,30 +312,28 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
             x_pre = x
-            x = t.transform_one(x=x)
+            x = t.transform_one(x)
 
             # The supervised transformers have to be updated.
             # Note that this is done after transforming in order to avoid target leakage.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
-                        sub_t.learn_one(x=x_pre, y=y)
+                        sub_t.learn_one(x_pre, y)
                     elif learn_unsupervised:
-                        sub_t.learn_one(x=x_pre)
+                        sub_t.learn_one(x_pre)
 
             elif t._supervised:
-                t.learn_one(x=x_pre, y=y)
+                t.learn_one(x_pre, y)
 
             elif learn_unsupervised:
-                t.learn_one(x=x_pre)
+                t.learn_one(x_pre)
 
-        # At this point steps contains a single step, which is therefore the final step of the
-        # pipeline
-        final = next(steps)
-        if final._supervised:
-            final.learn_one(x=x, y=y, **params)
-        elif learn_unsupervised:
-            final.learn_one(x=x, **params)
+        last_step = next(steps)
+        if last_step._supervised:
+            last_step.learn_one(x, y, **params)
+        else:
+            last_step.learn_one(x, **params)
 
         return self
 
@@ -357,18 +355,15 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
                     if not sub_t._supervised and learn_unsupervised:
-                        sub_t.learn_one(x=x)
+                        sub_t.learn_one(x)
 
             elif not t._supervised and learn_unsupervised:
-                t.learn_one(x=x)
+                t.learn_one(x)
 
-            x = t.transform_one(x=x)
+            x = t.transform_one(x)
 
-        final_step = next(steps)
-        if not final_step._supervised and learn_unsupervised:
-            final_step.learn_one(x)
-
-        return x, final_step
+        last_step = next(steps)
+        return x, last_step
 
     def transform_one(self, x: dict):
         """Apply each transformer in the pipeline to some features.
@@ -378,9 +373,11 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         that precede the final step are assumed to all be transformers.
 
         """
-        x, final_step = self._transform_one(x=x)
-        if isinstance(final_step, base.Transformer):
-            return final_step.transform_one(x=x)
+        x, last_step = self._transform_one(x)
+        if isinstance(last_step, base.Transformer):
+            if not last_step._supervised:
+                last_step.learn_one(x)
+            return last_step.transform_one(x)
         return x
 
     def predict_one(self, x: dict, learn_unsupervised=True):
@@ -395,8 +392,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             docstring of this class for more information.
 
         """
-        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
-        return final_step.predict_one(x=x)
+        x, last_step = self._transform_one(x, learn_unsupervised=learn_unsupervised)
+        return last_step.predict_one(x)
 
     def predict_proba_one(self, x: dict, learn_unsupervised=True):
         """Call `transform_one` on the first steps and `predict_proba_one` on the last step.
@@ -410,8 +407,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             docstring of this class for more information.
 
         """
-        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
-        return final_step.predict_proba_one(x=x)
+        x, last_step = self._transform_one(x, learn_unsupervised=learn_unsupervised)
+        return last_step.predict_proba_one(x)
 
     def score_one(self, x: dict, learn_unsupervised=True):
         """Call `transform_one` on the first steps and `score_one` on the last step.
@@ -425,8 +422,8 @@ class Pipeline(base.Estimator, collections.OrderedDict):
             docstring of this class for more information.
 
         """
-        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
-        return final_step.score_one(x=x)
+        x, last_step = self._transform_one(x, learn_unsupervised=learn_unsupervised)
+        return last_step.score_one(x)
 
     def forecast(self, horizon: int, xs: typing.List[dict] = None):
         """Return a forecast.
@@ -621,15 +618,15 @@ class Pipeline(base.Estimator, collections.OrderedDict):
         that precede the final step are assumed to all be transformers.
 
         """
-        X, final_step = self._transform_many(X=X)
-        if isinstance(final_step, base.Transformer):
-            return final_step.transform_many(X=X)
+        X, last_step = self._transform_many(X=X)
+        if isinstance(last_step, base.Transformer):
+            return last_step.transform_many(X=X)
         return X
 
     def predict_many(self, X: pd.DataFrame, learn_unsupervised=True):
-        X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
-        return final_step.predict_many(X=X)
+        X, last_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
+        return last_step.predict_many(X=X)
 
     def predict_proba_many(self, X: pd.DataFrame, learn_unsupervised=True):
-        X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
-        return final_step.predict_proba_many(X=X)
+        X, last_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
+        return last_step.predict_proba_many(X=X)
