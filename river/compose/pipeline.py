@@ -1,4 +1,5 @@
 import collections
+import contextlib
 import functools
 import io
 import itertools
@@ -12,6 +13,17 @@ from .. import base, utils
 from . import func, union
 
 __all__ = ["Pipeline"]
+
+WARM_UP = False
+
+
+@contextlib.contextmanager
+def warm_up_mode():
+    WARM_UP = True
+    try:
+        yield
+    finally:
+        WARM_UP = False
 
 
 class Pipeline(base.Estimator, collections.OrderedDict):
@@ -331,7 +343,7 @@ class Pipeline(base.Estimator, collections.OrderedDict):
 
         last_step = next(steps)
         if last_step._supervised:
-            last_step.learn_one(x, y, **params)
+            last_step.learn_one(x=x, y=y, **params)
         else:
             last_step.learn_one(x, **params)
 

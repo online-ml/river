@@ -35,49 +35,26 @@ class OneClassSVM(GLM, AnomalyDetector):
     Examples
     --------
 
-    >>> from random import Random
     >>> from river import anomaly
     >>> from river import compose
     >>> from river import datasets
-    >>> from river import feature_extraction
-    >>> from river import optim
+    >>> from river import metrics
     >>> from river import preprocessing
 
-    >>> def data():
-    ...     rng = Random(42)
-    ...     for _ in range(1000):
-    ...         a = rng.uniform(0, 1)
-    ...         b = rng.uniform(0, 1)
-    ...         if rng.random() < 0.005:
-    ...             a *= 10
-    ...             b *= 10
-    ...         yield {'a': a, 'b': b}
-
-
-    >>> model = compose.Pipeline(
-    ...     preprocessing.StandardScaler(),
-    ...     anomaly.QuantileThresholder(
-    ...         anomaly.OneClassSVM(nu=0.2),
-    ...         q=0.995
-    ...     )
+    >>> model = anomaly.QuantileThresholder(
+    ...     anomaly.OneClassSVM(nu=0.2),
+    ...     q=0.995
     ... )
 
-    >>> for x in data():
+    >>> auc = metrics.ROCAUC()
+
+    >>> for x, y in datasets.CreditCard().take(2500):
     ...     score = model.score_one(x)
     ...     model = model.learn_one(x)
-    ...     if score:
-    ...         print(" ".join(f"{xi:.3f}" for xi in x.values()))
-    0.545 0.220
-    0.809 0.006
-    0.698 0.340
-    0.957 0.337
-    0.097 0.847
-    0.807 0.730
-    4.236 2.767
-    2.547 7.088
-    9.503 3.273
-    8.577 4.413
-    2.188 5.264
+    ...     auc = auc.update(y, score)
+
+    >>> auc
+    ROCAUC: 0.747398
 
     """
 

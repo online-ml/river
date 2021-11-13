@@ -96,11 +96,11 @@ class LDA(base.Transformer):
     ...     lda = lda.learn_one(x)
     ...     topics = lda.transform_one(x)
     ...     print(topics)
-    {0: 2.5, 1: 0.5}
-    {0: 2.5, 1: 1.5}
+    {0: 0.5, 1: 2.5}
     {0: 1.5, 1: 2.5}
+    {0: 3.5, 1: 0.5}
     {0: 1.5, 1: 1.5}
-    {0: 0.5, 1: 3.5}
+    {0: 2.5, 1: 1.5}
 
     References
     ----------
