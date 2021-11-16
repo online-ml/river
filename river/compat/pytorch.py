@@ -205,7 +205,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
         if i == -1:
             i = -2
         # Get first Layers
-        new_net = list(self.net.children())[:i + 1]
+        new_net = list(self.net.children())[: i + 1]
         new_layer = torch.nn.Linear(
             in_features=layer_to_convert.in_features, out_features=self.n_classes
         )
