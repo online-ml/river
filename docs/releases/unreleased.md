@@ -18,3 +18,4 @@
 - Implemented median absolute deviation in `stats.MAD`.
 - Refactored `compat.PyTorch2RiverRegressor`
 - Fixed an issue where some statistics could not be printed if they had not seen any data yet.
+- Fixed an issue where `compat.PyTorch2RiverClassifier` could not adapt to new classes.
