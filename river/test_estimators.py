@@ -131,9 +131,9 @@ def iter_estimators_which_can_be_tested():
             cluster.KMeans(n_clusters=5, seed=42),
             preprocessing.MinMaxScaler(),
             preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
-            feature_extraction.PolynomialFeatures(),
+            feature_extraction.PolynomialExtender(),
             (
-                feature_extraction.PolynomialFeatures()
+                feature_extraction.PolynomialExtender()
                 | preprocessing.StandardScaler()
                 | linear_model.LinearRegression()
             ),

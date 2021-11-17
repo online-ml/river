@@ -39,7 +39,6 @@
 
 - Implemented `feature_extraction.Lagger`.
 - Implemented `feature_extraction.TargetLagger`.
-- `feature_extraction.PolynomialExtender` has been renamed to `feature_extraction.PolynomialFeatures`.
 
 ## meta
 

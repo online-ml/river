@@ -11,7 +11,7 @@ class TransformerProduct(union.TransformerUnion):
     """Computes interactions between the outputs of a set transformers.
 
     This is for when you want to add interaction terms between groups of features. It may also
-    be used an alternative to `feature_extraction.PolynomialFeatures` when the latter is overkill.
+    be used an alternative to `feature_extraction.PolynomialExtender` when the latter is overkill.
 
     Parameters
     ----------

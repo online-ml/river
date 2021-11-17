@@ -111,7 +111,7 @@ class Pipeline(base.Estimator):
     >>> counts = fx.BagOfWords('text')
     >>> text_part = compose.Select('text') | (tfidf + counts)
 
-    >>> num_part = compose.Select('a', 'b') | fx.PolynomialFeatures()
+    >>> num_part = compose.Select('a', 'b') | fx.PolynomialExtender()
 
     >>> model = text_part + num_part
     >>> model |= preprocessing.StandardScaler()
