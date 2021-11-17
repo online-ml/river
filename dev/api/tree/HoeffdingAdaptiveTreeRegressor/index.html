@@ -8520,10 +8520,14 @@
 <span class="n">MAE</span><span class="p">:</span> <span class="mf">0.719929</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>debug_one</summary><p>Print an explanation of how <code>x</code> is predicted.</p>
+<details class="- note">
+<summary>debug_one</summary>
+<p>Print an explanation of how <code>x</code> is predicted.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
@@ -8531,7 +8535,9 @@
 <p><strong>Returns</strong></p>
 <p><em>typing.Union[str, NoneType]</em>:     A representation of the path followed by the tree to predict <code>x</code>; <code>None</code> if</p>
 </details>
-<details class="- note"><summary>draw</summary><p>Draw the tree using the <code>graphviz</code> library.</p>
+<details class="- note">
+<summary>draw</summary>
+<p>Draw the tree using the <code>graphviz</code> library.</p>
 <p>Since the tree is drawn without passing incoming samples, classification trees will show the majority class in their leaves, whereas regression trees will use the target mean.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -8539,7 +8545,9 @@
     The maximum depth a tree can reach. If <code>None</code>, the tree will grow indefinitely.</li>
 </ul>
 </details>
-<details class="- note"><summary>learn_one</summary><p>Train the tree model on sample x and corresponding target y.</p>
+<details class="- note">
+<summary>learn_one</summary>
+<p>Train the tree model on sample x and corresponding target y.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>
@@ -8549,7 +8557,9 @@
 <p><strong>Returns</strong></p>
 <p>self</p>
 </details>
-<details class="- note"><summary>predict_one</summary><p>Predict the target value using one of the leaf prediction strategies.</p>
+<details class="- note">
+<summary>predict_one</summary>
+<p>Predict the target value using one of the leaf prediction strategies.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>
@@ -8557,7 +8567,9 @@
 <p><strong>Returns</strong></p>
 <p>Predicted target value.</p>
 </details>
-<details class="- note"><summary>to_dataframe</summary><p>Return a representation of the current tree structure organized in a <code>pandas.DataFrame</code> object.</p>
+<details class="- note">
+<summary>to_dataframe</summary>
+<p>Return a representation of the current tree structure organized in a <code>pandas.DataFrame</code> object.</p>
 <p>In case the tree is empty or it only contains a single node (a leaf), <code>None</code> is returned.</p>
 <p><strong>Returns</strong></p>
 <p>df</p>

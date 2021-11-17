@@ -8510,10 +8510,14 @@
 <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>joint_log_likelihood</summary><p>Computes the joint log likelihood of input features.</p>
+<details class="- note">
+<summary>joint_log_likelihood</summary>
+<p>Computes the joint log likelihood of input features.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
@@ -8521,7 +8525,9 @@
 <p><strong>Returns</strong></p>
 <p><em>float</em>:     Mapping between classes and joint log likelihood.</p>
 </details>
-<details class="- note"><summary>joint_log_likelihood_many</summary><p>Computes the joint log likelihood of input features.</p>
+<details class="- note">
+<summary>joint_log_likelihood_many</summary>
+<p>Computes the joint log likelihood of input features.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
@@ -8529,7 +8535,9 @@
 <p><strong>Returns</strong></p>
 <p><em>DataFrame</em>:     Input samples joint log likelihood.</p>
 </details>
-<details class="- note"><summary>learn_many</summary><p>Updates the model with a term-frequency or TF-IDF pandas dataframe.</p>
+<details class="- note">
+<summary>learn_many</summary>
+<p>Updates the model with a term-frequency or TF-IDF pandas dataframe.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
@@ -8538,7 +8546,9 @@
 <p><strong>Returns</strong></p>
 <p><em>MiniBatchClassifier</em>:     self</p>
 </details>
-<details class="- note"><summary>learn_one</summary><p>Updates the model with a single observation.</p>
+<details class="- note">
+<summary>learn_one</summary>
+<p>Updates the model with a single observation.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
@@ -8547,10 +8557,18 @@
 <p><strong>Returns</strong></p>
 <p><em>Classifier</em>:     self</p>
 </details>
-<details class="- note"><summary>p_class</summary></details>
-<details class="- note"><summary>p_class_many</summary></details>
-<details class="- note"><summary>p_feature_given_class</summary></details>
-<details class="- note"><summary>predict_many</summary><p>Predict the outcome for each given sample.</p>
+<details class="- note">
+<summary>p_class</summary>
+</details>
+<details class="- note">
+<summary>p_class_many</summary>
+</details>
+<details class="- note">
+<summary>p_feature_given_class</summary>
+</details>
+<details class="- note">
+<summary>predict_many</summary>
+<p>Predict the outcome for each given sample.</p>
 <p>Parameters --------- X     A dataframe of features.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -8559,7 +8577,9 @@
 <p><strong>Returns</strong></p>
 <p><em>Series</em>:     The predicted labels.</p>
 </details>
-<details class="- note"><summary>predict_one</summary><p>Predict the label of a set of features <code>x</code>.</p>
+<details class="- note">
+<summary>predict_one</summary>
+<p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
@@ -8567,13 +8587,17 @@
 <p><strong>Returns</strong></p>
 <p><em>typing.Union[bool, str, int]</em>:     The predicted label.</p>
 </details>
-<details class="- note"><summary>predict_proba_many</summary><p>Return probabilities using the log-likelihoods in mini-batchs setting.</p>
+<details class="- note">
+<summary>predict_proba_many</summary>
+<p>Return probabilities using the log-likelihoods in mini-batchs setting.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
 </ul>
 </details>
-<details class="- note"><summary>predict_proba_one</summary><p>Return probabilities using the log-likelihoods.</p>
+<details class="- note">
+<summary>predict_proba_one</summary>
+<p>Return probabilities using the log-likelihoods.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>

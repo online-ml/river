@@ -8330,7 +8330,9 @@
 <li><strong>C</strong> – defaults to <code>80</code></li>
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary><strong>call</strong></summary><p>Returns the loss.</p>
+<details class="- note">
+<summary><strong>call</strong></summary>
+<p>Returns the loss.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>y_true</strong>    </li>
@@ -8339,10 +8341,14 @@
 <p><strong>Returns</strong></p>
 <p>The loss(es).</p>
 </details>
-<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>gradient</summary><p>Return the gradient with respect to y_pred.</p>
+<details class="- note">
+<summary>gradient</summary>
+<p>Return the gradient with respect to y_pred.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>y_true</strong>    </li>
@@ -8351,7 +8357,9 @@
 <p><strong>Returns</strong></p>
 <p>The gradient(s).</p>
 </details>
-<details class="- note"><summary>mean_func</summary><p>Mean function.</p>
+<details class="- note">
+<summary>mean_func</summary>
+<p>Mean function.</p>
 <p>This is the inverse of the link function. Typically, a loss function takes as input the raw output of a model. In the case of classification, the raw output would be logits. The mean function can be used to convert the raw output into a value that makes sense to the user, such as a probability.</p>
 <p><strong>Parameters</strong></p>
 <ul>

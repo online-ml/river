@@ -8340,7 +8340,9 @@
 </li>
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>best_evaluated_split_suggestion</summary><p>Get the best split suggestion given a criterion and the target's statistics.</p>
+<details class="- note">
+<summary>best_evaluated_split_suggestion</summary>
+<p>Get the best split suggestion given a criterion and the target's statistics.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>criterion</strong>     (<em>river.tree.split_criterion.base.SplitCriterion</em>)    </li>
@@ -8351,17 +8353,23 @@
 <p><strong>Returns</strong></p>
 <p><em>BranchFactory</em>:     Suggestion of the best attribute split.</p>
 </details>
-<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>cond_proba</summary><p>Not implemented in regression splitters.</p>
+<details class="- note">
+<summary>cond_proba</summary>
+<p>Not implemented in regression splitters.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>att_val</strong>    </li>
 <li><strong>target_val</strong>     (<em>Union[bool, str, int]</em>)    </li>
 </ul>
 </details>
-<details class="- note"><summary>remove_bad_splits</summary><p>Remove bad splits.</p>
+<details class="- note">
+<summary>remove_bad_splits</summary>
+<p>Remove bad splits.</p>
 <p>Based on FIMT-DD's <sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup> procedure to remove bad split candidates from the E-BST. This mechanism is triggered every time a split attempt fails. The rationale is to remove points whose split merit is much worse than the best candidate overall (for which the growth decision already failed).  Let <span class="arithmatex">\(m_1\)</span> be the merit of the best split point and <span class="arithmatex">\(m_2\)</span> be the merit of the second best split candidate. The ratio <span class="arithmatex">\(r = m_2/m_1\)</span> along with the Hoeffding bound (<span class="arithmatex">\(\epsilon\)</span>) are used to decide upon creating a split. A split occurs when <span class="arithmatex">\(r &lt; 1 - \epsilon\)</span>. A split candidate, with merit <span class="arithmatex">\(m_i\)</span>, is considered badr if <span class="arithmatex">\(m_i / m_1 &lt; r - 2\epsilon\)</span>. The rationale is the following: if the merit ratio for this point is smaller than the lower bound of <span class="arithmatex">\(r\)</span>, then the true merit of that split relative to the best one is small. Hence, this candidate can be safely removed.  To avoid excessive and costly manipulations of the E-BST to update the stored statistics, only the nodes whose children are all bad split points are pruned, as defined in <sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -8372,7 +8380,9 @@
 <li><strong>pre_split_dist</strong>     (<em>Union[List, Dict]</em>)    </li>
 </ul>
 </details>
-<details class="- note"><summary>update</summary><p>Update statistics of this observer given an attribute value, its target value and the weight of the instance observed.</p>
+<details class="- note">
+<summary>update</summary>
+<p>Update statistics of this observer given an attribute value, its target value and the weight of the instance observed.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>att_val</strong>    </li>
