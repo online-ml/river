@@ -200,24 +200,28 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
     def _update_classes(self):
         self.n_classes = len(self.classes)
         layers = list(self.net.children())
+        # Get last trainable layer
         i = -1
         layer_to_convert = layers[i]
         while not hasattr(layer_to_convert, "weight"):
             layer_to_convert = layers[i]
             i -= 1
-
-        removed = list(self.net.children())[: i + 1]
-        new_net = removed
+        if i == -1:
+            i = -2
+        # Get first Layers
+        new_net = list(self.net.children())[: i + 1]
         new_layer = torch.nn.Linear(
             in_features=layer_to_convert.in_features, out_features=self.n_classes
         )
-        # copy the original weights back
+        # Copy the original weights back
         with torch.no_grad():
             new_layer.weight[:-1, :] = layer_to_convert.weight
             new_layer.weight[-1:, :] = torch.mean(layer_to_convert.weight, 0)
+        # Append new Layer
         new_net.append(new_layer)
+        # Add non trainable layers
         if i + 1 < -1:
-            for layer in layers[i + 2 :]:
+            for layer in layers[i + 2:]:
                 new_net.append(layer)
         self.net = torch.nn.Sequential(*new_net)
         self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
