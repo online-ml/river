@@ -35,7 +35,7 @@ class Discard(base.Transformer):
 
     >>> pipeline = (
     ...     compose.Discard('shop', 'country') |
-    ...     fx.PolynomialExtender()
+    ...     fx.PolynomialFeatures()
     ... )
     >>> pipeline.transform_one(x)
     {'sales': 10, 'sales*sales': 100}
@@ -92,7 +92,7 @@ class Select(base.Transformer):
 
     >>> pipeline = (
     ...     compose.Select('sales') |
-    ...     fx.PolynomialExtender()
+    ...     fx.PolynomialFeatures()
     ... )
     >>> pipeline.transform_one(x)
     {'sales': 10, 'sales*sales': 100}

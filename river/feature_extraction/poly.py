@@ -2,7 +2,7 @@ import itertools
 
 from river import base, utils
 
-__all__ = ["PolynomialExtender"]
+__all__ = ["PolynomialFeatures"]
 
 
 def powerset(iterable, min_size, max_size, with_replacement=False):
@@ -18,7 +18,7 @@ def powerset(iterable, min_size, max_size, with_replacement=False):
     )
 
 
-class PolynomialExtender(base.Transformer):
+class PolynomialFeatures(base.Transformer):
     """Polynomial feature extender.
 
     Generate features consisting of all polynomial combinations of the features with degree less
@@ -49,7 +49,7 @@ class PolynomialExtender(base.Transformer):
     ...     {'x': 4, 'y': 5}
     ... ]
 
-    >>> poly = fx.PolynomialExtender(degree=2, include_bias=True)
+    >>> poly = fx.PolynomialFeatures(degree=2, include_bias=True)
     >>> for x in X:
     ...     print(poly.transform_one(x))
     {'x': 0, 'y': 1, 'x*x': 0, 'x*y': 0, 'y*y': 1, 'bias': 1}
@@ -62,7 +62,7 @@ class PolynomialExtender(base.Transformer):
     ...     {'x': 4, 'y': 5, 'z': 2}
     ... ]
 
-    >>> poly = fx.PolynomialExtender(degree=3, interaction_only=True)
+    >>> poly = fx.PolynomialFeatures(degree=3, interaction_only=True)
     >>> for x in X:
     ...     print(poly.transform_one(x))
     {'x': 0, 'y': 1, 'z': 2, 'x*y': 0, 'x*z': 0, 'y*z': 2, 'x*y*z': 0}
@@ -81,7 +81,7 @@ class PolynomialExtender(base.Transformer):
     >>> dataset = datasets.Phishing()
 
     >>> model = (
-    ...     fx.PolynomialExtender() |
+    ...     fx.PolynomialFeatures() |
     ...     pp.StandardScaler() |
     ...     lm.LogisticRegression()
     ... )
