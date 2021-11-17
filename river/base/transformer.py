@@ -74,8 +74,6 @@ class Transformer(base.Estimator):
 
     def __rmul__(self, other):
         """Creates a Grouper."""
-        from .. import compose
-
         return self * other
 
 

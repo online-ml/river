@@ -1,6 +1,6 @@
 import itertools
 
-from river import base, utils
+from river import utils
 
 from . import union
 
