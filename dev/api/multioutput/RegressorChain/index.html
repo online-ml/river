@@ -8363,25 +8363,41 @@
 <span class="n">MAE</span><span class="p">:</span> <span class="mf">12.649592</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>clear</summary><p>D.clear() -&gt; None.  Remove all items from D.</p>
+<details class="- note">
+<summary>clear</summary>
+<p>D.clear() -&gt; None.  Remove all items from D.</p>
 </details>
-<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>copy</summary></details>
-<details class="- note"><summary>fromkeys</summary></details>
-<details class="- note"><summary>get</summary><p>D.get(k[,d]) -&gt; D[k] if k in D, else d.  d defaults to None.</p>
+<details class="- note">
+<summary>copy</summary>
+</details>
+<details class="- note">
+<summary>fromkeys</summary>
+</details>
+<details class="- note">
+<summary>get</summary>
+<p>D.get(k[,d]) -&gt; D[k] if k in D, else d.  d defaults to None.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>key</strong>    </li>
 <li><strong>default</strong>     – defaults to <code>None</code>    </li>
 </ul>
 </details>
-<details class="- note"><summary>items</summary><p>D.items() -&gt; a set-like object providing a view on D's items</p>
+<details class="- note">
+<summary>items</summary>
+<p>D.items() -&gt; a set-like object providing a view on D's items</p>
 </details>
-<details class="- note"><summary>keys</summary><p>D.keys() -&gt; a set-like object providing a view on D's keys</p>
+<details class="- note">
+<summary>keys</summary>
+<p>D.keys() -&gt; a set-like object providing a view on D's keys</p>
 </details>
-<details class="- note"><summary>learn_one</summary><p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
+<details class="- note">
+<summary>learn_one</summary>
+<p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>
@@ -8390,16 +8406,22 @@
 <p><strong>Returns</strong></p>
 <p>self</p>
 </details>
-<details class="- note"><summary>pop</summary><p>D.pop(k[,d]) -&gt; v, remove specified key and return the corresponding value. If key is not found, d is returned if given, otherwise KeyError is raised.</p>
+<details class="- note">
+<summary>pop</summary>
+<p>D.pop(k[,d]) -&gt; v, remove specified key and return the corresponding value. If key is not found, d is returned if given, otherwise KeyError is raised.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>key</strong>    </li>
-<li><strong>default</strong>     – defaults to <code>&lt;object object at 0x7f6016604150&gt;</code>    </li>
+<li><strong>default</strong>     – defaults to <code>&lt;object object at 0x7f2e25458150&gt;</code>    </li>
 </ul>
 </details>
-<details class="- note"><summary>popitem</summary><p>D.popitem() -&gt; (k, v), remove and return some (key, value) pair as a 2-tuple; but raise KeyError if D is empty.</p>
+<details class="- note">
+<summary>popitem</summary>
+<p>D.popitem() -&gt; (k, v), remove and return some (key, value) pair as a 2-tuple; but raise KeyError if D is empty.</p>
 </details>
-<details class="- note"><summary>predict_one</summary><p>Predicts the target value of a set of features <code>x</code>.</p>
+<details class="- note">
+<summary>predict_one</summary>
+<p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>
@@ -8407,21 +8429,27 @@
 <p><strong>Returns</strong></p>
 <p>The prediction.</p>
 </details>
-<details class="- note"><summary>setdefault</summary><p>D.setdefault(k[,d]) -&gt; D.get(k,d), also set D[k]=d if k not in D</p>
+<details class="- note">
+<summary>setdefault</summary>
+<p>D.setdefault(k[,d]) -&gt; D.get(k,d), also set D[k]=d if k not in D</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>key</strong>    </li>
 <li><strong>default</strong>     – defaults to <code>None</code>    </li>
 </ul>
 </details>
-<details class="- note"><summary>update</summary><p>D.update([E, ]**F) -&gt; None.  Update D from mapping/iterable E and F. If E present and has a .keys() method, does:     for k in E: D[k] = E[k] If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
+<details class="- note">
+<summary>update</summary>
+<p>D.update([E, ]**F) -&gt; None.  Update D from mapping/iterable E and F. If E present and has a .keys() method, does:     for k in E: D[k] = E[k] If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>other</strong>     – defaults to <code>()</code>    </li>
 <li><strong>kwds</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>values</summary><p>D.values() -&gt; an object providing a view on D's values</p>
+<details class="- note">
+<summary>values</summary>
+<p>D.values() -&gt; an object providing a view on D's values</p>
 </details>
                 
               

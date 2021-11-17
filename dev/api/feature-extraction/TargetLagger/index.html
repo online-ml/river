@@ -8386,10 +8386,14 @@
 <span class="p">{</span><span class="s1">&#39;y-1_by_country&#39;</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="s1">&#39;y-2_by_country&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">}</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>learn_one</summary><p>Update with a set of features <code>x</code> and a target <code>y</code>.</p>
+<details class="- note">
+<summary>learn_one</summary>
+<p>Update with a set of features <code>x</code> and a target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
@@ -8398,7 +8402,9 @@
 <p><strong>Returns</strong></p>
 <p><em>SupervisedTransformer</em>:     self</p>
 </details>
-<details class="- note"><summary>transform_one</summary><p>Transform a set of features <code>x</code>.</p>
+<details class="- note">
+<summary>transform_one</summary>
+<p>Transform a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>

@@ -8435,10 +8435,14 @@ linear regression is part of a pipeline.</p>
 <span class="n">Prediction</span><span class="p">:</span> <span class="mf">32.54607</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>debug_one</summary><p>Debugs the output of the linear regression.</p>
+<details class="- note">
+<summary>debug_one</summary>
+<p>Debugs the output of the linear regression.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
@@ -8447,7 +8451,9 @@ linear regression is part of a pipeline.</p>
 <p><strong>Returns</strong></p>
 <p><em>str</em>:     A table which explains the output.</p>
 </details>
-<details class="- note"><summary>learn_many</summary><p>Update the model with a mini-batch of features <code>X</code> and boolean targets <code>y</code>.</p>
+<details class="- note">
+<summary>learn_many</summary>
+<p>Update the model with a mini-batch of features <code>X</code> and boolean targets <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
@@ -8457,7 +8463,9 @@ linear regression is part of a pipeline.</p>
 <p><strong>Returns</strong></p>
 <p><em>MiniBatchRegressor</em>:     self</p>
 </details>
-<details class="- note"><summary>learn_one</summary><p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
+<details class="- note">
+<summary>learn_one</summary>
+<p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
@@ -8467,7 +8475,9 @@ linear regression is part of a pipeline.</p>
 <p><strong>Returns</strong></p>
 <p><em>Regressor</em>:     self</p>
 </details>
-<details class="- note"><summary>predict_many</summary><p>Predict the outcome for each given sample.</p>
+<details class="- note">
+<summary>predict_many</summary>
+<p>Predict the outcome for each given sample.</p>
 <p>Parameters --------- X     A dataframe of features.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -8476,7 +8486,9 @@ linear regression is part of a pipeline.</p>
 <p><strong>Returns</strong></p>
 <p>The predicted outcomes.</p>
 </details>
-<details class="- note"><summary>predict_one</summary><p>Predicts the target value of a set of features <code>x</code>.</p>
+<details class="- note">
+<summary>predict_one</summary>
+<p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>

@@ -8444,31 +8444,45 @@
 <span class="n">Accuracy</span><span class="p">:</span> <span class="mf">74.47</span><span class="o">%</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>append</summary><p>S.append(value) -- append value to the end of the sequence</p>
+<details class="- note">
+<summary>append</summary>
+<p>S.append(value) -- append value to the end of the sequence</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>clear</summary><p>S.clear() -&gt; None -- remove all items from S</p>
+<details class="- note">
+<summary>clear</summary>
+<p>S.clear() -&gt; None -- remove all items from S</p>
 </details>
-<details class="- note"><summary>clone</summary><p>Return a fresh estimator with the same parameters.</p>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
-<details class="- note"><summary>copy</summary></details>
-<details class="- note"><summary>count</summary><p>S.count(value) -&gt; integer -- return number of occurrences of value</p>
+<details class="- note">
+<summary>copy</summary>
+</details>
+<details class="- note">
+<summary>count</summary>
+<p>S.count(value) -&gt; integer -- return number of occurrences of value</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>extend</summary><p>S.extend(iterable) -- extend sequence by appending elements from the iterable</p>
+<details class="- note">
+<summary>extend</summary>
+<p>S.extend(iterable) -- extend sequence by appending elements from the iterable</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>other</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>index</summary><p>S.index(value, [start, [stop]]) -&gt; integer -- return first index of value. Raises ValueError if the value is not present.</p>
+<details class="- note">
+<summary>index</summary>
+<p>S.index(value, [start, [stop]]) -&gt; integer -- return first index of value. Raises ValueError if the value is not present.</p>
 <p>Supporting start and stop arguments is optional, but recommended.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -8476,21 +8490,29 @@
 <li><strong>args</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>insert</summary><p>S.insert(index, value) -- insert value before index</p>
+<details class="- note">
+<summary>insert</summary>
+<p>S.insert(index, value) -- insert value before index</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>i</strong>    </li>
 <li><strong>item</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>learn_one</summary></details>
-<details class="- note"><summary>pop</summary><p>S.pop([index]) -&gt; item -- remove and return item at index (default last). Raise IndexError if list is empty or index is out of range.</p>
+<details class="- note">
+<summary>learn_one</summary>
+</details>
+<details class="- note">
+<summary>pop</summary>
+<p>S.pop([index]) -&gt; item -- remove and return item at index (default last). Raise IndexError if list is empty or index is out of range.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>i</strong>     – defaults to <code>-1</code>    </li>
 </ul>
 </details>
-<details class="- note"><summary>predict_one</summary><p>Predict the label of a set of features <code>x</code>.</p>
+<details class="- note">
+<summary>predict_one</summary>
+<p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
@@ -8498,7 +8520,9 @@
 <p><strong>Returns</strong></p>
 <p><em>typing.Union[bool, str, int]</em>:     The predicted label.</p>
 </details>
-<details class="- note"><summary>predict_proba_one</summary><p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
+<details class="- note">
+<summary>predict_proba_one</summary>
+<p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>
@@ -8506,16 +8530,24 @@
 <p><strong>Returns</strong></p>
 <p>A dictionary that associates a probability which each label.</p>
 </details>
-<details class="- note"><summary>remove</summary><p>S.remove(value) -- remove first occurrence of value. Raise ValueError if the value is not present.</p>
+<details class="- note">
+<summary>remove</summary>
+<p>S.remove(value) -- remove first occurrence of value. Raise ValueError if the value is not present.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>reset</summary></details>
-<details class="- note"><summary>reverse</summary><p>S.reverse() -- reverse <em>IN PLACE</em></p>
+<details class="- note">
+<summary>reset</summary>
 </details>
-<details class="- note"><summary>sort</summary></details>
+<details class="- note">
+<summary>reverse</summary>
+<p>S.reverse() -- reverse <em>IN PLACE</em></p>
+</details>
+<details class="- note">
+<summary>sort</summary>
+</details>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
 <p>This implementation uses <code>n_models=10</code> as default given the impact on
 processing time. The optimal number of models depends on the data and

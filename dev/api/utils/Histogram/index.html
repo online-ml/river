@@ -8391,35 +8391,49 @@
 <p>.. image:: ../../docs/img/histogram_docstring.svg
     :align: center</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note"><summary>append</summary><p>S.append(value) -- append value to the end of the sequence</p>
+<details class="- note">
+<summary>append</summary>
+<p>S.append(value) -- append value to the end of the sequence</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>cdf</summary><p>Cumulative distribution function.</p>
+<details class="- note">
+<summary>cdf</summary>
+<p>Cumulative distribution function.</p>
 <p>Example:      &gt;&gt;&gt; from river import utils      &gt;&gt;&gt; hist = utils.Histogram()     &gt;&gt;&gt; for x in range(4):     ...     hist = hist.update(x)      &gt;&gt;&gt; print(hist)     [0.00000, 0.00000]: 1     [1.00000, 1.00000]: 1     [2.00000, 2.00000]: 1     [3.00000, 3.00000]: 1      &gt;&gt;&gt; hist.cdf(-1)     0.0      &gt;&gt;&gt; hist.cdf(0)     0.25      &gt;&gt;&gt; hist.cdf(.5)     0.25      &gt;&gt;&gt; hist.cdf(1)     0.5      &gt;&gt;&gt; hist.cdf(2.5)     0.75      &gt;&gt;&gt; hist.cdf(3.5)     1.0</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>clear</summary><p>S.clear() -&gt; None -- remove all items from S</p>
+<details class="- note">
+<summary>clear</summary>
+<p>S.clear() -&gt; None -- remove all items from S</p>
 </details>
-<details class="- note"><summary>copy</summary></details>
-<details class="- note"><summary>count</summary><p>S.count(value) -&gt; integer -- return number of occurrences of value</p>
+<details class="- note">
+<summary>copy</summary>
+</details>
+<details class="- note">
+<summary>count</summary>
+<p>S.count(value) -&gt; integer -- return number of occurrences of value</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>extend</summary><p>S.extend(iterable) -- extend sequence by appending elements from the iterable</p>
+<details class="- note">
+<summary>extend</summary>
+<p>S.extend(iterable) -- extend sequence by appending elements from the iterable</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>other</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>index</summary><p>S.index(value, [start, [stop]]) -&gt; integer -- return first index of value. Raises ValueError if the value is not present.</p>
+<details class="- note">
+<summary>index</summary>
+<p>S.index(value, [start, [stop]]) -&gt; integer -- return first index of value. Raises ValueError if the value is not present.</p>
 <p>Supporting start and stop arguments is optional, but recommended.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -8427,14 +8441,18 @@
 <li><strong>args</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>insert</summary><p>S.insert(index, value) -- insert value before index</p>
+<details class="- note">
+<summary>insert</summary>
+<p>S.insert(index, value) -- insert value before index</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>i</strong>    </li>
 <li><strong>item</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>iter_cdf</summary><p>Yields CDF values for a sorted iterable of values.</p>
+<details class="- note">
+<summary>iter_cdf</summary>
+<p>Yields CDF values for a sorted iterable of values.</p>
 <p>This is faster than calling <code>cdf</code> with many values.  Example:      &gt;&gt;&gt; from river import utils      &gt;&gt;&gt; hist = utils.Histogram()     &gt;&gt;&gt; for x in range(4):     ...     hist = hist.update(x)      &gt;&gt;&gt; print(hist)     [0.00000, 0.00000]: 1     [1.00000, 1.00000]: 1     [2.00000, 2.00000]: 1     [3.00000, 3.00000]: 1      &gt;&gt;&gt; X = [-1, 0, .5, 1, 2.5, 3.5]     &gt;&gt;&gt; for x, cdf in zip(X, hist.iter_cdf(X)):     ...     print(x, cdf)     -1 0.0     0 0.25     0.5 0.25     1 0.5     2.5 0.75     3.5 1.0</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -8442,22 +8460,32 @@
 <li><strong>verbose</strong>     – defaults to <code>False</code>    </li>
 </ul>
 </details>
-<details class="- note"><summary>pop</summary><p>S.pop([index]) -&gt; item -- remove and return item at index (default last). Raise IndexError if list is empty or index is out of range.</p>
+<details class="- note">
+<summary>pop</summary>
+<p>S.pop([index]) -&gt; item -- remove and return item at index (default last). Raise IndexError if list is empty or index is out of range.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>i</strong>     – defaults to <code>-1</code>    </li>
 </ul>
 </details>
-<details class="- note"><summary>remove</summary><p>S.remove(value) -- remove first occurrence of value. Raise ValueError if the value is not present.</p>
+<details class="- note">
+<summary>remove</summary>
+<p>S.remove(value) -- remove first occurrence of value. Raise ValueError if the value is not present.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>    </li>
 </ul>
 </details>
-<details class="- note"><summary>reverse</summary><p>S.reverse() -- reverse <em>IN PLACE</em></p>
+<details class="- note">
+<summary>reverse</summary>
+<p>S.reverse() -- reverse <em>IN PLACE</em></p>
 </details>
-<details class="- note"><summary>sort</summary></details>
-<details class="- note"><summary>update</summary></details>
+<details class="- note">
+<summary>sort</summary>
+</details>
+<details class="- note">
+<summary>update</summary>
+</details>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <div class="footnote">
 <hr />
