@@ -221,7 +221,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
         new_net.append(new_layer)
         # Add non trainable layers
         if i + 1 < -1:
-            for layer in layers[i + 2:]:
+            for layer in layers[i + 2 :]:
                 new_net.append(layer)
         self.net = torch.nn.Sequential(*new_net)
         self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
