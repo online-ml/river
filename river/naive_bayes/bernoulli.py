@@ -34,182 +34,69 @@ class BernoulliNB(base.BaseNB):
     Examples
     --------
 
-    >>> import math
+    >>> import pandas as pd
     >>> from river import compose
     >>> from river import feature_extraction
     >>> from river import naive_bayes
 
     >>> docs = [
-    ...     ('Chinese Beijing Chinese', 'yes'),
-    ...     ('Chinese Chinese Shanghai', 'yes'),
-    ...     ('Chinese Macao', 'yes'),
-    ...     ('Tokyo Japan Chinese', 'no')
+    ...     ("Chinese Beijing Chinese", "yes"),
+    ...     ("Chinese Chinese Shanghai", "yes"),
+    ...     ("Chinese Macao", "yes"),
+    ...     ("Tokyo Japan Chinese", "no")
     ... ]
 
     >>> model = compose.Pipeline(
-    ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
-    ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
+    ...     ("tokenize", feature_extraction.BagOfWords(lowercase=False)),
+    ...     ("nb", naive_bayes.BernoulliNB(alpha=1))
     ... )
 
     >>> for sentence, label in docs:
     ...     model = model.learn_one(sentence, label)
 
-    >>> model['nb'].p_class('yes')
+    >>> model["nb"].p_class("yes")
     0.75
-    >>> model['nb'].p_class('no')
+    >>> model["nb"].p_class("no")
     0.25
 
-    >>> cp = model['nb'].p_feature_given_class
+    >>> model.predict_proba_one("test")
+    {'yes': 0.8831539823829913, 'no': 0.11684601761700895}
 
-    >>> cp('Chinese', 'yes') == (3 + 1) / (3 + 2)
-    True
+    >>> model.predict_one("test")
+    'yes'
 
-    >>> cp('Japan', 'yes') == (0 + 1) / (3 + 2)
-    True
-    >>> cp('Tokyo', 'yes') == (0 + 1) / (3 + 2)
-    True
+    You can train the model and make predictions in mini-batch mode using the class methods 
+    `learn_many` and `predict_many`.
 
-    >>> cp('Beijing', 'yes') == (1 + 1) / (3 + 2)
-    True
-    >>> cp('Macao', 'yes') == (1 + 1) / (3 + 2)
-    True
-    >>> cp('Shanghai', 'yes') == (1 + 1) / (3 + 2)
-    True
+    >>> df_docs = pd.DataFrame(docs, columns = ["docs", "y"])
 
-    >>> cp('Chinese', 'no') == (1 + 1) / (1 + 2)
-    True
+    >>> X = pd.Series([
+    ...    "Chinese Beijing Chinese", 
+    ...    "Chinese Chinese Shanghai", 
+    ...    "Chinese Macao",
+    ...    "Tokyo Japan Chinese"
+    ... ])
 
-    >>> cp('Japan', 'no') == (1 + 1) / (1 + 2)
-    True
-    >>> cp('Tokyo', 'no') == (1 + 1) / (1 + 2)
-    True
-
-    >>> cp('Beijing', 'no') == (0 + 1) / (1 + 2)
-    True
-    >>> cp('Macao', 'no') == (0 + 1) / (1 + 2)
-    True
-    >>> cp('Shanghai', 'no') == (0 + 1) / (1 + 2)
-    True
-
-    >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
-    >>> tokens = model['tokenize'].transform_one(new_text)
-    >>> jlh = model['nb'].joint_log_likelihood(tokens)
-    >>> math.exp(jlh['yes'])
-    0.005184
-    >>> math.exp(jlh['no'])
-    0.021947
-    >>> model.predict_one(new_text)
-    'no'
-
-    >>> model.predict_proba_one('test')['yes']
-    0.8831539823829913
-
-    You can train the model and make predictions in mini-batch mode using the class methods `learn_many` and `predict_many`.
-
-    >>> import pandas as pd
-
-    >>> docs = [
-    ...     ('Chinese Beijing Chinese', 'yes'),
-    ...     ('Chinese Chinese Shanghai', 'yes'),
-    ...     ('Chinese Macao', 'yes'),
-    ...     ('Tokyo Japan Chinese', 'no')
-    ... ]
-
-    >>> docs = pd.DataFrame(docs, columns = ['docs', 'y'])
-
-    >>> X, y = docs['docs'], docs['y']
+    >>> y = pd.Series(["yes", "yes", "yes", "no"])
 
     >>> model = compose.Pipeline(
-    ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
-    ...     ('nb', naive_bayes.BernoulliNB(alpha=1))
+    ...     ("tokenize", feature_extraction.BagOfWords(lowercase=False)),
+    ...     ("nb", naive_bayes.BernoulliNB(alpha=1))
     ... )
 
     >>> model = model.learn_many(X, y)
 
-    >>> model['nb'].p_class('yes')
-    0.75
+    >>> unseen = pd.Series(["Taiwanese Taipei", "Chinese Shanghai"])
 
-    >>> model['nb'].p_class('no')
-    0.25
-
-    >>> cp = model['nb'].p_feature_given_class
-
-    >>> cp('Chinese', 'yes') == (3 + 1) / (3 + 2)
-    True
-
-    >>> cp('Japan', 'yes') == (0 + 1) / (3 + 2)
-    True
-    >>> cp('Tokyo', 'yes') == (0 + 1) / (3 + 2)
-    True
-
-    >>> cp('Beijing', 'yes') == (1 + 1) / (3 + 2)
-    True
-    >>> cp('Macao', 'yes') == (1 + 1) / (3 + 2)
-    True
-    >>> cp('Shanghai', 'yes') == (1 + 1) / (3 + 2)
-    True
-
-    >>> cp('Chinese', 'no') == (1 + 1) / (1 + 2)
-    True
-
-    >>> cp('Japan', 'no') == (1 + 1) / (1 + 2)
-    True
-    >>> cp('Tokyo', 'no') == (1 + 1) / (1 + 2)
-    True
-
-    >>> cp('Beijing', 'no') == (0 + 1) / (1 + 2)
-    True
-    >>> cp('Macao', 'no') == (0 + 1) / (1 + 2)
-    True
-    >>> cp('Shanghai', 'no') == (0 + 1) / (1 + 2)
-    True
-
-    >>> unseen_data = pd.Series(
-    ...    ['Taiwanese Taipei', 'Chinese Shanghai'],
-    ...    name = 'docs',
-    ...    index=['river', 'rocks']
-    ... )
-
-    >>> model.predict_proba_many(unseen_data)
-            no       yes
-    river  0.116846  0.883154
-    rocks  0.047269  0.952731
-
-    >>> model.predict_many(unseen_data)
-    river    yes
-    rocks    yes
-    dtype: object
-
-    >>> unseen_data = pd.Series(
-    ...    ['test'], name = 'docs')
-
-    >>> model.predict_proba_many(unseen_data)
-        no       yes
+    >>> model.predict_proba_many(unseen)
+             no       yes
     0  0.116846  0.883154
+    1  0.047269  0.952731
 
-    >>> model.predict_proba_one('test')
-    {'no': 0.116846017617009, 'yes': 0.8831539823829913}
-
-    >>> bag = feature_extraction.BagOfWords(lowercase=False)
-
-    >>> model = naive_bayes.BernoulliNB(alpha=1)
-
-    >>> X, y = docs['docs'], docs['y']
-
-    >>> X = bag.transform_many(X)
-
-    >>> X = pd.DataFrame(X.values, columns=X.columns, dtype=int)
-
-    >>> model = model.learn_many(X, y)
-
-    >>> unseen_data = bag.transform_many(unseen_data)
-
-    >>> unseen_data = pd.DataFrame(unseen_data.values, columns=unseen_data.columns, index=['river'])
-
-    >>> model.predict_proba_many(unseen_data)
-            no       yes
-    river  0.116846  0.883154
-
+    >>> model.predict_many(unseen)
+    0    yes
+    1    yes
+    dtype: object
 
     References
     ----------

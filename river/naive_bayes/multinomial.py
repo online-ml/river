@@ -37,139 +37,72 @@ class MultinomialNB(base.BaseNB):
     Examples
     --------
 
-    >>> import math
+    >>> import pandas as pd
     >>> from river import compose
     >>> from river import feature_extraction
     >>> from river import naive_bayes
 
     >>> docs = [
-    ...     ('Chinese Beijing Chinese', 'yes'),
-    ...     ('Chinese Chinese Shanghai', 'yes'),
-    ...     ('Chinese Macao', 'yes'),
-    ...     ('Tokyo Japan Chinese', 'no')
+    ...     ("Chinese Beijing Chinese", "yes"),
+    ...     ("Chinese Chinese Shanghai", "yes"),
+    ...     ("Chinese Macao", "maybe"),
+    ...     ("Tokyo Japan Chinese", "no")
     ... ]
 
     >>> model = compose.Pipeline(
-    ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
-    ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
+    ...     ("tokenize", feature_extraction.BagOfWords(lowercase=False)),
+    ...     ("nb", naive_bayes.MultinomialNB(alpha=1))
     ... )
 
     >>> for sentence, label in docs:
     ...     model = model.learn_one(sentence, label)
 
-    >>> model['nb'].p_class('yes')
-    0.75
+    >>> model["nb"].p_class("yes")
+    0.5
 
-    >>> model['nb'].p_class('no')
+    >>> model["nb"].p_class("no")
     0.25
 
-    >>> cp = model['nb'].p_feature_given_class
+    >>> model["nb"].p_class("maybe")
+    0.25
 
-    >>> cp('Chinese', 'yes') == (5 + 1) / (8 + 6)
-    True
+    >>> model.predict_proba_one("test")
+    {'yes': 0.413, 'maybe': 0.310, 'no': 0.275}
 
-    >>> cp('Tokyo', 'yes') == (0 + 1) / (8 + 6)
-    True
-
-    >>> cp('Japan', 'yes') == (0 + 1) / (8 + 6)
-    True
-
-    >>> cp('Chinese', 'no') == (1 + 1) / (3 + 6)
-    True
-
-    >>> cp('Tokyo', 'no') == (1 + 1) / (3 + 6)
-    True
-
-    >>> cp('Japan', 'no') == (1 + 1) / (3 + 6)
-    True
-
-    >>> new_text = 'Chinese Chinese Chinese Tokyo Japan'
-    >>> tokens = model['tokenize'].transform_one(new_text)
-    >>> jlh = model['nb'].joint_log_likelihood(tokens)
-    >>> math.exp(jlh['yes'])
-    0.000301
-    >>> math.exp(jlh['no'])
-    0.000135
-
-    >>> model.predict_one(new_text)
+    >>> model.predict_one("test")
     'yes'
 
-    >>> new_unseen_text = 'Taiwanese Taipei'
-    >>> tokens = model['tokenize'].transform_one(new_unseen_text)
-    >>> # P(Taiwanese|yes)
-    >>> #   = (N_Taiwanese_yes + 1) / (N_yes + N_terms)
-    >>> cp('Taiwanese', 'yes') == cp('Taipei', 'yes') == (0 + 1) / (8 + 6)
-    True
-    >>> cp('Taiwanese', 'no') == cp('Taipei', 'no') == (0 + 1) / (3 + 6)
-    True
+    You can train the model and make predictions in mini-batch mode using the class methods 
+    `learn_many` and `predict_many`.
 
-    >>> # P(yes|Taiwanese Taipei)
-    >>> #   ∝ P(Taiwanese|yes) * P(Taipei|yes) * P(yes)
-    >>> posterior_yes_given_new_text = (0 + 1) / (8 + 6) * (0 + 1) / (8 + 6) * 0.75
-    >>> jlh = model['nb'].joint_log_likelihood(tokens)
-    >>> jlh['yes'] == math.log(posterior_yes_given_new_text)
-    True
+    >>> df_docs = pd.DataFrame(docs, columns = ["docs", "y"])
 
-    >>> model.predict_one(new_unseen_text)
-    'yes'
+    >>> X = pd.Series([
+    ...    "Chinese Beijing Chinese", 
+    ...    "Chinese Chinese Shanghai", 
+    ...    "Chinese Macao",
+    ...    "Tokyo Japan Chinese"
+    ... ])
 
-    You can train the model and make predictions in mini-batch mode using the class methods `learn_many` and `predict_many`.
-
-    >>> import pandas as pd
-
-    >>> docs = [
-    ...     ('Chinese Beijing Chinese', 'yes'),
-    ...     ('Chinese Chinese Shanghai', 'yes'),
-    ...     ('Chinese Macao', 'yes'),
-    ...     ('Tokyo Japan Chinese', 'no')
-    ... ]
-
-    >>> docs = pd.DataFrame(docs, columns = ['docs', 'y'])
-
-    >>> X, y = docs['docs'], docs['y']
+    >>> y = pd.Series(["yes", "yes", "maybe", "no"])
 
     >>> model = compose.Pipeline(
-    ...     ('tokenize', feature_extraction.BagOfWords(lowercase=False)),
-    ...     ('nb', naive_bayes.MultinomialNB(alpha=1))
+    ...     ("tokenize", feature_extraction.BagOfWords(lowercase=False)),
+    ...     ("nb", naive_bayes.MultinomialNB(alpha=1))
     ... )
 
     >>> model = model.learn_many(X, y)
 
-    >>> model['nb'].p_class('yes')
-    0.75
+    >>> unseen = pd.Series(["Taiwanese Taipei", "Chinese Shanghai"])
 
-    >>> model['nb'].p_class('no')
-    0.25
+    >>> model.predict_proba_many(unseen)
+          maybe        no       yes
+    0  0.373272  0.294931  0.331797
+    1  0.160396  0.126733  0.712871
 
-    >>> cp = model['nb'].p_feature_given_class
-
-    >>> cp('Chinese', 'yes') == (5 + 1) / (8 + 6)
-    True
-
-    >>> cp('Tokyo', 'yes') == (0 + 1) / (8 + 6)
-    True
-    >>> cp('Japan', 'yes') == (0 + 1) / (8 + 6)
-    True
-
-    >>> cp('Chinese', 'no') == (1 + 1) / (3 + 6)
-    True
-
-    >>> cp('Tokyo', 'no') == (1 + 1) / (3 + 6)
-    True
-    >>> cp('Japan', 'no') == (1 + 1) / (3 + 6)
-    True
-
-    >>> unseen_data = pd.Series(
-    ...    ['Taiwanese Taipei', 'Chinese Shanghai'], name = 'docs', index = ['river', 'rocks'])
-
-    >>> model.predict_proba_many(unseen_data)
-                 no       yes
-    river  0.446469  0.553531
-    rocks  0.118501  0.881499
-
-    >>> model.predict_many(unseen_data)
-    river    yes
-    rocks    yes
+    >>> model.predict_many(unseen)
+    0    maybe
+    1      yes
     dtype: object
 
     References
