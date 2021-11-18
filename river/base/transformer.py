@@ -64,10 +64,9 @@ class Transformer(base.Estimator):
         return compose.TransformerUnion(other, self)
 
     def __mul__(self, other):
-        """Creates a Grouper."""
         from .. import compose
 
-        if isinstance(other, Transformer):
+        if isinstance(other, (Transformer, compose.Pipeline)):
             return compose.TransformerProduct(self, other)
 
         return compose.Grouper(transformer=self, by=other)

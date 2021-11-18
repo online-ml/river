@@ -59,7 +59,7 @@ class TransformerProduct(union.TransformerUnion):
     """
 
     def __repr__(self):
-        return repr(super()).replace("Union", "Product", 1)
+        return super().__repr__().replace("Union", "Product", 1)
 
     def __mul__(self, other):
         return self._add_step(other)
