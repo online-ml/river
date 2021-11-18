@@ -63,17 +63,17 @@ class Transformer(base.Estimator):
             return other.__add__(self)
         return compose.TransformerUnion(other, self)
 
-    def __mul__(self, feature):
-        """Creates a Grouper."""
+    def __mul__(self, other):
         from .. import compose
 
-        return compose.Grouper(transformer=self, by=feature)
+        if isinstance(other, (Transformer, compose.Pipeline)):
+            return compose.TransformerProduct(self, other)
 
-    def __rmul__(self, feature):
+        return compose.Grouper(transformer=self, by=other)
+
+    def __rmul__(self, other):
         """Creates a Grouper."""
-        from .. import compose
-
-        return compose.Grouper(transformer=self, by=feature)
+        return self * other
 
 
 class SupervisedTransformer(Transformer):
