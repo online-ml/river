@@ -8375,180 +8375,68 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">math</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">naive_bayes</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;Chinese Beijing Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;Chinese Chinese Shanghai&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;Chinese Macao&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;Tokyo Japan Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;Chinese Beijing Chinese&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;Chinese Chinese Shanghai&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;Chinese Macao&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;Tokyo Japan Chinese&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">)</span>
 <span class="o">...</span> <span class="p">]</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;tokenize&#39;</span><span class="p">,</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">(</span><span class="n">lowercase</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">BernoulliNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;tokenize&quot;</span><span class="p">,</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">(</span><span class="n">lowercase</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;nb&quot;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">BernoulliNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 <span class="o">...</span> <span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
 <span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s2">&quot;nb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span>
 <span class="mf">0.75</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s1">&#39;no&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s2">&quot;nb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
 <span class="mf">0.25</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_feature_given_class</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;yes&#39;</span><span class="p">:</span> <span class="mf">0.8831539823829913</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span> <span class="mf">0.11684601761700895</span><span class="p">}</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Japan&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Tokyo&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Beijing&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Macao&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Shanghai&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Japan&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Tokyo&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Beijing&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Macao&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Shanghai&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">new_text</span> <span class="o">=</span> <span class="s1">&#39;Chinese Chinese Chinese Tokyo Japan&#39;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">tokens</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;tokenize&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">new_text</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">jlh</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">joint_log_likelihood</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jlh</span><span class="p">[</span><span class="s1">&#39;yes&#39;</span><span class="p">])</span>
-<span class="mf">0.005184</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jlh</span><span class="p">[</span><span class="s1">&#39;no&#39;</span><span class="p">])</span>
-<span class="mf">0.021947</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">new_text</span><span class="p">)</span>
-<span class="s1">&#39;no&#39;</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)[</span><span class="s1">&#39;yes&#39;</span><span class="p">]</span>
-<span class="mf">0.8831539823829913</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="s1">&#39;yes&#39;</span>
 </code></pre></div>
-<p>You can train the model and make predictions in mini-batch mode using the class methods <code>learn_many</code> and <code>predict_many</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<p>You can train the model and make predictions in mini-batch mode using the class methods
+<code>learn_many</code> and <code>predict_many</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">df_docs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;docs&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;Chinese Beijing Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;Chinese Chinese Shanghai&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;Chinese Macao&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;Tokyo Japan Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span>
-<span class="o">...</span> <span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span>
+<span class="o">...</span>    <span class="s2">&quot;Chinese Beijing Chinese&quot;</span><span class="p">,</span>
+<span class="o">...</span>    <span class="s2">&quot;Chinese Chinese Shanghai&quot;</span><span class="p">,</span>
+<span class="o">...</span>    <span class="s2">&quot;Chinese Macao&quot;</span><span class="p">,</span>
+<span class="o">...</span>    <span class="s2">&quot;Tokyo Japan Chinese&quot;</span>
+<span class="o">...</span> <span class="p">])</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">docs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;docs&#39;</span><span class="p">],</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">])</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;tokenize&#39;</span><span class="p">,</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">(</span><span class="n">lowercase</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">BernoulliNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;tokenize&quot;</span><span class="p">,</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">(</span><span class="n">lowercase</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;nb&quot;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">BernoulliNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 <span class="o">...</span> <span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
-<span class="mf">0.75</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">unseen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;Taiwanese Taipei&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinese Shanghai&quot;</span><span class="p">])</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s1">&#39;no&#39;</span><span class="p">)</span>
-<span class="mf">0.25</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_feature_given_class</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Japan&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Tokyo&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Beijing&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Macao&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Shanghai&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Japan&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Tokyo&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Beijing&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Macao&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">cp</span><span class="p">(</span><span class="s1">&#39;Shanghai&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">unseen_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
-<span class="o">...</span>    <span class="p">[</span><span class="s1">&#39;Taiwanese Taipei&#39;</span><span class="p">,</span> <span class="s1">&#39;Chinese Shanghai&#39;</span><span class="p">],</span>
-<span class="o">...</span>    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;docs&#39;</span><span class="p">,</span>
-<span class="o">...</span>    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;river&#39;</span><span class="p">,</span> <span class="s1">&#39;rocks&#39;</span><span class="p">]</span>
-<span class="o">...</span> <span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_many</span><span class="p">(</span><span class="n">unseen_data</span><span class="p">)</span>
-        <span class="n">no</span>       <span class="n">yes</span>
-<span class="n">river</span>  <span class="mf">0.116846</span>  <span class="mf">0.883154</span>
-<span class="n">rocks</span>  <span class="mf">0.047269</span>  <span class="mf">0.952731</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">unseen_data</span><span class="p">)</span>
-<span class="n">river</span>    <span class="n">yes</span>
-<span class="n">rocks</span>    <span class="n">yes</span>
-<span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">unseen_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
-<span class="o">...</span>    <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;docs&#39;</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_many</span><span class="p">(</span><span class="n">unseen_data</span><span class="p">)</span>
-    <span class="n">no</span>       <span class="n">yes</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span>
+         <span class="n">no</span>       <span class="n">yes</span>
 <span class="mi">0</span>  <span class="mf">0.116846</span>  <span class="mf">0.883154</span>
+<span class="mi">1</span>  <span class="mf">0.047269</span>  <span class="mf">0.952731</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;no&#39;</span><span class="p">:</span> <span class="mf">0.116846017617009</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">:</span> <span class="mf">0.8831539823829913</span><span class="p">}</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">bag</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">(</span><span class="n">lowercase</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">BernoulliNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;docs&#39;</span><span class="p">],</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="n">bag</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">unseen_data</span> <span class="o">=</span> <span class="n">bag</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">unseen_data</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">unseen_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">unseen_data</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">unseen_data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;river&#39;</span><span class="p">])</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_many</span><span class="p">(</span><span class="n">unseen_data</span><span class="p">)</span>
-        <span class="n">no</span>       <span class="n">yes</span>
-<span class="n">river</span>  <span class="mf">0.116846</span>  <span class="mf">0.883154</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span>
+<span class="mi">0</span>    <span class="n">yes</span>
+<span class="mi">1</span>    <span class="n">yes</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
