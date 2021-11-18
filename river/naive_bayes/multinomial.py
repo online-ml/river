@@ -72,14 +72,14 @@ class MultinomialNB(base.BaseNB):
     >>> model.predict_one("test")
     'yes'
 
-    You can train the model and make predictions in mini-batch mode using the class methods 
+    You can train the model and make predictions in mini-batch mode using the class methods
     `learn_many` and `predict_many`.
 
     >>> df_docs = pd.DataFrame(docs, columns = ["docs", "y"])
 
     >>> X = pd.Series([
-    ...    "Chinese Beijing Chinese", 
-    ...    "Chinese Chinese Shanghai", 
+    ...    "Chinese Beijing Chinese",
+    ...    "Chinese Chinese Shanghai",
     ...    "Chinese Macao",
     ...    "Tokyo Japan Chinese"
     ... ])
