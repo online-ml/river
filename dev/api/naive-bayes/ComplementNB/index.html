@@ -8375,72 +8375,71 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">naive_bayes</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;food food meat brain&#39;</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;food meat &#39;</span> <span class="o">+</span> <span class="s1">&#39;kitchen &#39;</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">+</span> <span class="s1">&#39;job&#39;</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;butcher&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;food food meat job&#39;</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;Chinese Beijing Chinese&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;Chinese Chinese Shanghai&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;Chinese Macao&quot;</span><span class="p">,</span> <span class="s2">&quot;maybe&quot;</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;Tokyo Japan Chinese&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">)</span>
 <span class="o">...</span> <span class="p">]</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">()</span> <span class="o">|</span> <span class="p">(</span><span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">ComplementNB</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;tokenize&quot;</span><span class="p">,</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">(</span><span class="n">lowercase</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;nb&quot;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">ComplementNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="o">...</span> <span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
 <span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s1">&#39;health&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span>
-<span class="kc">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s1">&#39;butcher&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span>
-<span class="kc">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s2">&quot;nb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+<span class="mf">0.5</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="s1">&#39;food job meat&#39;</span><span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;health&#39;</span><span class="p">:</span> <span class="mf">0.9409689355477155</span><span class="p">,</span> <span class="s1">&#39;butcher&#39;</span><span class="p">:</span> <span class="mf">0.05903106445228467</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s2">&quot;nb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
+<span class="mf">0.25</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s2">&quot;nb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s2">&quot;maybe&quot;</span><span class="p">)</span>
+<span class="mf">0.25</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;yes&#39;</span><span class="p">:</span> <span class="mf">0.275</span><span class="p">,</span> <span class="s1">&#39;maybe&#39;</span><span class="p">:</span> <span class="mf">0.375</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span> <span class="mf">0.35</span><span class="p">}</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="s1">&#39;maybe&#39;</span>
 </code></pre></div>
-<p>You can train the model and make predictions in mini-batch mode using the class methods <code>learn_many</code> and <code>predict_many</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<p>You can train the model and make predictions in mini-batch mode using the class methods
+<code>learn_many</code> and <code>predict_many</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">df_docs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;docs&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;food food meat brain&#39;</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;food meat &#39;</span> <span class="o">+</span> <span class="s1">&#39;kitchen &#39;</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">+</span> <span class="s1">&#39;job&#39;</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;butcher&#39;</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;food food meat job&#39;</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">)</span>
-<span class="o">...</span> <span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span>
+<span class="o">...</span>    <span class="s2">&quot;Chinese Beijing Chinese&quot;</span><span class="p">,</span>
+<span class="o">...</span>    <span class="s2">&quot;Chinese Chinese Shanghai&quot;</span><span class="p">,</span>
+<span class="o">...</span>    <span class="s2">&quot;Chinese Macao&quot;</span><span class="p">,</span>
+<span class="o">...</span>    <span class="s2">&quot;Tokyo Japan Chinese&quot;</span>
+<span class="o">...</span> <span class="p">])</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">docs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;maybe&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">])</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">()</span> <span class="o">|</span> <span class="p">(</span><span class="s1">&#39;nb&#39;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">ComplementNB</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;tokenize&quot;</span><span class="p">,</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">(</span><span class="n">lowercase</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="s2">&quot;nb&quot;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">ComplementNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="o">...</span> <span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s1">&#39;health&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span>
-<span class="kc">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">unseen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;Taiwanese Taipei&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinese Shanghai&quot;</span><span class="p">])</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s1">&#39;butcher&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span>
-<span class="kc">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span>
+      <span class="n">maybe</span>        <span class="n">no</span>       <span class="n">yes</span>
+<span class="mi">0</span>  <span class="mf">0.415129</span>  <span class="mf">0.361624</span>  <span class="mf">0.223247</span>
+<span class="mi">1</span>  <span class="mf">0.248619</span>  <span class="mf">0.216575</span>  <span class="mf">0.534807</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class_many</span><span class="p">()</span>
-    <span class="n">butcher</span>    <span class="n">health</span>
-<span class="mi">0</span>  <span class="mf">0.333333</span>  <span class="mf">0.666667</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="s1">&#39;food job meat&#39;</span><span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;butcher&#39;</span><span class="p">:</span> <span class="mf">0.05903106445228467</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">:</span> <span class="mf">0.9409689355477155</span><span class="p">}</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="s1">&#39;Taiwanese Taipei&#39;</span><span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;butcher&#39;</span><span class="p">:</span> <span class="mf">0.3769230769230768</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">:</span> <span class="mf">0.6230769230769229</span><span class="p">}</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">unseen_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
-<span class="o">...</span>    <span class="p">[</span><span class="s1">&#39;food job meat&#39;</span><span class="p">,</span> <span class="s1">&#39;Taiwanese Taipei&#39;</span><span class="p">],</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;river&#39;</span><span class="p">,</span> <span class="s1">&#39;rocks&#39;</span><span class="p">])</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_many</span><span class="p">(</span><span class="n">unseen_data</span><span class="p">)</span>
-        <span class="n">butcher</span>    <span class="n">health</span>
-<span class="n">river</span>  <span class="mf">0.059031</span>  <span class="mf">0.940969</span>
-<span class="n">rocks</span>  <span class="mf">0.376923</span>  <span class="mf">0.623077</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">unseen_data</span><span class="p">)</span>
-<span class="n">river</span>    <span class="n">health</span>
-<span class="n">rocks</span>    <span class="n">health</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span>
+<span class="mi">0</span>    <span class="n">maybe</span>
+<span class="mi">1</span>      <span class="n">yes</span>
 <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
