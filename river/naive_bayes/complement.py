@@ -36,73 +36,72 @@ class ComplementNB(base.BaseNB):
     Examples
     --------
 
+    >>> import pandas as pd
+    >>> from river import compose
     >>> from river import feature_extraction
     >>> from river import naive_bayes
 
-    >>> sentences = [
-    ...     ('food food meat brain', 'health'),
-    ...     ('food meat ' + 'kitchen ' * 9 + 'job' * 5, 'butcher'),
-    ...     ('food food meat job', 'health')
+    >>> docs = [
+    ...     ("Chinese Beijing Chinese", "yes"),
+    ...     ("Chinese Chinese Shanghai", "yes"),
+    ...     ("Chinese Macao", "maybe"),
+    ...     ("Tokyo Japan Chinese", "no")
     ... ]
 
-    >>> model = feature_extraction.BagOfWords() | ('nb', naive_bayes.ComplementNB)
+    >>> model = compose.Pipeline(
+    ...     ("tokenize", feature_extraction.BagOfWords(lowercase=False)),
+    ...     ("nb", naive_bayes.ComplementNB(alpha=1))
+    ... )
 
-    >>> for sentence, label in sentences:
+    >>> for sentence, label in docs:
     ...     model = model.learn_one(sentence, label)
 
-    >>> model['nb'].p_class('health') == 2 / 3
-    True
-    >>> model['nb'].p_class('butcher') == 1 / 3
-    True
+    >>> model["nb"].p_class("yes")
+    0.5
 
-    >>> model.predict_proba_one('food job meat')
-    {'health': 0.9409689355477155, 'butcher': 0.05903106445228467}
+    >>> model["nb"].p_class("no")
+    0.25
 
-    You can train the model and make predictions in mini-batch mode using the class methods `learn_many` and `predict_many`.
+    >>> model["nb"].p_class("maybe")
+    0.25
 
-    >>> import pandas as pd
+    >>> model.predict_proba_one("test")
+    {'yes': 0.275, 'maybe': 0.375, 'no': 0.35}
 
-    >>> docs = [
-    ...     ('food food meat brain', 'health'),
-    ...     ('food meat ' + 'kitchen ' * 9 + 'job' * 5, 'butcher'),
-    ...     ('food food meat job', 'health')
-    ... ]
+    >>> model.predict_one("test")
+    'maybe'
 
-    >>> docs = pd.DataFrame(docs, columns = ['X', 'y'])
+    You can train the model and make predictions in mini-batch mode using the class methods 
+    `learn_many` and `predict_many`.
 
-    >>> X, y = docs['X'], docs['y']
+    >>> df_docs = pd.DataFrame(docs, columns = ["docs", "y"])
 
-    >>> model = feature_extraction.BagOfWords() | ('nb', naive_bayes.ComplementNB)
+    >>> X = pd.Series([
+    ...    "Chinese Beijing Chinese", 
+    ...    "Chinese Chinese Shanghai", 
+    ...    "Chinese Macao",
+    ...    "Tokyo Japan Chinese"
+    ... ])
+
+    >>> y = pd.Series(["yes", "yes", "maybe", "no"])
+
+    >>> model = compose.Pipeline(
+    ...     ("tokenize", feature_extraction.BagOfWords(lowercase=False)),
+    ...     ("nb", naive_bayes.ComplementNB(alpha=1))
+    ... )
 
     >>> model = model.learn_many(X, y)
 
-    >>> model['nb'].p_class('health') == 2 / 3
-    True
+    >>> unseen = pd.Series(["Taiwanese Taipei", "Chinese Shanghai"])
 
-    >>> model['nb'].p_class('butcher') == 1 / 3
-    True
+    >>> model.predict_proba_many(unseen)
+          maybe        no       yes
+    0  0.415129  0.361624  0.223247
+    1  0.248619  0.216575  0.534807
 
-    >>> model['nb'].p_class_many()
-        butcher    health
-    0  0.333333  0.666667
-
-    >>> model.predict_proba_one('food job meat')
-    {'butcher': 0.05903106445228467, 'health': 0.9409689355477155}
-
-    >>> model.predict_proba_one('Taiwanese Taipei')
-    {'butcher': 0.3769230769230768, 'health': 0.6230769230769229}
-
-    >>> unseen_data = pd.Series(
-    ...    ['food job meat', 'Taiwanese Taipei'], name = 'X', index = ['river', 'rocks'])
-
-    >>> model.predict_proba_many(unseen_data)
-            butcher    health
-    river  0.059031  0.940969
-    rocks  0.376923  0.623077
-
-    >>> model.predict_many(unseen_data)
-    river    health
-    rocks    health
+    >>> model.predict_many(unseen)
+    0    maybe
+    1      yes
     dtype: object
 
     References
