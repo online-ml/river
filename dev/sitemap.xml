@@ -211,6 +211,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/api/compose/TransformerProduct/</loc>
+         <lastmod>2021-11-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/api/compose/TransformerUnion/</loc>
          <lastmod>2021-11-18</lastmod>
          <changefreq>daily</changefreq>
