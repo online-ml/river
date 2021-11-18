@@ -28,6 +28,7 @@
 - You can now use a `list` as a shorthand to build a `TransformerUnion`.
 - Fixed a visualization issue when using a pipeline with multiple feature unions.
 - The prejudiced terms `blacklist` and `whitelist` have both been renamed to `keys`.
+- Implemented `compose.TransformerProduct`.
 
 ## ensemble
 

@@ -7,6 +7,7 @@ pipelines are not the only way to process a stream of data, we highly encourage 
 from .func import FuncTransformer
 from .grouper import Grouper
 from .pipeline import Pipeline
+from .product import TransformerProduct
 from .rename import Renamer
 from .select import Discard, Select, SelectType
 from .target_transform import TargetTransformRegressor
@@ -21,5 +22,6 @@ __all__ = [
     "Select",
     "SelectType",
     "TargetTransformRegressor",
+    "TransformerProduct",
     "TransformerUnion",
 ]
