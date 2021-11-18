@@ -10,16 +10,18 @@ def river_models():
     yield from [
         naive_bayes.MultinomialNB,
         naive_bayes.BernoulliNB,
-        naive_bayes.ComplementNB
+        naive_bayes.ComplementNB,
     ]
+
 
 def sklearn_models():
     """Mapping between Naives Bayes river models and sklearn models."""
     yield from [
         (naive_bayes.MultinomialNB, sk_naive_bayes.MultinomialNB),
         (naive_bayes.BernoulliNB, sk_naive_bayes.BernoulliNB),
-        (naive_bayes.ComplementNB, sk_naive_bayes.ComplementNB)
+        (naive_bayes.ComplementNB, sk_naive_bayes.ComplementNB),
     ]
+
 
 def yield_dataset():
     """"Incremental dataset."""
@@ -56,6 +58,7 @@ def yield_unseen_data():
 
 def yield_batch_unseen_data():
     yield from [pd.Series(x) for x in yield_unseen_data()]
+
 
 @pytest.mark.parametrize(
     "model",
@@ -106,8 +109,8 @@ def test_learn_one_methods(model):
     ],
 )
 def test_learn_many_vs_learn_one(model, batch_model):
-    """Assert that the Naive Bayes river models provide the same results when learning in 
-    incremental and mini-batch modes. The models tested are MultinomialNB, BernoulliNB and 
+    """Assert that the Naive Bayes river models provide the same results when learning in
+    incremental and mini-batch modes. The models tested are MultinomialNB, BernoulliNB and
     ComplementNB with differents alpha parameters..
     """
     for x, y in yield_dataset():
@@ -118,7 +121,7 @@ def test_learn_many_vs_learn_one(model, batch_model):
 
     assert model["model"].p_class("yes") == batch_model["model"].p_class("yes")
     assert model["model"].p_class("no") == batch_model["model"].p_class("no")
-    
+
     # Assert batch and incremental models give same results
     for x, x_batch in zip(yield_unseen_data(), yield_batch_unseen_data()):
 
@@ -162,6 +165,7 @@ def test_learn_many_vs_learn_one(model, batch_model):
     if isinstance(model["model"], sk_naive_bayes.ComplementNB):
         assert model["model"].feature_totals == batch_model["model"].feature_totals
 
+
 @pytest.mark.parametrize(
     "batch_model",
     [
@@ -177,7 +181,7 @@ def test_learn_many_vs_learn_one(model, batch_model):
     ],
 )
 def test_learn_many_not_fit(batch_model):
-    """Ensure that Naives Bayes models return an empty DataFrame when not yet fitted. Also check 
+    """Ensure that Naives Bayes models return an empty DataFrame when not yet fitted. Also check
     that the predict_proba_many method keeps the index.
     """
     assert batch_model.predict_proba_many(
@@ -186,7 +190,8 @@ def test_learn_many_not_fit(batch_model):
 
     assert batch_model.predict_many(
         pd.Series(["new", "unseen"], index=["river", "rocks"])
-    ).equals(pd.DataFrame(index=["river", "rocks"]))  
+    ).equals(pd.DataFrame(index=["river", "rocks"]))
+
 
 @pytest.mark.parametrize(
     "model, sk_model, bag",
@@ -205,9 +210,9 @@ def test_learn_many_not_fit(batch_model):
     ],
 )
 def test_river_vs_sklearn(model, sk_model, bag):
-    """Assert that river Naive Bayes models and sklearn Naive Bayes models provide the same results 
-    when the input data are the same. Also check that the behaviour of Naives Bayes models are the 
-    same with dense and sparse dataframe. Models tested are MultinomialNB, BernoulliNB and 
+    """Assert that river Naive Bayes models and sklearn Naive Bayes models provide the same results
+    when the input data are the same. Also check that the behaviour of Naives Bayes models are the
+    same with dense and sparse dataframe. Models tested are MultinomialNB, BernoulliNB and
     ComplementNB with differents alpha parameters.
     """
     for x, y in yield_batch_dataset():
