@@ -7441,6 +7441,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../utils/log-method-calls/" class="md-nav__link">
+        log_method_calls
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../utils/numpy2dict/" class="md-nav__link">
         numpy2dict
       </a>
@@ -7468,22 +7482,50 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../utils/pure-inference-mode/" class="md-nav__link">
+        pure_inference_mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/warm-up-mode/" class="md-nav__link">
+        warm_up_mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_12" type="checkbox" id="__nav_4_34_12" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_15" type="checkbox" id="__nav_4_34_15" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_34_12">
+        <label class="md-nav__link" for="__nav_4_34_15">
           math
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="math" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_34_12">
+        <label class="md-nav__title" for="__nav_4_34_15">
           <span class="md-nav__icon md-icon"></span>
           math
         </label>
@@ -7701,18 +7743,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_13" type="checkbox" id="__nav_4_34_13" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_16" type="checkbox" id="__nav_4_34_16" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_34_13">
+        <label class="md-nav__link" for="__nav_4_34_16">
           pretty
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="pretty" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_34_13">
+        <label class="md-nav__title" for="__nav_4_34_16">
           <span class="md-nav__icon md-icon"></span>
           pretty
         </label>
@@ -8354,7 +8396,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_sklearn_dataset</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_boston</span><span class="p">(),</span>
+<span class="o">...</span>     <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_diabetes</span><span class="p">(),</span>
 <span class="o">...</span>     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="o">...</span> <span class="p">)</span>
@@ -8366,7 +8408,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">11.004415</span>
+<span class="n">MAE</span><span class="p">:</span> <span class="mf">84.51947</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">

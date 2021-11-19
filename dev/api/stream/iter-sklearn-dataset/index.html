@@ -7434,6 +7434,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../utils/log-method-calls/" class="md-nav__link">
+        log_method_calls
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../utils/numpy2dict/" class="md-nav__link">
         numpy2dict
       </a>
@@ -7461,22 +7475,50 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../utils/pure-inference-mode/" class="md-nav__link">
+        pure_inference_mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/warm-up-mode/" class="md-nav__link">
+        warm_up_mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_12" type="checkbox" id="__nav_4_34_12" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_15" type="checkbox" id="__nav_4_34_15" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_34_12">
+        <label class="md-nav__link" for="__nav_4_34_15">
           math
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="math" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_34_12">
+        <label class="md-nav__title" for="__nav_4_34_15">
           <span class="md-nav__icon md-icon"></span>
           math
         </label>
@@ -7694,18 +7736,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_13" type="checkbox" id="__nav_4_34_13" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_16" type="checkbox" id="__nav_4_34_16" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_34_13">
+        <label class="md-nav__link" for="__nav_4_34_16">
           pretty
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="pretty" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_34_13">
+        <label class="md-nav__title" for="__nav_4_34_16">
           <span class="md-nav__icon md-icon"></span>
           pretty
         </label>
@@ -8340,26 +8382,23 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stream</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_boston</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_diabetes</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_sklearn_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
 <span class="o">...</span>     <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
 <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">yi</span><span class="p">)</span>
 <span class="o">...</span>     <span class="k">break</span>
-<span class="p">{</span><span class="s1">&#39;AGE&#39;</span><span class="p">:</span> <span class="mf">65.2</span><span class="p">,</span>
-    <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="mf">396.9</span><span class="p">,</span>
-    <span class="s1">&#39;CHAS&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="s1">&#39;CRIM&#39;</span><span class="p">:</span> <span class="mf">0.00632</span><span class="p">,</span>
-    <span class="s1">&#39;DIS&#39;</span><span class="p">:</span> <span class="mf">4.09</span><span class="p">,</span>
-    <span class="s1">&#39;INDUS&#39;</span><span class="p">:</span> <span class="mf">2.31</span><span class="p">,</span>
-    <span class="s1">&#39;LSTAT&#39;</span><span class="p">:</span> <span class="mf">4.98</span><span class="p">,</span>
-    <span class="s1">&#39;NOX&#39;</span><span class="p">:</span> <span class="mf">0.538</span><span class="p">,</span>
-    <span class="s1">&#39;PTRATIO&#39;</span><span class="p">:</span> <span class="mf">15.3</span><span class="p">,</span>
-    <span class="s1">&#39;RAD&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-    <span class="s1">&#39;RM&#39;</span><span class="p">:</span> <span class="mf">6.575</span><span class="p">,</span>
-    <span class="s1">&#39;TAX&#39;</span><span class="p">:</span> <span class="mf">296.0</span><span class="p">,</span>
-    <span class="s1">&#39;ZN&#39;</span><span class="p">:</span> <span class="mf">18.0</span><span class="p">}</span>
-<span class="mf">24.0</span>
+<span class="p">{</span><span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mf">0.0380759064334241</span><span class="p">,</span>
+ <span class="s1">&#39;bmi&#39;</span><span class="p">:</span> <span class="mf">0.0616962065186885</span><span class="p">,</span>
+ <span class="s1">&#39;bp&#39;</span><span class="p">:</span> <span class="mf">0.0218723549949558</span><span class="p">,</span>
+ <span class="s1">&#39;s1&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.0442234984244464</span><span class="p">,</span>
+ <span class="s1">&#39;s2&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.0348207628376986</span><span class="p">,</span>
+ <span class="s1">&#39;s3&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.0434008456520269</span><span class="p">,</span>
+ <span class="s1">&#39;s4&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.00259226199818282</span><span class="p">,</span>
+ <span class="s1">&#39;s5&#39;</span><span class="p">:</span> <span class="mf">0.0199084208763183</span><span class="p">,</span>
+ <span class="s1">&#39;s6&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.0176461251598052</span><span class="p">,</span>
+ <span class="s1">&#39;sex&#39;</span><span class="p">:</span> <span class="mf">0.0506801187398187</span><span class="p">}</span>
+<span class="mf">151.0</span>
 </code></pre></div>
                 
               

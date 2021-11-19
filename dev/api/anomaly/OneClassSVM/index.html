@@ -7448,6 +7448,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../utils/log-method-calls/" class="md-nav__link">
+        log_method_calls
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../utils/numpy2dict/" class="md-nav__link">
         numpy2dict
       </a>
@@ -7475,22 +7489,50 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../utils/pure-inference-mode/" class="md-nav__link">
+        pure_inference_mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/warm-up-mode/" class="md-nav__link">
+        warm_up_mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_12" type="checkbox" id="__nav_4_34_12" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_15" type="checkbox" id="__nav_4_34_15" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_34_12">
+        <label class="md-nav__link" for="__nav_4_34_15">
           math
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="math" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_34_12">
+        <label class="md-nav__title" for="__nav_4_34_15">
           <span class="md-nav__icon md-icon"></span>
           math
         </label>
@@ -7708,18 +7750,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_13" type="checkbox" id="__nav_4_34_13" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_34_16" type="checkbox" id="__nav_4_34_16" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_34_13">
+        <label class="md-nav__link" for="__nav_4_34_16">
           pretty
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="pretty" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_34_13">
+        <label class="md-nav__title" for="__nav_4_34_16">
           <span class="md-nav__icon md-icon"></span>
           pretty
         </label>
@@ -8381,48 +8423,26 @@
 <li><strong>weights</strong></li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">Random</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">anomaly</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">anomaly</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">data</span><span class="p">():</span>
-<span class="o">...</span>     <span class="n">rng</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-<span class="o">...</span>     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-<span class="o">...</span>         <span class="n">a</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="o">...</span>         <span class="n">b</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="o">...</span>         <span class="k">if</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.005</span><span class="p">:</span>
-<span class="o">...</span>             <span class="n">a</span> <span class="o">*=</span> <span class="mi">10</span>
-<span class="o">...</span>             <span class="n">b</span> <span class="o">*=</span> <span class="mi">10</span>
-<span class="o">...</span>         <span class="k">yield</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">}</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">(),</span>
-<span class="o">...</span>     <span class="n">anomaly</span><span class="o">.</span><span class="n">QuantileThresholder</span><span class="p">(</span>
-<span class="o">...</span>         <span class="n">anomaly</span><span class="o">.</span><span class="n">OneClassSVM</span><span class="p">(</span><span class="n">nu</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
-<span class="o">...</span>         <span class="n">q</span><span class="o">=</span><span class="mf">0.995</span>
-<span class="o">...</span>     <span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">anomaly</span><span class="o">.</span><span class="n">QuantileThresholder</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">anomaly</span><span class="o">.</span><span class="n">OneClassSVM</span><span class="p">(</span><span class="n">nu</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
+<span class="o">...</span>     <span class="n">q</span><span class="o">=</span><span class="mf">0.995</span>
 <span class="o">...</span> <span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">():</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">auc</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2500</span><span class="p">):</span>
 <span class="o">...</span>     <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="o">...</span>     <span class="k">if</span> <span class="n">score</span><span class="p">:</span>
-<span class="o">...</span>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xi</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-<span class="mf">0.545</span> <span class="mf">0.220</span>
-<span class="mf">0.809</span> <span class="mf">0.006</span>
-<span class="mf">0.698</span> <span class="mf">0.340</span>
-<span class="mf">0.957</span> <span class="mf">0.337</span>
-<span class="mf">0.097</span> <span class="mf">0.847</span>
-<span class="mf">0.807</span> <span class="mf">0.730</span>
-<span class="mf">4.236</span> <span class="mf">2.767</span>
-<span class="mf">2.547</span> <span class="mf">7.088</span>
-<span class="mf">9.503</span> <span class="mf">3.273</span>
-<span class="mf">8.577</span> <span class="mf">4.413</span>
-<span class="mf">2.188</span> <span class="mf">5.264</span>
+<span class="o">...</span>     <span class="n">auc</span> <span class="o">=</span> <span class="n">auc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">auc</span>
+<span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">0.747398</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
