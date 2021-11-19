@@ -82,7 +82,7 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
 
         self.classifiers = {i: copy.deepcopy(classifier) for i in range(code_size)}
 
-        # We don't how many classes there are, therefore we can't generate the code book
+        # We don't know how many classes there are, therefore we can't generate the code book
         # from the start. Therefore, we define a random queue of integers. When a new class
         # appears, we get the next integer and convert it to a code.
         integers = list(range(2 ** code_size))

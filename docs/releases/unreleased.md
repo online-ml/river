@@ -29,6 +29,7 @@
 - Fixed a visualization issue when using a pipeline with multiple feature unions.
 - The prejudiced terms `blacklist` and `whitelist` have both been renamed to `keys`.
 - Removed `learn_unsupervised` parameter from pipeline methods.
+- Implemented `compose.TransformerProduct`.
 
 ## ensemble
 

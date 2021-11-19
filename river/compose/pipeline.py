@@ -353,6 +353,17 @@ class Pipeline(base.Estimator):
             return other.__add__(self)
         return union.TransformerUnion(self, other)
 
+    def __mul__(self, other):
+        from .. import compose
+
+        if isinstance(other, (base.Transformer, Pipeline)):
+            return compose.TransformerProduct(self, other)
+
+        return compose.Grouper(transformer=self, by=other)
+
+    def __rmul__(self, other):
+        return self * other
+
     def __str__(self):
         return " | ".join(map(str, self.steps.values()))
 
