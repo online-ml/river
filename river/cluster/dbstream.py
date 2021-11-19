@@ -199,7 +199,7 @@ class DBSTREAM(base.Clusterer):
                 self.micro_clusters[i].center = {
                     j: self.micro_clusters[i].center[j]
                     + self._gaussian_neighborhood(x, self.micro_clusters[i].center)
-                    * (x[j] - self.micro_clusters[i].center[j])
+                    * (x.get(j, 0.0) - self.micro_clusters[i].center[j])
                     for j in self.micro_clusters[i].center.keys()
                 }
                 self.micro_clusters[i].last_update = self.time_stamp
@@ -412,7 +412,7 @@ class DBSTREAMMicroCluster(metaclass=ABCMeta):
 
     def merge(self, cluster):
         self.center = {
-            i: (self.center[i] * self.weight + cluster.center[i] * cluster.weight)
+            i: (self.center.get(i, 0.0) * self.weight + cluster.center.get(i, 0.0) * cluster.weight)
             / (self.weight + cluster.weight)
             for i in self.center.keys()
         }
