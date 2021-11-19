@@ -28,6 +28,7 @@
 - You can now use a `list` as a shorthand to build a `TransformerUnion`.
 - Fixed a visualization issue when using a pipeline with multiple feature unions.
 - The prejudiced terms `blacklist` and `whitelist` have both been renamed to `keys`.
+- Removed `learn_unsupervised` parameter from pipeline methods.
 - Implemented `compose.TransformerProduct`.
 
 ## ensemble
@@ -76,3 +77,6 @@ This module has been deleted.
 
 - Moved `model_selection.expand_param_grid` to `utils.expand_param_grid`.
 - Added `utils.poisson`.
+- Added the `utils.log_method_calls` context manager.
+- Added the `utils.warm_up_mode` context manager.
+- Added the `utils.pure_inference_model` context manager.

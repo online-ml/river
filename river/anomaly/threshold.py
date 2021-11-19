@@ -52,14 +52,14 @@ class ConstantThresholder(Thresholder):
     ...     report = report.update(y, score)
 
     >>> report
-    Precision   Recall   F1      Support
+               Precision   Recall   F1      Support
     <BLANKLINE>
            0       0.999    0.939   0.968      7975
            1       0.038    0.760   0.072        25
     <BLANKLINE>
-       Macro       0.519    0.850   0.520
+       Macro       0.518    0.850   0.520
        Micro       0.939    0.939   0.939
-    Weighted       0.996    0.939   0.966
+    Weighted       0.996    0.939   0.965
     <BLANKLINE>
                      93.9% accuracy
 
@@ -116,16 +116,16 @@ class QuantileThresholder(Thresholder):
     ...     report = report.update(y, score)
 
     >>> report
-                   Precision   Recall   F1      Support
+               Precision   Recall   F1      Support
     <BLANKLINE>
            0       0.998    0.983   0.991      7975
            1       0.087    0.520   0.149        25
     <BLANKLINE>
        Macro       0.543    0.751   0.570
-       Micro       0.981    0.981   0.981
-    Weighted       0.996    0.981   0.988
+       Micro       0.982    0.982   0.982
+    Weighted       0.996    0.982   0.988
     <BLANKLINE>
-                     98.1% accuracy
+                     98.2% accuracy
 
     """
 
