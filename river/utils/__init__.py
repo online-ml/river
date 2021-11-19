@@ -1,6 +1,6 @@
 """Utility classes and functions."""
 from . import inspect, math, pretty, skmultiflow_utils
-from .context_managers import log_method_calls, warm_up_mode
+from .context_managers import log_method_calls, pure_inference_mode, warm_up_mode
 from .data_conversion import dict2numpy, numpy2dict
 from .estimator_checks import check_estimator
 from .histogram import Histogram
@@ -22,6 +22,7 @@ __all__ = [
     "pretty",
     "Histogram",
     "numpy2dict",
+    "pure_inference_mode",
     "SDFT",
     "skmultiflow_utils",
     "Skyline",

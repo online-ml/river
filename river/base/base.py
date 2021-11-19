@@ -265,7 +265,12 @@ class Base:
 
 def _log_method_calls(self, name, class_condition, method_condition):
     method = object.__getattribute__(self, name)
-    if inspect.ismethod(method) and class_condition(self) and method_condition(method):
+    if (
+        not name.startswith("_")
+        and inspect.ismethod(method)
+        and class_condition(self)
+        and method_condition(method)
+    ):
         logging.debug(f"{self.__class__.__name__}.{name}")
     return method
 

@@ -45,7 +45,7 @@ def warm_up_mode():
 
     >>> model = compose.Pipeline(
     ...     preprocessing.MinMaxScaler(),
-    ...     anomaly.HalfSpaceTrees(seed=42)
+    ...     anomaly.HalfSpaceTrees()
     ... )
 
     >>> class_condition = lambda x: x.__class__.__name__ in ('MinMaxScaler', 'HalfSpaceTrees')
@@ -90,6 +90,79 @@ def warm_up_mode():
         yield
     finally:
         Pipeline._WARM_UP = False
+
+
+@contextlib.contextmanager
+def pure_inference_mode():
+    """A context manager for making inferences with no side-effects.
+
+    Calling `predict_one` with a pipeline will update the unsupervised steps of the pipeline. This
+    is the expected behavior for online machine learning. However, in some cases you might just
+    want to produce predictions without necessarily updating anything.
+
+    This context manager allows you to override that behavior and make it so that unsupervised
+    estimators are not updated when `predict_one` is called.
+
+    Examples
+    --------
+
+    Let's first see what methods are called if we just call `predict_one`.
+
+    >>> import io
+    >>> import logging
+    >>> from river import compose
+    >>> from river import datasets
+    >>> from river import linear_model
+    >>> from river import preprocessing
+    >>> from river import utils
+
+    >>> model = compose.Pipeline(
+    ...     preprocessing.StandardScaler(),
+    ...     linear_model.LinearRegression()
+    ... )
+
+    >>> class_condition = lambda x: x.__class__.__name__ in ('StandardScaler', 'LinearRegression')
+
+    >>> logger = logging.getLogger()
+    >>> logger.setLevel(logging.DEBUG)
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition):
+    ...     for x, y in datasets.TrumpApproval().take(1):
+    ...         _ = model.predict_one(x)
+
+    >>> print(logs.getvalue())
+    StandardScaler.learn_one
+    StandardScaler.transform_one
+    LinearRegression.predict_one
+
+    Now let's use the context manager and see what methods get called.
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition), utils.pure_inference_mode():
+    ...     for x, y in datasets.TrumpApproval().take(1):
+    ...         _ = model.predict_one(x)
+
+    >>> print(logs.getvalue())
+    StandardScaler.transform_one
+    LinearRegression.predict_one
+
+    We can see that the scaler did not get updated before transforming the data.
+
+    """
+    Pipeline._STATELESS = True
+    try:
+        yield
+    finally:
+        Pipeline._STATELESS = False
 
 
 class Pipeline(base.Estimator):
@@ -249,6 +322,7 @@ class Pipeline(base.Estimator):
     """
 
     _WARM_UP = False
+    _STATELESS = False
 
     def __init__(self, *steps):
         self.steps = collections.OrderedDict()
@@ -437,13 +511,15 @@ class Pipeline(base.Estimator):
 
         for t in itertools.islice(steps, len(self) - 1):
 
-            if isinstance(t, union.TransformerUnion):
-                for sub_t in t.transformers.values():
-                    if not sub_t._supervised:
-                        sub_t.learn_one(x)
+            if not self._STATELESS:
 
-            elif not t._supervised:
-                t.learn_one(x)
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.transformers.values():
+                        if not sub_t._supervised:
+                            sub_t.learn_one(x)
+
+                elif not t._supervised:
+                    t.learn_one(x)
 
             x = t.transform_one(x)
 
