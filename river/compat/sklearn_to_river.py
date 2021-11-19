@@ -69,7 +69,7 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
     >>> from sklearn import datasets
 
     >>> dataset = stream.iter_sklearn_dataset(
-    ...     dataset=datasets.load_boston(),
+    ...     dataset=datasets.load_diabetes(),
     ...     shuffle=True,
     ...     seed=42
     ... )
@@ -81,7 +81,7 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 11.004415
+    MAE: 84.51947
 
     """
 

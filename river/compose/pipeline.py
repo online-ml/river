@@ -1,4 +1,5 @@
 import collections
+import contextlib
 import functools
 import io
 import itertools
@@ -12,6 +13,156 @@ from .. import base, utils
 from . import func, union
 
 __all__ = ["Pipeline"]
+
+
+@contextlib.contextmanager
+def warm_up_mode():
+    """A context manager for training pipelines during a warm-up phase.
+
+    You don't have to worry about anything when you call `predict_one` and `learn_one` with a
+    pipeline during in a training loop. The methods at each step of the pipeline will be called in
+    the correct order.
+
+    However, during a warm-up phase, you might just be calling `learn_one` because you don't need
+    the out-of-sample predictions. In this case the unsupervised estimators in the pipeline won't
+    be updated, because they are usually updated when `predict_one` is called.
+
+    This context manager allows you to override that behavior and make it so that unsupervised
+    estimators are updated when `learn_one` is called.
+
+    Examples
+    --------
+
+    Let's first see what methods are called if we just call `learn_one`.
+
+    >>> import io
+    >>> import logging
+    >>> from river import anomaly
+    >>> from river import compose
+    >>> from river import datasets
+    >>> from river import preprocessing
+    >>> from river import utils
+
+    >>> model = compose.Pipeline(
+    ...     preprocessing.MinMaxScaler(),
+    ...     anomaly.HalfSpaceTrees()
+    ... )
+
+    >>> class_condition = lambda x: x.__class__.__name__ in ('MinMaxScaler', 'HalfSpaceTrees')
+
+    >>> logger = logging.getLogger()
+    >>> logger.setLevel(logging.DEBUG)
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition):
+    ...     for x, y in datasets.CreditCard().take(1):
+    ...         model = model.learn_one(x)
+
+    >>> print(logs.getvalue())
+    MinMaxScaler.transform_one
+    HalfSpaceTrees.learn_one
+
+    Now let's use the context manager and see what methods get called.
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition), utils.warm_up_mode():
+    ...     for x, y in datasets.CreditCard().take(1):
+    ...         model = model.learn_one(x)
+
+    >>> print(logs.getvalue())
+    MinMaxScaler.learn_one
+    MinMaxScaler.transform_one
+    HalfSpaceTrees.learn_one
+
+    We can see that the scaler got updated before transforming the data.
+
+    """
+    Pipeline._WARM_UP = True
+    try:
+        yield
+    finally:
+        Pipeline._WARM_UP = False
+
+
+@contextlib.contextmanager
+def pure_inference_mode():
+    """A context manager for making inferences with no side-effects.
+
+    Calling `predict_one` with a pipeline will update the unsupervised steps of the pipeline. This
+    is the expected behavior for online machine learning. However, in some cases you might just
+    want to produce predictions without necessarily updating anything.
+
+    This context manager allows you to override that behavior and make it so that unsupervised
+    estimators are not updated when `predict_one` is called.
+
+    Examples
+    --------
+
+    Let's first see what methods are called if we just call `predict_one`.
+
+    >>> import io
+    >>> import logging
+    >>> from river import compose
+    >>> from river import datasets
+    >>> from river import linear_model
+    >>> from river import preprocessing
+    >>> from river import utils
+
+    >>> model = compose.Pipeline(
+    ...     preprocessing.StandardScaler(),
+    ...     linear_model.LinearRegression()
+    ... )
+
+    >>> class_condition = lambda x: x.__class__.__name__ in ('StandardScaler', 'LinearRegression')
+
+    >>> logger = logging.getLogger()
+    >>> logger.setLevel(logging.DEBUG)
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition):
+    ...     for x, y in datasets.TrumpApproval().take(1):
+    ...         _ = model.predict_one(x)
+
+    >>> print(logs.getvalue())
+    StandardScaler.learn_one
+    StandardScaler.transform_one
+    LinearRegression.predict_one
+
+    Now let's use the context manager and see what methods get called.
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition), utils.pure_inference_mode():
+    ...     for x, y in datasets.TrumpApproval().take(1):
+    ...         _ = model.predict_one(x)
+
+    >>> print(logs.getvalue())
+    StandardScaler.transform_one
+    LinearRegression.predict_one
+
+    We can see that the scaler did not get updated before transforming the data.
+
+    """
+    Pipeline._STATELESS = True
+    try:
+        yield
+    finally:
+        Pipeline._STATELESS = False
 
 
 class Pipeline(base.Estimator):
@@ -170,6 +321,9 @@ class Pipeline(base.Estimator):
 
     """
 
+    _WARM_UP = False
+    _STATELESS = False
+
     def __init__(self, *steps):
         self.steps = collections.OrderedDict()
         for step in steps:
@@ -248,8 +402,12 @@ class Pipeline(base.Estimator):
         return any(step._supervised for step in self.steps.values())
 
     @property
+    def _last_step(self):
+        return list(self.steps.values())[-1]
+
+    @property
     def _multiclass(self):
-        return list(self.steps.values())[-1]._multiclass
+        return self._last_step._multiclass
 
     def _add_step(self, obj: typing.Any, at_start: bool):
         """Add a step to either end of the pipeline.
@@ -307,7 +465,7 @@ class Pipeline(base.Estimator):
 
     # Single instance methods
 
-    def learn_one(self, x: dict, y=None, learn_unsupervised=False, **params):
+    def learn_one(self, x: dict, y=None, **params):
         """Fit to a single instance.
 
         Parameters
@@ -316,45 +474,44 @@ class Pipeline(base.Estimator):
             A dictionary of features.
         y
             A target value.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
 
         steps = iter(self.steps.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
-        for t in itertools.islice(steps, len(self.steps) - 1):
+        for t in itertools.islice(steps, len(self) - 1):
+
+            if self._WARM_UP:
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.transformers.values():
+                        if not sub_t._supervised:
+                            sub_t.learn_one(x)
+                elif not t._supervised:
+                    t.learn_one(x)
+
             x_pre = x
-            x = t.transform_one(x=x)
+            x = t.transform_one(x)
 
             # The supervised transformers have to be updated.
             # Note that this is done after transforming in order to avoid target leakage.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
-                        sub_t.learn_one(x=x_pre, y=y)
-                    elif learn_unsupervised:
-                        sub_t.learn_one(x=x_pre)
+                        sub_t.learn_one(x_pre, y)
 
             elif t._supervised:
-                t.learn_one(x=x_pre, y=y)
+                t.learn_one(x_pre, y)
 
-            elif learn_unsupervised:
-                t.learn_one(x=x_pre)
-
-        # At this point steps contains a single step, which is therefore the final step of the
-        # pipeline
-        final = next(steps)
-        if final._supervised:
-            final.learn_one(x=x, y=y, **params)
-        elif learn_unsupervised:
-            final.learn_one(x=x, **params)
+        last_step = next(steps)
+        if last_step._supervised:
+            last_step.learn_one(x=x, y=y, **params)
+        else:
+            last_step.learn_one(x, **params)
 
         return self
 
-    def _transform_one(self, x: dict, learn_unsupervised=True):
+    def _transform_one(self, x: dict):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -363,27 +520,22 @@ class Pipeline(base.Estimator):
 
         steps = iter(self.steps.values())
 
-        for t in itertools.islice(steps, len(self.steps) - 1):
+        for t in itertools.islice(steps, len(self) - 1):
 
-            # The unsupervised transformers are updated during transform. We do this because
-            # typically transform_one is called before learn_one, and therefore we might as well use
-            # the available information as soon as possible. Note that way of proceeding is very
-            # specific to online machine learning.
-            if isinstance(t, union.TransformerUnion):
-                for sub_t in t.transformers.values():
-                    if not sub_t._supervised and learn_unsupervised:
-                        sub_t.learn_one(x=x)
+            if not self._STATELESS:
 
-            elif not t._supervised and learn_unsupervised:
-                t.learn_one(x=x)
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.transformers.values():
+                        if not sub_t._supervised:
+                            sub_t.learn_one(x)
 
-            x = t.transform_one(x=x)
+                elif not t._supervised:
+                    t.learn_one(x)
 
-        final_step = next(steps)
-        if not final_step._supervised and learn_unsupervised:
-            final_step.learn_one(x)
+            x = t.transform_one(x)
 
-        return x, final_step
+        last_step = next(steps)
+        return x, last_step
 
     def transform_one(self, x: dict):
         """Apply each transformer in the pipeline to some features.
@@ -393,55 +545,48 @@ class Pipeline(base.Estimator):
         that precede the final step are assumed to all be transformers.
 
         """
-        x, final_step = self._transform_one(x=x)
-        if isinstance(final_step, base.Transformer):
-            return final_step.transform_one(x=x)
+        x, last_step = self._transform_one(x)
+        if isinstance(last_step, base.Transformer):
+            if not last_step._supervised:
+                last_step.learn_one(x)
+            return last_step.transform_one(x)
         return x
 
-    def predict_one(self, x: dict, learn_unsupervised=True):
+    def predict_one(self, x: dict):
         """Call `transform_one` on the first steps and `predict_one` on the last step.
 
         Parameters
         ----------
         x
             A dictionary of features.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
-        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
-        return final_step.predict_one(x=x)
+        x, last_step = self._transform_one(x)
+        return last_step.predict_one(x)
 
-    def predict_proba_one(self, x: dict, learn_unsupervised=True):
+    def predict_proba_one(self, x: dict):
         """Call `transform_one` on the first steps and `predict_proba_one` on the last step.
 
         Parameters
         ----------
         x
             A dictionary of features.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
-        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
-        return final_step.predict_proba_one(x=x)
+        x, last_step = self._transform_one(x)
+        return last_step.predict_proba_one(x)
 
-    def score_one(self, x: dict, learn_unsupervised=True):
+    def score_one(self, x: dict):
         """Call `transform_one` on the first steps and `score_one` on the last step.
 
         Parameters
         ----------
         x
             A dictionary of features.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
-        x, final_step = self._transform_one(x=x, learn_unsupervised=learn_unsupervised)
-        return final_step.score_one(x=x)
+        x, last_step = self._transform_one(x)
+        return last_step.score_one(x)
 
     def forecast(self, horizon: int, xs: typing.List[dict] = None):
         """Return a forecast.
@@ -459,8 +604,7 @@ class Pipeline(base.Estimator):
         """
         if xs is not None:
             xs = [self._transform_one(x)[0] for x in xs]
-        final_step = list(self.steps.values())[-1]
-        return final_step.forecast(horizon=horizon, xs=xs)
+        return self._last_step.forecast(horizon=horizon, xs=xs)
 
     def debug_one(self, x: dict, show_types=True, n_decimals=5) -> str:
         """Displays the state of a set of features as it goes through the pipeline.
@@ -512,7 +656,7 @@ class Pipeline(base.Estimator):
 
         # Print the state of x at each step
         steps = iter(self.steps.values())
-        for i, t in enumerate(itertools.islice(steps, len(self.steps) - 1)):
+        for i, t in enumerate(itertools.islice(steps, len(self) - 1)):
 
             if isinstance(t, union.TransformerUnion):
                 print_title(f"{i+1}. Transformer union")
@@ -553,9 +697,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(
-        self, X: pd.DataFrame, y: pd.Series = None, learn_unsupervised=False, **params
-    ):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
         """Fit to a mini-batch.
 
         Parameters
@@ -564,16 +706,22 @@ class Pipeline(base.Estimator):
             A dataframe of features. Columns can be added and/or removed between successive calls.
         y
             A series of target values.
-        learn_unsupervised
-            Whether the unsupervised parts of the pipeline should be updated or not. See the
-            docstring of this class for more information.
 
         """
 
         steps = iter(self.steps.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
-        for t in itertools.islice(steps, len(self.steps) - 1):
+        for t in itertools.islice(steps, len(self) - 1):
+
+            if self._WARM_UP:
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.transformers.values():
+                        if not sub_t._supervised:
+                            sub_t.learn_many(X)
+                elif not t._supervised:
+                    t.learn_many(X)
+
             X_pre = X
             X = t.transform_many(X=X)
 
@@ -583,26 +731,19 @@ class Pipeline(base.Estimator):
                 for sub_t in t.transformers.values():
                     if sub_t._supervised:
                         sub_t.learn_many(X=X_pre, y=y)
-                    elif learn_unsupervised:
-                        sub_t.learn_many(X=X_pre)
 
             elif t._supervised:
                 t.learn_many(X=X_pre, y=y)
 
-            elif learn_unsupervised:
-                t.learn_many(X=X_pre)
-
-        # At this point steps contains a single step, which is therefore the final step of the
-        # pipeline
-        final = next(steps)
-        if final._supervised:
-            final.learn_many(X=X, y=y, **params)
-        elif learn_unsupervised:
-            final.learn_many(X=X, **params)
+        last_step = next(steps)
+        if last_step._supervised:
+            last_step.learn_many(X=X, y=y, **params)
+        else:
+            last_step.learn_many(X=X, **params)
 
         return self
 
-    def _transform_many(self, X: pd.DataFrame, learn_unsupervised=True):
+    def _transform_many(self, X: pd.DataFrame):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -611,23 +752,20 @@ class Pipeline(base.Estimator):
 
         steps = iter(self.steps.values())
 
-        for t in itertools.islice(steps, len(self.steps) - 1):
+        for t in itertools.islice(steps, len(self) - 1):
 
-            # The unsupervised transformers are updated during transform. We do this because
-            # typically transform_one is called before learn_one, and therefore we might as well use
-            # the available information as soon as possible. Note that way of proceeding is very
-            # specific to online machine learning.
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
-                    if not sub_t._supervised and learn_unsupervised:
+                    if not sub_t._supervised:
                         sub_t.learn_many(X=X)
 
-            elif not t._supervised and learn_unsupervised:
+            elif not t._supervised:
                 t.learn_many(X=X)
 
             X = t.transform_many(X=X)
 
-        return X, next(steps)
+        last_step = next(steps)
+        return X, last_step
 
     def transform_many(self, X: pd.DataFrame):
         """Apply each transformer in the pipeline to some features.
@@ -637,15 +775,17 @@ class Pipeline(base.Estimator):
         that precede the final step are assumed to all be transformers.
 
         """
-        X, final_step = self._transform_many(X=X)
-        if isinstance(final_step, base.Transformer):
-            return final_step.transform_many(X=X)
+        X, last_step = self._transform_many(X=X)
+        if isinstance(last_step, base.Transformer):
+            if not last_step._supervised:
+                last_step.learn_many(X)
+            return last_step.transform_many(X)
         return X
 
-    def predict_many(self, X: pd.DataFrame, learn_unsupervised=True):
-        X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
-        return final_step.predict_many(X=X)
+    def predict_many(self, X: pd.DataFrame):
+        X, last_step = self._transform_many(X=X)
+        return last_step.predict_many(X=X)
 
-    def predict_proba_many(self, X: pd.DataFrame, learn_unsupervised=True):
-        X, final_step = self._transform_many(X=X, learn_unsupervised=learn_unsupervised)
-        return final_step.predict_proba_many(X=X)
+    def predict_proba_many(self, X: pd.DataFrame):
+        X, last_step = self._transform_many(X=X)
+        return last_step.predict_proba_many(X=X)

@@ -26,26 +26,23 @@ def iter_sklearn_dataset(
     >>> from sklearn import datasets
     >>> from river import stream
 
-    >>> dataset = datasets.load_boston()
+    >>> dataset = datasets.load_diabetes()
 
     >>> for xi, yi in stream.iter_sklearn_dataset(dataset):
     ...     pprint.pprint(xi)
     ...     print(yi)
     ...     break
-    {'AGE': 65.2,
-        'B': 396.9,
-        'CHAS': 0.0,
-        'CRIM': 0.00632,
-        'DIS': 4.09,
-        'INDUS': 2.31,
-        'LSTAT': 4.98,
-        'NOX': 0.538,
-        'PTRATIO': 15.3,
-        'RAD': 1.0,
-        'RM': 6.575,
-        'TAX': 296.0,
-        'ZN': 18.0}
-    24.0
+    {'age': 0.0380759064334241,
+     'bmi': 0.0616962065186885,
+     'bp': 0.0218723549949558,
+     's1': -0.0442234984244464,
+     's2': -0.0348207628376986,
+     's3': -0.0434008456520269,
+     's4': -0.00259226199818282,
+     's5': 0.0199084208763183,
+     's6': -0.0176461251598052,
+     'sex': 0.0506801187398187}
+    151.0
 
     """
     kwargs["X"] = dataset.data

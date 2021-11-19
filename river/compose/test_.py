@@ -1,7 +1,6 @@
 import pandas as pd
-import pytest
 
-from river import anomaly, compose, linear_model, preprocessing
+from river import compose, linear_model, preprocessing, utils
 
 
 def test_pipeline_funcs():
@@ -54,72 +53,7 @@ def test_union_funcs():
         assert str(pipeline) == "a + b"
 
 
-@pytest.mark.parametrize(
-    "func", [compose.Pipeline.predict_one, compose.Pipeline.predict_proba_one]
-)
-def test_learn_unsupervised_predict_one(func):
-    pipeline = compose.Pipeline(
-        ("scale", preprocessing.StandardScaler()),
-        ("log_reg", linear_model.LogisticRegression()),
-    )
-
-    dataset = [dict(a=x, b=x) for x in range(100)]
-
-    for x in dataset:
-        counts_pre = dict(pipeline.steps["scale"].counts)
-        func(pipeline, x, learn_unsupervised=True)
-        counts_post = dict(pipeline.steps["scale"].counts)
-        func(pipeline, x, learn_unsupervised=False)
-        counts_no_learn = dict(pipeline.steps["scale"].counts)
-
-        assert counts_pre != counts_post
-        assert counts_post == counts_no_learn
-
-
-@pytest.mark.parametrize(
-    "func", [compose.Pipeline.predict_many, compose.Pipeline.predict_proba_many]
-)
-def test_learn_unsupervised_predict_many(func):
-    pipeline = compose.Pipeline(
-        ("scale", preprocessing.StandardScaler()),
-        ("log_reg", linear_model.LogisticRegression()),
-    )
-
-    dataset = [(dict(a=x, b=x), x) for x in range(100)]
-
-    for i in range(0, len(dataset), 5):
-        X = pd.DataFrame([x for x, y in dataset][i : i + 5])
-
-        counts_pre = dict(pipeline.steps["scale"].counts)
-        func(pipeline, X, learn_unsupervised=True)
-        counts_post = dict(pipeline.steps["scale"].counts)
-        func(pipeline, X, learn_unsupervised=False)
-        counts_no_learn = dict(pipeline.steps["scale"].counts)
-
-        assert counts_pre != counts_post
-        assert counts_post == counts_no_learn
-
-
-def test_learn_unsupervised_score_one():
-    pipeline = compose.Pipeline(
-        ("scale", preprocessing.StandardScaler()),
-        ("anomaly", anomaly.HalfSpaceTrees()),
-    )
-
-    dataset = [(dict(a=x, b=x), x) for x in range(100)]
-
-    for x, y in dataset:
-        counts_pre = dict(pipeline.steps["scale"].counts)
-        pipeline.score_one(x, learn_unsupervised=True)
-        counts_post = dict(pipeline.steps["scale"].counts)
-        pipeline.score_one(x, learn_unsupervised=False)
-        counts_no_learn = dict(pipeline.steps["scale"].counts)
-
-        assert counts_pre != counts_post
-        assert counts_post == counts_no_learn
-
-
-def test_learn_unsupervised_learn_one():
+def test_learn_one_warm_up_mode():
     pipeline = compose.Pipeline(
         ("scale", preprocessing.StandardScaler()),
         ("log_reg", linear_model.LogisticRegression()),
@@ -128,17 +62,18 @@ def test_learn_unsupervised_learn_one():
     dataset = [(dict(a=x, b=x), bool(x % 2)) for x in range(100)]
 
     for x, y in dataset:
-        counts_pre = dict(pipeline.steps["scale"].counts)
-        pipeline.learn_one(x, y, learn_unsupervised=True)
-        counts_post = dict(pipeline.steps["scale"].counts)
-        pipeline.learn_one(x, y, learn_unsupervised=False)
-        counts_no_learn = dict(pipeline.steps["scale"].counts)
+        counts_pre = dict(pipeline["scale"].counts)
+        with utils.warm_up_mode():
+            pipeline.learn_one(x, y)
+        counts_post = dict(pipeline["scale"].counts)
+        pipeline.learn_one(x, y)
+        counts_no_learn = dict(pipeline["scale"].counts)
 
         assert counts_pre != counts_post
         assert counts_post == counts_no_learn
 
 
-def test_learn_unsupervised_learn_many():
+def test_learn_many_warm_up_mode():
     pipeline = compose.Pipeline(
         ("scale", preprocessing.StandardScaler()),
         ("log_reg", linear_model.LogisticRegression()),
@@ -150,11 +85,12 @@ def test_learn_unsupervised_learn_many():
         X = pd.DataFrame([x for x, _ in dataset][i : i + 5])
         y = pd.Series([bool(y % 2) for _, y in dataset][i : i + 5])
 
-        counts_pre = dict(pipeline.steps["scale"].counts)
-        pipeline.learn_many(X, y, learn_unsupervised=True)
-        counts_post = dict(pipeline.steps["scale"].counts)
-        pipeline.learn_many(X, y, learn_unsupervised=False)
-        counts_no_learn = dict(pipeline.steps["scale"].counts)
+        counts_pre = dict(pipeline["scale"].counts)
+        with utils.warm_up_mode():
+            pipeline.learn_many(X, y)
+        counts_post = dict(pipeline["scale"].counts)
+        pipeline.learn_many(X, y)
+        counts_no_learn = dict(pipeline["scale"].counts)
 
         assert counts_pre != counts_post
         assert counts_post == counts_no_learn
