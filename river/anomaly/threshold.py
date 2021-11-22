@@ -10,6 +10,10 @@ class Thresholder(AnomalyDetector, Wrapper):
     def __init__(self, anomaly_detector: AnomalyDetector):
         self.anomaly_detector = anomaly_detector
 
+    @property
+    def _wrapped_model(self):
+        return self.anomaly_detector
+
     def learn_one(self, x):
         self.anomaly_detector.learn_one(x)
         return self
