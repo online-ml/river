@@ -253,7 +253,6 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, ModelSelectionRegressor):
     @classmethod
     def _unit_test_params(cls):
         for params in super()._unit_test_params():
-            print(params)
             yield {**params, "budget": 500}
 
 
