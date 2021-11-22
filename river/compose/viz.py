@@ -127,6 +127,10 @@ CSS = """
     margin-top: 0;
 }
 
+.union > .pipeline {
+    margin-top: 0;
+}
+
 /* Spacing within a union of estimators */
 
 .union > .component + .component {
