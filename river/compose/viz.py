@@ -10,7 +10,7 @@ def to_html(obj) -> ET:
         return pipeline_to_html(obj)
     if isinstance(obj, compose.TransformerUnion):
         return union_to_html(obj)
-    if isinstance(obj, base.WrapperMixin):
+    if isinstance(obj, base.Wrapper):
         return wrapper_to_html(obj)
     return estimator_to_html(obj)
 

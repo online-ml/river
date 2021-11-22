@@ -1,4 +1,4 @@
-from river.base import WrapperMixin
+from river.base import Wrapper
 from river.stats import Quantile
 
 from .base import AnomalyDetector
@@ -6,7 +6,7 @@ from .base import AnomalyDetector
 __all__ = ["ConstantThresholder", "QuantileThresholder"]
 
 
-class Thresholder(AnomalyDetector, WrapperMixin):
+class Thresholder(AnomalyDetector, Wrapper):
     def __init__(self, anomaly_detector: AnomalyDetector):
         self.anomaly_detector = anomaly_detector
 
