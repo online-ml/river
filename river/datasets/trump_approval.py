@@ -19,7 +19,7 @@ class TrumpApproval(base.FileDataset):
 
     def __init__(self):
         super().__init__(
-            n_samples=1001,
+            n_samples=1_001,
             n_features=6,
             task=base.REG,
             filename="trump_approval.csv.gz",

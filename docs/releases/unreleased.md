@@ -31,6 +31,10 @@
 - Removed `learn_unsupervised` parameter from pipeline methods.
 - Implemented `compose.TransformerProduct`.
 
+## datasets
+
+- Added `datasets.Keystroke`.
+
 ## ensemble
 
 - Bug fixes in `ensemble.SRPClassifier` and `ensemble.SRPRegressor`.

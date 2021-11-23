@@ -19,7 +19,7 @@ class SMSSpam(base.RemoteDataset):
             n_features=1,
             task=base.BINARY_CLF,
             url="https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip",
-            size=477907,
+            size=477_907,
             filename="SMSSpamCollection",
         )
 

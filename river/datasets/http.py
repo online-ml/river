@@ -21,7 +21,7 @@ class HTTP(base.RemoteDataset):
             n_features=3,
             task=base.BINARY_CLF,
             url="https://maxhalford.github.io/files/datasets/kdd99_http.zip",
-            size=32400738,
+            size=32_400_738,
             filename="kdd99_http.csv",
         )
 
