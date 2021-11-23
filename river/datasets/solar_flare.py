@@ -14,7 +14,7 @@ class SolarFlare(base.FileDataset):
 
     def __init__(self):
         super().__init__(
-            n_samples=1066,
+            n_samples=1_066,
             n_features=10,
             n_outputs=3,
             task=base.MO_REG,

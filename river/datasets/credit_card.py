@@ -39,7 +39,7 @@ class CreditCard(base.RemoteDataset):
             n_features=30,
             task=base.BINARY_CLF,
             url="https://maxhalford.github.io/files/datasets/creditcardfraud.zip",
-            size=150828752,
+            size=150_828_752,
             filename="creditcard.csv",
         )
 
