@@ -20,7 +20,7 @@ class Taxis(base.RemoteDataset):
             n_features=8,
             task=base.REG,
             url="https://maxhalford.github.io/files/datasets/nyc_taxis.zip",
-            size=195271696,
+            size=195_271_696,
             filename="train.csv",
         )
 

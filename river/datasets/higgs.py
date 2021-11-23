@@ -23,7 +23,7 @@ class Higgs(base.RemoteDataset):
             n_features=28,
             task=base.BINARY_CLF,
             url="https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz",
-            size=2816407858,
+            size=2_816_407_858,
             unpack=False,
         )
 

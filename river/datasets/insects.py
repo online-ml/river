@@ -36,17 +36,17 @@ class Insects(base.RemoteDataset):
     """
 
     variant_sizes = {
-        "abrupt_balanced": (52848, 16419025),
-        "abrupt_imbalanced": (355275, 110043637),
-        "gradual_balanced": (24150, 7503750),
-        "gradual_imbalanced": (143323, 44371501),
-        "incremental-abrupt_balanced": (79986, 24849436),
-        "incremental-abrupt_imbalanced": (452044, 140004225),
-        "incremental-reoccurring_balanced": (79986, 24849092),
-        "incremental-reoccurring_imbalanced": (452044, 140004230),
-        "incremental_balanced": (57018, 17713574),
-        "incremental_imbalanced": (452044, 140004218),
-        "out-of-control": (905145, 277777854),
+        "abrupt_balanced": (52_848, 16_419_025),
+        "abrupt_imbalanced": (355_275, 110_043_637),
+        "gradual_balanced": (24_150, 7_503_750),
+        "gradual_imbalanced": (143_323, 44_371_501),
+        "incremental-abrupt_balanced": (79_986, 24_849_436),
+        "incremental-abrupt_imbalanced": (452_044, 140_004_225),
+        "incremental-reoccurring_balanced": (79_986, 24_849_092),
+        "incremental-reoccurring_imbalanced": (452_044, 140_004_230),
+        "incremental_balanced": (57_018, 17_713_574),
+        "incremental_imbalanced": (452_044, 140_004_218),
+        "out-of-control": (905_145, 277_777_854),
     }
 
     variants = list(variant_sizes.keys())

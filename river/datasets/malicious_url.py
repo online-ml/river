@@ -22,7 +22,7 @@ class MaliciousURL(base.RemoteDataset):
             task=base.BINARY_CLF,
             url="http://www.sysnet.ucsd.edu/projects/url/url_svmlight.tar.gz",
             filename="url_svmlight",
-            size=2210273352,
+            size=2_210_273_352,
             sparse=True,
         )
 
