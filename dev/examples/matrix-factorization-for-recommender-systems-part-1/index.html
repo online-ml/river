@@ -8508,7 +8508,7 @@ y = 4.0
     <span class="n">_</span> <span class="o">=</span> <span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">print_every</span><span class="o">=</span><span class="mi">25_000</span><span class="p">,</span> <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="naive-prediction">Naive prediction<a class="headerlink" href="#naive-prediction" title="Permanent link">&para;</a></h2>
-<p>It's good practice in machine learning to start with a naive baseline and then iterate from simple things to complex ones observing progress incrementally. Let's start by predicing the target running mean as a first shot:</p>
+<p>It's good practice in machine learning to start with a naive baseline and then iterate from simple things to complex ones observing progress incrementally. Let's start by predicting the target running mean as a first shot:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
 
 <span class="n">mean</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">()</span>
