@@ -13,7 +13,7 @@ def iter_arff(
     Parameters
     ----------
     filepath_or_buffer
-        Either a string indicating the location of a CSV file, or a buffer object that has a
+        Either a string indicating the location of a file, or a buffer object that has a
         `read` method.
     target
         Name of the target field.
