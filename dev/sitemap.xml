@@ -2,2277 +2,2277 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://riverml.xyz/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/overview/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/anomaly/AnomalyDetector/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/anomaly/ConstantThresholder/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/anomaly/HalfSpaceTrees/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/anomaly/OneClassSVM/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/anomaly/QuantileThresholder/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/Base/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/Classifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/Clusterer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/DriftDetector/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/Ensemble/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/Estimator/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/MiniBatchClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/MiniBatchRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/MultiOutputMixin/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/Regressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/SupervisedTransformer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/Transformer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/WrapperEnsemble/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/base/WrapperMixin/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/cluster/CluStream/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/cluster/DBSTREAM/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/cluster/DenStream/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/cluster/KMeans/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/cluster/STREAMKMeans/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compat/River2SKLClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compat/River2SKLClusterer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compat/River2SKLRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compat/River2SKLTransformer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compat/SKL2RiverClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compat/SKL2RiverRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compat/convert-river-to-sklearn/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compat/convert-sklearn-to-river/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/Discard/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/FuncTransformer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/Grouper/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/Pipeline/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/Renamer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/Select/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/SelectType/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/TargetTransformRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/TransformerProduct/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/compose/TransformerUnion/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/AirlinePassengers/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Bananas/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Bikes/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/ChickWeights/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/CreditCard/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Elec2/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/HTTP/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Higgs/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/ImageSegments/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Insects/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Keystroke/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/MaliciousURL/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/MovieLens100K/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Music/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Phishing/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Restaurants/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/SMSSpam/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/SMTP/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/SolarFlare/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/TREC07/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/Taxis/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/datasets/TrumpApproval/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/drift/ADWIN/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/drift/DDM/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/drift/EDDM/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/drift/HDDM-A/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/drift/HDDM-W/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/drift/KSWIN/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/drift/PageHinkley/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/dummy/NoChangeClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/dummy/PriorClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/dummy/StatisticRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/ADWINBaggingClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/AdaBoostClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/AdaptiveRandomForestClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/AdaptiveRandomForestRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/BaggingClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/BaggingRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/EWARegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/LeveragingBaggingClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/SRPClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/SRPRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/StackingClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/ensemble/VotingClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/evaluate/Track/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/evaluate/load-binary-clf-tracks/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/evaluate/progressive-val-score/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/facto/FFMClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/facto/FFMRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/facto/FMClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/facto/FMRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/facto/FwFMClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/facto/FwFMRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/facto/HOFMClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/facto/HOFMRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-extraction/Agg/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-extraction/BagOfWords/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-extraction/Lagger/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-extraction/PolynomialExtender/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-extraction/RBFSampler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-extraction/TFIDF/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-extraction/TargetAgg/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-extraction/TargetLagger/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-selection/PoissonInclusion/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-selection/SelectKBest/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/feature-selection/VarianceThreshold/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/imblearn/HardSamplingClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/imblearn/HardSamplingRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/imblearn/RandomOverSampler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/imblearn/RandomSampler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/imblearn/RandomUnderSampler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/linear-model/ALMAClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/linear-model/LinearRegression/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/linear-model/LogisticRegression/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/linear-model/PAClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/linear-model/PARegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/linear-model/Perceptron/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/linear-model/SoftmaxRegression/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Accuracy/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/AdjustedMutualInfo/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/AdjustedRand/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/BalancedAccuracy/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/BinaryMetric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ClassificationMetric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ClassificationReport/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/CohenKappa/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Completeness/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ConfusionMatrix/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/CrossEntropy/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ExactMatch/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ExampleF1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ExampleFBeta/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ExamplePrecision/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ExampleRecall/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/F1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/FBeta/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/FowlkesMallows/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/GeometricMean/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Hamming/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/HammingLoss/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Homogeneity/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Jaccard/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/KappaM/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/KappaT/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/LogLoss/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MAE/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MCC/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MSE/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MacroF1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MacroFBeta/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MacroPrecision/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MacroRecall/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MatthewsCorrCoef/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Metric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Metrics/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MicroF1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MicroFBeta/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MicroPrecision/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MicroRecall/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MultiClassMetric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MultiFBeta/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MultiLabelConfusionMatrix/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MultiOutputClassificationMetric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MultiOutputRegressionMetric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/MutualInfo/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/NormalizedMutualInfo/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/PairConfusionMatrix/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Precision/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/PrevalenceThreshold/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Purity/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Q0/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Q2/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/R2/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/RMSE/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/RMSLE/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/ROCAUC/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Rand/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Recall/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/RegressionMetric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/RegressionMultiOutput/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/Rolling/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/SMAPE/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/SorensenDice/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/TimeRolling/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/VBeta/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/VariationInfo/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/WeightedF1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/WeightedFBeta/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/WeightedPrecision/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/WeightedRecall/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/WrapperMetric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/BIC/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/BallHall/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/CalinskiHarabasz/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/Cohesion/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/DaviesBouldin/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/GD43/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/GD53/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/Hartigan/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/IIndex/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/InternalMetric/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/MSSTD/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/PS/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/R2/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/RMSSTD/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/SD/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/SSB/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/SSW/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/Separation/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/Silhouette/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/WB/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/XieBeni/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/cluster/Xu/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/multiclass/OneVsOneClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/multiclass/OneVsRestClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/multiclass/OutputCodeClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/multioutput/ClassifierChain/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/multioutput/MonteCarloClassifierChain/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/multioutput/ProbabilisticClassifierChain/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/multioutput/RegressorChain/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/naive-bayes/BernoulliNB/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/naive-bayes/ComplementNB/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/naive-bayes/GaussianNB/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/naive-bayes/MultinomialNB/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/neighbors/KNNADWINClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/neighbors/KNNClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/neighbors/KNNRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/neighbors/SAMKNNClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/neural-net/MLPRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/neural-net/activations/Identity/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/neural-net/activations/ReLU/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/neural-net/activations/Sigmoid/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/AMSGrad/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/AdaBound/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/AdaDelta/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/AdaGrad/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/AdaMax/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/Adam/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/Averager/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/FTRLProximal/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/Momentum/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/Nadam/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/NesterovMomentum/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/Optimizer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/RMSProp/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/SGD/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/initializers/Constant/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/initializers/Normal/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/initializers/Zeros/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/Absolute/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/BinaryFocalLoss/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/BinaryLoss/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/Cauchy/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/CrossEntropy/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/EpsilonInsensitiveHinge/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/Hinge/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/Huber/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/Log/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/MultiClassLoss/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/Poisson/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/Quantile/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/RegressionLoss/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/losses/Squared/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/schedulers/Constant/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/schedulers/InverseScaling/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/schedulers/Optimal/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/optim/schedulers/Scheduler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/AdaptiveStandardScaler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/Binarizer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/FeatureHasher/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/LDA/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/MaxAbsScaler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/MinMaxScaler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/Normalizer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/OneHotEncoder/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/PreviousImputer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/RobustScaler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/StandardScaler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/StatImputer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/preprocessing/TargetStandardScaler/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/proba/Gaussian/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/proba/Multinomial/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/reco/Baseline/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/reco/BiasedMF/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/reco/FunkMF/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/reco/RandomNormal/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/rules/AMRules/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/selection/EpsilonGreedyRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/selection/GreedySelectionRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/selection/SuccessiveHalvingClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/selection/SuccessiveHalvingRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/AbsMax/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/AutoCorr/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/BayesianMean/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Bivariate/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Count/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Cov/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/EWMean/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/EWVar/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Entropy/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/IQR/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Kurtosis/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Link/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/MAD/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Max/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Mean/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Min/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Mode/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/NUnique/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/PeakToPeak/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/PearsonCorr/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Quantile/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingAbsMax/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingCov/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingIQR/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingMax/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingMean/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingMin/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingMode/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingPeakToPeak/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingPearsonCorr/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingQuantile/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingSEM/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingSum/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/RollingVar/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/SEM/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Shift/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Skew/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Sum/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Univariate/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stats/Var/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/Cache/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/iter-arff/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/iter-array/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/iter-csv/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/iter-libsvm/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/iter-pandas/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/iter-sklearn-dataset/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/iter-sql/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/shuffle/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/stream/simulate-qa/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Agrawal/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/AnomalySine/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/ConceptDriftStream/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Friedman/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/FriedmanDrift/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Hyperplane/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/LED/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/LEDDrift/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Logical/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Mixed/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Mv/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Planes2D/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/RandomRBF/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/RandomRBFDrift/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/RandomTree/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/SEA/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/STAGGER/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Sine/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/synth/Waveform/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/time-series/Forecaster/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/time-series/HoltWinters/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/time-series/SNARIMAX/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/time-series/evaluate/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/ExtremelyFastDecisionTreeClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/HoeffdingAdaptiveTreeClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/HoeffdingAdaptiveTreeRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/HoeffdingTreeClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/HoeffdingTreeRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/LabelCombinationHoeffdingTreeClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/SGTClassifier/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/SGTRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/iSOUPTreeRegressor/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/DynamicQuantizer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/EBSTSplitter/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/ExhaustiveSplitter/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/GaussianSplitter/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/HistogramSplitter/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/QOSplitter/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/Quantizer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/Splitter/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/StaticQuantizer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/tree/splitter/TEBSTSplitter/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/Histogram/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/SDFT/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/Skyline/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/SortedWindow/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/VectorDict/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/Window/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/check-estimator/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/dict2numpy/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/expand-param-grid/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/log-method-calls/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/numpy2dict/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/poisson/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/pure-inference-mode/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/warm-up-mode/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/argmax/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/chain-dot/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/clamp/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/dot/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/dotvecmat/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/matmul2d/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/minkowski-distance/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/norm/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/outer/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/prod/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/sherman-morrison/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/sigmoid/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/sign/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/math/softmax/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/pretty/humanize-bytes/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/api/utils/pretty/print-table/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/batch-to-online/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/bike-sharing-forecasting/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/building-a-simple-nowcasting-model/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/concept-drift-detection/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/debugging-a-pipeline/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/imbalanced-learning/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/matrix-factorization-for-recommender-systems-part-1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/matrix-factorization-for-recommender-systems-part-2/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/matrix-factorization-for-recommender-systems-part-3/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/quantile-regression-uncertainty/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/examples/the-art-of-using-pipelines/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/faq/faq/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/getting-started/getting-started/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/getting-started/installation/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.0.2/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.0.3/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.1.0/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.2.0/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.3.0/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.4.1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.4.3/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.4.4/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.5.0/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.5.1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.6.0/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.6.1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.7.0/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.7.1/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.7.2/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.8.0/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/releases/unreleased/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/user-guide/feature-extraction/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/user-guide/hyperparameter-tuning/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/user-guide/mini-batching/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/user-guide/model-evaluation/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/user-guide/on-hoeffding-trees/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/user-guide/pipelines/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/user-guide/reading-data/</loc>
-         <lastmod>2021-11-23</lastmod>
+         <lastmod>2021-11-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
