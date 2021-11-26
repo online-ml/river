@@ -181,6 +181,15 @@ class FMRegressor(FM, base.Regressor):
     >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
     5.236504
 
+    >>> report = model.debug_one({'Bob': 1, 'Harry Potter': 1})
+
+    >>> print(report)
+    Name                 Value      Weight     Contribution
+             Intercept    1.00000    5.23426        5.23426
+    Bob - Harry Potter    1.00000    0.00224        0.00224
+          Harry Potter    1.00000    0.00000        0.00000
+                   Bob    1.00000    0.00000        0.00000
+
     References
     ----------
     [^1]: [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
