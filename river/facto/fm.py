@@ -181,6 +181,15 @@ class FMRegressor(FM, base.Regressor):
     >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
     5.236504
 
+    >>> report = model.debug_one({'Bob': 1, 'Harry Potter': 1})
+
+    >>> print(report)
+    Name                 Value      Weight     Contribution
+             Intercept    1.00000    5.23426        5.23426
+    Bob - Harry Potter    1.00000    0.00224        0.00224
+          Harry Potter    1.00000    0.00000        0.00000
+                   Bob    1.00000    0.00000        0.00000
+
     References
     ----------
     [^1]: [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
@@ -228,6 +237,73 @@ class FMRegressor(FM, base.Regressor):
     def predict_one(self, x):
         x = self._ohe_cat_features(x)
         return self._raw_dot(x)
+
+    def debug_one(self, x: dict, decimals: int = 5) -> str:
+        """Debugs the output of the fm regressor.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        decimals
+            The number of decimals use for printing each numeric value.
+        Returns
+        -------
+        A table which explains the output.
+        """
+
+        x = self._ohe_cat_features(x)
+
+        def fmt_float(x):
+            return "{: ,.{prec}f}".format(x, prec=decimals)
+
+        names = (
+            [
+                f"{j1} - {j2}" for j1, j2 in itertools.combinations(x.keys(), 2)
+            ]  # latents
+            + list(map(str, x.keys()))  # weights
+            + ["Intercept"]  # intercept
+        )
+
+        values = list(
+            map(
+                fmt_float,
+                [
+                    x[j1] * x[j2] for j1, j2 in itertools.combinations(x.keys(), 2)
+                ]  # latents
+                + list(x.values())  # weights
+                + [1],  # intercept
+            )
+        )
+
+        weights = list(
+            map(
+                fmt_float,
+                [
+                    np.dot(self.latents[j1], self.latents[j2])
+                    for j1, j2 in itertools.combinations(x.keys(), 2)
+                ]  # latents
+                + [self.weights.get(i, 0) for i in x]  # weights
+                + [self.intercept],  # intercept
+            )
+        )
+        contributions = (
+            [
+                x[j1] * x[j2] * np.dot(self.latents[j1], self.latents[j2])
+                for j1, j2 in itertools.combinations(x.keys(), 2)
+            ]  # latents
+            + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights
+            + [self.intercept]  # intercept
+        )
+        order = reversed(np.argsort(contributions))
+        contributions = list(map(fmt_float, contributions))
+
+        table = utils.pretty.print_table(
+            headers=["Name", "Value", "Weight", "Contribution"],
+            columns=[names, values, weights, contributions],
+            order=order,
+        )
+
+        return table
 
 
 class FMClassifier(FM, base.Classifier):
