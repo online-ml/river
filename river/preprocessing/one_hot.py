@@ -1,7 +1,6 @@
 import collections
 
 from river import base
-from collections.abc import Iterable
 
 __all__ = ["OneHotEncoder"]
 
@@ -9,8 +8,8 @@ __all__ = ["OneHotEncoder"]
 class OneHotEncoder(base.Transformer):
     """One-hot encoding.
 
-    This transformer will encode every feature it is provided it with.
-    If an iterable is provded, this transformer will encode every entry in the iterable.
+    This transformer will encode every feature it is provided with.
+    If a list or set is provded, this transformer will encode every entry in the list/set.
     You can apply it to a subset of features by composing it
      with `compose.Select` or `compose.SelectType`.
 
@@ -118,7 +117,7 @@ class OneHotEncoder(base.Transformer):
 
     def learn_one(self, x):
         for i, xi in x.items():
-            if isinstance(xi, (list, set, tuple)):
+            if isinstance(xi, (list, set)):
                 for xj in xi:
                     self.values[i].add(xj)
             else:
@@ -135,7 +134,7 @@ class OneHotEncoder(base.Transformer):
 
         # Add 1s
         for i, xi in x.items():
-            if isinstance(xi, (list, set, tuple)):
+            if isinstance(xi, (list, set)):
                 for xj in xi:
                     oh[f"{i}_{xj}"] = 1
             else:
