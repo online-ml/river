@@ -9,7 +9,7 @@ class OneHotEncoder(base.Transformer):
     """One-hot encoding.
 
     This transformer will encode every feature it is provided with.
-    If a list or set is provded, this transformer will encode every entry in the list/set.
+    If a list or set is provided, this transformer will encode every entry in the list/set.
     You can apply it to a subset of features by composing it
      with `compose.Select` or `compose.SelectType`.
 
