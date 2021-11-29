@@ -8,8 +8,10 @@ __all__ = ["OneHotEncoder"]
 class OneHotEncoder(base.Transformer):
     """One-hot encoding.
 
-    This transformer will encode every feature it is provided it with. You can apply it to a
-    subset of features by composing it with `compose.Select` or `compose.SelectType`.
+    This transformer will encode every feature it is provided with.
+    If a list or set is provided, this transformer will encode every entry in the list/set.
+    You can apply it to a subset of features by composing it
+     with `compose.Select` or `compose.SelectType`.
 
     Parameters
     ----------
@@ -91,6 +93,22 @@ class OneHotEncoder(base.Transformer):
     {'c1_a': 0, 'c1_i': 1, 'c1_u': 0, 'c2': 'h'}
     {'c1_a': 0, 'c1_h': 1, 'c1_i': 0, 'c1_u': 0, 'c2': 'e'}
 
+    Similar to the above examples, we can also pass values as a list. This will one-hot
+    encode all of the entries individually.
+
+    >>> X = [{'c1': ['u', 'a'], 'c2': ['d']},
+    ...     {'c1': ['a', 'b'], 'c2': ['x']},
+    ...     {'c1': ['i'], 'c2': ['h', 'z']},
+    ...     {'c1': ['h', 'b'], 'c2': ['e']}]
+
+    >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
+    >>> for x in X:
+    ...     oh = oh.learn_one(x)
+    ...     pprint(oh.transform_one(x))
+    {'c1_a': 1, 'c1_u': 1, 'c2_d': 1}
+    {'c1_a': 1, 'c1_b': 1, 'c2_x': 1}
+    {'c1_i': 1, 'c2_h': 1, 'c2_z': 1}
+    {'c1_b': 1, 'c1_h': 1, 'c2_e': 1}
     """
 
     def __init__(self, sparse=False):
@@ -99,7 +117,12 @@ class OneHotEncoder(base.Transformer):
 
     def learn_one(self, x):
         for i, xi in x.items():
-            self.values[i].add(xi)
+            if isinstance(xi, (list, set)):
+                for xj in xi:
+                    self.values[i].add(xj)
+            else:
+                self.values[i].add(xi)
+
         return self
 
     def transform_one(self, x, y=None):
@@ -111,6 +134,10 @@ class OneHotEncoder(base.Transformer):
 
         # Add 1s
         for i, xi in x.items():
-            oh[f"{i}_{xi}"] = 1
+            if isinstance(xi, (list, set)):
+                for xj in xi:
+                    oh[f"{i}_{xj}"] = 1
+            else:
+                oh[f"{i}_{xi}"] = 1
 
         return oh
