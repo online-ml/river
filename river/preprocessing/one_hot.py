@@ -97,15 +97,12 @@ class OneHotEncoder(base.Transformer):
     Similar to the above examples, we can also pass values as a list. This will one-hot
     encode all of the entries individually.
 
-    >>> from pprint import pprint
     >>> X = [{'c1': ['u', 'a'], 'c2': ['d']},
     ...     {'c1': ['a', 'b'], 'c2': ['x']},
     ...     {'c1': ['i'], 'c2': ['h', 'z']},
     ...     {'c1': ['h', 'b'], 'c2': ['e']}]
 
-    >>> import river.preprocessing
-
-    >>> oh = river.preprocessing.OneHotListEncoder(sparse=True)
+    >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
     >>> for x in X:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
