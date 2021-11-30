@@ -12,14 +12,14 @@
         <meta name="author" content="The river developers">
       
       
-        <link rel="canonical" href="https://riverml.xyz/api/selection/SuccessiveHalvingClassifier/">
+        <link rel="canonical" href="https://riverml.xyz/api/model-selection/UCBRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.2">
     
     
       
-        <title>SuccessiveHalvingClassifier - River</title>
+        <title>UCBRegressor - River</title>
       
     
     
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#successivehalvingclassifier" class="md-skip">
+        <a href="#ucbregressor" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SuccessiveHalvingClassifier
+              UCBRegressor
             
           </span>
         </div>
@@ -894,8 +894,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../base/WrapperEnsemble/" class="md-nav__link">
-        WrapperEnsemble
+      <a href="../../base/Wrapper/" class="md-nav__link">
+        Wrapper
       </a>
     </li>
   
@@ -908,8 +908,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../base/WrapperMixin/" class="md-nav__link">
-        WrapperMixin
+      <a href="../../base/WrapperEnsemble/" class="md-nav__link">
+        WrapperEnsemble
       </a>
     </li>
   
@@ -4166,23 +4166,211 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18" type="checkbox" id="__nav_4_18" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18" type="checkbox" id="__nav_4_18" checked>
       
       
       
       
         <label class="md-nav__link" for="__nav_4_18">
+          model_selection
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="model_selection" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_18">
+          <span class="md-nav__icon md-icon"></span>
+          model_selection
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EpsilonGreedyRegressor/" class="md-nav__link">
+        EpsilonGreedyRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GreedyRegressor/" class="md-nav__link">
+        GreedyRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModelSelector/" class="md-nav__link">
+        ModelSelector
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SuccessiveHalvingClassifier/" class="md-nav__link">
+        SuccessiveHalvingClassifier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SuccessiveHalvingRegressor/" class="md-nav__link">
+        SuccessiveHalvingRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          UCBRegressor
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        UCBRegressor
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    References
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_19" type="checkbox" id="__nav_4_19" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_19">
           multiclass
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="multiclass" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_18">
+        <label class="md-nav__title" for="__nav_4_19">
           <span class="md-nav__icon md-icon"></span>
           multiclass
         </label>
@@ -4246,18 +4434,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_19" type="checkbox" id="__nav_4_19" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_20" type="checkbox" id="__nav_4_20" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_19">
+        <label class="md-nav__link" for="__nav_4_20">
           multioutput
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="multioutput" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_19">
+        <label class="md-nav__title" for="__nav_4_20">
           <span class="md-nav__icon md-icon"></span>
           multioutput
         </label>
@@ -4335,18 +4523,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_20" type="checkbox" id="__nav_4_20" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_21" type="checkbox" id="__nav_4_21" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_20">
+        <label class="md-nav__link" for="__nav_4_21">
           naive_bayes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="naive_bayes" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_20">
+        <label class="md-nav__title" for="__nav_4_21">
           <span class="md-nav__icon md-icon"></span>
           naive_bayes
         </label>
@@ -4424,18 +4612,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_21" type="checkbox" id="__nav_4_21" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22" type="checkbox" id="__nav_4_22" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_21">
+        <label class="md-nav__link" for="__nav_4_22">
           neighbors
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="neighbors" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_21">
+        <label class="md-nav__title" for="__nav_4_22">
           <span class="md-nav__icon md-icon"></span>
           neighbors
         </label>
@@ -4513,18 +4701,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22" type="checkbox" id="__nav_4_22" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23" type="checkbox" id="__nav_4_23" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_22">
+        <label class="md-nav__link" for="__nav_4_23">
           neural_net
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="neural_net" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_22">
+        <label class="md-nav__title" for="__nav_4_23">
           <span class="md-nav__icon md-icon"></span>
           neural_net
         </label>
@@ -4553,18 +4741,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_22_2" type="checkbox" id="__nav_4_22_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_2" type="checkbox" id="__nav_4_23_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_22_2">
+        <label class="md-nav__link" for="__nav_4_23_2">
           activations
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="activations" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_22_2">
+        <label class="md-nav__title" for="__nav_4_23_2">
           <span class="md-nav__icon md-icon"></span>
           activations
         </label>
@@ -4635,18 +4823,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23" type="checkbox" id="__nav_4_23" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24" type="checkbox" id="__nav_4_24" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_23">
+        <label class="md-nav__link" for="__nav_4_24">
           optim
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="optim" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_23">
+        <label class="md-nav__title" for="__nav_4_24">
           <span class="md-nav__icon md-icon"></span>
           optim
         </label>
@@ -4857,18 +5045,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_15" type="checkbox" id="__nav_4_23_15" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_15" type="checkbox" id="__nav_4_24_15" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_23_15">
+        <label class="md-nav__link" for="__nav_4_24_15">
           initializers
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="initializers" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_23_15">
+        <label class="md-nav__title" for="__nav_4_24_15">
           <span class="md-nav__icon md-icon"></span>
           initializers
         </label>
@@ -4932,18 +5120,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_16" type="checkbox" id="__nav_4_23_16" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_16" type="checkbox" id="__nav_4_24_16" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_23_16">
+        <label class="md-nav__link" for="__nav_4_24_16">
           losses
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="losses" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_23_16">
+        <label class="md-nav__title" for="__nav_4_24_16">
           <span class="md-nav__icon md-icon"></span>
           losses
         </label>
@@ -5161,18 +5349,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_23_17" type="checkbox" id="__nav_4_23_17" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24_17" type="checkbox" id="__nav_4_24_17" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_23_17">
+        <label class="md-nav__link" for="__nav_4_24_17">
           schedulers
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="schedulers" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_23_17">
+        <label class="md-nav__title" for="__nav_4_24_17">
           <span class="md-nav__icon md-icon"></span>
           schedulers
         </label>
@@ -5257,18 +5445,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_24" type="checkbox" id="__nav_4_24" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25" type="checkbox" id="__nav_4_25" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_24">
+        <label class="md-nav__link" for="__nav_4_25">
           preprocessing
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="preprocessing" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_24">
+        <label class="md-nav__title" for="__nav_4_25">
           <span class="md-nav__icon md-icon"></span>
           preprocessing
         </label>
@@ -5472,18 +5660,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_25" type="checkbox" id="__nav_4_25" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_26" type="checkbox" id="__nav_4_26" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_25">
+        <label class="md-nav__link" for="__nav_4_26">
           proba
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="proba" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_25">
+        <label class="md-nav__title" for="__nav_4_26">
           <span class="md-nav__icon md-icon"></span>
           proba
         </label>
@@ -5533,18 +5721,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_26" type="checkbox" id="__nav_4_26" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27" type="checkbox" id="__nav_4_27" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_26">
+        <label class="md-nav__link" for="__nav_4_27">
           reco
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="reco" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_26">
+        <label class="md-nav__title" for="__nav_4_27">
           <span class="md-nav__icon md-icon"></span>
           reco
         </label>
@@ -5622,18 +5810,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27" type="checkbox" id="__nav_4_27" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28" type="checkbox" id="__nav_4_28" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_27">
+        <label class="md-nav__link" for="__nav_4_28">
           rules
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="rules" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_27">
+        <label class="md-nav__title" for="__nav_4_28">
           <span class="md-nav__icon md-icon"></span>
           rules
         </label>
@@ -5647,166 +5835,6 @@
     <li class="md-nav__item">
       <a href="../../rules/AMRules/" class="md-nav__link">
         AMRules
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28" type="checkbox" id="__nav_4_28" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4_28">
-          selection
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="selection" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_28">
-          <span class="md-nav__icon md-icon"></span>
-          selection
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../EpsilonGreedyRegressor/" class="md-nav__link">
-        EpsilonGreedyRegressor
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../GreedySelectionRegressor/" class="md-nav__link">
-        GreedySelectionRegressor
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          SuccessiveHalvingClassifier
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        SuccessiveHalvingClassifier
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    Methods
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../SuccessiveHalvingRegressor/" class="md-nav__link">
-        SuccessiveHalvingRegressor
       </a>
     </li>
   
@@ -8413,39 +8441,30 @@
               
                 
 
-<h1 id="successivehalvingclassifier">SuccessiveHalvingClassifier<a class="headerlink" href="#successivehalvingclassifier" title="Permanent link">&para;</a></h1>
-<p>Successive halving algorithm for classification.</p>
-<p>Successive halving is a method for performing model selection without having to train each model on all the dataset. At certain points in time (called "rungs"), the worst performing will be discarded and the best ones will keep competing between each other. The rung values are designed so that at most <code>budget</code> model updates will be performed in total. </p>
-<p>If you have <code>k</code> combinations of hyperparameters and that your dataset contains <code>n</code> observations, then the maximal budget you can allocate is: </p>
-<div class="arithmatex">\[\frac{2kn}{eta}\]</div>
-<p>It is recommended that you check this beforehand. This bound can't be checked by the function because the size of the dataset is not known. In fact it is potentially infinite, in which case the algorithm will terminate once all the budget has been spent. </p>
-<p>If you have a budget of <code>B</code>, and that your dataset contains <code>n</code> observations, then the number of hyperparameter combinations that will spend all the budget and go through all the data is: </p>
-<div class="arithmatex">\[\ceil(\floor(\frac{B}{(2n)}) \times eta)\]</div>
+<h1 id="ucbregressor">UCBRegressor<a class="headerlink" href="#ucbregressor" title="Permanent link">&para;</a></h1>
+<p>Model selection based on the UCB bandit strategy.</p>
+<p>Due to the nature of this algorithm, it's recommended to scale the target so that it exhibits sub-gaussian properties. This can be done by using a <code>preprocessing.TargetStandardScaler</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>models</strong></p>
-<p>The models to compare.</p>
+<p>The models to choose from.</p>
 </li>
 <li>
-<p><strong>metric</strong> (<em>river.metrics.base.Metric</em>)</p>
-<p>Metric used for comparing models with.</p>
+<p><strong>metric</strong> – defaults to <code>None</code></p>
+<p>The metric that is used to compare models with each other. Defaults to <code>metrics.MAE</code>.</p>
 </li>
 <li>
-<p><strong>budget</strong> (<em>int</em>)</p>
-<p>Total number of model updates you wish to allocate.</p>
+<p><strong>delta</strong> – defaults to <code>1</code></p>
+<p>Exploration parameter.</p>
 </li>
 <li>
-<p><strong>eta</strong> – defaults to <code>2</code></p>
-<p>Rate of elimination. At every rung, <code>math.ceil(k / eta)</code> models are kept, where <code>k</code> is the number of models that have reached the rung. A higher <code>eta</code> value will focus on less models but will allocate more iterations to the best models.</p>
+<p><strong>burn_in</strong> – defaults to <code>100</code></p>
+<p>The number of initial steps during which each model is updated.</p>
 </li>
 <li>
-<p><strong>verbose</strong> – defaults to <code>False</code></p>
-<p>Whether to display progress or not.</p>
-</li>
-<li>
-<p><strong>print_kwargs</strong></p>
-<p>Extra keyword arguments are passed to the <code>print</code> function. For instance, this allows providing a <code>file</code> argument, which indicates where to output progress.</p>
+<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p>Random number generator seed for reproducibility.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
@@ -8455,97 +8474,71 @@
 <p>The current best model.</p>
 </li>
 <li>
+<p><strong>burn_in</strong></p>
+</li>
+<li>
+<p><strong>delta</strong></p>
+</li>
+<li>
 <p><strong>models</strong></p>
+</li>
+<li>
+<p><strong>seed</strong></p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p>As an example, let's use successive halving to tune the optimizer of a logistic regression.
-We'll first define the model.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
-<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
-<span class="o">...</span>     <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
-<span class="o">...</span> <span class="p">)</span>
-</code></pre></div>
-<p>Let's now define a grid of parameters which we would like to compare. We'll try
-different optimizers with various learning rates.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">models</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">expand_param_grid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">{</span>
-<span class="o">...</span>     <span class="s1">&#39;LogisticRegression&#39;</span><span class="p">:</span> <span class="p">{</span>
-<span class="o">...</span>         <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="p">[</span>
-<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="mf">.005</span><span class="p">]}),</span>
-<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;beta_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.01</span><span class="p">,</span> <span class="mf">.001</span><span class="p">],</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="mf">.001</span><span class="p">]}),</span>
-<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;beta_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">],</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.001</span><span class="p">]}),</span>
-<span class="o">...</span>         <span class="p">]</span>
-<span class="o">...</span>     <span class="p">}</span>
-<span class="o">...</span> <span class="p">})</span>
-</code></pre></div>
-<p>We can check how many models we've created.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
-<span class="mi">10</span>
-</code></pre></div>
-<p>We can now pass these models to a <code>SuccessiveHalvingClassifier</code>. We also need to pick a
-metric to compare the models, and a budget which indicates how many iterations to run
-before picking the best model and discarding the rest.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">selection</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">sh</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">SuccessiveHalvingClassifier</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">models</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>
-<span class="o">...</span>     <span class="n">budget</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">eta</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
-<span class="o">...</span> <span class="p">)</span>
-</code></pre></div>
-<p>A <code>SuccessiveHalvingClassifier</code> is also a classifier with a <code>learn_one</code> and a
-<code>predict_proba_one</code> method. We can therefore evaluate it like any other classifier with
-<code>evaluate.progressive_val_score</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">model_selection</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">(),</span>
-<span class="o">...</span>     <span class="n">model</span><span class="o">=</span><span class="n">sh</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">models</span> <span class="o">=</span> <span class="p">[</span>
+<span class="o">...</span>     <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">))</span>
+<span class="o">...</span>     <span class="k">for</span> <span class="n">lr</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">1e-05</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">]</span>
+<span class="o">...</span> <span class="p">]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
+<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">TargetStandardScaler</span><span class="p">(</span>
+<span class="o">...</span>         <span class="n">model_selection</span><span class="o">.</span><span class="n">UCBRegressor</span><span class="p">(</span>
+<span class="o">...</span>             <span class="n">models</span><span class="p">,</span>
+<span class="o">...</span>             <span class="n">delta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="o">...</span>             <span class="n">burn_in</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="o">...</span>             <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="o">...</span>         <span class="p">)</span>
+<span class="o">...</span>     <span class="p">)</span>
 <span class="o">...</span> <span class="p">)</span>
-<span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="mi">5</span> <span class="n">removed</span>       <span class="mi">5</span> <span class="n">left</span>  <span class="mi">50</span> <span class="n">iterations</span>   <span class="n">budget</span> <span class="n">used</span><span class="p">:</span> <span class="mi">500</span>        <span class="n">budget</span> <span class="n">left</span><span class="p">:</span> <span class="mi">1500</span>       <span class="n">best</span> <span class="n">Accuracy</span><span class="p">:</span> <span class="mf">80.00</span><span class="o">%</span>
-<span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="mi">2</span> <span class="n">removed</span>       <span class="mi">3</span> <span class="n">left</span>  <span class="mi">100</span> <span class="n">iterations</span>  <span class="n">budget</span> <span class="n">used</span><span class="p">:</span> <span class="mi">1000</span>       <span class="n">budget</span> <span class="n">left</span><span class="p">:</span> <span class="mi">1000</span>       <span class="n">best</span> <span class="n">Accuracy</span><span class="p">:</span> <span class="mf">84.00</span><span class="o">%</span>
-<span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="mi">1</span> <span class="n">removed</span>       <span class="mi">2</span> <span class="n">left</span>  <span class="mi">166</span> <span class="n">iterations</span>  <span class="n">budget</span> <span class="n">used</span><span class="p">:</span> <span class="mi">1498</span>       <span class="n">budget</span> <span class="n">left</span><span class="p">:</span> <span class="mi">502</span>        <span class="n">best</span> <span class="n">Accuracy</span><span class="p">:</span> <span class="mf">86.14</span><span class="o">%</span>
-<span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="mi">1</span> <span class="n">removed</span>       <span class="mi">1</span> <span class="n">left</span>  <span class="mi">250</span> <span class="n">iterations</span>  <span class="n">budget</span> <span class="n">used</span><span class="p">:</span> <span class="mi">1998</span>       <span class="n">budget</span> <span class="n">left</span><span class="p">:</span> <span class="mi">2</span>  <span class="n">best</span> <span class="n">Accuracy</span><span class="p">:</span> <span class="mf">84.80</span><span class="o">%</span>
-<span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">0.952889</span>
-</code></pre></div>
-<p>We can now view the best model.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">sh</span><span class="o">.</span><span class="n">best_model</span>
-<span class="n">Pipeline</span> <span class="p">(</span>
-  <span class="n">StandardScaler</span> <span class="p">(</span>
-    <span class="n">with_std</span><span class="o">=</span><span class="kc">True</span>
-  <span class="p">),</span>
-  <span class="n">LogisticRegression</span> <span class="p">(</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span> <span class="p">(</span>
-      <span class="n">lr</span><span class="o">=</span><span class="n">Constant</span> <span class="p">(</span>
-        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span>
-      <span class="p">)</span>
-      <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.01</span>
-      <span class="n">beta_2</span><span class="o">=</span><span class="mf">0.999</span>
-      <span class="n">eps</span><span class="o">=</span><span class="mf">1e-08</span>
-    <span class="p">)</span>
-    <span class="n">loss</span><span class="o">=</span><span class="n">Log</span> <span class="p">(</span>
-      <span class="n">weight_pos</span><span class="o">=</span><span class="mf">1.</span>
-      <span class="n">weight_neg</span><span class="o">=</span><span class="mf">1.</span>
-    <span class="p">)</span>
-    <span class="n">l2</span><span class="o">=</span><span class="mf">0.</span>
-    <span class="n">intercept_init</span><span class="o">=</span><span class="mf">0.</span>
-    <span class="n">intercept_lr</span><span class="o">=</span><span class="n">Constant</span> <span class="p">(</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+<span class="n">MAE</span><span class="p">:</span> <span class="mf">0.410815</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;TargetStandardScaler&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">regressor</span><span class="o">.</span><span class="n">bandit</span>
+<span class="n">Ranking</span>   <span class="n">MAE</span>        <span class="n">Pulls</span>   <span class="n">Share</span>
+     <span class="c1">#3   1.441458       8    0.80%</span>
+     <span class="c1">#1   0.291200     242   24.18%</span>
+     <span class="c1">#2   0.808878      19    1.90%</span>
+     <span class="c1">#0   0.204892     732   73.13%</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;TargetStandardScaler&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">regressor</span><span class="o">.</span><span class="n">best_model</span>
+<span class="n">LinearRegression</span> <span class="p">(</span>
+  <span class="n">optimizer</span><span class="o">=</span><span class="n">SGD</span> <span class="p">(</span>
+    <span class="n">lr</span><span class="o">=</span><span class="n">Constant</span> <span class="p">(</span>
       <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span>
     <span class="p">)</span>
-    <span class="n">clip_gradient</span><span class="o">=</span><span class="mf">1e+12</span>
-    <span class="n">initializer</span><span class="o">=</span><span class="n">Zeros</span> <span class="p">()</span>
   <span class="p">)</span>
+  <span class="n">loss</span><span class="o">=</span><span class="n">Squared</span> <span class="p">()</span>
+  <span class="n">l2</span><span class="o">=</span><span class="mf">0.</span>
+  <span class="n">intercept_init</span><span class="o">=</span><span class="mf">0.</span>
+  <span class="n">intercept_lr</span><span class="o">=</span><span class="n">Constant</span> <span class="p">(</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span>
+  <span class="p">)</span>
+  <span class="n">clip_gradient</span><span class="o">=</span><span class="mf">1e+12</span>
+  <span class="n">initializer</span><span class="o">=</span><span class="n">Zeros</span> <span class="p">()</span>
 <span class="p">)</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
@@ -8606,6 +8599,14 @@ before picking the best model and discarding the rest.</p>
 </details>
 <details class="- note">
 <summary>learn_one</summary>
+<p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>y</strong>     (<em>numbers.Number</em>)    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>Regressor</em>:     self</p>
 </details>
 <details class="- note">
 <summary>pop</summary>
@@ -8617,23 +8618,13 @@ before picking the best model and discarding the rest.</p>
 </details>
 <details class="- note">
 <summary>predict_one</summary>
-<p>Predict the label of a set of features <code>x</code>.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
-</ul>
-<p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int]</em>:     The predicted label.</p>
-</details>
-<details class="- note">
-<summary>predict_proba_one</summary>
-<p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
+<p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>A dictionary that associates a probability which each label.</p>
+<p>The prediction.</p>
 </details>
 <details class="- note">
 <summary>remove</summary>
@@ -8655,13 +8646,13 @@ before picking the best model and discarding the rest.</p>
 <hr />
 <ol>
 <li id="fn:1">
-<p><a href="http://proceedings.mlr.press/v51/jamieson16.pdf">Jamieson, K. and Talwalkar, A., 2016, May. Non-stochastic best arm identification and hyperparameter optimization. In Artificial Intelligence and Statistics (pp. 240-248).</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p><a href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.674.1620&amp;rep=rep1&amp;type=pdf">Lai, T. L., &amp; Robbins, H. (1985). Asymptotically efficient adaptive allocation rules. Advances in applied mathematics, 6(1), 4-22.</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p><a href="https://arxiv.org/pdf/1810.05934.pdf">Li, L., Jamieson, K., Rostamizadeh, A., Gonina, E., Hardt, M., Recht, B. and Talwalkar, A., 2018. Massively parallel hyperparameter tuning. arXiv preprint arXiv:1810.05934.</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p><a href="https://lilianweng.github.io/lil-log/2018/01/23/the-multi-armed-bandit-problem-and-its-solutions.html#upper-confidence-bounds">Upper Confidence Bounds - The Multi-Armed Bandit Problem and Its Solutions - Lilian Weng</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p><a href="https://arxiv.org/pdf/1603.06560.pdf">Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. Hyperband: A novel bandit-based approach to hyperparameter optimization. The Journal of Machine Learning Research, 18(1), pp.6765-6816.</a>&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p><a href="https://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/">The Upper Confidence Bound Algorithm - Bandit Algorithms</a>&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
@@ -8722,7 +8713,7 @@ before picking the best model and discarding the rest.</p>
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.01824240.min.js"}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.a87c2adc.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.ff0eccb3.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
