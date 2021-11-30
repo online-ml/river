@@ -16,6 +16,7 @@ __all__ = [
     "Normalizer",
     "RobustScaler",
     "StandardScaler",
+    "TargetStandardScaler",
 ]
 
 

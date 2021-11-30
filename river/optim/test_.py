@@ -39,9 +39,8 @@ def optimizers() -> typing.Iterable[optim.Optimizer]:
         and issubclass(x, optim.Optimizer)
         and x is not optim.Optimizer,
     ):
-        params = optimizer._unit_test_params()
-        print(optimizer)
-        yield optimizer(**params)
+        for params in optimizer._unit_test_params():
+            yield optimizer(**params)
 
 
 @pytest.mark.parametrize(

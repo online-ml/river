@@ -86,7 +86,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"model": linear_model.LogisticRegression()}
+        yield {"model": linear_model.LogisticRegression()}
 
     def predict_proba_one(self, x):
         """Averages the predictions of each classifier."""
@@ -158,7 +158,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"model": linear_model.LinearRegression()}
+        yield {"model": linear_model.LinearRegression()}
 
     def predict_one(self, x):
         """Averages the predictions of each regressor."""

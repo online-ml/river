@@ -1,6 +1,6 @@
 import typing
 
-from river import base
+from river import base, linear_model, naive_bayes, tree
 
 __all__ = ["StackingClassifier"]
 
@@ -96,3 +96,14 @@ class StackingClassifier(base.Ensemble, base.Classifier):
             oof.update(x)
 
         return self.meta_classifier.predict_proba_one(oof)
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {
+            "models": [
+                linear_model.LogisticRegression(),
+                tree.HoeffdingTreeClassifier(),
+                naive_bayes.GaussianNB(),
+            ],
+            "meta_classifier": linear_model.LogisticRegression(),
+        }

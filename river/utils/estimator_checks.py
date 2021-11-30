@@ -2,6 +2,7 @@
 import copy
 import functools
 import inspect
+import itertools
 import math
 import pickle
 import random
@@ -213,8 +214,8 @@ def check_set_params_idempotent(model):
 
 
 def check_init_has_default_params_for_tests(model):
-    params = model._unit_test_params()
-    assert isinstance(model.__class__(**params), model.__class__)
+    for params in model._unit_test_params():
+        assert isinstance(model.__class__(**params), model.__class__)
 
 
 def check_init_default_params_are_not_mutable(model):
@@ -239,6 +240,23 @@ def check_clone(model):
     clone = model.clone()
     assert id(clone) != id(model)
     assert dir(clone) == dir(model)
+
+
+def check_model_selection_order_does_not_matter(model, dataset):
+    best_params = []
+    permutations = list(itertools.permutations(model.models))
+    datasets = itertools.tee(dataset, len(permutations))
+
+    for permutation, dataset in zip(permutations, datasets):
+        models = [model.clone() for model in permutation]
+        clone = model._set_params(new_params={"models": models})
+        for x, y in dataset:
+            clone.predict_one(x)
+            clone.learn_one(x, y)
+        best_params.append(clone.best_model._get_params())
+
+    # Check that the best params are always the same
+    assert all(params == best_params[0] for params in best_params)
 
 
 def seed_params(params, seed):
@@ -311,7 +329,7 @@ def yield_checks(model):
 
     """
 
-    from river import utils
+    from river import model_selection, utils
 
     # General checks
     yield check_repr
@@ -349,6 +367,9 @@ def yield_checks(model):
             checks.append(
                 allow_exception(check_predict_proba_one_binary, NotImplementedError)
             )
+
+    if isinstance(utils.inspect.extract_relevant(model), model_selection.ModelSelector):
+        checks.append(check_model_selection_order_does_not_matter)
 
     for check in checks:
         for dataset in yield_datasets(model):

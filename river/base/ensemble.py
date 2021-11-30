@@ -4,7 +4,7 @@ from random import Random
 from typing import Iterator
 
 from .estimator import Estimator
-from .wrapper import WrapperMixin
+from .wrapper import Wrapper
 
 
 class Ensemble(UserList):
@@ -34,7 +34,7 @@ class Ensemble(UserList):
         return self.data
 
 
-class WrapperEnsemble(Ensemble, WrapperMixin):
+class WrapperEnsemble(Ensemble, Wrapper):
     """A wrapper ensemble is an ensemble composed of multiple copies of the same model.
 
     Parameters

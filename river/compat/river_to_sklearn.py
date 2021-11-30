@@ -82,7 +82,7 @@ def convert_river_to_sklearn(estimator: base.Estimator):
     raise ValueError("Couldn't find an appropriate wrapper")
 
 
-class River2SKLBase(sklearn_base.BaseEstimator, base.WrapperMixin):
+class River2SKLBase(sklearn_base.BaseEstimator, base.Wrapper):
     """This class is just here for house-keeping."""
 
     @property

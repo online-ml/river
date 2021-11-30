@@ -51,7 +51,6 @@ class DriftDetector(base.Base):
         A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
 
         """
-        raise NotImplementedError
 
     def __iadd__(self, other):
         self.update(other)

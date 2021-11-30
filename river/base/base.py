@@ -36,7 +36,7 @@ class Base:
         individual as needed.
 
         """
-        return {}
+        yield {}
 
     def _get_params(self) -> typing.Dict[str, typing.Any]:
         """Return the parameters that were used during initialization."""

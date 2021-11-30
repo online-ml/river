@@ -43,7 +43,7 @@ class PyTorch2RiverBase(base.Estimator):
             )
             return net
 
-        return {
+        yield {
             "build_fn": build_torch_linear_regressor,
             "loss_fn": torch.nn.MSELoss,
             "optimizer_fn": torch.optim.SGD,

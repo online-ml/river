@@ -6,7 +6,8 @@ class Distribution(abc.ABC):
     def update(self, x):
         """Updates the parameters of the distribution given a new observation."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def n_samples(self):
         """The number of observed samples."""
 
@@ -25,7 +26,8 @@ class DiscreteDistribution(Distribution):
 class ContinuousDistribution(Distribution):
     """A probability distribution for continuous values."""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def mode(self):
         """Most likely value."""
 
