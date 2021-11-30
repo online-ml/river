@@ -10,7 +10,7 @@ class Triplet(collections.namedtuple("Triplet", "x y loss")):
         return self.loss < other.loss
 
 
-class HardSampling(base.WrapperMixin):
+class HardSampling(base.Wrapper):
     """Hard sampler."""
 
     def __init__(self, model, loss, size, p, seed=None):
@@ -145,7 +145,7 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"regressor": linear_model.LinearRegression(), "p": 0.1, "size": 40}
+        yield {"regressor": linear_model.LinearRegression(), "p": 0.1, "size": 40}
 
 
 class HardSamplingClassifier(HardSampling, base.Classifier):
@@ -236,4 +236,4 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"classifier": linear_model.LogisticRegression(), "p": 0.1, "size": 40}
+        yield {"classifier": linear_model.LogisticRegression(), "p": 0.1, "size": 40}

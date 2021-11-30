@@ -11,7 +11,7 @@ def l1_dist(a, b):
     return sum(abs(ai - bi) for ai, bi in zip(a, b))
 
 
-class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
+class OutputCodeClassifier(base.Wrapper, base.Classifier):
     """Output-code multiclass strategy.
 
     This also referred to as "error-correcting output codes".
@@ -106,7 +106,7 @@ class OutputCodeClassifier(base.WrapperMixin, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"classifier": linear_model.LogisticRegression(), "code_size": 6}
+        yield {"classifier": linear_model.LogisticRegression(), "code_size": 6}
 
     def learn_one(self, x, y):
 

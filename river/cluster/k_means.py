@@ -121,3 +121,7 @@ class KMeans(base.Clusterer):
             return utils.math.minkowski_distance(a=self.centers[c], b=x, p=self.p)
 
         return min(self.centers, key=get_distance)
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"n_clusters": 5}

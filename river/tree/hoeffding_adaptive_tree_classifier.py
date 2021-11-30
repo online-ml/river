@@ -268,4 +268,4 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"seed": 1}
+        yield {"seed": 1}

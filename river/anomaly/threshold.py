@@ -1,4 +1,4 @@
-from river.base import WrapperMixin
+from river.base import Wrapper
 from river.stats import Quantile
 
 from .base import AnomalyDetector
@@ -6,9 +6,13 @@ from .base import AnomalyDetector
 __all__ = ["ConstantThresholder", "QuantileThresholder"]
 
 
-class Thresholder(AnomalyDetector, WrapperMixin):
+class Thresholder(AnomalyDetector, Wrapper):
     def __init__(self, anomaly_detector: AnomalyDetector):
         self.anomaly_detector = anomaly_detector
+
+    @property
+    def _wrapped_model(self):
+        return self.anomaly_detector
 
     def learn_one(self, x):
         self.anomaly_detector.learn_one(x)
@@ -73,7 +77,7 @@ class ConstantThresholder(Thresholder):
     def _unit_test_params(cls):
         from .hst import HalfSpaceTrees
 
-        return {"anomaly_detector": HalfSpaceTrees(), "threshold": 0.5}
+        yield {"anomaly_detector": HalfSpaceTrees(), "threshold": 0.5}
 
     def score_one(self, x):
         return 1 if self.anomaly_detector.score_one(x) > self.threshold else 0
@@ -137,7 +141,7 @@ class QuantileThresholder(Thresholder):
     def _unit_test_params(cls):
         from .hst import HalfSpaceTrees
 
-        return {"anomaly_detector": HalfSpaceTrees(), "q": 0.5}
+        yield {"anomaly_detector": HalfSpaceTrees(), "q": 0.5}
 
     @property
     def q(self):

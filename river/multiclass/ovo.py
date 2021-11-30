@@ -7,7 +7,7 @@ from river import base, linear_model
 __all__ = ["OneVsOneClassifier"]
 
 
-class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
+class OneVsOneClassifier(base.Wrapper, base.Classifier):
     """One-vs-One (OvO) multiclass strategy.
 
     This strategy consists in fitting one binary classifier for each pair of classes. Because we
@@ -69,7 +69,7 @@ class OneVsOneClassifier(base.WrapperMixin, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"classifier": linear_model.LogisticRegression()}
+        yield {"classifier": linear_model.LogisticRegression()}
 
     def learn_one(self, x, y):
 

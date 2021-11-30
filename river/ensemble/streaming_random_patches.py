@@ -13,7 +13,7 @@ from river.metrics.base import Metric, MultiClassMetric, RegressionMetric
 from river.tree import HoeffdingTreeClassifier, HoeffdingTreeRegressor
 
 
-class BaseSRPEnsemble(base.WrapperMixin, base.Ensemble):
+class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
     """Base class for the sRP ensemble family"""
 
     _TRAIN_RANDOM_SUBSPACES = "subspaces"
@@ -72,7 +72,7 @@ class BaseSRPEnsemble(base.WrapperMixin, base.Ensemble):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"n_models": 3}
+        yield {"n_models": 3}
 
     def _unit_test_skips(self):
         return {"check_shuffle_features_no_impact"}
@@ -503,7 +503,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"n_models": 3}
+        yield {"n_models": 3}
 
     def _unit_test_skips(self):
         return {
@@ -820,7 +820,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"n_models": 3}
+        yield {"n_models": 3}
 
     def _unit_test_skips(self):
         return {

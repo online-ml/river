@@ -78,7 +78,7 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        return {"model": linear_model.LogisticRegression()}
+        yield {"model": linear_model.LogisticRegression()}
 
     def learn_one(self, x, y):
         lambda_poisson = 1

@@ -21,7 +21,7 @@ from .estimator import Estimator
 from .multi_output import MultiOutputMixin
 from .regressor import MiniBatchRegressor, Regressor
 from .transformer import SupervisedTransformer, Transformer
-from .wrapper import WrapperMixin
+from .wrapper import Wrapper
 
 __all__ = [
     "Base",
@@ -39,5 +39,5 @@ __all__ = [
     "Transformer",
     "typing",
     "WrapperEnsemble",
-    "WrapperMixin",
+    "Wrapper",
 ]

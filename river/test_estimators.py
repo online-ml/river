@@ -7,7 +7,6 @@ import pytest
 
 from river import (
     base,
-    cluster,
     compose,
     ensemble,
     facto,
@@ -15,13 +14,11 @@ from river import (
     feature_selection,
     imblearn,
     linear_model,
+    model_selection,
     multiclass,
-    naive_bayes,
     neural_net,
     preprocessing,
     reco,
-    selection,
-    stats,
     time_series,
     utils,
 )
@@ -61,7 +58,6 @@ def iter_estimators_which_can_be_tested():
         compose.TargetTransformRegressor,
         ensemble.AdaptiveRandomForestClassifier,
         ensemble.AdaptiveRandomForestRegressor,
-        ensemble.StackingClassifier,
         facto.FFMClassifier,
         facto.FFMRegressor,
         facto.FMClassifier,
@@ -75,6 +71,7 @@ def iter_estimators_which_can_be_tested():
         feature_extraction.Lagger,
         feature_extraction.TargetLagger,
         feature_selection.PoissonInclusion,
+        model_selection.SuccessiveHalvingClassifier,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
@@ -86,8 +83,6 @@ def iter_estimators_which_can_be_tested():
         imblearn.RandomOverSampler,
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,
-        selection.SuccessiveHalvingClassifier,
-        selection.SuccessiveHalvingRegressor,
         time_series.HoltWinters,
         time_series.SNARIMAX,
     )
@@ -99,7 +94,8 @@ def iter_estimators_which_can_be_tested():
         return not inspect.isabstract(estimator) and not issubclass(estimator, ignored)
 
     for estimator in filter(can_be_tested, iter_estimators()):
-        yield estimator(**estimator._unit_test_params())
+        for params in estimator._unit_test_params():
+            yield estimator(**params)
 
 
 @pytest.mark.parametrize(
@@ -108,8 +104,6 @@ def iter_estimators_which_can_be_tested():
         pytest.param(estimator, check, id=f"{estimator}:{check.__name__}")
         for estimator in list(iter_estimators_which_can_be_tested())
         + [
-            feature_extraction.TFIDF(),
-            linear_model.LogisticRegression(),
             preprocessing.StandardScaler() | linear_model.LinearRegression(),
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
@@ -126,19 +120,12 @@ def iter_estimators_which_can_be_tested():
                 preprocessing.StandardScaler()
                 | multiclass.OneVsRestClassifier(linear_model.PAClassifier())
             ),
-            naive_bayes.GaussianNB(),
-            preprocessing.StandardScaler(),
-            cluster.KMeans(n_clusters=5, seed=42),
-            preprocessing.MinMaxScaler(),
             preprocessing.MinMaxScaler() + preprocessing.StandardScaler(),
-            feature_extraction.PolynomialExtender(),
             (
                 feature_extraction.PolynomialExtender()
                 | preprocessing.StandardScaler()
                 | linear_model.LinearRegression()
             ),
-            feature_selection.VarianceThreshold(),
-            feature_selection.SelectKBest(similarity=stats.PearsonCorr()),
         ]
         for check in utils.estimator_checks.yield_checks(estimator)
         if check.__name__ not in estimator._unit_test_skips()

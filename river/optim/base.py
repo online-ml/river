@@ -86,7 +86,3 @@ class Optimizer(base.Base):
 
     def __repr__(self):
         return f"{self.__class__.__name__}({vars(self)})"
-
-    @classmethod
-    def _unit_test_params(cls):
-        return {}

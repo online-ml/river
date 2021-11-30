@@ -75,7 +75,7 @@ class VotingClassifier(base.Classifier, base.Ensemble):
 
     @classmethod
     def _unit_test_params(cls):
-        return {
+        yield {
             "models": [
                 linear_model.LogisticRegression(),
                 tree.HoeffdingTreeClassifier(),
