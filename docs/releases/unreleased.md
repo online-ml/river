@@ -59,6 +59,14 @@ This module has been deleted.
 - `optim.Adam` and `optim.RMSProp` now work with `utils.VectorDict`s as well as `numpy.ndarray`s.
 - Added `optim.losses.Huber`.
 
+## preprocessing
+
+- Enabled `preprocessing.OneHotEncoder` to one-hot encode values that are list or sets.
+
+## reco
+
+- Added a `debug_one` method to `reco.FMRegressor`.
+
 ## selection
 
 - This new module replaces the `expert` module.
