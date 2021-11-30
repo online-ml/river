@@ -26,6 +26,9 @@ class UCB(BanditPolicy):
 class UCBRegressor(BanditRegressor):
     """Model selection based on the UCB bandit strategy.
 
+    Due to the nature of this algorithm, it's recommended to scale the target so that it exhibits
+    sub-gaussian properties. This can be done by using a `preprocessing.TargetStandardScaler`.
+
     Parameters
     ----------
     models
@@ -52,32 +55,34 @@ class UCBRegressor(BanditRegressor):
 
     >>> models = [
     ...     linear_model.LinearRegression(optimizer=optim.SGD(lr=lr))
-    ...     for lr in [1e-5, 1e-4, 1e-3, 1e-2]
+    ...     for lr in [0.0001, 0.001, 1e-05, 0.01]
     ... ]
 
     >>> dataset = datasets.TrumpApproval()
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     model_selection.UCBRegressor(
-    ...         models,
-    ...         delta=50,
-    ...         burn_in=0,
-    ...         seed=42
+    ...     preprocessing.TargetStandardScaler(
+    ...         model_selection.UCBRegressor(
+    ...             models,
+    ...             delta=1,
+    ...             burn_in=0,
+    ...             seed=42
+    ...         )
     ...     )
     ... )
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.9054
+    MAE: 0.410815
 
-    >>> model['UCBRegressor'].bandit
-    Ranking   MAE         Pulls   Share
-          3   32.092731      26    2.60%
-          2   31.911083      26    2.60%
-          1   27.594521      33    3.30%
-          0    1.332678     916   91.51%
+    >>> model['TargetStandardScaler'].regressor.bandit
+    Ranking   MAE        Pulls   Share
+         #3   1.441458       8    0.80%
+         #1   0.291200     242   24.18%
+         #2   0.808878      19    1.90%
+         #0   0.204892     732   73.13%
 
-    >>> model['UCBRegressor'].best_model
+    >>> model['TargetStandardScaler'].regressor.best_model
     LinearRegression (
       optimizer=SGD (
         lr=Constant (
@@ -98,18 +103,28 @@ class UCBRegressor(BanditRegressor):
     ----------
     [^1]: [Lai, T. L., & Robbins, H. (1985). Asymptotically efficient adaptive allocation rules. Advances in applied mathematics, 6(1), 4-22.](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.674.1620&rep=rep1&type=pdf)
     [^2]: [Upper Confidence Bounds - The Multi-Armed Bandit Problem and Its Solutions - Lilian Weng](https://lilianweng.github.io/lil-log/2018/01/23/the-multi-armed-bandit-problem-and-its-solutions.html#upper-confidence-bounds)
+    [^3]: [The Upper Confidence Bound Algorithm - Bandit Algorithms](https://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/)
 
     """
 
     def __init__(
-        self, models, metric=None, delta=1, burn_in=100, seed: int = None,
+        self,
+        models,
+        metric=None,
+        delta=1,
+        burn_in=100,
+        seed: int = None,
     ):
         if metric is None:
             metric = metrics.MAE()
         super().__init__(
             models=models,
             metric=metric,
-            policy=UCB(delta=delta, burn_in=burn_in, seed=seed,),
+            policy=UCB(
+                delta=delta,
+                burn_in=burn_in,
+                seed=seed,
+            ),
         )
 
     @property
