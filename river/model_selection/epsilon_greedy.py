@@ -64,7 +64,7 @@ class EpsilonGreedyRegressor(BanditRegressor):
 
     >>> models = [
     ...     linear_model.LinearRegression(optimizer=optim.SGD(lr=lr))
-    ...     for lr in [1e-5, 1e-4, 1e-3, 1e-2]
+    ...     for lr in [0.0001, 0.001, 1e-05, 0.01]
     ... ]
 
     >>> dataset = datasets.TrumpApproval()
@@ -81,14 +81,14 @@ class EpsilonGreedyRegressor(BanditRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.363539
+    MAE: 1.363516
 
     >>> model['EpsilonGreedyRegressor'].bandit
     Ranking   MAE         Pulls   Share
-          3   16.223154     111    8.53%
-          2   15.226291     117    8.99%
-          1   13.831753     109    8.38%
-          0    1.387839     964   74.10%
+         #2   15.850129     111    8.53%
+         #1   13.060601     117    8.99%
+         #3   16.519079     109    8.38%
+         #0    1.387839     964   74.10%
 
     >>> model['EpsilonGreedyRegressor'].best_model
     LinearRegression (
@@ -128,7 +128,10 @@ class EpsilonGreedyRegressor(BanditRegressor):
             models=models,
             metric=metric,
             policy=EpsilonGreedy(
-                epsilon=epsilon, decay=decay, burn_in=burn_in, seed=seed,
+                epsilon=epsilon,
+                decay=decay,
+                burn_in=burn_in,
+                seed=seed,
             ),
         )
 
