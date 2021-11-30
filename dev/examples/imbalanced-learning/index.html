@@ -5507,6 +5507,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/preprocessing/PredClipper/" class="md-nav__link">
+        PredClipper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/preprocessing/PreviousImputer/" class="md-nav__link">
         PreviousImputer
       </a>
@@ -8155,6 +8169,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/0.9.0/" class="md-nav__link">
+        0.9.0 - 2021-11-30
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/0.8.0/" class="md-nav__link">
         0.8.0 - 2021-08-31
       </a>
@@ -8522,7 +8550,7 @@
 <div class="highlight"><pre><span></span><code>ROCAUC: 0.914269
 </code></pre></div>
 <h2 id="focal-loss">Focal loss<a class="headerlink" href="#focal-loss" title="Permanent link">&para;</a></h2>
-<p>The deep learning for object detection community has produced a special loss function for imbalaced learning called <a href="https://arxiv.org/pdf/1708.02002.pdf">focal loss</a>. We are doing binary classification, so we can plug the binary version of focal loss into our logistic regression and see how well it fairs.</p>
+<p>The deep learning for object detection community has produced a special loss function for imbalanced learning called <a href="https://arxiv.org/pdf/1708.02002.pdf">focal loss</a>. We are doing binary classification, so we can plug the binary version of focal loss into our logistic regression and see how well it fairs.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
     <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">BinaryFocalLoss</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -8556,7 +8584,7 @@
 <p>The <code>RandomUnderSampler</code> class is a wrapper for classifiers. This is represented by a rectangle around the logistic regression bubble when we visualize the model.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<p><html><body><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
+<div><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
 {'counts': Counter({'Time': 284807,
                     'V1': 284807,
                     'V2': 284807,
@@ -8649,11 +8677,12 @@
                       'V7': 1.5303951971990823,
                       'V8': 1.426473847533605,
                       'V9': 1.2069882295421888}),
- 'with_std': True}</p>
-<p></code></details><details class="estimator"><summary><pre class="estimator-name">RandomUnderSampler(LogisticRegression)</pre></summary><code class="estimator-params">
+ 'with_std': True}
+
+</code></details><div class="component wrapper"><details><summary><pre class="estimator-name">RandomUnderSampler</pre></summary><code class="estimator-params">
 {'_actual_dist': Counter({0: 284315, 1: 492}),
  '_pivot': 1,
- '_rng': RandomState(MT19937) at 0x7F8C79B3BC40,
+ '_rng': RandomState(MT19937) at 0x7FB79EA22A40,
  'classifier': LogisticRegression (
   optimizer=SGD (
     lr=Constant (
@@ -8673,20 +8702,35 @@
   initializer=Zeros ()
 ),
  'desired_dist': {0: 0.8, 1: 0.2},
- 'seed': 42}</p>
-<p></code></details></div></body><style>
+ 'seed': 42}
+
+</code></details><details class="component estimator"><summary><pre class="estimator-name">LogisticRegression</pre></summary><code class="estimator-params">
+{'_weights': {'Time': -1.6641306264784972, 'V1': -0.1599659187750452, 'V2': 0.04344696123719202, 'V3': -0.2721170522268713, 'V4': 0.6916589139943812, 'V5': 0.17021248440050196, 'V6': -0.10985861853253961, 'V7': -0.06417467297089502, 'V8': -0.27620200713013304, 'V9': -0.03588628034795379, 'V10': -0.23052292417060072, 'V11': 0.2559724882472953, 'V12': -0.5896873005805503, 'V13': -0.00781916404772026, 'V14': -0.533977051320637, 'V15': -0.11682052362352723, 'V16': -0.21516217614349042, 'V17': -0.009152723158714259, 'V18': 0.07914978322313096, 'V19': -0.059805830541265016, 'V20': 0.027488030533780676, 'V21': 0.06830376534645256, 'V22': 0.1238012301169065, 'V23': -0.11595605141684359, 'V24': 0.04893230557346892, 'V25': -0.06549541465389698, 'V26': -0.05345696163492266, 'V27': 0.023779407654823708, 'V28': 0.1187553855561891, 'Amount': 0.2276158366259826},
+ '_y_name': None,
+ 'clip_gradient': 1000000000000.0,
+ 'initializer': Zeros (),
+ 'intercept': -1.0742178747798434,
+ 'intercept_init': 0.0,
+ 'intercept_lr': Constant({'learning_rate': 0.01}),
+ 'l2': 0.0,
+ 'loss': Log({'weight_pos': 1.0, 'weight_neg': 1.0}),
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 3562})}
+
+</code></details></div></div><style scoped>
 .estimator {
     padding: 1em;
     border-style: solid;
     background: white;
-}</p>
-<p>.pipeline {
+}
+
+.pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
-}</p>
-<p>.union {
+}
+
+.union {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -8694,49 +8738,75 @@
     padding: 1em;
     border-style: solid;
     background: white
-}</p>
-<p>/<em> Vertical spacing between steps </em>/</p>
-<p>.estimator + .estimator,
-.estimator + .union,
-.union + .estimator {
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.wrapper > .estimator {
+    margin-top: 1em;
+}
+
+/* Vertical spacing between steps */
+
+.component + .component {
     margin-top: 2em;
-}</p>
-<p>.union &gt; .estimator {
+}
+
+.union > .estimator {
     margin-top: 0;
-}</p>
-<p>/<em> Spacing within a union of estimators </em>/</p>
-<p>.union &gt;
-.estimator + .estimator,
-.pipeline + .estimator,
-.estimator + .pipeline,
-.pipeline + .pipeline {
+}
+
+.union > .pipeline {
+    margin-top: 0;
+}
+
+/* Spacing within a union of estimators */
+
+.union > .component + .component {
     margin-left: 1em;
-}</p>
-<p>/<em> Typography </em>/
+}
+
+/* Typography */
+
 .estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
-}</p>
-<p>.estimator &gt; code {
+}
+
+.estimator > code,
+.wrapper > details > code {
     background-color: white !important;
-}</p>
-<p>.estimator-name {
+}
+
+.estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
-}</p>
-<p>/<em> Toggle </em>/</p>
-<p>summary {
+}
+
+/* Toggle */
+
+summary {
     display: flex;
     align-items:center;
     cursor: pointer;
-}</p>
-<p>summary &gt; div {
+}
+
+summary > div {
     width: 100%;
 }
-</style></html></p>
+</style></div>
+
 <h2 id="over-sampling-the-minority-class">Over-sampling the minority class<a class="headerlink" href="#over-sampling-the-minority-class" title="Permanent link">&para;</a></h2>
 <p>We can also attain the same class distribution by over-sampling the minority class. This will come at cost of having to train with more samples.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>

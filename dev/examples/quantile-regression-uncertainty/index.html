@@ -5507,6 +5507,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/preprocessing/PredClipper/" class="md-nav__link">
+        PredClipper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/preprocessing/PreviousImputer/" class="md-nav__link">
         PreviousImputer
       </a>
@@ -8082,6 +8096,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/0.9.0/" class="md-nav__link">
+        0.9.0 - 2021-11-30
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/0.8.0/" class="md-nav__link">
         0.8.0 - 2021-08-31
       </a>
@@ -8353,7 +8381,6 @@
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
-<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">time_series</span>
 
 
 <span class="k">def</span> <span class="nf">get_ordinal_date</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -8375,12 +8402,12 @@
 
     <span class="n">learn</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span>
         <span class="n">intercept_lr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">0.03</span><span class="p">),</span>
         <span class="n">loss</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Quantile</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="n">model</span> <span class="o">=</span> <span class="n">extract_features</span> <span class="o">|</span> <span class="n">scale</span> <span class="o">|</span> <span class="n">learn</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">Detrender</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">TargetStandardScaler</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">model</span>
 
@@ -8420,9 +8447,7 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">metric</span><span class="p">);</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Text(0.5, 1.0, &#39;MAE: 15.634343&#39;)
-</code></pre></div>
-<p><img alt="png" src="../quantile-regression-uncertainty_files/quantile-regression-uncertainty_3_1.png" /></p>
+<p><img alt="png" src="../quantile-regression-uncertainty_files/quantile-regression-uncertainty_3_0.png" /></p>
 <p>An important thing to note is that the prediction interval we obtained should not be confused with a confidence interval. Simply put, a prediction interval represents uncertainty for where the true value lies, whereas a confidence interval encapsulates the uncertainty on the prediction. You can find out more by reading <a href="https://stats.stackexchange.com/questions/16493/difference-between-confidence-intervals-and-prediction-intervals">this</a> CrossValidated post.</p>
 
               

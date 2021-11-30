@@ -1426,6 +1426,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/api/preprocessing/PredClipper/</loc>
+         <lastmod>2021-11-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/api/preprocessing/PreviousImputer/</loc>
          <lastmod>2021-11-30</lastmod>
          <changefreq>daily</changefreq>
@@ -2242,6 +2247,11 @@
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.8.0/</loc>
+         <lastmod>2021-11-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/releases/0.9.0/</loc>
          <lastmod>2021-11-30</lastmod>
          <changefreq>daily</changefreq>
     </url>

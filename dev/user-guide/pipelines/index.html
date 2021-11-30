@@ -5519,6 +5519,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/preprocessing/PredClipper/" class="md-nav__link">
+        PredClipper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/preprocessing/PreviousImputer/" class="md-nav__link">
         PreviousImputer
       </a>
@@ -8082,6 +8096,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/0.9.0/" class="md-nav__link">
+        0.9.0 - 2021-11-30
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/0.8.0/" class="md-nav__link">
         0.8.0 - 2021-08-31
       </a>
@@ -8366,17 +8394,19 @@
 <p>A pipeline has a <code>draw</code> method that can be used to visualize it:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<p><html><body><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
+<div><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
 {'counts': Counter(),
  'means': defaultdict(&lt;class 'float'&gt;, {}),
  'vars': defaultdict(&lt;class 'float'&gt;, {}),
- 'with_std': True}</p>
-<p></code></details><details class="estimator"><summary><pre class="estimator-name">PolynomialExtender</pre></summary><code class="estimator-params">
+ 'with_std': True}
+
+</code></details><details class="component estimator"><summary><pre class="estimator-name">PolynomialExtender</pre></summary><code class="estimator-params">
 {'bias_name': 'bias',
  'degree': 2,
  'include_bias': False,
- 'interaction_only': False}</p>
-<p></code></details><details class="estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
+ 'interaction_only': False}
+
+</code></details><details class="component estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
 {'_weights': {},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
@@ -8386,20 +8416,23 @@
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l2': 0.0,
  'loss': Squared({}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}</p>
-<p></code></details></div></body><style>
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}
+
+</code></details></div><style scoped>
 .estimator {
     padding: 1em;
     border-style: solid;
     background: white;
-}</p>
-<p>.pipeline {
+}
+
+.pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
-}</p>
-<p>.union {
+}
+
+.union {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -8407,49 +8440,75 @@
     padding: 1em;
     border-style: solid;
     background: white
-}</p>
-<p>/<em> Vertical spacing between steps </em>/</p>
-<p>.estimator + .estimator,
-.estimator + .union,
-.union + .estimator {
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.wrapper > .estimator {
+    margin-top: 1em;
+}
+
+/* Vertical spacing between steps */
+
+.component + .component {
     margin-top: 2em;
-}</p>
-<p>.union &gt; .estimator {
+}
+
+.union > .estimator {
     margin-top: 0;
-}</p>
-<p>/<em> Spacing within a union of estimators </em>/</p>
-<p>.union &gt;
-.estimator + .estimator,
-.pipeline + .estimator,
-.estimator + .pipeline,
-.pipeline + .pipeline {
+}
+
+.union > .pipeline {
+    margin-top: 0;
+}
+
+/* Spacing within a union of estimators */
+
+.union > .component + .component {
     margin-left: 1em;
-}</p>
-<p>/<em> Typography </em>/
+}
+
+/* Typography */
+
 .estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
-}</p>
-<p>.estimator &gt; code {
+}
+
+.estimator > code,
+.wrapper > details > code {
     background-color: white !important;
-}</p>
-<p>.estimator-name {
+}
+
+.estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
-}</p>
-<p>/<em> Toggle </em>/</p>
-<p>summary {
+}
+
+/* Toggle */
+
+summary {
     display: flex;
     align-items:center;
     cursor: pointer;
-}</p>
-<p>summary &gt; div {
+}
+
+summary > div {
     width: 100%;
 }
-</style></html></p>
+</style></div>
+
 <p><code>compose.Pipeline</code> inherits from <code>base.Estimator</code>, which means that it has a <code>learn_one</code> method. You would expect <code>learn_one</code> to update each estimator, but <strong>that's not actually what happens</strong>. Instead, the transformers are updated when <code>predict_one</code> (or <code>predict_proba_one</code> for that matter) is called. Indeed, in online machine learning, we can update the unsupervised parts of our model when a sample arrives. We don't have to wait for the ground truth to arrive in order to update unsupervised estimators that don't depend on it. In other words, in a pipeline, <code>learn_one</code> updates the supervised parts, whilst <code>predict_one</code> updates the unsupervised parts. It's important to be aware of this behavior, as it is quite different to what is done in other libraries that rely on batch machine learning.</p>
 <p>Here is a small example to illustrate the previous point:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
@@ -8523,127 +8582,130 @@
 
 <span class="n">model</span>
 </code></pre></div>
-<p><html><body><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
+<div><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
 {'counts': Counter(),
  'means': defaultdict(&lt;class 'float'&gt;, {}),
  'vars': defaultdict(&lt;class 'float'&gt;, {}),
- 'with_std': True}</p>
-<p></code></details><div class="union"><details class="estimator"><summary><pre class="estimator-name">PolynomialExtender</pre></summary><code class="estimator-params">
+ 'with_std': True}
+
+</code></details><div class="component union"><details class="component estimator"><summary><pre class="estimator-name">PolynomialExtender</pre></summary><code class="estimator-params">
 {'bias_name': 'bias',
  'degree': 2,
  'include_bias': False,
- 'interaction_only': False}</p>
-<p></code></details><details class="estimator"><summary><pre class="estimator-name">RBFSampler</pre></summary><code class="estimator-params">
+ 'interaction_only': False}
+
+</code></details><details class="component estimator"><summary><pre class="estimator-name">RBFSampler</pre></summary><code class="estimator-params">
 {'gamma': 1.0,
  'n_components': 100,
- 'offsets': [5.40319886163907,
-             1.6410242429846016,
-             2.9102505212582352,
-             1.2502497289471197,
-             1.6599819506345908,
-             0.9905000367712694,
-             2.733090767224682,
-             4.620746211242217,
-             2.852398674434833,
-             2.476005155469144,
-             3.7388007297528816,
-             5.646400674828576,
-             3.6227497381819425,
-             4.749089309393084,
-             1.4884201177246816,
-             0.6620783374639668,
-             5.373190414753098,
-             5.275452969586568,
-             3.2621017095010485,
-             5.393146766246767,
-             1.223265495606927,
-             2.0411736263752953,
-             5.553580538930083,
-             4.10986679876461,
-             6.235554966861734,
-             0.4643626338300455,
-             0.7817900181257065,
-             0.8011940519896001,
-             4.052099753388222,
-             2.909807284332097,
-             3.34510955200856,
-             0.3493140121007998,
-             5.402607818879578,
-             3.3087431285569493,
-             1.8770747192053943,
-             4.01284630848113,
-             2.474480980660175,
-             0.2501484424124193,
-             5.8711331722594995,
-             4.057584696495738,
-             3.8164961475303794,
-             0.06634520341680332,
-             5.8565647315792235,
-             0.1847353689415499,
-             5.382451632052383,
-             3.011163589617232,
-             1.7522981577704155,
-             4.2331865374090984,
-             2.9867710560333927,
-             4.433570469239939,
-             2.4306908395425553,
-             4.410215591556303,
-             5.380236343065923,
-             2.640146753638325,
-             3.2230721786004044,
-             4.287528278000641,
-             3.7882931545627048,
-             4.667545445964917,
-             2.921414671761127,
-             1.625105282481997,
-             5.351157082446773,
-             2.2249830555738033,
-             0.41897902600140907,
-             4.798923547622566,
-             0.5031333518481544,
-             3.2612135038369066,
-             2.9675308240998395,
-             1.1389886230155741,
-             0.6804135746493921,
-             5.001111709332776,
-             1.3026367122959899,
-             5.442518462695327,
-             2.6475839991470536,
-             3.2467017672206873,
-             2.5583103981305917,
-             4.121664457069394,
-             1.6644131911945859,
-             5.635212438790749,
-             2.0520138088916995,
-             2.7215315131799485,
-             1.2082918732869392,
-             0.6419157988676313,
-             5.355430804977489,
-             3.863611291623673,
-             5.493444748277504,
-             3.9141646461679795,
-             4.702303680693544,
-             2.6397887943831235,
-             3.4407364580864517,
-             0.7644840870081152,
-             5.025314138394125,
-             3.1860810516030793,
-             0.6846299445357678,
-             3.901352049120776,
-             0.7555553455686381,
-             3.7131726729981533,
-             2.0153584522084187,
-             5.571985454181369,
-             0.006569980732336922,
-             2.7015961406802824],
- 'rng': &lt;random.Random object at 0x7fb947bf3610&gt;,
+ 'offsets': [3.3510532411100926,
+             1.190142184105075,
+             4.758468173807059,
+             2.102487972776319,
+             1.480660275522741,
+             5.366729269710237,
+             5.070416334382951,
+             1.277733738266996,
+             2.207119719491707,
+             2.1426794957848565,
+             1.8225710193657765,
+             0.053985537083313495,
+             2.6438259461961584,
+             0.8971767883543308,
+             3.471297218403341,
+             2.6459033776328047,
+             1.9757793978738034,
+             5.087466036691654,
+             3.518448810009812,
+             5.758687368535289,
+             4.79849237290909,
+             5.743603500595328,
+             3.8577593701336594,
+             2.992220690658145,
+             4.6122186296260645,
+             2.1072783802275836,
+             3.2587620363834997,
+             4.18188290647669,
+             3.789865875963889,
+             1.3166941816528979,
+             2.1496598890995253,
+             0.5514213256928427,
+             6.133866289278633,
+             5.464360858865711,
+             4.291124096688779,
+             5.030631537283815,
+             0.9257361562479935,
+             6.114310134092216,
+             2.5412321682182526,
+             4.822019847592126,
+             0.49289853038336945,
+             5.662322515846727,
+             1.1066734350932208,
+             2.7859787189161023,
+             1.0923831484478823,
+             3.862364264034545,
+             4.57817015349273,
+             4.879251535793154,
+             3.2389588917501846,
+             0.8671594208818371,
+             0.3928381887147743,
+             0.8367553042176593,
+             5.487324628228967,
+             1.754506781747617,
+             1.4467895315220585,
+             4.95057422570524,
+             1.515646570633651,
+             0.7141957541762096,
+             2.6802165231715596,
+             3.1143643491751765,
+             3.2887707754133637,
+             4.698780590052855,
+             2.628523813897675,
+             3.051845846553334,
+             0.7137935763683448,
+             0.8668790249131346,
+             4.55066107913964,
+             5.448264849218835,
+             0.6859224016931418,
+             3.7014814797697153,
+             1.4690127755832323,
+             4.680232230781756,
+             2.1073009522234694,
+             3.8794879419289177,
+             0.9006462860416513,
+             2.682015494386968,
+             2.52991503710204,
+             2.2535812651434344,
+             5.407510051438392,
+             2.8275014865565486,
+             0.5645870178898392,
+             5.242344945410286,
+             1.609719168544174,
+             4.340295048969955,
+             2.927344299721854,
+             2.1090856426673503,
+             2.698017694795121,
+             5.749312469665515,
+             3.6999265064358733,
+             3.280883125056919,
+             5.481053451883993,
+             1.77331580361824,
+             0.0858416295646753,
+             5.316833856722039,
+             1.8426572018482168,
+             5.347342560277715,
+             5.1189679745176475,
+             1.2592524362712572,
+             3.637660524181257,
+             2.393108047753942],
+ 'rng': &lt;random.Random object at 0x7ff61a344210&gt;,
  'seed': None,
  'weights': defaultdict(&lt;bound method RBFSampler._random_weights of RBFSampler (
   gamma=1.
   n_components=100
   seed=None
-)&gt;, {})}</p>
-<p></code></details></div><details class="estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
+)&gt;, {})}
+
+</code></details></div><details class="component estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
 {'_weights': {},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
@@ -8653,20 +8715,23 @@
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l2': 0.0,
  'loss': Squared({}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}</p>
-<p></code></details></div></body><style>
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}
+
+</code></details></div><style scoped>
 .estimator {
     padding: 1em;
     border-style: solid;
     background: white;
-}</p>
-<p>.pipeline {
+}
+
+.pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
-}</p>
-<p>.union {
+}
+
+.union {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -8674,49 +8739,75 @@
     padding: 1em;
     border-style: solid;
     background: white
-}</p>
-<p>/<em> Vertical spacing between steps </em>/</p>
-<p>.estimator + .estimator,
-.estimator + .union,
-.union + .estimator {
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.wrapper > .estimator {
+    margin-top: 1em;
+}
+
+/* Vertical spacing between steps */
+
+.component + .component {
     margin-top: 2em;
-}</p>
-<p>.union &gt; .estimator {
+}
+
+.union > .estimator {
     margin-top: 0;
-}</p>
-<p>/<em> Spacing within a union of estimators </em>/</p>
-<p>.union &gt;
-.estimator + .estimator,
-.pipeline + .estimator,
-.estimator + .pipeline,
-.pipeline + .pipeline {
+}
+
+.union > .pipeline {
+    margin-top: 0;
+}
+
+/* Spacing within a union of estimators */
+
+.union > .component + .component {
     margin-left: 1em;
-}</p>
-<p>/<em> Typography </em>/
+}
+
+/* Typography */
+
 .estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
-}</p>
-<p>.estimator &gt; code {
+}
+
+.estimator > code,
+.wrapper > details > code {
     background-color: white !important;
-}</p>
-<p>.estimator-name {
+}
+
+.estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
-}</p>
-<p>/<em> Toggle </em>/</p>
-<p>summary {
+}
+
+/* Toggle */
+
+summary {
     display: flex;
     align-items:center;
     cursor: pointer;
-}</p>
-<p>summary &gt; div {
+}
+
+summary > div {
     width: 100%;
 }
-</style></html></p>
+</style></div>
+
 <p>Note that the <code>+</code> symbol acts as a shorthand notation for creating a <code>compose.TransformerUnion</code>, which means that we could have declared the above pipeline as so:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>

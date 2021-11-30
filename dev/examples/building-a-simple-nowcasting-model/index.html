@@ -5507,6 +5507,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/preprocessing/PredClipper/" class="md-nav__link">
+        PredClipper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/preprocessing/PreviousImputer/" class="md-nav__link">
         PreviousImputer
       </a>
@@ -8082,6 +8096,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/0.9.0/" class="md-nav__link">
+        0.9.0 - 2021-11-30
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/0.8.0/" class="md-nav__link">
         0.8.0 - 2021-08-31
       </a>
@@ -8411,9 +8439,8 @@
   font.set_text(s, 0, flags=flags)
 </code></pre></div>
 <p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_9_1.png" /></p>
-<p>The model has captured a trend but not the right one. Indeed it thinks the trend is linear whereas we can visually see that the growth of the data increases with time. In other words the second derivative of the series is positive. This is a well know problem in time series forecasting and there are thus many ways to handle it; for example by using a <a href="https://www.wikiwand.com/en/Power_transform">Box-Cox transform</a>. However we are going to do something a bit different, and instead linearly detrend the series using a <code>Detrender</code>. We'll set <code>window_size</code> to 12 in order to use a rolling mean of size 12 for detrending. The <code>Detrender</code> will center the target in 0, which means that we don't need an intercept in our linear regression. We can thus set <code>intercept_lr</code> to 0.</p>
+<p>The model has captured a trend but not the right one. Indeed it thinks the trend is linear whereas we can visually see that the growth of the data increases with time. In other words the second derivative of the series is positive. This is a well know problem in time series forecasting and there are thus many ways to handle it; for example by using a <a href="https://www.wikiwand.com/en/Power_transform">Box-Cox transform</a>. However we are going to do something a bit different, and instead linearly detrend the series using a <code>TargetStandardScaler</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
-<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">time_series</span>
 
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
@@ -8422,7 +8449,7 @@
     <span class="p">(</span><span class="s1">&#39;lin_reg&#39;</span><span class="p">,</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">intercept_lr</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
 <span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">Detrender</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">TargetStandardScaler</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
@@ -8447,7 +8474,7 @@
     <span class="p">(</span><span class="s1">&#39;lin_reg&#39;</span><span class="p">,</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">intercept_lr</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 <span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">Detrender</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">TargetStandardScaler</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
@@ -8455,19 +8482,19 @@
 <p>This seems pretty decent. We can take a look at the weights of the linear regression to get an idea of the importance of each feature.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">regressor</span><span class="p">[</span><span class="s1">&#39;lin_reg&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">weights</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;January&#39;: -9.469216150196292,
- &#39;February&#39;: -14.616539494085554,
- &#39;March&#39;: -3.543831579749453,
- &#39;April&#39;: -2.766323821459067,
- &#39;May&#39;: -0.6224556651312263,
- &#39;June&#39;: 13.478341968972643,
- &#39;July&#39;: 28.772701948655836,
- &#39;August&#39;: 26.88560005378563,
- &#39;September&#39;: 4.707302312777268,
- &#39;October&#39;: -8.705184336916485,
- &#39;November&#39;: -22.48440069047625,
- &#39;December&#39;: -13.372426538578132,
- &#39;ordinal_date&#39;: 13.829969822169433}
+<div class="highlight"><pre><span></span><code>{&#39;January&#39;: -0.13808091575141299,
+ &#39;February&#39;: -0.18716063793638954,
+ &#39;March&#39;: -0.026469206216021102,
+ &#39;April&#39;: -0.03500685108350436,
+ &#39;May&#39;: -0.013638742192777328,
+ &#39;June&#39;: 0.16194267303548826,
+ &#39;July&#39;: 0.31995865445067634,
+ &#39;August&#39;: 0.2810396556938982,
+ &#39;September&#39;: 0.03834350518076595,
+ &#39;October&#39;: -0.11655850082390988,
+ &#39;November&#39;: -0.2663497734491209,
+ &#39;December&#39;: -0.15396048501165746,
+ &#39;ordinal_date&#39;: 1.0234863735122575}
 </code></pre></div>
 <p>As could be expected the months of July and August have the highest weights because these are the months where people typically go on holiday abroad. The month of December has a low weight because this is a month of festivities in most of the Western world where people usually stay at home.</p>
 <p>Our model seems to understand which months are important, but it fails to see that the importance of each month grows multiplicatively as the years go on. In other words our model is too shy. We can fix this by increasing the learning rate of the <code>LinearRegression</code>'s optimizer.</p>
@@ -8485,7 +8512,7 @@
     <span class="p">))</span>
 <span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">Detrender</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">TargetStandardScaler</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
@@ -8515,7 +8542,7 @@
     <span class="p">))</span>
 <span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">Detrender</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">TargetStandardScaler</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
@@ -8532,11 +8559,13 @@
 <span class="p">)</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">extract_features</span> <span class="o">|</span> <span class="n">scale</span> <span class="o">|</span> <span class="n">learn</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">Detrender</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">TargetStandardScaler</span><span class="p">(</span><span class="n">regressor</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_21_0.png" /></p>
+<div class="highlight"><pre><span></span><code>
+</code></pre></div>
 
               
             </article>
