@@ -5519,6 +5519,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/preprocessing/PredClipper/" class="md-nav__link">
+        PredClipper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/preprocessing/PreviousImputer/" class="md-nav__link">
         PreviousImputer
       </a>
@@ -8082,6 +8096,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/0.9.0/" class="md-nav__link">
+        0.9.0 - 2021-11-30
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/0.8.0/" class="md-nav__link">
         0.8.0 - 2021-08-31
       </a>
@@ -8440,27 +8468,24 @@ Downloaded  True
 <p>The <code>stream</code> module provides helper functions to read data from different formats. For instance, you can use the <code>stream.iter_sklearn_dataset</code> function to turn any scikit-learn dataset into a stream.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_boston</span><span class="p">()</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_diabetes</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_sklearn_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
     <span class="k">break</span>
 
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>({&#39;CRIM&#39;: 0.00632,
-  &#39;ZN&#39;: 18.0,
-  &#39;INDUS&#39;: 2.31,
-  &#39;CHAS&#39;: 0.0,
-  &#39;NOX&#39;: 0.538,
-  &#39;RM&#39;: 6.575,
-  &#39;AGE&#39;: 65.2,
-  &#39;DIS&#39;: 4.09,
-  &#39;RAD&#39;: 1.0,
-  &#39;TAX&#39;: 296.0,
-  &#39;PTRATIO&#39;: 15.3,
-  &#39;B&#39;: 396.9,
-  &#39;LSTAT&#39;: 4.98},
- 24.0)
+<div class="highlight"><pre><span></span><code>({&#39;age&#39;: 0.0380759064334241,
+  &#39;sex&#39;: 0.0506801187398187,
+  &#39;bmi&#39;: 0.0616962065186885,
+  &#39;bp&#39;: 0.0218723549949558,
+  &#39;s1&#39;: -0.0442234984244464,
+  &#39;s2&#39;: -0.0348207628376986,
+  &#39;s3&#39;: -0.0434008456520269,
+  &#39;s4&#39;: -0.00259226199818282,
+  &#39;s5&#39;: 0.0199084208763183,
+  &#39;s6&#39;: -0.0176461251598052},
+ 151.0)
 </code></pre></div>
 <p>To conclude, let us shortly mention the difference between <em>proactive learning</em> and <em>reactive learning</em> in the specific context of online machine learning. When we loop over a data with a <code>for</code> loop, we have the control over the data and the order in which it arrives. We are proactive in the sense that we, the user, are asking for the data to arrive.</p>
 <p>In contract, in a reactive situation, we don't have control on the data arrival. A typical example of such a situation is a web server, where web requests arrive in an arbitrary order. This is a situation where <code>river</code> shines. For instance, in a <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> application, you could define a route to make predictions with a <code>river</code> model as so:</p>

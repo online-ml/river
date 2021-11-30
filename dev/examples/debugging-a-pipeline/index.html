@@ -5507,6 +5507,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/preprocessing/PredClipper/" class="md-nav__link">
+        PredClipper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/preprocessing/PreviousImputer/" class="md-nav__link">
         PreviousImputer
       </a>
@@ -8082,6 +8096,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/0.9.0/" class="md-nav__link">
+        0.9.0 - 2021-11-30
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/0.8.0/" class="md-nav__link">
         0.8.0 - 2021-08-31
       </a>
@@ -8399,179 +8427,184 @@
 <p>Let's start by looking at the pipeline. You can click each cell to display the current state for each step of the pipeline.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<p><html><body><div class="pipeline"><details class="estimator"><summary><pre class="estimator-name">add_time_features</pre></summary><code class="estimator-params">
+<div><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">add_time_features</pre></summary><code class="estimator-params">
 def add_time_features(x):
     return {
         **x,
         'hour': x['moment'].hour,
         'day': x['moment'].weekday()
-    }</p>
-<p></code></details><div class="union"><details class="estimator"><summary><pre class="estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="estimator-params">
-{'whitelist': {'temperature', 'humidity', 'wind', 'pressure', 'clouds'}}</p>
-<p></code></details><details class="estimator"><summary><pre class="estimator-name">target_mean_by_station_and_hour</pre></summary><code class="estimator-params">
-{'by': ['station', 'hour'],
- 'feature_name': 'target_mean_by_station_and_hour',
- 'groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7feddafb5700&gt;, Mean: 0.),
-                       {'metro-canal-du-midi_0': Mean: 7.93981,
-                        'metro-canal-du-midi_1': Mean: 8.179704,
-                        'metro-canal-du-midi_10': Mean: 12.486815,
-                        'metro-canal-du-midi_11': Mean: 11.675479,
-                        'metro-canal-du-midi_12': Mean: 10.197409,
-                        'metro-canal-du-midi_13': Mean: 10.650855,
-                        'metro-canal-du-midi_14': Mean: 11.109123,
-                        'metro-canal-du-midi_15': Mean: 11.068934,
-                        'metro-canal-du-midi_16': Mean: 11.274958,
-                        'metro-canal-du-midi_17': Mean: 8.459136,
-                        'metro-canal-du-midi_18': Mean: 7.587469,
-                        'metro-canal-du-midi_19': Mean: 7.734677,
-                        'metro-canal-du-midi_2': Mean: 8.35824,
-                        'metro-canal-du-midi_20': Mean: 7.582465,
-                        'metro-canal-du-midi_21': Mean: 7.190665,
-                        'metro-canal-du-midi_22': Mean: 7.486895,
-                        'metro-canal-du-midi_23': Mean: 7.840791,
-                        'metro-canal-du-midi_3': Mean: 8.656051,
-                        'metro-canal-du-midi_4': Mean: 8.868445,
-                        'metro-canal-du-midi_5': Mean: 8.99656,
-                        'metro-canal-du-midi_6': Mean: 9.09966,
-                        'metro-canal-du-midi_7': Mean: 8.852642,
-                        'metro-canal-du-midi_8': Mean: 12.66712,
-                        'metro-canal-du-midi_9': Mean: 13.412186,
-                        'place-des-carmes_0': Mean: 4.720696,
-                        'place-des-carmes_1': Mean: 3.390295,
-                        'place-des-carmes_10': Mean: 8.575303,
-                        'place-des-carmes_11': Mean: 9.321546,
-                        'place-des-carmes_12': Mean: 10.511931,
-                        'place-des-carmes_13': Mean: 11.392745,
-                        'place-des-carmes_14': Mean: 10.735003,
-                        'place-des-carmes_15': Mean: 10.198787,
-                        'place-des-carmes_16': Mean: 9.941479,
-                        'place-des-carmes_17': Mean: 9.125579,
-                        'place-des-carmes_18': Mean: 7.660775,
-                        'place-des-carmes_19': Mean: 6.847649,
-                        'place-des-carmes_2': Mean: 2.232181,
-                        'place-des-carmes_20': Mean: 9.626876,
-                        'place-des-carmes_21': Mean: 11.602929,
-                        'place-des-carmes_22': Mean: 10.405537,
-                        'place-des-carmes_23': Mean: 7.700904,
-                        'place-des-carmes_3': Mean: 1.371981,
-                        'place-des-carmes_4': Mean: 1.051665,
-                        'place-des-carmes_5': Mean: 0.984993,
-                        'place-des-carmes_6': Mean: 2.039947,
-                        'place-des-carmes_7': Mean: 3.850369,
-                        'place-des-carmes_8': Mean: 3.792624,
-                        'place-des-carmes_9': Mean: 5.957182,
-                        'place-esquirol_0': Mean: 7.415789,
-                        'place-esquirol_1': Mean: 5.244396,
-                        'place-esquirol_10': Mean: 19.465005,
-                        'place-esquirol_11': Mean: 22.976512,
-                        'place-esquirol_12': Mean: 25.324159,
-                        'place-esquirol_13': Mean: 25.428847,
-                        'place-esquirol_14': Mean: 24.57762,
-                        'place-esquirol_15': Mean: 24.416851,
-                        'place-esquirol_16': Mean: 23.555125,
-                        'place-esquirol_17': Mean: 22.062564,
-                        'place-esquirol_18': Mean: 18.10623,
-                        'place-esquirol_19': Mean: 11.916638,
-                        'place-esquirol_2': Mean: 2.858635,
-                        'place-esquirol_20': Mean: 13.346362,
-                        'place-esquirol_21': Mean: 16.743318,
-                        'place-esquirol_22': Mean: 15.562088,
-                        'place-esquirol_23': Mean: 10.911134,
-                        'place-esquirol_3': Mean: 1.155929,
-                        'place-esquirol_4': Mean: 0.73306,
-                        'place-esquirol_5': Mean: 0.668546,
-                        'place-esquirol_6': Mean: 1.21265,
-                        'place-esquirol_7': Mean: 3.107535,
-                        'place-esquirol_8': Mean: 8.518696,
-                        'place-esquirol_9': Mean: 15.470588,
-                        'place-jeanne-darc_0': Mean: 6.541667,
-                        'place-jeanne-darc_1': Mean: 5.99892,
-                        'place-jeanne-darc_10': Mean: 5.735553,
-                        'place-jeanne-darc_11': Mean: 5.616142,
-                        'place-jeanne-darc_12': Mean: 5.787478,
-                        'place-jeanne-darc_13': Mean: 5.817699,
-                        'place-jeanne-darc_14': Mean: 5.657546,
-                        'place-jeanne-darc_15': Mean: 6.224604,
-                        'place-jeanne-darc_16': Mean: 5.796141,
-                        'place-jeanne-darc_17': Mean: 5.743089,
-                        'place-jeanne-darc_18': Mean: 5.674784,
-                        'place-jeanne-darc_19': Mean: 5.833068,
-                        'place-jeanne-darc_2': Mean: 5.598169,
-                        'place-jeanne-darc_20': Mean: 6.015755,
-                        'place-jeanne-darc_21': Mean: 6.242541,
-                        'place-jeanne-darc_22': Mean: 6.141509,
-                        'place-jeanne-darc_23': Mean: 6.493028,
-                        'place-jeanne-darc_3': Mean: 5.180556,
-                        'place-jeanne-darc_4': Mean: 4.779626,
-                        'place-jeanne-darc_5': Mean: 4.67063,
-                        'place-jeanne-darc_6': Mean: 4.611995,
-                        'place-jeanne-darc_7': Mean: 4.960718,
-                        'place-jeanne-darc_8': Mean: 5.552273,
-                        'place-jeanne-darc_9': Mean: 6.249573,
-                        'pomme_0': Mean: 3.301532,
-                        'pomme_1': Mean: 2.312914,
-                        'pomme_10': Mean: 11.791436,
-                        'pomme_11': Mean: 12.976854,
-                        'pomme_12': Mean: 13.962654,
-                        'pomme_13': Mean: 11.692257,
-                        'pomme_14': Mean: 11.180851,
-                        'pomme_15': Mean: 11.939586,
-                        'pomme_16': Mean: 12.267051,
-                        'pomme_17': Mean: 12.132993,
-                        'pomme_18': Mean: 11.399108,
-                        'pomme_19': Mean: 6.37021,
-                        'pomme_2': Mean: 2.144453,
-                        'pomme_20': Mean: 5.279234,
-                        'pomme_21': Mean: 6.254257,
-                        'pomme_22': Mean: 6.568678,
-                        'pomme_23': Mean: 5.235756,
-                        'pomme_3': Mean: 1.563622,
-                        'pomme_4': Mean: 0.947328,
-                        'pomme_5': Mean: 0.924175,
-                        'pomme_6': Mean: 1.287805,
-                        'pomme_7': Mean: 1.299456,
-                        'pomme_8': Mean: 2.94988,
-                        'pomme_9': Mean: 7.89396}),
+    }
+
+</code></details><div class="component union"><details class="component estimator"><summary><pre class="estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="estimator-params">
+{'keys': {'humidity', 'clouds', 'pressure', 'temperature', 'wind'}}
+
+</code></details><details class="component estimator"><summary><pre class="estimator-name">y_mean_by_station_and_hour</pre></summary><code class="estimator-params">
+{'_feature_name': 'y_mean_by_station_and_hour',
+ '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7ffd24fb5790&gt;, Mean: 0.),
+                        {('metro-canal-du-midi', 0): Mean: 7.93981,
+                         ('metro-canal-du-midi', 1): Mean: 8.179704,
+                         ('metro-canal-du-midi', 2): Mean: 8.35824,
+                         ('metro-canal-du-midi', 3): Mean: 8.656051,
+                         ('metro-canal-du-midi', 4): Mean: 8.868445,
+                         ('metro-canal-du-midi', 5): Mean: 8.99656,
+                         ('metro-canal-du-midi', 6): Mean: 9.09966,
+                         ('metro-canal-du-midi', 7): Mean: 8.852642,
+                         ('metro-canal-du-midi', 8): Mean: 12.66712,
+                         ('metro-canal-du-midi', 9): Mean: 13.412186,
+                         ('metro-canal-du-midi', 10): Mean: 12.486815,
+                         ('metro-canal-du-midi', 11): Mean: 11.675479,
+                         ('metro-canal-du-midi', 12): Mean: 10.197409,
+                         ('metro-canal-du-midi', 13): Mean: 10.650855,
+                         ('metro-canal-du-midi', 14): Mean: 11.109123,
+                         ('metro-canal-du-midi', 15): Mean: 11.068934,
+                         ('metro-canal-du-midi', 16): Mean: 11.274958,
+                         ('metro-canal-du-midi', 17): Mean: 8.459136,
+                         ('metro-canal-du-midi', 18): Mean: 7.587469,
+                         ('metro-canal-du-midi', 19): Mean: 7.734677,
+                         ('metro-canal-du-midi', 20): Mean: 7.582465,
+                         ('metro-canal-du-midi', 21): Mean: 7.190665,
+                         ('metro-canal-du-midi', 22): Mean: 7.486895,
+                         ('metro-canal-du-midi', 23): Mean: 7.840791,
+                         ('place-des-carmes', 0): Mean: 4.720696,
+                         ('place-des-carmes', 1): Mean: 3.390295,
+                         ('place-des-carmes', 2): Mean: 2.232181,
+                         ('place-des-carmes', 3): Mean: 1.371981,
+                         ('place-des-carmes', 4): Mean: 1.051665,
+                         ('place-des-carmes', 5): Mean: 0.984993,
+                         ('place-des-carmes', 6): Mean: 2.039947,
+                         ('place-des-carmes', 7): Mean: 3.850369,
+                         ('place-des-carmes', 8): Mean: 3.792624,
+                         ('place-des-carmes', 9): Mean: 5.957182,
+                         ('place-des-carmes', 10): Mean: 8.575303,
+                         ('place-des-carmes', 11): Mean: 9.321546,
+                         ('place-des-carmes', 12): Mean: 10.511931,
+                         ('place-des-carmes', 13): Mean: 11.392745,
+                         ('place-des-carmes', 14): Mean: 10.735003,
+                         ('place-des-carmes', 15): Mean: 10.198787,
+                         ('place-des-carmes', 16): Mean: 9.941479,
+                         ('place-des-carmes', 17): Mean: 9.125579,
+                         ('place-des-carmes', 18): Mean: 7.660775,
+                         ('place-des-carmes', 19): Mean: 6.847649,
+                         ('place-des-carmes', 20): Mean: 9.626876,
+                         ('place-des-carmes', 21): Mean: 11.602929,
+                         ('place-des-carmes', 22): Mean: 10.405537,
+                         ('place-des-carmes', 23): Mean: 7.700904,
+                         ('place-esquirol', 0): Mean: 7.415789,
+                         ('place-esquirol', 1): Mean: 5.244396,
+                         ('place-esquirol', 2): Mean: 2.858635,
+                         ('place-esquirol', 3): Mean: 1.155929,
+                         ('place-esquirol', 4): Mean: 0.73306,
+                         ('place-esquirol', 5): Mean: 0.668546,
+                         ('place-esquirol', 6): Mean: 1.21265,
+                         ('place-esquirol', 7): Mean: 3.107535,
+                         ('place-esquirol', 8): Mean: 8.518696,
+                         ('place-esquirol', 9): Mean: 15.470588,
+                         ('place-esquirol', 10): Mean: 19.465005,
+                         ('place-esquirol', 11): Mean: 22.976512,
+                         ('place-esquirol', 12): Mean: 25.324159,
+                         ('place-esquirol', 13): Mean: 25.428847,
+                         ('place-esquirol', 14): Mean: 24.57762,
+                         ('place-esquirol', 15): Mean: 24.416851,
+                         ('place-esquirol', 16): Mean: 23.555125,
+                         ('place-esquirol', 17): Mean: 22.062564,
+                         ('place-esquirol', 18): Mean: 18.10623,
+                         ('place-esquirol', 19): Mean: 11.916638,
+                         ('place-esquirol', 20): Mean: 13.346362,
+                         ('place-esquirol', 21): Mean: 16.743318,
+                         ('place-esquirol', 22): Mean: 15.562088,
+                         ('place-esquirol', 23): Mean: 10.911134,
+                         ('place-jeanne-darc', 0): Mean: 6.541667,
+                         ('place-jeanne-darc', 1): Mean: 5.99892,
+                         ('place-jeanne-darc', 2): Mean: 5.598169,
+                         ('place-jeanne-darc', 3): Mean: 5.180556,
+                         ('place-jeanne-darc', 4): Mean: 4.779626,
+                         ('place-jeanne-darc', 5): Mean: 4.67063,
+                         ('place-jeanne-darc', 6): Mean: 4.611995,
+                         ('place-jeanne-darc', 7): Mean: 4.960718,
+                         ('place-jeanne-darc', 8): Mean: 5.552273,
+                         ('place-jeanne-darc', 9): Mean: 6.249573,
+                         ('place-jeanne-darc', 10): Mean: 5.735553,
+                         ('place-jeanne-darc', 11): Mean: 5.616142,
+                         ('place-jeanne-darc', 12): Mean: 5.787478,
+                         ('place-jeanne-darc', 13): Mean: 5.817699,
+                         ('place-jeanne-darc', 14): Mean: 5.657546,
+                         ('place-jeanne-darc', 15): Mean: 6.224604,
+                         ('place-jeanne-darc', 16): Mean: 5.796141,
+                         ('place-jeanne-darc', 17): Mean: 5.743089,
+                         ('place-jeanne-darc', 18): Mean: 5.674784,
+                         ('place-jeanne-darc', 19): Mean: 5.833068,
+                         ('place-jeanne-darc', 20): Mean: 6.015755,
+                         ('place-jeanne-darc', 21): Mean: 6.242541,
+                         ('place-jeanne-darc', 22): Mean: 6.141509,
+                         ('place-jeanne-darc', 23): Mean: 6.493028,
+                         ('pomme', 0): Mean: 3.301532,
+                         ('pomme', 1): Mean: 2.312914,
+                         ('pomme', 2): Mean: 2.144453,
+                         ('pomme', 3): Mean: 1.563622,
+                         ('pomme', 4): Mean: 0.947328,
+                         ('pomme', 5): Mean: 0.924175,
+                         ('pomme', 6): Mean: 1.287805,
+                         ('pomme', 7): Mean: 1.299456,
+                         ('pomme', 8): Mean: 2.94988,
+                         ('pomme', 9): Mean: 7.89396,
+                         ('pomme', 10): Mean: 11.791436,
+                         ('pomme', 11): Mean: 12.976854,
+                         ('pomme', 12): Mean: 13.962654,
+                         ('pomme', 13): Mean: 11.692257,
+                         ('pomme', 14): Mean: 11.180851,
+                         ('pomme', 15): Mean: 11.939586,
+                         ('pomme', 16): Mean: 12.267051,
+                         ('pomme', 17): Mean: 12.132993,
+                         ('pomme', 18): Mean: 11.399108,
+                         ('pomme', 19): Mean: 6.37021,
+                         ('pomme', 20): Mean: 5.279234,
+                         ('pomme', 21): Mean: 6.254257,
+                         ('pomme', 22): Mean: 6.568678,
+                         ('pomme', 23): Mean: 5.235756}),
+ 'by': ['station', 'hour'],
  'how': Mean: 0.,
- 'target_name': 'target'}</p>
-<p></code></details><details class="estimator"><summary><pre class="estimator-name">target_ewm_0.5_by_station</pre></summary><code class="estimator-params">
-{'by': ['station'],
- 'feature_name': 'target_ewm_0.5_by_station',
- 'groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7feddafb5700&gt;, EWMean: 0.),
-                       {'metro-canal-du-midi': EWMean: 4.690531,
-                        'place-des-carmes': EWMean: 3.295317,
-                        'place-esquirol': EWMean: 31.539759,
-                        'place-jeanne-darc': EWMean: 22.449934,
-                        'pomme': EWMean: 11.803716}),
+ 'target_name': 'y'}
+
+</code></details><details class="component estimator"><summary><pre class="estimator-name">y_ewm_0.5_by_station</pre></summary><code class="estimator-params">
+{'_feature_name': 'y_ewm_0.5_by_station',
+ '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7ffd24fb5790&gt;, EWMean: 0.),
+                        {('metro-canal-du-midi',): EWMean: 4.690531,
+                         ('place-des-carmes',): EWMean: 3.295317,
+                         ('place-esquirol',): EWMean: 31.539759,
+                         ('place-jeanne-darc',): EWMean: 22.449934,
+                         ('pomme',): EWMean: 11.803716}),
+ 'by': ['station'],
  'how': EWMean: 0.,
- 'target_name': 'target'}</p>
-<p></code></details></div><details class="estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
-{'counts': Counter({'target_ewm_0.5_by_station': 182470,
-                    'target_mean_by_station_and_hour': 182470,
-                    'temperature': 182470,
+ 'target_name': 'y'}
+
+</code></details></div><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
+{'counts': Counter({'y_ewm_0.5_by_station': 182470,
+                    'y_mean_by_station_and_hour': 182470,
                     'humidity': 182470,
-                    'wind': 182470,
+                    'clouds': 182470,
                     'pressure': 182470,
-                    'clouds': 182470}),
+                    'temperature': 182470,
+                    'wind': 182470}),
  'means': defaultdict(&lt;class 'float'&gt;,
                       {'clouds': 30.315131254453505,
                        'humidity': 62.24244533347998,
                        'pressure': 1017.0563060996391,
-                       'target_ewm_0.5_by_station': 10.08331958752748,
-                       'target_mean_by_station_and_hour': 9.410348580619415,
                        'temperature': 20.50980692716619,
-                       'wind': 3.4184331122924543}),
+                       'wind': 3.4184331122924543,
+                       'y_ewm_0.5_by_station': 10.08331958752748,
+                       'y_mean_by_station_and_hour': 9.410348580619415}),
  'vars': defaultdict(&lt;class 'float'&gt;,
                      {'clouds': 1389.0025610928221,
                       'humidity': 349.59967918503554,
                       'pressure': 33.298307526514115,
-                      'target_ewm_0.5_by_station': 80.17355266024735,
-                      'target_mean_by_station_and_hour': 33.98249801051089,
                       'temperature': 34.70701720774977,
-                      'wind': 4.473627075744674}),
- 'with_std': True}</p>
-<p></code></details><details class="estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
-{'_weights': {'target_ewm_0.5_by_station': 9.264175276315452, 'target_mean_by_station_and_hour': 0.19801400070497788, 'temperature': -0.4211217806219195, 'humidity': 1.012524843761294, 'wind': -0.04087954775179751, 'pressure': 0.1813749890913752, 'clouds': -0.3269694794458267},
+                      'wind': 4.473627075744674,
+                      'y_ewm_0.5_by_station': 80.17355266024735,
+                      'y_mean_by_station_and_hour': 33.98249801051089}),
+ 'with_std': True}
+
+</code></details><details class="component estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
+{'_weights': {'y_ewm_0.5_by_station': 9.264175276315452, 'y_mean_by_station_and_hour': 0.1980140007049774, 'humidity': 1.0125248437612977, 'clouds': -0.3269694794458268, 'pressure': 0.1813749890913746, 'temperature': -0.4211217806219108, 'wind': -0.04087954775179999},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
  'initializer': Zeros (),
@@ -8580,20 +8613,23 @@ def add_time_features(x):
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l2': 0.0,
  'loss': Squared({}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 182470})}</p>
-<p></code></details></div></body><style>
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 182470})}
+
+</code></details></div><style scoped>
 .estimator {
     padding: 1em;
     border-style: solid;
     background: white;
-}</p>
-<p>.pipeline {
+}
+
+.pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
-}</p>
-<p>.union {
+}
+
+.union {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -8601,49 +8637,75 @@ def add_time_features(x):
     padding: 1em;
     border-style: solid;
     background: white
-}</p>
-<p>/<em> Vertical spacing between steps </em>/</p>
-<p>.estimator + .estimator,
-.estimator + .union,
-.union + .estimator {
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.wrapper > .estimator {
+    margin-top: 1em;
+}
+
+/* Vertical spacing between steps */
+
+.component + .component {
     margin-top: 2em;
-}</p>
-<p>.union &gt; .estimator {
+}
+
+.union > .estimator {
     margin-top: 0;
-}</p>
-<p>/<em> Spacing within a union of estimators </em>/</p>
-<p>.union &gt;
-.estimator + .estimator,
-.pipeline + .estimator,
-.estimator + .pipeline,
-.pipeline + .pipeline {
+}
+
+.union > .pipeline {
+    margin-top: 0;
+}
+
+/* Spacing within a union of estimators */
+
+.union > .component + .component {
     margin-left: 1em;
-}</p>
-<p>/<em> Typography </em>/
+}
+
+/* Typography */
+
 .estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
-}</p>
-<p>.estimator &gt; code {
+}
+
+.estimator > code,
+.wrapper > details > code {
     background-color: white !important;
-}</p>
-<p>.estimator-name {
+}
+
+.estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
-}</p>
-<p>/<em> Toggle </em>/</p>
-<p>summary {
+}
+
+/* Toggle */
+
+summary {
     display: flex;
     align-items:center;
     cursor: pointer;
-}</p>
-<p>summary &gt; div {
+}
+
+summary > div {
     width: 100%;
 }
-</style></html></p>
+</style></div>
+
 <p>As mentioned above the <code>Pipeline</code> class has a <code>debug_one</code> method. You can use this at any point you want to visualize what happen to an input <code>x</code>. For example, let's see what happens to the last seen <code>x</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">debug_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
@@ -8683,41 +8745,41 @@ wind: 1.95000 (float)
 
     2.1 TargetAgg
     -------------
-    target_mean_by_station_and_hour: 7.89396 (float)
+    y_mean_by_station_and_hour: 7.89396 (float)
 
     2.2 TargetAgg1
     --------------
-    target_ewm_0.5_by_station: 11.80372 (float)
+    y_ewm_0.5_by_station: 11.80372 (float)
 
 clouds: 88 (int)
 humidity: 84 (int)
 pressure: 1,017.34000 (float)
-target_ewm_0.5_by_station: 11.80372 (float)
-target_mean_by_station_and_hour: 7.89396 (float)
 temperature: 17.45000 (float)
 wind: 1.95000 (float)
+y_ewm_0.5_by_station: 11.80372 (float)
+y_mean_by_station_and_hour: 7.89396 (float)
 
 3. StandardScaler
 -----------------
 clouds: 1.54778 (float)
 humidity: 1.16366 (float)
 pressure: 0.04916 (float)
-target_ewm_0.5_by_station: 0.19214 (float)
-target_mean_by_station_and_hour: -0.26013 (float)
 temperature: -0.51938 (float)
 wind: -0.69426 (float)
+y_ewm_0.5_by_station: 0.19214 (float)
+y_mean_by_station_and_hour: -0.26013 (float)
 
 4. LinearRegression
 -------------------
-Name                              Value      Weight     Contribution  
-                      Intercept    1.00000    9.22316        9.22316  
-      target_ewm_0.5_by_station    0.19214    9.26418        1.78000  
-                       humidity    1.16366    1.01252        1.17823  
-                    temperature   -0.51938   -0.42112        0.21872  
-                           wind   -0.69426   -0.04088        0.02838  
-                       pressure    0.04916    0.18137        0.00892  
-target_mean_by_station_and_hour   -0.26013    0.19801       -0.05151  
-                         clouds    1.54778   -0.32697       -0.50608
+Name                         Value      Weight     Contribution  
+                 Intercept    1.00000    9.22316        9.22316  
+      y_ewm_0.5_by_station    0.19214    9.26418        1.78000  
+                  humidity    1.16366    1.01252        1.17823  
+               temperature   -0.51938   -0.42112        0.21872  
+                      wind   -0.69426   -0.04088        0.02838  
+                  pressure    0.04916    0.18137        0.00892  
+y_mean_by_station_and_hour   -0.26013    0.19801       -0.05151  
+                    clouds    1.54778   -0.32697       -0.50608
 
 Prediction: 11.87982
 </code></pre></div>
