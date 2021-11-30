@@ -59,3 +59,14 @@ class PredClipper(base.Regressor, base.Wrapper):
     def predict_one(self, x):
         y_pred = self.regressor.predict_one(x)
         return utils.math.clamp(y_pred, self.y_min, self.y_max)
+
+    @classmethod
+    def _unit_test_params(cls):
+        import math
+        from river import linear_model
+
+        yield {
+            "regressor": linear_model.LinearRegression(),
+            "y_min": -math.inf,
+            "y_max": math.inf,
+        }
