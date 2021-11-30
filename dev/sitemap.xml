@@ -96,12 +96,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/api/base/WrapperEnsemble/</loc>
+         <loc>https://riverml.xyz/api/base/Wrapper/</loc>
          <lastmod>2021-11-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/api/base/WrapperMixin/</loc>
+         <loc>https://riverml.xyz/api/base/WrapperEnsemble/</loc>
          <lastmod>2021-11-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -1086,6 +1086,36 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/api/model-selection/EpsilonGreedyRegressor/</loc>
+         <lastmod>2021-11-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/model-selection/GreedyRegressor/</loc>
+         <lastmod>2021-11-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/model-selection/ModelSelector/</loc>
+         <lastmod>2021-11-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/model-selection/SuccessiveHalvingClassifier/</loc>
+         <lastmod>2021-11-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/model-selection/SuccessiveHalvingRegressor/</loc>
+         <lastmod>2021-11-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/model-selection/UCBRegressor/</loc>
+         <lastmod>2021-11-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/api/multiclass/OneVsOneClassifier/</loc>
          <lastmod>2021-11-30</lastmod>
          <changefreq>daily</changefreq>
@@ -1452,26 +1482,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/api/rules/AMRules/</loc>
-         <lastmod>2021-11-30</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/selection/EpsilonGreedyRegressor/</loc>
-         <lastmod>2021-11-30</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/selection/GreedySelectionRegressor/</loc>
-         <lastmod>2021-11-30</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/selection/SuccessiveHalvingClassifier/</loc>
-         <lastmod>2021-11-30</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/selection/SuccessiveHalvingRegressor/</loc>
          <lastmod>2021-11-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
