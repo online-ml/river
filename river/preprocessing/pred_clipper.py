@@ -63,6 +63,7 @@ class PredClipper(base.Regressor, base.Wrapper):
     @classmethod
     def _unit_test_params(cls):
         import math
+
         from river import linear_model
 
         yield {
