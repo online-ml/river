@@ -10,6 +10,7 @@ from .feature_hasher import FeatureHasher
 from .impute import PreviousImputer, StatImputer
 from .lda import LDA
 from .one_hot import OneHotEncoder
+from .pred_clipper import PredClipper
 from .scale import (
     AdaptiveStandardScaler,
     Binarizer,
@@ -30,6 +31,7 @@ __all__ = [
     "MinMaxScaler",
     "Normalizer",
     "OneHotEncoder",
+    "PredClipper",
     "PreviousImputer",
     "RobustScaler",
     "StandardScaler",
