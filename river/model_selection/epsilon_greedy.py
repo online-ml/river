@@ -128,10 +128,7 @@ class EpsilonGreedyRegressor(BanditRegressor):
             models=models,
             metric=metric,
             policy=EpsilonGreedy(
-                epsilon=epsilon,
-                decay=decay,
-                burn_in=burn_in,
-                seed=seed,
+                epsilon=epsilon, decay=decay, burn_in=burn_in, seed=seed,
             ),
         )
 
