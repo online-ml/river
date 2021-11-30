@@ -31,6 +31,10 @@
 - Removed `learn_unsupervised` parameter from pipeline methods.
 - Implemented `compose.TransformerProduct`.
 
+## datasets
+
+- Added `datasets.Keystroke`.
+
 ## ensemble
 
 - Bug fixes in `ensemble.SRPClassifier` and `ensemble.SRPRegressor`.
@@ -60,6 +64,19 @@ This module has been deleted.
 
 - `optim.Adam` and `optim.RMSProp` now work with `utils.VectorDict`s as well as `numpy.ndarray`s.
 - Added `optim.losses.Huber`.
+
+## preprocessing
+
+- Enabled `preprocessing.OneHotEncoder` to one-hot encode values that are list or sets.
+
+## reco
+
+- Added a `debug_one` method to `reco.FMRegressor`.
+
+## selection
+
+- This new module replaces the `expert` module.
+- Implemented `selection.GreedyExpertRegressor`.
 
 ## stats
 

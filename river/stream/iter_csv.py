@@ -52,7 +52,7 @@ def iter_csv(
     Parameters
     ----------
     filepath_or_buffer
-        Either a string indicating the location of a CSV file, or a buffer object that has a
+        Either a string indicating the location of a file, or a buffer object that has a
         `read` method.
     target
         A single target column is assumed if a string is passed. A multiple output scenario

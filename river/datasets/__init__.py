@@ -15,6 +15,7 @@ from .elec2 import Elec2
 from .higgs import Higgs
 from .http import HTTP
 from .insects import Insects
+from .keystroke import Keystroke
 from .malicious_url import MaliciousURL
 from .movielens100k import MovieLens100K
 from .music import Music
@@ -39,6 +40,7 @@ __all__ = [
     "HTTP",
     "ImageSegments",
     "Insects",
+    "Keystroke",
     "MaliciousURL",
     "MovieLens100K",
     "Music",

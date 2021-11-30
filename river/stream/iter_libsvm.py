@@ -14,7 +14,7 @@ def iter_libsvm(
     Parameters
     ----------
     filepath_or_buffer
-        Either a string indicating the location of a CSV file, or a buffer object that has a `read`
+        Either a string indicating the location of a file, or a buffer object that has a `read`
         method.
     target_type
         The type of the target value.

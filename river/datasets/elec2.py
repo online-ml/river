@@ -24,7 +24,7 @@ class Elec2(base.RemoteDataset):
     def __init__(self):
         super().__init__(
             url="https://maxhalford.github.io/files/datasets/electricity.zip",
-            size=3091689,
+            size=3_091_689,
             task=base.BINARY_CLF,
             n_samples=45_312,
             n_features=8,

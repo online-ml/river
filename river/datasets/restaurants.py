@@ -23,7 +23,7 @@ class Restaurants(base.RemoteDataset):
             n_features=7,
             task=base.REG,
             url="https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip",
-            size=28881242,
+            size=28_881_242,
             filename="kaggle_recruit_restaurants.csv",
         )
 
