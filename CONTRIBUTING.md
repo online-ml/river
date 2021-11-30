@@ -148,6 +148,7 @@ $ make execute-notebooks
 
 1. Checkout `main`
 2. Bump the version in `river/__version__.py`
-3. Commit
-4. Tag the commit with the version (e.g. `0.4.2`)
-5. Push the tag (i.e. `git push origin 0.4.2`)
+3. Tag and date the `docs/releases/unreleased.md` file
+4. Commit
+5. Tag the commit with the version (e.g. `0.4.2`)
+6. Push the tag (i.e. `git push origin 0.4.2`)
