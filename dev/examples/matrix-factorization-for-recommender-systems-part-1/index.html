@@ -8591,7 +8591,7 @@ y = 4.0
 <span class="p">}</span>
 </code></pre></div>
 <p>Other entries, if exist, are simply ignored. This is quite useful as we don't need to spend time and storage doing one hot encoding.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">meta</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">reco</span>
 
@@ -8601,7 +8601,7 @@ y = 4.0
     <span class="s1">&#39;initializer&#39;</span><span class="p">:</span> <span class="n">optim</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Zeros</span><span class="p">()</span>
 <span class="p">}</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
     <span class="n">regressor</span><span class="o">=</span><span class="n">reco</span><span class="o">.</span><span class="n">Baseline</span><span class="p">(</span><span class="o">**</span><span class="n">baseline_params</span><span class="p">),</span>
     <span class="n">y_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">y_max</span><span class="o">=</span><span class="mi">5</span>
@@ -8629,7 +8629,7 @@ y = 4.0
     <span class="s1">&#39;initializer&#39;</span><span class="p">:</span> <span class="n">optim</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">73</span><span class="p">)</span>
 <span class="p">}</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
     <span class="n">regressor</span><span class="o">=</span><span class="n">reco</span><span class="o">.</span><span class="n">FunkMF</span><span class="p">(</span><span class="o">**</span><span class="n">funk_mf_params</span><span class="p">),</span>
     <span class="n">y_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">y_max</span><span class="o">=</span><span class="mi">5</span>
@@ -8660,7 +8660,7 @@ y = 4.0
     <span class="s1">&#39;l2_latent&#39;</span><span class="p">:</span> <span class="mf">0.</span>
 <span class="p">}</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
     <span class="n">regressor</span><span class="o">=</span><span class="n">reco</span><span class="o">.</span><span class="n">BiasedMF</span><span class="p">(</span><span class="o">**</span><span class="n">biased_mf_params</span><span class="p">),</span>
     <span class="n">y_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">y_max</span><span class="o">=</span><span class="mi">5</span>
