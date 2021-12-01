@@ -8507,7 +8507,7 @@
 <p>In order to build an equivalent model we need to use the same hyper-parameters. As we can't replace FM intercept by the global running mean we won't be able to build the exact same model:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">facto</span>
-<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">meta</span>
+<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
 
@@ -8529,7 +8529,7 @@
 <span class="n">regressor</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">)</span>
 <span class="n">regressor</span> <span class="o">|=</span> <span class="n">facto</span><span class="o">.</span><span class="n">FMRegressor</span><span class="p">(</span><span class="o">**</span><span class="n">fm_params</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
     <span class="n">regressor</span><span class="o">=</span><span class="n">regressor</span><span class="p">,</span>
     <span class="n">y_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">y_max</span><span class="o">=</span><span class="mi">5</span>
@@ -8608,7 +8608,7 @@ y = 4.0
 <span class="p">)</span>
 <span class="n">regressor</span> <span class="o">|=</span> <span class="n">facto</span><span class="o">.</span><span class="n">FMRegressor</span><span class="p">(</span><span class="o">**</span><span class="n">fm_params</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
     <span class="n">regressor</span><span class="o">=</span><span class="n">regressor</span><span class="p">,</span>
     <span class="n">y_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">y_max</span><span class="o">=</span><span class="mi">5</span>
@@ -8653,7 +8653,7 @@ y = 4.0
 <span class="p">)</span>
 <span class="n">regressor</span> <span class="o">|=</span> <span class="n">facto</span><span class="o">.</span><span class="n">HOFMRegressor</span><span class="p">(</span><span class="o">**</span><span class="n">hofm_params</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
     <span class="n">regressor</span><span class="o">=</span><span class="n">regressor</span><span class="p">,</span>
     <span class="n">y_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">y_max</span><span class="o">=</span><span class="mi">5</span>
@@ -8695,7 +8695,7 @@ y = 4.0
 <span class="p">)</span>
 <span class="n">regressor</span> <span class="o">|=</span> <span class="n">facto</span><span class="o">.</span><span class="n">FFMRegressor</span><span class="p">(</span><span class="o">**</span><span class="n">ffm_params</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
     <span class="n">regressor</span><span class="o">=</span><span class="n">regressor</span><span class="p">,</span>
     <span class="n">y_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">y_max</span><span class="o">=</span><span class="mi">5</span>
@@ -8735,7 +8735,7 @@ y = 4.0
 <span class="p">)</span>
 <span class="n">regressor</span> <span class="o">|=</span> <span class="n">facto</span><span class="o">.</span><span class="n">FwFMRegressor</span><span class="p">(</span><span class="o">**</span><span class="n">fwfm_params</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">PredClipper</span><span class="p">(</span>
     <span class="n">regressor</span><span class="o">=</span><span class="n">regressor</span><span class="p">,</span>
     <span class="n">y_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">y_max</span><span class="o">=</span><span class="mi">5</span>
