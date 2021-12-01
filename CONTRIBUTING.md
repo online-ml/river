@@ -152,3 +152,5 @@ $ make execute-notebooks
 4. Commit
 5. Tag the commit with the version (e.g. `0.4.2`)
 6. Push the tag (i.e. `git push origin 0.4.2`)
+7. [Wait for CI to run]
+8. [Create a release](https://github.com/online-ml/river/releases) with a link to the [release notes](https://riverml.xyz/latest/releases/unreleased/)
