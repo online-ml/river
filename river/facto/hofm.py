@@ -216,6 +216,19 @@ class HOFMRegressor(HOFM, base.Regressor):
     >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
     5.311745
 
+    >>> report = model.debug_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+
+    >>> print(report)
+    Name                                  Value      Weight     Contribution
+                              Intercept    1.00000    5.23495        5.23495
+                               user_Bob    1.00000    0.11436        0.11436
+                                   time    0.14000    0.03185        0.00446
+                        user_Bob - time    0.14000    0.00884        0.00124
+    user_Bob - item_Harry Potter - time    0.14000    0.00117        0.00016
+                      item_Harry Potter    1.00000    0.00000        0.00000
+               item_Harry Potter - time    0.14000   -0.00695       -0.00097
+           user_Bob - item_Harry Potter    1.00000   -0.04246       -0.04246
+
     References
     ----------
     [^1]: [Rendle, S., 2010, December. Factorization machines. In 2010 IEEE International Conference on Data Mining (pp. 995-1000). IEEE.](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
@@ -264,6 +277,90 @@ class HOFMRegressor(HOFM, base.Regressor):
     def predict_one(self, x):
         x = self._ohe_cat_features(x)
         return self._raw_dot(x)
+
+    def debug_one(self, x: dict, decimals: int = 5) -> str:
+        """Debugs the output of the fwfm regressor.
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        decimals
+            The number of decimals use for printing each numeric value.
+        Returns
+        -------
+        A table which explains the output.
+        """
+
+        x = self._ohe_cat_features(x)
+
+        def fmt_float(x):
+            return "{: ,.{prec}f}".format(x, prec=decimals)
+
+        names = (
+            [
+                " - ".join(map(str, combination))
+                for d in range(2, self.degree + 1)
+                for combination in itertools.combinations(x.keys(), d)
+            ]  # latents
+            + list(map(str, x.keys()))  # weights
+            + ["Intercept"]  # intercept
+        )
+
+        values = list(
+            map(
+                fmt_float,
+                [
+                    functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+                    for d in range(2, self.degree + 1)
+                    for combination in itertools.combinations(x.keys(), d)
+                ]  # latents
+                + list(x.values())  # weights
+                + [1],  # intercept
+            )
+        )
+
+        weights = list(
+            map(
+                fmt_float,
+                [
+                    sum(
+                        functools.reduce(
+                            lambda x, y: np.multiply(x, y),
+                            (self.latents[j][d] for j in combination),
+                        )
+                    )
+                    for d in range(2, self.degree + 1)
+                    for combination in itertools.combinations(x.keys(), d)
+                ]  # latents
+                + [self.weights.get(i, 0) for i in x]  # weights
+                + [self.intercept],  # intercept
+            )
+        )
+        contributions = (
+            [
+                functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+                * sum(
+                    functools.reduce(
+                        lambda x, y: np.multiply(x, y),
+                        (self.latents[j][d] for j in combination),
+                    )
+                )
+                for d in range(2, self.degree + 1)
+                for combination in itertools.combinations(x.keys(), d)
+            ]  # latents
+            + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights
+            + [self.intercept]  # intercept
+        )
+        order = reversed(np.argsort(contributions))
+        contributions = list(map(fmt_float, contributions))
+
+        table = utils.pretty.print_table(
+            headers=["Name", "Value", "Weight", "Contribution"],
+            columns=[names, values, weights, contributions],
+            order=order,
+        )
+
+        return table
 
 
 class HOFMClassifier(HOFM, base.Classifier):
