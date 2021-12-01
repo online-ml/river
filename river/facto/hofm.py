@@ -3,6 +3,8 @@ import functools
 import itertools
 import typing
 
+import numpy as np
+
 from river import base, optim, utils
 
 from .base import BaseFM
@@ -72,9 +74,9 @@ class HOFM(BaseFM):
         )
         latent_scalar_product = sum(
             functools.reduce(
-                lambda x, y: x * y, (self.latents[j][d][f] for j in combination)
+                lambda x, y: np.multiply(x, y),
+                (self.latents[j][d] for j in combination),
             )
-            for f in range(self.n_factors)
         )
         return feature_product * latent_scalar_product
 
