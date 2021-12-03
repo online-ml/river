@@ -308,7 +308,8 @@ class FwFMRegressor(FwFM, base.Regressor):
             map(
                 fmt_float,
                 [
-                    x[j1] * x[j2] for j1, j2 in itertools.combinations(x.keys(), 2)
+                    self._interaction_combination_vals(x, combination)
+                    for combination in self._interaction_combination_keys(x)
                 ]  # latents
                 + list(x.values())  # weights
                 + [1],  # intercept
@@ -319,9 +320,8 @@ class FwFMRegressor(FwFM, base.Regressor):
             map(
                 fmt_float,
                 [
-                    np.dot(self.latents[j1], self.latents[j2])
-                    * self.interaction_weights[self._field(j1) + self._field(j2)]
-                    for j1, j2 in itertools.combinations(x.keys(), 2)
+                    self._interaction_coefficient(combination)
+                    for combination in self._interaction_combination_keys(x)
                 ]  # latents
                 + [self.weights.get(i, 0) for i in x]  # weights
                 + [self.intercept],  # intercept
@@ -329,11 +329,9 @@ class FwFMRegressor(FwFM, base.Regressor):
         )
         contributions = (
             [
-                x[j1]
-                * x[j2]
-                * np.dot(self.latents[j1], self.latents[j2])
-                * self.interaction_weights[self._field(j1) + self._field(j2)]
-                for j1, j2 in itertools.combinations(x.keys(), 2)
+                self._interaction_coefficient(combination)
+                * self._interaction_combination_vals(x, combination)
+                for combination in self._interaction_combination_keys(x)
             ]  # latents
             + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights
             + [self.intercept]  # intercept

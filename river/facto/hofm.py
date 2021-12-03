@@ -69,10 +69,11 @@ class HOFM(BaseFM):
         return functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
 
     def _interaction_coefficient(self, combination):
+        d = len(combination)
         return sum(
             functools.reduce(
                 lambda x, y: np.multiply(x, y),
-                (self.latents[j][len(list(combination))] for j in combination),
+                (self.latents[j][d] for j in combination),
             )
         )
 
@@ -306,9 +307,8 @@ class HOFMRegressor(HOFM, base.Regressor):
             map(
                 fmt_float,
                 [
-                    functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
-                    for d in range(2, self.degree + 1)
-                    for combination in itertools.combinations(x.keys(), d)
+                    self._interaction_combination_vals(x, combination)
+                    for combination in self._interaction_combination_keys(x)
                 ]  # latents
                 + list(x.values())  # weights
                 + [1],  # intercept
@@ -319,14 +319,8 @@ class HOFMRegressor(HOFM, base.Regressor):
             map(
                 fmt_float,
                 [
-                    sum(
-                        functools.reduce(
-                            lambda x, y: np.multiply(x, y),
-                            (self.latents[j][d] for j in combination),
-                        )
-                    )
-                    for d in range(2, self.degree + 1)
-                    for combination in itertools.combinations(x.keys(), d)
+                    self._interaction_coefficient(combination)
+                    for combination in self._interaction_combination_keys(x)
                 ]  # latents
                 + [self.weights.get(i, 0) for i in x]  # weights
                 + [self.intercept],  # intercept
@@ -334,15 +328,9 @@ class HOFMRegressor(HOFM, base.Regressor):
         )
         contributions = (
             [
-                functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
-                * sum(
-                    functools.reduce(
-                        lambda x, y: np.multiply(x, y),
-                        (self.latents[j][d] for j in combination),
-                    )
-                )
-                for d in range(2, self.degree + 1)
-                for combination in itertools.combinations(x.keys(), d)
+                self._interaction_coefficient(combination)
+                * self._interaction_combination_vals(x, combination)
+                for combination in self._interaction_combination_keys(x)
             ]  # latents
             + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights
             + [self.intercept]  # intercept
