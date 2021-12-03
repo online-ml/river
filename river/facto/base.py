@@ -1,6 +1,7 @@
 import abc
 import collections
 import numbers
+from typing import Iterable
 
 from .. import optim, utils
 
@@ -122,9 +123,32 @@ class BaseFM:
         """Infers feature field name."""
         return j.split("_")[0]
 
-    @abc.abstractmethod
     def _calculate_interactions(self, x: dict) -> float:
-        """Calculates greater than unary interactions."""
+        """Calculates greater than unary interactions.
+        For normal FM: sigma (i < j) product(latents[xi] * latents[xj]) xi * xj
+        interaction_combination_keys: sigma (i < j)
+        interaction_val: xi * xj
+        interaction_coefficient: latents[xi] * latents[xj]
+        """
+        return sum(
+            [
+                self._interaction_coefficient(combination)
+                * self._interaction_val(x, combination)
+                for combination in self._interaction_combination_keys(x)
+            ]
+        )
+
+    @abc.abstractmethod
+    def _interaction_combination_keys(self, x) -> Iterable:
+        """Return combinations for interactions."""
+
+    @abc.abstractmethod
+    def _interaction_val(self) -> float:
+        """Return values corresponding to combination keys for interactions."""
+
+    @abc.abstractmethod
+    def _interaction_coefficient(self) -> float:
+        """Return coefficient corresponding to combination keys for interactions."""
 
     @abc.abstractmethod
     def _calculate_weights_gradients(self, x: dict, g_loss: float) -> dict:

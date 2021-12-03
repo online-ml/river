@@ -58,14 +58,16 @@ class FFM(BaseFM):
         field_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(field_latents_dict)
 
-    def _calculate_interactions(self, x):
-        """Calculates pairwise interactions."""
-        field = self._field
-        return sum(
-            x[j1]
-            * x[j2]
-            * np.dot(self.latents[j1][field(j2)], self.latents[j2][field(j1)])
-            for j1, j2 in itertools.combinations(x.keys(), 2)
+    def _interaction_combination_keys(self, x):
+        return itertools.combinations(x.keys(), 2)
+
+    def _interaction_val(self, x, combination):
+        return functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+
+    def _interaction_coefficient(self, combination):
+        j1, j2 = combination
+        return np.dot(
+            self.latents[j1][self._field(j2)], self.latents[j2][self._field(j1)]
         )
 
     def _calculate_weights_gradients(self, x, g_loss):

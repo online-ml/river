@@ -57,12 +57,15 @@ class FM(BaseFM):
         )
         return collections.defaultdict(random_latents)
 
-    def _calculate_interactions(self, x):
-        """Calculates pairwise interactions."""
-        return sum(
-            x[j1] * x[j2] * np.dot(self.latents[j1], self.latents[j2])
-            for j1, j2 in itertools.combinations(x.keys(), 2)
-        )
+    def _interaction_combination_keys(self, x):
+        return itertools.combinations(x.keys(), 2)
+
+    def _interaction_val(self, x, combination):
+        return functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+
+    def _interaction_coefficient(self, combination):
+        j1, j2 = combination
+        return np.dot(self.latents[j1], self.latents[j2])
 
     def _calculate_weights_gradients(self, x, g_loss):
 
@@ -288,8 +291,9 @@ class FMRegressor(FM, base.Regressor):
         )
         contributions = (
             [
-                x[j1] * x[j2] * np.dot(self.latents[j1], self.latents[j2])
-                for j1, j2 in itertools.combinations(x.keys(), 2)
+                self._interaction_coefficient(combination)
+                * self._interaction_combination_vals(x, combination)
+                for combination in self._interaction_combination_keys(x)
             ]  # latents
             + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights
             + [self.intercept]  # intercept

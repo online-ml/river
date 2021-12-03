@@ -60,25 +60,21 @@ class HOFM(BaseFM):
         order_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(order_latents_dict)
 
-    def _calculate_interactions(self, x):
-        """Calculates greater than unary interactions."""
-        return sum(
-            self._calculate_interaction(x, d, combination)
-            for d in range(2, self.degree + 1)
-            for combination in itertools.combinations(x.keys(), d)
-        )
+    def _interaction_combination_keys(self, x):
+        for d in range(2, self.degree + 1):
+            for combination in itertools.combinations(x.keys(), d):
+                yield combination
 
-    def _calculate_interaction(self, x, d, combination):
-        feature_product = functools.reduce(
-            lambda x, y: x * y, (x[j] for j in combination)
-        )
-        latent_scalar_product = sum(
+    def _interaction_val(self, x, combination):
+        return functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+
+    def _interaction_coefficient(self, combination):
+        return sum(
             functools.reduce(
                 lambda x, y: np.multiply(x, y),
-                (self.latents[j][d] for j in combination),
+                (self.latents[j][len(list(combination))] for j in combination),
             )
         )
-        return feature_product * latent_scalar_product
 
     def _calculate_weights_gradients(self, x, g_loss):
 
