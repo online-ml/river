@@ -133,21 +133,21 @@ class BaseFM:
         interaction_coefficient: latents[xi] * latents[xj]
         """
         return sum(
-            [
-                self._interaction_coefficient(combination)
-                * self._interaction_val(x, combination)
-                for combination in self._interaction_combination_keys(x)
-            ]
+            self._interaction_coefficient(combination)
+            * self._interaction_val(x, combination)
+            for combination in self._interaction_combination_keys(x)
         )
 
     def debug_one(self, x: dict, decimals: int = 5) -> str:
         """Debugs the output of the FM regressor.
+
         Parameters
         ----------
         x
             A dictionary of features.
         decimals
             The number of decimals use for printing each numeric value.
+
         Returns
         -------
         A table which explains the output.
