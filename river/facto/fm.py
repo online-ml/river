@@ -57,6 +57,9 @@ class FM(BaseFM):
         )
         return collections.defaultdict(random_latents)
 
+    def _interaction_names(self, x):
+        return [f"{j1} - {j2}" for j1, j2 in itertools.combinations(x.keys(), 2)]
+
     def _interaction_combination_keys(self, x):
         return itertools.combinations(x.keys(), 2)
 
@@ -240,75 +243,6 @@ class FMRegressor(FM, base.Regressor):
     def predict_one(self, x):
         x = self._ohe_cat_features(x)
         return self._raw_dot(x)
-
-    def debug_one(self, x: dict, decimals: int = 5) -> str:
-        """Debugs the output of the fm regressor.
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-        decimals
-            The number of decimals use for printing each numeric value.
-        Returns
-        -------
-        A table which explains the output.
-        """
-
-        x = self._ohe_cat_features(x)
-
-        def fmt_float(x):
-            return "{: ,.{prec}f}".format(x, prec=decimals)
-
-        names = (
-            [
-                f"{j1} - {j2}" for j1, j2 in itertools.combinations(x.keys(), 2)
-            ]  # latents
-            + list(map(str, x.keys()))  # weights
-            + ["Intercept"]  # intercept
-        )
-
-        values = list(
-            map(
-                fmt_float,
-                [
-                    self._interaction_combination_vals(x, combination)
-                    for combination in self._interaction_combination_keys(x)
-                ]  # latents
-                + list(x.values())  # weights
-                + [1],  # intercept
-            )
-        )
-
-        weights = list(
-            map(
-                fmt_float,
-                [
-                    self._interaction_coefficient(combination)
-                    for combination in self._interaction_combination_keys(x)
-                ]  # latents
-                + [self.weights.get(i, 0) for i in x]  # weights
-                + [self.intercept],  # intercept
-            )
-        )
-        contributions = (
-            [
-                self._interaction_coefficient(combination)
-                * self._interaction_combination_vals(x, combination)
-                for combination in self._interaction_combination_keys(x)
-            ]  # latents
-            + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights
-            + [self.intercept]  # intercept
-        )
-        order = reversed(np.argsort(contributions))
-        contributions = list(map(fmt_float, contributions))
-
-        table = utils.pretty.print_table(
-            headers=["Name", "Value", "Weight", "Contribution"],
-            columns=[names, values, weights, contributions],
-            order=order,
-        )
-
-        return table
 
 
 class FMClassifier(FM, base.Classifier):
