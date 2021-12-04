@@ -216,12 +216,12 @@ class BaseFM:
         """Return combinations for interactions."""
 
     @abc.abstractmethod
-    def _interaction_val(self) -> float:
-        """Return values corresponding to combination keys for interactions."""
+    def _interaction_val(self, x, combination) -> float:
+        """Return values corresponding to a given combination of interaction."""
 
     @abc.abstractmethod
-    def _interaction_coefficient(self) -> float:
-        """Return coefficient corresponding to combination keys for interactions."""
+    def _interaction_coefficient(self, combination) -> float:
+        """Return coefficient corresponding to a given combination of interaction."""
 
     @abc.abstractmethod
     def _calculate_weights_gradients(self, x: dict, g_loss: float) -> dict:
