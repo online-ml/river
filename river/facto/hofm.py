@@ -60,25 +60,28 @@ class HOFM(BaseFM):
         order_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(order_latents_dict)
 
-    def _calculate_interactions(self, x):
-        """Calculates greater than unary interactions."""
-        return sum(
-            self._calculate_interaction(x, d, combination)
+    def _interaction_names(self, x):
+        return [
+            " - ".join(map(str, combination))
             for d in range(2, self.degree + 1)
             for combination in itertools.combinations(x.keys(), d)
-        )
+        ]
 
-    def _calculate_interaction(self, x, d, combination):
-        feature_product = functools.reduce(
-            lambda x, y: x * y, (x[j] for j in combination)
-        )
-        latent_scalar_product = sum(
+    def _interaction_combination_keys(self, x):
+        for d in range(2, self.degree + 1):
+            for combination in itertools.combinations(x.keys(), d):
+                yield combination
+
+    def _interaction_val(self, x, combination):
+        return functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+
+    def _interaction_coefficient(self, combination):
+        return sum(
             functools.reduce(
                 lambda x, y: np.multiply(x, y),
-                (self.latents[j][d] for j in combination),
+                (self.latents[j][len(combination)] for j in combination),
             )
         )
-        return feature_product * latent_scalar_product
 
     def _calculate_weights_gradients(self, x, g_loss):
 
@@ -215,6 +218,19 @@ class HOFMRegressor(HOFM, base.Regressor):
 
     >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
     5.311745
+
+    >>> report = model.debug_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+
+    >>> print(report)
+    Name                                  Value      Weight     Contribution
+                              Intercept    1.00000    5.23495        5.23495
+                               user_Bob    1.00000    0.11436        0.11436
+                                   time    0.14000    0.03185        0.00446
+                        user_Bob - time    0.14000    0.00884        0.00124
+    user_Bob - item_Harry Potter - time    0.14000    0.00117        0.00016
+                      item_Harry Potter    1.00000    0.00000        0.00000
+               item_Harry Potter - time    0.14000   -0.00695       -0.00097
+           user_Bob - item_Harry Potter    1.00000   -0.04246       -0.04246
 
     References
     ----------
