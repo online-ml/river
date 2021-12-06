@@ -58,14 +58,22 @@ class FFM(BaseFM):
         field_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(field_latents_dict)
 
-    def _calculate_interactions(self, x):
-        """Calculates pairwise interactions."""
-        field = self._field
-        return sum(
-            x[j1]
-            * x[j2]
-            * np.dot(self.latents[j1][field(j2)], self.latents[j2][field(j1)])
+    def _interaction_names(self, x):
+        return [
+            f"{j1}({self._field(j2)}) - {j2}({self._field(j1)})"
             for j1, j2 in itertools.combinations(x.keys(), 2)
+        ]
+
+    def _interaction_combination_keys(self, x):
+        return itertools.combinations(x.keys(), 2)
+
+    def _interaction_val(self, x, combination):
+        return functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+
+    def _interaction_coefficient(self, combination):
+        j1, j2 = combination
+        return np.dot(
+            self.latents[j1][self._field(j2)], self.latents[j2][self._field(j1)]
         )
 
     def _calculate_weights_gradients(self, x, g_loss):
@@ -195,6 +203,18 @@ class FFMRegressor(FFM, base.Regressor):
 
     >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
     5.319945
+
+    >>> report = model.debug_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
+
+    >>> print(report)
+    Name                                       Value      Weight     Contribution
+                                   Intercept    1.00000    5.23501        5.23501
+                                    user_Bob    1.00000    0.11438        0.11438
+                                        time    0.14000    0.03186        0.00446
+        item_Harry Potter(time) - time(item)    0.14000    0.03153        0.00441
+                 user_Bob(time) - time(user)    0.14000    0.02864        0.00401
+                           item_Harry Potter    1.00000    0.00000        0.00000
+    user_Bob(item) - item_Harry Potter(user)    1.00000   -0.04232       -0.04232
 
     References
     ----------

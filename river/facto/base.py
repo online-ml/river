@@ -1,6 +1,9 @@
 import abc
 import collections
 import numbers
+from typing import Iterable
+
+import numpy as np
 
 from .. import optim, utils
 
@@ -122,9 +125,103 @@ class BaseFM:
         """Infers feature field name."""
         return j.split("_")[0]
 
-    @abc.abstractmethod
     def _calculate_interactions(self, x: dict) -> float:
-        """Calculates greater than unary interactions."""
+        """Calculates greater than unary interactions.
+        For normal FM: sigma (i < j) product(latents[xi] * latents[xj]) xi * xj
+        interaction_combination_keys: sigma (i < j)
+        interaction_val: xi * xj
+        interaction_coefficient: latents[xi] * latents[xj]
+        """
+        return sum(
+            self._interaction_coefficient(combination)
+            * self._interaction_val(x, combination)
+            for combination in self._interaction_combination_keys(x)
+        )
+
+    def debug_one(self, x: dict, decimals: int = 5) -> str:
+        """Debugs the output of the FM regressor.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        decimals
+            The number of decimals use for printing each numeric value.
+
+        Returns
+        -------
+        A table which explains the output.
+        """
+
+        x = self._ohe_cat_features(x)
+
+        def fmt_float(x):
+            return "{: ,.{prec}f}".format(x, prec=decimals)
+
+        names = (
+            self._interaction_names(x)  # latents
+            + list(map(str, x.keys()))  # weights
+            + ["Intercept"]  # intercept
+        )
+
+        values = list(
+            map(
+                fmt_float,
+                [
+                    self._interaction_val(x, combination)
+                    for combination in self._interaction_combination_keys(x)
+                ]  # latents
+                + list(x.values())  # weights
+                + [1],  # intercept
+            )
+        )
+
+        weights = list(
+            map(
+                fmt_float,
+                [
+                    self._interaction_coefficient(combination)
+                    for combination in self._interaction_combination_keys(x)
+                ]  # latents
+                + [self.weights.get(i, 0) for i in x]  # weights
+                + [self.intercept],  # intercept
+            )
+        )
+        contributions = (
+            [
+                self._interaction_coefficient(combination)
+                * self._interaction_val(x, combination)
+                for combination in self._interaction_combination_keys(x)
+            ]  # latents
+            + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights
+            + [self.intercept]  # intercept
+        )
+        order = reversed(np.argsort(contributions))
+        contributions = list(map(fmt_float, contributions))
+
+        table = utils.pretty.print_table(
+            headers=["Name", "Value", "Weight", "Contribution"],
+            columns=[names, values, weights, contributions],
+            order=order,
+        )
+
+        return table
+
+    @abc.abstractmethod
+    def _interaction_names(self, x) -> list:
+        "Return names for interactions."
+
+    @abc.abstractmethod
+    def _interaction_combination_keys(self, x) -> Iterable:
+        """Return combinations for interactions."""
+
+    @abc.abstractmethod
+    def _interaction_val(self, x, combination) -> float:
+        """Return values corresponding to a given combination of interaction."""
+
+    @abc.abstractmethod
+    def _interaction_coefficient(self, combination) -> float:
+        """Return coefficient corresponding to a given combination of interaction."""
 
     @abc.abstractmethod
     def _calculate_weights_gradients(self, x: dict, g_loss: float) -> dict:

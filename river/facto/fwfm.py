@@ -65,15 +65,23 @@ class FwFM(BaseFM):
         )
         return collections.defaultdict(random_latents)
 
-    def _calculate_interactions(self, x):
-        """Calculates pairwise interactions."""
-
-        # For notational convenience
-        v, w_int, field = self.latents, self.interaction_weights, self._field
-
-        return sum(
-            x[j1] * x[j2] * np.dot(v[j1], v[j2]) * w_int[field(j1) + field(j2)]
+    def _interaction_names(self, x):
+        return [
+            f"{j1}({self._field(j2)}) - {j2}({self._field(j1)})"
             for j1, j2 in itertools.combinations(x.keys(), 2)
+        ]
+
+    def _interaction_combination_keys(self, x):
+        return itertools.combinations(x.keys(), 2)
+
+    def _interaction_val(self, x, combination):
+        return functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+
+    def _interaction_coefficient(self, combination):
+        j1, j2 = combination
+        return (
+            np.dot(self.latents[j1], self.latents[j2])
+            * self.interaction_weights[self._field(j1) + self._field(j2)]
         )
 
     def _calculate_weights_gradients(self, x, g_loss):
@@ -216,6 +224,15 @@ class FwFMRegressor(FwFM, base.Regressor):
 
     >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
     5.236501
+
+    >>> report = model.debug_one({'Bob': 1, 'Harry Potter': 1})
+
+    >>> print(report)
+    Name                                    Value      Weight     Contribution
+                                Intercept    1.00000    5.23426        5.23426
+    Bob(Harry Potter) - Harry Potter(Bob)    1.00000    0.00224        0.00224
+                             Harry Potter    1.00000    0.00000        0.00000
+                                      Bob    1.00000    0.00000        0.00000
 
     References
     ----------
