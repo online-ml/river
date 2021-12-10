@@ -3,6 +3,7 @@ import typing
 import pandas as pd
 
 from river import optim
+from river.base import typing as river_typing
 from river.linear_model.glm import GLM
 
 from .base import AnomalyDetector
@@ -83,10 +84,15 @@ class OneClassSVM(GLM, AnomalyDetector):
             + 2.0 * self.intercept_lr.get(self.optimizer.n_iterations) * self.l2
         )
 
-    def learn_one(self, x):
+    def learn_one(self, x: dict, y: river_typing.ClfTarget = None, **kwargs):
         return super().learn_one(x, y=1)
 
-    def learn_many(self, X):
+    def learn_many(
+        self,
+        X: pd.DataFrame,
+        y: pd.Series = None,
+        w: typing.Union[float, pd.Series] = 1,
+    ):
         return super().learn_many(X, y=pd.Series(True, index=X.index))
 
     def score_one(self, x):

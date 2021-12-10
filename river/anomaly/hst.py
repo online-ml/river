@@ -221,7 +221,7 @@ class HalfSpaceTrees(AnomalyDetector):
         """The largest potential anomaly score."""
         return self.n_trees * self.window_size * (2 ** (self.height + 1) - 1)
 
-    def learn_one(self, x):
+    def learn_one(self, x: dict, y: base.typing.ClfTarget = None, **kwargs):
 
         # The trees are built when the first observation comes in
         if not self.trees:

@@ -1,4 +1,4 @@
-from river.base import Wrapper
+from river.base import Wrapper, typing
 from river.stats import Quantile
 
 from .base import AnomalyDetector
@@ -14,7 +14,7 @@ class Thresholder(AnomalyDetector, Wrapper):
     def _wrapped_model(self):
         return self.anomaly_detector
 
-    def learn_one(self, x):
+    def learn_one(self, x: dict, y: typing.ClfTarget = None, **kwargs):
         self.anomaly_detector.learn_one(x)
         return self
 
