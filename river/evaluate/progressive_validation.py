@@ -10,7 +10,7 @@ __all__ = ["progressive_val_score"]
 
 def _progressive_validation(
     dataset: base.typing.Dataset,
-    model,
+    model: base.Estimator,
     metric: metrics.Metric,
     checkpoints: typing.Iterator[int],
     moment: typing.Union[str, typing.Callable] = None,
@@ -26,9 +26,12 @@ def _progressive_validation(
         )
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
-    pred_func = model.predict_one
-    if utils.inspect.isclassifier(model) and not metric.requires_labels:
+    if utils.inspect.isanomalydetector(model):
+        pred_func = model.score_one
+    elif utils.inspect.isclassifier(model) and not metric.requires_labels:
         pred_func = model.predict_proba_one
+    else:
+        pred_func = model.predict_one
 
     preds = {}
 
@@ -48,7 +51,10 @@ def _progressive_validation(
         y_pred = preds.pop(i)
         if y_pred != {} and y_pred is not None:
             metric.update(y_true=y, y_pred=y_pred)
-        model.learn_one(x=x, y=y)
+        if model._supervised:
+            model.learn_one(x=x, y=y)
+        else:
+            model.learn_one(x=x)
 
         # Update the answer counter
         n_total_answers += 1
