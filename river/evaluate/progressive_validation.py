@@ -10,7 +10,7 @@ __all__ = ["progressive_val_score"]
 
 def _progressive_validation(
     dataset: base.typing.Dataset,
-    model: base.Estimator,
+    model,
     metric: metrics.Metric,
     checkpoints: typing.Iterator[int],
     moment: typing.Union[str, typing.Callable] = None,
