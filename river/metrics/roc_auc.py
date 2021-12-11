@@ -61,9 +61,7 @@ class ROCAUC(base.BinaryMetric):
         self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
 
     def works_with(self, model) -> bool:
-        return utils.inspect.isclassifier(model) or utils.inspect.isanomalydetector(
-            model
-        )
+        return super().works_with(model) or utils.inspect.isanomalydetector(model)
 
     def update(self, y_true, y_pred, sample_weight=1.0):
         p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
