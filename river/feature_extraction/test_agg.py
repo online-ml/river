@@ -77,3 +77,53 @@ def test_agg_lag():
     {'customers_shift_1_by_shop': 40}
 
     """
+
+
+def test_target_agg_lag():
+    """
+
+    >>> dataset = [
+    ...     ({'country': 'France'}, 42),
+    ...     ({'country': 'Sweden'}, 16),
+    ...     ({'country': 'France'}, 24),
+    ...     ({'country': 'Sweden'}, 58),
+    ...     ({'country': 'Sweden'}, 20),
+    ...     ({'country': 'France'}, 50),
+    ...     ({'country': 'France'}, 10),
+    ...     ({'country': 'Sweden'}, 80)
+    ... ]
+
+    Let's extract the two last values of the target at each time step.
+
+    >>> from river.feature_extraction import TargetAgg
+    >>> from river.stats import Shift
+
+    >>> agg = TargetAgg(None, Shift(1)) + TargetAgg(None, Shift(2))
+    >>> for x, y in dataset:
+    ...     print(agg.transform_one(x))
+    ...     agg = agg.learn_one(x, y)
+    {'y_shift_2': None, 'y_shift_1': None}
+    {'y_shift_2': None, 'y_shift_1': None}
+    {'y_shift_2': None, 'y_shift_1': 42}
+    {'y_shift_2': 42, 'y_shift_1': 16}
+    {'y_shift_2': 16, 'y_shift_1': 24}
+    {'y_shift_2': 24, 'y_shift_1': 58}
+    {'y_shift_2': 58, 'y_shift_1': 20}
+    {'y_shift_2': 20, 'y_shift_1': 50}
+
+    We can also calculate the lags with different groups:
+
+    >>> agg = TargetAgg("country", Shift(1)) + TargetAgg("country", Shift(2))
+    >>> for x, y in dataset:
+    ...     print(agg.transform_one(x))
+    ...     agg = agg.learn_one(x, y)
+    {'y_shift_2_by_country': None, 'y_shift_1_by_country': None}
+    {'y_shift_2_by_country': None, 'y_shift_1_by_country': None}
+    {'y_shift_2_by_country': None, 'y_shift_1_by_country': None}
+    {'y_shift_2_by_country': None, 'y_shift_1_by_country': None}
+    {'y_shift_2_by_country': None, 'y_shift_1_by_country': 16}
+    {'y_shift_2_by_country': None, 'y_shift_1_by_country': 42}
+    {'y_shift_2_by_country': 42, 'y_shift_1_by_country': 24}
+    {'y_shift_2_by_country': 16, 'y_shift_1_by_country': 58}
+
+    """
