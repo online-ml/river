@@ -76,12 +76,12 @@ class FuncTransformer(base.Transformer):
     >>> pipeline = compose.FuncTransformer(parse_date) | naive_bayes.MultinomialNB()
     >>> pipeline
     Pipeline (
-        FuncTransformer (
+      FuncTransformer (
         func="parse_date"
-        ),
-        MultinomialNB (
+      ),
+      MultinomialNB (
         alpha=1.
-        )
+      )
     )
 
     If you provide a function with wrapping it, then the pipeline will do it for you:

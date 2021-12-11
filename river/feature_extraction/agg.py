@@ -26,16 +26,10 @@ class Agg(base.Transformer):
     on
         The feature on which to compute the aggregate statistic.
     by
-        The feature by which to group the data.
+        The feature by which to group the data. All the data is included in the aggregate
+        if this is `None`.
     how
         The statistic to compute.
-
-    Attributes
-    ----------
-    groups : collections.defaultdict
-        Maps group keys to univariate statistics.
-    feature_name : str
-        The name of the feature used in the output.
 
     Examples
     --------
@@ -126,26 +120,33 @@ class Agg(base.Transformer):
     """
 
     def __init__(
-        self, on: str, by: typing.Union[str, typing.List[str]], how: stats.Univariate
+        self,
+        on: str,
+        by: typing.Optional[typing.Union[str, typing.List[str]]],
+        how: stats.Univariate,
     ):
         self.on = on
-        self.by = by if isinstance(by, list) else [by]
+        self.by = (by if isinstance(by, list) else [by]) if by is not None else by
         self.how = how
-        self.groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
-        self.feature_name = f'{self.on}_{self.how.name}_by_{"_and_".join(self.by)}'
+        self._groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
+        self._feature_name = f"{self.on}_{self.how.name}"
+        if self.by:
+            self._feature_name += f"_by_{'_and_'.join(self.by)}"
 
     def _make_key(self, x):
-        return tuple(x[k] for k in self.by)
+        if self.by:
+            return tuple(x[k] for k in self.by)
+        return None
 
     def learn_one(self, x):
-        self.groups[self._make_key(x)].update(x[self.on])
+        self._groups[self._make_key(x)].update(x[self.on])
         return self
 
     def transform_one(self, x):
-        return {self.feature_name: self.groups[self._make_key(x)].get()}
+        return {self._feature_name: self._groups[self._make_key(x)].get()}
 
     def __str__(self):
-        return self.feature_name
+        return self._feature_name
 
 
 class TargetAgg(base.SupervisedTransformer):
@@ -159,7 +160,8 @@ class TargetAgg(base.SupervisedTransformer):
     Parameters
     ----------
     by
-        The feature by which to group the target values.
+        The feature by which to group the target values. All the data is included in the aggregate
+        if this is `None`.
     how
         The statistic to compute.
     target_name
@@ -240,19 +242,23 @@ class TargetAgg(base.SupervisedTransformer):
 
     def __init__(
         self,
-        by: typing.Union[str, typing.List[str]],
+        by: typing.Optional[typing.Union[str, typing.List[str]]],
         how: stats.Univariate,
         target_name="y",
     ):
-        self.by = by if isinstance(by, list) else [by]
+        self.by = (by if isinstance(by, list) else [by]) if by is not None else by
         self.how = how
         self.target_name = target_name
 
-        self._feature_name = f'{target_name}_{how.name}_by_{"_and_".join(self.by)}'
         self._groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
+        self._feature_name = f"{target_name}_{how.name}"
+        if self.by:
+            self._feature_name += f"_by_{'_and_'.join(self.by)}"
 
     def _make_key(self, x):
-        return tuple(x[k] for k in self.by)
+        if self.by:
+            return tuple(x[k] for k in self.by)
+        return None
 
     def learn_one(self, x, y):
         self._groups[self._make_key(x)].update(y)
