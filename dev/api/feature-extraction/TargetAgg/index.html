@@ -2372,20 +2372,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../Lagger/" class="md-nav__link">
-        Lagger
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../PolynomialExtender/" class="md-nav__link">
         PolynomialExtender
       </a>
@@ -2493,20 +2479,6 @@
   
 </nav>
       
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../TargetLagger/" class="md-nav__link">
-        TargetLagger
-      </a>
     </li>
   
 
@@ -8459,8 +8431,8 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>by</strong> (<em>Union[str, List[str]]</em>)</p>
-<p>The feature by which to group the target values.</p>
+<p><strong>by</strong> (<em>Union[str, List[str], NoneType]</em>)</p>
+<p>The feature by which to group the target values. All the data is included in the aggregate if this is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>how</strong> (<em>river.stats.base.Univariate</em>)</p>

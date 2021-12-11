@@ -2385,13 +2385,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     Examples
   </a>
@@ -2429,20 +2422,6 @@
     <li class="md-nav__item">
       <a href="../BagOfWords/" class="md-nav__link">
         BagOfWords
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Lagger/" class="md-nav__link">
-        Lagger
       </a>
     </li>
   
@@ -2499,20 +2478,6 @@
     <li class="md-nav__item">
       <a href="../TargetAgg/" class="md-nav__link">
         TargetAgg
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../TargetLagger/" class="md-nav__link">
-        TargetLagger
       </a>
     </li>
   
@@ -8427,13 +8392,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     Examples
   </a>
@@ -8479,23 +8437,12 @@
 <p>The feature on which to compute the aggregate statistic.</p>
 </li>
 <li>
-<p><strong>by</strong> (<em>Union[str, List[str]]</em>)</p>
-<p>The feature by which to group the data.</p>
+<p><strong>by</strong> (<em>Union[str, List[str], NoneType]</em>)</p>
+<p>The feature by which to group the data. All the data is included in the aggregate if this is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>how</strong> (<em>river.stats.base.Univariate</em>)</p>
 <p>The statistic to compute.</p>
-</li>
-</ul>
-<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p><strong>groups</strong> (<em>collections.defaultdict</em>)</p>
-<p>Maps group keys to univariate statistics.</p>
-</li>
-<li>
-<p><strong>feature_name</strong> (<em>str</em>)</p>
-<p>The name of the feature used in the output.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>

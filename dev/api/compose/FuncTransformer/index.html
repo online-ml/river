@@ -2427,20 +2427,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../feature-extraction/Lagger/" class="md-nav__link">
-        Lagger
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../feature-extraction/PolynomialExtender/" class="md-nav__link">
         PolynomialExtender
       </a>
@@ -2485,20 +2471,6 @@
     <li class="md-nav__item">
       <a href="../../feature-extraction/TargetAgg/" class="md-nav__link">
         TargetAgg
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../feature-extraction/TargetLagger/" class="md-nav__link">
-        TargetLagger
       </a>
     </li>
   
@@ -8495,12 +8467,12 @@ this in a pure way by unpacking the input <code>dict</code> into the output <cod
 <span class="o">&gt;&gt;&gt;</span> <span class="n">pipeline</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">FuncTransformer</span><span class="p">(</span><span class="n">parse_date</span><span class="p">)</span> <span class="o">|</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">MultinomialNB</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">pipeline</span>
 <span class="n">Pipeline</span> <span class="p">(</span>
-    <span class="n">FuncTransformer</span> <span class="p">(</span>
+  <span class="n">FuncTransformer</span> <span class="p">(</span>
     <span class="n">func</span><span class="o">=</span><span class="s2">&quot;parse_date&quot;</span>
-    <span class="p">),</span>
-    <span class="n">MultinomialNB</span> <span class="p">(</span>
+  <span class="p">),</span>
+  <span class="n">MultinomialNB</span> <span class="p">(</span>
     <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span>
-    <span class="p">)</span>
+  <span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
 <p>If you provide a function with wrapping it, then the pipeline will do it for you:</p>
