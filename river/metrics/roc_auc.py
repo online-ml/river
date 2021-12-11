@@ -1,5 +1,7 @@
 from scipy import integrate
 
+from river import utils
+
 from . import base, confusion
 
 __all__ = ["ROCAUC"]
@@ -57,6 +59,9 @@ class ROCAUC(base.BinaryMetric):
         self.thresholds[0] -= 1e-7
         self.thresholds[-1] += 1e-7
         self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
+
+    def works_with(self, model) -> bool:
+        return super().works_with(model) or utils.inspect.isanomalydetector(model)
 
     def update(self, y_true, y_pred, sample_weight=1.0):
         p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
