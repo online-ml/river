@@ -6,13 +6,14 @@ some models the model's type is only known at runtime. For instance, we can't do
 thus provides utilities for determining an arbitrary model's type.
 
 """
-from river import base, compose
+from river import anomaly, base, compose
 
 # TODO: maybe all of this could be done by monkeypatching isintance for pipelines?
 
 
 __all__ = [
     "extract_relevant",
+    "isanomalydetector",
     "isclassifier",
     "isregressor",
     "ismoclassifier",
@@ -33,6 +34,10 @@ def extract_relevant(model: base.Estimator):
     if isinstance(model, compose.Pipeline):
         return extract_relevant(model._last_step)
     return model
+
+
+def isanomalydetector(model):
+    return isinstance(extract_relevant(model), anomaly.AnomalyDetector)
 
 
 def isclassifier(model):
