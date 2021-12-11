@@ -68,8 +68,6 @@ def iter_estimators_which_can_be_tested():
         facto.HOFMRegressor,
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
-        feature_extraction.Lagger,
-        feature_extraction.TargetLagger,
         feature_selection.PoissonInclusion,
         model_selection.SuccessiveHalvingClassifier,
         neural_net.MLPRegressor,
