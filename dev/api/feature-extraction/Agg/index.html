@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/api/feature-extraction/Agg/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.0">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.2">
     
     
       
@@ -23,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.82f3c0b9.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.f7951f6f.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.9204c3b2.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
         
           
           
@@ -2380,6 +2380,13 @@
         <li class="md-nav__item">
   <a href="#parameters" class="md-nav__link">
     Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
   </a>
   
 </li>
@@ -8392,6 +8399,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     Examples
   </a>
@@ -8443,6 +8457,13 @@
 <li>
 <p><strong>how</strong> (<em>river.stats.base.Univariate</em>)</p>
 <p>The statistic to compute.</p>
+</li>
+</ul>
+<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>state</strong></p>
+<p>Return the current values for each group.  Examples --------  &gt;&gt;&gt; X = [ ...     {"country": "France", "place": "Taco Bell", "revenue": 42}, ...     {"country": "Sweden", "place": "Burger King", "revenue": 16}, ...     {"country": "France", "place": "Burger King", "revenue": 24}, ...     {"country": "Sweden", "place": "Taco Bell", "revenue": 58}, ...     {"country": "Sweden", "place": "Burger King", "revenue": 20}, ...     {"country": "France", "place": "Taco Bell", "revenue": 50}, ...     {"country": "France", "place": "Burger King", "revenue": 10}, ...     {"country": "Sweden", "place": "Taco Bell", "revenue": 80}, ... ]  &gt;&gt;&gt; from river import feature_extraction as fx &gt;&gt;&gt; from river import stats  &gt;&gt;&gt; agg = fx.Agg(on="revenue", by="place", how=stats.Mean()) &gt;&gt;&gt; for x in X: ...     agg = agg.learn_one(x) &gt;&gt;&gt; agg.state Taco Bell      57.5 Burger King    17.5 Name: revenue_mean_by_place, dtype: float64  &gt;&gt;&gt; agg = fx.Agg(on="revenue", by=["country", "place"], how=stats.Mean()) &gt;&gt;&gt; for x in X: ...     agg = agg.learn_one(x) &gt;&gt;&gt; agg.state country  place France   Taco Bell      46.0 Sweden   Burger King    18.0 France   Burger King    17.0 Sweden   Taco Bell      69.0 Name: revenue_mean_by_country_and_place, dtype: float64</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -8611,10 +8632,10 @@ go. The latter can be constructed by using the <code>+</code> operator:</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.cefbb252.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.0bbba5b5.min.js"}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.17f42bbf.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.649a939e.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
