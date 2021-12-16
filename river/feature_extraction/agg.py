@@ -3,6 +3,8 @@ import copy
 import functools
 import typing
 
+import pandas as pd
+
 from river import base, stats
 
 
@@ -145,11 +147,62 @@ class Agg(base.Transformer):
     def transform_one(self, x):
         return {self._feature_name: self._groups[self._make_key(x)].get()}
 
+    @property
+    def state(self) -> pd.Series:
+        """Return the current values for each group.
+
+        Examples
+        --------
+
+        >>> X = [
+        ...     {"country": "France", "place": "Taco Bell", "revenue": 42},
+        ...     {"country": "Sweden", "place": "Burger King", "revenue": 16},
+        ...     {"country": "France", "place": "Burger King", "revenue": 24},
+        ...     {"country": "Sweden", "place": "Taco Bell", "revenue": 58},
+        ...     {"country": "Sweden", "place": "Burger King", "revenue": 20},
+        ...     {"country": "France", "place": "Taco Bell", "revenue": 50},
+        ...     {"country": "France", "place": "Burger King", "revenue": 10},
+        ...     {"country": "Sweden", "place": "Taco Bell", "revenue": 80},
+        ... ]
+
+        >>> from river import feature_extraction as fx
+        >>> from river import stats
+
+        >>> agg = fx.Agg(on="revenue", by="place", how=stats.Mean())
+        >>> for x in X:
+        ...     agg = agg.learn_one(x)
+        >>> agg.state
+        Taco Bell      57.5
+        Burger King    17.5
+        Name: revenue_mean_by_place, dtype: float64
+
+        >>> agg = fx.Agg(on="revenue", by=["country", "place"], how=stats.Mean())
+        >>> for x in X:
+        ...     agg = agg.learn_one(x)
+        >>> agg.state
+        country  place
+        France   Taco Bell      46.0
+        Sweden   Burger King    18.0
+        France   Burger King    17.0
+        Sweden   Taco Bell      69.0
+        Name: revenue_mean_by_country_and_place, dtype: float64
+
+        """
+        return pd.Series(
+            (stat.get() for stat in self._groups.values()),
+            index=(
+                pd.Index(key[0] for key in self._groups.keys())
+                if len(self.by) == 1
+                else pd.MultiIndex.from_tuples(self._groups.keys(), names=self.by)
+            ),
+            name=self._feature_name,
+        )
+
     def __str__(self):
         return self._feature_name
 
 
-class TargetAgg(base.SupervisedTransformer):
+class TargetAgg(Agg, base.SupervisedTransformer):
     """Computes a streaming aggregate of the target values.
 
     This transformer is identical to `feature_extraction.Agg`, the only difference is that it
@@ -234,6 +287,14 @@ class TargetAgg(base.SupervisedTransformer):
     {'y_bayes_mean_by_place_and_country': 13.5}
     {'y_bayes_mean_by_place_and_country': 30.5}
 
+    >>> agg.state
+    place        country
+    Taco Bell    France     31.666667
+    Burger King  Sweden     13.000000
+                 France     12.333333
+    Taco Bell    Sweden     47.000000
+    Name: y_bayes_mean_by_place_and_country, dtype: float64
+
     References
     ----------
     1. [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
@@ -246,26 +307,12 @@ class TargetAgg(base.SupervisedTransformer):
         how: stats.Univariate,
         target_name="y",
     ):
-        self.by = (by if isinstance(by, list) else [by]) if by is not None else by
-        self.how = how
-        self.target_name = target_name
+        super().__init__(on=target_name, by=by, how=how)
 
-        self._groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
-        self._feature_name = f"{target_name}_{how.name}"
-        if self.by:
-            self._feature_name += f"_by_{'_and_'.join(self.by)}"
-
-    def _make_key(self, x):
-        if self.by:
-            return tuple(x[k] for k in self.by)
-        return None
+    @property
+    def target_name(self):
+        return self.on
 
     def learn_one(self, x, y):
         self._groups[self._make_key(x)].update(y)
         return self
-
-    def transform_one(self, x):
-        return {self._feature_name: self._groups[self._make_key(x)].get()}
-
-    def __str__(self):
-        return self._feature_name
