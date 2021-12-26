@@ -7,6 +7,7 @@ import pytest
 
 from river import (
     base,
+    checks,
     compose,
     ensemble,
     facto,
@@ -18,9 +19,7 @@ from river import (
     multiclass,
     neural_net,
     preprocessing,
-    reco,
     time_series,
-    utils,
 )
 
 try:
@@ -74,10 +73,6 @@ def iter_estimators_which_can_be_tested():
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
-        reco.Baseline,
-        reco.BiasedMF,
-        reco.FunkMF,
-        reco.RandomNormal,
         imblearn.RandomOverSampler,
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,
@@ -99,7 +94,11 @@ def iter_estimators_which_can_be_tested():
 @pytest.mark.parametrize(
     "estimator, check",
     [
-        pytest.param(estimator, check, id=f"{estimator}:{check.__name__}")
+        pytest.param(
+            estimator,
+            check,
+            id=f"{estimator}:{check.__name__}",
+        )
         for estimator in list(iter_estimators_which_can_be_tested())
         + [
             preprocessing.StandardScaler() | linear_model.LinearRegression(),
@@ -125,7 +124,7 @@ def iter_estimators_which_can_be_tested():
                 | linear_model.LinearRegression()
             ),
         ]
-        for check in utils.estimator_checks.yield_checks(estimator)
+        for check in checks.yield_checks(estimator)
         if check.__name__ not in estimator._unit_test_skips()
     ],
 )

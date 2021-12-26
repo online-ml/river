@@ -287,7 +287,7 @@ class CluStream(base.Clusterer):
 
 
 class CluStreamMicroCluster(metaclass=ABCMeta):
-    """ Micro-cluster class """
+    """Micro-cluster class"""
 
     def __init__(
         self,

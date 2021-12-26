@@ -1,5 +1,9 @@
 # Unreleased
 
+## checks
+
+- Created this module to store estimator unit testing, rather than having it in the `utils` module.
+
 ## evaluate
 
 - Refactored `evaluate.progressive_validation` to work with `base.AnomalyDetector`s.
@@ -17,3 +21,9 @@
 ## metrics
 
 - `metrics.ROCAUC` works with `base.AnomalyDetectors`s.
+
+## reco
+
+- Removed `reco.SurpriseWrapper` as it wasn't really useful.
+- Added a `recommend` method to each recommender.
+- Added an `is_contextual` property to each recommender.

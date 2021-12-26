@@ -54,7 +54,7 @@ class KNeighborsBuffer:
         self._is_initialized = True
 
     def reset(self):
-        """Reset the sliding window. """
+        """Reset the sliding window."""
         self._n_features = -1
         self._n_targets = -1
         self._size = 0
@@ -119,7 +119,7 @@ class KNeighborsBuffer:
         return self
 
     def pop(self) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
-        """Remove and return the most recent element added to the buffer. """
+        """Remove and return the most recent element added to the buffer."""
         if self.size > 0:
             self._next_insert = (
                 self._next_insert - 1 if self._next_insert > 0 else self.window_size - 1
@@ -135,7 +135,7 @@ class KNeighborsBuffer:
     def popleft(
         self,
     ) -> typing.Union[typing.Tuple[np.ndarray, base.typing.Target], None]:
-        """Remove and return the oldest element in the buffer. """
+        """Remove and return the oldest element in the buffer."""
         if self.size > 0:
             x, y = self._X[self._oldest], self._y[self._oldest]
             self._imask[self._oldest] = False  # Mark slot as free
@@ -177,22 +177,22 @@ class KNeighborsBuffer:
 
     @property
     def n_targets(self) -> int:
-        """Get the number of targets. """
+        """Get the number of targets."""
         return self._n_targets
 
     @property
     def n_features(self) -> int:
-        """Get the number of features. """
+        """Get the number of features."""
         return self._n_features
 
     @property
     def size(self) -> int:
-        """Get the window size. """
+        """Get the window size."""
         return self._size
 
 
 class BaseNeighbors:
-    """Base class for neighbors-based estimators. """
+    """Base class for neighbors-based estimators."""
 
     def __init__(
         self,
@@ -227,7 +227,7 @@ class BaseNeighbors:
         return dist, idx
 
     def reset(self) -> "BaseNeighbors":
-        """Reset estimator. """
+        """Reset estimator."""
         self.data_window.reset()
 
         return self

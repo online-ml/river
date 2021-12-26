@@ -24,7 +24,7 @@ def sklearn_models():
 
 
 def yield_dataset():
-    """"Incremental dataset."""
+    """Incremental dataset."""
     yield from [
         ("Chinese Beijing Chinese", "yes"),
         ("Chinese Chinese Shanghai", "yes"),
@@ -34,7 +34,7 @@ def yield_dataset():
 
 
 def yield_batch_dataset():
-    """"Batch dataset."""
+    """Batch dataset."""
     for x, y in yield_dataset():
         yield pd.Series([x]), pd.Series([y])
 

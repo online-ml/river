@@ -1,17 +1,9 @@
-"""
-
-This module contains model selection logic based on multi-armed bandits (MAB). The way the code is
-organised, the bandit logic is agnostic of the model selection aspect.
-
-"""
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from random import Random
-from typing import Iterator, List
+from typing import Iterator
 
-from river import base, metrics, utils
-
-from .base import ModelSelectionRegressor
+from river import metrics, utils
 
 
 @dataclass
@@ -64,7 +56,12 @@ class Bandit:
 
     def __repr__(self):
         return utils.pretty.print_table(
-            headers=["Ranking", self.metric.__class__.__name__, "Pulls", "Share",],
+            headers=[
+                "Ranking",
+                self.metric.__class__.__name__,
+                "Pulls",
+                "Share",
+            ],
             columns=[
                 [f"#{self.ranking.index(arm.index)}" for arm in self.arms],
                 [f"{arm.metric.get():{self.metric._fmt}}" for arm in self.arms],
@@ -94,27 +91,3 @@ class BanditPolicy(ABC):
     @abstractmethod
     def _pull(self, bandit: Bandit) -> Iterator[Arm]:
         ...
-
-
-class BanditRegressor(ModelSelectionRegressor):
-    def __init__(
-        self,
-        models: List[base.Regressor],
-        metric: metrics.RegressionMetric,
-        policy: BanditPolicy,
-    ):
-        super().__init__(models, metric)
-        self.bandit = Bandit(n_arms=len(models), metric=metric)
-        self.policy = policy
-
-    @property
-    def best_model(self):
-        return self[self.bandit.best_arm.index]
-
-    def learn_one(self, x, y):
-        for arm in self.policy.pull(self.bandit):
-            model = self[arm.index]
-            y_pred = model.predict_one(x)
-            self.bandit.update(arm, y_true=y, y_pred=y_pred)
-            model.learn_one(x, y)
-        return self

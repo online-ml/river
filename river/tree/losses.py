@@ -5,10 +5,10 @@ from .utils import GradHess
 
 
 class Loss(abc.ABC):
-    """Base class to implement optimization objectives used in Stochastic Gradient Trees. """
+    """Base class to implement optimization objectives used in Stochastic Gradient Trees."""
 
     def compute_derivatives(self, y_true: float, y_pred: float) -> GradHess:
-        """ Return the gradient and hessian data concerning one instance and its prediction.
+        """Return the gradient and hessian data concerning one instance and its prediction.
 
         Parameters
         ----------
@@ -20,7 +20,7 @@ class Loss(abc.ABC):
         pass
 
     def transfer(self, y: float) -> float:
-        """ Optionally apply some transformation to the value predicted by the tree before
+        """Optionally apply some transformation to the value predicted by the tree before
         returning it.
 
         For instance, in classification, the softmax operation might be applied.
@@ -34,7 +34,7 @@ class Loss(abc.ABC):
 
 
 class BinaryCrossEntropyLoss(Loss):
-    """ Loss function used in binary classification tasks. """
+    """Loss function used in binary classification tasks."""
 
     def compute_derivatives(self, y_true, y_pred):
         y_trs = self.transfer(y_pred)
@@ -46,7 +46,7 @@ class BinaryCrossEntropyLoss(Loss):
 
 
 class SquaredErrorLoss(Loss):
-    """ Loss function used in regression tasks. """
+    """Loss function used in regression tasks."""
 
     def compute_derivatives(self, y_true, y_pred):
         return GradHess(y_pred - y_true, 1.0)

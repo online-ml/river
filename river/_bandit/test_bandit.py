@@ -1,5 +1,5 @@
 from river import base
-from river.model_selection.bandit import Bandit
+from river._bandit import Bandit
 
 
 def test_ranking():

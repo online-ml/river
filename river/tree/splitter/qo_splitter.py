@@ -126,7 +126,7 @@ class QOSplitter(Splitter):
 
 
 class Slot:
-    """ The element stored in the quantization hash.
+    """The element stored in the quantization hash.
 
     Each slot keeps the mean values of the numerical feature, as well as the variance
     and mean of the target.
@@ -179,7 +179,7 @@ class Slot:
 
 
 class FeatureQuantizer:
-    """ The actual dynamic feature quantization mechanism.
+    """The actual dynamic feature quantization mechanism.
 
     The input numerical feature is partitioned using equal-sized intervals that are defined
     by the `radius` parameter. For each interval, estimators of target's mean and variance are

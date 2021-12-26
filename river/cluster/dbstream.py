@@ -402,7 +402,7 @@ class DBSTREAM(base.Clusterer):
 
 
 class DBSTREAMMicroCluster(metaclass=ABCMeta):
-    """ DBStream Micro-cluster class """
+    """DBStream Micro-cluster class"""
 
     def __init__(self, x=None, last_update=None, weight=None):
 

@@ -105,7 +105,7 @@ class BranchFactory:
 
 
 class GradHess:
-    """ The most basic inner structure of the Stochastic Gradient Trees that carries information
+    """The most basic inner structure of the Stochastic Gradient Trees that carries information
     about the gradient and hessian of a given observation.
     """
 
@@ -164,7 +164,7 @@ class GradHessMerit:
 
 
 class GradHessStats:
-    """ Class used to monitor and update the gradient/hessian information in Stochastic Gradient
+    """Class used to monitor and update the gradient/hessian information in Stochastic Gradient
     Trees.
 
     Represents the aggregated gradient/hessian data in a node (global node statistics), category,

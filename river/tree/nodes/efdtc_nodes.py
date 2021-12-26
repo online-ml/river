@@ -180,7 +180,7 @@ class BaseEFDTBranch(DTBranch):
 
     @last_split_reevaluation_at.setter
     def last_split_reevaluation_at(self, value: float):
-        """Update weight seen at the last split in the reevaluation. """
+        """Update weight seen at the last split in the reevaluation."""
         self._last_split_reevaluation_at = value
 
     def observed_class_distribution_is_pure(self):
