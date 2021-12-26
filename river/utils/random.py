@@ -1,7 +1,6 @@
 import math
 import random
 
-
 __all__ = ["poisson"]
 
 
