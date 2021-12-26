@@ -2,11 +2,6 @@
 
 import copy
 import functools
-import inspect
-import itertools
-import math
-import pickle
-import random
 
 import numpy as np
 
@@ -14,10 +9,7 @@ from river.base import Estimator
 from river.model_selection import ModelSelector
 from river.reco import Recommender
 
-from .base import *
-from .clf import *
-from .model_selection import *
-from .reco import *
+from . import common, clf, model_selection, reco
 
 __all__ = ["check_estimator", "yield_checks"]
 
@@ -120,47 +112,51 @@ def yield_checks(model: Estimator):
     from river import model_selection, utils
 
     # General checks
-    yield check_repr
-    yield check_str
-    yield check_tags
-    yield check_set_params_idempotent
-    yield check_init_has_default_params_for_tests
-    yield check_init_default_params_are_not_mutable
-    yield check_doc
-    yield check_clone
+    yield common.check_repr
+    yield common.check_str
+    yield common.check_tags
+    yield common.check_set_params_idempotent
+    yield common.check_init_has_default_params_for_tests
+    yield common.check_init_default_params_are_not_mutable
+    yield common.check_doc
+    yield common.check_clone
 
     if utils.inspect.isclassifier(model):
-        yield check_multiclass_is_bool
+        yield clf.check_multiclass_is_bool
 
     # Checks that make use of datasets
     checks = [
-        check_learn_one,
-        check_pickling,
-        check_shuffle_features_no_impact,
-        check_emerging_features,
-        check_disappearing_features,
+        common.check_learn_one,
+        common.check_pickling,
+        common.check_shuffle_features_no_impact,
+        common.check_emerging_features,
+        common.check_disappearing_features,
     ]
 
     if hasattr(model, "debug_one"):
-        checks.append(check_debug_one)
+        checks.append(common.check_debug_one)
 
     if model._is_stochastic:
-        checks.append(check_seeding_is_idempotent)
+        checks.append(common.check_seeding_is_idempotent)
 
     # Classifier checks
     if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
-        checks.append(_allow_exception(check_predict_proba_one, NotImplementedError))
+        checks.append(
+            _allow_exception(clf.check_predict_proba_one, NotImplementedError)
+        )
         # Specific checks for binary classifiers
         if not model._multiclass:
             checks.append(
-                _allow_exception(check_predict_proba_one_binary, NotImplementedError)
+                _allow_exception(
+                    clf.check_predict_proba_one_binary, NotImplementedError
+                )
             )
 
     if isinstance(utils.inspect.extract_relevant(model), ModelSelector):
-        checks.append(check_model_selection_order_does_not_matter)
+        checks.append(model_selection.check_model_selection_order_does_not_matter)
 
     if isinstance(utils.inspect.extract_relevant(model), Recommender):
-        yield check_reco_routine
+        yield reco.check_reco_routine
 
     for check in checks:
         for dataset in _yield_datasets(model):
