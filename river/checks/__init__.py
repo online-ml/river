@@ -2,6 +2,7 @@
 
 import copy
 import functools
+from typing import Iterator
 
 import numpy as np
 
@@ -106,8 +107,14 @@ def _yield_datasets(model: Estimator):
             yield datasets.ImageSegments().take(200)
 
 
-def yield_checks(model: Estimator):
-    """Generates unit tests for a given model."""
+def yield_checks(model: Estimator) -> Iterator[callable]:
+    """Generates unit tests for a given model.
+
+    Parameters
+    ----------
+    model
+
+    """
 
     from river import utils
 
