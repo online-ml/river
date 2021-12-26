@@ -50,7 +50,7 @@ class Constant(Initializer):
         self.value = value
 
     def __call__(self, shape=1):
-        return np.full(shape, self.value) if shape != 1 else self.value
+        return np.full(shape, self.value, dtype=float) if shape != 1 else self.value
 
 
 class Zeros(Constant):

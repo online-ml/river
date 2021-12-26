@@ -1,21 +1,45 @@
 import abc
+import numbers
+import random
 import typing
 
-from river import base
+import numpy as np
+from scipy import special
+
+from river import base, utils
+
+ID = typing.Union[str, int]
+Reward = typing.Union[numbers.Number, bool]
 
 
-class Recommender(base.Regressor):
+class Recommender(base.Estimator):
     """A recommender."""
 
-    def learn_one(self, x, y):
-        return self._learn_one(x["user"], x["item"], y)
+    def __init__(self, seed: int = None):
+        self.seed = seed
+        self._rng = random.Random(seed)
+        self._numpy_rng = np.random.RandomState(seed)
+        self._items = set()
 
-    def predict_one(self, x):
-        return self._predict_one(x["user"], x["item"])
+    @property
+    def is_contextual(self):
+        return False
+
+    def learn_one(self, x, y: Reward):
+        user = x.pop("user")
+        item = x.pop("item")
+        self._items.add(item)
+        return self.learn_user_item(user, item, context=x, reward=y)
+
+    def predict_one(self, x) -> float:
+        user = x.pop("user")
+        item = x.pop("item")
+        self._items.add(item)
+        return self.predict_user_item(user, item, context=x)
 
     @abc.abstractmethod
-    def _learn_one(
-        self, user: typing.Union[str, int], item: typing.Union[str, int], y: float
+    def learn_user_item(
+        self, user: ID, item: ID, context: typing.Optional[dict], reward: Reward
     ) -> "Recommender":
         """Fits a `user`-`item` pair and a real-valued target `y`.
 
@@ -25,14 +49,16 @@ class Recommender(base.Regressor):
             A user ID.
         item
             An item ID.
-        y
-            A rating.
+        context
+            Side information.
+        reward
+            Feedback from the user for this item.
 
         """
 
     @abc.abstractmethod
-    def _predict_one(
-        self, user: typing.Union[str, int], item: typing.Union[str, int]
+    def predict_user_item(
+        self, user: ID, item: ID, context: typing.Optional[dict]
     ) -> float:
         """Predicts the target value of a set of features `x`.
 
@@ -42,9 +68,56 @@ class Recommender(base.Regressor):
             A user ID.
         item
             An item ID.
+        context
+            Side information.
 
         Returns
         -------
         The predicted rating.
 
         """
+
+    def recommend(
+        self,
+        user: ID,
+        k=1,
+        context: typing.Optional[dict] = None,
+        items: typing.Optional[typing.Set[ID]] = None,
+        strategy="best",
+    ) -> typing.List[ID]:
+        """Recommend k items to a user.
+
+        Parameters
+        ----------
+        user
+            A user ID.
+        k
+            The number of items to recommend.
+        context
+            Side information.
+        items
+            An optional set of items that should be considered. Every seen item will be considered
+            if this isn't specified.
+        strategy
+            The strategy used to select which items to recommend once they've been scored.
+
+        """
+
+        items = list(items or self._items)
+        if not items:
+            return []
+
+        # Evaluate the preference of each user towards each time given the context
+        preferences = [
+            self.predict_user_item(user, item, context=context) for item in items
+        ]
+
+        # Apply the selection strategy
+        if strategy == "best":
+            return [item for _, item in sorted(zip(preferences, items), reverse=True)][
+                :k
+            ]
+
+        raise ValueError(
+            f"{strategy} is not a valid value for strategy, must be one of: best"
+        )

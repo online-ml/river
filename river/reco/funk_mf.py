@@ -97,25 +97,25 @@ class FunkMF(base.Recommender):
         l2=0.0,
         initializer: optim.initializers.Initializer = None,
         clip_gradient=1e12,
-        seed: int = None,
+        seed=None,
     ):
+        super().__init__(seed=seed)
 
         self.n_factors = n_factors
         self.u_optimizer = (
-            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+            optim.SGD(0.1) if optimizer is None else copy.deepcopy(optimizer)
         )
         self.i_optimizer = (
-            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+            optim.SGD(0.1) if optimizer is None else copy.deepcopy(optimizer)
         )
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2 = l2
 
         if initializer is None:
-            initializer = optim.initializers.Normal(mu=0.0, sigma=0.1, seed=seed)
+            initializer = optim.initializers.Normal(mu=0.0, sigma=0.1, seed=self.seed)
         self.initializer = initializer
 
         self.clip_gradient = clip_gradient
-        self.seed = seed
 
         random_latents = functools.partial(self.initializer, shape=self.n_factors)
         self.u_latents: typing.DefaultDict[
@@ -125,13 +125,13 @@ class FunkMF(base.Recommender):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 
-    def _predict_one(self, user, item):
+    def predict_user_item(self, user, item, context):
         return np.dot(self.u_latents[user], self.i_latents[item])
 
-    def _learn_one(self, user, item, y):
+    def learn_user_item(self, user, item, context, reward):
 
         # Calculate the gradient of the loss with respect to the prediction
-        g_loss = self.loss.gradient(y, self._predict_one(user, item))
+        g_loss = self.loss.gradient(reward, self.predict_user_item(user, item, context))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(

@@ -2,7 +2,7 @@ import collections
 import math
 
 from river import base, linear_model
-from river.utils import poisson
+from river.utils.random import poisson
 from river.utils.skmultiflow_utils import normalize_values_in_dict, scale_values_in_dict
 
 __all__ = ["AdaBoostClassifier"]

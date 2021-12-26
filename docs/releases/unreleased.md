@@ -17,3 +17,7 @@
 ## metrics
 
 - `metrics.ROCAUC` works with `base.AnomalyDetectors`s.
+
+## reco
+
+- Removed `reco.SurpriseWrapper` as it wasn't really useful.

@@ -10,11 +10,9 @@ __all__ = ["RandomNormal"]
 class RandomNormal(base.Recommender):
     """Predicts random values sampled from a normal distribution.
 
-    The parameters of the normal distribution are fitted with running statistics. This is
-    equivalent to using `surprise.prediction_algorithms.random_pred.NormalPredictor`.
-
-    This model expects a dict input with a `user` and an `item` entries without any type constraint
-    on their values (i.e. can be strings or numbers). Other entries are ignored.
+    The parameters of the normal distribution are fitted with running statistics. They parameters
+    are independent of the user, the item, or the context, and are instead fitted globally. This
+    recommender therefore acts as a dummy model that any serious model should easily outperform.
 
     Parameters
     ----------
@@ -56,19 +54,17 @@ class RandomNormal(base.Recommender):
     """
 
     def __init__(self, seed=None):
-        super().__init__()
+        super().__init__(seed=seed)
         self.variance = stats.Var()
         self.mean = stats.Mean()
         self.seed = seed
-        self._rng = random.Random(seed)
 
-    def _learn_one(self, user, item, y):
-        y_pred = self._predict_one(user, item)
-        self.mean.update(y)
-        self.variance.update(y)
-        return y_pred
+    def learn_user_item(self, user, item, context, reward):
+        self.mean.update(reward)
+        self.variance.update(reward)
+        return self
 
-    def _predict_one(self, user, item):
+    def predict_user_item(self, user, item, context):
         μ = self.mean.get() or 0
         σ = (self.variance.get() or 1) ** 0.5
         return self._rng.gauss(μ, σ)

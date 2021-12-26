@@ -2,9 +2,8 @@ import collections
 import copy
 import statistics
 
-from river import base, linear_model
+from river import base, linear_model, utils
 from river.drift import ADWIN
-from river.utils import poisson
 
 __all__ = [
     "BaggingClassifier",
@@ -18,7 +17,7 @@ class BaseBagging(base.WrapperEnsemble):
     def learn_one(self, x, y):
 
         for model in self:
-            for _ in range(poisson(1, self._rng)):
+            for _ in range(utils.random.poisson(1, self._rng)):
                 model.learn_one(x, y)
 
         return self
@@ -31,7 +30,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     `k` is sampled from a Poisson distribution of parameter 1. `k` thus has a 36% chance of
     being equal to 0, a 36% chance of being equal to 1, an 18% chance of being equal to 2, a 6%
     chance of being equal to 3, a 1% chance of being equal to 4, etc. You can do
-    `scipy.stats.poisson(1).pmf(k)` to obtain more detailed values.
+    `scipy.stats.utils.random.poisson(1).pmf(k)` to obtain more detailed values.
 
     Parameters
     ----------
@@ -108,7 +107,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
     `k` is sampled from a Poisson distribution of parameter 1. `k` thus has a 36% chance of
     being equal to 0, a 36% chance of being equal to 1, an 18% chance of being equal to 2, a 6%
     chance of being equal to 3, a 1% chance of being equal to 4, etc. You can do
-    `scipy.stats.poisson(1).pmf(k)` for more detailed values.
+    `scipy.stats.utils.random.poisson(1).pmf(k)` for more detailed values.
 
     Parameters
     ----------
@@ -229,7 +228,7 @@ class ADWINBaggingClassifier(BaggingClassifier):
 
         change_detected = False
         for i, model in enumerate(self):
-            for _ in range(poisson(1, self._rng)):
+            for _ in range(utils.random.poisson(1, self._rng)):
                 model.learn_one(x, y)
 
             try:
@@ -383,11 +382,11 @@ class LeveragingBaggingClassifier(BaggingClassifier):
 
     def _leveraging_bag_wt(self, **kwargs):
         # Resampling without taking out all instances
-        return 1 + self._rng.poisson(1.0)
+        return 1 + utils.random.poisson(1, self._rng)
 
     def _leveraging_subag(self, **kwargs):
         # Subagging using resampling without replacement
-        return int(self._rng.poisson(1) > 0)
+        return int(utils.random.poisson(1, self._rng) > 0)
 
     def learn_one(self, x, y):
         change_detected = False

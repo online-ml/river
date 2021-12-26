@@ -86,7 +86,10 @@ class Baseline(base.Recommender):
         l2=0.0,
         initializer: optim.initializers.Initializer = None,
         clip_gradient=1e12,
+        seed=None,
     ):
+        super().__init__(seed=seed)
+
         self.optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.u_optimizer = (
             optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
@@ -110,16 +113,16 @@ class Baseline(base.Recommender):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(initializer)
 
-    def _predict_one(self, user, item):
+    def predict_user_item(self, user, item, context):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]
 
-    def _learn_one(self, user, item, y):
+    def learn_user_item(self, user, item, context, reward):
 
         # Update the global mean
-        self.global_mean.update(y)
+        self.global_mean.update(reward)
 
         # Calculate the gradient of the loss with respect to the prediction
-        g_loss = self.loss.gradient(y, self._predict_one(user, item))
+        g_loss = self.loss.gradient(reward, self.predict_user_item(user, item, context))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(

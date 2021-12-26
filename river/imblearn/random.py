@@ -1,15 +1,14 @@
 import collections
+import random
 
-import numpy as np
-
-from river import base
+from river import base, utils
 
 
 class ClassificationSampler(base.Wrapper, base.Classifier):
     def __init__(self, classifier, seed=None):
         self.classifier = classifier
         self.seed = seed
-        self._rng = np.random.RandomState(seed)
+        self._rng = random.Random(seed)
 
     @property
     def _wrapped_model(self):
@@ -175,7 +174,7 @@ class RandomOverSampler(ClassificationSampler):
         M = g[self._pivot] / f[self._pivot]
         rate = M * f[y] / g[y]
 
-        for _ in range(self._rng.poisson(rate)):
+        for _ in range(utils.random.poisson(rate, rng=self._rng)):
             self.classifier.learn_one(x, y)
 
         return self
@@ -256,7 +255,7 @@ class RandomSampler(ClassificationSampler):
 
         rate = self.sampling_rate * f[y] / (g[y] / self._n)
 
-        for _ in range(self._rng.poisson(rate)):
+        for _ in range(utils.random.poisson(rate, rng=self._rng)):
             self.classifier.learn_one(x, y)
 
         return self
