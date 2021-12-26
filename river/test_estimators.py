@@ -19,7 +19,6 @@ from river import (
     multiclass,
     neural_net,
     preprocessing,
-    reco,
     time_series,
 )
 
@@ -74,10 +73,6 @@ def iter_estimators_which_can_be_tested():
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
-        reco.Baseline,
-        reco.BiasedMF,
-        reco.FunkMF,
-        reco.RandomNormal,
         imblearn.RandomOverSampler,
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,

@@ -101,6 +101,8 @@ class FunkMF(base.Recommender):
     ):
         super().__init__(seed=seed)
 
+        self.optimizer = optimizer
+
         self.n_factors = n_factors
         self.u_optimizer = (
             optim.SGD(0.1) if optimizer is None else copy.deepcopy(optimizer)

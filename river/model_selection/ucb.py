@@ -2,25 +2,9 @@ import math
 import operator
 
 from river import metrics
+from river._bandit import UCB
 
-from .bandit import BanditPolicy, BanditRegressor
-
-
-class UCB(BanditPolicy):
-    def __init__(self, delta, burn_in, seed):
-        super().__init__(burn_in, seed)
-        self.delta = delta
-
-    def _pull(self, bandit):
-        sign = operator.pos if bandit.metric.bigger_is_better else operator.neg
-        upper_bounds = [
-            sign(arm.metric.get())
-            + self.delta * math.sqrt(2 * math.log(bandit.n_pulls) / arm.n_pulls)
-            if arm.n_pulls
-            else math.inf
-            for arm in bandit.arms
-        ]
-        yield max(bandit.arms, key=lambda arm: upper_bounds[arm.index])
+from .base import BanditRegressor
 
 
 class UCBRegressor(BanditRegressor):
@@ -108,14 +92,23 @@ class UCBRegressor(BanditRegressor):
     """
 
     def __init__(
-        self, models, metric=None, delta=1, burn_in=100, seed: int = None,
+        self,
+        models,
+        metric=None,
+        delta=1,
+        burn_in=100,
+        seed: int = None,
     ):
         if metric is None:
             metric = metrics.MAE()
         super().__init__(
             models=models,
             metric=metric,
-            policy=UCB(delta=delta, burn_in=burn_in, seed=seed,),
+            policy=UCB(
+                delta=delta,
+                burn_in=burn_in,
+                seed=seed,
+            ),
         )
 
     @property

@@ -358,7 +358,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
 
     def _leveraging_bag(self, **kwargs):
         # Leveraging bagging
-        return poisson(self.w, self._rng)
+        return utils.random.poisson(self.w, self._rng)
 
     def _leveraging_bag_me(self, **kwargs):
         # Miss-classification error using weight=1 if misclassified.

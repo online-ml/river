@@ -9,7 +9,7 @@ from river import optim, stats, utils
 
 from . import base
 
-__all__ = ["Normal"]
+__all__ = ["BiasedMF"]
 
 
 class BiasedMF(base.Recommender):

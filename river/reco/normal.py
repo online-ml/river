@@ -49,7 +49,7 @@ class RandomNormal(base.Recommender):
     ...     _ = model.learn_one(x, y)
 
     >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
-    6.883895
+    6.147299621751425
 
     """
 
