@@ -8,7 +8,7 @@ from .base import Quantizer
 
 
 class DynamicQuantizer(Quantizer):
-    """ Adapted version of the Quantizer Observer (QO)[^1] that is applied to Stochastic Gradient
+    """Adapted version of the Quantizer Observer (QO)[^1] that is applied to Stochastic Gradient
     Trees (SGT).
 
     This feature quantizer starts by partitioning the inputs using the passed `radius` value.

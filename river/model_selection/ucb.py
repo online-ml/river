@@ -1,6 +1,3 @@
-import math
-import operator
-
 from river import metrics
 from river._bandit import UCB
 

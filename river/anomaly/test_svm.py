@@ -18,7 +18,9 @@ tests = {
 
 
 @pytest.mark.parametrize(
-    "river_params, sklearn_params", tests.values(), ids=tests.keys(),
+    "river_params, sklearn_params",
+    tests.values(),
+    ids=tests.keys(),
 )
 def test_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""

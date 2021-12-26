@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from random import Random
-from typing import Iterator, List
+from typing import Iterator
 
 from river import metrics, utils
 

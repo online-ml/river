@@ -260,7 +260,7 @@ class RandomRBFDrift(RandomRBF):
 
 
 class Centroid:
-    """ Class that stores a centroid's attributes. """
+    """Class that stores a centroid's attributes."""
 
     def __init__(self):
         self.centre = None

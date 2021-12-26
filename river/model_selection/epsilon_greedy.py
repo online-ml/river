@@ -1,5 +1,3 @@
-import math
-
 from river import metrics
 from river._bandit import EpsilonGreedy
 

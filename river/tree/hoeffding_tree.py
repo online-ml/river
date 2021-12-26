@@ -224,17 +224,17 @@ class HoeffdingTree(ABC):
 
     @property
     def split_criterion(self) -> str:
-        """Return a string with the name of the split criterion being used by the tree. """
+        """Return a string with the name of the split criterion being used by the tree."""
         return self._split_criterion
 
     @split_criterion.setter
     @abstractmethod
     def split_criterion(self, split_criterion):
-        """Define the split criterion to be used by the tree. """
+        """Define the split criterion to be used by the tree."""
 
     @property
     def leaf_prediction(self) -> str:
-        """Return the prediction strategy used by the tree at its leaves. """
+        """Return the prediction strategy used by the tree at its leaves."""
         return self._leaf_prediction
 
     @leaf_prediction.setter
@@ -321,7 +321,7 @@ class HoeffdingTree(ABC):
             self._enforce_size_limit()
 
     def _deactivate_all_leaves(self):
-        """Deactivate all leaves. """
+        """Deactivate all leaves."""
         leaves = self._find_leaves()
         for leaf in leaves:
             leaf.deactivate()

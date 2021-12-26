@@ -98,7 +98,9 @@ def test_memory_usage_multitarget():
     dataset = get_regression_data()
 
     model = tree.iSOUPTreeRegressor(
-        leaf_prediction="mean", max_size=0.5, memory_estimate_period=100,
+        leaf_prediction="mean",
+        max_size=0.5,
+        memory_estimate_period=100,
     )
 
     for x, y in dataset:
