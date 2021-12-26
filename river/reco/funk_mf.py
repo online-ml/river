@@ -39,7 +39,7 @@ class FunkMF(Recommender, base.Regressor):
     clip_gradient
         Clips the absolute value of each gradient value.
     seed
-        Randomization seed used for reproducibility.
+        Random number generation seed. Set this for reproducibility.
 
     Attributes
     ----------

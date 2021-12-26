@@ -15,7 +15,7 @@ class RandomNormal(Recommender, base.Regressor):
     Parameters
     ----------
     seed
-        Randomization seed used for reproducibility.
+        Random number generation seed. Set this for reproducibility.
 
     Attributes
     ----------

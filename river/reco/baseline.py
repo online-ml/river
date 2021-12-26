@@ -33,6 +33,8 @@ class Baseline(Recommender, base.Regressor):
         Weights initialization scheme.
     clip_gradient
         Clips the absolute value of each gradient value.
+    seed
+        Random number generation seed. Set this for reproducibility.
 
     Attributes
     ----------
