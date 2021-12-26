@@ -84,7 +84,7 @@ class FuncTransformer(base.Transformer):
       )
     )
 
-    If you provide a function with wrapping it, then the pipeline will do it for you:
+    If you provide a function without wrapping it, then the pipeline will do it for you:
 
     >>> pipeline = parse_date | naive_bayes.MultinomialNB()
 

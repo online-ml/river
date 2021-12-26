@@ -1,6 +1,8 @@
 import math
 import random
 
+__all__ = ["poisson"]
+
 
 def poisson(rate: float, rng=random) -> int:
     """Sample a random value from a Poisson distribution.

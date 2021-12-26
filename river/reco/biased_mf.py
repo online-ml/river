@@ -5,14 +5,14 @@ import typing
 
 import numpy as np
 
-from river import optim, stats, utils
+from river import base, optim, stats, utils
 
-from . import base
+from .base import Recommender
 
 __all__ = ["BiasedMF"]
 
 
-class BiasedMF(base.Recommender):
+class BiasedMF(Recommender, base.Regressor):
     """Biased Matrix Factorization for recommender systems.
 
     The model equation is defined as:
@@ -50,7 +50,7 @@ class BiasedMF(base.Recommender):
     clip_gradient
         Clips the absolute value of each gradient value.
     seed
-        Randomization seed used for reproducibility.
+        Random number generation seed. Set this for reproducibility.
 
     Attributes
     ----------
@@ -122,8 +122,12 @@ class BiasedMF(base.Recommender):
         weight_initializer: optim.initializers.Initializer = None,
         latent_initializer: optim.initializers.Initializer = None,
         clip_gradient=1e12,
-        seed: int = None,
+        seed=None,
     ):
+        super().__init__(seed=seed)
+
+        self.bias_optimizer = bias_optimizer
+        self.latent_optimizer = latent_optimizer
 
         self.n_factors = n_factors
         self.u_bias_optimizer = (
@@ -147,11 +151,10 @@ class BiasedMF(base.Recommender):
         self.weight_initializer = weight_initializer
 
         if latent_initializer is None:
-            latent_initializer = optim.initializers.Normal(sigma=0.1, seed=seed)
+            latent_initializer = optim.initializers.Normal(sigma=0.1, seed=self.seed)
         self.latent_initializer = latent_initializer
 
         self.clip_gradient = clip_gradient
-        self.seed = seed
         self.global_mean = stats.Mean()
 
         self.u_biases: typing.DefaultDict[
@@ -171,7 +174,7 @@ class BiasedMF(base.Recommender):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 
-    def _predict_one(self, user, item):
+    def _predict_user_item(self, user, item, context):
 
         # Initialize the prediction to the mean
         y_pred = self.global_mean.get()
@@ -187,13 +190,15 @@ class BiasedMF(base.Recommender):
 
         return y_pred
 
-    def _learn_one(self, user, item, y):
+    def _learn_user_item(self, user, item, context, reward):
 
         # Update the global mean
-        self.global_mean.update(y)
+        self.global_mean.update(reward)
 
         # Calculate the gradient of the loss with respect to the prediction
-        g_loss = self.loss.gradient(y, self._predict_one(user, item))
+        g_loss = self.loss.gradient(
+            reward, self._predict_user_item(user, item, context)
+        )
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(

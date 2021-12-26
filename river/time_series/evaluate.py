@@ -1,5 +1,6 @@
 import collections
-from typing import Any, Iterable, Iterator, Optional, Tuple
+import numbers
+from typing import Iterable, Iterator, Optional, Tuple
 
 from river.base.typing import Dataset
 from river.metrics import RegressionMetric
@@ -10,9 +11,9 @@ from .metric import HorizonMetric
 TimeSeries = Iterator[
     Tuple[
         Optional[dict],  # x
-        Any,  # y
+        numbers.Number,  # y
         Iterable[Optional[dict]],  # x_horizon
-        Iterable[Any],  # y_horizon
+        Iterable[numbers.Number],  # y_horizon
     ]
 ]
 

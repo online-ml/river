@@ -81,18 +81,18 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=
 def scale_values_in_dict(dictionary, multiplier, inplace=True):
     """Scale the values in a dictionary.
 
-        For each element in the dictionary, applies `value * multiplier`.
+    For each element in the dictionary, applies `value * multiplier`.
 
-        Parameters
-        ----------
-        dictionary
-            Dictionary to scale.
-        multiplier
-            Scaling value.
-        inplace
-            If True, perform operation in-place
+    Parameters
+    ----------
+    dictionary
+        Dictionary to scale.
+    multiplier
+        Scaling value.
+    inplace
+        If True, perform operation in-place
 
-        """
+    """
 
     if not inplace:
         dictionary = copy.deepcopy(dictionary)

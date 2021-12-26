@@ -1,15 +1,14 @@
 import collections
+import random
 
-import numpy as np
-
-from river import base
+from river import base, utils
 
 
 class ClassificationSampler(base.Wrapper, base.Classifier):
     def __init__(self, classifier, seed=None):
         self.classifier = classifier
         self.seed = seed
-        self._rng = np.random.RandomState(seed)
+        self._rng = random.Random(seed)
 
     @property
     def _wrapped_model(self):
@@ -64,7 +63,7 @@ class RandomUnderSampler(ClassificationSampler):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.07292
+    LogLoss: 0.0728
 
     References
     ----------
@@ -147,7 +146,7 @@ class RandomOverSampler(ClassificationSampler):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.05421
+    LogLoss: 0.054338
 
     """
 
@@ -175,7 +174,7 @@ class RandomOverSampler(ClassificationSampler):
         M = g[self._pivot] / f[self._pivot]
         rate = M * f[y] / g[y]
 
-        for _ in range(self._rng.poisson(rate)):
+        for _ in range(utils.random.poisson(rate, rng=self._rng)):
             self.classifier.learn_one(x, y)
 
         return self
@@ -228,7 +227,7 @@ class RandomSampler(ClassificationSampler):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.130906
+    LogLoss: 0.131988
 
     """
 
@@ -256,7 +255,7 @@ class RandomSampler(ClassificationSampler):
 
         rate = self.sampling_rate * f[y] / (g[y] / self._n)
 
-        for _ in range(self._rng.poisson(rate)):
+        for _ in range(utils.random.poisson(rate, rng=self._rng)):
             self.classifier.learn_one(x, y)
 
         return self

@@ -53,7 +53,10 @@ def test_height():
 
     tree = BinaryBranch(
         BinaryBranch(
-            BinaryBranch(BinaryBranch(Leaf(), Leaf()), Leaf(),),
+            BinaryBranch(
+                BinaryBranch(Leaf(), Leaf()),
+                Leaf(),
+            ),
             BinaryBranch(Leaf(), Leaf()),
         ),
         BinaryBranch(Leaf(), Leaf()),

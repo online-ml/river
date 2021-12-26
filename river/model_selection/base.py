@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Iterator
+from typing import Iterator, List
 
 from river import compose, linear_model, metrics, optim, preprocessing
+from river._bandit import Bandit, BanditPolicy
 from river.base import Classifier, Ensemble, Estimator, Regressor
-from river.metrics import Metric
+from river.metrics import Metric, RegressionMetric
 
 
 class ModelSelector(Ensemble, ABC):
@@ -66,3 +67,27 @@ class ModelSelectionRegressor(ModelSelector, Regressor):
 class ModelSelectionClassifier(ModelSelector, Classifier):
     def predict_proba_one(self, x):
         return self.best_model.predict_proba_one(x)
+
+
+class BanditRegressor(ModelSelectionRegressor):
+    def __init__(
+        self,
+        models: List[Regressor],
+        metric: RegressionMetric,
+        policy: BanditPolicy,
+    ):
+        super().__init__(models, metric)
+        self.bandit = Bandit(n_arms=len(models), metric=metric)
+        self.policy = policy
+
+    @property
+    def best_model(self):
+        return self[self.bandit.best_arm.index]
+
+    def learn_one(self, x, y):
+        for arm in self.policy.pull(self.bandit):
+            model = self[arm.index]
+            y_pred = model.predict_one(x)
+            self.bandit.update(arm, y_true=y, y_pred=y_pred)
+            model.learn_one(x, y)
+        return self
