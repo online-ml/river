@@ -12,7 +12,14 @@ Reward = typing.Union[numbers.Number, bool]
 
 
 class Recommender(base.Estimator):
-    """A recommender."""
+    """Base class for recommendation models.
+
+    Parameters
+    ----------
+    seed
+        Random number generation seed. Set this for reproducibility.
+
+    """
 
     def __init__(self, seed: int = None):
         self.seed = seed
