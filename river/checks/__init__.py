@@ -45,6 +45,14 @@ def _wrapped_partial(func, *args, **kwargs):
     return partial
 
 
+class _DummyDataset:
+    def __init__(self, *data):
+        self.data = data
+
+    def __iter__(self):
+        yield from self.data
+
+
 def _yield_datasets(model: Estimator):
     """Generates datasets for a given model."""
 
@@ -52,8 +60,25 @@ def _yield_datasets(model: Estimator):
 
     from river import base, compose, datasets, preprocessing, stream, utils
 
+    # Recommendation models can be regressors or classifiers, but they have requirements as to the
+    # structure of the data
+    if isinstance(utils.inspect.extract_relevant(model), Recommender):
+        if utils.inspect.isregressor(model):
+            yield _DummyDataset(
+                ({"user": "Alice", "item": "Superman"}, 8),
+                ({"user": "Alice", "item": "Terminator"}, 9),
+                ({"user": "Alice", "item": "Star Wars"}, 8),
+                ({"user": "Alice", "item": "Notting Hill"}, 2),
+                ({"user": "Alice", "item": "Harry Potter"}, 5),
+                ({"user": "Bob", "item": "Superman"}, 8),
+                ({"user": "Bob", "item": "Terminator"}, 9),
+                ({"user": "Bob", "item": "Star Wars"}, 8),
+                ({"user": "Bob", "item": "Notting Hill"}, 2),
+            )
+        return
+
     # Multi-output regression
-    if utils.inspect.ismoregressor(model):
+    elif utils.inspect.ismoregressor(model):
 
         # 1
         yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())

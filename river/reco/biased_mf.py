@@ -5,14 +5,14 @@ import typing
 
 import numpy as np
 
-from river import optim, stats, utils
+from river import base, optim, stats, utils
 
-from . import base
+from .base import Recommender
 
 __all__ = ["BiasedMF"]
 
 
-class BiasedMF(base.Recommender):
+class BiasedMF(Recommender, base.Regressor):
     """Biased Matrix Factorization for recommender systems.
 
     The model equation is defined as:
@@ -174,7 +174,7 @@ class BiasedMF(base.Recommender):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 
-    def predict_user_item(self, user, item, context):
+    def _predict_user_item(self, user, item, context):
 
         # Initialize the prediction to the mean
         y_pred = self.global_mean.get()
@@ -190,13 +190,15 @@ class BiasedMF(base.Recommender):
 
         return y_pred
 
-    def learn_user_item(self, user, item, context, reward):
+    def _learn_user_item(self, user, item, context, reward):
 
         # Update the global mean
         self.global_mean.update(reward)
 
         # Calculate the gradient of the loss with respect to the prediction
-        g_loss = self.loss.gradient(reward, self.predict_user_item(user, item, context))
+        g_loss = self.loss.gradient(
+            reward, self._predict_user_item(user, item, context)
+        )
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(

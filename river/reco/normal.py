@@ -1,13 +1,13 @@
 import random
 
-from river import stats
+from river import base, stats
 
-from . import base
+from .base import Recommender
 
 __all__ = ["RandomNormal"]
 
 
-class RandomNormal(base.Recommender):
+class RandomNormal(Recommender, base.Regressor):
     """Predicts random values sampled from a normal distribution.
 
     The parameters of the normal distribution are fitted with running statistics. They parameters
@@ -59,12 +59,12 @@ class RandomNormal(base.Recommender):
         self.mean = stats.Mean()
         self.seed = seed
 
-    def learn_user_item(self, user, item, context, reward):
+    def _learn_user_item(self, user, item, context, reward):
         self.mean.update(reward)
         self.variance.update(reward)
         return self
 
-    def predict_user_item(self, user, item, context):
+    def _predict_user_item(self, user, item, context):
         μ = self.mean.get() or 0
         σ = (self.variance.get() or 1) ** 0.5
         return self._rng.gauss(μ, σ)

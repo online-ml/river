@@ -2,14 +2,14 @@ import collections
 import copy
 import typing
 
-from river import optim, stats, utils
+from river import base, optim, stats, utils
 
-from . import base
+from .base import Recommender
 
 __all__ = ["Baseline"]
 
 
-class Baseline(base.Recommender):
+class Baseline(Recommender, base.Regressor):
     """Baseline for recommender systems.
 
     A first-order approximation of the bias involved in target. The model equation is defined as:
@@ -113,16 +113,18 @@ class Baseline(base.Recommender):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(initializer)
 
-    def predict_user_item(self, user, item, context):
+    def _predict_user_item(self, user, item, context):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]
 
-    def learn_user_item(self, user, item, context, reward):
+    def _learn_user_item(self, user, item, context, reward):
 
         # Update the global mean
         self.global_mean.update(reward)
 
         # Calculate the gradient of the loss with respect to the prediction
-        g_loss = self.loss.gradient(reward, self.predict_user_item(user, item, context))
+        g_loss = self.loss.gradient(
+            reward, self._predict_user_item(user, item, context)
+        )
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(

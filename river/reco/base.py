@@ -26,19 +26,21 @@ class Recommender(base.Estimator):
         return False
 
     def learn_one(self, x, y: Reward):
+        x = x.copy()
         user = x.pop("user")
         item = x.pop("item")
         self._items.add(item)
-        return self.learn_user_item(user, item, context=x, reward=y)
+        return self._learn_user_item(user, item, context=x, reward=y)
 
     def predict_one(self, x) -> float:
+        x = x.copy()
         user = x.pop("user")
         item = x.pop("item")
         self._items.add(item)
-        return self.predict_user_item(user, item, context=x)
+        return self._predict_user_item(user, item, context=x)
 
     @abc.abstractmethod
-    def learn_user_item(
+    def _learn_user_item(
         self, user: ID, item: ID, context: typing.Optional[dict], reward: Reward
     ) -> "Recommender":
         """Fits a `user`-`item` pair and a real-valued target `y`.
@@ -57,7 +59,7 @@ class Recommender(base.Estimator):
         """
 
     @abc.abstractmethod
-    def predict_user_item(
+    def _predict_user_item(
         self, user: ID, item: ID, context: typing.Optional[dict]
     ) -> float:
         """Predicts the target value of a set of features `x`.
@@ -109,7 +111,7 @@ class Recommender(base.Estimator):
 
         # Evaluate the preference of each user towards each time given the context
         preferences = [
-            self.predict_user_item(user, item, context=context) for item in items
+            self._predict_user_item(user, item, context=context) for item in items
         ]
 
         # Apply the selection strategy
@@ -121,3 +123,6 @@ class Recommender(base.Estimator):
         raise ValueError(
             f"{strategy} is not a valid value for strategy, must be one of: best"
         )
+
+    def _unit_test_skips(self):
+        return {"check_emerging_features", "check_disappearing_features"}
