@@ -9,7 +9,7 @@ from river.base import Estimator
 from river.model_selection import ModelSelector
 from river.reco import Recommender
 
-from . import common, clf, model_selection, reco
+from . import clf, common, model_selection, reco
 
 __all__ = ["check_estimator", "yield_checks"]
 
@@ -109,7 +109,7 @@ def _yield_datasets(model: Estimator):
 def yield_checks(model: Estimator):
     """Generates unit tests for a given model."""
 
-    from river import model_selection, utils
+    from river import utils
 
     # General checks
     yield common.check_repr

@@ -4,9 +4,8 @@ import random
 import typing
 
 import numpy as np
-from scipy import special
 
-from river import base, utils
+from river import base
 
 ID = typing.Union[str, int]
 Reward = typing.Union[numbers.Number, bool]

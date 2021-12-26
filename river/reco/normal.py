@@ -1,5 +1,3 @@
-import random
-
 from river import base, stats
 
 from .base import Recommender
