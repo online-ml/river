@@ -43,6 +43,7 @@ it in the issue: https://gist.github.com
 
 ```python
 # Sample code to reproduce the problem
+# Please do your best to provide a Minimal, Reproducible Example: https://stackoverflow.com/help/minimal-reproducible-example
 ```
 
 
