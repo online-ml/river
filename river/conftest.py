@@ -13,11 +13,6 @@ except ImportError:
     collect_ignore.append("stream/test_sql.py")
 
 try:
-    import surprise  # noqa: F401
-except ImportError:
-    collect_ignore.append("reco/surprise.py")
-
-try:
     import torch  # noqa: F401
 except ImportError:
     collect_ignore.append("compat/pytorch.py")

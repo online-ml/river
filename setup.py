@@ -33,7 +33,6 @@ base_packages = ["numpy>=1.20.0", "scipy>=1.4.1", "pandas>=1.0.1"]
 
 compat_packages = base_packages + [
     "scikit-learn",
-    "scikit-surprise",
     "sqlalchemy>=1.4",
     "torch",
     "vaex",
