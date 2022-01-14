@@ -53,3 +53,21 @@ def test_both_are_pipelines():
         "b_2": 1,
         "a_1": 1,
     }
+
+
+def test_renaming():
+
+    renamer = compose.Rename(dict(a="z", b="y", c="x"))
+    assert renamer.transform_one(dict(a=1, b=2, d=3)) == dict(z=1, y=2, d=3)
+
+
+def test_prefixing():
+
+    prefixer = compose.Prefix("x_")
+    assert prefixer.transform_one(dict(a=1, b=2, d=3)) == dict(x_a=1, x_b=2, x_d=3)
+
+
+def test_suffixing():
+
+    suffixer = compose.Suffix("_x")
+    assert suffixer.transform_one(dict(a=1, b=2, d=3)) == dict(a_x=1, b_x=2, d_x=3)

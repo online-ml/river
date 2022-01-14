@@ -4,6 +4,11 @@
 
 - Created this module to store estimator unit testing, rather than having it in the `utils` module.
 
+## compose
+
+- Split `compose.Renamer` into `compose.Prefix` and `compose.Suffix` that respectively prepend and append a string to the features' name.
+- Added `compose.Rename`, allowing to rename features following a mapping.
+
 ## evaluate
 
 - Refactored `evaluate.progressive_validation` to work with `base.AnomalyDetector`s.

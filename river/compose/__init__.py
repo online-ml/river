@@ -8,7 +8,7 @@ from .func import FuncTransformer
 from .grouper import Grouper
 from .pipeline import Pipeline
 from .product import TransformerProduct
-from .rename import Renamer
+from .rename import Prefix, Rename, Suffix
 from .select import Discard, Select, SelectType
 from .target_transform import TargetTransformRegressor
 from .union import TransformerUnion
@@ -18,9 +18,11 @@ __all__ = [
     "FuncTransformer",
     "Grouper",
     "Pipeline",
-    "Renamer",
+    "Prefix",
+    "Rename",
     "Select",
     "SelectType",
+    "Suffix",
     "TargetTransformRegressor",
     "TransformerProduct",
     "TransformerUnion",

@@ -1,14 +1,76 @@
+from typing import Dict
+
 from .. import base
 
-__all__ = ["Renamer"]
+__all__ = ["Rename", "Prefix", "Suffix"]
 
 
-class Renamer(base.Transformer):
-    """Renames keys based on given parameters.
+class Rename(base.Transformer):
+    """Renames features following substitution rules.
+
+    Parameters
+    ----------
+    mapping
+        Dictionnary describing substitution rules. Keys in `mapping` that are not a feature's name are silently ignored.
+
+    Examples
+    --------
+
+    >>> from river import compose
+
+    >>> mapping = {'a': 'v', 'c': 'o'}
+    >>> x = {'a': 42, 'b': 12}
+    >>> compose.Rename(mapping).transform_one(x)
+    {'b': 12, 'v': 42}
+
+    """
+
+    def __init__(self, mapping: Dict[str, str]):
+        self.mapping = mapping
+
+    def transform_one(self, x):
+        for old_key, new_key in self.mapping.items():
+            try:
+                x[new_key] = x.pop(old_key)
+            except KeyError:
+                pass  # Ignoring keys that are not a feature's name
+
+        return x
+
+
+class Prefix(base.Transformer):
+    """Prepends a prefix on features names.
 
     Parameters
     ----------
     prefix
+
+    Examples
+    --------
+
+    >>> from river import compose
+
+    >>> x = {'a': 42, 'b': 12}
+    >>> compose.Prefix('prefix_').transform_one(x)
+    {'prefix_a': 42, 'prefix_b': 12}
+
+    """
+
+    def __init__(self, prefix: str):
+        self.prefix = prefix
+
+    def _rename(self, s: str) -> str:
+        return f"{self.prefix}{s}"
+
+    def transform_one(self, x):
+        return {self._rename(i): xi for i, xi in x.items()}
+
+
+class Suffix(base.Transformer):
+    """Appends a suffix on features names.
+
+    Parameters
+    ----------
     suffix
 
     Examples
@@ -17,17 +79,16 @@ class Renamer(base.Transformer):
     >>> from river import compose
 
     >>> x = {'a': 42, 'b': 12}
-    >>> compose.Renamer(prefix='prefix_', suffix='_suffix').transform_one(x)
-    {'prefix_a_suffix': 42, 'prefix_b_suffix': 12}
+    >>> compose.Suffix('_suffix').transform_one(x)
+    {'a_suffix': 42, 'b_suffix': 12}
 
     """
 
-    def __init__(self, prefix=None, suffix=None):
-        self.prefix = prefix or ""
-        self.suffix = suffix or ""
+    def __init__(self, suffix: str):
+        self.suffix = suffix
 
-    def _rename(self, s):
-        return self.prefix + s + self.suffix
+    def _rename(self, s: str) -> str:
+        return f"{s}{self.suffix}"
 
     def transform_one(self, x):
         return {self._rename(i): xi for i, xi in x.items()}
