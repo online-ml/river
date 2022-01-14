@@ -282,8 +282,8 @@ class Pipeline(base.Estimator):
     ...     ('A harsh comment', False)
     ... ]
 
-    >>> tfidf = fx.TFIDF() | compose.Renamer(prefix='tfidf_')
-    >>> counts = fx.BagOfWords() | compose.Renamer(prefix='count_')
+    >>> tfidf = fx.TFIDF() | compose.Prefixer('tfidf_')
+    >>> counts = fx.BagOfWords() | compose.Prefixer('count_')
     >>> mnb = naive_bayes.MultinomialNB()
     >>> model = (tfidf + counts) | mnb
 
@@ -296,24 +296,20 @@ class Pipeline(base.Estimator):
     0. Input
     --------
     A positive comment
-    <BLANKLINE>
     1. Transformer union
     --------------------
-        1.0 TFIDF | Renamer
-        -------------------
+        1.0 TFIDF | Prefixer
+        --------------------
         tfidf_comment: 0.47606 (float)
         tfidf_positive: 0.87942 (float)
-    <BLANKLINE>
-        1.1 BagOfWords | Renamer
-        ------------------------
+        1.1 BagOfWords | Prefixer
+        -------------------------
         count_comment: 1 (int)
         count_positive: 1 (int)
-    <BLANKLINE>
     count_comment: 1 (int)
     count_positive: 1 (int)
     tfidf_comment: 0.50854 (float)
     tfidf_positive: 0.86104 (float)
-    <BLANKLINE>
     2. MultinomialNB
     ----------------
     False: 0.19313
