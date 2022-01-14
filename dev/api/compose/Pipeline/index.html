@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/api/compose/Pipeline/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.6">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.bb3983ee.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.cd566b2a.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -1314,6 +1314,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../Prefixer/" class="md-nav__link">
+        Prefixer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../Renamer/" class="md-nav__link">
         Renamer
       </a>
@@ -1344,6 +1358,20 @@
     <li class="md-nav__item">
       <a href="../SelectType/" class="md-nav__link">
         SelectType
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Suffixer/" class="md-nav__link">
+        Suffixer
       </a>
     </li>
   
@@ -8554,8 +8582,8 @@ flows and changes throughout the pipeline.</p>
 <span class="o">...</span>     <span class="p">(</span><span class="s1">&#39;A harsh comment&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 <span class="o">...</span> <span class="p">]</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">tfidf</span> <span class="o">=</span> <span class="n">fx</span><span class="o">.</span><span class="n">TFIDF</span><span class="p">()</span> <span class="o">|</span> <span class="n">compose</span><span class="o">.</span><span class="n">Renamer</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;tfidf_&#39;</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">fx</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">()</span> <span class="o">|</span> <span class="n">compose</span><span class="o">.</span><span class="n">Renamer</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;count_&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tfidf</span> <span class="o">=</span> <span class="n">fx</span><span class="o">.</span><span class="n">TFIDF</span><span class="p">()</span> <span class="o">|</span> <span class="n">compose</span><span class="o">.</span><span class="n">Prefixer</span><span class="p">(</span><span class="s1">&#39;tfidf_&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">fx</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">()</span> <span class="o">|</span> <span class="n">compose</span><span class="o">.</span><span class="n">Prefixer</span><span class="p">(</span><span class="s1">&#39;count_&#39;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">mnb</span> <span class="o">=</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">MultinomialNB</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfidf</span> <span class="o">+</span> <span class="n">counts</span><span class="p">)</span> <span class="o">|</span> <span class="n">mnb</span>
 
@@ -8568,24 +8596,20 @@ flows and changes throughout the pipeline.</p>
 <span class="mf">0.</span> <span class="n">Input</span>
 <span class="o">--------</span>
 <span class="n">A</span> <span class="n">positive</span> <span class="n">comment</span>
-<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
 <span class="mf">1.</span> <span class="n">Transformer</span> <span class="n">union</span>
 <span class="o">--------------------</span>
-    <span class="mf">1.0</span> <span class="n">TFIDF</span> <span class="o">|</span> <span class="n">Renamer</span>
-    <span class="o">-------------------</span>
+    <span class="mf">1.0</span> <span class="n">TFIDF</span> <span class="o">|</span> <span class="n">Prefixer</span>
+    <span class="o">--------------------</span>
     <span class="n">tfidf_comment</span><span class="p">:</span> <span class="mf">0.47606</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">tfidf_positive</span><span class="p">:</span> <span class="mf">0.87942</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
-    <span class="mf">1.1</span> <span class="n">BagOfWords</span> <span class="o">|</span> <span class="n">Renamer</span>
-    <span class="o">------------------------</span>
+    <span class="mf">1.1</span> <span class="n">BagOfWords</span> <span class="o">|</span> <span class="n">Prefixer</span>
+    <span class="o">-------------------------</span>
     <span class="n">count_comment</span><span class="p">:</span> <span class="mi">1</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">count_positive</span><span class="p">:</span> <span class="mi">1</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
 <span class="n">count_comment</span><span class="p">:</span> <span class="mi">1</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <span class="n">count_positive</span><span class="p">:</span> <span class="mi">1</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <span class="n">tfidf_comment</span><span class="p">:</span> <span class="mf">0.50854</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="n">tfidf_positive</span><span class="p">:</span> <span class="mf">0.86104</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
 <span class="mf">2.</span> <span class="n">MultinomialNB</span>
 <span class="o">----------------</span>
 <span class="kc">False</span><span class="p">:</span> <span class="mf">0.19313</span>
@@ -8739,10 +8763,10 @@ flows and changes throughout the pipeline.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.361d90f1.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.22074ed6.min.js"}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.289a2a4b.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.1514a9a0.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
