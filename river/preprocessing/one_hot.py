@@ -112,6 +112,56 @@ class OneHotEncoder(base.Transformer):
     {'c1_a': 1, 'c1_b': 1, 'c2_x': 1}
     {'c1_i': 1, 'c2_h': 1, 'c2_z': 1}
     {'c1_b': 1, 'c1_h': 1, 'c2_e': 1}
+
+    Mini-batching
+
+    >>> from pprint import pprint
+    >>> import random
+    >>> import string
+
+    >>> random.seed(42)
+    >>> alphabet = list(string.ascii_lowercase)
+    >>> X = [
+    ...     {
+    ...         'c1': random.choice(alphabet),
+    ...         'c2': random.choice(alphabet),
+    ...     }
+    ...     for _ in range(4)
+    ... ]
+    >>> pprint(X)
+    [{'c1': 'u', 'c2': 'd'},
+        {'c1': 'a', 'c2': 'x'},
+        {'c1': 'i', 'c2': 'h'},
+        {'c1': 'h', 'c2': 'e'}]
+
+    >>> import river.preprocessing
+
+    >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = oh.learn_many(pd.DataFrame(X))
+
+    >>> oh.transform_many(pd.DataFrame(X))
+        c1_h  c1_u  c1_i  c1_a  c2_x  c2_h  c2_e  c2_d
+    0     0     1     0     0     0     0     0     1
+    1     0     0     0     1     1     0     0     0
+    2     0     0     1     0     0     1     0     0
+    3     1     0     0     0     0     0     1     0
+
+    Keep in mind that ability for sparse transformations is limited in mini-batch case,
+    which might affect speed/memory footprint of your training loop.
+
+    Here's a non-sparse example:
+    >>> oh = river.preprocessing.OneHotEncoder(sparse=False)
+    >>> X_init = [{"c1": "Oranges", "c2": "Apples"}]
+    >>> oh = oh.learn_many(pd.DataFrame(X_init))
+    >>> oh = oh.learn_many(pd.DataFrame(X))
+
+    >>> oh.transform_many(X=pd.DataFrame(X))
+        c1_h  c1_i  c1_Oranges  c1_u  c1_a  c2_h  c2_x  c2_e  c2_d  c2_Apples
+    0     0     0           0     1     0     0     0     0     1          0
+    1     0     0           0     0     1     0     1     0     0          0
+    2     0     1           0     0     0     1     0     0     0          0
+    3     1     0           0     0     0     0     0     1     0          0
+
     """
 
     def __init__(self, sparse=False):
@@ -175,9 +225,9 @@ class OneHotEncoder(base.Transformer):
             cat = pd.Categorical(data, ordered=False)
         categories = cat.categories
         # cat.add_categories INFO: look into this for learninig?
-        print(categories)
+        # print(categories)
         codes = cat.codes
-        print(codes)
+        # print(codes)
 
         # if sparse:
         # categories = categories[codes != -1]
