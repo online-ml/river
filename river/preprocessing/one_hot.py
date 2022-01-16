@@ -162,6 +162,43 @@ class OneHotEncoder(base.Transformer):
     2     0     1           0     0     0     1     0     0     0          0
     3     1     0           0     0     0     0     0     1     0          0
 
+    When inspecting mini-batch one-hot encoding you might notice that the encoder
+    sometimes outputs different number of columns in different order
+    (e.g. when `sparse=True` or when the encoder has learnt new values).
+
+    This, however, is not a problem for `river` estimators,
+    because they map weights and gradient updates to names of the features regardless of their order
+    and correctly process the missing columns.
+
+    To demonstrate, here's 2 scenarios with the same result:
+    >>> df_test = oh_ext.transform_many(pd.DataFrame(X)).iloc[:, :3]
+    >>> df_test
+        c1_h  c1_u  c1_i
+    0     0     1     0
+    1     0     0     0
+    2     0     0     1
+    3     1     0     0
+
+    >>> from river import linear_model
+
+    >>> model = linear_model.LogisticRegression()
+
+    ... model.learn_many(df_test.iloc[:, [1, 2]], df_test.any(axis=1).astype(int))
+    ... model.learn_many(df_test.iloc[:, [0, 1, 2]], df_test.any(axis=1).astype(int))
+    ... model.learn_many(df_test.iloc[:, [1, 2, 0]], df_test.any(axis=1).astype(int))
+
+    ... weights_1 = model.weights
+
+    ... model = linear_model.LogisticRegression()
+
+    ... model.learn_many(df_test.iloc[:, [1, 2, 0]], df_test.any(axis=1).astype(int))
+    ... model.learn_many(df_test.iloc[:, [0, 1, 2]], df_test.any(axis=1).astype(int))
+    ... model.learn_many(df_test.iloc[:, [1, 2]], df_test.any(axis=1).astype(int))
+
+    ... weights_2 = model.weights
+
+    ... weights_1 == weights_2
+    True
     """
 
     def __init__(self, sparse=False):
