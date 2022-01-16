@@ -1,6 +1,8 @@
 import collections
 import types
 
+import pandas as pd
+
 from river import base
 
 from . import func
@@ -118,6 +120,35 @@ class TransformerUnion(base.Transformer):
     ...     ('# by place', count)
     ... )
 
+    Mini-batch example:
+
+    >>> X = [
+    ... {"place": 2, "revenue": 42},
+    ... {"place": 3, "revenue": 16},
+    ... {"place": 3, "revenue": 24},
+    ... {"place": 2, "revenue": 58},
+    ... {"place": 3, "revenue": 20},
+    ... {"place": 2, "revenue": 50},
+    ... ]
+
+    Since we need a transformer with mini-batch support to demonstrate, we shall use the `StandardScaler`
+
+    >>> from river import compose
+    >>> from river import preprocessing
+
+    >>> t_1 = compose.Select("place") | preprocessing.StandardScaler()
+    >>> t_2 = compose.Select("revenue") | preprocessing.StandardScaler()
+
+    >>> agg = compose.TransformerUnion(t_1, t_2)
+    >>> agg.learn_many(pd.DataFrame(X))
+    >>> agg.transform_many(pd.DataFrame(X))
+        revenue  place
+    0  0.441250   -1.0
+    1 -1.197680    1.0
+    2 -0.693394    1.0
+    3  1.449823   -1.0
+    4 -0.945537    1.0
+    5  0.945537   -1.0
     """
 
     def __init__(self, *transformers):
@@ -232,4 +263,37 @@ class TransformerUnion(base.Transformer):
             collections.ChainMap(
                 *(t.transform_one(x) for t in self.transformers.values())
             )
+        )
+
+    # Mini-batch methods
+
+    def learn_many(self, X: pd.DataFrame, y: pd.Series = None):
+        """Update each transformer.
+
+        Parameters
+        ----------
+        x
+            Features.
+        y
+            An optional target, this is expected to be provided if at least one of the transformers
+            is supervised (i.e. it inherits from `base.SupervisedTransformer`).
+
+        """
+        for t in self.transformers.values():
+            if isinstance(t, base.SupervisedTransformer):
+                t.learn_many(X, y)
+            else:
+                t.learn_many(X)
+        return self
+
+    def transform_many(self, X: pd.DataFrame):
+        """Passes the data through each transformer and packs the results together."""
+        # INFO: not the most optimal but at least it works
+        return pd.DataFrame(
+            dict(
+                collections.ChainMap(
+                    *(t.transform_many(X) for t in self.transformers.values())
+                )
+            ),
+            copy=False,
         )
