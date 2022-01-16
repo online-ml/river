@@ -1,5 +1,7 @@
 import abc
 
+import pandas as pd
+
 from river import base
 
 
@@ -22,6 +24,28 @@ class Transformer(base.Estimator):
         ----------
         x
             A dictionary of features.
+        kwargs
+            Some models might allow/require providing extra parameters, such as sample weights.
+
+        Returns
+        -------
+        self
+
+        """
+        return self
+
+    def learn_many(self, X: pd.DataFrame, **kwargs) -> "Transformer":
+        """Update with a set of features `x`.
+
+        A lot of transformers don't actually have to do anything during the `learn_many` step
+        because they are stateless. For this reason the default behavior of this function is to do
+        nothing. Transformers that however do something during the `learn_many` can override this
+        method.
+
+        Parameters
+        ----------
+        x
+            A DataFrame of features.
         kwargs
             Some models might allow/require providing extra parameters, such as sample weights.
 
