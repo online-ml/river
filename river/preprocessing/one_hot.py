@@ -197,8 +197,8 @@ class OneHotEncoder(base.Transformer):
 
     # Mini-batch methods
 
-    # @staticmethod
-    def _encode_1d(self, data, prefix, categories=None, sparse=False):
+    @staticmethod
+    def _encode_1d(data, prefix, categories=None, sparse=False):
         # REFLECTION: river often descends onto numpy level for computations
         # and just carries column names around, maybe try the same on next iteration
         # INFO: inspired by:
