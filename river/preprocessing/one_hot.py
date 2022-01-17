@@ -236,8 +236,6 @@ class OneHotEncoder(base.Transformer):
 
     @staticmethod
     def _encode_1d(data, prefix, categories=None, sparse=False):
-        # REFLECTION: river often descends onto numpy level for computations
-        # and just carries column names around, maybe try the same on next iteration
         # INFO: inspired by:
         # https://github.com/pandas-dev/pandas/blob/66e3805b8cabe977f40c05259cc3fcf7ead5687d/pandas/core/reshape/reshape.py#L936
 
@@ -261,9 +259,8 @@ class OneHotEncoder(base.Transformer):
         # reset NaN GH4446[pandas]
         dummy_mat[codes == -1] = 0
 
-        return pd.DataFrame(
-            dummy_mat, index=data.index, columns=[f"{prefix}_{v}" for v in categories]
-        )
+        columns = [f"{prefix}_{v}" for v in categories]
+        return dummy_mat, columns
 
     def learn_many(self, X: pd.DataFrame):
 
@@ -275,16 +272,21 @@ class OneHotEncoder(base.Transformer):
     def transform_many(self, X: pd.DataFrame):
 
         Xt = list()
+        Xt_columns = list()
 
         for col, values in self.values.items():
-            xt = self._encode_1d(
+            xt, xt_columns = self._encode_1d(
                 data=X.loc[:, col], prefix=col, categories=values, sparse=self.sparse
             )
+
             Xt.append(xt)
+            Xt_columns.extend(xt_columns)
 
         # INFO: otherwise throws error if nothing to concatenate
         # (when inferring from blank state stansformer during learning, which is done inside `Pipeline`)
         if len(Xt) == 0:
             return pd.DataFrame(index=X.index, copy=False)
         else:
-            return pd.concat(Xt, axis=1, copy=False)
+            return pd.DataFrame(
+                np.concatenate(Xt, axis=1), columns=Xt_columns, index=X.index, copy=False
+            )
