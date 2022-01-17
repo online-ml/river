@@ -288,5 +288,8 @@ class OneHotEncoder(base.Transformer):
             return pd.DataFrame(index=X.index, copy=False)
         else:
             return pd.DataFrame(
-                np.concatenate(Xt, axis=1), columns=Xt_columns, index=X.index, copy=False
+                np.concatenate(Xt, axis=1),
+                columns=Xt_columns,
+                index=X.index,
+                copy=False,
             )
