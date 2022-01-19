@@ -123,12 +123,12 @@ class TransformerUnion(base.Transformer):
     Mini-batch example:
 
     >>> X = [
-    ... {"place": 2, "revenue": 42},
-    ... {"place": 3, "revenue": 16},
-    ... {"place": 3, "revenue": 24},
-    ... {"place": 2, "revenue": 58},
-    ... {"place": 3, "revenue": 20},
-    ... {"place": 2, "revenue": 50},
+    ...     {"place": 2, "revenue": 42},
+    ...     {"place": 3, "revenue": 16},
+    ...     {"place": 3, "revenue": 24},
+    ...     {"place": 2, "revenue": 58},
+    ...     {"place": 3, "revenue": 20},
+    ...     {"place": 2, "revenue": 50},
     ... ]
 
     Since we need a transformer with mini-batch support to demonstrate, we shall use the `StandardScaler`
