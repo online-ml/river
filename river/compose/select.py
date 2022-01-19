@@ -118,7 +118,7 @@ class Select(base.Transformer):
     >>> import pandas as pd
     >>> X = pd.DataFrame.from_dict(X)
 
-    You can then call `transform_many` to scale a mini-batch of features:
+    You can then call `transform_many` to transform a mini-batch of features:
 
     >>> compose.Select('x_2').transform_many(X)
         x_2
