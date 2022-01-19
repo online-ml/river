@@ -255,7 +255,7 @@ class OneHotEncoder(base.Transformer):
         codes = cat.codes
 
         number_of_cols = len(categories)
-        dummy_mat = np.eye(number_of_cols, dtype=int).take(codes, axis=1).T
+        dummy_mat = np.eye(number_of_cols, dtype=np.int8).take(codes, axis=1).T
         # reset NaN GH4446[pandas]
         dummy_mat[codes == -1] = 0
 
