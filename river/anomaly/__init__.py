@@ -20,5 +20,5 @@ __all__ = [
     "HalfSpaceTrees",
     "QuantileThresholder",
     "OneClassSVM",
-    "Zscore"
+    "Zscore",
 ]
