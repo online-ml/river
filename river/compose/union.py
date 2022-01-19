@@ -142,13 +142,13 @@ class TransformerUnion(base.Transformer):
     >>> agg = compose.TransformerUnion(t_1, t_2)
     >>> _ = agg.learn_many(pd.DataFrame(X))
     >>> agg.transform_many(pd.DataFrame(X))
-        revenue  place
-    0  0.441250      2
-    1 -1.197680      3
-    2 -0.693394      3
-    3  1.449823      2
-    4 -0.945537      3
-    5  0.945537      2
+       place   revenue
+    0      2  0.441250
+    1      3 -1.197680
+    2      3 -0.693394
+    3      2  1.449823
+    4      3 -0.945537
+    5      2  0.945537
 
     """
 
@@ -290,11 +290,17 @@ class TransformerUnion(base.Transformer):
     def transform_many(self, X: pd.DataFrame):
         """Passes the data through each transformer and packs the results together."""
         # INFO: not the most optimal but at least it works
-        return pd.DataFrame(
-            dict(
-                collections.ChainMap(
-                    *(t.transform_many(X) for t in self.transformers.values())
-                )
-            ),
+        # return pd.DataFrame(
+        #     dict(
+        #         collections.ChainMap(
+        #             *(t.transform_many(X) for t in self.transformers.values())
+        #         )
+        #     ),
+        #     copy=False,
+        # )
+        # INFO: likely more optimal and definitely more clean
+        return pd.concat(
+            (t.transform_many(X) for t in self.transformers.values()),
             copy=False,
+            axis=1,
         )
