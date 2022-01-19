@@ -128,6 +128,7 @@ class Select(base.Transformer):
     3   8.347755
     4   8.119189
     5  10.021421
+
     """
 
     def __init__(self, *keys: typing.Tuple[base.typing.FeatureName]):

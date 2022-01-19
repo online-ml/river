@@ -149,6 +149,7 @@ class TransformerUnion(base.Transformer):
     3  1.449823      2
     4 -0.945537      3
     5  0.945537      2
+
     """
 
     def __init__(self, *transformers):
@@ -272,7 +273,7 @@ class TransformerUnion(base.Transformer):
 
         Parameters
         ----------
-        x
+        X
             Features.
         y
             An optional target, this is expected to be provided if at least one of the transformers

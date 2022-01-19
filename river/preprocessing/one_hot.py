@@ -204,6 +204,7 @@ class OneHotEncoder(base.Transformer):
 
     ... weights_1 == weights_2
     True
+
     """
 
     def __init__(self, sparse=False):
