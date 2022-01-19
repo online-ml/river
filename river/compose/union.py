@@ -140,7 +140,7 @@ class TransformerUnion(base.Transformer):
     >>> t_2 = compose.Select("revenue") | preprocessing.StandardScaler()
 
     >>> agg = compose.TransformerUnion(t_1, t_2)
-    >>> agg.learn_many(pd.DataFrame(X))
+    >>> _ = agg.learn_many(pd.DataFrame(X))
     >>> agg.transform_many(pd.DataFrame(X))
         revenue  place
     0  0.441250   -1.0
