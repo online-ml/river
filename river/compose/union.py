@@ -136,19 +136,19 @@ class TransformerUnion(base.Transformer):
     >>> from river import compose
     >>> from river import preprocessing
 
-    >>> t_1 = compose.Select("place") | preprocessing.StandardScaler()
+    >>> t_1 = compose.Select("place")
     >>> t_2 = compose.Select("revenue") | preprocessing.StandardScaler()
 
     >>> agg = compose.TransformerUnion(t_1, t_2)
     >>> _ = agg.learn_many(pd.DataFrame(X))
     >>> agg.transform_many(pd.DataFrame(X))
         revenue  place
-    0  0.441250   -1.0
-    1 -1.197680    1.0
-    2 -0.693394    1.0
-    3  1.449823   -1.0
-    4 -0.945537    1.0
-    5  0.945537   -1.0
+    0  0.441250      2
+    1 -1.197680      3
+    2 -0.693394      3
+    3  1.449823      2
+    4 -0.945537      3
+    5  0.945537      2
     """
 
     def __init__(self, *transformers):
