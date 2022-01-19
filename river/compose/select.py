@@ -139,6 +139,7 @@ class Select(base.Transformer):
     def transform_many(self, X: pd.DataFrame):
         # INFO: has either side-effects or doesn't have copy - choose your poison
         # REFLECTION: worth adding `copy=True` parameter to the object constructor to allow both?
+        # << convention is to have pure methods/functions
         return X.loc[:, self.keys].copy()
         # return X.loc[:, self.keys]
 
