@@ -139,12 +139,13 @@ class OneHotEncoder(base.Transformer):
     >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
     >>> oh = oh.learn_many(pd.DataFrame(X))
 
-    >>> oh.transform_many(pd.DataFrame(X))
-        c1_h  c1_u  c1_i  c1_a  c2_x  c2_h  c2_e  c2_d
-    0     0     1     0     0     0     0     0     1
-    1     0     0     0     1     1     0     0     0
-    2     0     0     1     0     0     1     0     0
-    3     1     0     0     0     0     0     1     0
+    >>> df = oh.transform_many(pd.DataFrame(X))
+    >>> df.loc[:,sorted(df.columns)]
+        c1_a  c1_h  c1_i  c1_u  c2_d  c2_e  c2_h  c2_x
+    0     0     0     0     1     1     0     0     0
+    1     1     0     0     0     0     0     0     1
+    2     0     0     1     0     0     0     1     0
+    3     0     1     0     0     0     1     0     0
 
     Keep in mind that ability for sparse transformations is limited in mini-batch case,
     which might affect speed/memory footprint of your training loop.
@@ -155,12 +156,13 @@ class OneHotEncoder(base.Transformer):
     >>> oh = oh.learn_many(pd.DataFrame(X_init))
     >>> oh = oh.learn_many(pd.DataFrame(X))
 
-    >>> oh.transform_many(X=pd.DataFrame(X))
-        c1_h  c1_i  c1_Oranges  c1_u  c1_a  c2_h  c2_x  c2_e  c2_d  c2_Apples
-    0     0     0           0     1     0     0     0     0     1          0
-    1     0     0           0     0     1     0     1     0     0          0
-    2     0     1           0     0     0     1     0     0     0          0
-    3     1     0           0     0     0     0     0     1     0          0
+    >>> df = oh.transform_many(X=pd.DataFrame(X))
+    >>> df.loc[:,sorted(df.columns)]
+        c1_Oranges  c1_a  c1_h  c1_i  c1_u  c2_Apples  c2_d  c2_e  c2_h  c2_x
+    0           0     0     0     0     1          0     1     0     0     0
+    1           0     1     0     0     0          0     0     0     0     1
+    2           0     0     0     1     0          0     0     0     1     0
+    3           0     0     1     0     0          0     0     1     0     0
 
     When inspecting mini-batch one-hot encoding you might notice that the encoder
     sometimes outputs different number of columns in different order
@@ -171,13 +173,16 @@ class OneHotEncoder(base.Transformer):
     and correctly process the missing columns.
 
     To demonstrate, here's 2 scenarios with the same result:
-    >>> df_test = oh_ext.transform_many(pd.DataFrame(X)).iloc[:, :3]
-    >>> df_test
-        c1_h  c1_u  c1_i
-    0     0     1     0
-    1     0     0     0
+    >>> oh = river.preprocessing.OneHotEncoder(sparse=False)
+    >>> oh = oh.learn_many(pd.DataFrame(X))
+    >>> df_test = oh.transform_many(pd.DataFrame(X))
+    >>> df_test = df_test.loc[:,sorted(df_test.columns)]
+    >>> df_test.iloc[:, :3]
+       c1_a  c1_h  c1_i
+    0     0     0     0
+    1     1     0     0
     2     0     0     1
-    3     1     0     0
+    3     0     1     0
 
     >>> from river import linear_model
 
