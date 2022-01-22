@@ -1,8 +1,8 @@
 import math
 
-from .base import AnomalyDetector
-
 from river.stats.var import RollingVar
+
+from .base import AnomalyDetector
 
 
 class Zscore(AnomalyDetector):

@@ -1,7 +1,5 @@
-import math
-
-import pytest
 import numpy as np
+import pytest
 
 from .zscore import Zscore
 
@@ -22,6 +20,7 @@ def warm_up_zs_an_detector() -> Zscore:
         zs.learn_one(v)
     return zs
 
+
 @pytest.mark.zscore
 def test_zs_anomaly(warm_up_zs_an_detector):
     """
@@ -34,6 +33,7 @@ def test_zs_anomaly(warm_up_zs_an_detector):
     """
     v = 10 + 4 * 2
     assert warm_up_zs_an_detector.score_one(v) >= 1.0
+
 
 @pytest.mark.zscore
 def test_zs_normal(warm_up_zs_an_detector):
