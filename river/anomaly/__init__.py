@@ -13,6 +13,7 @@ from .base import AnomalyDetector
 from .hst import HalfSpaceTrees
 from .svm import OneClassSVM
 from .threshold import ConstantThresholder, QuantileThresholder
+from .zscore import Zscore
 
 __all__ = [
     "AnomalyDetector",

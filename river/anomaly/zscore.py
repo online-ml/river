@@ -1,20 +1,42 @@
 import math
 
-from base import AnomalyDetector
+from .base import AnomalyDetector
 
 from river.stats.var import RollingVar
 
 
 class Zscore(AnomalyDetector):
-    """ """
+    """
+    Anomaly detection based on zscore. Data is assumed to have gaussian distribution
+
+    Examples
+    --------
+    import numppy as np
+    from river.anomaly.zscore import Zscore
+
+    #warmup anomaly detector
+    zs = Zscore(100)
+    mean = 10.0
+    sd = 2.0
+
+    for _ in range(110):
+        v = np.random.normal(mean, sd)
+        zs.learn_one(v)
+
+    #get score
+    v = mean + 4 * sd
+    sc = zs.score_one(v)
+    print(sc)
+
+    """
 
     def __init__(self, window_size: int, zs_threshold: float = 3.0):
         """
 
         Parameters
         ----------
-        window_size
-        zs_threshold
+        window_size : size of rolling window
+        zs_threshold : zscore threshold
         """
         self.var = RollingVar(window_size)
         self.zs_threshold = zs_threshold
