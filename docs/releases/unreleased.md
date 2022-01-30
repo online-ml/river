@@ -29,6 +29,7 @@
 
 ## reco
 
+- Renamed the `Recommender` base class into `Ranker`.
+- Added a `rank` method to each recommender.
 - Removed `reco.SurpriseWrapper` as it wasn't really useful.
-- Added a `recommend` method to each recommender.
-- Added an `is_contextual` property to each recommender.
+- Added an `is_contextual` property to each ranker to indicate if a model makes use of contextual features or not.

@@ -5,14 +5,14 @@ import typing
 
 import numpy as np
 
-from river import base, optim, utils
+from river import optim, utils
 
-from .base import Recommender
+from .base import Ranker
 
 __all__ = ["FunkMF"]
 
 
-class FunkMF(Recommender, base.Regressor):
+class FunkMF(Ranker):
     """Funk Matrix Factorization for recommender systems.
 
     The model equation is defined as:
@@ -77,9 +77,9 @@ class FunkMF(Recommender, base.Regressor):
     ... )
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(x, y)
+    ...     _ = model.learn_one(**x, y=y)
 
-    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+    >>> model.predict_one(user='Bob', item='Harry Potter')
     1.866272
 
     References
@@ -127,15 +127,13 @@ class FunkMF(Recommender, base.Regressor):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 
-    def _predict_user_item(self, user, item, context):
+    def predict_one(self, user, item, x=None):
         return np.dot(self.u_latents[user], self.i_latents[item])
 
-    def _learn_user_item(self, user, item, context, reward):
+    def learn_one(self, user, item, y, x=None):
 
         # Calculate the gradient of the loss with respect to the prediction
-        g_loss = self.loss.gradient(
-            reward, self._predict_user_item(user, item, context)
-        )
+        g_loss = self.loss.gradient(y, self.predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(
