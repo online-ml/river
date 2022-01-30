@@ -79,7 +79,6 @@ def iter_estimators_which_can_be_tested():
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
-        reco.Ranker,
         time_series.Forecaster,
     )
 
