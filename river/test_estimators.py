@@ -71,16 +71,16 @@ def iter_estimators_which_can_be_tested():
         feature_extraction.Agg,
         feature_extraction.TargetAgg,
         feature_selection.PoissonInclusion,
+        imblearn.RandomOverSampler,
+        imblearn.RandomUnderSampler,
+        imblearn.RandomSampler,
         model_selection.SuccessiveHalvingClassifier,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
-        imblearn.RandomOverSampler,
-        imblearn.RandomUnderSampler,
-        imblearn.RandomSampler,
-        time_series.HoltWinters,
-        time_series.SNARIMAX,
+        reco.Ranker,
+        time_series.Forecaster,
     )
 
     if PYTORCH_INSTALLED:

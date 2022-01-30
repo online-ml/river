@@ -1,11 +1,11 @@
-from river import base, stats
+from river import stats
 
-from .base import Recommender
+from .base import Ranker
 
 __all__ = ["RandomNormal"]
 
 
-class RandomNormal(Recommender, base.Regressor):
+class RandomNormal(Ranker):
     """Predicts random values sampled from a normal distribution.
 
     The parameters of the normal distribution are fitted with running statistics. They parameters
@@ -44,9 +44,9 @@ class RandomNormal(Recommender, base.Regressor):
     >>> model = reco.RandomNormal(seed=42)
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(x, y)
+    ...     _ = model.learn_one(**x, y=y)
 
-    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+    >>> model.predict_one(user='Bob', item='Harry Potter')
     6.147299621751425
 
     """
@@ -57,12 +57,12 @@ class RandomNormal(Recommender, base.Regressor):
         self.mean = stats.Mean()
         self.seed = seed
 
-    def _learn_user_item(self, user, item, context, reward):
-        self.mean.update(reward)
-        self.variance.update(reward)
+    def learn_one(self, user, item, y, x=None):
+        self.mean.update(y)
+        self.variance.update(y)
         return self
 
-    def _predict_user_item(self, user, item, context):
+    def predict_one(self, user, item, x=None):
         μ = self.mean.get() or 0
         σ = (self.variance.get() or 1) ** 0.5
         return self._rng.gauss(μ, σ)

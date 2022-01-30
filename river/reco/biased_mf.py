@@ -5,14 +5,14 @@ import typing
 
 import numpy as np
 
-from river import base, optim, stats, utils
+from river import optim, stats, utils
 
-from .base import Recommender
+from .base import Ranker
 
 __all__ = ["BiasedMF"]
 
 
-class BiasedMF(Recommender, base.Regressor):
+class BiasedMF(Ranker):
     """Biased Matrix Factorization for recommender systems.
 
     The model equation is defined as:
@@ -99,9 +99,9 @@ class BiasedMF(Recommender, base.Regressor):
     ... )
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(x, y)
+    ...     _ = model.learn_one(**x, y=y)
 
-    >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter'})
+    >>> model.predict_one(user='Bob', item='Harry Potter')
     6.489025
 
     References
@@ -174,7 +174,7 @@ class BiasedMF(Recommender, base.Regressor):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 
-    def _predict_user_item(self, user, item, context):
+    def predict_one(self, user, item, x=None):
 
         # Initialize the prediction to the mean
         y_pred = self.global_mean.get()
@@ -190,15 +190,13 @@ class BiasedMF(Recommender, base.Regressor):
 
         return y_pred
 
-    def _learn_user_item(self, user, item, context, reward):
+    def learn_one(self, user, item, y, x=None):
 
         # Update the global mean
-        self.global_mean.update(reward)
+        self.global_mean.update(y)
 
         # Calculate the gradient of the loss with respect to the prediction
-        g_loss = self.loss.gradient(
-            reward, self._predict_user_item(user, item, context)
-        )
+        g_loss = self.loss.gradient(y, self.predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(
