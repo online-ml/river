@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/examples/content-personalization/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.6">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.9">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.cd566b2a.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2b4465f4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -5739,8 +5739,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/reco/Recommender/" class="md-nav__link">
-        Recommender
+      <a href="../../api/reco/Ranker/" class="md-nav__link">
+        Ranker
       </a>
     </li>
   
@@ -6912,8 +6912,36 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/time-series/ForecastingMetric/" class="md-nav__link">
+        ForecastingMetric
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/time-series/HoltWinters/" class="md-nav__link">
         HoltWinters
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/time-series/HorizonMetric/" class="md-nav__link">
+        HorizonMetric
       </a>
     </li>
   
@@ -8507,7 +8535,7 @@
         <span class="n">user</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">users</span><span class="p">)</span>
 
         <span class="c1"># Make a single recommendation</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="c1"># Measure the reward</span>
         <span class="n">clicked</span> <span class="o">=</span> <span class="n">reward_func</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
@@ -8515,7 +8543,7 @@
         <span class="n">ctr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_clicks</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 
         <span class="c1"># Update the model</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">},</span> <span class="n">clicked</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">clicked</span><span class="p">)</span>
 
     <span class="n">plot_ctr</span><span class="p">(</span><span class="n">ctr</span><span class="p">)</span>
 </code></pre></div>
@@ -8537,7 +8565,7 @@
 <li><span class="arithmatex">\(b_{u}\)</span> is the average CTR per user minus <span class="arithmatex">\(\bar{y}\)</span> -- it's therefore called a <em>bias</em></li>
 <li><span class="arithmatex">\(b_{i}\)</span> is the average CTR per item minus <span class="arithmatex">\(\bar{y}\)</span></li>
 </ul>
-<p>This model is considered to be a baseline because it doesn't actually learn what items are preferred by each user. Instead it models each user and item separately. We shouldn't expect it to be a performant model. It should do better than the random model used above.</p>
+<p>This model is considered to be a baseline because it doesn't actually learn what items are preferred by each user. Instead it models each user and item separately. We shouldn't expect it to be a strong model. It should however do better than the random model used above.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">Baseline</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
@@ -8546,13 +8574,13 @@
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">i_biases</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>defaultdict(Zeros (),
-            {&#39;finance&#39;: 0.0,
-             &#39;health&#39;: 0.0,
-             &#39;sports&#39;: -0.001838245790476189,
-             &#39;camping&#39;: 0.0,
-             &#39;politics&#39;: 0.0014179703167458942,
-             &#39;food&#39;: 0.0,
-             &#39;music&#39;: 0.0})
+            {&#39;sports&#39;: -0.001838245790476189,
+             &#39;music&#39;: -0.004396366054606374,
+             &#39;food&#39;: -0.014798806488674389,
+             &#39;health&#39;: -0.004471153052267044,
+             &#39;finance&#39;: -0.014270542321734815,
+             &#39;politics&#39;: 0.01916333051533779,
+             &#39;camping&#39;: 0.0})
 </code></pre></div>
 <p>The model is not as performant if we use a reward function where both users have different preferences.</p>
 <div class="highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span>
@@ -8566,12 +8594,13 @@
 <span class="p">)</span>
 </code></pre></div>
 <p><img alt="png" src="../content-personalization_files/content-personalization_13_0.png" /></p>
-<p>A good recommender model should at the very least understand what kind of items each user prefers. One of the simplest and yet performant models to do this is Simon Funk's SGD method he developped for the Netflix challenge and wrote about <a href="https://sifter.org/simon/journal/20061211.html">here</a>. It models each user and each item as latent vectors, who's dot product becomes is the preference of the user for the item.</p>
+<p>A good recommender model should at the very least understand what kind of items each user prefers. One of the simplest and yet performant way to do this is Simon Funk's SGD method he developped for the Netflix challenge and wrote about <a href="https://sifter.org/simon/journal/20061211.html">here</a>. It models each user and each item as latent vectors. The dot product of these two vectors is the expected preference of the user for the item.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">FunkMF</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
 <p><img alt="png" src="../content-personalization_files/content-personalization_15_0.png" /></p>
-<p>We can see that this model perfectly learns what items each user enjoys. Of course, there are some caveats. In our simulation, we ask the model to recommend the item most likely to be preferred for each user. We do this many times for only two users. This of course is not realistic. Users will get fed up with your recommendations if you always recommend the same item. It's important to include diversity into recommendations, and to let the model explore other options instead of always focusing on the item with the highest score. This is where evaluating recommender systems gets tricky: the reward function itself is difficult to model.</p>
+<p>We can see that this model learns what items each user enjoys very well. Of course, there are some caveats. In our simulation, we ask the model to recommend the item most likely to be preferred for each user. Indeed, we rank all the items and pick the item at the top of the list. We do this many times for only two users.</p>
+<p>This is of course not realistic. Users will get fed up with recommendations if they're always shown the same item. It's important to include diversity into recommendations, and to let the model explore other options instead of always focusing on the item with the highest score. This is where evaluating recommender systems gets tricky: the reward function itself is difficult to model.</p>
 <p>We will keep ignoring these caveats in this notebook. Instead we will focus on a different concern: making recommendations when context is involved.</p>
 <h2 id="with-context">With context<a class="headerlink" href="#with-context" title="Permanent link">&para;</a></h2>
 <p>We'll add some context by making it so that user preferences change depending on the time the day. Very simply, preferences might change from morning to afternoon. This is captured by the following reward function.</p>
@@ -8600,16 +8629,16 @@
 
         <span class="n">user</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">users</span><span class="p">)</span>
 
-        <span class="c1"># New: pick a time of day</span>
+        <span class="c1"># New: pass a context</span>
         <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time_of_day&#39;</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">times_of_day</span><span class="p">)}</span>
-
-        <span class="n">item</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">context</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">clicked</span> <span class="o">=</span> <span class="n">reward_func</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
         <span class="n">n_clicks</span> <span class="o">+=</span> <span class="n">clicked</span>
         <span class="n">ctr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_clicks</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 
-        <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">},</span> <span class="n">clicked</span><span class="p">)</span>
+        <span class="c1"># New: pass a context</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">clicked</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 
     <span class="n">plot_ctr</span><span class="p">(</span><span class="n">ctr</span><span class="p">)</span>
 </code></pre></div>
@@ -8620,12 +8649,117 @@
 <div class="highlight"><pre><span></span><code>False
 </code></pre></div>
 <p>Let's see well it performs.</p>
-<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">FunkMF</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
 <p><img alt="png" src="../content-personalization_files/content-personalization_25_0.png" /></p>
 <p>The performance has roughly been divided by half. This is most likely because there are now two times of day, and if the model has learnt preferences for one time of the day, then it's expected to be wrong half of the time.</p>
-<p>TODO: add example with a contextual bandit.</p>
+<p>Before delving into recsys models that can handle context, a simple hack is to notice that we can append the time of day to the user. This effectively results in new users which our model can distinguish between. We could apply this trick during the simulation, but we can also override the behavior of the <code>learn_one</code> and <code>rank</code> methods of our model.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FunkMFWithHack</span><span class="p">(</span><span class="n">reco</span><span class="o">.</span><span class="n">FunkMF</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">learn_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;time_of_day&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;time_of_day&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">FunkMFWithHack</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">29</span><span class="p">)</span>
+<span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="png" src="../content-personalization_files/content-personalization_27_0.png" /></p>
+<p>We can verify that the model has learnt the correct preferences by looking at the expected preference for each <code>(user, item)</code> pair.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="p">(</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
+            <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
+            <span class="s1">&#39;preference&#39;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">u_latents</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">i_latents</span>
+    <span class="p">)</span>
+    <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">highlight_max</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgreen&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+<style type="text/css">
+#T_341f6_row0_col5, #T_341f6_row1_col6, #T_341f6_row2_col4, #T_341f6_row3_col5 {
+  background-color: lightgreen;
+}
+</style>
+<table id="T_341f6_">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th class="col_heading level0 col0" colspan="7">preference</th>
+    </tr>
+    <tr>
+      <th class="index_name level1" >item</th>
+      <th class="col_heading level1 col0" >camping</th>
+      <th class="col_heading level1 col1" >finance</th>
+      <th class="col_heading level1 col2" >food</th>
+      <th class="col_heading level1 col3" >health</th>
+      <th class="col_heading level1 col4" >music</th>
+      <th class="col_heading level1 col5" >politics</th>
+      <th class="col_heading level1 col6" >sports</th>
+    </tr>
+    <tr>
+      <th class="index_name level0" >user</th>
+      <th class="blank col0" >&nbsp;</th>
+      <th class="blank col1" >&nbsp;</th>
+      <th class="blank col2" >&nbsp;</th>
+      <th class="blank col3" >&nbsp;</th>
+      <th class="blank col4" >&nbsp;</th>
+      <th class="blank col5" >&nbsp;</th>
+      <th class="blank col6" >&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_341f6_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
+      <td id="T_341f6_row0_col0" class="data row0 col0" >0.008975</td>
+      <td id="T_341f6_row0_col1" class="data row0 col1" >-0.063252</td>
+      <td id="T_341f6_row0_col2" class="data row0 col2" >-0.059613</td>
+      <td id="T_341f6_row0_col3" class="data row0 col3" >-0.040775</td>
+      <td id="T_341f6_row0_col4" class="data row0 col4" >-0.043611</td>
+      <td id="T_341f6_row0_col5" class="data row0 col5" >1.000000</td>
+      <td id="T_341f6_row0_col6" class="data row0 col6" >0.085815</td>
+    </tr>
+    <tr>
+      <th id="T_341f6_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
+      <td id="T_341f6_row1_col0" class="data row1 col0" >0.148763</td>
+      <td id="T_341f6_row1_col1" class="data row1 col1" >0.145286</td>
+      <td id="T_341f6_row1_col2" class="data row1 col2" >-0.081833</td>
+      <td id="T_341f6_row1_col3" class="data row1 col3" >-0.201108</td>
+      <td id="T_341f6_row1_col4" class="data row1 col4" >0.181523</td>
+      <td id="T_341f6_row1_col5" class="data row1 col5" >0.060344</td>
+      <td id="T_341f6_row1_col6" class="data row1 col6" >1.000000</td>
+    </tr>
+    <tr>
+      <th id="T_341f6_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
+      <td id="T_341f6_row2_col0" class="data row2 col0" >0.070099</td>
+      <td id="T_341f6_row2_col1" class="data row2 col1" >-0.073921</td>
+      <td id="T_341f6_row2_col2" class="data row2 col2" >0.064348</td>
+      <td id="T_341f6_row2_col3" class="data row2 col3" >-0.227501</td>
+      <td id="T_341f6_row2_col4" class="data row2 col4" >1.000000</td>
+      <td id="T_341f6_row2_col5" class="data row2 col5" >-0.174663</td>
+      <td id="T_341f6_row2_col6" class="data row2 col6" >0.189768</td>
+    </tr>
+    <tr>
+      <th id="T_341f6_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
+      <td id="T_341f6_row3_col0" class="data row3 col0" >-0.009221</td>
+      <td id="T_341f6_row3_col1" class="data row3 col1" >-0.070864</td>
+      <td id="T_341f6_row3_col2" class="data row3 col2" >-0.071227</td>
+      <td id="T_341f6_row3_col3" class="data row3 col3" >-0.035938</td>
+      <td id="T_341f6_row3_col4" class="data row3 col4" >-0.143357</td>
+      <td id="T_341f6_row3_col5" class="data row3 col5" >1.000000</td>
+      <td id="T_341f6_row3_col6" class="data row3 col6" >-0.002576</td>
+    </tr>
+  </tbody>
+</table>
 
               
             </article>
@@ -8683,7 +8817,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.22074ed6.min.js"}</script>
     
     
-      <script src="../../assets/javascripts/bundle.1514a9a0.min.js"></script>
+      <script src="../../assets/javascripts/bundle.960e086b.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
