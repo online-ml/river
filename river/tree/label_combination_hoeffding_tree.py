@@ -197,7 +197,10 @@ class LabelCombinationHoeffdingTreeClassifier(
         return preds
 
     def debug_one(self, x: dict):
-        warnings.warn(f"'debug_one' is not supported by {self.__class__.__name__}")
+        raise NotImplementedError
 
     def draw(self, max_depth: int = None):
-        warnings.warn(f"'draw' is not supported by {self.__class__.__name__}")
+        raise NotImplementedError
+
+    def _unit_test_skips(self):
+        return {"check_debug_one"}
