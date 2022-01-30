@@ -1,5 +1,4 @@
 import typing
-import warnings
 
 from river import base, tree
 from river.utils.skmultiflow_utils import normalize_values_in_dict
