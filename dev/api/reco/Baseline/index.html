@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/api/reco/Baseline/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.6">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.9">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.cd566b2a.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2b4465f4.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -5812,8 +5812,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../Recommender/" class="md-nav__link">
-        Recommender
+      <a href="../Ranker/" class="md-nav__link">
+        Ranker
       </a>
     </li>
   
@@ -6985,8 +6985,36 @@
   
   
     <li class="md-nav__item">
+      <a href="../../time-series/ForecastingMetric/" class="md-nav__link">
+        ForecastingMetric
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../time-series/HoltWinters/" class="md-nav__link">
         HoltWinters
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../time-series/HorizonMetric/" class="md-nav__link">
+        HorizonMetric
       </a>
     </li>
   
@@ -8589,9 +8617,9 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">Baseline</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">0.005</span><span class="p">))</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
-<span class="o">...</span>     <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="s1">&#39;Harry Potter&#39;</span><span class="p">})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s1">&#39;Harry Potter&#39;</span><span class="p">)</span>
 <span class="mf">6.538120</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
@@ -8602,35 +8630,35 @@
 </details>
 <details class="- note">
 <summary>learn_one</summary>
-<p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
+<p>Fits a <code>user</code>-<code>item</code> pair and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>user</strong>     (<em>Union[str, int]</em>)    </li>
+<li><strong>item</strong>     (<em>Union[str, int]</em>)    </li>
 <li><strong>y</strong>     (<em>Union[numbers.Number, bool]</em>)    </li>
+<li><strong>x</strong>     (<em>dict</em>)     – defaults to <code>None</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Regressor</em>:     self</p>
 </details>
 <details class="- note">
 <summary>predict_one</summary>
 <p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>user</strong>     (<em>Union[str, int]</em>)    </li>
+<li><strong>item</strong>     (<em>Union[str, int]</em>)    </li>
+<li><strong>x</strong>     (<em>dict</em>)     – defaults to <code>None</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>float</em>:     The prediction.</p>
+<p><em>typing.Union[numbers.Number, bool]</em>:     The predicted preference from the user for the item.</p>
 </details>
 <details class="- note">
-<summary>recommend</summary>
-<p>Recommend k items to a user.</p>
+<summary>rank</summary>
+<p>Rank models by decreasing order of preference for a given user.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>user</strong>     (<em>Union[str, int]</em>)    </li>
-<li><strong>k</strong>     – defaults to <code>1</code>    </li>
-<li><strong>context</strong>     (<em>Union[dict, NoneType]</em>)     – defaults to <code>None</code>    </li>
-<li><strong>items</strong>     (<em>Union[Set[Union[str, int]], NoneType]</em>)     – defaults to <code>None</code>    </li>
-<li><strong>strategy</strong>     – defaults to <code>best</code>    </li>
+<li><strong>items</strong>     (<em>Set[Union[str, int]]</em>)    </li>
+<li><strong>x</strong>     (<em>dict</em>)     – defaults to <code>None</code>    </li>
 </ul>
 </details>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
@@ -8699,7 +8727,7 @@
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.22074ed6.min.js"}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.1514a9a0.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.960e086b.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
