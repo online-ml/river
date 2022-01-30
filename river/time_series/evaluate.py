@@ -6,7 +6,7 @@ from river.base.typing import Dataset
 from river.metrics import RegressionMetric
 
 from .base import Forecaster
-from .metric import HorizonMetric
+from .metrics import HorizonMetric
 
 TimeSeries = Iterator[
     Tuple[

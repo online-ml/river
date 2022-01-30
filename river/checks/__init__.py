@@ -8,7 +8,7 @@ import numpy as np
 
 from river.base import Estimator
 from river.model_selection import ModelSelector
-from river.reco import Recommender
+from river.reco import Ranker
 
 from . import clf, common, model_selection, reco
 
@@ -54,18 +54,18 @@ def _yield_datasets(model: Estimator):
 
     # Recommendation models can be regressors or classifiers, but they have requirements as to the
     # structure of the data
-    if isinstance(utils.inspect.extract_relevant(model), Recommender):
+    if isinstance(utils.inspect.extract_relevant(model), Ranker):
         if utils.inspect.isregressor(model):
             yield _DummyDataset(
-                ({"user": "Alice", "item": "Superman"}, 8),
-                ({"user": "Alice", "item": "Terminator"}, 9),
-                ({"user": "Alice", "item": "Star Wars"}, 8),
-                ({"user": "Alice", "item": "Notting Hill"}, 2),
-                ({"user": "Alice", "item": "Harry Potter"}, 5),
-                ({"user": "Bob", "item": "Superman"}, 8),
-                ({"user": "Bob", "item": "Terminator"}, 9),
-                ({"user": "Bob", "item": "Star Wars"}, 8),
-                ({"user": "Bob", "item": "Notting Hill"}, 2),
+                ("Alice", "Superman", 8),
+                ("Alice", "Terminator", 9),
+                ("Alice", "Star Wars", 8),
+                ("Alice", "Notting Hill", 2),
+                ("Alice", "Harry Potter", 5),
+                ("Bob", "Superman", 8),
+                ("Bob", "Terminator", 9),
+                ("Bob", "Star Wars", 8),
+                ("Bob", "Notting Hill", 2),
             )
         return
 
@@ -162,7 +162,7 @@ def yield_checks(model: Estimator) -> Iterator[callable]:
     if isinstance(utils.inspect.extract_relevant(model), ModelSelector):
         checks.append(model_selection.check_model_selection_order_does_not_matter)
 
-    if isinstance(utils.inspect.extract_relevant(model), Recommender):
+    if isinstance(utils.inspect.extract_relevant(model), Ranker):
         yield reco.check_reco_routine
 
     for check in checks:
