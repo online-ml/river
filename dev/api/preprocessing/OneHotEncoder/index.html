@@ -836,6 +836,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../base/MiniBatchTransformer/" class="md-nav__link">
+        MiniBatchTransformer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../base/MultiOutputMixin/" class="md-nav__link">
         MultiOutputMixin
       </a>
@@ -8547,9 +8561,9 @@
 </code></pre></div>
 <p>We can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
 no need to specify which features to encode.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">river.preprocessing</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">river</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
 <span class="o">...</span>     <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="o">...</span>     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
@@ -8560,7 +8574,7 @@ no need to specify which features to encode.</p>
 </code></pre></div>
 <p>The <code>sparse</code> parameter can be set to <code>False</code> in order to include the values that are not
 present in the output.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">river</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:</span><span class="mi">2</span><span class="p">]:</span>
 <span class="o">...</span>     <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="o">...</span>     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
@@ -8570,7 +8584,7 @@ present in the output.</p>
 <p>A subset of the features can be one-hot encoded by using an instance of <code>compose.Select</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">pp</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">river</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pp</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
 <span class="o">...</span>     <span class="n">pp</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -8581,7 +8595,7 @@ present in the output.</p>
 <span class="p">{</span><span class="s1">&#39;c1_a&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;c1_h&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;c1_i&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;c1_u&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 </code></pre></div>
 <p>You can preserve the <code>c2</code> feature by using a union:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">pp</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">river</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">pp</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">pp</span> <span class="o">+=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c2&#39;</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
@@ -8599,7 +8613,7 @@ encode all of the entries individually.</p>
 <span class="o">...</span>     <span class="p">{</span><span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;i&#39;</span><span class="p">],</span> <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">]},</span>
 <span class="o">...</span>     <span class="p">{</span><span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">]}]</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">river</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
 <span class="o">...</span>     <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="o">...</span>     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
@@ -8608,11 +8622,70 @@ encode all of the entries individually.</p>
 <span class="p">{</span><span class="s1">&#39;c1_i&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;c2_h&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;c2_z&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 <span class="p">{</span><span class="s1">&#39;c1_b&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;c1_h&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;c2_e&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 </code></pre></div>
+<p>Processing mini-batches is also possible.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">random</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">string</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">alphabet</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="o">...</span>     <span class="p">{</span>
+<span class="o">...</span>         <span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">alphabet</span><span class="p">),</span>
+<span class="o">...</span>         <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">alphabet</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">}</span>
+<span class="o">...</span>     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span>
+  <span class="n">c1</span> <span class="n">c2</span>
+<span class="mi">0</span>  <span class="n">u</span>  <span class="n">d</span>
+<span class="mi">1</span>  <span class="n">a</span>  <span class="n">x</span>
+<span class="mi">2</span>  <span class="n">i</span>  <span class="n">h</span>
+<span class="mi">3</span>  <span class="n">h</span>  <span class="n">e</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)]</span>
+    <span class="n">c1_a</span>  <span class="n">c1_h</span>  <span class="n">c1_i</span>  <span class="n">c1_u</span>  <span class="n">c2_d</span>  <span class="n">c2_e</span>  <span class="n">c2_h</span>  <span class="n">c2_x</span>
+<span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>
+<span class="mi">1</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>
+<span class="mi">2</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>
+<span class="mi">3</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>
+</code></pre></div>
+<p>Keep in mind that ability for sparse transformations is limited in mini-batch case,
+which might affect speed/memory footprint of your training loop.</p>
+<p>Here's a non-sparse example:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X_init</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="s2">&quot;Oranges&quot;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="s2">&quot;Apples&quot;</span><span class="p">}])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X_init</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)]</span>
+    <span class="n">c1_Oranges</span>  <span class="n">c1_a</span>  <span class="n">c1_h</span>  <span class="n">c1_i</span>  <span class="n">c1_u</span>  <span class="n">c2_Apples</span>  <span class="n">c2_d</span>  <span class="n">c2_e</span>  <span class="n">c2_h</span>  <span class="n">c2_x</span>
+<span class="mi">0</span>           <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>          <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>
+<span class="mi">1</span>           <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>          <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>
+<span class="mi">2</span>           <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>          <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>
+<span class="mi">3</span>           <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>          <span class="mi">0</span>     <span class="mi">0</span>     <span class="mi">1</span>     <span class="mi">0</span>     <span class="mi">0</span>
+</code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
 <summary>clone</summary>
 <p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
+</details>
+<details class="- note">
+<summary>learn_many</summary>
+<p>Update with a mini-batch of features.</p>
+<p>A lot of transformers don't actually have to do anything during the <code>learn_many</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_many</code> can override this method.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>Transformer</em>:     self</p>
 </details>
 <details class="- note">
 <summary>learn_one</summary>
@@ -8624,6 +8697,16 @@ encode all of the entries individually.</p>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Transformer</em>:     self</p>
+</details>
+<details class="- note">
+<summary>transform_many</summary>
+<p>Transform a mini-batch of features.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>DataFrame</em>:     A new DataFrame.</p>
 </details>
 <details class="- note">
 <summary>transform_one</summary>
