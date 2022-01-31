@@ -1,6 +1,8 @@
-import pandas as pd
 import random
 import string
+
+import pandas as pd
+
 from river import linear_model, preprocessing
 
 

@@ -1,7 +1,5 @@
 import typing
 
-import pandas as pd
-
 from river import base
 
 __all__ = ["Discard", "Select", "SelectType"]
