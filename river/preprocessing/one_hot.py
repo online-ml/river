@@ -1,11 +1,14 @@
 import collections
 
+import numpy as np
+import pandas as pd
+
 from river import base
 
 __all__ = ["OneHotEncoder"]
 
 
-class OneHotEncoder(base.Transformer):
+class OneHotEncoder(base.MiniBatchTransformer):
     """One-hot encoding.
 
     This transformer will encode every feature it is provided with.
@@ -45,9 +48,9 @@ class OneHotEncoder(base.Transformer):
     We can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
     no need to specify which features to encode.
 
-    >>> import river.preprocessing
+    >>> from river import preprocessing
 
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = preprocessing.OneHotEncoder(sparse=True)
     >>> for x in X:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
@@ -59,7 +62,7 @@ class OneHotEncoder(base.Transformer):
     The `sparse` parameter can be set to `False` in order to include the values that are not
     present in the output.
 
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=False)
+    >>> oh = preprocessing.OneHotEncoder(sparse=False)
     >>> for x in X[:2]:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
@@ -70,7 +73,7 @@ class OneHotEncoder(base.Transformer):
 
     >>> from river import compose
 
-    >>> pp = compose.Select('c1') | river.preprocessing.OneHotEncoder()
+    >>> pp = compose.Select('c1') | preprocessing.OneHotEncoder()
 
     >>> for x in X:
     ...     pp = pp.learn_one(x)
@@ -82,7 +85,7 @@ class OneHotEncoder(base.Transformer):
 
     You can preserve the `c2` feature by using a union:
 
-    >>> pp = compose.Select('c1') | river.preprocessing.OneHotEncoder()
+    >>> pp = compose.Select('c1') | preprocessing.OneHotEncoder()
     >>> pp += compose.Select('c2')
 
     >>> for x in X:
@@ -101,7 +104,7 @@ class OneHotEncoder(base.Transformer):
     ...     {'c1': ['i'], 'c2': ['h', 'z']},
     ...     {'c1': ['h', 'b'], 'c2': ['e']}]
 
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = preprocessing.OneHotEncoder(sparse=True)
     >>> for x in X:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
@@ -109,6 +112,58 @@ class OneHotEncoder(base.Transformer):
     {'c1_a': 1, 'c1_b': 1, 'c2_x': 1}
     {'c1_i': 1, 'c2_h': 1, 'c2_z': 1}
     {'c1_b': 1, 'c1_h': 1, 'c2_e': 1}
+
+    Processing mini-batches is also possible.
+
+    >>> from pprint import pprint
+    >>> import random
+    >>> import string
+
+    >>> random.seed(42)
+    >>> alphabet = list(string.ascii_lowercase)
+    >>> X = pd.DataFrame(
+    ...     {
+    ...         'c1': random.choice(alphabet),
+    ...         'c2': random.choice(alphabet),
+    ...     }
+    ...     for _ in range(4)
+    ... )
+    >>> X
+      c1 c2
+    0  u  d
+    1  a  x
+    2  i  h
+    3  h  e
+
+    >>> oh = preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = oh.learn_many(X)
+
+    >>> df = oh.transform_many(X)
+    >>> df.loc[:, sorted(df.columns)]
+        c1_a  c1_h  c1_i  c1_u  c2_d  c2_e  c2_h  c2_x
+    0     0     0     0     1     1     0     0     0
+    1     1     0     0     0     0     0     0     1
+    2     0     0     1     0     0     0     1     0
+    3     0     1     0     0     0     1     0     0
+
+    Keep in mind that ability for sparse transformations is limited in mini-batch case,
+    which might affect speed/memory footprint of your training loop.
+
+    Here's a non-sparse example:
+
+    >>> oh = preprocessing.OneHotEncoder(sparse=False)
+    >>> X_init = pd.DataFrame([{'c1': "Oranges", 'c2': "Apples"}])
+    >>> oh = oh.learn_many(X_init)
+    >>> oh = oh.learn_many(X)
+
+    >>> df = oh.transform_many(X)
+    >>> df.loc[:, sorted(df.columns)]
+        c1_Oranges  c1_a  c1_h  c1_i  c1_u  c2_Apples  c2_d  c2_e  c2_h  c2_x
+    0           0     0     0     0     1          0     1     0     0     0
+    1           0     1     0     0     0          0     0     0     0     1
+    2           0     0     0     1     0          0     0     0     1     0
+    3           0     0     1     0     0          0     0     1     0     0
+
     """
 
     def __init__(self, sparse=False):
@@ -141,3 +196,65 @@ class OneHotEncoder(base.Transformer):
                 oh[f"{i}_{xi}"] = 1
 
         return oh
+
+    # Mini-batch methods
+
+    @staticmethod
+    def _encode_1d(data, prefix, categories=None, sparse=False):
+        # INFO: inspired by:
+        # https://github.com/pandas-dev/pandas/blob/66e3805b8cabe977f40c05259cc3fcf7ead5687d/pandas/core/reshape/reshape.py#L936
+
+        if categories is not None:
+            if type(categories) is not set:
+                categories = set(categories)
+
+            if sparse:
+                categories = categories & set(data)
+
+            cat = pd.Categorical(data, categories=categories, ordered=False)
+        else:
+            cat = pd.Categorical(data, ordered=False)
+        categories = cat.categories
+        # cat.add_categories INFO: look into this for learninig?
+
+        codes = cat.codes
+
+        number_of_cols = len(categories)
+        dummy_mat = np.eye(number_of_cols, dtype=np.int8).take(codes, axis=1).T
+        # reset NaN GH4446[pandas]
+        dummy_mat[codes == -1] = 0
+
+        columns = [f"{prefix}_{v}" for v in categories]
+        return dummy_mat, columns
+
+    def learn_many(self, X):
+
+        for col in X.columns:
+            self.values[col].update(set(X.loc[:, col]))
+
+        return self
+
+    def transform_many(self, X):
+
+        Xt = list()
+        Xt_columns = list()
+
+        for col, values in self.values.items():
+            xt, xt_columns = self._encode_1d(
+                data=X.loc[:, col], prefix=col, categories=values, sparse=self.sparse
+            )
+
+            Xt.append(xt)
+            Xt_columns.extend(xt_columns)
+
+        # INFO: otherwise throws error if nothing to concatenate
+        # (when inferring from blank state stansformer during learning, which is done inside `Pipeline`)
+        if len(Xt) == 0:
+            return pd.DataFrame(index=X.index, copy=False)
+        else:
+            return pd.DataFrame(
+                np.concatenate(Xt, axis=1),
+                columns=Xt_columns,
+                index=X.index,
+                copy=False,
+            )

@@ -81,7 +81,7 @@ class Classifier(estimator.Estimator):
 
 
 class MiniBatchClassifier(Classifier):
-    """A classifier that can can operate on mini-batches."""
+    """A classifier that can operate on mini-batches."""
 
     @abc.abstractmethod
     def learn_many(
