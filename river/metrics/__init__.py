@@ -48,7 +48,6 @@ from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .multioutput import RegressionMultiOutput
 from .mutual_info import AdjustedMutualInfo, MutualInfo, NormalizedMutualInfo
-from .pair_confusion import PairConfusionMatrix
 from .precision import (
     ExamplePrecision,
     MacroPrecision,
@@ -122,7 +121,6 @@ __all__ = [
     "MSE",
     "MutualInfo",
     "NormalizedMutualInfo",
-    "PairConfusionMatrix",
     "Precision",
     "Purity",
     "Q0",
