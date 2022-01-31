@@ -64,7 +64,7 @@ class Discard(base.Transformer):
         return Discard(*keys)
 
 
-class Select(base.Transformer):
+class Select(base.MiniBatchTransformer):
     """Selects features.
 
     This can be used in a pipeline when you want to select certain features. The `transform_one`
@@ -137,7 +137,7 @@ class Select(base.Transformer):
     def transform_one(self, x):
         return {i: x[i] for i in self.keys}
 
-    def transform_many(self, X: pd.DataFrame):
+    def transform_many(self, X):
         # INFO: has either side-effects or doesn't have copy - choose your poison
         # REFLECTION: worth adding `copy=True` parameter to the object constructor to allow both?
         # << convention is to have pure methods/functions

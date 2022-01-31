@@ -8,7 +8,7 @@ from river import base
 __all__ = ["OneHotEncoder"]
 
 
-class OneHotEncoder(base.Transformer):
+class OneHotEncoder(base.MiniBatchTransformer):
     """One-hot encoding.
 
     This transformer will encode every feature it is provided with.
@@ -48,9 +48,9 @@ class OneHotEncoder(base.Transformer):
     We can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
     no need to specify which features to encode.
 
-    >>> import river.preprocessing
+    >>> from river import preprocessing
 
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = preprocessing.OneHotEncoder(sparse=True)
     >>> for x in X:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
@@ -62,7 +62,7 @@ class OneHotEncoder(base.Transformer):
     The `sparse` parameter can be set to `False` in order to include the values that are not
     present in the output.
 
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=False)
+    >>> oh = preprocessing.OneHotEncoder(sparse=False)
     >>> for x in X[:2]:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
@@ -73,7 +73,7 @@ class OneHotEncoder(base.Transformer):
 
     >>> from river import compose
 
-    >>> pp = compose.Select('c1') | river.preprocessing.OneHotEncoder()
+    >>> pp = compose.Select('c1') | preprocessing.OneHotEncoder()
 
     >>> for x in X:
     ...     pp = pp.learn_one(x)
@@ -85,7 +85,7 @@ class OneHotEncoder(base.Transformer):
 
     You can preserve the `c2` feature by using a union:
 
-    >>> pp = compose.Select('c1') | river.preprocessing.OneHotEncoder()
+    >>> pp = compose.Select('c1') | preprocessing.OneHotEncoder()
     >>> pp += compose.Select('c2')
 
     >>> for x in X:
@@ -104,7 +104,7 @@ class OneHotEncoder(base.Transformer):
     ...     {'c1': ['i'], 'c2': ['h', 'z']},
     ...     {'c1': ['h', 'b'], 'c2': ['e']}]
 
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = preprocessing.OneHotEncoder(sparse=True)
     >>> for x in X:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
@@ -113,7 +113,7 @@ class OneHotEncoder(base.Transformer):
     {'c1_i': 1, 'c2_h': 1, 'c2_z': 1}
     {'c1_b': 1, 'c1_h': 1, 'c2_e': 1}
 
-    Mini-batching
+    Processing mini-batches is also possible.
 
     >>> from pprint import pprint
     >>> import random
@@ -121,26 +121,25 @@ class OneHotEncoder(base.Transformer):
 
     >>> random.seed(42)
     >>> alphabet = list(string.ascii_lowercase)
-    >>> X = [
+    >>> X = pd.DataFrame(
     ...     {
     ...         'c1': random.choice(alphabet),
     ...         'c2': random.choice(alphabet),
     ...     }
     ...     for _ in range(4)
-    ... ]
-    >>> pprint(X)
-    [{'c1': 'u', 'c2': 'd'},
-        {'c1': 'a', 'c2': 'x'},
-        {'c1': 'i', 'c2': 'h'},
-        {'c1': 'h', 'c2': 'e'}]
+    ... )
+    >>> X
+      c1 c2
+    0  u  d
+    1  a  x
+    2  i  h
+    3  h  e
 
-    >>> import river.preprocessing
+    >>> oh = preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = oh.learn_many(X)
 
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=True)
-    >>> oh = oh.learn_many(pd.DataFrame(X))
-
-    >>> df = oh.transform_many(pd.DataFrame(X))
-    >>> df.loc[:,sorted(df.columns)]
+    >>> df = oh.transform_many(X)
+    >>> df.loc[:, sorted(df.columns)]
         c1_a  c1_h  c1_i  c1_u  c2_d  c2_e  c2_h  c2_x
     0     0     0     0     1     1     0     0     0
     1     1     0     0     0     0     0     0     1
@@ -151,59 +150,19 @@ class OneHotEncoder(base.Transformer):
     which might affect speed/memory footprint of your training loop.
 
     Here's a non-sparse example:
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=False)
-    >>> X_init = [{"c1": "Oranges", "c2": "Apples"}]
-    >>> oh = oh.learn_many(pd.DataFrame(X_init))
-    >>> oh = oh.learn_many(pd.DataFrame(X))
 
-    >>> df = oh.transform_many(X=pd.DataFrame(X))
-    >>> df.loc[:,sorted(df.columns)]
+    >>> oh = preprocessing.OneHotEncoder(sparse=False)
+    >>> X_init = pd.DataFrame([{'c1': "Oranges", 'c2': "Apples"}])
+    >>> oh = oh.learn_many(X_init)
+    >>> oh = oh.learn_many(X)
+
+    >>> df = oh.transform_many(X)
+    >>> df.loc[:, sorted(df.columns)]
         c1_Oranges  c1_a  c1_h  c1_i  c1_u  c2_Apples  c2_d  c2_e  c2_h  c2_x
     0           0     0     0     0     1          0     1     0     0     0
     1           0     1     0     0     0          0     0     0     0     1
     2           0     0     0     1     0          0     0     0     1     0
     3           0     0     1     0     0          0     0     1     0     0
-
-    When inspecting mini-batch one-hot encoding you might notice that the encoder
-    sometimes outputs different number of columns in different order
-    (e.g. when `sparse=True` or when the encoder has learnt new values).
-
-    This, however, is not a problem for `river` estimators,
-    because they map weights and gradient updates to names of the features regardless of their order
-    and correctly process the missing columns.
-
-    To demonstrate, here's 2 scenarios with the same result:
-    >>> oh = river.preprocessing.OneHotEncoder(sparse=False)
-    >>> oh = oh.learn_many(pd.DataFrame(X))
-    >>> df_test = oh.transform_many(pd.DataFrame(X))
-    >>> df_test = df_test.loc[:,sorted(df_test.columns)]
-    >>> df_test.iloc[:, :3]
-       c1_a  c1_h  c1_i
-    0     0     0     0
-    1     1     0     0
-    2     0     0     1
-    3     0     1     0
-
-    >>> from river import linear_model
-
-    >>> model = linear_model.LogisticRegression()
-
-    ... model.learn_many(df_test.iloc[:, [1, 2]], df_test.any(axis=1).astype(int))
-    ... model.learn_many(df_test.iloc[:, [0, 1, 2]], df_test.any(axis=1).astype(int))
-    ... model.learn_many(df_test.iloc[:, [1, 2, 0]], df_test.any(axis=1).astype(int))
-
-    ... weights_1 = model.weights
-
-    ... model = linear_model.LogisticRegression()
-
-    ... model.learn_many(df_test.iloc[:, [1, 2, 0]], df_test.any(axis=1).astype(int))
-    ... model.learn_many(df_test.iloc[:, [0, 1, 2]], df_test.any(axis=1).astype(int))
-    ... model.learn_many(df_test.iloc[:, [1, 2]], df_test.any(axis=1).astype(int))
-
-    ... weights_2 = model.weights
-
-    ... weights_1 == weights_2
-    True
 
     """
 
@@ -268,14 +227,14 @@ class OneHotEncoder(base.Transformer):
         columns = [f"{prefix}_{v}" for v in categories]
         return dummy_mat, columns
 
-    def learn_many(self, X: pd.DataFrame):
+    def learn_many(self, X):
 
         for col in X.columns:
             self.values[col].update(set(X.loc[:, col]))
 
         return self
 
-    def transform_many(self, X: pd.DataFrame):
+    def transform_many(self, X):
 
         Xt = list()
         Xt_columns = list()

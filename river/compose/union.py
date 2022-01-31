@@ -10,7 +10,7 @@ from . import func
 __all__ = ["TransformerUnion"]
 
 
-class TransformerUnion(base.Transformer):
+class TransformerUnion(base.MiniBatchTransformer):
     """Packs multiple transformers into a single one.
 
     Pipelines allow you to apply steps sequentially. Therefore, the output of a step becomes the
@@ -122,26 +122,28 @@ class TransformerUnion(base.Transformer):
 
     Mini-batch example:
 
-    >>> X = [
+    >>> X = pd.DataFrame([
     ...     {"place": 2, "revenue": 42},
     ...     {"place": 3, "revenue": 16},
     ...     {"place": 3, "revenue": 24},
     ...     {"place": 2, "revenue": 58},
     ...     {"place": 3, "revenue": 20},
     ...     {"place": 2, "revenue": 50},
-    ... ]
+    ... ])
 
-    Since we need a transformer with mini-batch support to demonstrate, we shall use the `StandardScaler`
+    Since we need a transformer with mini-batch support to demonstrate, we shall use
+    a `StandardScaler`.
 
     >>> from river import compose
     >>> from river import preprocessing
 
-    >>> t_1 = compose.Select("place")
-    >>> t_2 = compose.Select("revenue") | preprocessing.StandardScaler()
+    >>> agg = (
+    ...     compose.Select("place") +
+    ...     compose.Select("revenue") | preprocessing.StandardScaler()
+    ... )
 
-    >>> agg = compose.TransformerUnion(t_1, t_2)
-    >>> _ = agg.learn_many(pd.DataFrame(X))
-    >>> agg.transform_many(pd.DataFrame(X))
+    >>> _ = agg.learn_many(X)
+    >>> agg.transform_many(X)
        place   revenue
     0      2  0.441250
     1      3 -1.197680
@@ -287,7 +289,7 @@ class TransformerUnion(base.Transformer):
                 t.learn_many(X)
         return self
 
-    def transform_many(self, X: pd.DataFrame):
+    def transform_many(self, X):
         """Passes the data through each transformer and packs the results together."""
         # INFO: not the most optimal but at least it works
         # return pd.DataFrame(

@@ -20,7 +20,7 @@ from .ensemble import Ensemble, WrapperEnsemble
 from .estimator import Estimator
 from .multi_output import MultiOutputMixin
 from .regressor import MiniBatchRegressor, Regressor
-from .transformer import SupervisedTransformer, Transformer
+from .transformer import SupervisedTransformer, Transformer, MiniBatchTransformer
 from .wrapper import Wrapper
 
 __all__ = [
@@ -31,6 +31,7 @@ __all__ = [
     "Ensemble",
     "Estimator",
     "MiniBatchClassifier",
+    "MiniBatchTransformer",
     "MiniBatchRegressor",
     "MultiOutputMixin",
     "Regressor",
