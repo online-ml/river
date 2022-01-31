@@ -106,7 +106,7 @@ class SupervisedTransformer(Transformer):
 
 
 class MiniBatchTransformer(Transformer):
-    """A classifier that can can operate on mini-batches."""
+    """A transform that can operate on mini-batches."""
 
     @abc.abstractmethod
     def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:
