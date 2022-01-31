@@ -836,6 +836,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../base/MiniBatchTransformer/" class="md-nav__link">
+        MiniBatchTransformer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../base/MultiOutputMixin/" class="md-nav__link">
         MultiOutputMixin
       </a>
@@ -8562,12 +8576,29 @@ namespaces, such one for items and the other for users.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 </details>
 <details class="- note">
+<summary>learn_many</summary>
+<p>Update each transformer.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+<li><strong>y</strong>     (<em>pandas.core.series.Series</em>)     – defaults to <code>None</code>    </li>
+</ul>
+</details>
+<details class="- note">
 <summary>learn_one</summary>
 <p>Update each transformer.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
 <li><strong>y</strong>     – defaults to <code>None</code>    </li>
+</ul>
+</details>
+<details class="- note">
+<summary>transform_many</summary>
+<p>Passes the data through each transformer and packs the results together.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
 </ul>
 </details>
 <details class="- note">

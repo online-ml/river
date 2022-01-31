@@ -836,6 +836,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../base/MiniBatchTransformer/" class="md-nav__link">
+        MiniBatchTransformer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../base/MultiOutputMixin/" class="md-nav__link">
         MultiOutputMixin
       </a>
@@ -8544,11 +8558,51 @@ desired features.</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="p">{</span><span class="s1">&#39;sales&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;sales*sales&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
 </code></pre></div>
+<p>This transformer also supports mini-batch processing:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">random</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;x_1&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="s2">&quot;x_2&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">)}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;x_1&#39;</span><span class="p">:</span> <span class="mf">10.557707193831535</span><span class="p">,</span> <span class="s1">&#39;x_2&#39;</span><span class="p">:</span> <span class="mf">8.100043020890668</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;x_1&#39;</span><span class="p">:</span> <span class="mf">9.100117273476478</span><span class="p">,</span> <span class="s1">&#39;x_2&#39;</span><span class="p">:</span> <span class="mf">8.892842952595291</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;x_1&#39;</span><span class="p">:</span> <span class="mf">10.94588485665605</span><span class="p">,</span> <span class="s1">&#39;x_2&#39;</span><span class="p">:</span> <span class="mf">10.706797949691644</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;x_1&#39;</span><span class="p">:</span> <span class="mf">11.568718270819382</span><span class="p">,</span> <span class="s1">&#39;x_2&#39;</span><span class="p">:</span> <span class="mf">8.347755330517664</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;x_1&#39;</span><span class="p">:</span> <span class="mf">9.687687278741082</span><span class="p">,</span> <span class="s1">&#39;x_2&#39;</span><span class="p">:</span> <span class="mf">8.119188877752281</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;x_1&#39;</span><span class="p">:</span> <span class="mf">8.874551899214413</span><span class="p">,</span> <span class="s1">&#39;x_2&#39;</span><span class="p">:</span> <span class="mf">10.021421152413449</span><span class="p">}</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</code></pre></div>
+<p>You can then call <code>transform_many</code> to transform a mini-batch of features:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;x_2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">x_2</span>
+<span class="mi">0</span>   <span class="mf">8.100043</span>
+<span class="mi">1</span>   <span class="mf">8.892843</span>
+<span class="mi">2</span>  <span class="mf">10.706798</span>
+<span class="mi">3</span>   <span class="mf">8.347755</span>
+<span class="mi">4</span>   <span class="mf">8.119189</span>
+<span class="mi">5</span>  <span class="mf">10.021421</span>
+</code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
 <summary>clone</summary>
 <p>Return a fresh estimator with the same parameters.</p>
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
+</details>
+<details class="- note">
+<summary>learn_many</summary>
+<p>Update with a mini-batch of features.</p>
+<p>A lot of transformers don't actually have to do anything during the <code>learn_many</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_many</code> can override this method.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+<li><strong>kwargs</strong>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>Transformer</em>:     self</p>
 </details>
 <details class="- note">
 <summary>learn_one</summary>
@@ -8561,6 +8615,16 @@ desired features.</p>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Transformer</em>:     self</p>
+</details>
+<details class="- note">
+<summary>transform_many</summary>
+<p>Transform a mini-batch of features.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>DataFrame</em>:     A new DataFrame.</p>
 </details>
 <details class="- note">
 <summary>transform_one</summary>
