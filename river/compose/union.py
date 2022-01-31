@@ -139,7 +139,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     >>> agg = (
     ...     compose.Select("place") +
-    ...     compose.Select("revenue") | preprocessing.StandardScaler()
+    ...     (compose.Select("revenue") | preprocessing.StandardScaler())
     ... )
 
     >>> _ = agg.learn_many(X)
