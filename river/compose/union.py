@@ -1,6 +1,8 @@
 import collections
 import types
 
+import pandas as pd
+
 from river import base
 
 from . import func
@@ -8,7 +10,7 @@ from . import func
 __all__ = ["TransformerUnion"]
 
 
-class TransformerUnion(base.Transformer):
+class TransformerUnion(base.MiniBatchTransformer):
     """Packs multiple transformers into a single one.
 
     Pipelines allow you to apply steps sequentially. Therefore, the output of a step becomes the
@@ -117,6 +119,38 @@ class TransformerUnion(base.Transformer):
     ...     ('Mean revenue by place', mean),
     ...     ('# by place', count)
     ... )
+
+    Mini-batch example:
+
+    >>> X = pd.DataFrame([
+    ...     {"place": 2, "revenue": 42},
+    ...     {"place": 3, "revenue": 16},
+    ...     {"place": 3, "revenue": 24},
+    ...     {"place": 2, "revenue": 58},
+    ...     {"place": 3, "revenue": 20},
+    ...     {"place": 2, "revenue": 50},
+    ... ])
+
+    Since we need a transformer with mini-batch support to demonstrate, we shall use
+    a `StandardScaler`.
+
+    >>> from river import compose
+    >>> from river import preprocessing
+
+    >>> agg = (
+    ...     compose.Select("place") +
+    ...     (compose.Select("revenue") | preprocessing.StandardScaler())
+    ... )
+
+    >>> _ = agg.learn_many(X)
+    >>> agg.transform_many(X)
+       place   revenue
+    0      2  0.441250
+    1      3 -1.197680
+    2      3 -0.693394
+    3      2  1.449823
+    4      3 -0.945537
+    5      2  0.945537
 
     """
 
@@ -232,4 +266,43 @@ class TransformerUnion(base.Transformer):
             collections.ChainMap(
                 *(t.transform_one(x) for t in self.transformers.values())
             )
+        )
+
+    # Mini-batch methods
+
+    def learn_many(self, X: pd.DataFrame, y: pd.Series = None):
+        """Update each transformer.
+
+        Parameters
+        ----------
+        X
+            Features.
+        y
+            An optional target, this is expected to be provided if at least one of the transformers
+            is supervised (i.e. it inherits from `base.SupervisedTransformer`).
+
+        """
+        for t in self.transformers.values():
+            if isinstance(t, base.SupervisedTransformer):
+                t.learn_many(X, y)
+            else:
+                t.learn_many(X)
+        return self
+
+    def transform_many(self, X):
+        """Passes the data through each transformer and packs the results together."""
+        # INFO: not the most optimal but at least it works
+        # return pd.DataFrame(
+        #     dict(
+        #         collections.ChainMap(
+        #             *(t.transform_many(X) for t in self.transformers.values())
+        #         )
+        #     ),
+        #     copy=False,
+        # )
+        # INFO: likely more optimal and definitely more clean
+        return pd.concat(
+            (t.transform_many(X) for t in self.transformers.values()),
+            copy=False,
+            axis=1,
         )

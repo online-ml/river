@@ -62,7 +62,7 @@ class Discard(base.Transformer):
         return Discard(*keys)
 
 
-class Select(base.Transformer):
+class Select(base.MiniBatchTransformer):
     """Selects features.
 
     This can be used in a pipeline when you want to select certain features. The `transform_one`
@@ -97,6 +97,36 @@ class Select(base.Transformer):
     >>> pipeline.transform_one(x)
     {'sales': 10, 'sales*sales': 100}
 
+    This transformer also supports mini-batch processing:
+
+    >>> import random
+    >>> from river import compose
+
+    >>> random.seed(42)
+    >>> X = [{"x_1": random.uniform(8, 12), "x_2": random.uniform(8, 12)} for _ in range(6)]
+    >>> for x in X:
+    ...     print(x)
+    {'x_1': 10.557707193831535, 'x_2': 8.100043020890668}
+    {'x_1': 9.100117273476478, 'x_2': 8.892842952595291}
+    {'x_1': 10.94588485665605, 'x_2': 10.706797949691644}
+    {'x_1': 11.568718270819382, 'x_2': 8.347755330517664}
+    {'x_1': 9.687687278741082, 'x_2': 8.119188877752281}
+    {'x_1': 8.874551899214413, 'x_2': 10.021421152413449}
+
+    >>> import pandas as pd
+    >>> X = pd.DataFrame.from_dict(X)
+
+    You can then call `transform_many` to transform a mini-batch of features:
+
+    >>> compose.Select('x_2').transform_many(X)
+        x_2
+    0   8.100043
+    1   8.892843
+    2  10.706798
+    3   8.347755
+    4   8.119189
+    5  10.021421
+
     """
 
     def __init__(self, *keys: typing.Tuple[base.typing.FeatureName]):
@@ -104,6 +134,13 @@ class Select(base.Transformer):
 
     def transform_one(self, x):
         return {i: x[i] for i in self.keys}
+
+    def transform_many(self, X):
+        # INFO: has either side-effects or doesn't have copy - choose your poison
+        # REFLECTION: worth adding `copy=True` parameter to the object constructor to allow both?
+        # << convention is to have pure methods/functions
+        return X.loc[:, self.keys].copy()
+        # return X.loc[:, self.keys]
 
     def __str__(self):
         return str(sorted(self.keys))

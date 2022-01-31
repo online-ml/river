@@ -1,5 +1,9 @@
 # Unreleased
 
+## base
+
+- Introduce `base.MiniBatchTransformer`. Add support for mini-batches to `compose.TransformerUnion`, `compose.Select`, and `preprocessing.OneHotEncoder`.
+
 ## checks
 
 - Created this module to store estimator unit testing, rather than having it in the `utils` module.
