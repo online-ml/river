@@ -77,8 +77,6 @@ def generate_test_cases(metric, n):
 
     sample_weights = [random.random() for _ in range(n)]
 
-    print(isinstance(metric, base.ClassificationMetric))
-
     if isinstance(metric, base.ClassificationMetric):
         y_true = [random.choice([False, True]) for _ in range(n)]
         if metric.requires_labels:
@@ -171,40 +169,44 @@ TEST_CASES = [
     (metrics.VBeta(beta=0.5), partial(sk_metrics.v_measure_score, beta=0.5)),
     (metrics.FowlkesMallows(), sk_metrics.fowlkes_mallows_score),
     (metrics.Rand(), sk_metrics.rand_score),
-    # (metrics.AdjustedRand(), sk_metrics.adjusted_rand_score),
-    # (metrics.MutualInfo(), sk_metrics.mutual_info_score),
-    # (
-    #     metrics.NormalizedMutualInfo(average_method="min"),
-    #     partial(sk_metrics.normalized_mutual_info_score, average_method="min"),
-    # ),
-    # (
-    #     metrics.NormalizedMutualInfo(average_method="max"),
-    #     partial(sk_metrics.normalized_mutual_info_score, average_method="max"),
-    # ),
-    # (
-    #     metrics.NormalizedMutualInfo(average_method="arithmetic"),
-    #     partial(sk_metrics.normalized_mutual_info_score, average_method="arithmetic"),
-    # ),
-    # (
-    #     metrics.NormalizedMutualInfo(average_method="geometric"),
-    #     partial(sk_metrics.normalized_mutual_info_score, average_method="geometric"),
-    # ),
-    # (
-    #     metrics.AdjustedMutualInfo(average_method="min"),
-    #     partial(sk_metrics.adjusted_mutual_info_score, average_method="min"),
-    # ),
-    # (
-    #     metrics.AdjustedMutualInfo(average_method="max"),
-    #     partial(sk_metrics.adjusted_mutual_info_score, average_method="max"),
-    # ),
-    # (
-    #     metrics.AdjustedMutualInfo(average_method="arithmetic"),
-    #     partial(sk_metrics.adjusted_mutual_info_score, average_method="arithmetic"),
-    # ),
-    # (
-    #     metrics.AdjustedMutualInfo(average_method="geometric"),
-    #     partial(sk_metrics.adjusted_mutual_info_score, average_method="geometric"),
-    # ),
+    (metrics.AdjustedRand(), sk_metrics.adjusted_rand_score),
+    (metrics.MutualInfo(), sk_metrics.mutual_info_score),
+    (
+        metrics.NormalizedMutualInfo(average_method="min"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="min"),
+    ),
+    (
+        metrics.NormalizedMutualInfo(average_method="max"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="max"),
+    ),
+    (
+        metrics.NormalizedMutualInfo(average_method="arithmetic"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="arithmetic"),
+    ),
+    (
+        metrics.NormalizedMutualInfo(average_method="geometric"),
+        partial(sk_metrics.normalized_mutual_info_score, average_method="geometric"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="min"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="min"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="max"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="max"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="arithmetic"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="arithmetic"),
+    ),
+    (
+        metrics.AdjustedMutualInfo(average_method="geometric"),
+        partial(sk_metrics.adjusted_mutual_info_score, average_method="geometric"),
+    ),
+    (metrics.Jaccard(), partial(sk_metrics.jaccard_score, average="binary")),
+    (metrics.MacroJaccard(), partial(sk_metrics.jaccard_score, average="macro")),
+    (metrics.MicroJaccard(), partial(sk_metrics.jaccard_score, average="micro")),
+    (metrics.WeightedJaccard(), partial(sk_metrics.jaccard_score, average="weighted")),
 ]
 
 
@@ -216,6 +218,7 @@ TEST_CASES = [
     ],
 )
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+@pytest.mark.filterwarnings("ignore::sklearn.exceptions.UndefinedMetricWarning")
 def test_metric(metric, sk_metric):
 
     for y_true, y_pred, sample_weights in generate_test_cases(metric=metric, n=30):
@@ -247,6 +250,7 @@ def test_metric(metric, sk_metric):
     ],
 )
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+@pytest.mark.filterwarnings("ignore::sklearn.exceptions.UndefinedMetricWarning")
 def test_rolling_metric(metric, sk_metric):
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)

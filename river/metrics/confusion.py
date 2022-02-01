@@ -49,7 +49,6 @@ class ConfusionMatrix:
 
     def __init__(self, classes=None):
         self._init_classes = set(classes) if classes is not None else set()
-        self.sum_diag = 0.0
         self.sum_row = defaultdict(float)
         self.sum_col = defaultdict(float)
         self.data = defaultdict(functools.partial(defaultdict, float))
@@ -74,9 +73,6 @@ class ConfusionMatrix:
     def _update(self, y_true, y_pred, sample_weight):
         self.data[y_true][y_pred] += sample_weight
         self.total_weight += sample_weight
-
-        if y_true == y_pred:
-            self.sum_diag += sample_weight
         self.sum_row[y_true] += sample_weight
         self.sum_col[y_pred] += sample_weight
 
@@ -86,10 +82,6 @@ class ConfusionMatrix:
             set(c for c, n in self.sum_row.items() if n)
             | set(c for c, n in self.sum_col.items() if n)
         )
-
-    @property
-    def n_classes(self):
-        return len(self.classes)
 
     def __repr__(self):
 
@@ -126,14 +118,33 @@ class ConfusionMatrix:
 
         return textwrap.dedent(table)
 
+    def support(self, label):
+        return self.sum_row[label]
+
     def true_positives(self, label):
         return self.data[label][label]
 
     def true_negatives(self, label):
-        return self.sum_diag - self.data[label][label]
+        return self.total_true_positives - self.data[label][label]
 
     def false_positives(self, label):
         return self.sum_col[label] - self.data[label][label]
 
     def false_negatives(self, label):
         return self.sum_row[label] - self.data[label][label]
+
+    @property
+    def total_true_positives(self):
+        return sum(self.true_positives(label) for label in self.classes)
+
+    @property
+    def total_true_negatives(self):
+        return sum(self.true_negatives(label) for label in self.classes)
+
+    @property
+    def total_false_positives(self):
+        return sum(self.false_positives(label) for label in self.classes)
+
+    @property
+    def total_false_negatives(self):
+        return sum(self.false_negatives(label) for label in self.classes)

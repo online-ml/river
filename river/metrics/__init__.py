@@ -20,6 +20,7 @@ from .base import (
 )
 from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
+from .jaccard import Jaccard, MacroJaccard, MicroJaccard, WeightedJaccard
 from .fbeta import (
     F1,
     FBeta,
@@ -63,6 +64,9 @@ __all__ = [
     "CohenKappa",
     "ConfusionMatrix",
     "CrossEntropy",
+    "Jaccard",
+    "MacroJaccard",
+    "MicroJaccard",
     "F1",
     "FBeta",
     "GeometricMean",
@@ -105,4 +109,5 @@ __all__ = [
     "WeightedPrecision",
     "WeightedRecall",
     "WrapperMetric",
+    "WeightedJaccard",
 ]

@@ -54,8 +54,7 @@ class Metric(base.Base, abc.ABC):
 
     def __repr__(self):
         """Return the class name along with the current value of the metric."""
-        fmt = getattr(self, "_fmt", ",.6f") or ",.6f"
-        return f"{self.__class__.__name__}: {self.get():{fmt}}".rstrip("0")
+        return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
     def __str__(self):
         return repr(self)
@@ -179,6 +178,8 @@ class MultiClassMetric(ClassificationMetric):
 
 class RegressionMetric(Metric):
     """Mother class for all regression metrics."""
+
+    _fmt = ",.6f"  # use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
     def update(
@@ -319,7 +320,12 @@ class WrapperMetric(Metric):
         return self.metric.__class__
 
     def __repr__(self):
-        return str(self.metric)
+        name = self.__class__.__name__
+        return (
+            super()
+            .__repr__()
+            .replace(name, f"{name}({self.metric.__class__.__name__})")
+        )
 
 
 class MeanMetric(abc.ABC):

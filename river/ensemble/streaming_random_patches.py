@@ -306,11 +306,7 @@ class BaseSRPEstimator:
             self.model = self._background_learner.model
             self.drift_detector = self._background_learner.drift_detector
             self.warning_detector = self._background_learner.warning_detector
-            self.metric = self._background_learner.metric
-            if isinstance(self.metric, MultiClassMetric):
-                self.metric.cm.reset()
-            else:
-                self.metric.__init__()
+            self.metric = self._background_learner.metric.clone()
             self.created_on = self._background_learner.created_on
             self.features = self._background_learner.features
             self._background_learner = None

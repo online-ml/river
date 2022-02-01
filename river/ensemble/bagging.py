@@ -315,7 +315,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.887286
+    F1: 88.73%
 
     """
 

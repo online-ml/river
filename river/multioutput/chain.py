@@ -71,7 +71,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     ...     order=list(range(14))
     ... )
 
-    >>> metric = metrics.Jaccard()
+    >>> metric = metrics.multioutput.MicroAverage(metrics.Jaccard())
 
     >>> for x, y in dataset:
     ...     # Convert y values to booleans
@@ -81,7 +81,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     ...     model = model.learn_one(x, y)
 
     >>> metric
-    Jaccard: 0.451524
+    MicroAverage(Jaccard): 41.95%
 
     References
     ----------
@@ -202,7 +202,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     >>> metric = metrics.multioutput.MicroAverage(metrics.MAE())
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 12.649592
+    MicroAverage(MAE): 12.649592
 
     """
 
@@ -292,7 +292,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
     ...     model=linear_model.LogisticRegression()
     ... )
 
-    >>> metric = metrics.Jaccard()
+    >>> metric = metrics.multioutput.MicroAverage(metrics.Jaccard())
 
     >>> for x, y in dataset:
     ...    y_pred = model.predict_one(x)
@@ -300,7 +300,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    Jaccard: 0.571429
+    MicroAverage(Jaccard): 54.83%
 
     References
     ----------
@@ -390,7 +390,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     ...     seed=42
     ... )
 
-    >>> metric = metrics.Jaccard()
+    >>> metric = metrics.multioutput.MicroAverage(metrics.Jaccard())
 
     >>> for x, y in dataset:
     ...    y_pred = model.predict_one(x)
@@ -398,7 +398,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    Jaccard: 0.568087
+    MicroAverage(Jaccard): 54.75%
 
     References
     ----------

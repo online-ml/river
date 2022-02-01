@@ -363,7 +363,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, ModelSelectionClassifier):
     [2] 2 removed       3 left  100 iterations  budget used: 1000       budget left: 1000       best Accuracy: 84.00%
     [3] 1 removed       2 left  166 iterations  budget used: 1498       budget left: 502        best Accuracy: 86.14%
     [4] 1 removed       1 left  250 iterations  budget used: 1998       budget left: 2  best Accuracy: 84.80%
-    ROCAUC: 0.952889
+    ROCAUC: 95.29%
 
     We can now view the best model.
 

@@ -32,6 +32,6 @@ class Accuracy(base.MultiClassMetric):
 
     def get(self):
         try:
-            return self.cm.sum_diag / self.cm.total_weight
+            return self.cm.total_true_positives / self.cm.total_weight
         except ZeroDivisionError:
             return 0.0

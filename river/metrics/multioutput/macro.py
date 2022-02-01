@@ -1,15 +1,20 @@
+import statistics
+from collections import defaultdict
+from copy import deepcopy
+from functools import partial
 from river import utils, metrics
 
 from . import base
 from ..base import WrapperMetric
 
-__all__ = ["MicroAverage"]
+__all__ = ["MacroAverage"]
 
 
-class MicroAverage(base.MultiOutputMetric, WrapperMetric):
-    """Micro-average wrapper.
+class MacroAverage(base.MultiOutputMetric, WrapperMetric):
+    """Macro-average wrapper.
 
-    The provided metric is updated with the value of each output.
+    A copy of the provided metric is made for each output. The arithmetic average of all the
+    metrics is returned.
 
     Parameters
     ----------
@@ -20,6 +25,7 @@ class MicroAverage(base.MultiOutputMetric, WrapperMetric):
 
     def __init__(self, metric):
         self._metric = metric
+        self.metrics = defaultdict(partial(deepcopy, self._metric))
 
     @property
     def metric(self):
@@ -32,13 +38,13 @@ class MicroAverage(base.MultiOutputMetric, WrapperMetric):
 
     def update(self, y_true, y_pred, sample_weight=1.0):
         for i in y_pred:
-            self.metric.update(y_true[i], y_pred[i], sample_weight)
+            self.metrics[i].update(y_true[i], y_pred[i], sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.0):
         for i in y_pred:
-            self.metric.revert(y_true[i], y_pred[i], sample_weight)
+            self.metrics[i].revert(y_true[i], y_pred[i], sample_weight)
         return self
 
     def get(self):
-        return self.metric.get()
+        return statistics.mean(metric.get() for metric in self.metrics.values())

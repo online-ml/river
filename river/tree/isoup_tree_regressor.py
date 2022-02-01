@@ -110,7 +110,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
     >>> metric = metrics.multioutput.MicroAverage(metrics.MAE())
 
     >>> evaluate.progressive_val_score(dataset, pipeline, metric)
-    MAE: 0.426177
+    MicroAverage(MAE): 0.426177
 
     """
 

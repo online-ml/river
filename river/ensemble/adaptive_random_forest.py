@@ -465,7 +465,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 70.47%
+    Accuracy: 70.77%
 
     References
     ----------
@@ -961,8 +961,7 @@ class BaseForestMember:
             self.created_on = n_samples_seen
             self.drift_detector = self.drift_detector.clone()
         # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.metric, metrics.MultiClassMetric):
-            self.metric.cm.reset()
+        self.metric = self.metric.clone()
 
     def learn_one(
         self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int
