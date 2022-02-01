@@ -36,21 +36,21 @@ class ClassificationReport(base.MultiClassMetric):
     ...     report = report.update(yt, yp)
 
     >>> print(report)
-               Precision   Recall   F1      Support
+                   Precision   Recall   F1       Support
     <BLANKLINE>
-       apple       0.000    0.000   0.000         1
-      banana       1.000    0.667   0.800         3
-        pear       0.000    0.000   0.000         1
+       apple       0.00%    0.00%    0.00%         1
+      banana     100.00%   66.67%   80.00%         3
+        pear       0.00%    0.00%    0.00%         1
     <BLANKLINE>
-       Macro       0.333    0.222   0.267
-       Micro       0.400    0.400   0.400
-    Weighted       0.600    0.400   0.480
+       Macro      33.33%   22.22%   26.67%
+       Micro      40.00%   40.00%   40.00%
+    Weighted      60.00%   40.00%   48.00%
     <BLANKLINE>
-                     40.0% accuracy
+                     40.00% accuracy
 
     """
 
-    def __init__(self, decimals=3, cm=None):
+    def __init__(self, decimals=2, cm=None):
         super().__init__(cm)
         self.decimals = decimals
         self._f1s = {}
@@ -69,8 +69,8 @@ class ClassificationReport(base.MultiClassMetric):
         raise NotImplementedError
 
     def __repr__(self):
-        def fmt_float(x):
-            return f"{x:.{self.decimals}f}"
+        def fmt_pct(x):
+            return f"{x:.{self.decimals}%}"
 
         headers = ["", "Precision", "Recall", "F1", "Support"]
         classes = sorted(self.cm.classes)
@@ -85,10 +85,10 @@ class ClassificationReport(base.MultiClassMetric):
             # Precision values
             [
                 "",
-                *[fmt_float(self._f1s[c].precision.get()) for c in classes],
+                *[fmt_pct(self._f1s[c].precision.get()) for c in classes],
                 "",
                 *map(
-                    fmt_float,
+                    fmt_pct,
                     [
                         self._macro_precision.get(),
                         self._micro_precision.get(),
@@ -99,10 +99,10 @@ class ClassificationReport(base.MultiClassMetric):
             # Recall values
             [
                 "",
-                *[fmt_float(self._f1s[c].recall.get()) for c in classes],
+                *[fmt_pct(self._f1s[c].recall.get()) for c in classes],
                 "",
                 *map(
-                    fmt_float,
+                    fmt_pct,
                     [
                         self._macro_recall.get(),
                         self._micro_recall.get(),
@@ -113,10 +113,10 @@ class ClassificationReport(base.MultiClassMetric):
             # F1 values
             [
                 "",
-                *[fmt_float(self._f1s[c].get()) for c in classes],
+                *[fmt_pct(self._f1s[c].get()) for c in classes],
                 "",
                 *map(
-                    fmt_float,
+                    fmt_pct,
                     [
                         self._macro_f1.get(),
                         self._micro_f1.get(),
@@ -133,7 +133,7 @@ class ClassificationReport(base.MultiClassMetric):
 
         # Write down the accuracy
         width = len(table.splitlines()[0])
-        accuracy = f"{self._accuracy.get():.{self.decimals - 2}%}" + " accuracy"
+        accuracy = f"{self._accuracy.get():.{self.decimals}%}" + " accuracy"
         table += "\n\n" + f"{accuracy:^{width}}"
 
         return table

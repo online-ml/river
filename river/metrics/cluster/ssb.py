@@ -3,7 +3,7 @@ from river import stats, utils
 from . import base
 
 
-class SSB(base.InternalMetric):
+class SSB(base.ClusteringMetric):
     """Sum-of-Squares Between Clusters (SSB).
 
     The Sum-of-Squares Between Clusters is the weighted mean of the squares of distances

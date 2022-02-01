@@ -49,7 +49,7 @@ class OneVsOneClassifier(base.Wrapper, base.Classifier):
     >>> metric = metrics.MacroF1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MacroF1: 0.807573
+    MacroF1: 80.76%
 
     """
 

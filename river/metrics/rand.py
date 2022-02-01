@@ -1,8 +1,40 @@
-from river import metrics
+import collections
 
 from . import base
 
 __all__ = ["AdjustedRand", "Rand"]
+
+
+def _pair_confusion(cm):
+
+    pair_confusion_matrix = {i: collections.defaultdict(int) for i in range(2)}
+
+    sum_squares = 0
+    false_positives = 0
+    false_negatives = 0
+
+    for i in cm.classes:
+        for j in cm.classes:
+            sum_squares += cm[i][j] * cm[i][j]
+            false_positives += cm[i][j] * cm.sum_col[j]
+            false_negatives += cm[j][i] * cm.sum_row[j]
+
+    true_positives = sum_squares - cm.n_samples
+
+    false_positives -= sum_squares
+
+    false_negatives -= sum_squares
+
+    true_negatives = (
+        cm.n_samples * cm.n_samples - (false_positives + false_negatives) - sum_squares
+    )
+
+    pair_confusion_matrix[0][0] = true_negatives
+    pair_confusion_matrix[0][1] = false_positives
+    pair_confusion_matrix[1][0] = false_negatives
+    pair_confusion_matrix[1][1] = true_positives
+
+    return pair_confusion_matrix
 
 
 class Rand(base.MultiClassMetric):
@@ -41,19 +73,13 @@ class Rand(base.MultiClassMetric):
     --------
     >>> from river import metrics
 
-    >>> y_true = [1, 1, 2, 2, 3, 3]
-    >>> y_pred = [1, 1, 1, 2, 2, 2]
+    >>> y_true = [0, 0, 0, 1, 1, 1]
+    >>> y_pred = [0, 0, 1, 1, 2, 2]
 
     >>> metric = metrics.Rand()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
-    1.0
-    1.0
-    0.3333333333333333
-    0.5
-    0.6
-    0.6666666666666666
+    ...     metric = metric.update(yt, yp)
 
     >>> metric
     Rand: 0.666667
@@ -69,8 +95,7 @@ class Rand(base.MultiClassMetric):
 
     """
 
-    def __init__(self, cm=None):
-        super().__init__(cm)
+    _fmt = ""
 
     @property
     def works_with_weights(self):
@@ -78,7 +103,7 @@ class Rand(base.MultiClassMetric):
 
     def get(self):
 
-        pair_confusion_matrix = metrics.PairConfusionMatrix(self.cm).get()
+        pair_confusion_matrix = _pair_confusion(self.cm)
 
         true_positives = pair_confusion_matrix[1][1]
         true_negatives = pair_confusion_matrix[0][0]
@@ -118,8 +143,8 @@ class AdjustedRand(base.MultiClassMetric):
     --------
     >>> from river import metrics
 
-    >>> y_true = [1, 1, 2, 2, 3, 3]
-    >>> y_pred = [1, 1, 1, 2, 2, 2]
+    >>> y_true = [0, 0, 0, 1, 1, 1]
+    >>> y_pred = [0, 0, 1, 1, 2, 2]
 
     >>> metric = metrics.AdjustedRand()
 
@@ -146,8 +171,7 @@ class AdjustedRand(base.MultiClassMetric):
 
     """
 
-    def __init__(self, cm=None):
-        super().__init__(cm)
+    _fmt = ""
 
     @property
     def works_with_weights(self):
@@ -155,7 +179,7 @@ class AdjustedRand(base.MultiClassMetric):
 
     def get(self):
 
-        pair_confusion_matrix = metrics.PairConfusionMatrix(self.cm).get()
+        pair_confusion_matrix = _pair_confusion(self.cm)
 
         true_negatives, false_positives = pair_confusion_matrix[0].values()
         false_negatives, true_positives = pair_confusion_matrix[1].values()

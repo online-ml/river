@@ -1,128 +1,180 @@
-from . import base
+from river import metrics
 
-__all__ = ["Jaccard", "SorensenDice"]
+__all__ = ["Jaccard", "MacroJaccard", "MicroJaccard", "WeightedJaccard"]
 
 
-class Jaccard(base.MultiOutputClassificationMetric):
-    """Jaccard index for binary multi-outputs.
-
-    The Jaccard index, or Jaccard similarity coefficient, defined as the size of the intersection
-    divided by the size of the union of two label sets, is used to compare the set of predicted
-    labels for a sample with the corresponding set of labels in `y_true`.
-
-    The Jaccard index may be a poor metric if there are no positives for some samples or labels.
-    The Jaccard index is undefined if there are no true or predicted labels, this implementation
-    will return a score of 0.0 if this is the case.
+class Jaccard(metrics.BinaryMetric):
+    """Jaccard score.
 
     Parameters
     ----------
     cm
-        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
-        confusion matrix reduces the amount of storage and computation time.
+        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing
+        a confusion matrix reduces the amount of storage and computation time.
+    pos_val
+        Value to treat as "positive".
 
     Examples
     --------
 
     >>> from river import metrics
 
-    >>> y_true = [
-    ...     {0: False, 1: True, 2: True},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
+    >>> y_true = [False, True, True]
+    >>> y_pred = [True, True, True]
 
-    >>> y_pred = [
-    ...     {0: True, 1: True, 2: True},
-    ...     {0: True, 1: False, 2: False},
-    ... ]
+    >>> metric = metrics.Jaccard()
 
-    >>> jac = metrics.Jaccard()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     jac = jac.update(yt, yp)
-
-    >>> jac
-    Jaccard: 0.583333
+    ...     print(metric.update(yt, yp))
+    Jaccard: 0.00%
+    Jaccard: 50.00%
+    Jaccard: 66.67%
 
     References
     ----------
-    [^1]: [Wikipedia section on similarity of asymmetric binary attributes](https://www.wikiwand.com/en/Jaccard_index#/Similarity_of_asymmetric_binary_attributes)
+    [^1]: [Jaccard index](https://www.wikiwand.com/en/Jaccard_index)
 
     """
 
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
     def get(self):
-
+        tp = self.cm.true_positives(self.pos_val)
+        fp = self.cm.false_positives(self.pos_val)
+        fn = self.cm.false_negatives(self.pos_val)
         try:
-            return self.cm.jaccard_sum / self.cm.n_samples
+            return tp / (tp + fp + fn)
         except ZeroDivisionError:
             return 0.0
 
 
-class SorensenDice(Jaccard):
-    r"""Sørensen-Dice coefficient.
-
-    Sørensen-Dice coefficient [^1] (or Sørensen Index, Dice's coefficient) is a statistic used to gauge
-    the similarity of two samples. Sørensen's original formula was intended to be applied to discrete
-    data. Given two sets, $X$ and $Y$, it is defined as:
-
-    $$
-    DSC = \frac{2 |X \cap Y|}{|X| + |Y|}.
-    $$
-
-    It is equal to twice the number of elements common to both sets divided by the sum of the number of
-    elements in each set.
-
-    The coefficient is not very different in form from the Jaccard index. The only difference between the
-    two metrics is that the Jaccard index only counts true positives once in both the numerator and
-    denominator. In fact, both are equivalent in the sense that given a value for the Sorensen-Dice index,
-    once can canculate the respective Jaccard value and vice versa, using the equations
-
-    $$
-    \begin{equation}
-    J = \frac{S}{2-S}, \\ S = \frac{2J}{1+J}.
-    \end{equation}
-    $$
+class MacroJaccard(metrics.MultiClassMetric):
+    """Macro-average Jaccard score.
 
     Parameters
     ----------
     cm
-        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
-        confusion matrix reduces the amount of storage and computation time.
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
 
     Examples
     --------
 
     >>> from river import metrics
 
-    >>> y_true = [
-    ...     {0: False, 1: True, 2: True},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
+    >>> y_true = [0, 1, 2, 2, 2]
+    >>> y_pred = [0, 0, 2, 2, 1]
 
-    >>> y_pred = [
-    ...     {0: True, 1: True, 2: True},
-    ...     {0: True, 1: False, 2: False},
-    ... ]
+    >>> metric = metrics.MacroJaccard()
 
-    >>> sorensen_dice = metrics.SorensenDice()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     sorensen_dice = sorensen_dice.update(yt, yp)
-
-    >>> sorensen_dice
-    SorensenDice: 0.736842
-
-    References
-    ----------
-    [^1]: [Wikipedia article on Sørensen-Dice coefficient](https://en.wikipedia.org/wiki/Sørensen-Dice_coefficient)
+    ...     print(metric.update(yt, yp))
+    MacroJaccard: 100.00%
+    MacroJaccard: 25.00%
+    MacroJaccard: 50.00%
+    MacroJaccard: 50.00%
+    MacroJaccard: 38.89%
 
     """
 
     def get(self):
-        j = super().get()
-        return 2 * j / (1 + j)
+        total = 0
+        for c in self.cm.classes:
+            try:
+                tp = self.cm.true_positives(c)
+                fp = self.cm.false_positives(c)
+                fn = self.cm.false_negatives(c)
+                total += tp / (tp + fp + fn)
+            except ZeroDivisionError:
+                continue
+        try:
+            return total / len(self.cm.classes)
+        except ZeroDivisionError:
+            return 0.0
+
+
+class MicroJaccard(metrics.MultiClassMetric):
+    """Micro-average Jaccard score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [0, 1, 2, 2, 2]
+    >>> y_pred = [0, 0, 2, 2, 1]
+
+    >>> metric = metrics.MicroJaccard()
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    MicroJaccard: 100.00%
+    MicroJaccard: 33.33%
+    MicroJaccard: 50.00%
+    MicroJaccard: 60.00%
+    MicroJaccard: 42.86%
+
+    """
+
+    def get(self):
+
+        tp = self.cm.total_true_positives
+        fp = self.cm.total_false_positives
+        fn = self.cm.total_false_negatives
+
+        try:
+            return tp / (tp + fp + fn)
+        except ZeroDivisionError:
+            return 0.0
+
+
+class WeightedJaccard(metrics.MultiClassMetric):
+    """Weighted average Jaccard score.
+
+    Parameters
+    ----------
+    cm
+        This parameter allows sharing the same confusion
+        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
+        and computation time.
+
+    Examples
+    --------
+
+    >>> from river import metrics
+
+    >>> y_true = [0, 1, 2, 2, 2]
+    >>> y_pred = [0, 0, 2, 2, 1]
+
+    >>> metric = metrics.WeightedJaccard()
+
+    >>> for yt, yp in zip(y_true, y_pred):
+    ...     print(metric.update(yt, yp))
+    WeightedJaccard: 100.00%
+    WeightedJaccard: 25.00%
+    WeightedJaccard: 50.00%
+    WeightedJaccard: 62.50%
+    WeightedJaccard: 50.00%
+
+    """
+
+    def get(self):
+        total = 0
+        for c in self.cm.classes:
+            try:
+                tp = self.cm.true_positives(c)
+                fp = self.cm.false_positives(c)
+                fn = self.cm.false_negatives(c)
+                total += self.cm.support(c) * tp / (tp + fp + fn)
+            except ZeroDivisionError:
+                continue
+        try:
+            return total / self.cm.total_weight
+        except ZeroDivisionError:
+            return 0.0

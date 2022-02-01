@@ -36,6 +36,8 @@ class CrossEntropy(base.MeanMetric, base.MultiClassMetric):
 
     """
 
+    _fmt = ""
+
     @property
     def bigger_is_better(self):
         return False

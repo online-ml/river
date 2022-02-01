@@ -37,7 +37,7 @@ class RMSProp(base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.872378
+    F1: 87.24%
 
     References
     ----------

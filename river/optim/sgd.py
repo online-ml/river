@@ -29,7 +29,7 @@ class SGD(base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.878521
+    F1: 87.85%
 
     References
     ----------

@@ -7,7 +7,7 @@ from . import base
 __all__ = ["CalinskiHarabasz", "Hartigan", "WB"]
 
 
-class CalinskiHarabasz(base.InternalMetric):
+class CalinskiHarabasz(base.ClusteringMetric):
     """Calinski-Harabasz index (CH).
 
     The Calinski-Harabasz index (CH) index measures the criteria simultaneously
@@ -99,7 +99,7 @@ class CalinskiHarabasz(base.InternalMetric):
         return True
 
 
-class Hartigan(base.InternalMetric):
+class Hartigan(base.ClusteringMetric):
     """Hartigan Index (H - Index)
 
     Hartigan Index (H - Index) [^1] is a sum-of-square based index [^2], which is
@@ -183,7 +183,7 @@ class Hartigan(base.InternalMetric):
         return True
 
 
-class WB(base.InternalMetric):
+class WB(base.ClusteringMetric):
     """WB Index
 
     WB Index is a simple sum-of-square method, calculated by dividing the within

@@ -78,10 +78,11 @@ class LabelCombinationHoeffdingTreeClassifier(
     ...     grace_period=50
     ... )
 
-    >>> metric = metrics.Hamming()
+    >>> metric = metrics.multioutput.MicroAverage(metrics.Accuracy())
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Hamming: 0.154104
+    MicroAverage(Accuracy): 71.11%
+
     """
 
     def __init__(

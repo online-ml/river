@@ -40,7 +40,7 @@ class GeometricMean(base.MultiClassMetric):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    GeometricMean: 0.693361
+    GeometricMean: 69.34%
 
     References
     ----------
@@ -50,8 +50,8 @@ class GeometricMean(base.MultiClassMetric):
 
     def get(self):
 
-        if self.cm.n_classes > 0:
-            sensitivity_per_class = np.zeros(self.cm.n_classes, float)
+        if len(self.cm.classes) > 0:
+            sensitivity_per_class = np.zeros(len(self.cm.classes), float)
             for i, c in enumerate(self.cm.classes):
                 try:
                     sensitivity_per_class[i] = self.cm[c][c] / self.cm.sum_row[c]

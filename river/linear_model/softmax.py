@@ -46,7 +46,7 @@ class SoftmaxRegression(base.Classifier):
     >>> metric = metrics.MacroF1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MacroF1: 0.818765
+    MacroF1: 81.88%
 
     References
     ----------

@@ -3,10 +3,9 @@ import itertools
 import math
 import typing
 
-import river.base
-from river import linear_model, preprocessing
+from river import base, linear_model, preprocessing
 
-from . import base
+from .base import Forecaster
 
 __all__ = ["SNARIMAX"]
 
@@ -143,7 +142,7 @@ class Differencer:
         )
 
 
-class SNARIMAX(base.Forecaster):
+class SNARIMAX(Forecaster):
     """SNARIMAX model.
 
     SNARIMAX stands for (S)easonal (N)on-linear (A)uto(R)egressive (I)ntegrated (M)oving-(A)verage
@@ -303,7 +302,7 @@ class SNARIMAX(base.Forecaster):
         sp: int = 0,
         sd: int = 0,
         sq: int = 0,
-        regressor: river.base.Regressor = None,
+        regressor: base.Regressor = None,
     ):
 
         self.p = p
