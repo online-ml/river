@@ -5,7 +5,7 @@ from river import metrics
 from . import base
 
 
-class BIC(base.InternalMetric):
+class BIC(base.ClusteringMetric):
     r"""Bayesian Information Criterion (BIC).
 
     In statistics, the Bayesian Information Criterion (BIC) [^1], or Schwarz Information

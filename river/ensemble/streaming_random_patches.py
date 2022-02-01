@@ -238,12 +238,7 @@ class BaseSRPEstimator:
         self.idx_original = idx_original
         self.created_on = created_on
         self.model = model.clone()
-        self.metric = copy.deepcopy(metric)
-        # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.metric, MultiClassMetric):
-            self.metric.cm.reset()
-        else:
-            self.metric.__init__()
+        self.metric = metric.clone()
 
         # Store current model subspace representation of the original instances
         self.features = features

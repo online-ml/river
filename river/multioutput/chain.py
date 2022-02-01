@@ -199,7 +199,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     ...     order=[0, 1, 2]
     ... )
 
-    >>> metric = metrics.RegressionMultiOutput(metrics.MAE())
+    >>> metric = metrics.multioutput.MicroAverage(metrics.MAE())
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
     MAE: 12.649592

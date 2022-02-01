@@ -37,7 +37,7 @@ class ROCAUC(base.BinaryMetric):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    ROCAUC: 0.875
+    ROCAUC: 87.50%
 
     The true ROC AUC is in fact 0.75. We can improve the accuracy by increasing the amount
     of thresholds. This comes at the cost more computation time and more memory usage.
@@ -48,7 +48,7 @@ class ROCAUC(base.BinaryMetric):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    ROCAUC: 0.75
+    ROCAUC: 75.00%
 
     """
 

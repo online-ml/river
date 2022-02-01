@@ -11,7 +11,7 @@ class FowlkesMallows(base.MultiClassMetric):
     r"""Fowlkes-Mallows Index.
 
     The Fowlkes-Mallows Index [^1] [^2] is an external evaluation method that is
-    used to determine the similarity between two clusterings, and also a mmetric
+    used to determine the similarity between two clusterings, and also a metric
     to measure confusion matrices. The measure of similarity could be either between
     two hierarchical clusterings or a clustering and a benchmark classification. A
     higher value for the Fowlkes-Mallows index indicates a greater similarity between
@@ -42,22 +42,19 @@ class FowlkesMallows(base.MultiClassMetric):
     --------
     >>> from river import metrics
 
-    >>> y_true = [1, 1, 2, 2, 3, 3]
-    >>> y_pred = [1, 1, 1, 2, 2, 2]
+    >>> y_true = [0, 0, 0, 1, 1, 1]
+    >>> y_pred = [0, 0, 1, 1, 2, 2]
 
     >>> metric = metrics.FowlkesMallows()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
-    0.0
-    1.0
-    0.5773502691896257
-    0.408248290463863
-    0.3535533905932738
-    0.4714045207910317
-
-    >>> metric
-    FowlkesMallows: 0.471405
+    ...     print(metric.update(yt, yp))
+    FowlkesMallows: 0.00%
+    FowlkesMallows: 100.00%
+    FowlkesMallows: 57.74%
+    FowlkesMallows: 40.82%
+    FowlkesMallows: 35.36%
+    FowlkesMallows: 47.14%
 
     References
     ----------
@@ -70,29 +67,18 @@ class FowlkesMallows(base.MultiClassMetric):
 
     """
 
-    def __init__(self, cm=None):
-        super().__init__(cm)
-
     @property
     def works_with_weights(self):
         return False
 
     def get(self):
 
-        pair_confusion_matrix = metrics.PairConfusionMatrix(self.cm).get()
-
-        true_positives = pair_confusion_matrix[1][1]
-        false_positives = pair_confusion_matrix[0][1]
-        false_negatives = pair_confusion_matrix[1][0]
-
-        try:
-            ppv = true_positives / (true_positives + false_positives)
-        except ZeroDivisionError:
-            ppv = 0.0
+        n = self.cm.n_samples
+        tk = sum(c * c for row in self.cm.data.values() for c in row.values()) - n
+        pk = sum(sc * sc for sc in self.cm.sum_col.values()) - n
+        qk = sum(sr * sr for sr in self.cm.sum_row.values()) - n
 
         try:
-            tpr = true_positives / (true_positives + false_negatives)
+            return math.sqrt(tk / pk) * math.sqrt(tk / qk)
         except ZeroDivisionError:
-            tpr = 0.0
-
-        return math.sqrt(ppv * tpr)
+            return 0.0

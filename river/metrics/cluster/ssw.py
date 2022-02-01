@@ -7,7 +7,7 @@ from . import base
 __all__ = ["BallHall", "Cohesion", "SSW", "Xu"]
 
 
-class SSW(base.MeanInternalMetric):
+class SSW(base.MeanClusteringMetric):
     """Sum-of-Squares Within Clusters (SSW).
 
     Mean of sum of squared distances from data points to their assigned cluster centroids.
@@ -58,7 +58,7 @@ class SSW(base.MeanInternalMetric):
         return utils.math.minkowski_distance(centers[y_pred], x, 2)
 
 
-class Cohesion(base.MeanInternalMetric):
+class Cohesion(base.MeanClusteringMetric):
     """Mean distance from the points to their assigned cluster centroids. The smaller the better.
 
     Examples
@@ -106,7 +106,7 @@ class Cohesion(base.MeanInternalMetric):
         return math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
 
 
-class BallHall(base.InternalMetric):
+class BallHall(base.ClusteringMetric):
     """Ball-Hall index
 
     Ball-Hall index is a sum-of-squared based index. It is calculated by
@@ -186,7 +186,7 @@ class BallHall(base.InternalMetric):
         return False
 
 
-class Xu(base.InternalMetric):
+class Xu(base.ClusteringMetric):
     """Xu Index
 
     Xu Index is among the most complicated sum-of-squares based metrics [^1].

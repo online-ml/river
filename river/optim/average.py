@@ -39,7 +39,7 @@ class Averager(base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.878924
+    F1: 87.89%
 
     References
     ----------

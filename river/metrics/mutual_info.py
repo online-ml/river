@@ -3,6 +3,7 @@ import math
 import numpy as np
 
 from river import metrics
+from river.metrics.expected_mutual_info import expected_mutual_info
 
 __all__ = [
     "AdjustedMutualInfo",
@@ -75,8 +76,7 @@ class MutualInfo(metrics.MultiClassMetric):
           from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
     """
 
-    def __init__(self, cm=None):
-        super().__init__(cm)
+    _fmt = ""
 
     @property
     def works_with_weights(self):
@@ -170,6 +170,8 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
         _AVERAGE_GEOMETRIC,
         _AVERAGE_ARITHMETIC,
     ]
+
+    _fmt = ""
 
     def __init__(self, cm=None, average_method="arithmetic"):
         super().__init__(cm)
@@ -283,6 +285,8 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
         _AVERAGE_ARITHMETIC,
     ]
 
+    _fmt = ""
+
     def __init__(self, cm=None, average_method="arithmetic"):
         super().__init__(cm)
         self.average_method = average_method
@@ -315,7 +319,7 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
 
         mutual_info_score = metrics.MutualInfo(self.cm).get()
 
-        expected_mutual_info_score = metrics.expected_mutual_info(self.cm)
+        expected_mutual_info_score = expected_mutual_info(self.cm)
 
         entropy_true = _entropy(cm=self.cm, y_true=True)
         entropy_pred = _entropy(cm=self.cm, y_true=False)

@@ -41,7 +41,7 @@ class FTRLProximal(base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.876588
+    F1: 87.66%
 
     References
     ----------

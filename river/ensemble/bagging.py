@@ -69,7 +69,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.878269
+    F1: 87.83%
 
     >>> print(model)
     BaggingClassifier(StandardScaler | LogisticRegression)
@@ -205,7 +205,7 @@ class ADWINBaggingClassifier(BaggingClassifier):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.878269
+    F1: 87.83%
 
     References
     ----------

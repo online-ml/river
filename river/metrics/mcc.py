@@ -38,6 +38,8 @@ class MCC(base.BinaryMetric):
 
     """
 
+    _fmt = ""
+
     def get(self):
         tp = self.cm.true_positives(self.pos_val)
         tn = self.cm.true_negatives(self.pos_val)

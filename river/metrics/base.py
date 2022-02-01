@@ -14,8 +14,6 @@ __all__ = [
     "Metric",
     "Metrics",
     "MultiClassMetric",
-    "MultiOutputClassificationMetric",
-    "MultiOutputRegressionMetric",
     "RegressionMetric",
     "WrapperMetric",
 ]
@@ -23,9 +21,6 @@ __all__ = [
 
 class Metric(base.Base, abc.ABC):
     """Mother class for all metrics."""
-
-    # Define the format specification used for string representation.
-    _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
     def update(self, y_true, y_pred, sample_weight) -> "Metric":
@@ -59,7 +54,8 @@ class Metric(base.Base, abc.ABC):
 
     def __repr__(self):
         """Return the class name along with the current value of the metric."""
-        return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
+        fmt = getattr(self, "_fmt", ",.6f") or ",.6f"
+        return f"{self.__class__.__name__}: {self.get():{fmt}}".rstrip("0")
 
     def __str__(self):
         return repr(self)
@@ -77,6 +73,8 @@ class ClassificationMetric(Metric):
 
     """
 
+    _fmt = ".2%"  # output a percentage, e.g. 0.427 becomes "42,7%"
+
     def __init__(self, cm: confusion.ConfusionMatrix = None):
         if cm is None:
             cm = confusion.ConfusionMatrix()
@@ -86,16 +84,15 @@ class ClassificationMetric(Metric):
         self.cm.update(
             y_true,
             y_pred,
-            sample_weight=sample_weight if self.works_with_weights else 1.0,
+            sample_weight=sample_weight,
         )
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.0, correction=None):
+    def revert(self, y_true, y_pred, sample_weight=1.0):
         self.cm.revert(
             y_true,
             y_pred,
-            sample_weight=sample_weight if self.works_with_weights else 1.0,
-            correction=correction,
+            sample_weight=sample_weight,
         )
         return self
 
@@ -123,10 +120,6 @@ class ClassificationMetric(Metric):
                 "are not compatible"
             )
         return Metrics([self, other])
-
-    @property
-    def sample_correction(self):
-        return self.cm.sample_correction
 
 
 class BinaryMetric(ClassificationMetric):
@@ -162,11 +155,10 @@ class BinaryMetric(ClassificationMetric):
         y_true: bool,
         y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
         sample_weight=1.0,
-        correction=None,
     ) -> "BinaryMetric":
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
-        return super().revert(y_true == self.pos_val, y_pred, sample_weight, correction)
+        return super().revert(y_true == self.pos_val, y_pred, sample_weight)
 
 
 class MultiClassMetric(ClassificationMetric):
@@ -220,85 +212,6 @@ class RegressionMetric(Metric):
                 "are not compatible"
             )
         return Metrics([self, other])
-
-
-class MultiOutputClassificationMetric(Metric):
-    """Mother class for all multi-output classification metrics.
-
-    Parameters
-    ----------
-    cm
-        This parameter allows sharing the same confusion
-        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
-        and computation time.
-
-    """
-
-    def __init__(self, cm: confusion.MultiLabelConfusionMatrix = None):
-        if cm is None:
-            cm = confusion.MultiLabelConfusionMatrix()
-        self.cm = cm
-
-    def update(
-        self,
-        y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-        y_pred: typing.Union[
-            typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[
-                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]
-            ],
-        ],
-        sample_weight: numbers.Number = 1.0,
-    ) -> "MultiOutputClassificationMetric":
-        """Update the metric."""
-        self.cm.update(y_true, y_pred, sample_weight)
-        return self
-
-    def revert(
-        self,
-        y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-        y_pred: typing.Union[
-            typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[
-                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float]
-            ],
-        ],
-        sample_weight: numbers.Number = 1.0,
-        correction=None,
-    ) -> "MultiOutputClassificationMetric":
-        """Revert the metric."""
-        self.cm.revert(y_true, y_pred, sample_weight, correction)
-        return self
-
-    def works_with(self, model) -> bool:
-        return utils.inspect.ismoclassifier(model)
-
-    @property
-    def sample_correction(self):
-        return self.cm.sample_correction
-
-
-class MultiOutputRegressionMetric(Metric):
-    """Mother class for all multi-output regression metrics."""
-
-    def update(
-        self,
-        y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        sample_weight: numbers.Number,
-    ) -> "MultiOutputRegressionMetric":
-        """Update the metric."""
-
-    def revert(
-        self,
-        y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        sample_weight: numbers.Number,
-    ) -> "MultiOutputRegressionMetric":
-        """Revert the metric."""
-
-    def works_with(self, model) -> bool:
-        return utils.inspect.ismoregressor(model)
 
 
 class Metrics(Metric, collections.UserList):

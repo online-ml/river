@@ -5,6 +5,7 @@ predictive methods over time.
 
 """
 
+from . import multioutput
 from . import cluster
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
@@ -14,19 +15,13 @@ from .base import (
     Metric,
     Metrics,
     MultiClassMetric,
-    MultiOutputClassificationMetric,
-    MultiOutputRegressionMetric,
     RegressionMetric,
     WrapperMetric,
 )
-from .confusion import ConfusionMatrix, MultiLabelConfusionMatrix
+from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
-from .exact_match import ExactMatch
-from .expected_mutual_info import expected_mutual_info
 from .fbeta import (
     F1,
-    ExampleF1,
-    ExampleFBeta,
     FBeta,
     MacroF1,
     MacroFBeta,
@@ -38,35 +33,21 @@ from .fbeta import (
 )
 from .fowlkes_mallows import FowlkesMallows
 from .geometric_mean import GeometricMean
-from .hamming import Hamming, HammingLoss
-from .jaccard import Jaccard, SorensenDice
-from .kappa import CohenKappa, KappaM, KappaT
+from .kappa import CohenKappa
 from .log_loss import LogLoss
 from .mae import MAE
-from .matthews_corrcoef import MatthewsCorrCoef
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
-from .multioutput import RegressionMultiOutput
 from .mutual_info import AdjustedMutualInfo, MutualInfo, NormalizedMutualInfo
-from .precision import (
-    ExamplePrecision,
-    MacroPrecision,
-    MicroPrecision,
-    Precision,
-    WeightedPrecision,
-)
-from .prevalence_threshold import PrevalenceThreshold
-from .purity import Purity
-from .q0 import Q0, Q2
+from .precision import MacroPrecision, MicroPrecision, Precision, WeightedPrecision
 from .r2 import R2
 from .rand import AdjustedRand, Rand
-from .recall import ExampleRecall, MacroRecall, MicroRecall, Recall, WeightedRecall
+from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
 from .rolling import Rolling
 from .smape import SMAPE
 from .time_rolling import TimeRolling
-from .variation_info import VariationInfo
 from .vbeta import Completeness, Homogeneity, VBeta
 
 __all__ = [
@@ -79,33 +60,19 @@ __all__ = [
     "ClassificationMetric",
     "ClassificationReport",
     "ClusteringReport",
-    "cluster",
     "CohenKappa",
     "ConfusionMatrix",
     "CrossEntropy",
-    "ExactMatch",
-    "ExamplePrecision",
-    "ExampleRecall",
-    "ExampleF1",
-    "ExampleFBeta",
-    "expected_mutual_info",
     "F1",
     "FBeta",
-    "FowlkesMallows",
     "GeometricMean",
-    "Hamming",
-    "HammingLoss",
     "Homogeneity",
-    "Jaccard",
-    "KappaM",
-    "KappaT",
     "LogLoss",
     "MAE",
     "MacroF1",
     "MacroFBeta",
     "MacroPrecision",
     "MacroRecall",
-    "MatthewsCorrCoef",
     "MCC",
     "Metric",
     "Metrics",
@@ -115,32 +82,23 @@ __all__ = [
     "MicroRecall",
     "MultiClassMetric",
     "MultiFBeta",
-    "MultiLabelConfusionMatrix",
-    "MultiOutputClassificationMetric",
-    "MultiOutputRegressionMetric",
+    "cluster",
+    "multioutput",
     "MSE",
     "MutualInfo",
     "NormalizedMutualInfo",
     "Precision",
-    "Purity",
-    "Q0",
-    "Q2",
     "Rand",
     "Recall",
     "RegressionMetric",
-    "RegressionMultiOutput",
     "RMSE",
     "RMSLE",
     "ROCAUC",
     "Rolling",
-    "RollingClusteringReport",
     "R2",
     "Precision",
-    "PrevalenceThreshold",
     "SMAPE",
-    "SorensenDice",
     "TimeRolling",
-    "VariationInfo",
     "VBeta",
     "WeightedF1",
     "WeightedFBeta",

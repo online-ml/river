@@ -1,12 +1,6 @@
 from river import metrics
 
-__all__ = [
-    "MacroPrecision",
-    "MicroPrecision",
-    "Precision",
-    "WeightedPrecision",
-    "ExamplePrecision",
-]
+__all__ = ["MacroPrecision", "MicroPrecision", "Precision", "WeightedPrecision"]
 
 
 class Precision(metrics.BinaryMetric):
@@ -32,11 +26,11 @@ class Precision(metrics.BinaryMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    Precision: 1.
-    Precision: 0.5
-    Precision: 0.5
-    Precision: 0.666667
-    Precision: 0.75
+    Precision: 100.00%
+    Precision: 50.00%
+    Precision: 50.00%
+    Precision: 66.67%
+    Precision: 75.00%
 
     """
 
@@ -71,11 +65,11 @@ class MacroPrecision(metrics.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    MacroPrecision: 1.
-    MacroPrecision: 0.25
-    MacroPrecision: 0.5
-    MacroPrecision: 0.5
-    MacroPrecision: 0.5
+    MacroPrecision: 100.00%
+    MacroPrecision: 25.00%
+    MacroPrecision: 50.00%
+    MacroPrecision: 50.00%
+    MacroPrecision: 50.00%
 
     """
 
@@ -117,11 +111,11 @@ class MicroPrecision(metrics.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    MicroPrecision: 1.
-    MicroPrecision: 0.5
-    MicroPrecision: 0.666667
-    MicroPrecision: 0.75
-    MicroPrecision: 0.6
+    MicroPrecision: 100.00%
+    MicroPrecision: 50.00%
+    MicroPrecision: 66.67%
+    MicroPrecision: 75.00%
+    MicroPrecision: 60.00%
 
     References
     ----------
@@ -166,11 +160,11 @@ class WeightedPrecision(metrics.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    WeightedPrecision: 1.
-    WeightedPrecision: 0.25
-    WeightedPrecision: 0.5
-    WeightedPrecision: 0.625
-    WeightedPrecision: 0.7
+    WeightedPrecision: 100.00%
+    WeightedPrecision: 25.00%
+    WeightedPrecision: 50.00%
+    WeightedPrecision: 62.50%
+    WeightedPrecision: 70.00%
 
     """
 
@@ -183,56 +177,5 @@ class WeightedPrecision(metrics.MultiClassMetric):
                 continue
         try:
             return total / self.cm.total_weight
-        except ZeroDivisionError:
-            return 0.0
-
-
-class ExamplePrecision(metrics.MultiOutputClassificationMetric):
-    """Example-based precision score for multilabel classification.
-
-    Parameters
-    ----------
-    cm
-        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
-        confusion matrix reduces the amount of storage and computation time.
-
-    Examples
-    --------
-
-    >>> from river import metrics
-
-    >>> y_true = [
-    ...     {0: False, 1: True, 2: True},
-    ...     {0: True, 1: True, 2: False},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
-
-    >>> y_pred = [
-    ...     {0: True, 1: True, 2: True},
-    ...     {0: True, 1: False, 2: False},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
-
-    >>> metric = metrics.ExamplePrecision()
-    >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
-
-    >>> metric
-    ExamplePrecision: 0.888889
-
-    """
-
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
-    def get(self):
-
-        try:
-            return self.cm.precision_sum / self.cm.n_samples
         except ZeroDivisionError:
             return 0.0

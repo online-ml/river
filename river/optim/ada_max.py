@@ -39,7 +39,7 @@ class AdaMax(base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.875332
+    F1: 87.53%
 
     References
     ----------

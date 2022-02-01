@@ -41,8 +41,6 @@ class BalancedAccuracy(base.MultiClassMetric):
 
     """
 
-    _fmt = ".2%"  # will output a percentage, e.g. 0.625 will become "62,5%"
-
     def get(self):
         total = 0
         for c in self.cm.classes:

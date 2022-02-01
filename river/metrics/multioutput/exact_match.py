@@ -1,9 +1,10 @@
+from river.metrics.base import MeanMetric
 from . import base
 
 __all__ = ["ExactMatch"]
 
 
-class ExactMatch(base.MultiOutputClassificationMetric):
+class ExactMatch(MeanMetric, base.MultiOutputClassificationMetric):
     """Exact match score.
 
     This is the most strict multi-label metric, defined as the number of
@@ -33,26 +34,14 @@ class ExactMatch(base.MultiOutputClassificationMetric):
     ...     {0: True, 1: True, 2: False},
     ... ]
 
-    >>> metric = metrics.ExactMatch()
+    >>> metric = metrics.multioutput.ExactMatch()
     >>> for yt, yp in zip(y_true, y_pred):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    ExactMatch: 0.333333
+    ExactMatch: 33.33%
 
     """
 
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
-    def get(self):
-
-        try:
-            return self.cm.exact_match_cnt / self.cm.n_samples
-        except ZeroDivisionError:
-            return 0.0
+    def _eval(self, y_true, y_pred):
+        return y_true == y_pred

@@ -1,6 +1,6 @@
 from river import metrics
 
-__all__ = ["MacroRecall", "MicroRecall", "Recall", "WeightedRecall", "ExampleRecall"]
+__all__ = ["MacroRecall", "MicroRecall", "Recall", "WeightedRecall"]
 
 
 class Recall(metrics.BinaryMetric):
@@ -26,11 +26,11 @@ class Recall(metrics.BinaryMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    Recall: 1.
-    Recall: 1.
-    Recall: 0.5
-    Recall: 0.666667
-    Recall: 0.75
+    Recall: 100.00%
+    Recall: 100.00%
+    Recall: 50.00%
+    Recall: 66.67%
+    Recall: 75.00%
 
     """
 
@@ -64,11 +64,11 @@ class MacroRecall(metrics.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    MacroRecall: 1.
-    MacroRecall: 0.5
-    MacroRecall: 0.666667
-    MacroRecall: 0.666667
-    MacroRecall: 0.555556
+    MacroRecall: 100.00%
+    MacroRecall: 50.00%
+    MacroRecall: 66.67%
+    MacroRecall: 66.67%
+    MacroRecall: 55.56%
 
     """
 
@@ -109,11 +109,11 @@ class MicroRecall(metrics.MicroPrecision):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    MicroRecall: 1.
-    MicroRecall: 0.5
-    MicroRecall: 0.666667
-    MicroRecall: 0.75
-    MicroRecall: 0.6
+    MicroRecall: 100.00%
+    MicroRecall: 50.00%
+    MicroRecall: 66.67%
+    MicroRecall: 75.00%
+    MicroRecall: 60.00%
 
     References
     ----------
@@ -146,11 +146,11 @@ class WeightedRecall(metrics.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    WeightedRecall: 1.
-    WeightedRecall: 0.5
-    WeightedRecall: 0.666667
-    WeightedRecall: 0.75
-    WeightedRecall: 0.6
+    WeightedRecall: 100.00%
+    WeightedRecall: 50.00%
+    WeightedRecall: 66.67%
+    WeightedRecall: 75.00%
+    WeightedRecall: 60.00%
 
     """
 
@@ -163,56 +163,5 @@ class WeightedRecall(metrics.MultiClassMetric):
                 continue
         try:
             return total / self.cm.total_weight
-        except ZeroDivisionError:
-            return 0.0
-
-
-class ExampleRecall(metrics.MultiOutputClassificationMetric):
-    """Example-based recall score for multilabel classification.
-
-    Parameters
-    ----------
-    cm
-        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
-        confusion matrix reduces the amount of storage and computation time.
-
-    Examples
-    --------
-
-    >>> from river import metrics
-
-    >>> y_true = [
-    ...     {0: False, 1: True, 2: True},
-    ...     {0: True, 1: True, 2: False},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
-
-    >>> y_pred = [
-    ...     {0: True, 1: True, 2: True},
-    ...     {0: True, 1: False, 2: False},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
-
-    >>> metric = metrics.ExampleRecall()
-    >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
-
-    >>> metric
-    ExampleRecall: 0.833333
-
-    """
-
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
-    def get(self):
-
-        try:
-            return self.cm.recall_sum / self.cm.n_samples
         except ZeroDivisionError:
             return 0.0

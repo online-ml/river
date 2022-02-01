@@ -40,7 +40,7 @@ class GeometricMean(base.MultiClassMetric):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    GeometricMean: 0.693361
+    GeometricMean: 69.34%
 
     References
     ----------

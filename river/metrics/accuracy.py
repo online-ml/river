@@ -30,8 +30,6 @@ class Accuracy(base.MultiClassMetric):
 
     """
 
-    _fmt = ".2%"  # will output a percentage, e.g. 0.427 will become "42,7%"
-
     def get(self):
         try:
             return self.cm.sum_diag / self.cm.total_weight

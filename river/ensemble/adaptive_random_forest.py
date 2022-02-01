@@ -918,10 +918,7 @@ class BaseForestMember:
         self.model = model.clone()
         self.created_on = created_on
         self.is_background_learner = is_background_learner
-        self.metric = copy.deepcopy(metric)
-        # Make sure that the metric is not initialized, e.g. when creating background learners.
-        if isinstance(self.metric, metrics.MultiClassMetric):
-            self.metric.cm.reset()
+        self.metric = metric.clone()
         # Keep a copy of the original metric for background learners or reset
         self._original_metric = copy.deepcopy(metric)
 

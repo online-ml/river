@@ -5,7 +5,7 @@ from river import utils
 from . import base
 
 
-class Separation(base.MeanInternalMetric):
+class Separation(base.MeanClusteringMetric):
     """Average distance from a point to the points assigned to other clusters.
     The bigger the better.
 
