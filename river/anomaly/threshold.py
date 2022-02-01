@@ -65,7 +65,7 @@ class ConstantThresholder(Thresholder):
        Micro      93.86%   93.86%   93.86%
     Weighted      99.62%   93.86%   96.55%
     <BLANKLINE>
-                       94% accuracy
+                     93.86% accuracy
 
     """
 
@@ -129,7 +129,7 @@ class QuantileThresholder(Thresholder):
        Micro      98.15%   98.15%   98.15%
     Weighted      99.56%   98.15%   98.80%
     <BLANKLINE>
-                       98% accuracy
+                     98.15% accuracy
 
     """
 

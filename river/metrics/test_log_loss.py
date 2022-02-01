@@ -1,6 +1,8 @@
 import math
-from river import metrics
+
 from sklearn import metrics as sk_metrics
+
+from river import metrics
 
 
 def test_log_loss():

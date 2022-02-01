@@ -1,5 +1,4 @@
 import collections
-from river import metrics
 
 from . import base
 

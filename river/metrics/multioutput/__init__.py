@@ -6,7 +6,6 @@ from .macro import MacroAverage
 from .micro import MicroAverage
 from .per_output import PerOutput
 
-
 __all__ = [
     "MacroAverage",
     "MultiLabelConfusionMatrix",

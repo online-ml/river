@@ -1,7 +1,7 @@
-import textwrap
-import typing
 import collections
-from river import base, metrics
+import textwrap
+
+from river import metrics
 
 
 class MultiLabelConfusionMatrix:
@@ -61,7 +61,6 @@ class MultiLabelConfusionMatrix:
         return self
 
     def __repr__(self):
-        labels = sorted(self.data.keys())
         return "\n\n".join(
             "\n".join(
                 [str(label)] + textwrap.indent(repr(cm), prefix="    ").splitlines()

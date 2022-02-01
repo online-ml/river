@@ -1,4 +1,5 @@
 from river.metrics.base import MeanMetric
+
 from . import base
 
 __all__ = ["ExactMatch"]

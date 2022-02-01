@@ -1,6 +1,8 @@
-import typing
 import numbers
-from river import base
+import typing
+
+from river import base, utils
+
 from ..base import Metric
 from .confusion import MultiLabelConfusionMatrix
 

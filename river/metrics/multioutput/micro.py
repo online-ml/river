@@ -1,7 +1,7 @@
-from river import utils, metrics
+from river import metrics, utils
 
-from . import base
 from ..base import WrapperMetric
+from . import base
 
 __all__ = ["MicroAverage"]
 

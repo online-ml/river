@@ -1,7 +1,5 @@
 import math
 
-from river import metrics
-
 from . import base
 
 __all__ = ["FowlkesMallows"]

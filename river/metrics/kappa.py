@@ -1,6 +1,6 @@
 from . import base
 
-__all__ = ["CohenKappa", "KappaT", "KappaM"]
+__all__ = ["CohenKappa"]
 
 
 class CohenKappa(base.MultiClassMetric):

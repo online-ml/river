@@ -46,7 +46,7 @@ class ClassificationReport(base.MultiClassMetric):
        Micro      40.00%   40.00%   40.00%
     Weighted      60.00%   40.00%   48.00%
     <BLANKLINE>
-                       40% accuracy
+                     40.00% accuracy
 
     """
 
@@ -133,7 +133,7 @@ class ClassificationReport(base.MultiClassMetric):
 
         # Write down the accuracy
         width = len(table.splitlines()[0])
-        accuracy = f"{self._accuracy.get():.{self.decimals - 2}%}" + " accuracy"
+        accuracy = f"{self._accuracy.get():.{self.decimals}%}" + " accuracy"
         table += "\n\n" + f"{accuracy:^{width}}"
 
         return table

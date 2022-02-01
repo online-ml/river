@@ -1,10 +1,11 @@
 from collections import defaultdict
 from copy import deepcopy
 from functools import partial
+
 from river import metrics, utils
 
-from . import base
 from ..base import WrapperMetric
+from . import base
 
 __all__ = ["PerOutput"]
 

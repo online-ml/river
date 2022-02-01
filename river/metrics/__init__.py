@@ -5,8 +5,7 @@ predictive methods over time.
 
 """
 
-from . import multioutput
-from . import cluster
+from . import cluster, multioutput
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
 from .base import (
@@ -20,7 +19,6 @@ from .base import (
 )
 from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
-from .jaccard import Jaccard, MacroJaccard, MicroJaccard, WeightedJaccard
 from .fbeta import (
     F1,
     FBeta,
@@ -34,6 +32,7 @@ from .fbeta import (
 )
 from .fowlkes_mallows import FowlkesMallows
 from .geometric_mean import GeometricMean
+from .jaccard import Jaccard, MacroJaccard, MicroJaccard, WeightedJaccard
 from .kappa import CohenKappa
 from .log_loss import LogLoss
 from .mae import MAE
@@ -96,6 +95,7 @@ __all__ = [
     "Recall",
     "RegressionMetric",
     "RMSE",
+    "FowlkesMallows",
     "RMSLE",
     "ROCAUC",
     "Rolling",
