@@ -201,9 +201,9 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     ...     metric=metrics.ROCAUC(),
     ...     print_every=500,
     ... )
-    [500] ROCAUC: 0.927112
-    [1,000] ROCAUC: 0.947515
-    ROCAUC: 0.950541
+    [500] ROCAUC: 92.71%
+    [1,000] ROCAUC: 94.75%
+    ROCAUC: 95.05%
 
     """
 

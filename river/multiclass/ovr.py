@@ -50,7 +50,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
     >>> metric = metrics.MacroF1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MacroF1: 0.774573
+    MacroF1: 77.46%
 
     This estimator also also supports mini-batching.
 

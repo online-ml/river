@@ -1,12 +1,11 @@
-"""Internal clustering metrics
+"""Clustering metrics
 
 This submodule includes all internal clustering metrics that are updated with one sample,
-its label and the current cluster centers at a time. Using this, we can track the performance
-of the clustering algorithm without having to store information of all previously passed points.
+its label and the current cluster centers at a time.
 
 """
 
-from .base import InternalMetric
+from .base import ClusteringMetric
 from .bic import BIC
 from .daviesbouldin import DaviesBouldin
 from .generalized_dunn import GD43, GD53
@@ -26,13 +25,13 @@ __all__ = [
     "BallHall",
     "BIC",
     "CalinskiHarabasz",
+    "ClusteringMetric",
     "Cohesion",
     "DaviesBouldin",
     "GD43",
     "GD53",
     "Hartigan",
     "IIndex",
-    "InternalMetric",
     "MSSTD",
     "PS",
     "R2",

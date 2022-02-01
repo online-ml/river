@@ -44,7 +44,7 @@ class StackingClassifier(base.Ensemble, base.Classifier):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.881387
+    F1: 88.14%
 
     References
     ----------

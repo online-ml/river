@@ -36,7 +36,7 @@ class AdaGrad(base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.880143
+    F1: 88.01%
 
     References
     ----------

@@ -35,7 +35,7 @@ class Nadam(base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.865961
+    F1: 86.60%
 
     References
     ----------

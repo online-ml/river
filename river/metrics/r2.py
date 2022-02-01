@@ -43,11 +43,9 @@ class R2(base.RegressionMetric):
     """
 
     def __init__(self):
-        super().__init__()
         self._y_var = stats.Var()
         self._total_sum_of_squares = 0
         self._residual_sum_of_squares = 0
-        self.sample_correction = {}
 
     @property
     def bigger_is_better(self):
@@ -57,16 +55,13 @@ class R2(base.RegressionMetric):
         self._y_var.update(y_true, w=sample_weight)
         squared_error = (y_true - y_pred) * (y_true - y_pred) * sample_weight
         self._residual_sum_of_squares += squared_error
-
-        # To track back
-        self.sample_correction = {"squared_error": squared_error}
-
         return self
 
-    def revert(self, y_true, y_pred, sample_weight, correction=None):
+    def revert(self, y_true, y_pred, sample_weight):
         self._y_var.update(y_true, w=-sample_weight)
-        self._residual_sum_of_squares -= correction["squared_error"]
-
+        self._residual_sum_of_squares -= (
+            (y_true - y_pred) * (y_true - y_pred) * sample_weight
+        )
         return self
 
     def get(self):

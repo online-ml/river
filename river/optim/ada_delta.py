@@ -37,7 +37,7 @@ class AdaDelta(base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 0.805611
+    F1: 80.56%
 
     References
     ----------

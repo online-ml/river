@@ -57,7 +57,7 @@ class Homogeneity(metrics.MultiClassMetric):
     0.42062
 
     >>> metric
-    Homogeneity: 0.42062
+    Homogeneity: 42.06%
 
     References
     ----------
@@ -68,9 +68,6 @@ class Homogeneity(metrics.MultiClassMetric):
           Prague, June 2007.
 
     """
-
-    def __init__(self, cm=None):
-        super().__init__(cm)
 
     @property
     def works_with_weights(self):
@@ -156,7 +153,7 @@ class Completeness(metrics.MultiClassMetric):
     0.6666666666666667
 
     >>> metric
-    Completeness: 0.666667
+    Completeness: 66.67%
 
     References
     ----------
@@ -167,9 +164,6 @@ class Completeness(metrics.MultiClassMetric):
           Prague, June 2007.
 
     """
-
-    def __init__(self, cm=None):
-        super().__init__(cm)
 
     @property
     def works_with_weights(self):
@@ -257,7 +251,7 @@ class VBeta(metrics.MultiClassMetric):
     0.5158037429793888
 
     >>> metric
-    VBeta: 0.515804
+    VBeta: 51.58%
 
     References
     ----------

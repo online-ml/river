@@ -7,7 +7,7 @@ from . import base
 __all__ = ["GD43", "GD53"]
 
 
-class GD43(base.InternalMetric):
+class GD43(base.ClusteringMetric):
     r"""Generalized Dunn's index 43 (GD43).
 
     The Generalized Dunn's indices comprise a set of 17 variants of the original
@@ -126,7 +126,7 @@ class GD43(base.InternalMetric):
         return True
 
 
-class GD53(base.InternalMetric):
+class GD53(base.ClusteringMetric):
     r"""Generalized Dunn's index 53 (GD53).
 
     The Generalized Dunn's indices comprise a set of 17 variants of the original

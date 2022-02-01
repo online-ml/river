@@ -13,8 +13,6 @@ __all__ = [
     "MultiFBeta",
     "WeightedF1",
     "WeightedFBeta",
-    "ExampleF1",
-    "ExampleFBeta",
 ]
 
 
@@ -55,7 +53,7 @@ class FBeta(metrics.BinaryMetric):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    FBeta: 0.357143
+    FBeta: 35.71%
 
     """
 
@@ -101,11 +99,11 @@ class MacroFBeta(metrics.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    MacroFBeta: 1.
-    MacroFBeta: 0.310606
-    MacroFBeta: 0.540404
-    MacroFBeta: 0.540404
-    MacroFBeta: 0.485982
+    MacroFBeta: 100.00%
+    MacroFBeta: 31.06%
+    MacroFBeta: 54.04%
+    MacroFBeta: 54.04%
+    MacroFBeta: 48.60%
 
     """
 
@@ -168,7 +166,7 @@ class MicroFBeta(metrics.MultiClassMetric):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    MicroFBeta: 0.6
+    MicroFBeta: 60.00%
 
     References
     ----------
@@ -219,11 +217,11 @@ class WeightedFBeta(metrics.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    WeightedFBeta: 1.
-    WeightedFBeta: 0.310606
-    WeightedFBeta: 0.540404
-    WeightedFBeta: 0.655303
-    WeightedFBeta: 0.626283
+    WeightedFBeta: 100.00%
+    WeightedFBeta: 31.06%
+    WeightedFBeta: 54.04%
+    WeightedFBeta: 65.53%
+    WeightedFBeta: 62.63%
 
     """
 
@@ -290,11 +288,11 @@ class MultiFBeta(metrics.MultiClassMetric):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    MultiFBeta: 1.
-    MultiFBeta: 0.257576
-    MultiFBeta: 0.628788
-    MultiFBeta: 0.628788
-    MultiFBeta: 0.468788
+    MultiFBeta: 100.00%
+    MultiFBeta: 25.76%
+    MultiFBeta: 62.88%
+    MultiFBeta: 62.88%
+    MultiFBeta: 46.88%
 
     """
 
@@ -335,72 +333,6 @@ class MultiFBeta(metrics.MultiClassMetric):
             return 0.0
 
 
-class ExampleFBeta(metrics.MultiOutputClassificationMetric):
-    """Example-based F-Beta score.
-
-    Parameters
-    ----------
-    beta
-        Weight of precision in the harmonic mean.
-    cm
-        This parameter allows sharing the same confusion matrix between multiple metrics. Sharing a
-        confusion matrix reduces the amount of storage and computation time.
-
-    Attributes
-    ----------
-    precision : metrics.ExamplePrecision
-    recall : metrics.ExampleRecall
-
-    Examples
-    --------
-
-    >>> from river import metrics
-
-    >>> y_true = [
-    ...     {0: False, 1: True, 2: True},
-    ...     {0: True, 1: True, 2: False},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
-
-    >>> y_pred = [
-    ...     {0: True, 1: True, 2: True},
-    ...     {0: True, 1: False, 2: False},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
-
-    >>> metric = metrics.ExampleFBeta(beta=2)
-    >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
-
-    >>> metric
-    ExampleFBeta: 0.843882
-
-    """
-
-    @property
-    def bigger_is_better(self):
-        return True
-
-    @property
-    def requires_labels(self):
-        return True
-
-    def __init__(self, beta: float, cm=None):
-        super().__init__(cm)
-        self.beta = beta
-        self.precision = metrics.ExamplePrecision(self.cm)
-        self.recall = metrics.ExampleRecall(self.cm)
-
-    def get(self):
-        p = self.precision.get()
-        r = self.recall.get()
-        b2 = self.beta * self.beta
-        try:
-            return (1 + b2) * p * r / (b2 * p + r)
-        except ZeroDivisionError:
-            return 0.0
-
-
 class F1(FBeta):
     """Binary F1 score.
 
@@ -427,7 +359,7 @@ class F1(FBeta):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    F1: 0.4
+    F1: 40.00%
 
     """
 
@@ -459,11 +391,11 @@ class MacroF1(MacroFBeta):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    MacroF1: 1.
-    MacroF1: 0.333333
-    MacroF1: 0.555556
-    MacroF1: 0.555556
-    MacroF1: 0.488889
+    MacroF1: 100.00%
+    MacroF1: 33.33%
+    MacroF1: 55.56%
+    MacroF1: 55.56%
+    MacroF1: 48.89%
 
     """
 
@@ -497,7 +429,7 @@ class MicroF1(MicroFBeta):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    MicroF1: 0.6
+    MicroF1: 60.00%
 
     References
     ----------
@@ -536,51 +468,11 @@ class WeightedF1(WeightedFBeta):
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     print(metric.update(yt, yp))
-    WeightedF1: 1.
-    WeightedF1: 0.333333
-    WeightedF1: 0.555556
-    WeightedF1: 0.666667
-    WeightedF1: 0.613333
-
-    """
-
-    def __init__(self, cm=None):
-        super().__init__(beta=1.0, cm=cm)
-
-
-class ExampleF1(ExampleFBeta):
-    """Example-based F1 score for multilabel classification.
-
-    Parameters
-    ----------
-    cm
-        This parameter allows sharing the same confusion
-        matrix between multiple metrics. Sharing a confusion matrix reduces the amount of storage
-        and computation time.
-
-    Examples
-    --------
-
-    >>> from river import metrics
-
-    >>> y_true = [
-    ...     {0: False, 1: True, 2: True},
-    ...     {0: True, 1: True, 2: False},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
-
-    >>> y_pred = [
-    ...     {0: True, 1: True, 2: True},
-    ...     {0: True, 1: False, 2: False},
-    ...     {0: True, 1: True, 2: False},
-    ... ]
-
-    >>> metric = metrics.ExampleF1()
-    >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
-
-    >>> metric
-    ExampleF1: 0.860215
+    WeightedF1: 100.00%
+    WeightedF1: 33.33%
+    WeightedF1: 55.56%
+    WeightedF1: 66.67%
+    WeightedF1: 61.33%
 
     """
 

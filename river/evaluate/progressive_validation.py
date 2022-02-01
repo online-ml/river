@@ -161,13 +161,13 @@ def progressive_val_score(
     ...     metric=metrics.ROCAUC(),
     ...     print_every=200
     ... )
-    [200] ROCAUC: 0.897995
-    [400] ROCAUC: 0.920896
-    [600] ROCAUC: 0.931339
-    [800] ROCAUC: 0.939909
-    [1,000] ROCAUC: 0.947417
-    [1,200] ROCAUC: 0.950304
-    ROCAUC: 0.950363
+    [200] ROCAUC: 89.80%
+    [400] ROCAUC: 92.09%
+    [600] ROCAUC: 93.13%
+    [800] ROCAUC: 93.99%
+    [1,000] ROCAUC: 94.74%
+    [1,200] ROCAUC: 95.03%
+    ROCAUC: 95.04%
 
     We haven't specified a delay, therefore this is strictly equivalent to the following piece
     of code:
@@ -185,7 +185,7 @@ def progressive_val_score(
     ...     model = model.learn_one(x, y)
 
     >>> metric
-    ROCAUC: 0.950363
+    ROCAUC: 95.04%
 
     When `print_every` is specified, the current state is printed at regular intervals. Under
     the hood, Python's `print` method is being used. You can pass extra keyword arguments to
@@ -204,12 +204,12 @@ def progressive_val_score(
     >>> with open('progress.log') as f:
     ...     for line in f.read().splitlines():
     ...         print(line)
-    [200] ROCAUC: 0.94
-    [400] ROCAUC: 0.946969
-    [600] ROCAUC: 0.9517
-    [800] ROCAUC: 0.954238
-    [1,000] ROCAUC: 0.958207
-    [1,200] ROCAUC: 0.96002
+    [200] ROCAUC: 94.00%
+    [400] ROCAUC: 94.70%
+    [600] ROCAUC: 95.17%
+    [800] ROCAUC: 95.42%
+    [1,000] ROCAUC: 95.82%
+    [1,200] ROCAUC: 96.00%
 
     Note that the performance is slightly better than above because we haven't used a fresh
     copy of the model. Instead, we've reused the existing model which has already done a full

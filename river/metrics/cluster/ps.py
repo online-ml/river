@@ -5,7 +5,7 @@ from river import stats, utils
 from . import base
 
 
-class PS(base.InternalMetric):
+class PS(base.ClusteringMetric):
     r"""Partition Separation (PS).
 
     The PS index [^1] was originally developed for fuzzy clustering. This index

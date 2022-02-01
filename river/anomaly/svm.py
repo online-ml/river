@@ -54,7 +54,7 @@ class OneClassSVM(GLM, AnomalyDetector):
     ...     auc = auc.update(y, score)
 
     >>> auc
-    ROCAUC: 0.747398
+    ROCAUC: 74.74%
 
     """
 
