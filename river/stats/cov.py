@@ -88,10 +88,7 @@ class Cov(base.Bivariate):
         return self
 
     def __add__(self, other):
-        result = copy.deepcopy(self)
-        result += other
-
-        return result
+        return copy.deepcopy(self) + other
 
     def __isub__(self, other):
         if self.mean_x.n <= self.ddof:
@@ -125,10 +122,7 @@ class Cov(base.Bivariate):
         return self
 
     def __sub__(self, other):
-        result = copy.deepcopy(self)
-        result -= other
-
-        return result
+        return copy.deepcopy(self) - other
 
 
 class RollingCov(base.Bivariate):
