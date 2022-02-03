@@ -127,7 +127,7 @@ class Cov(base.Bivariate):
 
     def __sub__(self, other):
         result = copy.deepcopy(self)
-        result += other
+        result -= other
         return result
 
 
