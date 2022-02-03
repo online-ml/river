@@ -37,3 +37,11 @@
 - Added a `rank` method to each recommender.
 - Removed `reco.SurpriseWrapper` as it wasn't really useful.
 - Added an `is_contextual` property to each ranker to indicate if a model makes use of contextual features or not.
+
+## special
+
+- Created this module to store some stuff that was in the `utils` module.
+
+## utils
+
+- Removed `utils.Window` and use `collections.deque` instead where necessary.

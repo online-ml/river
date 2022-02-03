@@ -1,4 +1,5 @@
-from .. import utils
+import collections
+
 from . import base
 
 
@@ -39,7 +40,7 @@ class Sum(base.Univariate):
         return self.sum
 
 
-class RollingSum(base.RollingUnivariate, utils.Window):
+class RollingSum(base.RollingUnivariate):
     """Running sum over a window.
 
     Parameters
@@ -71,18 +72,18 @@ class RollingSum(base.RollingUnivariate, utils.Window):
     """
 
     def __init__(self, window_size: int):
-        super().__init__(size=window_size)
+        self.window = collections.deque(maxlen=window_size)
         self.sum = 0
 
     @property
     def window_size(self):
-        return self.size
+        return self.window.maxlen
 
     def update(self, x):
-        if len(self) == self.size:
-            self.sum -= self[0]
+        if len(self.window) == self.window_size:
+            self.sum -= self.window[0]
         self.sum += x
-        self.append(x)
+        self.window.append(x)
         return self
 
     def get(self):

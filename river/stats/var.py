@@ -164,8 +164,8 @@ class RollingVar(base.RollingUnivariate):
         return self._rolling_mean.window_size
 
     def update(self, x):
-        if len(self._rolling_mean) >= self._rolling_mean.size:
-            self._sos -= self._rolling_mean[0] ** 2
+        if len(self._rolling_mean.window) >= self._rolling_mean.window_size:
+            self._sos -= self._rolling_mean.window[0] ** 2
 
         self._sos += x * x
         self._rolling_mean.update(x)
@@ -173,14 +173,16 @@ class RollingVar(base.RollingUnivariate):
 
     @property
     def correction_factor(self):
-        n = len(self._rolling_mean)
+        n = len(self._rolling_mean.window)
         if n > self.ddof:
             return n / (n - self.ddof)
         return 1
 
     def get(self):
         try:
-            var = (self._sos / len(self._rolling_mean)) - self._rolling_mean.get() ** 2
+            var = (
+                self._sos / len(self._rolling_mean.window)
+            ) - self._rolling_mean.get() ** 2
             return self.correction_factor * var
         except ZeroDivisionError:
             return 0.0
