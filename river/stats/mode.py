@@ -1,8 +1,6 @@
 import collections
 import typing
 
-from river import utils
-
 from . import base
 
 __all__ = ["Mode"]
@@ -65,7 +63,7 @@ class Mode(base.Univariate):
         return max(self.counts, key=self.counts.get, default=None)
 
 
-class RollingMode(base.RollingUnivariate, utils.Window):
+class RollingMode(base.RollingUnivariate):
     """Running mode over a window.
 
     The mode is the most common value.
@@ -111,18 +109,18 @@ class RollingMode(base.RollingUnivariate, utils.Window):
     """
 
     def __init__(self, window_size: int):
-        super().__init__(size=window_size)
+        self.window = collections.deque(maxlen=window_size)
         self.counts: typing.DefaultDict[typing.Any, int] = collections.defaultdict(int)
 
     @property
     def window_size(self):
-        return self.size
+        return self.window.maxlen
 
     def update(self, x):
-        if len(self) >= self.size:
+        if len(self.window) >= self.window_size:
 
             # Subtract the counter of the last element
-            first_in = self[0]
+            first_in = self.window[0]
             self.counts[first_in] -= 1
 
             # No need to store the value if it's counter is 0
@@ -130,7 +128,7 @@ class RollingMode(base.RollingUnivariate, utils.Window):
                 self.counts.pop(first_in)
 
         self.counts[x] += 1
-        super().append(x)
+        self.window.append(x)
         return self
 
     def get(self):

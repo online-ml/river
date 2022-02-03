@@ -1,10 +1,11 @@
-from .. import utils
+import collections
+
 from . import base, report
 
 __all__ = ["Rolling"]
 
 
-class Rolling(base.WrapperMetric, utils.Window):
+class Rolling(base.WrapperMetric, collections.deque):
     """Wrapper for computing metrics over a window.
 
     This wrapper metric allows you to apply a metric over a window of observations. Under the hood,
@@ -42,9 +43,12 @@ class Rolling(base.WrapperMetric, utils.Window):
     """
 
     def __init__(self, metric: base.Metric, window_size: int):
-        super().__init__(size=window_size)
-        self.window_size = window_size
+        super().__init__(maxlen=window_size)
         self._metric = metric
+
+    @property
+    def window_size(self):
+        return self.maxlen
 
     @property
     def metric(self):

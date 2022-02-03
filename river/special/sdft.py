@@ -1,9 +1,9 @@
+import collections
+
 import numpy as np
 
-from . import window
 
-
-class SDFT(window.Window):
+class SDFT(collections.deque):
     """Sliding Discrete Fourier Transform (SDFT).
 
     Initially, the coefficients are all equal to 0, up until enough values have been seen. A call
@@ -16,20 +16,15 @@ class SDFT(window.Window):
     window_size
         The size of the window.
 
-    Attributes
-    ----------
-    window : utils.Window
-        The window of values.
-
     Examples
     --------
 
-    >>> from river import utils
+    >>> from river import special
 
     >>> X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     >>> window_size = 5
-    >>> sdft = utils.SDFT(window_size)
+    >>> sdft = special.SDFT(window_size)
 
     >>> for i, x in enumerate(X):
     ...     sdft = sdft.update(x)
@@ -45,25 +40,25 @@ class SDFT(window.Window):
     """
 
     def __init__(self, window_size):
-        super().__init__(size=window_size)
-        self.window = window.Window(size=window_size)
+        super().__init__(maxlen=window_size)
+        self.values = collections.deque(maxlen=window_size)
 
     def update(self, x):
 
         # Simply append the new value if the window isn't full yet
-        if len(self.window) < self.window.size - 1:
-            self.window.append(x)
+        if len(self.values) < self.values.maxlen - 1:
+            self.values.append(x)
 
         # Compute an initial FFT the first time the window is full
-        elif len(self.window) == self.window.size - 1:
-            self.window.append(x)
-            self.extend(np.fft.fft(self.window))
+        elif len(self.values) == self.values.maxlen - 1:
+            self.values.append(x)
+            self.extend(np.fft.fft(self.values))
 
         # Update the coefficients for subsequent values
         else:
-            diff = x - self.window[0]
-            for i in range(self.size):
-                self[i] = (self[i] + diff) * np.exp(2j * np.pi * i / self.size)
-            self.window.append(x)
+            diff = x - self.values[0]
+            for i in range(self.maxlen):
+                self[i] = (self[i] + diff) * np.exp(2j * np.pi * i / self.maxlen)
+            self.values.append(x)
 
         return self

@@ -2,8 +2,8 @@ import bisect
 import collections
 import functools
 
-from river import utils
-from river.utils.histogram import Bin  # noqa
+from river import special
+from river.special.histogram import Bin  # noqa
 
 from ..utils import BranchFactory
 from .base import Splitter
@@ -28,7 +28,7 @@ class HistogramSplitter(Splitter):
         self.n_bins = n_bins
         self.n_splits = n_splits
         self.hists = collections.defaultdict(
-            functools.partial(utils.Histogram, max_bins=self.n_bins)
+            functools.partial(special.Histogram, max_bins=self.n_bins)
         )
 
     def update(self, att_val, target_val, sample_weight):
