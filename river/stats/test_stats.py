@@ -204,3 +204,25 @@ def test_weighted_variance_with_close_numbers():
         var.update(x, w)
 
     assert var.get() > 0 and math.isclose(var.get(), 4.648047194845607e-15)
+
+
+@pytest.mark.parametrize(
+    "stat",
+    filter(
+        lambda stat: hasattr(stat, "update_many")
+        and issubclass(stat.__class__, stats.Univariate),
+        load_stats(),
+    ),
+    ids=lambda stat: stat.__class__.__name__,
+)
+def test_update_many_univariate(stat):
+
+    batch_stat = stat.clone()
+
+    for _ in range(5):
+        X = np.random.random(10)
+        batch_stat.update_many(X)
+        for x in X:
+            stat.update(x)
+
+    assert math.isclose(batch_stat.get(), stat.get())

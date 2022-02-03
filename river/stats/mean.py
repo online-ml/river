@@ -1,5 +1,7 @@
 import copy
 
+import numpy as np
+
 from . import base, summing
 
 
@@ -43,6 +45,13 @@ class Mean(base.Univariate):
     def update(self, x, w=1.0):
         self.n += w
         self._mean += (w / self.n) * (x - self._mean)
+        return self
+
+    def update_many(self, X: np.ndarray):
+        a = self.n / (self.n + len(X))
+        b = len(X) / (self.n + len(X))
+        self._mean = a * self._mean + b * np.mean(X)
+        self.n += len(X)
         return self
 
     def revert(self, x, w=1.0):
