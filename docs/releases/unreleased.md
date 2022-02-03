@@ -31,6 +31,10 @@
 
 - `metrics.ROCAUC` works with `base.AnomalyDetectors`s.
 
+## misc
+
+- Created this module to store some stuff that was in the `utils` module but wasn't necessarily shared between modules.
+
 ## reco
 
 - Renamed the `Recommender` base class into `Ranker`.
@@ -38,9 +42,9 @@
 - Removed `reco.SurpriseWrapper` as it wasn't really useful.
 - Added an `is_contextual` property to each ranker to indicate if a model makes use of contextual features or not.
 
-## special
+## stats
 
-- Created this module to store some stuff that was in the `utils` module.
+- `stats.Mean`, `stats.Var`, and `stats.Cov` each now have an `update_many` method which accepts numpy arrays.
 
 ## utils
 

@@ -1,4 +1,3 @@
-from .. import utils
 from . import base, quantile
 
 
@@ -64,7 +63,7 @@ class IQR(base.Univariate):
         return q_sup - q_inf
 
 
-class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
+class RollingIQR(base.RollingUnivariate):
     """Computes the rolling interquartile range.
 
     Parameters
@@ -105,7 +104,6 @@ class RollingIQR(base.RollingUnivariate, utils.SortedWindow):
     """
 
     def __init__(self, window_size: int, q_inf=0.25, q_sup=0.75):
-        super().__init__(size=window_size)
         if q_inf >= q_sup:
             raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
