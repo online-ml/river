@@ -238,15 +238,46 @@ def test_add_univariate(stat):
     b = stat.clone()
     c = stat.clone()
 
-    X = np.random.random(10)
+    X = np.random.random(30)
 
-    for x in X[:5]:
+    for x in X[:15]:
         a.update(x)
         c.update(x)
 
-    for x in X[5:]:
+    for x in X[15:]:
         b.update(x)
         c.update(x)
+
+    assert not math.isclose(a.get() != b.get(), c.get())
+    assert not math.isclose(a.get() + b.get(), c.get())
+    assert math.isclose((a + b).get(), c.get())
+
+
+@pytest.mark.parametrize(
+    "stat",
+    filter(
+        lambda stat: hasattr(stat, "__add__")
+        and issubclass(stat.__class__, stats.Bivariate),
+        load_stats(),
+    ),
+    ids=lambda stat: stat.__class__.__name__,
+)
+def test_add_bivariate(stat):
+
+    a = stat.clone()
+    b = stat.clone()
+    c = stat.clone()
+
+    X = np.random.random(30)
+    Y = np.random.random(30)
+
+    for x, y in zip(X[:15], Y[:15]):
+        a.update(x, y)
+        c.update(x, y)
+
+    for x, y in zip(X[15:], Y[15:]):
+        b.update(x, y)
+        c.update(x, y)
 
     assert not math.isclose(a.get() != b.get(), c.get())
     assert not math.isclose(a.get() + b.get(), c.get())
