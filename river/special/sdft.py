@@ -19,6 +19,7 @@ class SDFT:
     Examples
     --------
 
+    >>> import numpy as np
     >>> from river import special
 
     >>> X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -30,7 +31,7 @@ class SDFT:
     ...     sdft = sdft.update(x)
     ...
     ...     if i + 1 >= window_size:
-    ...         assert np.allclose(sdft, np.fft.fft(X[i+1 - window_size:i+1]))
+    ...         assert np.allclose(sdft.coefficients, np.fft.fft(X[i+1 - window_size:i+1]))
 
     References
     ----------
@@ -61,9 +62,9 @@ class SDFT:
         # Update the coefficients for subsequent values
         else:
             diff = x - self.window[0]
-            for i in range(self.maxlen):
-                self.coefficients[i] = (self[i] + diff) * np.exp(
-                    2j * np.pi * i / self.maxlen
+            for i, c in enumerate(self.coefficients):
+                self.coefficients[i] = (c + diff) * np.exp(
+                    2j * np.pi * i / self.window_size
                 )
             self.window.append(x)
 

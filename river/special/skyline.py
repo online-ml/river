@@ -67,7 +67,7 @@ class Skyline(collections.UserList):
     Here is another example using the kart data from *Mario Kart: Double Dash!!*.
 
     >>> import collections
-    >>> from river import utils
+    >>> from river import special
 
     >>> Kart = collections.namedtuple(
     ...      'Kart',
@@ -98,7 +98,7 @@ class Skyline(collections.UserList):
     ...     Kart('Parade Kart', 7, 3, 4, 7, 3)
     ... ]
 
-    >>> skyline = utils.Skyline(
+    >>> skyline = special.Skyline(
     ...     maximize=['speed', 'off_road', 'acceleration', 'turbo'],
     ...     minimize=['weight']
     ... )
