@@ -1,6 +1,5 @@
 import bisect
 import collections
-import typing
 
 
 class SortedWindow(collections.UserList):
