@@ -1,3 +1,4 @@
+"""Miscellaneous algorithms."""
 from .histogram import Histogram
 from .sdft import SDFT
 from .skyline import Skyline

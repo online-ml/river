@@ -43,7 +43,7 @@ class Max(base.Univariate):
         return self.max
 
 
-class RollingMax(base.RollingUnivariate, utils.SortedWindow):
+class RollingMax(base.RollingUnivariate):
     """Running max over a window.
 
     Parameters
@@ -70,19 +70,19 @@ class RollingMax(base.RollingUnivariate, utils.SortedWindow):
     """
 
     def __init__(self, window_size: int):
-        super().__init__(size=window_size)
+        self.window = utils.SortedWindow(size=window_size)
 
     @property
     def window_size(self):
-        return self.size
+        return self.window.size
 
     def update(self, x):
-        self.append(x)
+        self.window.append(x)
         return self
 
     def get(self):
         try:
-            return self[-1]
+            return self.window[-1]
         except IndexError:
             return None
 
@@ -125,7 +125,7 @@ class AbsMax(base.Univariate):
         return self.abs_max
 
 
-class RollingAbsMax(base.RollingUnivariate, utils.SortedWindow):
+class RollingAbsMax(base.RollingUnivariate):
     """Running absolute max over a window.
 
     Parameters
@@ -152,18 +152,18 @@ class RollingAbsMax(base.RollingUnivariate, utils.SortedWindow):
     """
 
     def __init__(self, window_size: int):
-        super().__init__(size=window_size)
+        self.window = utils.SortedWindow(size=window_size)
 
     @property
     def window_size(self):
-        return self.size
+        return self.window.size
 
     def update(self, x):
-        self.append(abs(x))
+        self.window.append(abs(x))
         return self
 
     def get(self):
         try:
-            return self[-1]
+            return self.window[-1]
         except IndexError:
             return None

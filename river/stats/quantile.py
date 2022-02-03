@@ -164,7 +164,7 @@ class Quantile(base.Univariate):
         return None
 
 
-class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
+class RollingQuantile(base.RollingUnivariate):
     """Running quantile over a window.
 
     Parameters
@@ -207,23 +207,23 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
     """
 
     def __init__(self, q, window_size):
-        super().__init__(size=window_size)
+        self.window = utils.SortedWindow(size=window_size)
         self.q = q
-        idx = self.q * (self.size - 1)
+        idx = self.q * (self.window.size - 1)
 
         self._lower = int(math.floor(idx))
         self._higher = self._lower + 1
-        if self._higher > self.size - 1:
-            self._higher = self.size - 1
+        if self._higher > self.window.size - 1:
+            self._higher = self.window.size - 1
         self._frac = idx - self._lower
 
     def _prepare(self):
-        if len(self) < self.size:
-            idx = self.q * (len(self) - 1)
+        if len(self.window) < self.window.size:
+            idx = self.q * (len(self.window) - 1)
             lower = int(math.floor(idx))
             higher = lower + 1
-            if higher > len(self) - 1:
-                higher = len(self) - 1
+            if higher > len(self.window) - 1:
+                higher = len(self.window) - 1
             frac = idx - lower
             return lower, higher, frac
 
@@ -231,15 +231,17 @@ class RollingQuantile(base.RollingUnivariate, utils.SortedWindow):
 
     @property
     def window_size(self):
-        return self.size
+        return self.window.size
 
     def update(self, x):
-        self.append(x)
+        self.window.append(x)
         return self
 
     def get(self):
         lower, higher, frac = self._prepare()
         try:
-            return self[lower] + (self[higher] - self[lower]) * frac
+            return (
+                self.window[lower] + (self.window[higher] - self.window[lower]) * frac
+            )
         except IndexError:
             return None
