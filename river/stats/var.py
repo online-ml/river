@@ -1,5 +1,7 @@
 import copy
 
+import numpy as np
+
 from . import base, mean
 
 
@@ -56,6 +58,15 @@ class Var(base.Univariate):
         self.mean.update(x, w)
         mean_new = self.mean.get()
         self._S += w * (x - mean_old) * (x - mean_new)
+        return self
+
+    def update_many(self, X: np.ndarray):
+        mean_old = self.mean.get()
+        self.mean.update_many(X)
+        mean_new = self.mean.get()
+        self._S += np.sum(
+            np.multiply(np.subtract(X, mean_old), np.subtract(X, mean_new))
+        )
         return self
 
     def get(self):
