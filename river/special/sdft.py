@@ -3,7 +3,7 @@ import collections
 import numpy as np
 
 
-class SDFT(collections.deque):
+class SDFT:
     """Sliding Discrete Fourier Transform (SDFT).
 
     Initially, the coefficients are all equal to 0, up until enough values have been seen. A call
@@ -40,25 +40,31 @@ class SDFT(collections.deque):
     """
 
     def __init__(self, window_size):
-        super().__init__(maxlen=window_size)
-        self.values = collections.deque(maxlen=window_size)
+        self.coefficients = collections.deque(maxlen=window_size)
+        self.window = collections.deque(maxlen=window_size)
+
+    @property
+    def window_size(self):
+        return self.coefficients.maxlen
 
     def update(self, x):
 
         # Simply append the new value if the window isn't full yet
-        if len(self.values) < self.values.maxlen - 1:
-            self.values.append(x)
+        if len(self.window) < self.window.maxlen - 1:
+            self.window.append(x)
 
         # Compute an initial FFT the first time the window is full
-        elif len(self.values) == self.values.maxlen - 1:
-            self.values.append(x)
-            self.extend(np.fft.fft(self.values))
+        elif len(self.window) == self.window.maxlen - 1:
+            self.window.append(x)
+            self.coefficients.extend(np.fft.fft(self.window))
 
         # Update the coefficients for subsequent values
         else:
-            diff = x - self.values[0]
+            diff = x - self.window[0]
             for i in range(self.maxlen):
-                self[i] = (self[i] + diff) * np.exp(2j * np.pi * i / self.maxlen)
-            self.values.append(x)
+                self.coefficients[i] = (self[i] + diff) * np.exp(
+                    2j * np.pi * i / self.maxlen
+                )
+            self.window.append(x)
 
         return self

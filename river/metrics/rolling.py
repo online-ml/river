@@ -5,7 +5,7 @@ from . import base, report
 __all__ = ["Rolling"]
 
 
-class Rolling(base.WrapperMetric, collections.deque):
+class Rolling(base.WrapperMetric):
     """Wrapper for computing metrics over a window.
 
     This wrapper metric allows you to apply a metric over a window of observations. Under the hood,
@@ -43,27 +43,29 @@ class Rolling(base.WrapperMetric, collections.deque):
     """
 
     def __init__(self, metric: base.Metric, window_size: int):
-        super().__init__(maxlen=window_size)
+        self.window = collections.deque(maxlen=window_size)
         self._metric = metric
 
     @property
     def window_size(self):
-        return self.maxlen
+        return self.window.maxlen
 
     @property
     def metric(self):
         return self._metric
 
     def update(self, y_true, y_pred, sample_weight=1.0):
-        if len(self) == self.window_size:
+        if len(self.window) == self.window_size:
             self.metric.revert(*self[0])
         self.metric.update(y_true, y_pred, sample_weight)
         try:
             # For classification metrics that require additional information
-            self.append((y_true, y_pred, sample_weight, self.metric.sample_correction))
+            self.window.append(
+                (y_true, y_pred, sample_weight, self.metric.sample_correction)
+            )
         except AttributeError:
             # Default case
-            self.append((y_true, y_pred, sample_weight))
+            self.window.append((y_true, y_pred, sample_weight))
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.0):
