@@ -1,5 +1,7 @@
 import copy
 
+import numpy as np
+
 from . import base, mean, summing
 
 
@@ -88,7 +90,9 @@ class Cov(base.Bivariate):
         return self
 
     def __add__(self, other):
-        return copy.deepcopy(self) + other
+        result = copy.deepcopy(self)
+        result += other
+        return result
 
     def __isub__(self, other):
         if self.mean_x.n <= self.ddof:
@@ -122,7 +126,9 @@ class Cov(base.Bivariate):
         return self
 
     def __sub__(self, other):
-        return copy.deepcopy(self) - other
+        result = copy.deepcopy(self)
+        result += other
+        return result
 
 
 class RollingCov(base.Bivariate):

@@ -178,34 +178,6 @@ def test_rolling_bivariate(stat, func):
             assert math.isclose(stat.get(), func(x_tail, y_tail), abs_tol=1e-10)
 
 
-def test_weighted_variance_with_close_numbers():
-    """
-
-    Origin of this test: https://github.com/online-ml/river/issues/732
-
-    This test would fail if Var were implemented with a numerically unstable algorithm.
-
-    """
-
-    D = [
-        (99.99999978143265, 6),
-        (99.99999989071631, 8),
-        (99.99999994535816, 6),
-        (99.99999997267908, 9),
-        (99.99999998633952, 10),
-        (99.99999999316977, 3),
-        (99.99999999829245, 5),
-        (99.99999999957309, 9),
-    ]
-
-    var = stats.Var()
-
-    for x, w in D:
-        var.update(x, w)
-
-    assert var.get() > 0 and math.isclose(var.get(), 4.648047194845607e-15)
-
-
 @pytest.mark.parametrize(
     "stat",
     filter(
@@ -226,3 +198,56 @@ def test_update_many_univariate(stat):
             stat.update(x)
 
     assert math.isclose(batch_stat.get(), stat.get())
+
+
+@pytest.mark.parametrize(
+    "stat",
+    filter(
+        lambda stat: hasattr(stat, "update_many")
+        and issubclass(stat.__class__, stats.Bivariate),
+        load_stats(),
+    ),
+    ids=lambda stat: stat.__class__.__name__,
+)
+def test_update_many_bivariate(stat):
+
+    batch_stat = stat.clone()
+
+    for _ in range(5):
+        X = np.random.random(10)
+        Y = np.random.random(10)
+        batch_stat.update_many(X, Y)
+        for x, y in zip(X, Y):
+            stat.update(x, y)
+
+    assert math.isclose(batch_stat.get(), stat.get())
+
+
+@pytest.mark.parametrize(
+    "stat",
+    filter(
+        lambda stat: hasattr(stat, "__add__")
+        and issubclass(stat.__class__, stats.Univariate),
+        load_stats(),
+    ),
+    ids=lambda stat: stat.__class__.__name__,
+)
+def test_add_univariate(stat):
+
+    a = stat.clone()
+    b = stat.clone()
+    c = stat.clone()
+
+    X = np.random.random(10)
+
+    for x in X[:5]:
+        a.update(x)
+        c.update(x)
+
+    for x in X[5:]:
+        b.update(x)
+        c.update(x)
+
+    assert not math.isclose(a.get() != b.get(), c.get())
+    assert not math.isclose(a.get() + b.get(), c.get())
+    assert math.isclose((a + b).get(), c.get())

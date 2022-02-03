@@ -99,7 +99,9 @@ class Var(base.Univariate):
         return self
 
     def __add__(self, other):
-        return copy.deepcopy(self) + other
+        result = copy.deepcopy(self)
+        result += other
+        return result
 
     def __isub__(self, other):
 
@@ -118,7 +120,9 @@ class Var(base.Univariate):
         return self
 
     def __sub__(self, other):
-        return copy.deepcopy(self) - other
+        result = copy.deepcopy(self)
+        result -= other
+        return result
 
 
 class RollingVar(base.RollingUnivariate):

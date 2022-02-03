@@ -27,7 +27,7 @@ class Min(base.Univariate):
         return self.min
 
 
-class RollingMin(base.RollingUnivariate, utils.SortedWindow):
+class RollingMin(base.RollingUnivariate):
     """Running min over a window.
 
     Parameters
@@ -54,18 +54,18 @@ class RollingMin(base.RollingUnivariate, utils.SortedWindow):
     """
 
     def __init__(self, window_size: int):
-        super().__init__(size=window_size)
+        self.window = utils.SortedWindow(size=window_size)
 
     @property
     def window_size(self):
-        return self.size
+        return self.window.size
 
     def update(self, x):
-        self.append(x)
+        self.window.append(x)
         return self
 
     def get(self):
         try:
-            return self[0]
+            return self.window[0]
         except IndexError:
             return None
