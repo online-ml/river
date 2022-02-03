@@ -42,6 +42,10 @@
 
 - Created this module to store some stuff that was in the `utils` module.
 
+## stats
+
+- `stats.Mean`, `stats.Var`, and `stats.Cov` each now have an `update_many` method which accepts numpy arrays.
+
 ## utils
 
 - Removed `utils.Window` and use `collections.deque` instead where necessary.
