@@ -58,12 +58,12 @@ class Cov(base.Bivariate):
         self._C += w * dx * (y - self.mean_y)
         return self
 
-    def update_many(self, X, Y, W):
-        self.w_sum += np.sum(W)
+    def update_many(self, X, Y):
+        self.w_sum += len(X)
         dx = X - self.mean_x
-        self.mean_x += (W * (dx)).sum() / self.w_sum
-        self.mean_y += (W * (Y - self.mean_y)).sum() / self.w_sum
-        self._C += (W * dx * (Y - self.mean_y)).sum()
+        self.mean_x += dx.sum() / self.w_sum
+        self.mean_y += ((Y - self.mean_y)).sum() / self.w_sum
+        self._C += (dx * (Y - self.mean_y)).sum()
         return self
 
     def get(self):
