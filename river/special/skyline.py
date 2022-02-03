@@ -22,7 +22,7 @@ class Skyline(collections.UserList):
     Here is an example taken from [this](https://maxhalford.github.io/blog/skyline-queries/) blog post.
 
     >>> import random
-    >>> from river import utils
+    >>> from river import special
     >>> import matplotlib.pyplot as plt
 
     >>> city_prices = {
@@ -37,7 +37,7 @@ class Skyline(collections.UserList):
     ...     price = round(random.uniform(0.8, 1.2) * city_prices[city] * size)
     ...     return {'city': city, 'size': size, 'price': price}
 
-    >>> skyline = utils.Skyline(minimize=['price'], maximize=['size'])
+    >>> skyline = special.Skyline(minimize=['price'], maximize=['size'])
 
     >>> random.seed(42)
 
