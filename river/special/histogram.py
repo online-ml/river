@@ -84,7 +84,7 @@ class Histogram(collections.UserList):
     Examples
     --------
 
-    >>> from river import utils
+    >>> from river import special
     >>> import matplotlib.pyplot as plt
     >>> import numpy as np
 
@@ -95,7 +95,7 @@ class Histogram(collections.UserList):
     ...     np.random.normal(3, 1, 1000),
     ... ))
 
-    >>> hist = utils.Histogram(max_bins=60)
+    >>> hist = special.Histogram(max_bins=60)
 
     >>> for x in values:
     ...     hist = hist.update(x)
@@ -193,29 +193,30 @@ class Histogram(collections.UserList):
 
         This is faster than calling `cdf` with many values.
 
-        Example:
+        Examples
+        --------
 
-            >>> from river import utils
+        >>> from river import special
 
-            >>> hist = utils.Histogram()
-            >>> for x in range(4):
-            ...     hist = hist.update(x)
+        >>> hist = special.Histogram()
+        >>> for x in range(4):
+        ...     hist = hist.update(x)
 
-            >>> print(hist)
-            [0.00000, 0.00000]: 1
-            [1.00000, 1.00000]: 1
-            [2.00000, 2.00000]: 1
-            [3.00000, 3.00000]: 1
+        >>> print(hist)
+        [0.00000, 0.00000]: 1
+        [1.00000, 1.00000]: 1
+        [2.00000, 2.00000]: 1
+        [3.00000, 3.00000]: 1
 
-            >>> X = [-1, 0, .5, 1, 2.5, 3.5]
-            >>> for x, cdf in zip(X, hist.iter_cdf(X)):
-            ...     print(x, cdf)
-            -1 0.0
-            0 0.25
-            0.5 0.25
-            1 0.5
-            2.5 0.75
-            3.5 1.0
+        >>> X = [-1, 0, .5, 1, 2.5, 3.5]
+        >>> for x, cdf in zip(X, hist.iter_cdf(X)):
+        ...     print(x, cdf)
+        -1 0.0
+        0 0.25
+        0.5 0.25
+        1 0.5
+        2.5 0.75
+        3.5 1.0
 
         """
 
@@ -240,37 +241,38 @@ class Histogram(collections.UserList):
     def cdf(self, x):
         """Cumulative distribution function.
 
-        Example:
+        Examples
+        --------
 
-            >>> from river import utils
+        >>> from river import special
 
-            >>> hist = utils.Histogram()
-            >>> for x in range(4):
-            ...     hist = hist.update(x)
+        >>> hist = special.Histogram()
+        >>> for x in range(4):
+        ...     hist = hist.update(x)
 
-            >>> print(hist)
-            [0.00000, 0.00000]: 1
-            [1.00000, 1.00000]: 1
-            [2.00000, 2.00000]: 1
-            [3.00000, 3.00000]: 1
+        >>> print(hist)
+        [0.00000, 0.00000]: 1
+        [1.00000, 1.00000]: 1
+        [2.00000, 2.00000]: 1
+        [3.00000, 3.00000]: 1
 
-            >>> hist.cdf(-1)
-            0.0
+        >>> hist.cdf(-1)
+        0.0
 
-            >>> hist.cdf(0)
-            0.25
+        >>> hist.cdf(0)
+        0.25
 
-            >>> hist.cdf(.5)
-            0.25
+        >>> hist.cdf(.5)
+        0.25
 
-            >>> hist.cdf(1)
-            0.5
+        >>> hist.cdf(1)
+        0.5
 
-            >>> hist.cdf(2.5)
-            0.75
+        >>> hist.cdf(2.5)
+        0.75
 
-            >>> hist.cdf(3.5)
-            1.0
+        >>> hist.cdf(3.5)
+        1.0
 
         """
         return next(self.iter_cdf([x]))

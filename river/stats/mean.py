@@ -136,7 +136,7 @@ class RollingMean(summing.RollingSum):
     """
 
     def get(self):
-        return super().get() / len(self) if len(self) > 0 else 0
+        return super().get() / len(self.window) if len(self.window) > 0 else 0
 
 
 class BayesianMean(base.Univariate):
