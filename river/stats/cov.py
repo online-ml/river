@@ -45,20 +45,29 @@ class Cov(base.Bivariate):
 
     def __init__(self, ddof=1):
         self.ddof = ddof
-        self.mean_x = mean.Mean()
-        self.mean_y = mean.Mean()
-        self.cov = 0
+        self.mean_x = 0
+        self.mean_y = 0
+        self.w_sum = 0
+        self._C = 0
 
     def update(self, x, y, w=1.0):
-        dx = x - self.mean_x.get()
-        self.mean_x.update(x, w)
-        self.mean_y.update(y, w)
-        dy = y - self.mean_y.get()
-        self.cov += w * (dx * dy - self.cov) / max(1, self.mean_x.n - self.ddof)
+        self.w_sum += w
+        dx = x - self.mean_x
+        self.mean_x += (w / self.w_sum) * dx
+        self.mean_y += (w / self.w_sum) * (y - self.mean_y)
+        self._C += w * dx * (y - self.mean_y)
+        return self
+
+    def update_many(self, X, Y, W):
+        self.w_sum += np.sum(W)
+        dx = X - self.mean_x
+        self.mean_x += (W * (dx)).sum() / self.w_sum
+        self.mean_y += (W * (Y - self.mean_y)).sum() / self.w_sum
+        self._C += (W * dx * (Y - self.mean_y)).sum()
         return self
 
     def get(self):
-        return self.cov
+        return self._C / max(1, self.w_sum - self.ddof)
 
     def __iadd__(self, other):
         old_mean_x = self.mean_x.get()

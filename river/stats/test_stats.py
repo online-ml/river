@@ -216,8 +216,9 @@ def test_update_many_bivariate(stat):
     for _ in range(5):
         X = np.random.random(10)
         Y = np.random.random(10)
-        batch_stat.update_many(X, Y)
-        for x, y in zip(X, Y):
-            stat.update(x, y)
+        W = np.ones(10)
+        batch_stat.update_many(X, Y, W)
+        for x, y, w in zip(X, Y, W):
+            stat.update(x, y, w)
 
     assert math.isclose(batch_stat.get(), stat.get())
