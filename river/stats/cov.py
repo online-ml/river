@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from . import base, mean, summing
+from . import base, summing
 
 
 class Cov(base.Bivariate):

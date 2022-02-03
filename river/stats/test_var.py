@@ -1,3 +1,7 @@
+import math
+from river import stats
+
+
 def test_weighted_variance_with_close_numbers():
     """
 
