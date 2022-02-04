@@ -178,7 +178,7 @@ def simulate_qa(
         queue(mementos, Memento(i, args, x, y, t + d))
         if copy:
             x = deepcopy(x)
-        yield i, x, None
+        yield i, *args, x, None
 
     for memento in mementos:
         yield memento.i, *memento.args, memento.x, memento.y
