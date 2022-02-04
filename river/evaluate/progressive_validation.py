@@ -241,7 +241,9 @@ def progressive_val_score(
 
         msg = f"[{checkpoint['Step']:,d}] {metric}"
         if show_time:
-            msg += f" – {checkpoint['Time']}"
+            H, rem = divmod(checkpoint["Time"].seconds, 3600)
+            M, S = divmod(rem, 60)
+            msg += f" – {H:02d}:{M:02d}:{S:02d}"
         if show_memory:
             msg += f" – {checkpoint['Memory']}"
         print(msg, **print_kwargs)
