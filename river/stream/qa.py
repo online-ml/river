@@ -159,7 +159,7 @@ def simulate_qa(
 
     for i, (x, y, *kwargs) in enumerate(dataset):
 
-        kwargs = kwargs[0] if kwargs else None
+        kwargs = kwargs[0] if kwargs else {}
 
         t = get_moment(i, x)
         d = get_delay(x, y)
