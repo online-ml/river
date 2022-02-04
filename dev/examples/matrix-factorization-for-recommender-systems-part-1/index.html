@@ -8525,9 +8525,6 @@
 </ul>
 <h2 id="lets-start">Let's start<a class="headerlink" href="#lets-start" title="Permanent link">&para;</a></h2>
 <p>In this tutorial, we are going to explore MF algorithms available in <code>river</code> and test them on a movie recommendation problem with the MovieLens 100K dataset. This latter is a collection of movie ratings (from 1 to 5) that includes various information about both the items and the users. We can access it from the <a href="/api/overview/#datasets">river.datasets</a> module:</p>
-<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load_ext</span> <span class="n">autoreload</span>
-<span class="o">%</span><span class="n">autoreload</span> <span class="mi">2</span>
-</code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">json</span>
 
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
@@ -8568,10 +8565,10 @@ y = 4.0
 <span class="n">model</span> <span class="o">=</span> <span class="n">dummy</span><span class="o">.</span><span class="n">StatisticRegressor</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span>
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">unpack_user_and_item</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.934259, RMSE: 1.124469 – 0:00:00.606692 – 514 B
-[50,000] MAE: 0.923893, RMSE: 1.105 – 0:00:01.217928 – 514 B
-[75,000] MAE: 0.937359, RMSE: 1.123696 – 0:00:01.835812 – 514 B
-[100,000] MAE: 0.942162, RMSE: 1.125783 – 0:00:02.469598 – 514 B
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.934259, RMSE: 1.124469 – 0:00:00.647357 – 514 B
+[50,000] MAE: 0.923893, RMSE: 1.105 – 0:00:01.290790 – 514 B
+[75,000] MAE: 0.937359, RMSE: 1.123696 – 0:00:01.944589 – 514 B
+[100,000] MAE: 0.942162, RMSE: 1.125783 – 0:00:02.591257 – 514 B
 </code></pre></div>
 <h2 id="baseline-model">Baseline model<a class="headerlink" href="#baseline-model" title="Permanent link">&para;</a></h2>
 <p>Now we can do machine learning and explore available models in <a href="https://online-ml.github.io/api/overview/#reco">river.reco</a> module starting with the baseline model. It extends our naive prediction by adding to the global running mean two bias terms characterizing the user and the item discrepancy from the general tendency. The model equation is defined as:</p>
