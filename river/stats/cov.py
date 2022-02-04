@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from . import base, summing
+from . import base, mean, summing
 
 
 class Cov(base.Bivariate):
@@ -45,59 +45,57 @@ class Cov(base.Bivariate):
 
     def __init__(self, ddof=1):
         self.ddof = ddof
-        self.mean_x = 0
-        self.mean_y = 0
+        self.mean_x = mean.Mean()
+        self.mean_y = mean.Mean()
         self.n = 0
         self._C = 0
         self.cov = 0
 
     def update(self, x, y, w=1.0):
-        self.n += w
-        dx = x - self.mean_x
-        self.mean_x += (w / self.n) * dx
-        self.mean_y += (w / self.n) * (y - self.mean_y)
-        self._C += w * dx * (y - self.mean_y)
-        self.cov = self._C / max(1, self.n - self.ddof)
+        dx = x - self.mean_x.get()
+        self.mean_x.update(x, w)
+        self.mean_y.update(y, w)
+        self._C += w * dx * (y - self.mean_y.get())
+        self.cov = self._C / max(1, self.mean_x.n - self.ddof)
         return self
 
     def update_many(self, X: np.ndarray, Y: np.ndarray):
-        self.n += len(X)
         dx = X - self.mean_x
-        self.mean_x += dx.sum() / self.n
-        self.mean_y += ((Y - self.mean_y)).sum() / self.n
+        self.mean_x.update_many(X)
+        self.mean_y.update_many(Y)
         self._C += (dx * (Y - self.mean_y)).sum()
-        self.cov = self._C / max(1, self.n - self.ddof)
+        self.cov = self._C / max(1, self.mean_x.n - self.ddof)
         return self
 
     def get(self):
         return self.cov
 
     def __iadd__(self, other):
-        old_mean_x = self.mean_x
-        old_mean_y = self.mean_y
-        old_n = self.n
+        old_mean_x = self.mean_x.get()
+        old_mean_y = self.mean_y.get()
+        old_n = self.mean_x.n
 
         # Update mean estimates
         self.mean_x += other.mean_x
         self.mean_y += other.mean_y
 
-        if self.n <= self.ddof:
+        if self.mean_x.n <= self.ddof:
             return self
 
         # Scale factors
         scale_a = old_n - self.ddof
-        scale_b = other.n - other.ddof
+        scale_b = other.mean_x.n - other.ddof
 
         # Scale the covariances
         self.cov = scale_a * self.cov + scale_b * other.cov
         # Apply correction factor
         self.cov += (
-            (old_mean_x - other.mean_x)
-            * (old_mean_y - other.mean_y)
-            * ((old_n * other.n) / self.n)
+            (old_mean_x - other.mean_x.get())
+            * (old_mean_y - other.mean_y.get())
+            * ((old_n * other.mean_x.n) / self.mean_x.n)
         )
         # Reapply scale
-        self.cov /= self.n - self.ddof
+        self.cov /= self.mean_x.n - self.ddof
 
         return self
 
@@ -107,33 +105,33 @@ class Cov(base.Bivariate):
         return result
 
     def __isub__(self, other):
-        if self.n <= self.ddof:
+        if self.mean_x.n <= self.ddof:
             return self
 
-        old_n = self.n
+        old_n = self.mean_x.n
 
         # Update mean estimates
         self.mean_x -= other.mean_x
         self.mean_y -= other.mean_y
 
-        if self.n <= self.ddof:
+        if self.mean_x.n <= self.ddof:
             self.cov = 0
             return self
 
         # Scale factors
         scale_x = old_n - self.ddof
-        scale_b = other.n - other.ddof
+        scale_b = other.mean_x.n - other.ddof
 
         # Scale the covariances
         self.cov = scale_x * self.cov - scale_b * other.cov
         # Apply correction
         self.cov -= (
-            (self.mean_x - other.mean_x)
-            * (self.mean_y - other.mean_y)
-            * ((self.n * other.n) / old_n)
+            (self.mean_x.get() - other.mean_x.get())
+            * (self.mean_y.get() - other.mean_y.get())
+            * ((self.mean_x.n * other.mean_x.n) / old_n)
         )
         # Re-apply scale factor
-        self.cov /= self.n - self.ddof
+        self.cov /= self.mean_x.n - self.ddof
 
         return self
 
