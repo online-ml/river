@@ -24,7 +24,7 @@ class MovieLens100K(base.RemoteDataset):
 
     """
 
-    def __init__(self, unpack_user_and_item=True):
+    def __init__(self, unpack_user_and_item=False):
         super().__init__(
             n_samples=100_000,
             n_features=10,
@@ -40,8 +40,6 @@ class MovieLens100K(base.RemoteDataset):
             self.path,
             target="rating",
             converters={
-                "user": int,
-                "item": int,
                 "timestamp": int,
                 "release_date": int,
                 "age": float,
