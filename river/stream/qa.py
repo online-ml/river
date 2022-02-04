@@ -9,7 +9,7 @@ from river import base
 __all__ = ["simulate_qa"]
 
 
-class Memento(collections.namedtuple("Memento", "i x y t_expire")):
+class Memento(collections.namedtuple("Memento", "i args x y t_expire")):
     def __lt__(self, other):
         return self.t_expire < other.t_expire
 
@@ -157,7 +157,7 @@ def simulate_qa(
 
     mementos: typing.List[Memento] = []
 
-    for i, (x, y) in enumerate(dataset):
+    for i, (*args, x, y) in enumerate(dataset):
 
         t = get_moment(i, x)
         d = get_delay(x, y)
@@ -165,20 +165,20 @@ def simulate_qa(
         while mementos:
 
             # Get the oldest answer
-            i_old, x_old, y_old, t_expire = mementos[0]
+            i_old, args_old, x_old, y_old, t_expire = mementos[0]
 
             # If the oldest answer isn't old enough then stop
             if t_expire > t:
                 break
 
             # Reveal the duration and pop the trip from the queue
-            yield i_old, x_old, y_old
+            yield i_old, *args_old, x_old, y_old
             del mementos[0]
 
-        queue(mementos, Memento(i, x, y, t + d))
+        queue(mementos, Memento(i, args, x, y, t + d))
         if copy:
             x = deepcopy(x)
         yield i, x, None
 
     for memento in mementos:
-        yield memento.i, memento.x, memento.y
+        yield memento.i, *memento.args, memento.x, memento.y

@@ -29,14 +29,19 @@ class MovieLens100K(base.RemoteDataset):
         )
 
     def _iter(self):
-        return stream.iter_csv(
+        for x, y in stream.iter_csv(
             self.path,
             target="rating",
             converters={
+                "user": int,
+                "item": int,
                 "timestamp": int,
                 "release_date": int,
                 "age": float,
                 "rating": float,
             },
             delimiter="\t",
-        )
+        ):
+            user = x.pop("user")
+            item = x.pop("item")
+            yield user, item, x, y

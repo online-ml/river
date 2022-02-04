@@ -40,11 +40,11 @@ def _progressive_validation(
     if measure_time:
         start = time.perf_counter()
 
-    for i, x, y in stream.simulate_qa(dataset, moment, delay, copy=True):
+    for i, *args, x, y in stream.simulate_qa(dataset, moment, delay, copy=True):
 
         # Question
         if y is None:
-            preds[i] = pred_func(x=x)
+            preds[i] = pred_func(*args, x=x)
             continue
 
         # Answer
