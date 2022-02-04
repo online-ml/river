@@ -40,7 +40,9 @@ def _progressive_validation(
     if measure_time:
         start = time.perf_counter()
 
-    for i, x, y, kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
+    for i, x, y, *kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
+
+        kwargs = kwargs[0] if kwargs else {}
 
         # Question
         if y is None:

@@ -159,7 +159,7 @@ def simulate_qa(
 
     for i, (x, y, *kwargs) in enumerate(dataset):
 
-        kwargs = kwargs[0] if kwargs else {}
+        kwargs = kwargs[0] if kwargs else None
 
         t = get_moment(i, x)
         d = get_delay(x, y)
@@ -174,13 +174,21 @@ def simulate_qa(
                 break
 
             # Reveal the ground truth and pop the observation from the queue
-            yield (i_old, x_old, y_old, kwargs_old)
+            yield (i_old, x_old, y_old, kwargs_old) if kwargs_old else (
+                i_old,
+                x_old,
+                y_old,
+            )
             del mementos[0]
 
         queue(mementos, Memento(i, x, y, kwargs, t + d))
         if copy:
             x = deepcopy(x)
-        yield (i, x, None, kwargs)
+        yield (i, x, None, kwargs) if kwargs else (i, x, None)
 
     for memento in mementos:
-        yield (memento.i, memento.x, memento.y, memento.kwargs)
+        yield (memento.i, memento.x, memento.y, memento.kwargs) if memento.kwargs else (
+            memento.i,
+            memento.x,
+            memento.y,
+        )
