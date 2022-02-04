@@ -37,7 +37,7 @@ class Skyline(collections.UserList):
     ...     price = round(random.uniform(0.8, 1.2) * city_prices[city] * size)
     ...     return {'city': city, 'size': size, 'price': price}
 
-    >>> skyline = special.Skyline(minimize=['price'], maximize=['size'])
+    >>> skyline = misc.Skyline(minimize=['price'], maximize=['size'])
 
     >>> random.seed(42)
 
@@ -98,7 +98,7 @@ class Skyline(collections.UserList):
     ...     Kart('Parade Kart', 7, 3, 4, 7, 3)
     ... ]
 
-    >>> skyline = special.Skyline(
+    >>> skyline = misc.Skyline(
     ...     maximize=['speed', 'off_road', 'acceleration', 'turbo'],
     ...     minimize=['weight']
     ... )
