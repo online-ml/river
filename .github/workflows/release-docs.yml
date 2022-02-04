@@ -2,8 +2,8 @@ name: release-docs
 
 on:
   push:
-    branches:
-      - "main"
+    tags:
+      - "*"
 
 jobs:
   ubuntu:
