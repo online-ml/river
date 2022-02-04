@@ -8532,16 +8532,14 @@
 
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 
-<span class="k">for</span> <span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MovieLens100K</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">user</span> <span class="si">= }</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">item</span> <span class="si">= }</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MovieLens100K</span><span class="p">(</span><span class="n">unpack_user_and_item</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;x = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;y = </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">break</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>user = 259
-item = 255
-x = {
+<div class="highlight"><pre><span></span><code>x = {
+    &quot;user&quot;: 259,
+    &quot;item&quot;: 255,
     &quot;timestamp&quot;: 874731910000000000,
     &quot;title&quot;: &quot;My Best Friend&#39;s Wedding (1997)&quot;,
     &quot;release_date&quot;: 866764800000000000,
@@ -8557,8 +8555,8 @@ y = 4.0
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
 <span class="kn">from</span> <span class="nn">river.evaluate</span> <span class="kn">import</span> <span class="n">progressive_val_score</span>
 
-<span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
-    <span class="n">X_y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MovieLens100K</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">unpack_user_and_item</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">X_y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MovieLens100K</span><span class="p">(</span><span class="n">unpack_user_and_item</span><span class="p">)</span>
     <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">RMSE</span><span class="p">()</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">print_every</span><span class="o">=</span><span class="mi">25_000</span><span class="p">,</span> <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
@@ -8568,12 +8566,12 @@ y = 4.0
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">dummy</span><span class="o">.</span><span class="n">StatisticRegressor</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span>
-<span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">unpack_user_and_item</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.934259, RMSE: 1.124469 – 0:00:00.614591 – 514 B
-[50,000] MAE: 0.923893, RMSE: 1.105 – 0:00:01.239970 – 514 B
-[75,000] MAE: 0.937359, RMSE: 1.123696 – 0:00:01.849419 – 514 B
-[100,000] MAE: 0.942162, RMSE: 1.125783 – 0:00:02.468085 – 514 B
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.934259, RMSE: 1.124469 – 0:00:00.606692 – 514 B
+[50,000] MAE: 0.923893, RMSE: 1.105 – 0:00:01.217928 – 514 B
+[75,000] MAE: 0.937359, RMSE: 1.123696 – 0:00:01.835812 – 514 B
+[100,000] MAE: 0.942162, RMSE: 1.125783 – 0:00:02.469598 – 514 B
 </code></pre></div>
 <h2 id="baseline-model">Baseline model<a class="headerlink" href="#baseline-model" title="Permanent link">&para;</a></h2>
 <p>Now we can do machine learning and explore available models in <a href="https://online-ml.github.io/api/overview/#reco">river.reco</a> module starting with the baseline model. It extends our naive prediction by adding to the global running mean two bias terms characterizing the user and the item discrepancy from the general tendency. The model equation is defined as:</p>
@@ -8607,10 +8605,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761844, RMSE: 0.960972 – 0:00:00.863946 – 132.26 KB
-[50,000] MAE: 0.753292, RMSE: 0.951223 – 0:00:01.732588 – 191.78 KB
-[75,000] MAE: 0.754177, RMSE: 0.953376 – 0:00:02.585223 – 225.88 KB
-[100,000] MAE: 0.754651, RMSE: 0.954148 – 0:00:03.443936 – 240.29 KB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761844, RMSE: 0.960972 – 0:00:00.864336 – 132.26 KB
+[50,000] MAE: 0.753292, RMSE: 0.951223 – 0:00:01.737809 – 191.78 KB
+[75,000] MAE: 0.754177, RMSE: 0.953376 – 0:00:02.598330 – 225.88 KB
+[100,000] MAE: 0.754651, RMSE: 0.954148 – 0:00:03.464756 – 240.29 KB
 </code></pre></div>
 <p>We won two tenth of MAE compared to our naive prediction (0.7546 vs 0.9421) meaning that significant information has been learnt by the model.</p>
 <h2 id="funk-matrix-factorization-funkmf">Funk Matrix Factorization (FunkMF)<a class="headerlink" href="#funk-matrix-factorization-funkmf" title="Permanent link">&para;</a></h2>
