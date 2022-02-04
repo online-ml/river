@@ -86,10 +86,12 @@ class ConfusionMatrix:
 
     def __repr__(self):
 
-        classes = sorted(map(str, self.classes))
+        classes = sorted(self.classes)
+        if not classes:
+            return ""
 
-        headers = [""] + classes
-        columns = [classes]
+        headers = [""] + list(map(str, classes))
+        columns = [headers[1:]]
         for col in classes:
             columns.append([f"{int(self.data[row][col]):,}" for row in classes])
 
