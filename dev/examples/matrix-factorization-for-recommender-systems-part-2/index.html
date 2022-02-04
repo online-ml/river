@@ -8467,6 +8467,9 @@
                 
 
 <h1 id="matrix-factorization-for-recommender-systems-part-2">Matrix Factorization for Recommender Systems - Part 2<a class="headerlink" href="#matrix-factorization-for-recommender-systems-part-2" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load_ext</span> <span class="n">autoreload</span>
+<span class="o">%</span><span class="n">autoreload</span> <span class="mi">2</span>
+</code></pre></div>
 <p>As seen in <a href="/examples/matrix-factorization-for-recommender-systems-part-1">Part 1</a>, strength of <a href="https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)">Matrix Factorization (MF)</a> lies in its ability to deal with sparse and high cardinality categorical variables. In this second tutorial we will have a look at Factorization Machines (FM) algorithm and study how it generalizes the power of MF.</p>
 <p><strong>Table of contents of this tutorial series on matrix factorization for recommender systems:</strong></p>
 <ul>
@@ -8536,10 +8539,10 @@
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.761778, RMSE: 0.960803 – 0:00:04.309677 – 1.16 MB
-[50,000] MAE: 0.751986, RMSE: 0.949941 – 0:00:08.523646 – 1.36 MB
-[75,000] MAE: 0.750044, RMSE: 0.948911 – 0:00:12.778733 – 1.58 MB
-[100,000] MAE: 0.748609, RMSE: 0.947994 – 0:00:17.031151 – 1.77 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: nan, RMSE: nan – 00:00:04 – 6.55 KB
+[50,000] MAE: nan, RMSE: nan – 00:00:08 – 6.55 KB
+[75,000] MAE: nan, RMSE: nan – 00:00:12 – 6.55 KB
+[100,000] MAE: nan, RMSE: nan – 00:00:16 – 6.55 KB
 </code></pre></div>
 <p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">reco.BiasedMF</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
 <h2 id="feature-engineering-for-fm-models">Feature engineering for FM models<a class="headerlink" href="#feature-engineering-for-fm-models" title="Permanent link">&para;</a></h2>
@@ -8551,8 +8554,8 @@
     <span class="k">break</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>x = {
-    &quot;user&quot;: &quot;259&quot;,
-    &quot;item&quot;: &quot;255&quot;,
+    &quot;user&quot;: 259,
+    &quot;item&quot;: 255,
     &quot;timestamp&quot;: 874731910000000000,
     &quot;title&quot;: &quot;My Best Friend&#39;s Wedding (1997)&quot;,
     &quot;release_date&quot;: 866764800000000000,
@@ -8615,10 +8618,91 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.759838, RMSE: 0.961281 – 0:00:10.537148 – 1.43 MB
-[50,000] MAE: 0.751307, RMSE: 0.951391 – 0:00:21.094161 – 1.68 MB
-[75,000] MAE: 0.750361, RMSE: 0.951393 – 0:00:31.479510 – 1.95 MB
-[100,000] MAE: 0.749994, RMSE: 0.951435 – 0:00:41.899833 – 2.2 MB
+<div class="highlight"><pre><span></span><code>[25,000] MAE: nan, RMSE: nan – 00:00:10 – 30.31 KB
+
+
+
+---------------------------------------------------------------------------
+
+KeyboardInterrupt                         Traceback (most recent call last)
+
+/var/folders/9z/dgt2y49d2qx_hkgt7qj8mc240000gn/T/ipykernel_36090/4267340742.py in &lt;module&gt;
+     24 )
+     25 
+---&gt; 26 evaluate(model)
+
+
+/var/folders/9z/dgt2y49d2qx_hkgt7qj8mc240000gn/T/ipykernel_36090/2127757032.py in evaluate(model)
+      6     X_y = datasets.MovieLens100K(unpack_user_and_item=False)
+      7     metric = metrics.MAE() + metrics.RMSE()
+----&gt; 8     _ = progressive_val_score(X_y, model, metric, print_every=25_000, show_time=True, show_memory=True)
+
+
+~/projects/river/river/evaluate/progressive_validation.py in progressive_val_score(dataset, model, metric, moment, delay, print_every, show_time, show_memory, **print_kwargs)
+    238     )
+    239 
+--&gt; 240     for checkpoint in checkpoints:
+    241 
+    242         msg = f&quot;[{checkpoint[&#39;Step&#39;]:,d}] {metric}&quot;
+
+
+~/projects/river/river/evaluate/progressive_validation.py in _progressive_validation(dataset, model, metric, checkpoints, moment, delay, measure_time, measure_memory)
+     55             metric.update(y_true=y, y_pred=y_pred)
+     56         if model._supervised:
+---&gt; 57             model.learn_one(x=x, y=y, **kwargs)
+     58         else:
+     59             model.learn_one(x=x, **kwargs)
+
+
+~/projects/river/river/preprocessing/pred_clipper.py in learn_one(self, x, y, **kwargs)
+     54 
+     55     def learn_one(self, x, y, **kwargs):
+---&gt; 56         self.regressor.learn_one(x=x, y=y, **kwargs)
+     57         return self
+     58
+
+
+~/projects/river/river/compose/pipeline.py in learn_one(self, x, y, **params)
+    502         last_step = next(steps)
+    503         if last_step._supervised:
+--&gt; 504             last_step.learn_one(x=x, y=y, **params)
+    505         else:
+    506             last_step.learn_one(x, **params)
+
+
+~/projects/river/river/facto/base.py in learn_one(self, x, y, sample_weight)
+     75             x = {j: xj / x_l2_norm for j, xj in x.items()}
+     76 
+---&gt; 77         return self._learn_one(x, y, sample_weight=sample_weight)
+     78 
+     79     def _ohe_cat_features(self, x):
+
+
+~/projects/river/river/facto/base.py in _learn_one(self, x, y, sample_weight)
+    105 
+    106         # Update the latent weights
+--&gt; 107         self._update_latents(x, g_loss)
+    108 
+    109         return self
+
+
+~/projects/river/river/facto/fm.py in _update_latents(self, x, g_loss)
+     91         gradients = {}
+     92         for j, xj in x.items():
+---&gt; 93             gradients[j] = {
+     94                 f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2)
+     95                 + l1 * sign(v[j][f])
+
+
+~/projects/river/river/facto/fm.py in &lt;dictcomp&gt;(.0)
+     91         gradients = {}
+     92         for j, xj in x.items():
+---&gt; 93             gradients[j] = {
+     94                 f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2)
+     95                 + l1 * sign(v[j][f])
+
+
+KeyboardInterrupt:
 </code></pre></div>
 <p>Note that using more variables involves factorizing a larger latent space, then increasing the number of latent factors <span class="arithmatex">\(k\)</span> often helps capturing more information.</p>
 <p>Some other feature engineering tips from <a href="https://www.kaggle.com/c/criteo-display-ad-challenge/discussion/10555">3 idiots' winning solution</a> for Kaggle <a href="https://www.kaggle.com/c/criteo-display-ad-challenge">Criteo display ads</a> competition in 2014:</p>
