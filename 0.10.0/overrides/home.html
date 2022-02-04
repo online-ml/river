@@ -1,0 +1,376 @@
+<!-- Custom HTML site displayed as the landing page -->
+{% extends "base.html" %}
+
+{% block announce %}
+<a>
+  🎉&nbsp;&nbsp;Announcing <strong>River</strong> — Machine learning for data streams in Python&nbsp;&nbsp;🚀
+</a>
+{% endblock %}
+
+<!-- Render hero under tabs -->
+{% block tabs %}
+    {{ super() }}
+
+   <link href="https://fonts.cdnfonts.com/css/gilroy-bold" rel="stylesheet">
+
+    <!-- Additional styles for landing page -->
+    <style>
+
+        /*Landing page container*/
+        .tx-container {
+            padding-top: .0rem;
+            background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: hsla(0, 0%, 100%, 1)' /></svg>") no-repeat bottom,
+            linear-gradient(
+                    to bottom,
+                    var(--md-primary-fg-color),
+                    hsla(280, 67%, 55%, 1) 99%,
+                    var(--md-default-bg-color) 99%
+            )
+        }
+
+        .tx-hero {
+            margin: 32px 2.8rem;
+            color: var(--md-primary-bg-color);
+            justify-content: center;
+        }
+
+        .tx-hero h1 {
+            margin-bottom: 1rem;
+            color: currentColor;
+            font-weight: 600;
+            font-size: 64px;
+            font-family: 'Gilroy-Regular', sans-serif;
+        }
+
+        .tx-hero__content {
+            padding-bottom: 1rem;
+            margin: 0 auto;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .tx-hero__image{
+            width:70%;
+            order:1;
+        }
+
+        .tx-hero .md-button {
+            margin-top: .5rem;
+            margin-right: .5rem;
+            color: var(--md-primary-bg-color)
+        }
+
+        .tx-hero .md-button--primary {
+            background-color: var(--md-primary-bg-color);
+            color: hsla(280deg, 37%, 48%, 1);
+            border-color: var(--md-primary-bg-color)
+        }
+
+        .tx-hero .md-button:focus,
+        .tx-hero .md-button:hover {
+            background-color: var(--md-accent-fg-color);
+            color: var(--md-default-bg-color);
+            border-color: var(--md-accent-fg-color)
+        }
+
+        .feature-item h2 svg {
+            height: 30px;
+            float: left;
+            margin-right: 10px;
+            transform: translateY(10%);
+        }
+
+        .top-hr {
+            margin-top: 42px;
+        }
+
+        @media screen and (max-width:30em) {
+            .tx-hero h1 {
+                font-size: 1.4rem
+            }
+        }
+
+        .hr {
+            border-bottom: 1px solid #eee;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .text-center {
+            text-align: center;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-top: 15px;
+            font-family: 'Lato', sans-serif;
+            font-size: 23px;
+            font-weight: 300;
+            padding-bottom: 10px;
+        }
+
+        /* Application header should be static for the landing page */
+        .md-header {
+          position: initial;
+        }
+
+        /* Remove spacing, as we cannot hide it completely */
+        .md-main__inner {
+          margin: 0;
+        }
+
+        /* Hide main content for now */
+        .md-content {
+          display: none;
+        }
+
+        /* Hide table of contents */
+        @media screen and (min-width: 60em) {
+          .md-sidebar--secondary {
+            display: none;
+          }
+        }
+
+        /* Hide navigation */
+        @media screen and (min-width: 76.25em) {
+          .md-sidebar--primary {
+            display: none;
+          }
+        }
+
+        .feature-item h2 svg {
+        height: 30px;
+        float: left;
+        margin-right: 10px;
+        transform: translateY(10%);
+        }
+
+        .feature-item {
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            padding: 15px 15px;
+            word-break: break-word;
+            border-radius: 3px;
+            /*height: 240px;*/
+            min-width: 275px;
+            /*width: 300px;*/
+            margin: 15px 15px;
+        }
+
+        .feature-item h2 {
+            color: #333;
+            font-weight: 300;
+            font-size: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: normal;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+
+        .feature-item p {
+            font-size: 14px;
+            line-height: 1.8em;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            color: #111;
+            margin: 0 0 10px;
+            display: block;
+        }
+
+        .feature-item-underline {
+            display: inline-block;
+            vertical-align: middle;
+            -webkit-transform: perspective(1px) translateZ(0);
+            transform: perspective(1px) translateZ(0);
+            /* Black, with 10% opacity */
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media screen and (max-width:30em) {
+            .tx-hero h1 {
+                font-size: 1.4rem
+            }
+        }
+
+        @media screen and (min-width:60em) {
+            .md-sidebar--secondary {
+                display: none
+            }
+
+            .tx-hero {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .tx-hero__content {
+                max-width: 22rem;
+                margin-top: 3.5rem;
+                margin-bottom: 3.5rem;
+                margin-left: 1.0rem;
+                margin-right: 4.0rem;
+                align-items: center;
+            }
+        }
+
+        @media screen and (min-width:76.25em) {
+            .md-sidebar--primary {
+                display: none
+            }
+
+            .top-hr {
+                width: 100%;
+                display: flex;
+                max-width: 61rem;
+                margin-right: auto;
+                margin-left: auto;
+                padding: 0 .2rem;
+            }
+
+            .bottom-hr {
+                margin-top: 10px;
+                width: 100%;
+                display: flex;
+                max-width: 61rem;
+                margin-right: auto;
+                margin-left: auto;
+                padding: 0 .2rem;
+            }
+
+            .feature-item {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .feature-item:hover {
+                background-color: #526cfe47;
+                border-radius: 3px;
+            }
+        }
+
+        .hr {
+            border-bottom: 1px solid #eee;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .text-center {
+            text-align: center;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-top: 15px;
+            font-family: 'Lato', sans-serif;
+            font-size: 23px;
+            font-weight: 300;
+            padding-bottom: 10px;
+        }
+
+        .logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-flow: row wrap;
+            margin: 0 auto;
+        }
+
+        .logos img {
+            flex: 1 1 auto;
+            padding: 25px;
+            max-height: 130px;
+            vertical-align: middle;
+        }
+
+        .hr-logos {
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .md-footer-meta__inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 1.0rem;
+        }
+
+        .md-footer-social {
+            padding-top: 20px;
+        }
+    </style>
+
+    <!-- Hero for landing page -->
+    <section class="tx-container">
+        <div class="md-grid md-typeset">
+          <div class="tx-hero">
+
+            <!-- Hero content -->
+            <div class="tx-hero__content">
+              <h1> River </h1>
+              <p>A Python package for online/streaming machine learning.</p>
+              <a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | striptags }}" class="md-button md-button--primary">
+                Get started
+              </a>
+              <a href="{{ config.repo_url }}" title="{{ lang.t('source.link.title') }}" class="md-button">
+                GitHub Repo
+              </a>
+            </div>
+
+            <!-- Hero image -->
+            <div class="tx-hero__image">
+              <img
+                src="img/illustration.png"
+                alt=""
+                width="1459"
+                height="1200"
+                draggable="false"
+              >
+            </div>
+
+          </div>
+        </div>
+    </section>
+
+    <div class="top-hr">
+        <div class="feature-item feature-item-underline">
+            <h2>
+                Incremental
+            </h2>
+            <p>All the tools in the library can be updated with a single observation at a time, and can therefore be used to process streaming data.</p>
+        </div>
+        <div class="feature-item feature-item-underline">
+            <h2>
+                Adaptive
+            </h2>
+            <p>In the streaming setting, data can evolve. Adaptive methods are specifically designed to be robust against concept drift in dynamic environments.</p>
+        </div>
+        <div class="feature-item feature-item-underline">
+            <h2>
+                General purpose
+            </h2>
+            <p>River caters for different ml problems, including regression, classification, and unsupervised learning. It can also be used for adhoc tasks, such as computing online metrics, and concept drift detection. </p>
+        </div>
+        <div class="feature-item feature-item-underline">
+            <h2>
+                Efficient & easy to use
+            </h2>
+            <p>Streaming techniques efficiently handle resources such as memory and processing time given the unbounded nature of data streams. River is designed for users with any experience level.</p>
+        </div>
+    </div>
+
+    <div class="top-hr">
+        <div class="hr">
+        </div>
+    </div>
+
+{% endblock %}
+
+<!-- Content -->
+{% block content %}{% endblock %}
+
+<!-- Application footer -->
+{% block footer %}{% endblock %}
