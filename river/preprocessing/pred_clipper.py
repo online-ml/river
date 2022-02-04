@@ -52,11 +52,11 @@ class PredClipper(base.Regressor, base.Wrapper):
     def _wrapped_model(self):
         return self.regressor
 
-    def learn_one(self, *args, x, y):
+    def learn_one(self, x, y, *args):
         self.regressor.learn_one(*args, x=x, y=y)
         return self
 
-    def predict_one(self, *args, x):
+    def predict_one(self, x, *args):
         y_pred = self.regressor.predict_one(*args, x=x)
         return utils.math.clamp(y_pred, self.y_min, self.y_max)
 
