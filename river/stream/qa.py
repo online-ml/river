@@ -171,14 +171,14 @@ def simulate_qa(
             if t_expire > t:
                 break
 
-            # Reveal the duration and pop the trip from the queue
-            yield i_old, *args_old, x_old, y_old
+            # Reveal the ground truth and pop the observation from the queue
+            yield (i_old, *args_old, x_old, y_old)
             del mementos[0]
 
         queue(mementos, Memento(i, args, x, y, t + d))
         if copy:
             x = deepcopy(x)
-        yield i, *args, x, None
+        yield (i, *args, x, None)
 
     for memento in mementos:
-        yield memento.i, *memento.args, memento.x, memento.y
+        yield (memento.i, *memento.args, memento.x, memento.y)
