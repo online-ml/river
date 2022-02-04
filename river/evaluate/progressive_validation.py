@@ -40,11 +40,11 @@ def _progressive_validation(
     if measure_time:
         start = time.perf_counter()
 
-    for i, *args, x, y in stream.simulate_qa(dataset, moment, delay, copy=True):
+    for i, x, y, kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
 
         # Question
         if y is None:
-            preds[i] = pred_func(*args, x=x)
+            preds[i] = pred_func(x=x, **kwargs)
             continue
 
         # Answer
@@ -52,9 +52,9 @@ def _progressive_validation(
         if y_pred != {} and y_pred is not None:
             metric.update(y_true=y, y_pred=y_pred)
         if model._supervised:
-            model.learn_one(*args, x=x, y=y)
+            model.learn_one(x=x, y=y, **kwargs)
         else:
-            model.learn_one(*args, x=x)
+            model.learn_one(x=x, **kwargs)
 
         # Update the answer counter
         n_total_answers += 1
