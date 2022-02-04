@@ -1,4 +1,3 @@
-import collections
 import textwrap
 
 from river import metrics
