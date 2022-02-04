@@ -20,12 +20,12 @@ class SDFT:
     --------
 
     >>> import numpy as np
-    >>> from river import special
+    >>> from river import misc
 
     >>> X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     >>> window_size = 5
-    >>> sdft = special.SDFT(window_size)
+    >>> sdft = misc.SDFT(window_size)
 
     >>> for i, x in enumerate(X):
     ...     sdft = sdft.update(x)

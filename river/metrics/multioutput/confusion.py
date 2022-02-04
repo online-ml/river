@@ -1,4 +1,3 @@
-import collections
 import textwrap
 
 from river import metrics
@@ -31,33 +30,43 @@ class MultiLabelConfusionMatrix:
 
     >>> cm
     0
-               False   True
-        False      0      1
-         True      0      1
+                False   True
+        False       0      1
+         True       0      1
     <BLANKLINE>
     1
-               False   True
-        False      0      0
-         True      1      1
+                False   True
+        False       0      0
+         True       1      1
     <BLANKLINE>
     2
-               False   True
-        False      1      0
-         True      0      1
+                False   True
+        False       1      0
+         True       0      1
 
     """
 
     def __init__(self):
-        self.data = collections.defaultdict(metrics.ConfusionMatrix)
+        self.data = dict()
 
     def update(self, y_true, y_pred, sample_weight=1.0):
         for label, yt in y_true.items():
-            self.data[label].update(yt, y_pred[label], sample_weight)
+            try:
+                cm = self.data[label]
+            except KeyError:
+                cm = metrics.ConfusionMatrix()
+                self.data[label] = cm
+            cm.update(yt, y_pred[label], sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.0):
         for label, yt in y_true.items():
-            self.data[label].revert(yt, y_pred[label], sample_weight)
+            try:
+                cm = self.data[label]
+            except KeyError:
+                cm = metrics.ConfusionMatrix()
+                self.data[label] = cm
+            cm.update(yt, y_pred[label], sample_weight)
         return self
 
     def __repr__(self):

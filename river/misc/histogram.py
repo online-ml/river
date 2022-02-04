@@ -84,7 +84,7 @@ class Histogram(collections.UserList):
     Examples
     --------
 
-    >>> from river import special
+    >>> from river import misc
     >>> import matplotlib.pyplot as plt
     >>> import numpy as np
 
@@ -95,7 +95,7 @@ class Histogram(collections.UserList):
     ...     np.random.normal(3, 1, 1000),
     ... ))
 
-    >>> hist = special.Histogram(max_bins=60)
+    >>> hist = misc.Histogram(max_bins=60)
 
     >>> for x in values:
     ...     hist = hist.update(x)
@@ -196,9 +196,9 @@ class Histogram(collections.UserList):
         Examples
         --------
 
-        >>> from river import special
+        >>> from river import misc
 
-        >>> hist = special.Histogram()
+        >>> hist = misc.Histogram()
         >>> for x in range(4):
         ...     hist = hist.update(x)
 
@@ -244,9 +244,9 @@ class Histogram(collections.UserList):
         Examples
         --------
 
-        >>> from river import special
+        >>> from river import misc
 
-        >>> hist = special.Histogram()
+        >>> hist = misc.Histogram()
         >>> for x in range(4):
         ...     hist = hist.update(x)
 
