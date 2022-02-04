@@ -12,13 +12,19 @@ class MovieLens100K(base.RemoteDataset):
     collected through the MovieLens web site (movielens.umn.edu) during the seven-month period from
     September 19th, 1997 through April 22nd, 1998.
 
+    Parameters
+    ----------
+    unpack_user_and_item
+        Whether or not the user and item should be extracted from the context and included as extra
+        keyword arguments.
+
     References
     ----------
     [^1]: [The MovieLens Datasets: History and Context](http://dx.doi.org/10.1145/2827872)
 
     """
 
-    def __init__(self):
+    def __init__(self, unpack_user_and_item=True):
         super().__init__(
             n_samples=100_000,
             n_features=10,
@@ -27,9 +33,10 @@ class MovieLens100K(base.RemoteDataset):
             size=11_057_876,
             filename="ml_100k.csv",
         )
+        self.unpack_user_and_item = unpack_user_and_item
 
     def _iter(self):
-        for x, y in stream.iter_csv(
+        X_y = stream.iter_csv(
             self.path,
             target="rating",
             converters={
@@ -41,7 +48,11 @@ class MovieLens100K(base.RemoteDataset):
                 "rating": float,
             },
             delimiter="\t",
-        ):
-            user = x.pop("user")
-            item = x.pop("item")
-            yield user, item, x, y
+        )
+        if self.unpack_user_and_item:
+            for x, y in X_y:
+                user = x.pop("user")
+                item = x.pop("item")
+                yield x, y, {"user": user, "item": item}
+        else:
+            yield from X_y
