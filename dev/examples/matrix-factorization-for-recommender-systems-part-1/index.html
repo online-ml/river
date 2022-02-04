@@ -8529,7 +8529,7 @@
 
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 
-<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MovieLens100K</span><span class="p">(</span><span class="n">unpack_user_and_item</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MovieLens100K</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;x = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;y = </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">break</span>
@@ -8565,10 +8565,10 @@ y = 4.0
 <span class="n">model</span> <span class="o">=</span> <span class="n">dummy</span><span class="o">.</span><span class="n">StatisticRegressor</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span>
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">unpack_user_and_item</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.934259, RMSE: 1.124469 – 0:00:00.647357 – 514 B
-[50,000] MAE: 0.923893, RMSE: 1.105 – 0:00:01.290790 – 514 B
-[75,000] MAE: 0.937359, RMSE: 1.123696 – 0:00:01.944589 – 514 B
-[100,000] MAE: 0.942162, RMSE: 1.125783 – 0:00:02.591257 – 514 B
+<div class="highlight"><pre><span></span><code>[25,000] MAE: 0.934259, RMSE: 1.124469 – 00:00:00 – 514 B
+[50,000] MAE: 0.923893, RMSE: 1.105 – 00:00:01 – 514 B
+[75,000] MAE: 0.937359, RMSE: 1.123696 – 00:00:01 – 514 B
+[100,000] MAE: 0.942162, RMSE: 1.125783 – 00:00:02 – 514 B
 </code></pre></div>
 <h2 id="baseline-model">Baseline model<a class="headerlink" href="#baseline-model" title="Permanent link">&para;</a></h2>
 <p>Now we can do machine learning and explore available models in <a href="https://online-ml.github.io/api/overview/#reco">river.reco</a> module starting with the baseline model. It extends our naive prediction by adding to the global running mean two bias terms characterizing the user and the item discrepancy from the general tendency. The model equation is defined as:</p>
