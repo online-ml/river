@@ -168,6 +168,7 @@ def simulate_qa(
 
             # Get the oldest answer
             i_old, x_old, y_old, kwargs_old, t_expire = mementos[0]
+            del mementos[0]
 
             # If the oldest answer isn't old enough then stop
             if t_expire > t:
@@ -179,7 +180,6 @@ def simulate_qa(
                 x_old,
                 y_old,
             )
-            del mementos[0]
 
         queue(mementos, Memento(i, x, y, kwargs, t + d))
         if copy:

@@ -533,7 +533,7 @@ class Pipeline(base.Estimator):
         last_step = next(steps)
         return x, last_step
 
-    def transform_one(self, x: dict):
+    def transform_one(self, x: dict, **params):
         """Apply each transformer in the pipeline to some features.
 
         The final step in the pipeline will be applied if it is a transformer. If not, then it will
@@ -545,10 +545,10 @@ class Pipeline(base.Estimator):
         if isinstance(last_step, base.Transformer):
             if not last_step._supervised:
                 last_step.learn_one(x)
-            return last_step.transform_one(x)
+            return last_step.transform_one(x, **params)
         return x
 
-    def predict_one(self, x: dict):
+    def predict_one(self, x: dict, **params):
         """Call `transform_one` on the first steps and `predict_one` on the last step.
 
         Parameters
@@ -558,9 +558,9 @@ class Pipeline(base.Estimator):
 
         """
         x, last_step = self._transform_one(x)
-        return last_step.predict_one(x)
+        return last_step.predict_one(x, **params)
 
-    def predict_proba_one(self, x: dict):
+    def predict_proba_one(self, x: dict, **params):
         """Call `transform_one` on the first steps and `predict_proba_one` on the last step.
 
         Parameters
@@ -570,9 +570,9 @@ class Pipeline(base.Estimator):
 
         """
         x, last_step = self._transform_one(x)
-        return last_step.predict_proba_one(x)
+        return last_step.predict_proba_one(x, **params)
 
-    def score_one(self, x: dict):
+    def score_one(self, x: dict, **params):
         """Call `transform_one` on the first steps and `score_one` on the last step.
 
         Parameters
@@ -582,7 +582,7 @@ class Pipeline(base.Estimator):
 
         """
         x, last_step = self._transform_one(x)
-        return last_step.score_one(x)
+        return last_step.score_one(x, **params)
 
     def forecast(self, horizon: int, xs: typing.List[dict] = None):
         """Return a forecast.
