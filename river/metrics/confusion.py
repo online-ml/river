@@ -1,5 +1,4 @@
 import functools
-from collections import defaultdict
 
 from river import utils
 
