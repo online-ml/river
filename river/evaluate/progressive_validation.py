@@ -52,9 +52,9 @@ def _progressive_validation(
         if y_pred != {} and y_pred is not None:
             metric.update(y_true=y, y_pred=y_pred)
         if model._supervised:
-            model.learn_one(x=x, y=y)
+            model.learn_one(*args, x=x, y=y)
         else:
-            model.learn_one(x=x)
+            model.learn_one(*args, x=x)
 
         # Update the answer counter
         n_total_answers += 1
