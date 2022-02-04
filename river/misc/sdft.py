@@ -20,7 +20,7 @@ class SDFT:
     --------
 
     >>> import numpy as np
-    >>> from river import special
+    >>> from river import misc
 
     >>> X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 

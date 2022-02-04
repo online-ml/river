@@ -2,8 +2,8 @@ import bisect
 import collections
 import functools
 
-from river import special
-from river.special.histogram import Bin  # noqa
+from river import misc
+from river.misc.histogram import Bin  # noqa
 
 from ..utils import BranchFactory
 from .base import Splitter

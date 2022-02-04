@@ -84,7 +84,7 @@ class Histogram(collections.UserList):
     Examples
     --------
 
-    >>> from river import special
+    >>> from river import misc
     >>> import matplotlib.pyplot as plt
     >>> import numpy as np
 
@@ -196,7 +196,7 @@ class Histogram(collections.UserList):
         Examples
         --------
 
-        >>> from river import special
+        >>> from river import misc
 
         >>> hist = special.Histogram()
         >>> for x in range(4):
@@ -244,7 +244,7 @@ class Histogram(collections.UserList):
         Examples
         --------
 
-        >>> from river import special
+        >>> from river import misc
 
         >>> hist = special.Histogram()
         >>> for x in range(4):

@@ -22,7 +22,7 @@ class Skyline(collections.UserList):
     Here is an example taken from [this](https://maxhalford.github.io/blog/skyline-queries/) blog post.
 
     >>> import random
-    >>> from river import special
+    >>> from river import misc
     >>> import matplotlib.pyplot as plt
 
     >>> city_prices = {
@@ -67,7 +67,7 @@ class Skyline(collections.UserList):
     Here is another example using the kart data from *Mario Kart: Double Dash!!*.
 
     >>> import collections
-    >>> from river import special
+    >>> from river import misc
 
     >>> Kart = collections.namedtuple(
     ...      'Kart',

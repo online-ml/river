@@ -34,6 +34,7 @@
 ## misc
 
 - Created this module to store some stuff that was in the `utils` module but wasn't necessarily shared between modules.
+- Implement `misc.CovMatrix`.
 
 ## reco
 
