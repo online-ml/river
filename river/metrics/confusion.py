@@ -1,5 +1,4 @@
 import functools
-import textwrap
 from collections import defaultdict
 
 from river import utils

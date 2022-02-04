@@ -28,7 +28,7 @@ class HistogramSplitter(Splitter):
         self.n_bins = n_bins
         self.n_splits = n_splits
         self.hists = collections.defaultdict(
-            functools.partial(special.Histogram, max_bins=self.n_bins)
+            functools.partial(misc.Histogram, max_bins=self.n_bins)
         )
 
     def update(self, att_val, target_val, sample_weight):

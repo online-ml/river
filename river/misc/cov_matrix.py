@@ -1,7 +1,8 @@
 import collections
-import functools
 import itertools
+
 import pandas as pd
+
 from river import stats, utils
 
 
@@ -127,9 +128,8 @@ class CovMatrix(collections.UserDict):
             column = []
             for row in names:
                 try:
-                    cov = self[row, col].get()
                     column.append(f"{self[row, col].get():{self._fmt}}")
-                except:
+                except KeyError:
                     column.append("")
             columns.append(column)
 
