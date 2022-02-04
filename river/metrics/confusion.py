@@ -1,6 +1,7 @@
 import functools
-import textwrap
 from collections import defaultdict
+
+from river import utils
 
 
 class ConfusionMatrix:
@@ -85,38 +86,16 @@ class ConfusionMatrix:
 
     def __repr__(self):
 
-        # The classes are sorted alphabetically for reproducibility reasons
         classes = sorted(self.classes)
-
         if not classes:
             return ""
 
-        # Determine the required width of each column in the table
-        largest_label_len = max(len(str(c)) for c in classes)
-        largest_number_len = len(
-            str(max(max(v for v in c.values()) for c in self.data.values()))
-        )
-        width = max(largest_label_len, largest_number_len) + 2
+        headers = [""] + list(map(str, classes))
+        columns = [headers[1:]]
+        for col in classes:
+            columns.append([f"{int(self.data[row][col]):,}" for row in classes])
 
-        # Make a template to print out rows one by one
-        row_format = "{:>{width}}" * (len(classes) + 1)
-
-        # Write down the header
-        table = row_format.format("", *map(str, classes), width=width) + "\n"
-
-        # Write down the true labels row by row
-        table += "\n".join(
-            (
-                row_format.format(
-                    str(y_true),
-                    *[f"{self.data[y_true][y_pred]:0.0f}" for y_pred in classes],
-                    width=width,
-                )
-                for y_true in classes
-            )
-        )
-
-        return textwrap.dedent(table)
+        return utils.pretty.print_table(headers, columns)
 
     def support(self, label):
         return self.sum_row[label]
