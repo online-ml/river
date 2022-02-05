@@ -58,6 +58,11 @@ class CovMatrix(collections.UserDict):
     >>> cov["blue", "green"]
     Cov: 0.020292
 
+    Diagonal entries are variances:
+
+    >>> cov["blue", "blue"]
+    Var: 0.076119
+
     """
 
     _fmt = ",.3f"
