@@ -12,17 +12,18 @@ from river import misc
 def test_cov_matrix(ddof):
 
     cov = misc.CovMatrix(ddof)
-    k = 5
-    X_all = pd.DataFrame(columns=range(k))
+    p = 5
+    X_all = pd.DataFrame(columns=range(p))
 
     for _ in range(5):
-        X = pd.DataFrame(np.random.random((30, k))).sample(3, axis="columns")
+        n = np.random.randint(1, 31)
+        X = pd.DataFrame(np.random.random((n, p))).sample(3, axis="columns")
         cov.update_many(X)
         X_all = pd.concat((X_all, X))
 
-        for i, j in itertools.combinations_with_replacement(range(k), r=2):
+        for i, j in itertools.combinations_with_replacement(range(p), r=2):
             not_null = X_all[i].notnull() & X_all[j].notnull()
             if not not_null.any():
                 continue
-            np_cov = np.cov(X_all.loc[not_null, [i, j]], rowvar=False, ddof=ddof)
+            np_cov = np.cov(X_all[not_null][[i, j]], rowvar=False, ddof=ddof)
             assert math.isclose(cov[i, j].get(), np_cov[0, 1])
