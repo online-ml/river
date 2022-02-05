@@ -18,7 +18,7 @@ def test_cov_matrix(ddof):
     for _ in range(5):
         X = pd.DataFrame(np.random.random((30, k))).sample(3, axis="columns")
         cov.update_many(X)
-        X_all = X_all.append(X)
+        X_all = pd.concat((X_all, X))
 
         for i, j in itertools.combinations_with_replacement(range(k), r=2):
             not_null = X_all[i].notnull() & X_all[j].notnull()
