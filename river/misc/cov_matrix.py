@@ -7,7 +7,7 @@ from river import stats, utils
 
 
 class CovMatrix(collections.UserDict):
-    """Covariance matrix.
+    """Sample covariance matrix.
 
     Parameters
     ----------
