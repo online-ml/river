@@ -58,6 +58,11 @@ class CovMatrix(collections.UserDict):
     >>> cov["blue", "green"]
     Cov: 0.020292
 
+    Diagonal entries are variances:
+
+    >>> cov["blue", "blue"]
+    Var: 0.076119
+
     """
 
     _fmt = ",.3f"
@@ -76,13 +81,21 @@ class CovMatrix(collections.UserDict):
 
         """
 
-        for i, j in itertools.combinations_with_replacement(sorted(x), r=2):
+        for i, j in itertools.combinations(sorted(x), r=2):
             try:
                 cov = self[i, j]
             except KeyError:
                 self[i, j] = stats.Cov(self.ddof)
                 cov = self[i, j]
             cov.update(x[i], x[j])
+
+        for i, xi in x.items():
+            try:
+                var = self[i, i]
+            except KeyError:
+                self[i, i] = stats.Var(self.ddof)
+                var = self[i, i]
+            var.update(xi)
 
         return self
 
@@ -96,13 +109,21 @@ class CovMatrix(collections.UserDict):
 
         """
 
-        for i, j in itertools.combinations_with_replacement(sorted(X.columns), r=2):
+        for i, j in itertools.combinations(sorted(X.columns), r=2):
             try:
                 cov = self[i, j]
             except KeyError:
                 self[i, j] = stats.Cov(self.ddof)
                 cov = self[i, j]
             cov.update_many(X[i].values, X[j].values)
+
+        for i in X.columns:
+            try:
+                var = self[i, i]
+            except KeyError:
+                self[i, i] = stats.Var(self.ddof)
+                var = self[i, i]
+            var.update_many(X[i].values)
 
         return self
 

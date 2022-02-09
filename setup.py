@@ -39,7 +39,6 @@ compat_packages = base_packages + [
 ]
 
 dev_packages = base_packages + [
-    "asv",
     "graphviz>=0.10.1",
     "matplotlib>=3.0.2",
     "mypy>=0.761",
