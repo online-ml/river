@@ -139,7 +139,7 @@ class Select(base.MiniBatchTransformer):
         # INFO: has either side-effects or doesn't have copy - choose your poison
         # REFLECTION: worth adding `copy=True` parameter to the object constructor to allow both?
         # << convention is to have pure methods/functions
-        return X.loc[:, self.keys].copy()
+        return X.loc[:, list(self.keys)].copy()
         # return X.loc[:, self.keys]
 
     def __str__(self):
