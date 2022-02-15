@@ -4,10 +4,11 @@ import typing
 import numpy as np
 import pandas as pd
 from river.utils import dict2numpy
+from river import base
 from sklearn.utils import validation
 from sklearn.metrics import euclidean_distances
 from sklearn.utils.multiclass import unique_labels
-from river import base
+
 
 
 class RobustSoftLearningVectorQuantization(base.MiniBatchClassifier):
@@ -433,7 +434,7 @@ class RobustSoftLearningVectorQuantization(base.MiniBatchClassifier):
 
         return self
 
-    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+    def predict_many(self, X: pd.DataFrame) -> np.ndarray:
         """
         Predict class membership index for each input sample.
 
