@@ -267,7 +267,7 @@ class Agrawal(base.SyntheticDataset):
             if (elevel == 1) or (elevel == 2) or (elevel == 3):
                 return int(50000 <= salary <= 100000))
             else:
-                return int(75000 <= salary <= 125000))
+                return int(75000 <= salary <= 125000)
         else:
             if (elevel == 2) or (elevel == 3) or (elevel == 4):
                 return int(50000 <= salary <= 100000))
