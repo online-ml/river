@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/user-guide/mini-batching/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.11">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.50e68009.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e8d9bf0c.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -8378,6 +8378,7 @@
               
                 
 
+
 <h1 id="mini-batching">Mini-batching<a class="headerlink" href="#mini-batching" title="Permanent link">&para;</a></h1>
 <p>In its purest form, online machine learning encompasses models which learn with one sample at a time. This is the design which is used in <code>river</code>.</p>
 <p>The main downside of single-instance processing is that it doesn't scale to big data, at least not in the sense of traditional batch learning. Indeed, processing one sample at a time means that we are unable to fully take advantage of <a href="https://www.wikiwand.com/en/Vectorization">vectorisation</a> and other computational tools that are taken for granted in batch learning. On top of this, processing a large dataset in <code>river</code> essentially involves a Python <code>for</code> loop, which might be too slow for some usecases. However, this doesn't mean that <code>river</code> is slow. In fact, for processing a single instance, <code>river</code> is actually a couple of orders of magnitude faster than libraries such as scikit-learn, PyTorch, and Tensorflow. The reason why is because <code>river</code> is designed from the ground up to process a single instance, whereas the majority of other libraries choose to care about batches of data. Both approaches offer different compromises, and the best choice depends on your usecase.</p>
@@ -8528,10 +8529,10 @@ StandardScaler
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.092fa1f6.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5a9542cf.min.js"></script>
+      <script src="../../assets/javascripts/bundle.8aa65030.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
