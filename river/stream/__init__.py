@@ -6,6 +6,7 @@ The module includes tools to iterate over data streams.
 from .cache import Cache
 from .iter_arff import iter_arff
 from .iter_array import iter_array
+from .iter_counts import iter_counts
 from .iter_csv import iter_csv
 from .iter_libsvm import iter_libsvm
 from .qa import simulate_qa
@@ -16,6 +17,7 @@ __all__ = [
     "iter_arff",
     "iter_array",
     "iter_csv",
+    "iter_counts",
     "iter_libsvm",
     "simulate_qa",
     "shuffle",
