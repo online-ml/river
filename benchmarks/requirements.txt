@@ -1,9 +1,8 @@
-git+https://github.com/creme-ml/creme
-Keras==2.2.4
-git+https://github.com/scikit-garden/scikit-garden
-scikit-learn==0.21.2
-scikit-multiflow==0.4.1
-tensorflow==1.15.2
-torch==1.1.0
-vowpalwabbit==8.7.0.post1
-watermark==1.8.2
+git+https://github.com/online-ml/river
+pandas
+rich
+scikit-learn
+tabulate
+torch
+vowpalwabbit
+watermark

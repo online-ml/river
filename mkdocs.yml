@@ -1,12 +1,13 @@
 # Project information
-site_name: creme
-site_description: A Material Design theme for MkDocs
-site_author: The creme developers
-site_url: https://creme-ml.github.io/
+site_name: River
+site_description: Machine learning for data streams in Python
+site_author: The river developers
+site_url: https://riverml.xyz
 
 # Repository
-repo_name: creme-ml/creme
-repo_url: https://github.com/creme-ml/creme
+repo_name: online-ml/river
+repo_url: https://github.com/online-ml/river
+edit_uri: ""
 
 # Copyright
 copyright: Copyright &copy; 2019 - 2020
@@ -22,40 +23,44 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
-  logo: img/creme_square.svg
+  logo: img/river_square.svg
   favicon: img/favicon.ico
   features:
-    - tabs
-    #- instant  # experimental, enables SPA
+    - navigation.tabs
+    - navigation.instant
 
 # Extras
 extra:
+  analytics:
+    provider: google
+    property: UA-63302552-3
   social:
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/creme-ml/creme
-
-# Google Analytics
-google_analytics:
-  - UA-63302552-3
-  - auto
+      link: https://github.com/online-ml/river
 
 # Extensions
 markdown_extensions:
   - admonition
-  - codehilite:
-      guess_lang: false
+  - footnotes
   - toc:
       permalink: true
-      toc_depth : "1-3"
+      toc_depth: "1-3"
   - pymdownx.details
-  - pymdownx.arithmatex
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight
+  - pymdownx.superfences
 
 plugins:
   - search
   - awesome-pages
 
 extra_javascript:
-  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - js/version-select.js
 
 extra_css:
   - stylesheets/extra.css
+  - css/version-select.css

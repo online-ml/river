@@ -1,6 +1,8 @@
-arrange:
-    - index.md
+nav:
+    - Home: index.md
+    - getting-started
     - user-guide
-    - api-reference
+    - api
     - examples
+    - FAQ: faq
     - releases

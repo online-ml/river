@@ -16,28 +16,26 @@ addressed by searching through the past issues.
 Describe all the versions that can help us to correct the bug
 -->
 
-**`creme` version** : 
-
-**Python version** : 
-
-**Operating System** :
+**river version**:
+**Python version**:
+**Operating system**:
 
 ## Describe the bug
 <!--
 A clear and concise description of the bug.
 -->
 
-## Steps/Code to Reproduce
+## Steps/code to reproduce
 <!--
 Please add a minimal example that we can reproduce the error by running the
 code. Be as succinct as possible. In short, we
 are going to copy-paste your code and we expect to get the same
 result as you.
 
-If we need to have access to a particular dataset to reproduce the error, 
-please attach it (or a reduced version if the file is too big) in a file (csv, json...). 
+If we need to have access to a particular dataset to reproduce the error,
+please attach it (or a reduced version if the file is too big) in a file (csv, json...).
 If you are not allowed to share the dataset, please try to create a minimal example with synthetic
-data which can allow us to reproduce the bug. 
+data which can allow us to reproduce the bug.
 
 If the code is too long, feel free to put it in a public gist and link
 it in the issue: https://gist.github.com
@@ -45,6 +43,7 @@ it in the issue: https://gist.github.com
 
 ```python
 # Sample code to reproduce the problem
+# Please do your best to provide a Minimal, Reproducible Example: https://stackoverflow.com/help/minimal-reproducible-example
 ```
 
 

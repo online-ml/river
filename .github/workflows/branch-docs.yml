@@ -1,0 +1,38 @@
+name: branch-docs
+
+on:
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Ubuntu dependencies
+        run: sudo apt-get install graphviz pandoc
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ matrix.python }}-pip-${{ hashFiles('**/setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.python }}-pip-
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[docs]"
+          pip install numpydoc jupyter
+          pip install git+https://github.com/MaxHalford/yamp
+
+      - name: Build docs
+        run: make doc
