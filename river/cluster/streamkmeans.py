@@ -71,11 +71,11 @@ class STREAMKMeans(base.Clusterer):
     >>> for x, _ in stream.iter_array(X):
     ...     streamkmeans = streamkmeans.learn_one(x)
 
-    >>> streamkmeans.predict_one({0:1, 1:0})
-    1
-
-    >>> streamkmeans.predict_one({0:5, 1:2})
+    >>> streamkmeans.predict_one({0: 1, 1: 0})
     0
+
+    >>> streamkmeans.predict_one({0: 5, 1: 2})
+    1
 
     """
 
