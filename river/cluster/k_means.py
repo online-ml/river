@@ -2,7 +2,7 @@ import collections
 import functools
 import random
 
-from river import base, utils
+from river import base
 
 __all__ = ["KMeans"]
 
@@ -55,12 +55,12 @@ class KMeans(base.Clusterer):
     ...     [1, 2],
     ...     [1, 4],
     ...     [1, 0],
-    ...     [4, 2],
-    ...     [4, 4],
-    ...     [4, 0]
+    ...     [-4, 2],
+    ...     [-4, 4],
+    ...     [-4, 0]
     ... ]
 
-    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.4, sigma=3, seed=0)
+    >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.1, sigma=3, seed=42)
 
     >>> for i, (x, _) in enumerate(stream.iter_array(X)):
     ...     k_means = k_means.learn_one(x)
@@ -68,15 +68,15 @@ class KMeans(base.Clusterer):
     [1, 2] is assigned to cluster 1
     [1, 4] is assigned to cluster 1
     [1, 0] is assigned to cluster 0
-    [4, 2] is assigned to cluster 0
-    [4, 4] is assigned to cluster 0
-    [4, 0] is assigned to cluster 0
+    [-4, 2] is assigned to cluster 1
+    [-4, 4] is assigned to cluster 1
+    [-4, 0] is assigned to cluster 0
 
     >>> k_means.predict_one({0: 0, 1: 0})
-    1
+    0
 
     >>> k_means.predict_one({0: 4, 1: 4})
-    0
+    1
 
     References
     ----------
@@ -118,7 +118,11 @@ class KMeans(base.Clusterer):
 
     def predict_one(self, x):
         def get_distance(c):
-            return utils.math.minkowski_distance(a=self.centers[c], b=x, p=self.p)
+            center = self.centers[c]
+            return sum(
+                (abs(center[k] - x.get(k, 0))) ** self.p
+                for k in set([*center.keys(), *x.keys()])
+            )
 
         return min(self.centers, key=get_distance)
 
