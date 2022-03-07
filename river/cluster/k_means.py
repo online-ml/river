@@ -118,7 +118,11 @@ class KMeans(base.Clusterer):
 
     def predict_one(self, x):
         def get_distance(c):
-            return utils.math.minkowski_distance(a=self.centers[c], b=x, p=self.p)
+            center = self.centers[c]
+            return sum(
+                (abs(center[k] - x.get(k, 0))) ** self.p
+                for k in set([*center.keys(), *x.keys()])
+            )
 
         return min(self.centers, key=get_distance)
 
