@@ -96,8 +96,8 @@ def dotvecmat(x, A):
     ... }
 
     >>> C = dotvecmat(x, A)
-    >>> pprint.pprint(C)
-    {0: 10, 1: 19}
+    >>> print(C)
+    {0: 10.0, 1: 19.0}
     """
 
     C = {}
