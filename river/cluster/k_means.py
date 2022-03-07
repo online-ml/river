@@ -2,7 +2,7 @@ import collections
 import functools
 import random
 
-from river import base, utils
+from river import base
 
 __all__ = ["KMeans"]
 
