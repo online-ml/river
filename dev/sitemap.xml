@@ -851,6 +851,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/api/metrics/Silhouette/</loc>
+         <lastmod>2022-03-08</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/api/metrics/TimeRolling/</loc>
          <lastmod>2022-03-08</lastmod>
          <changefreq>daily</changefreq>
@@ -887,116 +892,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/api/metrics/WrapperMetric/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/BIC/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/BallHall/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/CalinskiHarabasz/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/ClusteringMetric/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/Cohesion/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/DaviesBouldin/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/GD43/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/GD53/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/Hartigan/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/IIndex/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/MSSTD/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/PS/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/R2/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/RMSSTD/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/SD/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/SSB/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/SSW/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/Separation/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/Silhouette/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/WB/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/XieBeni/</loc>
-         <lastmod>2022-03-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/api/metrics/cluster/Xu/</loc>
          <lastmod>2022-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -2227,6 +2122,11 @@
     </url>
     <url>
          <loc>https://riverml.xyz/releases/0.9.0/</loc>
+         <lastmod>2022-03-08</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/releases/unreleased/</loc>
          <lastmod>2022-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
