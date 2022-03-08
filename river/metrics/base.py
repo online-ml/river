@@ -351,3 +351,37 @@ class MeanMetric(abc.ABC):
 
     def get(self):
         return self._mean.get()
+
+
+class ClusteringMetric(base.Base, abc.ABC):
+    """
+    Mother class of all internal clustering metrics.
+    """
+
+    # Define the format specification used for string representation.
+    _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
+
+    @abc.abstractmethod
+    def update(self, x, y_pred, centers, sample_weight=1.0) -> "ClusteringMetric":
+        """Update the metric."""
+
+    @abc.abstractmethod
+    def revert(self, x, y_pred, centers, sample_weight=1.0) -> "ClusteringMetric":
+        """Revert the metric."""
+
+    @abc.abstractmethod
+    def get(self) -> float:
+        """Return the current value of the metric."""
+
+    @property
+    @abc.abstractmethod
+    def bigger_is_better(self) -> bool:
+        """Indicates if a high value is better than a low one or not."""
+
+    def works_with(self, model: base.Estimator) -> bool:
+        """Indicates whether or not a metric can work with a given model."""
+        return utils.inspect.isclusterer(model)
+
+    def __repr__(self):
+        """Returns the class name along with the current value of the metric."""
+        return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
