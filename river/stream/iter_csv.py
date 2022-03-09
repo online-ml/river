@@ -83,9 +83,11 @@ def iter_csv(
     kwargs
         All other keyword arguments are passed to the underlying `csv.DictReader`.
 
-    Returns:
-        By default each feature value will be of type `str`. You can use the `converters` and
-        `parse_dates` parameters to convert them as you see fit.
+    Returns
+    -------
+
+    By default each feature value will be of type `str`. You can use the `converters` and
+    `parse_dates` parameters to convert them as you see fit.
 
     Examples
     --------
