@@ -92,7 +92,12 @@ class EDDM(DriftDetector):
     # FDDM_WARNING = 0.95
     # FDDM_MIN_NUM_INSTANCES = 30
 
-    def __init__(self, eddm_min_num_instances=30, eddm_warning_level=0.95, eddm_out_control_level=0.9):
+    def __init__(
+        self,
+        eddm_min_num_instances=30,
+        eddm_warning_level=0.95,
+        eddm_out_control_level=0.9,
+    ):
         super().__init__()
         self.eddm_min_num_instances = eddm_min_num_instances
         self.eddm_warning = eddm_warning_level
