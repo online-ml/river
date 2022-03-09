@@ -8144,7 +8144,7 @@
 </li>
 <li>
 <p><strong>converters</strong> (<em>dict</em>) – defaults to <code>None</code></p>
-<p>A <code>dict</code> mapping feature names to callables used to parse their associated values.</p>
+<p>All values in the CSV are interpreted as strings by default. You can use this parameter to cast values to the desired type. This should be a <code>dict</code> mapping feature names to callables used to parse their associated values. Note that a callable may be a type, such as <code>float</code> and <code>int</code>.</p>
 </li>
 <li>
 <p><strong>parse_dates</strong> (<em>dict</em>) – defaults to <code>None</code></p>
