@@ -40,6 +40,16 @@ class EDDM(DriftDetector):
 
     - 1: Error, $y \neq y'$
 
+    Parameters
+    ----------
+    eddm_min_num_instances
+        The minimum required number of analyzed samples so change can be detected. This is used to
+        avoid false detections during the early moments of the detector, when the weight of one
+        sample is important.
+    eddm_warning_level
+        Warning level.
+    eddm_out_control_level
+        Out-control level.
 
     Examples
     --------
@@ -77,12 +87,16 @@ class EDDM(DriftDetector):
     [^1]: Early Drift Detection Method. Manuel Baena-Garcia, Jose Del Campo-Avila, Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. In Fourth International Workshop on Knowledge Discovery from Data Streams, 2006.
 
     """
-    FDDM_OUTCONTROL = 0.9
-    FDDM_WARNING = 0.95
-    FDDM_MIN_NUM_INSTANCES = 30
 
-    def __init__(self):
+    # FDDM_OUTCONTROL = 0.9
+    # FDDM_WARNING = 0.95
+    # FDDM_MIN_NUM_INSTANCES = 30
+
+    def __init__(self, eddm_min_num_instances=30, eddm_warning_level=0.95, eddm_out_control_level=0.9):
         super().__init__()
+        self.eddm_min_num_instances = eddm_min_num_instances
+        self.eddm_warning = eddm_warning_level
+        self.eddm_outcontrol = eddm_out_control_level
         self.m_num_errors = None
         self.m_min_num_errors = 30
         self.m_n = None
@@ -146,7 +160,7 @@ class EDDM(DriftDetector):
             std = np.sqrt(self.m_std_temp / self.m_num_errors)
             m2s = self.m_mean + 2 * std
 
-            if self.m_n < self.FDDM_MIN_NUM_INSTANCES:
+            if self.m_n < self.eddm_min_num_instances:
                 return self._in_concept_change, self._in_warning_zone
 
             if m2s > self.m_m2s_max:
@@ -154,12 +168,12 @@ class EDDM(DriftDetector):
             else:
                 p = m2s / self.m_m2s_max
                 if (self.m_num_errors > self.m_min_num_errors) and (
-                    p < self.FDDM_OUTCONTROL
+                    p < self.eddm_outcontrol
                 ):
                     self._in_concept_change = True
 
                 elif (self.m_num_errors > self.m_min_num_errors) and (
-                    p < self.FDDM_WARNING
+                    p < self.eddm_warning
                 ):
                     self._in_warning_zone = True
 
