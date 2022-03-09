@@ -88,7 +88,7 @@ def dotvecmat(x, A):
 
     >>> from river import utils
 
-    >>> x = { 0: 4, 1: 5 }
+    >>> x = {0: 4, 1: 5}
 
     >>> A = {
     ...     (0, 0): 0, (0, 1): 1,
@@ -98,6 +98,7 @@ def dotvecmat(x, A):
     >>> C = dotvecmat(x, A)
     >>> print(C)
     {0: 10.0, 1: 19.0}
+
     """
 
     C = {}
