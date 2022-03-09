@@ -76,12 +76,28 @@ def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
 
 
 def dotvecmat(x, A):
-    """Vectors times matrix.
+    """Vector times matrix from left side, i.e. transpose(x)A.
 
     Parameters
     ----------
     x
     A
+
+    Examples
+    ----------
+
+    >>> from river import utils
+
+    >>> x = {0: 4, 1: 5}
+
+    >>> A = {
+    ...     (0, 0): 0, (0, 1): 1,
+    ...     (1, 0): 2, (1, 1): 3
+    ... }
+
+    >>> C = dotvecmat(x, A)
+    >>> print(C)
+    {0: 10.0, 1: 19.0}
 
     """
 
@@ -92,7 +108,7 @@ def dotvecmat(x, A):
         if i != j:
             continue
 
-        C[k] = C.get(j, 0.0) + xi * ai
+        C[k] = C.get(k, 0.0) + xi * ai
 
     return C
 
