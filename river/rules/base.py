@@ -229,7 +229,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
                 # Add a new literal
                 self.literals.append(lit)
 
-            # Reset all the statistics stored in the the decision rule
+            # Reset all the statistics stored in the decision rule
             updated_rule = self.clone()
             # Keep the literals
             updated_rule.literals.extend(self.literals)

@@ -155,6 +155,10 @@ class RegRule(HoeffdingRule, base.Regressor, AnomalyDetector):
     def predict_one(self, x: dict):
         return self.pred_model.predict_one(x)
 
+    def __repr__(self):
+        base_repr = super().__repr__()
+        return f"{base_repr} -> {self.statistics.mean.get()}"
+
 
 class AMRules(base.Regressor):
     """Adaptive Model Rules.
@@ -516,8 +520,8 @@ class AMRules(base.Regressor):
         ...     model = model.learn_one(x, y)
 
         >>> print(model.debug_one(x))
-        Rule 0: 3 > 0.5060027751338432 and 0 > 0.25379161985850063
-            Prediction: 18.72169583862947
+        Rule 0: 3 > 0.5060027751338432 and 0 > 0.25379161985850063 -> 18.28248930883455
+            Prediction (adaptive): 18.72169583862947
         <BLANKLINE>
 
         """
@@ -529,7 +533,7 @@ class AMRules(base.Regressor):
             if rule.covers(x):
                 any_covered = True
                 _print(f"Rule {i}: {repr(rule)}")
-                _print(f"\tPrediction: {rule.predict_one(x)}")
+                _print(f"\tPrediction ({self.pred_type}): {rule.predict_one(x)}")
             if self.ordered_rule_set:
                 break
 
