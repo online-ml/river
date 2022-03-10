@@ -39,9 +39,9 @@ class NumericLiteral(Literal):
 
     def describe(self):
         if not self.neg:
-            return f"{self.on} ≤ {self.at}"
+            return f"{self.on} ≤ {self.at:.4f}"
         else:
-            return f"{self.on} > {self.at}"
+            return f"{self.on} > {self.at:.4f}"
 
 
 class NominalLiteral(Literal):
@@ -229,7 +229,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
                 # Add a new literal
                 self.literals.append(lit)
 
-            # Reset all the statistics stored in the the decision rule
+            # Reset all the statistics stored in the decision rule
             updated_rule = self.clone()
             # Keep the literals
             updated_rule.literals.extend(self.literals)
