@@ -542,6 +542,6 @@ class AMRules(base.Regressor):
                 _print(f"Final prediction: {self.predict_one(x)}")
         else:
             _print("Default rule triggered:")
-            _print(f"\tPrediction: {self._default_rule.predict_one(x)}")
+            _print(f"\tPrediction ({self.pred_type}): {self._default_rule.predict_one(x)}")
 
         return buffer.getvalue()
