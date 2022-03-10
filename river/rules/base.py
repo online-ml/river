@@ -39,9 +39,9 @@ class NumericLiteral(Literal):
 
     def describe(self):
         if not self.neg:
-            return f"{self.on} ≤ {self.at}"
+            return f"{self.on} ≤ {self.at:.4f}"
         else:
-            return f"{self.on} > {self.at}"
+            return f"{self.on} > {self.at:.4f}"
 
 
 class NominalLiteral(Literal):
