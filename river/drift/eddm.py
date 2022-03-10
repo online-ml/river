@@ -177,9 +177,7 @@ class EDDM(DriftDetector):
                 ):
                     self._in_concept_change = True
 
-                elif (self.m_num_errors > self.m_min_num_errors) and (
-                    p < self.warning
-                ):
+                elif (self.m_num_errors > self.m_min_num_errors) and (p < self.warning):
                     self._in_warning_zone = True
 
                 else:
