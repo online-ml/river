@@ -42,13 +42,13 @@ class EDDM(DriftDetector):
 
     Parameters
     ----------
-    eddm_min_num_instances
+    min_num_instances
         The minimum required number of analyzed samples so change can be detected. This is used to
         avoid false detections during the early moments of the detector, when the weight of one
         sample is important.
-    eddm_warning_level
+    warning_level
         Warning level.
-    eddm_out_control_level
+    out_control_level
         Out-control level.
 
     Examples
@@ -94,14 +94,14 @@ class EDDM(DriftDetector):
 
     def __init__(
         self,
-        eddm_min_num_instances=30,
-        eddm_warning_level=0.95,
-        eddm_out_control_level=0.9,
+        min_num_instances=30,
+        warning_level=0.95,
+        out_control_level=0.9,
     ):
         super().__init__()
-        self.eddm_min_num_instances = eddm_min_num_instances
-        self.eddm_warning = eddm_warning_level
-        self.eddm_outcontrol = eddm_out_control_level
+        self.min_num_instances = min_num_instances
+        self.warning = warning_level
+        self.outcontrol = out_control_level
         self.m_num_errors = None
         self.m_min_num_errors = 30
         self.m_n = None
@@ -165,7 +165,7 @@ class EDDM(DriftDetector):
             std = np.sqrt(self.m_std_temp / self.m_num_errors)
             m2s = self.m_mean + 2 * std
 
-            if self.m_n < self.eddm_min_num_instances:
+            if self.m_n < self.min_num_instances:
                 return self._in_concept_change, self._in_warning_zone
 
             if m2s > self.m_m2s_max:
@@ -173,12 +173,12 @@ class EDDM(DriftDetector):
             else:
                 p = m2s / self.m_m2s_max
                 if (self.m_num_errors > self.m_min_num_errors) and (
-                    p < self.eddm_outcontrol
+                    p < self.outcontrol
                 ):
                     self._in_concept_change = True
 
                 elif (self.m_num_errors > self.m_min_num_errors) and (
-                    p < self.eddm_warning
+                    p < self.warning
                 ):
                     self._in_warning_zone = True
 
