@@ -1,4 +1,5 @@
 import collections
+import copy
 import math
 from abc import ABCMeta
 
@@ -174,7 +175,6 @@ class DBSTREAM(base.Clusterer):
 
     def _update(self, x):
         # Algorithm 1 of Michael Hahsler and Matthew Bolanos
-
         neighbor_clusters = self._find_fixed_radius_nn(x)
 
         if len(neighbor_clusters) < 1:
@@ -246,37 +246,40 @@ class DBSTREAM(base.Clusterer):
     def _cleanup(self):
         # Algorithm 2 of Michael Hahsler and Matthew Bolanos: Cleanup process to remove
         # inactive clusters and shared density entries from memory
-
         weight_weak = 2 ** (-self.fading_factor * self.cleanup_interval)
 
+        micro_clusters = copy.deepcopy(self.micro_clusters)
         for i, micro_cluster_i in self.micro_clusters.items():
-            if (
-                micro_cluster_i.weight
-                * (
-                    2
-                    ** (
-                        self.fading_factor
-                        * (self.time_stamp - micro_cluster_i.last_update)
-                    )
+
+            try:
+                value = 2 ** (
+                    self.fading_factor * (self.time_stamp - micro_cluster_i.last_update)
                 )
-                < weight_weak
-            ):
-                self.micro_clusters.pop(i)
+            except OverflowError:
+                continue
+
+            if micro_cluster_i.weight * value < weight_weak:
+                micro_clusters.pop(i)
+
+        # Update microclusters
+        self.micro_clusters = micro_clusters
 
         for i in self.s.keys():
             for j in self.s[i].keys():
-                if (
-                    self.s[i][j]
-                    * (2 ** (self.fading_factor * (self.time_stamp - self.s_t[i][j])))
-                    < self.intersection_factor * weight_weak
-                ):
+                try:
+                    value = 2 ** (
+                        self.fading_factor * (self.time_stamp - self.s_t[i][j])
+                    )
+                except OverflowError:
+                    continue
+
+                if self.s[i][j] * value < self.intersection_factor * weight_weak:
                     self.s[i][j] = 0
                     self.s_t[i][j] = 0
 
     def _generate_weighted_adjacency_matrix(self):
         # Algorithm 3 of Michael Hahsler and Matthew Bolanos: Reclustering using
         # shared density graph
-
         weighted_adjacency_matrix = {}
         for i in list(self.s.keys()):
             for j in list(self.s[i].keys()):
@@ -365,17 +368,16 @@ class DBSTREAM(base.Clusterer):
     def _recluster(self):
         # Algorithm 3 of Michael Hahsler and Matthew Bolanos: Reclustering
         # using shared density graph
-
         weighted_adjacency_list = self._generate_weighted_adjacency_matrix()
 
         labels = self._generate_labels(weighted_adjacency_list)
 
-        self.n_clusters, self.clusters = self._generate_clusters_from_labels(labels)
-
-        self.centers = {i: self.clusters[i].center for i in self.clusters.keys()}
+        # We can only update given we have labels (possibly not on first pass)
+        if labels:
+            self.n_clusters, self.clusters = self._generate_clusters_from_labels(labels)
+            self.centers = {i: self.clusters[i].center for i in self.clusters.keys()}
 
     def learn_one(self, x, sample_weight=None):
-
         self._update(x)
 
         if self.time_stamp % self.cleanup_interval == 0:
@@ -411,8 +413,12 @@ class DBSTREAMMicroCluster(metaclass=ABCMeta):
         self.weight = weight
 
     def merge(self, cluster):
+        # Using cluster.center.get allows updating clusters with different features
         self.center = {
-            i: (self.center[i] * self.weight + cluster.center[i] * cluster.weight)
+            i: (
+                self.center[i] * self.weight
+                + cluster.center.get(i, 0.0) * cluster.weight
+            )
             / (self.weight + cluster.weight)
             for i in self.center.keys()
         }
