@@ -60,6 +60,13 @@ class Var(base.Univariate):
         self._S += w * (x - mean_old) * (x - mean_new)
         return self
 
+    def revert(self, x, w=1.0):
+        mean_old = self.mean.get()
+        self.mean.revert(x, w)
+        mean_new = self.mean.get()
+        self._S -= w * (x - mean_old) * (x - mean_new)
+        return self
+
     def update_many(self, X: np.ndarray):
         mean_old = self.mean.get()
         self.mean.update_many(X)

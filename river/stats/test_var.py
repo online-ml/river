@@ -1,4 +1,5 @@
 import math
+import random
 
 from river import stats
 
@@ -29,3 +30,24 @@ def test_weighted_variance_with_close_numbers():
         var.update(x, w)
 
     assert var.get() > 0 and math.isclose(var.get(), 4.648047194845607e-15)
+
+
+def test_revert():
+
+    for _ in range(5):
+
+        X = [random.random() for _ in range(20)]
+
+        v1 = stats.Var()
+        v2 = stats.Var()
+
+        for x in X[:10]:
+            v1.update(x)
+            v2.update(x)
+
+        for x in X[10:]:
+            v2.update(x)
+        for x in X[10:]:
+            v2.revert(x)
+
+        assert math.isclose(v1.get(), v2.get())
