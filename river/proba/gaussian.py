@@ -22,6 +22,9 @@ class Gaussian(base.ContinuousDistribution):
     >>> p.pdf(6.5)
     0.564189
 
+    >>> p.revert(7)
+    𝒩(μ=6.000, σ=0.000)
+
     """
 
     def __init__(self):
@@ -48,6 +51,10 @@ class Gaussian(base.ContinuousDistribution):
 
     def update(self, x, w=1.0):
         self._var.update(x, w)
+        return self
+
+    def revert(self, x, w=1.0):
+        self._var.revert(x, w)
         return self
 
     def pdf(self, x):
