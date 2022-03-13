@@ -5300,6 +5300,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/proba/TimeRolling/" class="md-nav__link">
+        TimeRolling
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -7779,8 +7793,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#dist" class="md-nav__link">
+    dist
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rules" class="md-nav__link">
     rules
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stats" class="md-nav__link">
+    stats
   </a>
   
 </li>
@@ -8093,8 +8121,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#dist" class="md-nav__link">
+    dist
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rules" class="md-nav__link">
     rules
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stats" class="md-nav__link">
+    stats
   </a>
   
 </li>
@@ -8117,10 +8159,20 @@
 <ul>
 <li>Moved all metrics in <code>metrics.cluster</code> except <code>metrics.Silhouette</code> to <a href="https://github.com/online-ml/river-extra">river-extra</a>.</li>
 </ul>
+<h2 id="dist">dist<a class="headerlink" href="#dist" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A <code>revert</code> method has been added to <code>stats.Gaussian</code>.</li>
+<li>A <code>revert</code> method has been added to <code>stats.Multinomial</code>.</li>
+<li>Added <code>dist.TimeRolling</code> to measure probability distributions over windows of time.</li>
+</ul>
 <h2 id="rules">rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Now AMRules' rules representation show a default consequent: the target mean.</li>
 <li>AMRules's <code>debug_one</code> explicitly indicates the prediction strategy used by each rule.</li>
+</ul>
+<h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A <code>revert</code> method has been added to <code>stats.Var</code>.</li>
 </ul>
 
               
