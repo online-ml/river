@@ -556,6 +556,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/api/imblearn/ChebyshevOverSampler/</loc>
+         <lastmod>2022-03-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/api/imblearn/ChebyshevUnderSampler/</loc>
+         <lastmod>2022-03-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/api/imblearn/HardSamplingClassifier/</loc>
          <lastmod>2022-03-14</lastmod>
          <changefreq>daily</changefreq>
