@@ -534,8 +534,8 @@ class AMRules(base.Regressor):
                 any_covered = True
                 _print(f"Rule {i}: {repr(rule)}")
                 _print(f"\tPrediction ({self.pred_type}): {rule.predict_one(x):.4f}")
-            if self.ordered_rule_set:
-                break
+                if self.ordered_rule_set:
+                    break
 
         if any_covered:
             if not self.ordered_rule_set:
