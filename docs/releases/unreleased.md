@@ -8,6 +8,10 @@
 - A `revert` method has been added to `stats.Multinomial`.
 - Added `dist.TimeRolling` to measure probability distributions over windows of time.
 
+## imblearn
+
+- Added `imblearn.ChebyshevUnderSampler` and `imblearn.ChebyshevOverSampler` for imbalanced regression.
+
 ## rules
 
 - Now AMRules' rules representation show a default consequent: the target mean.
