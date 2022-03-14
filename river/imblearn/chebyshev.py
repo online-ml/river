@@ -1,7 +1,7 @@
 import math
 import random
 
-from river import base, stats
+from river import base, linear_model, stats
 
 
 class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
@@ -96,6 +96,10 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
         self._var.update(y)
         return self
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"regressor": linear_model.LinearRegression(), "seed": 42}
+
 
 class ChebyshevOverSampler(base.Wrapper, base.Regressor):
     """Over-sampling for imbalanced regression using Chebyshev's inequality.
@@ -185,3 +189,7 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
 
         self._var.update(y)
         return self
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"regressor": linear_model.LinearRegression()}
