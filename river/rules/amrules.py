@@ -506,7 +506,8 @@ class AMRules(base.Regressor):
         ...     n_min=50,
         ...     delta=0.1,
         ...     drift_detector=drift.ADWIN(),
-        ...     splitter=tree.splitter.QOSplitter()
+        ...     splitter=tree.splitter.QOSplitter(),
+        ...     ordered_rule_set=False
         ... )
 
         >>> for i, (x, y) in enumerate(dataset):
@@ -518,6 +519,9 @@ class AMRules(base.Regressor):
         >>> print(model.debug_one(x))
         Rule 0: 3 > 0.5060 and 0 > 0.2538
             Prediction (adaptive): 18.7217
+        Rule 1: 1 > 0.2480 and 3 > 0.2573
+            Prediction (adaptive): 19.4173
+        Final prediction: 19.0695
         <BLANKLINE>
 
         """
@@ -535,7 +539,7 @@ class AMRules(base.Regressor):
 
         if any_covered:
             if not self.ordered_rule_set:
-                _print(f"Final prediction: {self.predict_one(x)}")
+                _print(f"Final prediction: {self.predict_one(x):.4f}")
         else:
             _print("Default rule triggered:")
             _print(
