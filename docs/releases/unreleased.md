@@ -14,7 +14,6 @@
 
 ## rules
 
-- Now AMRules' rules representation show a default consequent: the target mean.
 - AMRules's `debug_one` explicitly indicates the prediction strategy used by each rule.
 - Fix bug in `debug_one` (AMRules) where prediction explanations were incorrectly displayed when `ordered_rule_set=True`.
 
