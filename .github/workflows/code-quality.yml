@@ -32,7 +32,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel
           pip install -e ".[dev]"
-          pip install git+git://github.com/psf/black --upgrade
 
       - name: Run pre-commit on all files
         run: pre-commit run --all-files
