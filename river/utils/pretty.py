@@ -74,6 +74,6 @@ def humanize_bytes(n_bytes: int):
     if n_bytes != 0:
         rank = int((math.log10(n_bytes)) / 3)
         rank = min(rank, len(suffixes) - 1)
-        human = n_bytes / (1024.0 ** rank)
+        human = n_bytes / (1024.0**rank)
     f = ("%.2f" % human).rstrip("0").rstrip(".")
     return "%s %s" % (f, suffixes[rank])

@@ -263,7 +263,7 @@ class HalfSpaceTrees(AnomalyDetector):
         score = 0.0
         for tree in self.trees:
             for depth, node in enumerate(tree.walk(x)):
-                score += node.r_mass * 2 ** depth
+                score += node.r_mass * 2**depth
                 if node.r_mass < self.size_limit:
                     break
 

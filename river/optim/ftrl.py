@@ -75,8 +75,8 @@ class FTRLProximal(base.Optimizer):
                 )
 
         for i, gi in g.items():
-            s = ((self.n[i] + gi ** 2) ** 0.5 - self.n[i] ** 0.5) / self.alpha
+            s = ((self.n[i] + gi**2) ** 0.5 - self.n[i] ** 0.5) / self.alpha
             self.z[i] += gi - s * w.get(i, 0)
-            self.n[i] += gi ** 2
+            self.n[i] += gi**2
 
         return w

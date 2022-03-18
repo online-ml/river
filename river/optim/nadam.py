@@ -57,7 +57,7 @@ class Nadam(base.Optimizer):
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
             m_hat = self.m[i] / (1 - math.pow(self.beta_1, self.n_iterations + 1))
 
-            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
+            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi**2
             v_hat = self.v[i] / (1 - math.pow(self.beta_2, self.n_iterations + 1))
 
             w[i] -= (
@@ -68,7 +68,7 @@ class Nadam(base.Optimizer):
                     * gi
                     / (1 - math.pow(self.beta_1, self.n_iterations + 1))
                 )
-                / (v_hat ** 0.5 + self.eps)
+                / (v_hat**0.5 + self.eps)
             )
 
         return w
