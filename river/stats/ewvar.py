@@ -54,7 +54,7 @@ class EWVar(base.Univariate):
 
     def update(self, x):
         self.mean.update(x)
-        self.sq_mean.update(x ** 2)
+        self.sq_mean.update(x**2)
         return self
 
     def get(self):

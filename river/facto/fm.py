@@ -91,7 +91,7 @@ class FM(BaseFM):
         gradients = {}
         for j, xj in x.items():
             gradients[j] = {
-                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj ** 2)
+                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj**2)
                 + l1 * sign(v[j][f])
                 + l2 * v[j][f]
                 for f in range(self.n_factors)

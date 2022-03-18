@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import io
 import os
 import platform
@@ -39,7 +41,10 @@ compat_packages = base_packages + [
 ]
 
 dev_packages = base_packages + [
+    "black>=22.1.0",
+    "flake8>=4.0.1",
     "graphviz>=0.10.1",
+    "isort>=5.9.3",
     "matplotlib>=3.0.2",
     "mypy>=0.761",
     "pre-commit>=2.9.2",
@@ -68,7 +73,7 @@ with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = "\n" + f.read()
 
 # Load the package's __version__.py module as a dictionary.
-about = {}
+about: dict = {}
 with open(os.path.join(here, NAME, "__version__.py")) as f:
     exec(f.read(), about)
 

@@ -200,7 +200,7 @@ class StandardScaler(base.Transformer):
         new_means = np.nanmean(X, axis=0)
         # We could call np.var, but we already have the mean so we can be smart
         if self.with_std:
-            new_vars = np.einsum("ij,ij->j", X, X) / len(X) - new_means ** 2
+            new_vars = np.einsum("ij,ij->j", X, X) / len(X) - new_means**2
         else:
             new_vars = []
         new_counts = np.sum(~np.isnan(X), axis=0)
