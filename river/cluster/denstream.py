@@ -396,7 +396,7 @@ class DenStream(base.Clusterer):
 
 
 class DenStreamMicroCluster(metaclass=ABCMeta):
-    """ DenStream Micro-cluster class """
+    """DenStream Micro-cluster class"""
 
     def __init__(self, x, timestamp, decaying_factor):
 
