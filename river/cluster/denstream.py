@@ -108,10 +108,10 @@ class DenStream(base.Clusterer):
     ...     [4, 3.25], [4, 3.5], [4, 3.75], [4, 4],
     ... ]
 
-    >>> denstream = cluster.DenStream(decaying_factor = 0.01,
-    ...                               beta = 0.5,
-    ...                               mu = 2.5,
-    ...                               epsilon = 0.5,
+    >>> denstream = cluster.DenStream(decaying_factor=0.01,
+    ...                               beta=0.5,
+    ...                               mu=2.5,
+    ...                               epsilon=0.5,
     ...                               n_samples_init=10)
 
     >>> for x, _ in stream.iter_array(X):
