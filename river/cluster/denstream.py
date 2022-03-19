@@ -105,8 +105,8 @@ class DenStream(base.Clusterer):
     ... ]
 
     >>> denstream = cluster.DenStream(decaying_factor = 0.01,
-    ...                               beta = 1.01,
-    ...                               mu = 1.0005,
+    ...                               beta = 0.5,
+    ...                               mu = 2.5,
     ...                               epsilon = 0.5,
     ...                               n_samples_init=10)
 
@@ -120,10 +120,10 @@ class DenStream(base.Clusterer):
     0
 
     >>> denstream.predict_one({0:1, 1:1})
-    2
+    1
 
     >>> denstream.n_clusters
-    3
+    2
 
     """
 
