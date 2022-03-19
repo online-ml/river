@@ -46,11 +46,11 @@ class DenStream(base.Clusterer):
 
     beta
         Parameter to determine the threshold of outlier relative to core micro-clusters.
-        Valid values are `0 < \beta <= 1`.
+        The value of `beta` must be within the range `(0,1]`.
 
     mu
         Parameter to determine the threshold of outliers relative to core micro-cluster.
-        Valid values are `\mu > 0`.
+        As ``beta` * `mu`` must be greater than 1, `mu` must be within the range `(1/`beta`, inf)`.
 
     epsilon
         Defines the epsilon neighborhood
