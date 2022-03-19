@@ -8229,7 +8229,7 @@
 </li>
 </ul>
 <p><strong>Offline generation of clusters on-demand (clustering)</strong> </p>
-<p>A variant of the DBSCAN algorithm <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> is used, such that all density-connected p-micro-clusters determine the final clusters.</p>
+<p>A variant of the DBSCAN algorithm <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> is used, such that all density-connected p-micro-clusters determine the final clusters. Moreover, in order for the algorithm to always be able to generate clusters, a certain number of points must be passed through the algorithm with a suitable streaming speed (number of points passed through within a unit time), indicated by <code>n_samples_init</code> and <code>stream_speed</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -8237,12 +8237,12 @@
 <p>Parameter that controls the importance of historical data to current cluster. Note that <code>decaying_factor</code> has to be different from <code>0</code>.</p>
 </li>
 <li>
-<p><strong>beta</strong> (<em>float</em>) – defaults to <code>5</code></p>
-<p>Parameter to determine the threshold of outlier relative to core micro-clusters. Valid values are <code>0 &lt; \beta &lt;= 1</code>.</p>
+<p><strong>beta</strong> (<em>float</em>) – defaults to <code>0.75</code></p>
+<p>Parameter to determine the threshold of outlier relative to core micro-clusters. The value of <code>beta</code> must be within the range <code>(0,1]</code>.</p>
 </li>
 <li>
-<p><strong>mu</strong> (<em>float</em>) – defaults to <code>0.5</code></p>
-<p>Parameter to determine the threshold of outliers relative to core micro-cluster. Valid values are <code>\mu &gt; 0</code>.</p>
+<p><strong>mu</strong> (<em>float</em>) – defaults to <code>2</code></p>
+<p>Parameter to determine the threshold of outliers relative to core micro-cluster. As <code>beta * mu</code> must be greater than 1, <code>mu</code> must be within the range <code>(1/beta, inf)</code>.</p>
 </li>
 <li>
 <p><strong>epsilon</strong> (<em>float</em>) – defaults to <code>0.02</code></p>
@@ -8290,10 +8290,10 @@ The set of evolving points <code>X</code> are designed so that clusters are easi
 <span class="o">...</span>     <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mf">3.25</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mf">3.75</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
 <span class="o">...</span> <span class="p">]</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">denstream</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">DenStream</span><span class="p">(</span><span class="n">decaying_factor</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
-<span class="o">...</span>                               <span class="n">beta</span> <span class="o">=</span> <span class="mf">1.01</span><span class="p">,</span>
-<span class="o">...</span>                               <span class="n">mu</span> <span class="o">=</span> <span class="mf">1.0005</span><span class="p">,</span>
-<span class="o">...</span>                               <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">denstream</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">DenStream</span><span class="p">(</span><span class="n">decaying_factor</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+<span class="o">...</span>                               <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="o">...</span>                               <span class="n">mu</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+<span class="o">...</span>                               <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="o">...</span>                               <span class="n">n_samples_init</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
@@ -8306,10 +8306,10 @@ The set of evolving points <code>X</code> are designed so that clusters are easi
 <span class="mi">0</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">denstream</span><span class="o">.</span><span class="n">predict_one</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">})</span>
-<span class="mi">2</span>
+<span class="mi">1</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">denstream</span><span class="o">.</span><span class="n">n_clusters</span>
-<span class="mi">3</span>
+<span class="mi">2</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
