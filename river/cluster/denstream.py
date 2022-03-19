@@ -36,7 +36,10 @@ class DenStream(base.Clusterer):
     **Offline generation of clusters on-demand (clustering)**
 
     A variant of the DBSCAN algorithm [^2] is used, such that all
-    density-connected p-micro-clusters determine the final clusters.
+    density-connected p-micro-clusters determine the final clusters. Moreover,
+    in order for the algorithm to always be able to generate clusters, a certain
+    number of points must be passed through the algorithm at the beginning, indicated
+    by `n_samples_init`.
 
     Parameters
     ----------
