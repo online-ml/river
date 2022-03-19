@@ -166,6 +166,10 @@ class DenStream(base.Clusterer):
         self._init_buffer = deque()
         self._n_samples_seen = 0
 
+        # check that the value of beta is within the range (0,1]
+        if not (0 < self.beta <= 1):
+            raise ValueError(f"The value of `beta` must be within the range (0,1].")
+
     @property
     def centers(self):
         return {
