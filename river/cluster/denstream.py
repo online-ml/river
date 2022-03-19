@@ -139,8 +139,8 @@ class DenStream(base.Clusterer):
     def __init__(
         self,
         decaying_factor: float = 0.25,
-        beta: float = 5,
-        mu: float = 0.5,
+        beta: float = 0.75,
+        mu: float = 2,
         epsilon: float = 0.02,
         n_samples_init: int = 1000,
         stream_speed: int = 100,
