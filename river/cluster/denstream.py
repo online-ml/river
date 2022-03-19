@@ -171,7 +171,9 @@ class DenStream(base.Clusterer):
 
         # check that the value of beta is within the range (0,1]
         if not (0 < self.beta <= 1):
-            raise ValueError(f"The value of `beta` (currently {self.beta}) must be within the range (0,1].")
+            raise ValueError(
+                f"The value of `beta` (currently {self.beta}) must be within the range (0,1]."
+            )
 
     @property
     def centers(self):
