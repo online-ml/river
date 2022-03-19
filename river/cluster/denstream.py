@@ -36,7 +36,11 @@ class DenStream(base.Clusterer):
     **Offline generation of clusters on-demand (clustering)**
 
     A variant of the DBSCAN algorithm [^2] is used, such that all
-    density-connected p-micro-clusters determine the final clusters.
+    density-connected p-micro-clusters determine the final clusters. Moreover,
+    in order for the algorithm to always be able to generate clusters, a certain
+    number of points must be passed through the algorithm with a suitable streaming
+    speed (number of points passed through within a unit time), indicated by
+    `n_samples_init` and `stream_speed`.
 
     Parameters
     ----------
@@ -46,11 +50,11 @@ class DenStream(base.Clusterer):
 
     beta
         Parameter to determine the threshold of outlier relative to core micro-clusters.
-        Valid values are `0 < \beta <= 1`.
+        The value of `beta` must be within the range `(0,1]`.
 
     mu
         Parameter to determine the threshold of outliers relative to core micro-cluster.
-        Valid values are `\mu > 0`.
+        As `beta * mu` must be greater than 1, `mu` must be within the range `(1/beta, inf)`.
 
     epsilon
         Defines the epsilon neighborhood
@@ -104,10 +108,10 @@ class DenStream(base.Clusterer):
     ...     [4, 3.25], [4, 3.5], [4, 3.75], [4, 4],
     ... ]
 
-    >>> denstream = cluster.DenStream(decaying_factor = 0.01,
-    ...                               beta = 1.01,
-    ...                               mu = 1.0005,
-    ...                               epsilon = 0.5,
+    >>> denstream = cluster.DenStream(decaying_factor=0.01,
+    ...                               beta=0.5,
+    ...                               mu=2.5,
+    ...                               epsilon=0.5,
     ...                               n_samples_init=10)
 
     >>> for x, _ in stream.iter_array(X):
@@ -120,10 +124,10 @@ class DenStream(base.Clusterer):
     0
 
     >>> denstream.predict_one({0:1, 1:1})
-    2
+    1
 
     >>> denstream.n_clusters
-    3
+    2
 
     """
 
@@ -136,8 +140,8 @@ class DenStream(base.Clusterer):
     def __init__(
         self,
         decaying_factor: float = 0.25,
-        beta: float = 5,
-        mu: float = 0.5,
+        beta: float = 0.75,
+        mu: float = 2,
         epsilon: float = 0.02,
         n_samples_init: int = 1000,
         stream_speed: int = 100,
@@ -165,6 +169,12 @@ class DenStream(base.Clusterer):
         )
         self._init_buffer = deque()
         self._n_samples_seen = 0
+
+        # check that the value of beta is within the range (0,1]
+        if not (0 < self.beta <= 1):
+            raise ValueError(
+                f"The value of `beta` (currently {self.beta}) must be within the range (0,1]."
+            )
 
     @property
     def centers(self):
