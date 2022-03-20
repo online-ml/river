@@ -202,7 +202,8 @@ class DBSTREAM(base.Clusterer):
                     j: self.micro_clusters[i].center[j]
                     + self._gaussian_neighborhood(x, self.micro_clusters[i].center)
                     * (x[j] - self.micro_clusters[i].center[j])
-                    for j in self.micro_clusters[i].center.keys() if j in x
+                    for j in self.micro_clusters[i].center.keys()
+                    if j in x
                 }
                 self.micro_clusters[i].last_update = self.time_stamp
 
