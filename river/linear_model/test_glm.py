@@ -195,20 +195,14 @@ lin_reg_tests = {
         },
     ),
     "L2 regu": (
-        {
-            "optimizer": optim.SGD(1e-2),
-            "loss": ScikitLearnSquaredLoss(),
-            "l2": 1e-3,
-        },
+        {"optimizer": optim.SGD(1e-2), "loss": ScikitLearnSquaredLoss(), "l2": 1e-3,},
         {"learning_rate": "constant", "eta0": 1e-2, "alpha": 1e-3},
     ),
 }
 
 
 @pytest.mark.parametrize(
-    "river_params, sklearn_params",
-    lin_reg_tests.values(),
-    ids=lin_reg_tests.keys(),
+    "river_params, sklearn_params", lin_reg_tests.values(), ids=lin_reg_tests.keys(),
 )
 def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
@@ -229,9 +223,7 @@ def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
 
 
 @pytest.mark.parametrize(
-    "river_params, sklearn_params",
-    lin_reg_tests.values(),
-    ids=lin_reg_tests.keys(),
+    "river_params, sklearn_params", lin_reg_tests.values(), ids=lin_reg_tests.keys(),
 )
 def test_lin_reg_sklearn_learn_many_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results
@@ -272,16 +264,8 @@ log_reg_tests = {
         },
     ),
     "L2 regu": (
-        {
-            "optimizer": optim.SGD(1e-2),
-            "l2": 1e-3,
-        },
-        {
-            "learning_rate": "constant",
-            "eta0": 1e-2,
-            "alpha": 1e-3,
-            "loss": "log",
-        },
+        {"optimizer": optim.SGD(1e-2), "l2": 1e-3,},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 1e-3, "loss": "log",},
     ),
     "Inverse-scaling": (
         {
@@ -316,9 +300,7 @@ log_reg_tests = {
 
 
 @pytest.mark.parametrize(
-    "river_params, sklearn_params",
-    log_reg_tests.values(),
-    ids=log_reg_tests.keys(),
+    "river_params, sklearn_params", log_reg_tests.values(), ids=log_reg_tests.keys(),
 )
 def test_log_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
@@ -339,19 +321,8 @@ def test_log_reg_sklearn_coherence(river_params, sklearn_params):
 
 
 perceptron_tests = {
-    "Vanilla": (
-        {},
-        {},
-    ),
-    "L2 regu": (
-        {
-            "l2": 1e-3,
-        },
-        {
-            "alpha": 1e-3,
-            "penalty": "l2",
-        },
-    ),
+    "Vanilla": ({}, {},),
+    "L2 regu": ({"l2": 1e-3,}, {"alpha": 1e-3, "penalty": "l2",},),
 }
 
 
