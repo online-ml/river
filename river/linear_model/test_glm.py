@@ -228,6 +228,30 @@ def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
     assert math.isclose(rv.intercept, sk.intercept_[0])
 
 
+@pytest.mark.parametrize(
+    "river_params, sklearn_params",
+    lin_reg_tests.values(),
+    ids=lin_reg_tests.keys(),
+)
+def test_lin_reg_sklearn_learn_many_coherence(river_params, sklearn_params):
+    """Checks that the sklearn and river implementations produce the same results
+    when learn_many is used."""
+
+    ss = preprocessing.StandardScaler()
+    rv = lm.LinearRegression(**river_params)
+    sk = sklm.SGDRegressor(**sklearn_params)
+
+    for x, y in datasets.TrumpApproval().take(100):
+        x = ss.learn_one(x).transform_one(x)
+        rv.learn_many(pd.DataFrame([x]), pd.Series([y]))
+        sk.partial_fit([list(x.values())], [y])
+
+    for i, w in enumerate(rv.weights.values()):
+        assert math.isclose(w, sk.coef_[i])
+
+    assert math.isclose(rv.intercept, sk.intercept_[0])
+
+
 log_reg_tests = {
     "Vanilla": (
         {"optimizer": optim.SGD(1e-2)},
