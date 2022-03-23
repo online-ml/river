@@ -89,10 +89,12 @@ class GLM:
             utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient)
         )
 
-        return (
-            loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
-            loss_gradient,
-        )
+        if self.l2:
+            return (
+                loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
+                loss_gradient,
+            )
+        return (loss_gradient * utils.VectorDict(x), loss_gradient)
 
     def learn_one(self, x, y, w=1.0):
         with self._learn_mode(x):
@@ -119,6 +121,8 @@ class GLM:
         # thereby obtaining the mean gradient of the batch. From thereon, the code reduces to the
         # single instance case.
         gradient = np.einsum("ij,i->ij", X.values, loss_gradient).mean(axis=0)
+        if self.l2:
+            gradient += self.l2 * self._weights.to_numpy(X.columns)
 
         return dict(zip(X.columns, gradient)), loss_gradient.mean()
 
