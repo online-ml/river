@@ -109,6 +109,7 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
         optimizer: optim.Optimizer = None,
         loss: optim.losses.RegressionLoss = None,
         l2=0.0,
+        l1=0.0,
         intercept_init=0.0,
         intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = 0.01,
         clip_gradient=1e12,
@@ -120,6 +121,7 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
             intercept_init=intercept_init,
             intercept_lr=intercept_lr,
             l2=l2,
+            l1=l1,
             clip_gradient=clip_gradient,
             initializer=initializer if initializer else optim.initializers.Zeros(),
         )

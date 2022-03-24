@@ -7,6 +7,8 @@ import pandas as pd
 
 from river import optim, utils
 
+import collections
+
 
 class GLM:
     """Generalized Linear Model.
@@ -20,6 +22,7 @@ class GLM:
         optimizer,
         loss,
         l2,
+        l1,
         intercept_init,
         intercept_lr,
         clip_gradient,
@@ -28,6 +31,7 @@ class GLM:
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
+        self.l1 = l1
         self.intercept_init = intercept_init
         self.intercept = intercept_init
         self.intercept_lr = (
@@ -42,6 +46,9 @@ class GLM:
         # The predict_many functions are going to return pandas.Series. We can name the series with
         # the name given to the y series seen during the last learn_many call.
         self._y_name = None
+
+        self.max_cum_l1 = 0
+        self.cum_l1 = collections.defaultdict(float)
 
     @property
     def weights(self):
@@ -74,7 +81,41 @@ class GLM:
         # Update the weights
         self.optimizer.step(w=self._weights, g=gradient)
 
+        # REFLECTION: this should be states after the learning_rate update in case of adaptive learning_rate
+        self.max_cum_l1 = self.max_cum_l1 + self.l1 * self.optimizer.learning_rate
+        # /
+
+        if (self.l2 == 0.0) and (self.l1 != 0.0):
+            print("hello")
+            self._update_weights(x)
+            # pass
+
         return self
+
+    # def _update_weights(self, x, loss_gradient):
+    def _update_weights(self, x):
+        # REFLECTION: learning_rate is a multiplier in optimizers;
+        # if it's a multiplier for weight updates here aswell, we could omit it somewhere
+        # and have this penalty implemented not inside the optimizer, which would be easier
+
+        for j, xj in x.items():
+            # REFLECTION: it's not `temperature` it's `temporary`
+            # wj_temp = self.weights[j] + self.learning_rate * xj * loss_gradient
+            wj_temp = self._weights[j]
+            self._apply_penalty(j, wj_temp)
+
+    def _apply_penalty(self, j, wj_temp):
+
+        if wj_temp > 0:
+            self._weights[j] = max(0, wj_temp - (self.max_cum_l1 + self.cum_l1[j]))
+        elif wj_temp < 0:
+            self._weights[j] = min(0, wj_temp + (self.max_cum_l1 - self.cum_l1[j]))
+        else:
+            self._weights[j] = wj_temp
+
+        self.cum_l1[j] = self.cum_l1[j] + (self._weights[j] - wj_temp)
+
+        pass
 
     # Single instance methods
 
@@ -89,10 +130,35 @@ class GLM:
             utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient)
         )
 
-        return (
-            loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
-            loss_gradient,
-        )
+        # print(loss_gradient)
+        # print(
+        #     loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
+        # )
+        # print("---")
+
+        # self.max_cum_l1 = self.max_cum_l1 + self.l1_reg * self.learning_rate
+
+        # for j, xj in x.items():
+        #     wj_temp = self.weights[j] + self.learning_rate * xj * loss_gradient
+        #     if wj_temp > 0:
+        #         self.weights[j] = max(0, wj_temp - (self.max_cum_l1 + self.cum_l1[j]))
+        #     elif wj_temp < 0:
+        #         self.weights[j] = min(0, wj_temp + (self.max_cum_l1 - self.cum_l1[j]))
+        #     else:
+        #         self.weights[j] = wj_temp
+
+        #     self.cum_l1[j] = self.cum_l1[j] + (self.weights[j] - wj_temp)
+        if self.l1 == 0.0:
+            return (
+                loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
+                loss_gradient,
+            )
+        if (self.l2 == 0.0) and (self.l1 != 0.0):
+            # print("hello")
+            return (
+                loss_gradient * utils.VectorDict(x),
+                loss_gradient,
+            )
 
     def learn_one(self, x, y, w=1.0):
         with self._learn_mode(x):
@@ -107,9 +173,7 @@ class GLM:
         self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
     ) -> (dict, float):
 
-        loss_gradient = self.loss.gradient(
-            y_true=y.values, y_pred=self._raw_dot_many(X)
-        )
+        loss_gradient = self.loss.gradient(y_true=y.values, y_pred=self._raw_dot_many(X))
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
 
