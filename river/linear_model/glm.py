@@ -82,32 +82,29 @@ class GLM:
         # Update the weights
         self.optimizer.step(w=self._weights, g=gradient)
 
-        # REFLECTION: this should be stated after the learning_rate update in case of adaptive learning_rate
-        self.max_cum_l1 = self.max_cum_l1 + self.l1 * self.optimizer.learning_rate
-        # /
-
         if (self.l1 != 0.0) and (self.l2 == 0.0):
-            # print("hello")
+            # REFLECTION: this should be stated after the learning_rate update in case of adaptive learning_rate
+            self.max_cum_l1 = self.max_cum_l1 + self.l1 * self.optimizer.learning_rate
+            # /
+
             self._update_weights(x)
             # pass
 
         return self
 
-    # def _update_weights(self, x, loss_gradient):
     def _update_weights(self, x):
-        # REFLECTION: learning_rate is a multiplier in optimizers;
-        # if it's a multiplier for weight updates here aswell, we could omit it somewhere
-        # and have this penalty implemented not inside the optimizer, which would be easier
+        # INFO: L1 penalty helper
 
         for j, xj in x.items():
-            # REFLECTION: it's not `temperature` it's `temporary`
-            # wj_temp = self.weights[j] + self.learning_rate * xj * loss_gradient
+            # REFLECTION: it's not `temperature` it's `temporary` lol
             wj_temp = self._weights[j]
             self._apply_penalty(j, wj_temp)
 
+        # INFO: perhaps a viable vectorized alternative
         # self._apply_penalty_vecrotized(x, self._weights)
 
     def _apply_penalty(self, j, wj_temp):
+        # INFO: L1 penalty helper
 
         if wj_temp > 0:
             self._weights[j] = max(0, wj_temp - (self.max_cum_l1 + self.cum_l1[j]))
@@ -116,16 +113,15 @@ class GLM:
         else:
             self._weights[j] = wj_temp
 
-        # print(f"{self.cum_l1=}")
         self.cum_l1[j] = self.cum_l1[j] + (self._weights[j] - wj_temp)
 
         pass
 
     def _apply_penalty_vecrotized(self, w_temp):
+        # INFO: L1 penalty helper
         # REFLECTION: no way this is going to work;
         # can't return from numpy to VectorDict without iterating
         # REFLECTION: make it as is, as a stub, add a test and be done
-        # TEST: this func weights on [-1] sample after normal training vs vanilla func weights on [:] training
         weights_mirror = self._weights.to_numpy(self._weights.keys())
         w_temp_mirror = w_temp.to_numpy(w_temp.keys())
         cum_l1_mirror = self.cum_l1.to_numpy(self.cum_l1.keys())
