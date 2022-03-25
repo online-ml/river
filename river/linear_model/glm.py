@@ -1,3 +1,4 @@
+import collections
 import contextlib
 import numbers
 import typing
@@ -6,8 +7,6 @@ import numpy as np
 import pandas as pd
 
 from river import optim, utils
-
-import collections
 
 
 class GLM:
