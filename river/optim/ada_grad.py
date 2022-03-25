@@ -52,7 +52,7 @@ class AdaGrad(base.Optimizer):
     def _step_with_dict(self, w, g):
 
         for i, gi in g.items():
-            self.g2[i] += gi ** 2
+            self.g2[i] += gi**2
             w[i] -= self.learning_rate / (self.g2[i] + self.eps) ** 0.5 * gi
 
         return w

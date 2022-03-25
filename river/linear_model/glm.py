@@ -158,35 +158,19 @@ class GLM:
             utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient)
         )
 
-        # print(loss_gradient)
-        # print(
-        #     loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
-        # )
-        # print("---")
-
-        # self.max_cum_l1 = self.max_cum_l1 + self.l1_reg * self.learning_rate
-
-        # for j, xj in x.items():
-        #     wj_temp = self.weights[j] + self.learning_rate * xj * loss_gradient
-        #     if wj_temp > 0:
-        #         self.weights[j] = max(0, wj_temp - (self.max_cum_l1 + self.cum_l1[j]))
-        #     elif wj_temp < 0:
-        #         self.weights[j] = min(0, wj_temp + (self.max_cum_l1 - self.cum_l1[j]))
-        #     else:
-        #         self.weights[j] = wj_temp
-
-        #     self.cum_l1[j] = self.cum_l1[j] + (self.weights[j] - wj_temp)
-        if self.l1 == 0.0:
+        if self.l2:
             return (
                 loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
                 loss_gradient,
             )
-        if (self.l1 != 0.0) and (self.l2 == 0.0):
-            # print("hello")
+
+        if self.l1:
             return (
                 loss_gradient * utils.VectorDict(x),
                 loss_gradient,
             )
+
+        return (loss_gradient * utils.VectorDict(x), loss_gradient)
 
     def learn_one(self, x, y, w=1.0):
         with self._learn_mode(x):
@@ -211,6 +195,8 @@ class GLM:
         # thereby obtaining the mean gradient of the batch. From thereon, the code reduces to the
         # single instance case.
         gradient = np.einsum("ij,i->ij", X.values, loss_gradient).mean(axis=0)
+        if self.l2:
+            gradient += self.l2 * self._weights.to_numpy(X.columns)
 
         return dict(zip(X.columns, gradient)), loss_gradient.mean()
 

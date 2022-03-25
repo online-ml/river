@@ -13,7 +13,7 @@ from river import base, cluster, compat, linear_model, preprocessing
             linear_model.LinearRegression(),
             linear_model.LogisticRegression(),
             preprocessing.StandardScaler(),
-            cluster.KMeans(seed=42),
+            cluster.KMeans(n_clusters=3, seed=42),
         ]
     ],
 )

@@ -39,7 +39,7 @@ class Silhouette(base.ClusteringMetric):
     ... ]
 
     >>> k_means = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
-    >>> metric = metrics.cluster.Silhouette()
+    >>> metric = metrics.Silhouette()
 
     >>> for x, _ in stream.iter_array(X):
     ...     k_means = k_means.learn_one(x)
@@ -47,14 +47,12 @@ class Silhouette(base.ClusteringMetric):
     ...     metric = metric.update(x, y_pred, k_means.centers)
 
     >>> metric
-    Silhouette: 0.453723
+    Silhouette: 0.32145
 
     References
     ----------
-
     [^1]: Rousseeuw, P. (1987). Silhouettes: a graphical aid to the intepretation and validation
           of cluster analysis 20, 53 - 65. DOI: 10.1016/0377-0427(87)90125-7
-
     [^2]: Bifet, A. et al. (2018). "Machine Learning for Data Streams".
           DOI: 10.7551/mitpress/10654.001.0001.
 

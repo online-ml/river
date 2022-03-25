@@ -59,7 +59,10 @@ def iter_csv(
         is assumed if a list of strings is passed. A `None` value will be assigned to each `y`
         if this parameter is omitted.
     converters
-        A `dict` mapping feature names to callables used to parse their associated values.
+        All values in the CSV are interpreted as strings by default. You can use this parameter to
+        cast values to the desired type. This should be a `dict` mapping feature names to callables
+        used to parse their associated values. Note that a callable may be a type, such as `float`
+        and `int`.
     parse_dates
         A `dict` mapping feature names to a format passed to the `datetime.datetime.strptime`
         method.
@@ -80,9 +83,11 @@ def iter_csv(
     kwargs
         All other keyword arguments are passed to the underlying `csv.DictReader`.
 
-    Returns:
-        By default each feature value will be of type `str`. You can use the `converters` and
-        `parse_dates` parameters to convert them as you see fit.
+    Returns
+    -------
+
+    By default each feature value will be of type `str`. You can use the `converters` and
+    `parse_dates` parameters to convert them as you see fit.
 
     Examples
     --------

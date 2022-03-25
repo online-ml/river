@@ -9,18 +9,23 @@ repos:
       - id: trailing-whitespace
       - id: mixed-line-ending
 
-  - repo: https://github.com/psf/black
-    rev: 21.9b0
+  - repo: local
     hooks:
       - id: black
+        name: black
+        language: python
+        types: [python]
+        entry: black
 
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.9.3
-    hooks:
-      - id: isort
-        args: ["-l 88"]
-
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 4.0.1
-    hooks:
       - id: flake8
+        name: flake8
+        language: python
+        types: [python]
+        entry: flake8
+
+      - id: isort
+        name: isort
+        language: python
+        types: [python]
+        entry: isort
+        args: ["--profile", "black"]

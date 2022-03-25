@@ -260,19 +260,19 @@ class Agrawal(base.SyntheticDataset):
     ):
         if age < 40:
             if (elevel == 0) or (elevel == 1):
-                return int((25000 <= salary) and (salary <= 75000))
+                return int(25000 <= salary <= 75000)
             else:
-                return int((50000 <= salary) and (salary <= 100000))
+                return int(50000 <= salary <= 100000)
         elif age < 60:
             if (elevel == 1) or (elevel == 2) or (elevel == 3):
-                return int((50000 <= salary) and (salary <= 100000))
+                return int(50000 <= salary <= 100000)
             else:
-                return int((75000 <= salary) and (salary <= 125000))
+                return int(75000 <= salary <= 125000)
         else:
             if (elevel == 2) or (elevel == 3) or (elevel == 4):
-                return int((50000 <= salary) and (salary <= 100000))
+                return int(50000 <= salary <= 100000)
             else:
-                return int((25000 <= salary) and (salary <= 75000))
+                return int(25000 <= salary <= 75000)
 
     @staticmethod
     def _classification_function_4(

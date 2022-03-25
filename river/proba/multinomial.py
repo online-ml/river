@@ -28,6 +28,9 @@ class Multinomial(base.DiscreteDistribution):
     >>> p.update('red').update('red').pmf('green')
     0.5
 
+    >>> p.revert('red').revert('red').pmf('red')
+    0.25
+
     """
 
     def __init__(self, events: typing.Union[dict, list] = None):
@@ -53,6 +56,11 @@ class Multinomial(base.DiscreteDistribution):
         self._n += 1
         return self
 
+    def revert(self, x):
+        self.counts.subtract([x])
+        self._n -= 1
+        return self
+
     def pmf(self, x):
         try:
             return self.counts[x] / self._n
@@ -61,5 +69,5 @@ class Multinomial(base.DiscreteDistribution):
 
     def __str__(self):
         return "\n".join(
-            f"P({c}) = {self.pmf(c):.3f}" for c in self.counts.most_common()
+            f"P({c}) = {self.pmf(c):.3f}" for c, _ in self.counts.most_common()
         )

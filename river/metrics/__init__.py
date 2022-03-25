@@ -5,7 +5,7 @@ predictive methods over time.
 
 """
 
-from . import cluster, multioutput
+from . import multioutput
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
 from .base import (
@@ -46,6 +46,7 @@ from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
 from .rolling import Rolling
+from .silhouette import Silhouette
 from .smape import SMAPE
 from .time_rolling import TimeRolling
 from .vbeta import Completeness, Homogeneity, VBeta
@@ -85,7 +86,6 @@ __all__ = [
     "MicroRecall",
     "MultiClassMetric",
     "MultiFBeta",
-    "cluster",
     "multioutput",
     "MSE",
     "MutualInfo",
@@ -101,6 +101,7 @@ __all__ = [
     "Rolling",
     "R2",
     "Precision",
+    "Silhouette",
     "SMAPE",
     "TimeRolling",
     "VBeta",

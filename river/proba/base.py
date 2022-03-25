@@ -6,6 +6,10 @@ class Distribution(abc.ABC):
     def update(self, x):
         """Updates the parameters of the distribution given a new observation."""
 
+    @abc.abstractmethod
+    def revert(self, x):
+        """Reverts the parameters of the distribution for a given observation."""
+
     @property
     @abc.abstractmethod
     def n_samples(self):

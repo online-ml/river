@@ -160,9 +160,9 @@ class MultinomialNB(base.BaseNB):
         return self.class_counts[c] / sum(self.class_counts.values())
 
     def p_class_many(self) -> pd.DataFrame:
-        return base.from_dict(self.class_counts).T[self.class_counts] / sum(
-            self.class_counts.values()
-        )
+        return base.from_dict(self.class_counts).T[
+            list(self.class_counts.keys())
+        ] / sum(self.class_counts.values())
 
     def joint_log_likelihood(self, x):
         """Computes the joint log likelihood of input features.

@@ -52,7 +52,7 @@ def test_memory_usage_class(dataset, model):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model._raw_memory_usage / (2 ** 20) < 0.025
+    assert model._raw_memory_usage / (2**20) < 0.025
 
 
 @pytest.mark.parametrize(
@@ -76,7 +76,7 @@ def test_memory_usage_reg(dataset, model):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model._raw_memory_usage / (2 ** 20) < 0.5
+    assert model._raw_memory_usage / (2**20) < 0.5
 
 
 def test_memory_usage_multilabel():
@@ -91,7 +91,7 @@ def test_memory_usage_multilabel():
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model._raw_memory_usage / (2 ** 20) < 1
+    assert model._raw_memory_usage / (2**20) < 1
 
 
 def test_memory_usage_multitarget():
@@ -108,7 +108,7 @@ def test_memory_usage_multitarget():
         y_ = {0: y, 1: 2 * y, 2: 3 * y}
         model.learn_one(x, y_)
 
-    assert model._raw_memory_usage / (2 ** 20) < 0.5
+    assert model._raw_memory_usage / (2**20) < 0.5
 
 
 def test_efdt_split_reevaluation():
