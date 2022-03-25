@@ -80,14 +80,14 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
 
     def learn_one(self, x, y, **kwargs):
         var = self._var.get()
-        sd = var**0.5
+        sd = var ** 0.5
 
         if sd > 0:
             mean = self._var.mean.get()
             dev = abs(y - mean)
             t = dev / sd
             if t > 1:
-                prob_train = 1 - (var / (dev**2))
+                prob_train = 1 - (var / (dev ** 2))
                 p = self._rng.random()
 
                 if p < prob_train:
@@ -174,7 +174,7 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
 
     def learn_one(self, x, y, **kwargs):
         var = self._var.get()
-        sd = var**0.5
+        sd = var ** 0.5
 
         if sd > 0:
             mean = self._var.mean.get()

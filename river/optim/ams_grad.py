@@ -80,7 +80,7 @@ class AMSGrad(base.Optimizer):
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
-            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi**2
+            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
             self.v_hat[i] = max(self.v_hat[i], self.v[i])
 
             w[i] -= lr * self.m[i] / (self.v_hat[i] ** 0.5 + self.eps)

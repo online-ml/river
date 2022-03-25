@@ -81,7 +81,7 @@ class AdaBound(base.Optimizer):
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
-            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi**2
+            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
 
             step_size_bound = step_size / (math.sqrt(self.v[i]) + self.eps)
 

@@ -61,7 +61,7 @@ class NUnique(base.Univariate):
 
     """
 
-    P32 = 2**32
+    P32 = 2 ** 32
 
     def __init__(self, error_rate=0.01, seed: int = None):
         self.error_rate = error_rate

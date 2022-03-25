@@ -324,7 +324,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
         max_payoff = 0.0
         n_labels = len(self.order)
         # for each and every possible label combination
-        for label in range(2**n_labels):
+        for label in range(2 ** n_labels):
             # put together a binary label vector
             y_gen = {
                 i: int(v)

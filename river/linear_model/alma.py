@@ -50,7 +50,7 @@ class ALMAClassifier(base.Classifier):
 
     """
 
-    def __init__(self, p=2, alpha=0.9, B=1 / 0.9, C=2**0.5):
+    def __init__(self, p=2, alpha=0.9, B=1 / 0.9, C=2 ** 0.5):
         self.p = p
         self.alpha = alpha
         self.B = B

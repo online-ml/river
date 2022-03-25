@@ -180,7 +180,7 @@ def calculate_object_size(obj, unit="byte") -> int:
     if unit == "kB":
         final_size = byte_size / 1024
     elif unit == "MB":
-        final_size = byte_size / (2**20)
+        final_size = byte_size / (2 ** 20)
     else:
         final_size = byte_size
 

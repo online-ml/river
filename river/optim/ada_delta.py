@@ -60,13 +60,13 @@ class AdaDelta(base.Optimizer):
         for i, gi in g.items():
 
             # Accumulate the gradient
-            self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi**2
+            self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi ** 2
 
             # Compute the update
             step = -self._rms(self.s2[i]) / self._rms(self.g2[i]) * gi
 
             # Accumulate the update
-            self.s2[i] = self.rho * self.s2[i] + (1 - self.rho) * step**2
+            self.s2[i] = self.rho * self.s2[i] + (1 - self.rho) * step ** 2
 
             # Apply the update
             w[i] += step

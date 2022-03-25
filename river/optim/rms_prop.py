@@ -57,7 +57,7 @@ class RMSProp(base.Optimizer):
             self.g2 = collections.defaultdict(float)
 
         for i, gi in g.items():
-            self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi**2
+            self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi ** 2
             w[i] -= self.learning_rate / (self.g2[i] + self.eps) ** 0.5 * gi
 
         return w
@@ -70,7 +70,7 @@ class RMSProp(base.Optimizer):
             else:
                 self.g2 = utils.VectorDict()
 
-        self.g2 = self.rho * self.g2 + (1 - self.rho) * g**2
+        self.g2 = self.rho * self.g2 + (1 - self.rho) * g ** 2
         w -= self.learning_rate / (self.g2 + self.eps) ** 0.5 * g
 
         return w

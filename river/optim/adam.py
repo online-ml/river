@@ -72,7 +72,7 @@ class Adam(base.Optimizer):
 
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
-            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi**2
+            self.v[i] = self.beta_2 * self.v[i] + (1 - self.beta_2) * gi ** 2
             w[i] -= lr * self.m[i] / (self.v[i] ** 0.5 + self.eps)
 
         return w
@@ -91,7 +91,7 @@ class Adam(base.Optimizer):
         lr /= 1 - self.beta_1 ** (self.n_iterations + 1)
 
         self.m = self.beta_1 * self.m + (1 - self.beta_1) * g
-        self.v = self.beta_2 * self.v + (1 - self.beta_2) * g**2
-        w -= lr * self.m / (self.v**0.5 + self.eps)
+        self.v = self.beta_2 * self.v + (1 - self.beta_2) * g ** 2
+        w -= lr * self.m / (self.v ** 0.5 + self.eps)
 
         return w

@@ -98,7 +98,7 @@ class Skew(moments.CentralMoments):
 
     def get(self):
         n = self.count.get()
-        skew = n**0.5 * self.M3 / self.M2**1.5 if self.M2 != 0 else 0
+        skew = n ** 0.5 * self.M3 / self.M2 ** 1.5 if self.M2 != 0 else 0
         if not self.bias and n > 2:
             return ((n - 1.0) * n) ** 0.5 / (n - 2.0) * skew
         return skew

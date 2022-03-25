@@ -421,6 +421,6 @@ class TFIDF(BagOfWords):
             tfidfs[term] = tf * idf
 
         if self.normalize:
-            norm = math.sqrt(sum(tfidf**2 for tfidf in tfidfs.values()))
+            norm = math.sqrt(sum(tfidf ** 2 for tfidf in tfidfs.values()))
             return {term: tfidf / norm for term, tfidf in tfidfs.items()}
         return tfidfs

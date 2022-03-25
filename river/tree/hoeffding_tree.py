@@ -71,7 +71,7 @@ class HoeffdingTree(ABC):
         self.max_depth: float = max_depth if max_depth is not None else math.inf
         self.binary_split: bool = binary_split
         self._max_size: float = max_size
-        self._max_byte_size: float = self._max_size * (2**20)  # convert to byte
+        self._max_byte_size: float = self._max_size * (2 ** 20)  # convert to byte
         self.memory_estimate_period: int = memory_estimate_period
         self.stop_mem_management: bool = stop_mem_management
         self.remove_poor_attrs: bool = remove_poor_attrs
@@ -127,7 +127,7 @@ class HoeffdingTree(ABC):
     @max_size.setter
     def max_size(self, size):
         self._max_size = size
-        self._max_byte_size = self._max_size * (2**20)
+        self._max_byte_size = self._max_size * (2 ** 20)
 
     @property
     def height(self) -> int:

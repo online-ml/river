@@ -95,7 +95,7 @@ class Kurtosis(moments.CentralMoments):
 
     def get(self):
         n = self.count.get()
-        kurtosis = n * self.M4 / self.M2**2 if self.M2 != 0 else 0
+        kurtosis = n * self.M4 / self.M2 ** 2 if self.M2 != 0 else 0
         if not self.bias and n > 3:
-            return 1 / (n - 2) / (n - 3) * ((n**2 - 1) * kurtosis - 3 * (n - 1) ** 2)
+            return 1 / (n - 2) / (n - 3) * ((n ** 2 - 1) * kurtosis - 3 * (n - 1) ** 2)
         return kurtosis - 3
