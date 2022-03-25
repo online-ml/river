@@ -48,7 +48,8 @@ class GLM:
         self._y_name = None
 
         self.max_cum_l1 = 0
-        self.cum_l1 = collections.defaultdict(float)
+        # self.cum_l1 = collections.defaultdict(float)
+        self.cum_l1 = utils.VectorDict(None, optim.initializers.Zeros())
 
     @property
     def weights(self):
@@ -81,12 +82,12 @@ class GLM:
         # Update the weights
         self.optimizer.step(w=self._weights, g=gradient)
 
-        # REFLECTION: this should be states after the learning_rate update in case of adaptive learning_rate
+        # REFLECTION: this should be stated after the learning_rate update in case of adaptive learning_rate
         self.max_cum_l1 = self.max_cum_l1 + self.l1 * self.optimizer.learning_rate
         # /
 
-        if (self.l2 == 0.0) and (self.l1 != 0.0):
-            print("hello")
+        if (self.l1 != 0.0) and (self.l2 == 0.0):
+            # print("hello")
             self._update_weights(x)
             # pass
 
@@ -104,6 +105,8 @@ class GLM:
             wj_temp = self._weights[j]
             self._apply_penalty(j, wj_temp)
 
+        # self._apply_penalty_vecrotized(x, self._weights)
+
     def _apply_penalty(self, j, wj_temp):
 
         if wj_temp > 0:
@@ -113,9 +116,34 @@ class GLM:
         else:
             self._weights[j] = wj_temp
 
+        # print(f"{self.cum_l1=}")
         self.cum_l1[j] = self.cum_l1[j] + (self._weights[j] - wj_temp)
 
         pass
+
+    def _apply_penalty_vecrotized(self, w_temp):
+        # REFLECTION: no way this is going to work;
+        # can't return from numpy to VectorDict without iterating
+        # REFLECTION: make it as is, as a stub, add a test and be done
+        # TEST: this func weights on [-1] sample after normal training vs vanilla func weights on [:] training
+        weights_mirror = self._weights.to_numpy(self._weights.keys())
+        w_temp_mirror = w_temp.to_numpy(w_temp.keys())
+        cum_l1_mirror = self.cum_l1.to_numpy(self.cum_l1.keys())
+        # x_mirror = utils.VectorDict(x).to_numpy(utils.VectorDict(x).keys())
+
+        indexer = w_temp_mirror > 0
+        weights_mirror[indexer] = np.maximum(
+            0, w_temp_mirror[indexer] - (self.max_cum_l1 + cum_l1_mirror[indexer])
+        )
+
+        indexer = w_temp_mirror < 0
+        weights_mirror[indexer] = np.minimum(
+            0, w_temp_mirror[indexer] + (self.max_cum_l1 - cum_l1_mirror[indexer])
+        )
+
+        cum_l1_mirror = cum_l1_mirror + (weights_mirror - w_temp_mirror)
+
+        return weights_mirror, cum_l1_mirror
 
     # Single instance methods
 
@@ -153,7 +181,7 @@ class GLM:
                 loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
                 loss_gradient,
             )
-        if (self.l2 == 0.0) and (self.l1 != 0.0):
+        if (self.l1 != 0.0) and (self.l2 == 0.0):
             # print("hello")
             return (
                 loss_gradient * utils.VectorDict(x),
