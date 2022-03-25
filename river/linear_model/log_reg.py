@@ -70,6 +70,7 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         optimizer: optim.Optimizer = None,
         loss: optim.losses.BinaryLoss = None,
         l2=0.0,
+        l1=0.0,
         intercept_init=0.0,
         intercept_lr: typing.Union[float, optim.schedulers.Scheduler] = 0.01,
         clip_gradient=1e12,
@@ -82,6 +83,7 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
             intercept_init=intercept_init,
             intercept_lr=intercept_lr,
             l2=l2,
+            l1=l1,
             clip_gradient=clip_gradient,
             initializer=initializer if initializer else optim.initializers.Zeros(),
         )
@@ -91,7 +93,5 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         return {False: 1.0 - p, True: p}
 
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        p = self.loss.mean_func(
-            self._raw_dot_many(X)
-        )  # Convert logits to probabilities
+        p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
         return pd.DataFrame({False: 1.0 - p, True: p}, index=X.index, copy=False)
