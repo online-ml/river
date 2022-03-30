@@ -121,13 +121,13 @@ class DenStream(base.Clusterer):
     1
 
     >>> denstream.predict_one({0:5, 1:4})
-    0
+    2
 
     >>> denstream.predict_one({0:1, 1:1})
-    1
+    0
 
     >>> denstream.n_clusters
-    2
+    3
 
     """
 
@@ -236,6 +236,15 @@ class DenStream(base.Clusterer):
                     decaying_factor=self.decaying_factor,
                 )
                 self.o_micro_clusters[len(self.o_micro_clusters)] = mc_from_p
+            merged_status = True
+
+        # when p is not merged and o-micro-cluster set is empty
+        if not merged_status and len(self.o_micro_clusters) == 0:
+            mc_from_p = DenStreamMicroCluster(
+                x=point, timestamp=self.timestamp, decaying_factor=self.decaying_factor
+            )
+            self.o_micro_clusters = {0: mc_from_p}
+            merged_status = True
 
     def _is_directly_density_reachable(self, c_p, c_q):
         if (
