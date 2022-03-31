@@ -104,6 +104,14 @@ def iter_progressive_val_score(
         The attribute used for measuring time. If a callable is passed, then it is expected to take
         as input a `dict` of features. If `None`, then the observations are implicitly timestamped
         in the order in which they arrive.
+    delay
+        The amount to wait before revealing the target associated with each observation to the
+        model. This value is expected to be able to sum with the `moment` value. For instance, if
+        `moment` is a `datetime.date`, then `delay` is expected to be a `datetime.timedelta`. If a
+        callable is passed, then it is expected to take as input a `dict` of features and the
+        target. If a `str` is passed, then it will be used to access the relevant field from the
+        features. If `None` is passed, then no delay will be used, which leads to doing standard
+        online validation.
     step
         Iteration number at which to yield results. This only takes into account the
         predictions, and not the training steps.
