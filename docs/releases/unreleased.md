@@ -8,6 +8,10 @@
 - A `revert` method has been added to `stats.Multinomial`.
 - Added `dist.TimeRolling` to measure probability distributions over windows of time.
 
+## evaluate
+
+- Added a `iter_progressive_val_score` function, which does the same as `progressive_val_score`, except that it yields rather than prints results at each step, which give more control to the user.
+
 ## imblearn
 
 - Added `imblearn.ChebyshevUnderSampler` and `imblearn.ChebyshevOverSampler` for imbalanced regression.
