@@ -1,7 +1,7 @@
 import datetime as dt
+import itertools
 import time
 import typing
-import itertools
 
 from river import base, metrics, stream, utils
 
