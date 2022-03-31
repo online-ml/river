@@ -1,14 +1,13 @@
-from typing import Callable
-
 import numpy as np
 
 from river import base
 
-from .base_neighbors import NearestNeighbors
+from .base_neighbors import BaseKNN, DistanceFunc
 
 
-class KNNRegressor(NearestNeighbors, base.Regressor):
-    """K-Nearest Neighbors regressor.
+class KNNRegressor(BaseKNN, base.Regressor):
+    """
+    K-Nearest Neighbors regressor.
 
     This non-parametric regression method keeps track of the last `window_size`
     training samples. Predictions are obtained by aggregating the values of the
@@ -55,11 +54,7 @@ class KNNRegressor(NearestNeighbors, base.Regressor):
     >>> from river import evaluate, metrics
     >>> dataset = datasets.TrumpApproval()
 
-    >>> model = (
-    ...     neighbors.KNNRegressor(window_size=50)
-    ... )
-
-
+    >>> model = neighbors.KNNRegressor(window_size=50)
     >>> for x, y in dataset.take(100):
     ...     model = model.learn_one(x, y)
 
@@ -78,7 +73,7 @@ class KNNRegressor(NearestNeighbors, base.Regressor):
         window_size: int = 1000,
         aggregation_method: str = "mean",
         min_distance_keep: float = 0.0,
-        distance_func: Callable = None,
+        distance_func: DistanceFunc = None,
         distance_func_kwargs: dict = None,
     ):
         super().__init__(
@@ -88,17 +83,26 @@ class KNNRegressor(NearestNeighbors, base.Regressor):
             distance_func=distance_func,
             distance_func_kwargs=distance_func_kwargs,
         )
-        if aggregation_method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
+        self._check_aggregation_method(aggregation_method)
+        self.aggregation_method = aggregation_method
+
+    def _check_aggregation_method(self, method):
+        """
+        Ensure validation method is known to the model. Raises a ValueError if not.
+
+        Parameters
+        ----------
+
+        method
+            The aggregration method as a string
+        """
+        if method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
             raise ValueError(
                 "Invalid aggregation_method: {}.\n"
                 "Valid options are: {}".format(
-                    aggregation_method, {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}
+                    method, {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}
                 )
             )
-        self.aggregation_method = aggregation_method
-
-    def _unit_test_skips(self):
-        return {"check_emerging_features", "check_disappearing_features"}
 
     def predict_one(self, x):
         """Predict the target value of a set of features `x`.
@@ -116,18 +120,23 @@ class KNNRegressor(NearestNeighbors, base.Regressor):
             The prediction.
         """
         # Find the nearest neighbors!
-        nearest = self.find_nearest(x=x, n_neighbors=self.n_neighbors)
+        nearest = self.nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
 
         if not nearest:
             return 0.0
 
-        # If the closest has a distance of 0 (it's the same) return it's output
+        # For each in nearest, call it 'item"
+        # item[0] is the original item (x, y)
+        # item[-1] is the distance
+        # item[1:n-1] are extra we don't use here
+
+        # If the closest distance is 0 (it's the same) return it's output (y)
         # BUT only if the output (y) is not None.
-        if nearest[0][-1] == 0 and nearest[0][1] is not None:
-            return nearest[0][1]
+        if nearest[0][-1] == 0 and nearest[0][0][1] is not None:
+            return nearest[0][0][1]
 
         # Only include neighbors in the sum that are non None
-        neighbor_vals = [n[1] for n in nearest if n[1] is not None]
+        neighbor_vals = [n[0][1] for n in nearest if n[0][1] is not None]
 
         if self.aggregation_method == self._MEAN:
             return np.mean(neighbor_vals)
@@ -136,7 +145,7 @@ class KNNRegressor(NearestNeighbors, base.Regressor):
             return np.median(neighbor_vals)
 
         # weighted mean based on distance
-        dists = [n[-1] for n in nearest if n[1] is not None]
+        dists = [n[-1] for n in nearest if n[0][1] is not None]
         return sum(y / d for y, d in zip(neighbor_vals, dists)) / sum(
             1 / d for d in dists
         )

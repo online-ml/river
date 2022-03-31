@@ -1,13 +1,11 @@
-from typing import Callable
-
 from river import base, utils
 
-from .base_neighbors import NearestNeighbors
+from .base_neighbors import BaseKNN, DistanceFunc
 
 __all__ = ["KNNClassifier"]
 
 
-class KNNClassifier(NearestNeighbors, base.Classifier):
+class KNNClassifier(BaseKNN, base.Classifier):
     """
     K-Nearest Neighbors (KNN) for classification.
 
@@ -50,6 +48,10 @@ class KNNClassifier(NearestNeighbors, base.Classifier):
         For this parameter, when `p=1`, this corresponds to the Manhattan
         distance, while `p=2` corresponds to the Euclidean distance.
 
+    softmax
+        Whether or not to use softmax normalization to normalize the neighbors contributions.
+        Votes are divided by the total number of votes if this is `False`.
+
     Notes
     -----
     See the NearestNeighbors documentation for details about the base model. Note that
@@ -84,8 +86,9 @@ class KNNClassifier(NearestNeighbors, base.Classifier):
         min_distance_keep: float = 0.0,
         weighted: bool = True,
         class_cleanup: bool = False,
-        distance_func: Callable = None,
+        distance_func: DistanceFunc = None,
         distance_func_kwargs: dict = None,
+        softmax: bool = True,
     ):
         super().__init__(
             n_neighbors=n_neighbors,
@@ -96,17 +99,8 @@ class KNNClassifier(NearestNeighbors, base.Classifier):
         )
         self.weighted = weighted
         self.class_cleanup = class_cleanup
-        self.reset()
-
-    def reset(self) -> "KNNClassifier":
-        """
-        Reset estimator
-        Returns:
-            self
-        """
-        self._reset()
         self.classes = set()
-        return self
+        self.softmax = softmax
 
     def _class_cleanup(self) -> "KNNClassifier":
         """
@@ -117,7 +111,7 @@ class KNNClassifier(NearestNeighbors, base.Classifier):
             self
         """
         self.classes = set()
-        [self.classes.add(x) for x in self.window if x[1] is not None]
+        [self.classes.add(x) for x in self.window if x[0][1] is not None]
         return self
 
     def learn_one(self, x: dict, y=None):
@@ -129,7 +123,7 @@ class KNNClassifier(NearestNeighbors, base.Classifier):
             self
         """
         # Only add the class y to known classes if we actually add the point!
-        if self.update(x, y, n_neighbors=self.n_neighbors):
+        if self.nn.update((x, y), n_neighbors=self.n_neighbors):
             self.classes.add(y)
 
         # Ensure classes known to instance reflect window
@@ -144,7 +138,7 @@ class KNNClassifier(NearestNeighbors, base.Classifier):
         Returns:
             Lookup (dict) of classes and probability predictions (normalized)
         """
-        nearest = self.find_nearest(x=x, n_neighbors=self.n_neighbors)
+        nearest = self.nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
 
         # Default prediction for every class we know is 0.
         # If class_cleanup is false this can include classes not in window
@@ -155,15 +149,15 @@ class KNNClassifier(NearestNeighbors, base.Classifier):
             return y_pred
 
         # If the closest is an exact match AND has a class, return it
-        if nearest[0][-1] == 0 and nearest[0][1] is not None:
+        if nearest[0][-1] == 0 and nearest[0][0][1] is not None:
 
             # Update the class in our prediction from 0 to 1, 100% certain!
-            y_pred[nearest[0][1]] = 1.0
+            y_pred[nearest[0][0][1]] = 1.0
             return y_pred
 
         for neighbor in nearest:
             distance = neighbor[-1]
-            y = neighbor[1]
+            y = neighbor[0][1]
 
             # Weighted votes by inverse distance
             if self.weighted:
@@ -174,4 +168,11 @@ class KNNClassifier(NearestNeighbors, base.Classifier):
                 y_pred[y] += 1.0
 
         # Normalize votes into real [0, 1] probabilities
-        return utils.math.softmax(y_pred)
+        if self.softmax:
+            return utils.math.softmax(y_pred)
+
+        # Otherwise reuturn average
+        total = sum(y_pred.values())
+        for y in y_pred:
+            y_pred[y] /= total
+        return y_pred
