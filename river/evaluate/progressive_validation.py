@@ -62,9 +62,9 @@ def _progressive_validation(
         n_total_answers += 1
         if n_total_answers == next_checkpoint:
             if isinstance(metric, metrics.Metrics):
-                results = {m.__class__.__name__: m.get() for m in metric}
+                results = {m.__class__.__name__: m for m in metric}
             else:
-                results = {metric.__class__.__name__: metric.get()}
+                results = {metric.__class__.__name__: metric}
             results["Step"] = n_total_answers
             if measure_time:
                 now = time.perf_counter()
