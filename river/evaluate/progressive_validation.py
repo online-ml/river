@@ -1,7 +1,7 @@
 import datetime as dt
 import time
 import typing
-from itertools import accumulate, cycle
+import itertools
 
 from river import base, metrics, stream, utils
 
@@ -73,6 +73,97 @@ def _progressive_validation(
                 results["Memory"] = model._memory_usage
             yield results
             next_checkpoint = next(checkpoints, None)
+
+
+def iter_progressive_val_score(
+    dataset: base.typing.Dataset,
+    model,
+    metric: metrics.Metric,
+    moment: typing.Union[str, typing.Callable] = None,
+    delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
+    step=1,
+    measure_time=False,
+    measure_memory=False,
+) -> metrics.Metric:
+    """Evaluates the performance of a model on a streaming dataset and yields results.
+
+    This does exactly the same as `evaluate.progressive_val_score`. The only difference is that
+    this function returns an iterator, yielding results at every step. This can be useful if you
+    want to have control over what you do with the results. For instance, you might want to plot
+    the results.
+
+    Parameters
+    ----------
+    dataset
+        The stream of observations against which the model will be evaluated.
+    model
+        The model to evaluate.
+    metric
+        The metric used to evaluate the model's predictions.
+    moment
+        The attribute used for measuring time. If a callable is passed, then it is expected to take
+        as input a `dict` of features. If `None`, then the observations are implicitly timestamped
+        in the order in which they arrive.
+    step
+        Iteration number at which to yield results. This only takes into account the
+        predictions, and not the training steps.
+    measure_time
+        Whether or not to measure the elapsed time.
+    measure_memory
+        Whether or not to measure the memory usage of the model.
+
+    Examples
+    --------
+
+    Take the following model:
+
+    >>> from river import linear_model
+    >>> from river import preprocessing
+
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     linear_model.LogisticRegression()
+    ... )
+
+    We can evaluate it on the `Phishing` dataset as so:
+
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+
+    >>> steps = evaluate.iter_progressive_val_score(
+    ...     model=model,
+    ...     dataset=datasets.Phishing(),
+    ...     metric=metrics.ROCAUC(),
+    ...     step=200
+    ... )
+
+    >>> for step in steps:
+    ...     print(step)
+    {'ROCAUC': ROCAUC: 89.80%, 'Step': 200}
+    {'ROCAUC': ROCAUC: 92.09%, 'Step': 400}
+    {'ROCAUC': ROCAUC: 93.13%, 'Step': 600}
+    {'ROCAUC': ROCAUC: 93.99%, 'Step': 800}
+    {'ROCAUC': ROCAUC: 94.74%, 'Step': 1000}
+    {'ROCAUC': ROCAUC: 95.03%, 'Step': 1200}
+
+    References
+    ----------
+    [^1]: [Beating the Hold-Out: Bounds for K-fold and Progressive Cross-Validation](http://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf)
+    [^2]: [Grzenda, M., Gomes, H.M. and Bifet, A., 2019. Delayed labelling evaluation for data streams. Data Mining and Knowledge Discovery, pp.1-30](https://link.springer.com/content/pdf/10.1007%2Fs10618-019-00654-y.pdf)
+
+    """
+
+    yield from _progressive_validation(
+        dataset,
+        model,
+        metric,
+        checkpoints=itertools.count(step, step) if step else iter([]),
+        moment=moment,
+        delay=delay,
+        measure_time=measure_time,
+        measure_memory=measure_memory,
+    )
 
 
 def progressive_val_score(
@@ -226,13 +317,13 @@ def progressive_val_score(
 
     """
 
-    checkpoints = _progressive_validation(
-        dataset,
-        model,
-        metric,
-        checkpoints=accumulate(cycle([print_every])) if print_every else iter([]),
+    checkpoints = iter_progressive_val_score(
+        dataset=dataset,
+        model=model,
+        metric=metric,
         moment=moment,
         delay=delay,
+        step=print_every,
         measure_time=show_time,
         measure_memory=show_memory,
     )

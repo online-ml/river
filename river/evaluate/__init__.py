@@ -12,7 +12,7 @@ a binary classification model.
 The `benchmarks` directory at the root of the River repository uses these tracks.
 
 """
-from .progressive_validation import progressive_val_score
+from .progressive_validation import progressive_val_score, iter_progressive_val_score
 from .tracks import Track, load_binary_clf_tracks
 
-__all__ = ["load_binary_clf_tracks", "progressive_val_score", "Track"]
+__all__ = ["load_binary_clf_tracks", "iter_progressive_val_score", "progressive_val_score", "Track"]
