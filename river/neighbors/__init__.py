@@ -4,8 +4,15 @@ Also known as *lazy* methods. In these methods, generalisation of the training d
 until a query is received.
 
 """
-from .base_neighbors import BaseKNN, NearestNeighbors
+from .base_neighbors import BaseKNN
 from .knn_classifier import KNNClassifier
 from .knn_regressor import KNNRegressor
+from .neighbors import MinkowskiNeighbors, NearestNeighbors
 
-__all__ = ["BaseKNN", "NearestNeighbors", "KNNClassifier", "KNNRegressor"]
+__all__ = [
+    "BaseKNN",
+    "MinkowskiNeighbors",
+    "NearestNeighbors",
+    "KNNClassifier",
+    "KNNRegressor",
+]

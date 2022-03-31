@@ -1,6 +1,7 @@
 from river import base, utils
 
-from .base_neighbors import BaseKNN, DistanceFunc
+from .base_neighbors import BaseKNN
+from .neighbors import DistanceFunc
 
 __all__ = ["KNNClassifier"]
 
@@ -41,24 +42,19 @@ class KNNClassifier(BaseKNN, base.Classifier):
         custom set of kwargs (defined in distance_func_kwargs). If not defined,
         the default Minkowski distance is used.
 
-    distance_func_kwargs
-        A dictionary to pass as kwargs to your distance function, in addition
-        to a= and b=. If distance_func is set to None, these are ignored,
-        and are set to including the power parameter for the Minkowski metric.
-        For this parameter, when `p=1`, this corresponds to the Manhattan
-        distance, while `p=2` corresponds to the Euclidean distance.
-
     softmax
         Whether or not to use softmax normalization to normalize the neighbors contributions.
         Votes are divided by the total number of votes if this is `False`.
 
     Notes
     -----
-    See the NearestNeighbors documentation for details about the base model. Note that
-    since the window is moving and we keep track of all classes that are added
-    at some point, a class might be returned in a result (with a value of 0)
-    if it is no longer in the window. You can call model.class_cleanup() if
-    you want to iterate through points to ensure no extra classes are present.
+    See the NearestNeighbors documentation for details about the base model,
+    along with KNNBase for an example of providing your own distance function.
+    Note that since the window is moving and we keep track of all classes that
+    are added at some point, a class might be returned in a result (with a
+    value of 0) if it is no longer in the window. You can call
+    model.class_cleanup() if you want to iterate through points to ensure
+    no extra classes are present.
 
     Examples
     --------
@@ -87,7 +83,6 @@ class KNNClassifier(BaseKNN, base.Classifier):
         weighted: bool = True,
         class_cleanup: bool = False,
         distance_func: DistanceFunc = None,
-        distance_func_kwargs: dict = None,
         softmax: bool = True,
     ):
         super().__init__(
@@ -95,7 +90,6 @@ class KNNClassifier(BaseKNN, base.Classifier):
             window_size=window_size,
             min_distance_keep=min_distance_keep,
             distance_func=distance_func,
-            distance_func_kwargs=distance_func_kwargs,
         )
         self.weighted = weighted
         self.class_cleanup = class_cleanup

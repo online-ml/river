@@ -2,7 +2,8 @@ import numpy as np
 
 from river import base
 
-from .base_neighbors import BaseKNN, DistanceFunc
+from .base_neighbors import BaseKNN
+from .neighbors import DistanceFunc
 
 
 class KNNRegressor(BaseKNN, base.Regressor):
@@ -37,16 +38,10 @@ class KNNRegressor(BaseKNN, base.Regressor):
         custom set of kwargs (defined in distance_func_kwargs). If not defined,
         the default Minkowski distance is used.
 
-    distance_func_kwargs
-        A dictionary to pass as kwargs to your distance function, in addition
-        to a= and b=. If distance_func is set to None, these are ignored,
-        and are set to including the power parameter for the Minkowski metric.
-        For this parameter, when `p=1`, this corresponds to the Manhattan
-        distance, while `p=2` corresponds to the Euclidean distance.
-
     Notes
     -----
-    See the NearestNeighbors documentation for details about the base model.
+    See the NearestNeighbors documentation for details about the base model,
+    along with KNNBase for an example of providing your own distance function.
 
     Examples
     --------
@@ -74,14 +69,12 @@ class KNNRegressor(BaseKNN, base.Regressor):
         aggregation_method: str = "mean",
         min_distance_keep: float = 0.0,
         distance_func: DistanceFunc = None,
-        distance_func_kwargs: dict = None,
     ):
         super().__init__(
             n_neighbors=n_neighbors,
             window_size=window_size,
             min_distance_keep=min_distance_keep,
             distance_func=distance_func,
-            distance_func_kwargs=distance_func_kwargs,
         )
         self._check_aggregation_method(aggregation_method)
         self.aggregation_method = aggregation_method
