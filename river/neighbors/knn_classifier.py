@@ -31,11 +31,10 @@ class KNNClassifier(BaseKNN, base.Classifier):
     weighted
         Weight the contribution of each neighbor by it's inverse distance.
 
-    class_cleanup
-        Boolean to indicate if you always want to cleanup the list of known
-        classes based on the current window. If true, cleanup happens after
-        learn. If False, you can call it manually (or not at all). This is ideal
-        for models that have a changing and growing number of classes.
+    cleanup_every
+        This determines at which rate old classes are cleaned up. Classes that
+        have been seen in the past but that are not present in the current
+        window are dropped. Classes are never dropped when this is set to 0.
 
     distance_func
         An optional distance function that should accept an a=, b=, and any
@@ -53,8 +52,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
     Note that since the window is moving and we keep track of all classes that
     are added at some point, a class might be returned in a result (with a
     value of 0) if it is no longer in the window. You can call
-    model.class_cleanup() if you want to iterate through points to ensure
-    no extra classes are present.
+    model.clean_up_classes(), or set `cleanup_every` to a non-zero value.
 
     Examples
     --------
@@ -81,9 +79,9 @@ class KNNClassifier(BaseKNN, base.Classifier):
         window_size: int = 1000,
         min_distance_keep: float = 0.0,
         weighted: bool = True,
-        class_cleanup: bool = False,
+        cleanup_every: int = 0,
         distance_func: DistanceFunc = None,
-        softmax: bool = True,
+        softmax: bool = False,
     ):
         super().__init__(
             n_neighbors=n_neighbors,
@@ -92,21 +90,19 @@ class KNNClassifier(BaseKNN, base.Classifier):
             distance_func=distance_func,
         )
         self.weighted = weighted
-        self.class_cleanup = class_cleanup
+        self.cleanup_every = cleanup_every
         self.classes = set()
         self.softmax = softmax
+        self._cleanup_counter = cleanup_every
 
-    def _class_cleanup(self) -> "KNNClassifier":
+    def clean_up_classes(self) -> "KNNClassifier":
         """
         Classes that are added (and removed) from the window may no longer be valid.
-        This method iterates through the current window and ensures only known classes
-        are added. This comes at a cost of O(N) to loop through entire window.
-        Returns:
-            self
+        This method cleans up the window and and ensures only known classes
+        are added, and we do not consider "None" a class. It is called every
+        `cleanup_every` step, or can be called manually.
         """
-        self.classes = set()
-        [self.classes.add(x) for x in self.window if x[0][1] is not None]
-        return self
+        self.classes = {x for x in self.window if x[0][1] is not None}
 
     def learn_one(self, x: dict, y=None):
         """Learn a set of features `x` and optional class `y`.
@@ -121,8 +117,20 @@ class KNNClassifier(BaseKNN, base.Classifier):
             self.classes.add(y)
 
         # Ensure classes known to instance reflect window
-        if self.class_cleanup:
-            self._class_cleanup()
+        self._run_class_cleanup()
+        return self
+
+    def _run_class_cleanup(self):
+        """
+        Helper function to run class cleanup, accounting for _cleanup_counter.
+        """
+        # clean up classes every cleanup_every steps
+        if self.cleanup_every:
+            self._cleanup_counter -= 1
+            if self._cleanup_counter == 0:
+                self.clean_up_classes()
+                self._cleanup_counter = self.cleanup_every
+
         return self
 
     def predict_proba_one(self, x):

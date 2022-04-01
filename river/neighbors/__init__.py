@@ -7,12 +7,9 @@ until a query is received.
 from .base_neighbors import BaseKNN
 from .knn_classifier import KNNClassifier
 from .knn_regressor import KNNRegressor
-from .neighbors import MinkowskiNeighbors, NearestNeighbors
 
 __all__ = [
     "BaseKNN",
-    "MinkowskiNeighbors",
-    "NearestNeighbors",
     "KNNClassifier",
     "KNNRegressor",
 ]

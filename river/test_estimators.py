@@ -78,8 +78,6 @@ def iter_estimators_which_can_be_tested():
         model_selection.SuccessiveHalvingClassifier,
         neighbors.BaseKNN,
         neighbors.KNNRegressor,
-        neighbors.MinkowskiNeighbors,
-        neighbors.NearestNeighbors,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
