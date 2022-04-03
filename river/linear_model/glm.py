@@ -134,6 +134,8 @@ class GLM:
                 loss_gradient,
             )
 
+        return (loss_gradient * utils.VectorDict(x), loss_gradient)
+
     def learn_one(self, x, y, w=1.0):
         with self._learn_mode(x):
             return self._fit(x, y, w, get_grad=self._eval_gradient_one)
@@ -147,9 +149,7 @@ class GLM:
         self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
     ) -> (dict, float):
 
-        loss_gradient = self.loss.gradient(
-            y_true=y.values, y_pred=self._raw_dot_many(X)
-        )
+        loss_gradient = self.loss.gradient(y_true=y.values, y_pred=self._raw_dot_many(X))
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
 
