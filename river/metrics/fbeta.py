@@ -66,7 +66,7 @@ class FBeta(metrics.BinaryMetric):
     def get(self):
         p = self.precision.get()
         r = self.recall.get()
-        b2 = self.beta ** 2
+        b2 = self.beta**2
         try:
             return (1 + b2) * p * r / (b2 * p + r)
         except ZeroDivisionError:
@@ -113,7 +113,7 @@ class MacroFBeta(metrics.MultiClassMetric):
 
     def get(self):
         total = 0
-        b2 = self.beta ** 2
+        b2 = self.beta**2
 
         for c in self.cm.classes:
 
@@ -183,7 +183,7 @@ class MicroFBeta(metrics.MultiClassMetric):
     def get(self):
         p = self.precision.get()
         r = self.recall.get()
-        b2 = self.beta ** 2
+        b2 = self.beta**2
         try:
             return (1 + b2) * p * r / (b2 * p + r)
         except ZeroDivisionError:
@@ -231,7 +231,7 @@ class WeightedFBeta(metrics.MultiClassMetric):
 
     def get(self):
         total = 0
-        b2 = self.beta ** 2
+        b2 = self.beta**2
 
         for c in self.cm.classes:
 

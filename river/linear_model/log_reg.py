@@ -95,5 +95,7 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         return {False: 1.0 - p, True: p}
 
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
+        p = self.loss.mean_func(
+            self._raw_dot_many(X)
+        )  # Convert logits to probabilities
         return pd.DataFrame({False: 1.0 - p, True: p}, index=X.index, copy=False)
