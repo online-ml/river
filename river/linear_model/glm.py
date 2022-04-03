@@ -149,7 +149,9 @@ class GLM:
         self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
     ) -> (dict, float):
 
-        loss_gradient = self.loss.gradient(y_true=y.values, y_pred=self._raw_dot_many(X))
+        loss_gradient = self.loss.gradient(
+            y_true=y.values, y_pred=self._raw_dot_many(X)
+        )
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
 
