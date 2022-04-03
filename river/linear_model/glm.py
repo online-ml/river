@@ -49,7 +49,7 @@ class GLM:
 
             if l2 != 0:
                 raise NotImplementedError(
-                    "Joint use of L1 and L2 penalties is not explicitly supported! Pick just one please"
+                    "Joint use of L1 and L2 penalties is not explicitly supported yet! Pick just one please"
                 )
 
             # L1-specific fields
