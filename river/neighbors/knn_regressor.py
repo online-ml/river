@@ -1,12 +1,13 @@
+from typing import Tuple
+
 import numpy as np
 
 from river import base
 
-from .base_neighbors import BaseKNN
-from .neighbors import DistanceFunc
+from .neighbors import DistanceFunc, MinkowskiNeighbors
 
 
-class KNNRegressor(BaseKNN, base.Regressor):
+class KNNRegressor(base.Regressor):
     """
     K-Nearest Neighbors regressor.
 
@@ -70,14 +71,18 @@ class KNNRegressor(BaseKNN, base.Regressor):
         min_distance_keep: float = 0.0,
         distance_func: DistanceFunc = None,
     ):
-        super().__init__(
-            n_neighbors=n_neighbors,
-            window_size=window_size,
-            min_distance_keep=min_distance_keep,
-            distance_func=distance_func,
-        )
         self._check_aggregation_method(aggregation_method)
         self.aggregation_method = aggregation_method
+        self.n_neighbors = n_neighbors
+        self.window_size = window_size
+        self.min_distance_keep = min_distance_keep
+        self.distance_func = distance_func
+        self.nn = MinkowskiNeighbors(
+            window_size=window_size,
+            distance_func=distance_func,
+            min_distance_keep=min_distance_keep,
+            n_neighbors=n_neighbors,
+        )
 
     def _check_aggregation_method(self, method):
         """
@@ -96,6 +101,18 @@ class KNNRegressor(BaseKNN, base.Regressor):
                     method, {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}
                 )
             )
+
+    def learn_one(self, x, y=None, extra: [Tuple, list] = None):
+        """Learn a set of features `x` and optional class `y`.
+        Parameters:
+            x: A dictionary of features.
+            y: A class (optional if known).
+            extra: an optional list or tuple of features to store
+        Returns:
+            self
+        """
+        self.nn.update((x, y), n_neighbors=self.n_neighbors, extra=extra)
+        return self
 
     def predict_one(self, x):
         """Predict the target value of a set of features `x`.

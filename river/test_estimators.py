@@ -76,7 +76,7 @@ def iter_estimators_which_can_be_tested():
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,
         model_selection.SuccessiveHalvingClassifier,
-        neighbors.BaseKNN,
+        neighbors.NearestNeighbors,
         neighbors.KNNRegressor,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
