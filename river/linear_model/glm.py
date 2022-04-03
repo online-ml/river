@@ -88,7 +88,7 @@ class GLM:
         self.optimizer.step(w=self._weights, g=gradient)
 
         # apply L1 cumulative penalty if applicable
-        if (self.l1 != 0.0) and (self.l2 == 0.0):
+        if self.l1 != 0.0:
             # INFO: this should be called after the learning_rate update in case of adaptive learning rate
             self.max_cum_l1 = self.max_cum_l1 + self.l1 * self.optimizer.learning_rate
             # ---
@@ -133,14 +133,6 @@ class GLM:
                 loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
                 loss_gradient,
             )
-
-        if self.l1:
-            return (
-                loss_gradient * utils.VectorDict(x),
-                loss_gradient,
-            )
-
-        return (loss_gradient * utils.VectorDict(x), loss_gradient)
 
     def learn_one(self, x, y, w=1.0):
         with self._learn_mode(x):
