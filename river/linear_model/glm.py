@@ -80,40 +80,33 @@ class GLM:
         # Update the weights
         self.optimizer.step(w=self._weights, g=gradient)
 
+        # apply L1 cumulative penalty if applicable
         if (self.l1 != 0.0) and (self.l2 == 0.0):
-            # REFLECTION: this should be stated after the learning_rate update in case of adaptive learning_rate
+            # INFO: this should be called after the learning_rate update in case of adaptive learning rate
             self.max_cum_l1 = self.max_cum_l1 + self.l1 * self.optimizer.learning_rate
-            # /
+            # ---
 
             self._update_weights(x)
-            # pass
 
         return self
 
     def _update_weights(self, x):
-        # INFO: L1 penalty helper
+        # INFO: L1 cumulative penalty helper
 
+        # INFO: apply penalty to each weight iteratively;
+        # can potentially be parallelized but requires some tricks with VectorDict
         for j, xj in x.items():
-            # REFLECTION: it's not `temperature` it's `temporary` lol
             wj_temp = self._weights[j]
-            self._apply_penalty(j, wj_temp)
 
-        # INFO: perhaps a viable vectorized alternative
-        # self._apply_penalty_vecrotized(x, self._weights)
+            if wj_temp > 0:
+                self._weights[j] = max(0, wj_temp - (self.max_cum_l1 + self.cum_l1[j]))
+            elif wj_temp < 0:
+                self._weights[j] = min(0, wj_temp + (self.max_cum_l1 - self.cum_l1[j]))
+            else:
+                self._weights[j] = wj_temp
 
-    def _apply_penalty(self, j, wj_temp):
-        # INFO: L1 penalty helper
-
-        if wj_temp > 0:
-            self._weights[j] = max(0, wj_temp - (self.max_cum_l1 + self.cum_l1[j]))
-        elif wj_temp < 0:
-            self._weights[j] = min(0, wj_temp + (self.max_cum_l1 - self.cum_l1[j]))
-        else:
-            self._weights[j] = wj_temp
-
-        self.cum_l1[j] = self.cum_l1[j] + (self._weights[j] - wj_temp)
-
-        pass
+            # INFO: update the penalty state of the estimator
+            self.cum_l1[j] = self.cum_l1[j] + (self._weights[j] - wj_temp)
 
     def _apply_penalty_vecrotized(self, w_temp):
         # INFO: L1 penalty helper
@@ -179,9 +172,7 @@ class GLM:
         self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
     ) -> (dict, float):
 
-        loss_gradient = self.loss.gradient(
-            y_true=y.values, y_pred=self._raw_dot_many(X)
-        )
+        loss_gradient = self.loss.gradient(y_true=y.values, y_pred=self._raw_dot_many(X))
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
 
