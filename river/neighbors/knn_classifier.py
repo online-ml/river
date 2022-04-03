@@ -1,11 +1,12 @@
 from river import base, utils
 
-from .neighbors import DistanceFunc, MinkowskiNeighbors
+from .base_neighbors import BaseKNN
+from .neighbors import DistanceFunc
 
 __all__ = ["KNNClassifier"]
 
 
-class KNNClassifier(base.Classifier):
+class KNNClassifier(BaseKNN, base.Classifier):
     """
     K-Nearest Neighbors (KNN) for classification.
 
@@ -82,22 +83,17 @@ class KNNClassifier(base.Classifier):
         distance_func: DistanceFunc = None,
         softmax: bool = False,
     ):
+        super().__init__(
+            n_neighbors=n_neighbors,
+            window_size=window_size,
+            min_distance_keep=min_distance_keep,
+            distance_func=distance_func,
+        )
         self.weighted = weighted
         self.cleanup_every = cleanup_every
         self.classes = set()
         self.softmax = softmax
         self._cleanup_counter = cleanup_every
-
-        self.n_neighbors = n_neighbors
-        self.window_size = window_size
-        self.min_distance_keep = min_distance_keep
-        self.distance_func = distance_func
-        self.nn = MinkowskiNeighbors(
-            window_size=window_size,
-            distance_func=distance_func,
-            min_distance_keep=min_distance_keep,
-            n_neighbors=n_neighbors,
-        )
 
     @property
     def _multiclass(self):

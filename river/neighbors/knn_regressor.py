@@ -4,10 +4,11 @@ import numpy as np
 
 from river import base
 
-from .neighbors import DistanceFunc, MinkowskiNeighbors
+from .base_neighbors import BaseKNN
+from .neighbors import DistanceFunc
 
 
-class KNNRegressor(base.Regressor):
+class KNNRegressor(BaseKNN, base.Regressor):
     """
     K-Nearest Neighbors regressor.
 
@@ -71,18 +72,14 @@ class KNNRegressor(base.Regressor):
         min_distance_keep: float = 0.0,
         distance_func: DistanceFunc = None,
     ):
+        super().__init__(
+            n_neighbors=n_neighbors,
+            window_size=window_size,
+            min_distance_keep=min_distance_keep,
+            distance_func=distance_func,
+        )
         self._check_aggregation_method(aggregation_method)
         self.aggregation_method = aggregation_method
-        self.n_neighbors = n_neighbors
-        self.window_size = window_size
-        self.min_distance_keep = min_distance_keep
-        self.distance_func = distance_func
-        self.nn = MinkowskiNeighbors(
-            window_size=window_size,
-            distance_func=distance_func,
-            min_distance_keep=min_distance_keep,
-            n_neighbors=n_neighbors,
-        )
 
     def _check_aggregation_method(self, method):
         """
