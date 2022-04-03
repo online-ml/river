@@ -45,9 +45,10 @@ class GLM:
         # the name given to the y series seen during the last learn_many call.
         self._y_name = None
 
-        self.max_cum_l1 = 0
-        # self.cum_l1 = collections.defaultdict(float)
-        self.cum_l1 = utils.VectorDict(None, optim.initializers.Zeros())
+        if l1 != 0:
+            # L1-specific fields
+            self.max_cum_l1 = 0
+            self.cum_l1 = utils.VectorDict(None, optim.initializers.Zeros())
 
     @property
     def weights(self):
