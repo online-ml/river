@@ -108,30 +108,6 @@ class GLM:
             # INFO: update the penalty state of the estimator
             self.cum_l1[j] = self.cum_l1[j] + (self._weights[j] - wj_temp)
 
-    def _apply_penalty_vecrotized(self, w_temp):
-        # INFO: L1 penalty helper
-        # REFLECTION: no way this is going to work;
-        # can't return from numpy to VectorDict without iterating
-        # REFLECTION: make it as is, as a stub, add a test and be done
-        weights_mirror = self._weights.to_numpy(self._weights.keys())
-        w_temp_mirror = w_temp.to_numpy(w_temp.keys())
-        cum_l1_mirror = self.cum_l1.to_numpy(self.cum_l1.keys())
-        # x_mirror = utils.VectorDict(x).to_numpy(utils.VectorDict(x).keys())
-
-        indexer = w_temp_mirror > 0
-        weights_mirror[indexer] = np.maximum(
-            0, w_temp_mirror[indexer] - (self.max_cum_l1 + cum_l1_mirror[indexer])
-        )
-
-        indexer = w_temp_mirror < 0
-        weights_mirror[indexer] = np.minimum(
-            0, w_temp_mirror[indexer] + (self.max_cum_l1 - cum_l1_mirror[indexer])
-        )
-
-        cum_l1_mirror = cum_l1_mirror + (weights_mirror - w_temp_mirror)
-
-        return weights_mirror, cum_l1_mirror
-
     # Single instance methods
 
     def _raw_dot_one(self, x: dict) -> float:
