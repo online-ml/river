@@ -26,6 +26,8 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         The loss function to optimize for. Defaults to `optim.losses.Log`.
     l2
         Amount of L2 regularization used to push weights towards 0.
+    l1
+        Amount of L1 regularization used to push weights towards 0. (cannot be used along with l2 for now)
     intercept_init
         Initial intercept value.
     intercept_lr
@@ -93,7 +95,5 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         return {False: 1.0 - p, True: p}
 
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        p = self.loss.mean_func(
-            self._raw_dot_many(X)
-        )  # Convert logits to probabilities
+        p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
         return pd.DataFrame({False: 1.0 - p, True: p}, index=X.index, copy=False)
