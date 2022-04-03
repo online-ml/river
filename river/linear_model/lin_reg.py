@@ -26,9 +26,9 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
     loss
         The loss function to optimize for.
     l2
-        Amount of L2 regularization used to push weights towards 0.
+        Amount of L2 regularization used to push weights towards 0. (only one type of penalty can be used for now)
     l1
-        Amount of L1 regularization used to push weights towards 0. (cannot be used along with l2 for now)
+        Amount of L1 regularization used to push weights towards 0. (only one type of penalty can be used for now)
     intercept_init
         Initial intercept value.
     intercept_lr
