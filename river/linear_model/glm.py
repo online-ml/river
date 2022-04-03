@@ -46,6 +46,12 @@ class GLM:
         self._y_name = None
 
         if l1 != 0:
+
+            if l2 != 0:
+                raise NotImplementedError(
+                    "Joint use of L1 and L2 penalties is not explicitly supported! Pick just one please"
+                )
+
             # L1-specific fields
             self.max_cum_l1 = 0
             self.cum_l1 = utils.VectorDict(None, optim.initializers.Zeros())
