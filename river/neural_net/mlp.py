@@ -57,7 +57,9 @@ class MLP:
         self.loss = loss
         self.optimizer = optimizer
         self.seed = seed
-        self._optimizers = collections.defaultdict(functools.partial(copy.deepcopy, optimizer))
+        self._optimizers = collections.defaultdict(
+            functools.partial(copy.deepcopy, optimizer)
+        )
 
     @property
     def n_layers(self) -> int:
