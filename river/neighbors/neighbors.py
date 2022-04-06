@@ -178,6 +178,8 @@ class MinkowskiNeighbors(NearestNeighbors):
         p: float = 2.0,
     ):
         # Custom minkowski with default p
+        global custom_minkowski
+
         def custom_minkowski(a, b, p=p):
             return utils.math.minkowski_distance(a[0], b[0], p=p)
 
