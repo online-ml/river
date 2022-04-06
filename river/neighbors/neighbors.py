@@ -137,6 +137,13 @@ class NearestNeighbors:
         self.window = collections.deque(maxlen=self.window_size)
 
 
+def custom_minkowski(a, b, p):
+    """
+    Custom minkoski function. Must be global to be pickle-able.
+    """
+    return utils.math.minkowski_distance(a[0], b[0], p=p)
+
+
 class MinkowskiNeighbors(NearestNeighbors):
     """
     NearestNeighbors using the Minkowski metric as the distance with p=2.
@@ -177,11 +184,6 @@ class MinkowskiNeighbors(NearestNeighbors):
         distance_func: DistanceFunc = None,
         p: float = 2.0,
     ):
-        # Custom minkowski with default p
-        global custom_minkowski
-
-        def custom_minkowski(a, b, p=p):
-            return utils.math.minkowski_distance(a[0], b[0], p=p)
 
         self.p = p
         super().__init__(
