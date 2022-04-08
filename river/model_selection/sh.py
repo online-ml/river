@@ -227,6 +227,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, ModelSelectionRegressor):
         )
         loss=Squared ()
         l2=0.
+        l1=0.
         intercept_init=0.
         intercept_lr=Constant (
           learning_rate=0.1
@@ -386,6 +387,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, ModelSelectionClassifier):
           weight_neg=1.
         )
         l2=0.
+        l1=0.
         intercept_init=0.
         intercept_lr=Constant (
           learning_rate=0.01
