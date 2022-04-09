@@ -49,10 +49,10 @@ class GLM:
 
             if l2 != 0:
                 raise NotImplementedError(
-                    "Joint use of L1 and L2 penalties is not explicitly supported yet! Pick just one please"
+                    "The joint use of L1 and L2 penalties is currently not explicitly supported!"
                 )
 
-            # L1-specific fields
+            # L1-specific parameters
             self.max_cum_l1 = 0
             self.cum_l1 = utils.VectorDict(None, optim.initializers.Zeros())
 
@@ -87,21 +87,19 @@ class GLM:
         # Update the weights
         self.optimizer.step(w=self._weights, g=gradient)
 
-        # apply L1 cumulative penalty if applicable
+        # Apply L1 cumulative penalty if applicable
         if self.l1 != 0.0:
-            # INFO: this should be called after the learning_rate update in case of adaptive learning rate
+            # This should be called after the learning_rate update in case of adaptive learning rate
             self.max_cum_l1 = self.max_cum_l1 + self.l1 * self.optimizer.learning_rate
-            # ---
 
             self._update_weights(x)
 
         return self
 
     def _update_weights(self, x):
-        # INFO: L1 cumulative penalty helper
+        # L1 cumulative penalty helper
 
-        # INFO: apply penalty to each weight iteratively;
-        # can potentially be parallelized but requires some tricks with VectorDict
+        # Apply penalty to each weight iteratively, with the potential of being parrallelized by using VectorDict
         for j, xj in x.items():
             wj_temp = self._weights[j]
 
@@ -112,7 +110,7 @@ class GLM:
             else:
                 self._weights[j] = wj_temp
 
-            # INFO: update the penalty state of the estimator
+            # Update the penalty state of the estimator
             self.cum_l1[j] = self.cum_l1[j] + (self._weights[j] - wj_temp)
 
     # Single instance methods
