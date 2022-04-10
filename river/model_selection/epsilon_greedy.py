@@ -77,6 +77,7 @@ class EpsilonGreedyRegressor(BanditRegressor):
       )
       loss=Squared ()
       l2=0.
+      l1=0.
       intercept_init=0.
       intercept_lr=Constant (
         learning_rate=0.01
