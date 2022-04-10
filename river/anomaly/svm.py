@@ -72,6 +72,7 @@ class OneClassSVM(GLM, AnomalyDetector):
             intercept_init=1.0,
             intercept_lr=intercept_lr,
             l2=nu / 2,
+            l1=0,  # for compatibility, L1 here is not explicitly supported
             clip_gradient=clip_gradient,
             initializer=initializer if initializer else optim.initializers.Zeros(),
         )

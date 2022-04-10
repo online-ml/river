@@ -27,6 +27,10 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
         The loss function to optimize for.
     l2
         Amount of L2 regularization used to push weights towards 0.
+        For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.
+    l1
+        Amount of L1 regularization used to push weights towards 0.
+        For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.
     intercept_init
         Initial intercept value.
     intercept_lr
@@ -109,6 +113,7 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
         optimizer: optim.Optimizer = None,
         loss: optim.losses.RegressionLoss = None,
         l2=0.0,
+        l1=0.0,
         intercept_init=0.0,
         intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = 0.01,
         clip_gradient=1e12,
@@ -120,6 +125,7 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
             intercept_init=intercept_init,
             intercept_lr=intercept_lr,
             l2=l2,
+            l1=l1,
             clip_gradient=clip_gradient,
             initializer=initializer if initializer else optim.initializers.Zeros(),
         )

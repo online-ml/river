@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import pytest
 from sklearn import linear_model as sklm
+from sklearn.datasets import make_classification, make_regression
+from sklearn.metrics import log_loss
 
 from river import datasets
 from river import linear_model as lm
@@ -376,3 +378,104 @@ def test_perceptron_sklearn_coherence(river_params, sklearn_params):
         assert math.isclose(w, sk.coef_[0][i])
 
     assert math.isclose(rv.intercept, sk.intercept_[0])
+
+
+def test_lin_reg_sklearn_l1_non_regression():
+    """Checks that the river L1 implementation results are no worse than sklearn L1."""
+
+    X, y, true_coeffs = make_regression(
+        n_samples=1000,
+        n_features=20,
+        n_informative=4,
+        coef=True,
+        random_state=273,
+    )
+    X = pd.DataFrame(X)
+    y = pd.Series(y)
+
+    ss = preprocessing.StandardScaler()
+
+    rv = lm.LinearRegression(
+        **{
+            "optimizer": optim.SGD(1e-2),
+            "loss": ScikitLearnSquaredLoss(),
+            "l1": 1e-1,
+        }
+    )
+
+    sk = sklm.SGDRegressor(
+        **{
+            "learning_rate": "constant",
+            "eta0": 1e-2,
+            "alpha": 1e-1,
+            "penalty": "l1",
+        }
+    )
+
+    for xi, yi in stream.iter_pandas(X, y):
+
+        xi_tr = ss.learn_one(xi).transform_one(xi)
+        rv.learn_one(xi_tr, yi)
+        sk.partial_fit([list(xi_tr.values())], [yi])
+
+    rv_coeffs = np.array(list(rv.weights.values()))
+    sk_coeffs = sk.coef_
+
+    # check that the shrinkage to zero is no worse than in sklearn
+    assert np.sum(rv_coeffs > 0) <= np.sum(sk_coeffs > 0)
+
+    # check that the river coefficients shrink to the true ones with 10% relative tolerance
+    assert np.isclose(rv_coeffs, true_coeffs, rtol=5e-02, atol=0.0).all()
+
+
+def test_log_reg_sklearn_l1_non_regression():
+    """Checks that the river L1 implementation results are no worse than sklearn L1."""
+
+    X, y, = make_classification(
+        n_samples=1000,
+        n_features=20,
+        n_informative=4,
+        n_classes=2,
+        random_state=273,
+    )
+    X = pd.DataFrame(X)
+    y = pd.Series(y)
+
+    ss = preprocessing.StandardScaler()
+
+    rv = lm.LogisticRegression(
+        **{
+            "optimizer": optim.SGD(1e-2),
+            "l1": 1e-3,
+        }
+    )
+
+    sk = sklm.SGDClassifier(
+        **{
+            "learning_rate": "constant",
+            "eta0": 1e-2,
+            "alpha": 1e-3,
+            "penalty": "l1",
+            "loss": "log",
+        }
+    )
+
+    rv_pred = list()
+    sk_pred = list()
+    for xi, yi in stream.iter_pandas(X, y):
+
+        xi_tr = ss.learn_one(xi).transform_one(xi)
+        rv.learn_one(xi_tr, yi)
+        sk.partial_fit([list(xi_tr.values())], [yi], classes=[False, True])
+
+        rv_pred.append(rv.predict_one(xi_tr))
+        sk_pred.append(sk.predict([list(xi_tr.values())])[0])
+
+    rv_coeffs = np.array(list(rv.weights.values()))
+    sk_coeffs = sk.coef_
+
+    # check that the shrinkage to zero is no worse than in sklearn
+    assert np.sum(rv_coeffs > 0) <= np.sum(sk_coeffs > 0)
+
+    # since we can't access true coefficients from sklearn.make_classification, we compare losses
+    assert math.isclose(log_loss(y, rv_pred), log_loss(y, sk_pred))
