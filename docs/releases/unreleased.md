@@ -19,6 +19,7 @@
 ## linear_model
 
 - `linear_model.LinearRegression` and `linear_model.LogisticRegression` now correctly apply the `l2` regularization when their `learn_many` method is used.
+- Added `l1` regularization (implementation with cumulative penalty, see [paper](https://aclanthology.org/P09-1054/)) for `linear_model.LinearRegression` and `linear_model.LogisticRegression`
 
 ## rules
 
