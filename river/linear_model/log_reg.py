@@ -26,6 +26,10 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         The loss function to optimize for. Defaults to `optim.losses.Log`.
     l2
         Amount of L2 regularization used to push weights towards 0.
+        For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.
+    l1
+        Amount of L1 regularization used to push weights towards 0.
+        For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.
     intercept_init
         Initial intercept value.
     intercept_lr
@@ -70,6 +74,7 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
         optimizer: optim.Optimizer = None,
         loss: optim.losses.BinaryLoss = None,
         l2=0.0,
+        l1=0.0,
         intercept_init=0.0,
         intercept_lr: typing.Union[float, optim.schedulers.Scheduler] = 0.01,
         clip_gradient=1e12,
@@ -82,6 +87,7 @@ class LogisticRegression(GLM, base.MiniBatchClassifier):
             intercept_init=intercept_init,
             intercept_lr=intercept_lr,
             l2=l2,
+            l1=l1,
             clip_gradient=clip_gradient,
             initializer=initializer if initializer else optim.initializers.Zeros(),
         )

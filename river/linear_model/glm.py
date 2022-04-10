@@ -20,6 +20,7 @@ class GLM:
         optimizer,
         loss,
         l2,
+        l1,
         intercept_init,
         intercept_lr,
         clip_gradient,
@@ -28,6 +29,7 @@ class GLM:
         self.optimizer = optimizer
         self.loss = loss
         self.l2 = l2
+        self.l1 = l1
         self.intercept_init = intercept_init
         self.intercept = intercept_init
         self.intercept_lr = (
@@ -42,6 +44,17 @@ class GLM:
         # The predict_many functions are going to return pandas.Series. We can name the series with
         # the name given to the y series seen during the last learn_many call.
         self._y_name = None
+
+        if l1 != 0:
+
+            if l2 != 0:
+                raise NotImplementedError(
+                    "The joint use of L1 and L2 penalties is currently not explicitly supported!"
+                )
+
+            # L1-specific parameters
+            self.max_cum_l1 = 0
+            self.cum_l1 = utils.VectorDict(None, optim.initializers.Zeros())
 
     @property
     def weights(self):
@@ -74,7 +87,31 @@ class GLM:
         # Update the weights
         self.optimizer.step(w=self._weights, g=gradient)
 
+        # Apply L1 cumulative penalty if applicable
+        if self.l1 != 0.0:
+            # This should be called after the learning_rate update in case of adaptive learning rate
+            self.max_cum_l1 = self.max_cum_l1 + self.l1 * self.optimizer.learning_rate
+
+            self._update_weights(x)
+
         return self
+
+    def _update_weights(self, x):
+        # L1 cumulative penalty helper
+
+        # Apply penalty to each weight iteratively, with the potential of being parrallelized by using VectorDict
+        for j, xj in x.items():
+            wj_temp = self._weights[j]
+
+            if wj_temp > 0:
+                self._weights[j] = max(0, wj_temp - (self.max_cum_l1 + self.cum_l1[j]))
+            elif wj_temp < 0:
+                self._weights[j] = min(0, wj_temp + (self.max_cum_l1 - self.cum_l1[j]))
+            else:
+                self._weights[j] = wj_temp
+
+            # Update the penalty state of the estimator
+            self.cum_l1[j] = self.cum_l1[j] + (self._weights[j] - wj_temp)
 
     # Single instance methods
 
@@ -94,6 +131,7 @@ class GLM:
                 loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
                 loss_gradient,
             )
+
         return (loss_gradient * utils.VectorDict(x), loss_gradient)
 
     def learn_one(self, x, y, w=1.0):
