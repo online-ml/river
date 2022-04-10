@@ -425,7 +425,7 @@ def test_lin_reg_sklearn_l1_non_regression():
     assert np.sum(rv_coeffs > 0) <= np.sum(sk_coeffs > 0)
 
     # check that the river coefficients shrink to the true ones with 10% relative tolerance
-    assert np.isclose(rv_coeffs, true_coeffs, rtol=1e-01, atol=0.0).all()
+    assert np.isclose(rv_coeffs, true_coeffs, rtol=5e-02, atol=0.0).all()
 
 
 def test_log_reg_sklearn_l1_non_regression():
