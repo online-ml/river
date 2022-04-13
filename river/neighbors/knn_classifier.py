@@ -1,58 +1,62 @@
-import typing
+from river import base, utils
 
-from river import base
-from river.utils import dict2numpy
-from river.utils.math import softmax
+from .base_neighbors import BaseKNN
+from .neighbors import DistanceFunc
 
-from .base_neighbors import BaseNeighbors
+__all__ = ["KNNClassifier"]
 
 
-class KNNClassifier(BaseNeighbors, base.Classifier):
-    """k-Nearest Neighbors classifier.
+class KNNClassifier(BaseKNN, base.Classifier):
+    """K-Nearest Neighbors (KNN) for classification.
 
-    This non-parametric classification method keeps track of the last
-    `window_size` training samples. The predicted class-label for a
-    given query sample is obtained in two steps:
-
-    1. Find the closest `n_neighbors` to the query sample in the data window.
-    2. Aggregate the class-labels of the `n_neighbors` to define the predicted
-       class for the query sample.
+    This works by storing a buffer with the `window_size` most recent observations.
+    A brute-force search is used to find the `n_neighbors` nearest observations
+    in the buffer to make a prediction. See the NearestNeighbors parent class for model
+    details.
 
     Parameters
     ----------
     n_neighbors
         The number of nearest neighbors to search for.
+
     window_size
         The maximum size of the window storing the last observed samples.
-    leaf_size
-        scipy.spatial.cKDTree parameter. The maximum number of samples that can be
-        stored in one leaf node, which determines from which point the algorithm will
-        switch for a brute-force approach. The bigger this number the faster the
-        tree construction time, but the slower the query time will be.
-    p
-        p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
-        Manhattan distance, while `p=2` corresponds to the Euclidean distance. Valid
-        values are in the interval $[1, +\\infty)$
+
+    min_distance_keep
+        The minimum distance (similarity) to consider adding a point to the window.
+        E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add
+        similar but not exactly the same points.
+
     weighted
-        Whether to weight the contribution of each neighbor by it's inverse
-        distance or not.
-    kwargs
-        Other parameters passed to `scipy.spatial.cKDTree`.
+        Weight the contribution of each neighbor by it's inverse distance.
+
+    cleanup_every
+        This determines at which rate old classes are cleaned up. Classes that
+        have been seen in the past but that are not present in the current
+        window are dropped. Classes are never dropped when this is set to 0.
+
+    distance_func
+        An optional distance function that should accept an a=, b=, and any
+        custom set of kwargs (defined in distance_func_kwargs). If not defined,
+        the default Minkowski distance is used.
+
+    softmax
+        Whether or not to use softmax normalization to normalize the neighbors contributions.
+        Votes are divided by the total number of votes if this is `False`.
 
     Notes
     -----
-    This estimator is not optimal for a mixture of categorical and numerical
-    features. This implementation treats all features from a given stream as
-    numerical.
+    See the NearestNeighbors documentation for details about the base model,
+    along with KNNBase for an example of providing your own distance function.
+    Note that since the window is moving and we keep track of all classes that
+    are added at some point, a class might be returned in a result (with a
+    value of 0) if it is no longer in the window. You can call
+    model.clean_up_classes(), or set `cleanup_every` to a non-zero value.
 
     Examples
     --------
-    >>> from river import datasets
-    >>> from river import evaluate
-    >>> from river import metrics
-    >>> from river import neighbors
-    >>> from river import preprocessing
-
+    >>> from river import datasets, neighbors, preprocessing
+    >>> from river import evaluate, metrics
     >>> dataset = datasets.Phishing()
 
     >>> model = (
@@ -60,10 +64,12 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
     ...     neighbors.KNNClassifier()
     ... )
 
-    >>> metric = metrics.Accuracy()
+    >>> for x, y in dataset.take(100):
+    ...     model = model.learn_one(x, y)
 
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 88.07%
+    >>> for x, y in dataset.take(1):
+    ...     model.predict_one(x)
+    True
 
     """
 
@@ -71,106 +77,99 @@ class KNNClassifier(BaseNeighbors, base.Classifier):
         self,
         n_neighbors: int = 5,
         window_size: int = 1000,
-        leaf_size: int = 30,
-        p: float = 2,
+        min_distance_keep: float = 0.0,
         weighted: bool = True,
-        **kwargs
+        cleanup_every: int = 0,
+        distance_func: DistanceFunc = None,
+        softmax: bool = False,
     ):
         super().__init__(
             n_neighbors=n_neighbors,
             window_size=window_size,
-            leaf_size=leaf_size,
-            p=p,
-            **kwargs
+            min_distance_keep=min_distance_keep,
+            distance_func=distance_func,
         )
         self.weighted = weighted
-        self.classes_: typing.Set = set()
-        self.kwargs = kwargs
-
-    def _unit_test_skips(self):
-        return {"check_emerging_features", "check_disappearing_features"}
-
-    def learn_one(self, x, y):
-        """Update the model with a set of features `x` and a label `y`.
-
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-        y
-            The class label.
-
-        Returns
-        -------
-            self
-
-        Notes
-        -----
-        For the K-Nearest Neighbors Classifier, fitting the model is the
-        equivalent of inserting the newer samples in the observed window,
-        and if the size_limit is reached, removing older results.
-
-        """
-
-        self.classes_.add(y)
-        x_arr = dict2numpy(x)
-
-        self.data_window.append(x_arr, y)
-
-        return self
-
-    def predict_proba_one(self, x):
-        """Predict the probability of each label for a dictionary of features `x`.
-
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-
-        Returns
-        -------
-        proba
-            A dictionary which associates a probability which each label.
-
-        """
-
-        proba = {class_idx: 0.0 for class_idx in self.classes_}
-        if self.data_window.size == 0:
-            # The model is empty, default to None
-            return proba
-
-        x_arr = dict2numpy(x)
-
-        dists, neighbor_idx = self._get_neighbors(x_arr)
-        target_buffer = self.data_window.targets_buffer
-
-        # If the closest neighbor has a distance of 0, then return it's output
-        if dists[0][0] == 0:
-            proba[target_buffer[neighbor_idx[0][0]]] = 1.0
-            return proba
-
-        if self.data_window.size < self.n_neighbors:  # Select only the valid neighbors
-            neighbor_idx = [
-                index
-                for cnt, index in enumerate(neighbor_idx[0])
-                if cnt < self.data_window.size
-            ]
-            dists = [
-                dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size
-            ]
-        else:
-            neighbor_idx = neighbor_idx[0]
-            dists = dists[0]
-
-        if not self.weighted:  # Uniform weights
-            for index in neighbor_idx:
-                proba[target_buffer[index]] += 1.0
-        else:  # Use the inverse of the distance to weight the votes
-            for d, index in zip(dists, neighbor_idx):
-                proba[target_buffer[index]] += 1.0 / d
-
-        return softmax(proba)
+        self.cleanup_every = cleanup_every
+        self.classes = set()
+        self.softmax = softmax
+        self._cleanup_counter = cleanup_every
 
     @property
     def _multiclass(self):
         return True
+
+    def clean_up_classes(self) -> "KNNClassifier":
+        """Clean up classes added to the window.
+
+        Classes that are added (and removed) from the window may no longer be valid.
+        This method cleans up the window and and ensures only known classes
+        are added, and we do not consider "None" a class. It is called every
+        `cleanup_every` step, or can be called manually.
+
+        """
+        self.classes = {x for x in self.window if x[0][1] is not None}
+
+    def learn_one(self, x, y):
+        # Only add the class y to known classes if we actually add the point!
+        if self.nn.update((x, y), n_neighbors=self.n_neighbors):
+            self.classes.add(y)
+
+        # Ensure classes known to instance reflect window
+        self._run_class_cleanup()
+        return self
+
+    def _run_class_cleanup(self):
+        """
+        Helper function to run class cleanup, accounting for _cleanup_counter.
+
+        """
+        # clean up classes every cleanup_every steps
+        if self.cleanup_every:
+            self._cleanup_counter -= 1
+            if self._cleanup_counter == 0:
+                self.clean_up_classes()
+                self._cleanup_counter = self.cleanup_every
+
+        return self
+
+    def predict_proba_one(self, x):
+        nearest = self.nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
+
+        # Default prediction for every class we know is 0.
+        # If class_cleanup is false this can include classes not in window
+        y_pred = {c: 0.0 for c in self.classes}
+
+        # No nearest points? Return the default (normalized)
+        # Note that normalization otherwise happens at the end
+        if not nearest:
+            default_pred = 1 / len(self.classes) if self.classes else 0.0
+            return {c: default_pred for c in self.classes}
+
+        # If the closest is an exact match AND has a class, return it
+        if nearest[0][-1] == 0 and nearest[0][0][1] is not None:
+
+            # Update the class in our prediction from 0 to 1, 100% certain!
+            y_pred[nearest[0][0][1]] = 1.0
+            return y_pred
+
+        for neighbor in nearest:
+            (x, y), distance = neighbor
+
+            # Weighted votes by inverse distance
+            if self.weighted:
+                y_pred[y] += 1.0 / distance
+
+            # Uniform votes
+            else:
+                y_pred[y] += 1.0
+
+        # Normalize votes into real [0, 1] probabilities
+        if self.softmax:
+            return utils.math.softmax(y_pred)
+
+        # Otherwise reuturn average
+        total = sum(y_pred.values())
+        for y in y_pred:
+            y_pred[y] /= total
+        return y_pred
