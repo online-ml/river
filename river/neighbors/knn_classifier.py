@@ -144,8 +144,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
         # Note that normalization otherwise happens at the end
         if not nearest:
             default_pred = 1 / len(self.classes) if self.classes else 0.0
-            y_pred = {c: default_pred for c in self.classes}
-            return y_pred
+            return {c: default_pred for c in self.classes}
 
         # If the closest is an exact match AND has a class, return it
         if nearest[0][-1] == 0 and nearest[0][0][1] is not None:
