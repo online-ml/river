@@ -140,8 +140,11 @@ class KNNClassifier(BaseKNN, base.Classifier):
         # If class_cleanup is false this can include classes not in window
         y_pred = {c: 0.0 for c in self.classes}
 
-        # No nearest points? Return the default.
+        # No nearest points? Return the default (normalized)
+        # Note that normalization otherwise happens at the end
         if not nearest:
+            default_pred = 1 / len(self.classes) if self.classes else 0.0
+            y_pred = {c: default_pred for c in self.classes}
             return y_pred
 
         # If the closest is an exact match AND has a class, return it
