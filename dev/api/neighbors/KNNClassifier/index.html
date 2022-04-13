@@ -4260,20 +4260,6 @@
               
   
   
-  
-    <li class="md-nav__item">
-      <a href="../KNNADWINClassifier/" class="md-nav__link">
-        KNNADWINClassifier
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
     
   
   
@@ -4366,8 +4352,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../SAMKNNClassifier/" class="md-nav__link">
-        SAMKNNClassifier
+      <a href="../NearestNeighbors/" class="md-nav__link">
+        NearestNeighbors
       </a>
     </li>
   
@@ -8214,11 +8200,8 @@
 
 
 <h1 id="knnclassifier">KNNClassifier<a class="headerlink" href="#knnclassifier" title="Permanent link">&para;</a></h1>
-<p>k-Nearest Neighbors classifier.</p>
-<p>This non-parametric classification method keeps track of the last <code>window_size</code> training samples. The predicted class-label for a given query sample is obtained in two steps: </p>
-<ol>
-<li>Find the closest <code>n_neighbors</code> to the query sample in the data window. 2. Aggregate the class-labels of the <code>n_neighbors</code> to define the predicted    class for the query sample.</li>
-</ol>
+<p>K-Nearest Neighbors (KNN) for classification.</p>
+<p>This works by storing a buffer with the <code>window_size</code> most recent observations. A brute-force search is used to find the <code>n_neighbors</code> nearest observations in the buffer to make a prediction. See the NearestNeighbors parent class for model details.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -8230,29 +8213,29 @@
 <p>The maximum size of the window storing the last observed samples.</p>
 </li>
 <li>
-<p><strong>leaf_size</strong> (<em>int</em>) – defaults to <code>30</code></p>
-<p>scipy.spatial.cKDTree parameter. The maximum number of samples that can be stored in one leaf node, which determines from which point the algorithm will switch for a brute-force approach. The bigger this number the faster the tree construction time, but the slower the query time will be.</p>
-</li>
-<li>
-<p><strong>p</strong> (<em>float</em>) – defaults to <code>2</code></p>
-<p>p-norm value for the Minkowski metric. When <code>p=1</code>, this corresponds to the Manhattan distance, while <code>p=2</code> corresponds to the Euclidean distance. Valid values are in the interval <span class="arithmatex">\([1, +\infty)\)</span></p>
+<p><strong>min_distance_keep</strong> (<em>float</em>) – defaults to <code>0.0</code></p>
+<p>The minimum distance (similarity) to consider adding a point to the window. E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add similar but not exactly the same points.</p>
 </li>
 <li>
 <p><strong>weighted</strong> (<em>bool</em>) – defaults to <code>True</code></p>
-<p>Whether to weight the contribution of each neighbor by it's inverse distance or not.</p>
+<p>Weight the contribution of each neighbor by it's inverse distance.</p>
 </li>
 <li>
-<p><strong>kwargs</strong></p>
-<p>Other parameters passed to <code>scipy.spatial.cKDTree</code>.</p>
+<p><strong>cleanup_every</strong> (<em>int</em>) – defaults to <code>0</code></p>
+<p>This determines at which rate old classes are cleaned up. Classes that have been seen in the past but that are not present in the current window are dropped. Classes are never dropped when this is set to 0.</p>
+</li>
+<li>
+<p><strong>distance_func</strong> (<em>Callable[[Any, Any], float]</em>) – defaults to <code>None</code></p>
+<p>An optional distance function that should accept an a=, b=, and any custom set of kwargs (defined in distance_func_kwargs). If not defined, the default Minkowski distance is used.</p>
+</li>
+<li>
+<p><strong>softmax</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p>Whether or not to use softmax normalization to normalize the neighbors contributions. Votes are divided by the total number of votes if this is <code>False</code>.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">neighbors</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
-
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">neighbors</span><span class="p">,</span> <span class="n">preprocessing</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">metrics</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
@@ -8260,12 +8243,19 @@
 <span class="o">...</span>     <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNClassifier</span><span class="p">()</span>
 <span class="o">...</span> <span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+<span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">88.07</span><span class="o">%</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+<span class="o">...</span>     <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="kc">True</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
+<details class="- note">
+<summary>clean_up_classes</summary>
+<p>Clean up classes added to the window.</p>
+<p>Classes that are added (and removed) from the window may no longer be valid. This method cleans up the window and and ensures only known classes are added, and we do not consider "None" a class. It is called every <code>cleanup_every</code> step, or can be called manually.</p>
+</details>
 <details class="- note">
 <summary>clone</summary>
 <p>Return a fresh estimator with the same parameters.</p>
@@ -8300,16 +8290,15 @@
 <li><strong>x</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>proba</p>
-</details>
-<details class="- note">
-<summary>reset</summary>
-<p>Reset estimator.</p>
+<p>A dictionary that associates a probability which each label.</p>
 </details>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>This estimator is not optimal for a mixture of categorical and numerical
-features. This implementation treats all features from a given stream as
-numerical.</p>
+<p>See the NearestNeighbors documentation for details about the base model,
+along with KNNBase for an example of providing your own distance function.
+Note that since the window is moving and we keep track of all classes that
+are added at some point, a class might be returned in a result (with a
+value of 0) if it is no longer in the window. You can call
+model.clean_up_classes(), or set <code>cleanup_every</code> to a non-zero value.</p>
 
               
             </article>
