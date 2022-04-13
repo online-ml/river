@@ -1,67 +1,61 @@
-import numpy as np
+import statistics
+from typing import Tuple
 
 from river import base
-from river.utils import dict2numpy
 
-from .base_neighbors import BaseNeighbors
+from .base_neighbors import BaseKNN
+from .neighbors import DistanceFunc
 
 
-class KNNRegressor(BaseNeighbors, base.Regressor):
-    """k-Nearest Neighbors regressor.
+class KNNRegressor(BaseKNN, base.Regressor):
+    """K-Nearest Neighbors regressor.
 
-    This non-parametric regression method keeps track of the last
-    `window_size` training samples. Predictions are obtained by
-    aggregating the values of the closest n_neighbors stored-samples with
-    respect to a query sample.
+    This non-parametric regression method keeps track of the last `window_size`
+    training samples. Predictions are obtained by aggregating the values of the
+    closest n_neighbors stored-samples with respect to a query sample.
 
     Parameters
     ----------
     n_neighbors
         The number of nearest neighbors to search for.
+
     window_size
         The maximum size of the window storing the last observed samples.
-    leaf_size
-        scipy.spatial.cKDTree parameter. The maximum number of samples that can
-        be stored in one leaf node, which determines from which point the algorithm
-        will switch for a brute-force approach. The bigger this number the faster
-        the tree construction time, but the slower the query time will be.
-    p
-        p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
-        Manhattan distance, while `p=2` corresponds to the Euclidean distance.
-        Valid values are in the interval $[1, +\\infty)$
+
     aggregation_method
         The method to aggregate the target values of neighbors.
             | 'mean'
             | 'median'
             | 'weighted_mean'
-    kwargs
-        Other parameters passed to scipy.spatial.cKDTree.
+
+    min_distance_keep
+        The minimum distance (similarity) to consider adding a point to the window.
+        E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add
+        similar but not exactly the same points.
+
+    distance_func
+        An optional distance function that should accept an a=, b=, and any
+        custom set of kwargs (defined in distance_func_kwargs). If not defined,
+        the default Minkowski distance is used.
 
     Notes
     -----
-    This estimator is not optimal for a mixture of categorical and numerical
-    features. This implementation treats all features from a given stream as
-    numerical.
+    See the NearestNeighbors documentation for details about the base model,
+    along with KNNBase for an example of providing your own distance function.
 
     Examples
     --------
-    >>> from river import datasets
-    >>> from river import evaluate
-    >>> from river import metrics
-    >>> from river import neighbors
-    >>> from river import preprocessing
-
+    >>> from river import datasets, neighbors
+    >>> from river import evaluate, metrics
     >>> dataset = datasets.TrumpApproval()
 
-    >>> model = (
-    ...     preprocessing.StandardScaler() |
-    ...     neighbors.KNNRegressor(window_size=50)
-    ... )
+    >>> model = neighbors.KNNRegressor(window_size=50)
+    >>> for x, y in dataset.take(100):
+    ...     model = model.learn_one(x, y)
 
-    >>> metric = metrics.MAE()
-
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.441308
+    >>> for x, y in dataset.take(1):
+    ...     model.predict_one(x)
+    41.839342
 
     """
 
@@ -73,63 +67,56 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
         self,
         n_neighbors: int = 5,
         window_size: int = 1000,
-        leaf_size: int = 30,
-        p: float = 2,
         aggregation_method: str = "mean",
-        **kwargs
+        min_distance_keep: float = 0.0,
+        distance_func: DistanceFunc = None,
     ):
-
         super().__init__(
             n_neighbors=n_neighbors,
             window_size=window_size,
-            leaf_size=leaf_size,
-            p=p,
-            **kwargs
+            min_distance_keep=min_distance_keep,
+            distance_func=distance_func,
         )
-        if aggregation_method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
-            raise ValueError(
-                "Invalid aggregation_method: {}.\n"
-                "Valid options are: {}".format(
-                    aggregation_method, {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}
-                )
-            )
+        self._check_aggregation_method(aggregation_method)
         self.aggregation_method = aggregation_method
-        self.kwargs = kwargs
 
-    def _unit_test_skips(self):
-        return {"check_emerging_features", "check_disappearing_features"}
+    def _check_aggregation_method(self, method):
+        """Ensure validation method is known to the model.
 
-    def learn_one(self, x, y):
-        """Update the model with a set of features `x` and a real target value `y`.
+        Raises a ValueError if not.
 
         Parameters
         ----------
-        x
-            A dictionary of features.
-        y
-            A numeric target.
 
-        Returns
-        -------
+        method
+            The aggregration method as a string
+        """
+        if method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
+            raise ValueError(
+                "Invalid aggregation_method: {}.\n"
+                "Valid options are: {}".format(
+                    method, {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}
+                )
+            )
+
+    def learn_one(self, x, y=None, extra: [Tuple, list] = None):
+        """Learn a set of features `x` and optional class `y`.
+        Parameters:
+            x: A dictionary of features.
+            y: A class (optional if known).
+            extra: an optional list or tuple of features to store
+        Returns:
             self
 
-        Notes
-        -----
-        For the K-Nearest Neighbors regressor, fitting the model is the
-        equivalent of inserting the newer samples in the observed window,
-        and if the `window_size` is reached, removing older results.
-
         """
-
-        x_arr = dict2numpy(x)
-        self.data_window.append(x_arr, y)
-
+        self.nn.update((x, y), n_neighbors=self.n_neighbors, extra=extra)
         return self
 
     def predict_one(self, x):
         """Predict the target value of a set of features `x`.
 
-        Search the KDTree for the `n_neighbors` nearest neighbors.
+        Search the window for the `n_neighbors` nearest neighbors. Return
+        a default prediction if the size of the window is 0 (no neighbors yet)
 
         Parameters
         ----------
@@ -141,38 +128,33 @@ class KNNRegressor(BaseNeighbors, base.Regressor):
             The prediction.
 
         """
+        # Find the nearest neighbors!
+        nearest = self.nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
 
-        if self.data_window.size == 0:
-            # Not enough information available, return default prediction
+        if not nearest:
             return 0.0
 
-        x_arr = dict2numpy(x)
+        # For each in nearest, call it 'item"
+        # item[0] is the original item (x, y)
+        # item[-1] is the distance
+        # item[1:n-1] are extra we don't use here
 
-        dists, neighbor_idx = self._get_neighbors(x_arr)
-        target_buffer = self.data_window.targets_buffer
+        # If the closest distance is 0 (it's the same) return it's output (y)
+        # BUT only if the output (y) is not None.
+        if nearest[0][-1] == 0 and nearest[0][0][1] is not None:
+            return nearest[0][0][1]
 
-        # If the closest neighbor has a distance of 0, then return it's output
-        if dists[0][0] == 0:
-            return target_buffer[neighbor_idx[0][0]]
-
-        if self.data_window.size < self.n_neighbors:  # Select only the valid neighbors
-            neighbor_vals = [
-                target_buffer[index]
-                for cnt, index in enumerate(neighbor_idx[0])
-                if cnt < self.data_window.size
-            ]
-            dists = [
-                dist for cnt, dist in enumerate(dists[0]) if cnt < self.data_window.size
-            ]
-        else:
-            neighbor_vals = [target_buffer[index] for index in neighbor_idx[0]]
-            dists = dists[0]
+        # Only include neighbors in the sum that are non None
+        neighbor_vals = [n[0][1] for n in nearest if n[0][1] is not None]
 
         if self.aggregation_method == self._MEAN:
-            return np.mean(neighbor_vals)
-        elif self.aggregation_method == self._MEDIAN:
-            return np.median(neighbor_vals)
-        else:  # weighted mean
-            return sum(y / d for y, d in zip(neighbor_vals, dists)) / sum(
-                1 / d for d in dists
-            )
+            return statistics.mean(neighbor_vals)
+
+        if self.aggregation_method == self._MEDIAN:
+            return statistics.median(neighbor_vals)
+
+        # weighted mean based on distance
+        dists = [n[-1] for n in nearest if n[0][1] is not None]
+        return sum(y / d for y, d in zip(neighbor_vals, dists)) / sum(
+            1 / d for d in dists
+        )
