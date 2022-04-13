@@ -2,7 +2,8 @@ from .neighbors import DistanceFunc, MinkowskiNeighbors
 
 
 class BaseKNN:
-    """
+    """Base neighbors class.
+
     Base neighbors class to make shared functionality for instantiating the
     nearest neighbors. We also provide this so that the model classes are
     able to be pickled.
@@ -25,6 +26,7 @@ class BaseKNN:
         An optional distance function that should be a callable with two inputs
         of Any type (e.g., a comparison A against B) that returns a distance.
         If not defined, the default Minkowski distance is used.
+
     """
 
     def __init__(

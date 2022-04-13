@@ -11,8 +11,7 @@ DistanceFunc = Callable[[Any, Any], float]
 
 
 class NearestNeighbors:
-    """
-    A basic data structure to hold nearest neighbors.
+    """A basic data structure to hold nearest neighbors.
 
     Parameters
     ----------
@@ -44,6 +43,7 @@ class NearestNeighbors:
     window - items that are far enough away (> min_distance_keep) are added to
     the window. Thus a value of 0 indicates that we add all points, and
     increasing from 0 makes it less likely we will keep a new item.
+
     """
 
     def __init__(
@@ -65,8 +65,7 @@ class NearestNeighbors:
         self.reset()
 
     def append(self, item: Any, extra: [Tuple, list] = None):
-        """
-        Add a point to the window, optionally with extra metadata.
+        """Add a point to the window, optionally with extra metadata.
 
         Parameters
         ----------
@@ -78,12 +77,13 @@ class NearestNeighbors:
             An extra set of metadata to add to the window that is not passed to
             the distance function, and allows easy customization without needing
             to always write a custom distance function.
+
         """
         self.window.append((item, *(extra or [])))
 
     def update(self, item: Any, n_neighbors=1, extra: [Tuple, list] = None):
-        """
-        Update the window with a new point, only added if > min distance.
+        """Update the window with a new point, only added if > min distance.
+
         If min distance is 0, we do not need to do the calculation. The item
         (and extra metadata) will not be added to the window if it is too close
         to an existing point.
@@ -102,6 +102,7 @@ class NearestNeighbors:
         Returns
         -------
         A boolean (true/false) to indicate if the point was added.
+
         """
         # If min distance is 0, we add all points
         if self.min_distance_keep == 0:
@@ -118,10 +119,11 @@ class NearestNeighbors:
         return False
 
     def find_nearest(self, item: Any, n_neighbors=1):
-        """
-        Returns the `n_neighbors` closest points to `x`, along with their distances.
+        """Find the `n_neighbors` closest points to `x`, along with their distances.
+
         This function assumes the x is a tuple or list with x[0] having relevant
         data for the distance calculation.
+
         """
         # Compute the distances to each point in the window
         # Item is JUST the (x,y) however the window is (item, <extra>, distance)
@@ -131,22 +133,18 @@ class NearestNeighbors:
         return sorted(points, key=operator.itemgetter(-1))[:n_neighbors]
 
     def reset(self) -> "NearestNeighbors":
-        """
-        Reset window
-        """
+        """Reset window"""
         self.window = collections.deque(maxlen=self.window_size)
 
 
 def custom_minkowski(a, b, p):
-    """
-    Custom minkoski function. Must be global to be pickle-able.
-    """
+    """Custom minkoski function. Must be global to be pickle-able."""
     return utils.math.minkowski_distance(a[0], b[0], p=p)
 
 
 class MinkowskiNeighbors(NearestNeighbors):
-    """
-    NearestNeighbors using the Minkowski metric as the distance with p=2.
+    """NearestNeighbors using the Minkowski metric as the distance with p=2.
+
     You can still overwrite the distance_func here, however the default is
     provided for the nearest neighbors classifiers to use, expecting that a
     typical user will not provide a custom function.

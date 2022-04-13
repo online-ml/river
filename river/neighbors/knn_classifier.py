@@ -7,8 +7,7 @@ __all__ = ["KNNClassifier"]
 
 
 class KNNClassifier(BaseKNN, base.Classifier):
-    """
-    K-Nearest Neighbors (KNN) for classification.
+    """K-Nearest Neighbors (KNN) for classification.
 
     This works by storing a buffer with the `window_size` most recent observations.
     A brute-force search is used to find the `n_neighbors` nearest observations
@@ -71,6 +70,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
     >>> for x, y in dataset.take(1):
     ...     model.predict_one(x)
     {False: 0.0, True: 1.0}
+
     """
 
     def __init__(
@@ -100,22 +100,17 @@ class KNNClassifier(BaseKNN, base.Classifier):
         return True
 
     def clean_up_classes(self) -> "KNNClassifier":
-        """
+        """Clean up classes added to the window.
+
         Classes that are added (and removed) from the window may no longer be valid.
         This method cleans up the window and and ensures only known classes
         are added, and we do not consider "None" a class. It is called every
         `cleanup_every` step, or can be called manually.
+
         """
         self.classes = {x for x in self.window if x[0][1] is not None}
 
-    def learn_one(self, x: dict, y=None):
-        """Learn a set of features `x` and optional class `y`.
-        Parameters:
-            x: A dictionary of features.
-            y: A class (optional if known).
-        Returns:
-            self
-        """
+    def learn_one(self, x, y):
         # Only add the class y to known classes if we actually add the point!
         if self.nn.update((x, y), n_neighbors=self.n_neighbors):
             self.classes.add(y)
@@ -127,6 +122,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
     def _run_class_cleanup(self):
         """
         Helper function to run class cleanup, accounting for _cleanup_counter.
+
         """
         # clean up classes every cleanup_every steps
         if self.cleanup_every:
@@ -137,27 +133,15 @@ class KNNClassifier(BaseKNN, base.Classifier):
 
         return self
 
-    def predict_one(self, x: dict):
-        """Predict the label of a set of features `x`.
-        Parameters:
-            x: A dictionary of features.
-        Returns:
-            The neighbors
-        """
-        return self.predict_proba_one(x)
-
     def predict_proba_one(self, x):
-        """Predict the class of a set of features `x`.
-        Parameters:
-            x: A dictionary of features.
-        Returns:
-            Lookup (dict) of classes and probability predictions (normalized)
-        """
         nearest = self.nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
+
+        # Probability distribution needs to sum to 1
+        default_pred = 1 / len(self.classes) if len(self.classes) > 0 else 0.0
 
         # Default prediction for every class we know is 0.
         # If class_cleanup is false this can include classes not in window
-        y_pred = {c: 0.0 for c in self.classes}
+        y_pred = {c: default_pred for c in self.classes}
 
         # No nearest points? Return the default.
         if not nearest:
@@ -171,8 +155,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
             return y_pred
 
         for neighbor in nearest:
-            distance = neighbor[-1]
-            y = neighbor[0][1]
+            (x, y), distance = neighbor
 
             # Weighted votes by inverse distance
             if self.weighted:

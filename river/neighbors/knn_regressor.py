@@ -1,6 +1,5 @@
+import statistics
 from typing import Tuple
-
-import numpy as np
 
 from river import base
 
@@ -9,8 +8,7 @@ from .neighbors import DistanceFunc
 
 
 class KNNRegressor(BaseKNN, base.Regressor):
-    """
-    K-Nearest Neighbors regressor.
+    """K-Nearest Neighbors regressor.
 
     This non-parametric regression method keeps track of the last `window_size`
     training samples. Predictions are obtained by aggregating the values of the
@@ -58,6 +56,7 @@ class KNNRegressor(BaseKNN, base.Regressor):
     >>> for x, y in dataset.take(1):
     ...     model.predict_one(x)
     41.839342
+
     """
 
     _MEAN = "mean"
@@ -82,8 +81,9 @@ class KNNRegressor(BaseKNN, base.Regressor):
         self.aggregation_method = aggregation_method
 
     def _check_aggregation_method(self, method):
-        """
-        Ensure validation method is known to the model. Raises a ValueError if not.
+        """Ensure validation method is known to the model.
+
+        Raises a ValueError if not.
 
         Parameters
         ----------
@@ -107,6 +107,7 @@ class KNNRegressor(BaseKNN, base.Regressor):
             extra: an optional list or tuple of features to store
         Returns:
             self
+
         """
         self.nn.update((x, y), n_neighbors=self.n_neighbors, extra=extra)
         return self
@@ -125,6 +126,7 @@ class KNNRegressor(BaseKNN, base.Regressor):
         Returns
         -------
             The prediction.
+
         """
         # Find the nearest neighbors!
         nearest = self.nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
@@ -146,10 +148,10 @@ class KNNRegressor(BaseKNN, base.Regressor):
         neighbor_vals = [n[0][1] for n in nearest if n[0][1] is not None]
 
         if self.aggregation_method == self._MEAN:
-            return np.mean(neighbor_vals)
+            return statistics.mean(neighbor_vals)
 
         if self.aggregation_method == self._MEDIAN:
-            return np.median(neighbor_vals)
+            return statistics.median(neighbor_vals)
 
         # weighted mean based on distance
         dists = [n[-1] for n in nearest if n[0][1] is not None]
