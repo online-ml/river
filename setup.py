@@ -127,21 +127,4 @@ setuptools.setup(
             "embedsignature": True,
         },
     )
-    + [
-        setuptools.Extension(
-            "river.neighbors.libNearestNeighbor",
-            sources=[
-                os.path.join(
-                    "river",
-                    "neighbors",
-                    "src",
-                    "libNearestNeighbor",
-                    "nearestNeighbor.cpp",
-                )
-            ],
-            include_dirs=[get_include()],
-            libraries=[] if platform.system() == "Windows" else ["m"],
-            language="c++",
-        )
-    ],
 )
