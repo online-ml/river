@@ -69,7 +69,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
 
     >>> for x, y in dataset.take(1):
     ...     model.predict_one(x)
-    {False: 0.0, True: 1.0}
+    True
 
     """
 
