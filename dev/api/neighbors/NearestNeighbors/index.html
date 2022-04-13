@@ -12,14 +12,14 @@
         <meta name="author" content="The river developers">
       
       
-        <link rel="canonical" href="https://riverml.xyz/api/neighbors/SAMKNNClassifier/">
+        <link rel="canonical" href="https://riverml.xyz/api/neighbors/NearestNeighbors/">
       
       <link rel="icon" href="../../../img/favicon.ico">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.9">
     
     
       
-        <title>SAMKNNClassifier - River</title>
+        <title>NearestNeighbors - River</title>
       
     
     
@@ -83,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#samknnclassifier" class="md-skip">
+        <a href="#nearestneighbors" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SAMKNNClassifier
+              NearestNeighbors
             
           </span>
         </div>
@@ -4262,20 +4262,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../KNNADWINClassifier/" class="md-nav__link">
-        KNNADWINClassifier
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../KNNClassifier/" class="md-nav__link">
         KNNClassifier
       </a>
@@ -4314,12 +4300,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          SAMKNNClassifier
+          NearestNeighbors
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        SAMKNNClassifier
+        NearestNeighbors
       </a>
       
         
@@ -4345,20 +4331,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#methods" class="md-nav__link">
     Methods
   </a>
@@ -4368,13 +4340,6 @@
         <li class="md-nav__item">
   <a href="#notes" class="md-nav__link">
     Notes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
   </a>
   
 </li>
@@ -8193,20 +8158,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#methods" class="md-nav__link">
     Methods
   </a>
@@ -8216,13 +8167,6 @@
         <li class="md-nav__item">
   <a href="#notes" class="md-nav__link">
     Notes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
   </a>
   
 </li>
@@ -8241,130 +8185,76 @@
                 
 
 
-<h1 id="samknnclassifier">SAMKNNClassifier<a class="headerlink" href="#samknnclassifier" title="Permanent link">&para;</a></h1>
-<p>Self Adjusting Memory coupled with the kNN classifier.</p>
-<p>The Self Adjusting Memory (SAM) <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> model builds an ensemble with models targeting current or former concepts. SAM is built using two memories: STM for the current concept, and the LTM to retain information about past concepts. A cleaning process is in charge of controlling the size of the STM while keeping the information in the LTM consistent with the STM.</p>
+<h1 id="nearestneighbors">NearestNeighbors<a class="headerlink" href="#nearestneighbors" title="Permanent link">&para;</a></h1>
+<p>A basic data structure to hold nearest neighbors.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>n_neighbors</strong> (<em>int</em>) – defaults to <code>5</code></p>
-<p>number of evaluated nearest neighbors.</p>
+<p>Number of neighbors to use.</p>
 </li>
 <li>
-<p><strong>distance_weighting</strong> – defaults to <code>True</code></p>
-<p>Type of weighting of the nearest neighbors. It <code>True</code>  will use 'distance'. Otherwise, will use 'uniform' (majority voting).</p>
+<p><strong>window_size</strong> (<em>int</em>) – defaults to <code>1000</code></p>
+<p>Size of the sliding window use to search neighbors with.</p>
 </li>
 <li>
-<p><strong>window_size</strong> (<em>int</em>) – defaults to <code>5000</code></p>
-<p>Maximum number of overall stored data points.</p>
+<p><strong>min_distance_keep</strong> (<em>float</em>) – defaults to <code>0.0</code></p>
+<p>The minimum distance (similarity) to consider adding a point to the window. E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add similar but not exactly the same points.</p>
 </li>
 <li>
-<p><strong>ltm_size</strong> (<em>float</em>) – defaults to <code>0.4</code></p>
-<p>Proportion of the overall instances that may be used for the LTM. This is only relevant when the maximum number(maxSize) of stored instances is reached.</p>
-</li>
-<li>
-<p><strong>min_stm_size</strong> (<em>int</em>) – defaults to <code>50</code></p>
-<p>Minimum STM size which is evaluated during the STM size adaption.</p>
-</li>
-<li>
-<p><strong>stm_aprox_adaption</strong> – defaults to <code>True</code></p>
-<p>Type of STM size adaption.<br/>     - If <code>True</code> approximates the interleaved test-train error and is        significantly faster than the exact version.<br/>     - If <code>False</code> calculates the interleaved test-train error exactly for each of the       evaluated window sizes, which often has to be recalculated from the scratch.<br/>     - If <code>None</code>, the STM is not  adapted at all. If additionally <code>use_ltm=False</code>, then       this algorithm is simply a kNN with fixed sliding window size.</p>
-</li>
-<li>
-<p><strong>use_ltm</strong> – defaults to <code>True</code></p>
-<p>Specifies whether the LTM should be used at all.</p>
+<p><strong>distance_func</strong> (<em>Callable[[Any, Any], float]</em>) – defaults to <code>None</code></p>
+<p>An required distance function that accept two input items to compare and optional parameters. It's recommended to use functools.partial.</p>
 </li>
 </ul>
-<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p><strong>LTMLabels</strong></p>
-<p>Class labels in the LTM.</p>
-</li>
-<li>
-<p><strong>LTMSamples</strong></p>
-<p>Samples in the LTM.</p>
-</li>
-<li>
-<p><strong>STMLabels</strong></p>
-<p>Class labels in the STM.</p>
-</li>
-<li>
-<p><strong>STMSamples</strong></p>
-<p>Samples in the STM.</p>
-</li>
-</ul>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">synth</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">neighbors</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">synth</span><span class="o">.</span><span class="n">ConceptDriftStream</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">SAMKNNClassifier</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>  <span class="c1"># doctest: +SKIP</span>
-<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">56.70</span><span class="o">%</span>
-</code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
-<summary>clone</summary>
-<p>Return a fresh estimator with the same parameters.</p>
-<p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
-</details>
-<details class="- note">
-<summary>learn_one</summary>
-<p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
+<summary>append</summary>
+<p>Add a point to the window, optionally with extra metadata.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
-<li><strong>y</strong>     (<em>Union[bool, str, int]</em>)    </li>
+<li><strong>item</strong>     (<em>Any</em>)    </li>
+<li><strong>extra</strong>     (<em>[typing.Tuple, <class 'list'>]</em>)     – defaults to <code>None</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Classifier</em>:     self</p>
 </details>
 <details class="- note">
-<summary>predict_one</summary>
-<p>Predict the label of a set of features <code>x</code>.</p>
+<summary>find_nearest</summary>
+<p>Find the <code>n_neighbors</code> closest points to <code>x</code>, along with their distances.</p>
+<p>This function assumes the x is a tuple or list with x[0] having relevant data for the distance calculation.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>item</strong>     (<em>Any</em>)    </li>
+<li><strong>n_neighbors</strong>     – defaults to <code>1</code>  <br />
+    Number of neighbors to use.</li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int]</em>:     The predicted label.</p>
 </details>
 <details class="- note">
-<summary>predict_proba_one</summary>
-<p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
+<summary>reset</summary>
+<p>Reset window</p>
+</details>
+<details class="- note">
+<summary>update</summary>
+<p>Update the window with a new point, only added if &gt; min distance.</p>
+<p>If min distance is 0, we do not need to do the calculation. The item (and extra metadata) will not be added to the window if it is too close to an existing point.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>item</strong>     (<em>Any</em>)    </li>
+<li><strong>n_neighbors</strong>     – defaults to <code>1</code>  <br />
+    Number of neighbors to use.</li>
+<li><strong>extra</strong>     (<em>[typing.Tuple, <class 'list'>]</em>)     – defaults to <code>None</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Union[bool, str, int], float]</em>:     A dictionary that associates a probability which each label.</p>
+<p>A boolean (true/false) to indicate if the point was added.</p>
 </details>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>This modules uses libNearestNeighbor, a C++ library used to speed up some of
-the algorithm's computations. When invoking the library's functions it's important
-to pass the right argument type. Although most of this framework's functionality
-will work with python standard types, the C++ library will work with 8-bit labels,
-which is already done by the SAMKNN class, but may be absent in custom classes that
-use SAMKNN static methods, or other custom functions that use the C++ library.</p>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p>Losing, Viktor, Barbara Hammer, and Heiko Wersing.
-  "Knn classifier with self adjusting memory for heterogeneous concept drift."
-  In Data Mining (ICDM), 2016 IEEE 16th International Conference on,
-  pp. 291-300. IEEE, 2016.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
+<p>Updates are by default stored by the FIFO (first in first out) method,
+which means that when the size limit is reached, old samples are dumped to
+give room for new samples. This is circular, meaning that older points
+are dumped first. This also gives the implementation a temporal aspect,
+because older samples are replaced with newer ones.</p>
+<p>The parameter <code>min_dinstance_keep</code> controls the addition of new items to the
+window - items that are far enough away (&gt; min_distance_keep) are added to
+the window. Thus a value of 0 indicates that we add all points, and
+increasing from 0 makes it less likely we will keep a new item.</p>
 
               
             </article>
