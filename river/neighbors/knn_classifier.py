@@ -136,12 +136,9 @@ class KNNClassifier(BaseKNN, base.Classifier):
     def predict_proba_one(self, x):
         nearest = self.nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
 
-        # Probability distribution needs to sum to 1
-        default_pred = 1 / len(self.classes) if len(self.classes) > 0 else 0.0
-
         # Default prediction for every class we know is 0.
         # If class_cleanup is false this can include classes not in window
-        y_pred = {c: default_pred for c in self.classes}
+        y_pred = {c: 0.0 for c in self.classes}
 
         # No nearest points? Return the default.
         if not nearest:
