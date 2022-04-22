@@ -1,5 +1,6 @@
 import math
 import random
+
 from river import base
 
 
@@ -126,7 +127,9 @@ class PeriodicTrigger(base.DriftDetector):
         self.trigger_method = trigger_method
 
         if self.trigger_method == self._RANDOM_TRIGGER and w == 0:
-            raise ValueError("The 'w' value must be greater than zero when 'trigger_method' is 'random'.")
+            raise ValueError(
+                "The 'w' value must be greater than zero when 'trigger_method' is 'random'."
+            )
 
         self.t_0 = t_0
         self.w = w
