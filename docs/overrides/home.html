@@ -1,10 +1,11 @@
 <!-- Custom HTML site displayed as the landing page -->
 {% extends "base.html" %}
 
-{% block announce %}
-<a>
-  🎉&nbsp;&nbsp;Announcing <strong>River</strong> — Machine learning for data streams in Python&nbsp;&nbsp;🚀
-</a>
+{% block outdated %}
+  You're not viewing the latest version.
+  <a href="{{ '../' ~ base_url }}">
+    <strong>Click here to go to latest.</strong>
+  </a>
 {% endblock %}
 
 <!-- Render hero under tabs -->

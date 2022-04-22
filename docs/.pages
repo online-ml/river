@@ -1,8 +1,7 @@
 nav:
-    - Home: index.md
-    - getting-started
-    - user-guide
-    - api
-    - examples
-    - FAQ: faq
-    - releases
+  - getting-started
+  - recipes
+  - examples
+  - api
+  - faq
+  - releases

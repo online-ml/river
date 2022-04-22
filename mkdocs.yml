@@ -21,7 +21,7 @@ theme:
     primary: indigo
     accent: indigo
   font:
-    text: Roboto
+    text: Rubik
     code: Roboto Mono
   logo: img/river_square.svg
   favicon: img/favicon.ico
@@ -37,6 +37,8 @@ extra:
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/online-ml/river
+  version:
+    provider: mike
 
 # Extensions
 markdown_extensions:
@@ -59,8 +61,6 @@ extra_javascript:
   - javascripts/config.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  - js/version-select.js
 
 extra_css:
   - stylesheets/extra.css
-  - css/version-select.css
