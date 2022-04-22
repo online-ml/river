@@ -8,6 +8,13 @@
 - A `revert` method has been added to `stats.Multinomial`.
 - Added `dist.TimeRolling` to measure probability distributions over windows of time.
 
+## drift
+- Add the `PeriodicTrigger` detector, a baseline capable of producing drift signals in regular or random intervals.
+
+## ensemble
+
+- Streamline `SRP{Classifier,Regressor}`, remove unneeded numpy usage, make SRP variants robust against missing features, and fix bugs.
+
 ## evaluate
 
 - Added a `iter_progressive_val_score` function, which does the same as `progressive_val_score`, except that it yields rather than prints results at each step, which give more control to the user.
