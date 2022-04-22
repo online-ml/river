@@ -5,7 +5,7 @@ from river import base
 
 
 class PeriodicTrigger(base.DriftDetector):
-    """Generates pseudo drift detection signals.
+    """Generate pseudo drift detection signals.
 
     There are two approaches[^1]:
 
