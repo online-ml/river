@@ -62,7 +62,7 @@ class KSWIN(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = kswin.update(val)
+    ...     in_drift, _ = kswin.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
     ...         kswin.reset()  # Good practice
