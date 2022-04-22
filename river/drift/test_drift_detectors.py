@@ -73,8 +73,8 @@ def test_hddm_w():
 
 
 def test_kswin():
-    kswin = KSWIN(alpha=0.0001, window_size=200, stat_size=100)
-    expected_indices = [1043, 1143]
+    kswin = KSWIN(alpha=0.0001, window_size=200, stat_size=100, seed=42)
+    expected_indices = [1042, 1142]
     detected_indices = perform_test(kswin, data_stream_1)
     assert detected_indices == expected_indices
 
@@ -85,15 +85,6 @@ def test_kswin_coverage():
 
     with pytest.raises(ValueError):
         KSWIN(alpha=1.1)
-
-    kswin = KSWIN(alpha=0.5)
-    assert kswin.alpha == 0.5
-
-    kswin = KSWIN(window="st")
-    assert isinstance(kswin.window, np.ndarray)
-
-    kswin = KSWIN(window=np.array([0.75, 0.80, 1, -1]))
-    assert isinstance(kswin.window, np.ndarray)
 
     try:
         KSWIN(window_size=-10)
@@ -107,12 +98,6 @@ def test_kswin_coverage():
         assert True
     else:
         assert False
-
-    kswin = KSWIN()
-    kswin.reset()
-    assert kswin.p_value == 0
-    assert kswin.window.shape[0] == 0
-    assert kswin.change_detected is False
 
 
 def test_page_hinkley():

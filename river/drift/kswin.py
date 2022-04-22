@@ -144,7 +144,11 @@ class KSWIN(DriftDetector):
                 self.window = collections.deque(most_recent, maxlen=self.window_size)
             else:
                 self._in_concept_change = False
-        else:  # Not enough samples in sliding window for a valid test
+        else:  # Not enough samples in the sliding window for a valid test
             self._in_concept_change = False
 
-        return self._in_concept_change, self._in_warning_zone
+        return self._in_concept_change, False
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"seed": 1}
