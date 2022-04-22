@@ -51,6 +51,7 @@ class KSWIN(DriftDetector):
 
     Examples
     --------
+    >>> import random
     >>> from river import drift
 
     >>> rng = random.Random(12345)
@@ -64,6 +65,7 @@ class KSWIN(DriftDetector):
     ...     in_drift, in_warning = kswin.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
+    ...         kswin.reset()  # Good practice
     Change detected at index 1016, input value: 6
 
     References
