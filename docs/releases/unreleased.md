@@ -21,6 +21,12 @@
 - `linear_model.LinearRegression` and `linear_model.LogisticRegression` now correctly apply the `l2` regularization when their `learn_many` method is used.
 - Added `l1` regularization (implementation with cumulative penalty, see [paper](https://aclanthology.org/P09-1054/)) for `linear_model.LinearRegression` and `linear_model.LogisticRegression`
 
+## neighbors
+
+- `neighbors.KNNADWINClassifier` and `neighbors.SAMKNNClassifier` have been deprecated.
+- Introduced `neighbors.NearestNeighbors` for searching nearest neighbors.
+- Vastly refactored and simplified the nearest neighbors logic.
+
 ## rules
 
 - AMRules's `debug_one` explicitly indicates the prediction strategy used by each rule.
