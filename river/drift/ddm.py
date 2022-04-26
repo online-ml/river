@@ -58,24 +58,24 @@ class DDM(DriftDetector):
 
     Examples
     --------
-    >>> import numpy as np
-    >>> from river.drift import DDM
-    >>> np.random.seed(12345)
+    >>> import random
+    >>> from river import drift
 
-    >>> ddm = DDM()
+    >>> rng = random.Random(42)
+    >>> ddm = drift.DDM()
 
-    >>> # Simulate a data stream as a normal distribution of 1's and 0's
-    >>> data_stream = np.random.randint(2, size=2000)
+    >>> # Simulate a data stream as a uniform distribution of 1's and 0's
+    >>> data_stream = rng.choices([0, 1], k=2000)
     >>> # Change the data distribution from index 999 to 1500, simulating an
     >>> # increase in error rate (1 indicates error)
-    >>> data_stream[1000:1200] = [np.random.binomial(1, .8) for _ in range(200)]
+    >>> data_stream[999:1500] = [1] * 500
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
     ...     in_drift, in_warning = ddm.update(val)
     ...     if in_drift:
     ...         print(f"Change detected at index {i}, input value: {val}")
-    Change detected at index 1157, input value: 1
+    Change detected at index 1101, input value: 1
 
     Notes
     -----
