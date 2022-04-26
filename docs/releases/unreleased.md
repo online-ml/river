@@ -8,6 +8,12 @@
 - A `revert` method has been added to `stats.Multinomial`.
 - Added `dist.TimeRolling` to measure probability distributions over windows of time.
 
+## drift
+- The numpy usage was removed in `drift.KSWIN` in favor of `collections.deque`. Appending or deleting elements to numpy arrays imply creating another object.
+- Added the seed parameter to `drift.KSWIN` to control reproducibility.
+- The Kolmogorov-Smirnov test mode was changed to the default (`"auto"`) to suppress warnings (`drift.KSWIN`).
+- Unnecessary usage of numpy was also removed in other concept drift detectors.
+
 ## evaluate
 
 - Added a `iter_progressive_val_score` function, which does the same as `progressive_val_score`, except that it yields rather than prints results at each step, which give more control to the user.
