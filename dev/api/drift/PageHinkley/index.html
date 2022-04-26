@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/api/drift/PageHinkley/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.9">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.11">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.120efc48.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.8c5ef100.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.9647289d.min.css">
@@ -8247,22 +8247,21 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river.drift</span> <span class="kn">import</span> <span class="n">PageHinkley</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">random</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">drift</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">PageHinkley</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">drift</span><span class="o">.</span><span class="n">PageHinkley</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="c1"># Simulate a data stream composed by two data distributions</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">data_stream</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
-<span class="o">...</span>                               <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data_stream</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choices</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="c1"># Update drift detector and verify if change is detected</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_stream</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">in_drift</span><span class="p">,</span> <span class="n">in_warning</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">in_drift</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 <span class="o">...</span>     <span class="k">if</span> <span class="n">in_drift</span><span class="p">:</span>
 <span class="o">...</span>         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Change detected at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, input value: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">Change</span> <span class="n">detected</span> <span class="n">at</span> <span class="n">index</span> <span class="mi">1009</span><span class="p">,</span> <span class="nb">input</span> <span class="n">value</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">Change</span> <span class="n">detected</span> <span class="n">at</span> <span class="n">index</span> <span class="mi">1006</span><span class="p">,</span> <span class="nb">input</span> <span class="n">value</span><span class="p">:</span> <span class="mi">5</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
@@ -8350,7 +8349,7 @@
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.6e54b5cd.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.748e2769.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
