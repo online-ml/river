@@ -33,7 +33,7 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: d
     total_weight = sum(observed_class_distribution.values())
     if not observed_class_distribution or total_weight == 0:
         # No observed class distributions, all classes equal
-        return None
+        return {}
 
     votes = {}
     for class_index, class_weight in observed_class_distribution.items():
