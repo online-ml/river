@@ -9,10 +9,16 @@
 - Added `dist.TimeRolling` to measure probability distributions over windows of time.
 
 ## drift
+
+- Add the `PeriodicTrigger` detector, a baseline capable of producing drift signals in regular or random intervals.
 - The numpy usage was removed in `drift.KSWIN` in favor of `collections.deque`. Appending or deleting elements to numpy arrays imply creating another object.
 - Added the seed parameter to `drift.KSWIN` to control reproducibility.
 - The Kolmogorov-Smirnov test mode was changed to the default (`"auto"`) to suppress warnings (`drift.KSWIN`).
 - Unnecessary usage of numpy was also removed in other concept drift detectors.
+
+## ensemble
+
+- Streamline `SRP{Classifier,Regressor}`, remove unneeded numpy usage, make SRP variants robust against missing features, and fix bugs.
 
 ## evaluate
 
