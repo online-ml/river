@@ -1848,6 +1848,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/drift/PeriodicTrigger/" class="md-nav__link">
+        PeriodicTrigger
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -7835,6 +7849,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#ensemble" class="md-nav__link">
+    ensemble
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#evaluate" class="md-nav__link">
     evaluate
   </a>
@@ -8191,6 +8212,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#ensemble" class="md-nav__link">
+    ensemble
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#evaluate" class="md-nav__link">
     evaluate
   </a>
@@ -8251,10 +8279,15 @@
 </ul>
 <h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Add the <code>PeriodicTrigger</code> detector, a baseline capable of producing drift signals in regular or random intervals.</li>
 <li>The numpy usage was removed in <code>drift.KSWIN</code> in favor of <code>collections.deque</code>. Appending or deleting elements to numpy arrays imply creating another object.</li>
 <li>Added the seed parameter to <code>drift.KSWIN</code> to control reproducibility.</li>
 <li>The Kolmogorov-Smirnov test mode was changed to the default (<code>"auto"</code>) to suppress warnings (<code>drift.KSWIN</code>).</li>
 <li>Unnecessary usage of numpy was also removed in other concept drift detectors.</li>
+</ul>
+<h2 id="ensemble">ensemble<a class="headerlink" href="#ensemble" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Streamline <code>SRP{Classifier,Regressor}</code>, remove unneeded numpy usage, make SRP variants robust against missing features, and fix bugs.</li>
 </ul>
 <h2 id="evaluate">evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h2>
 <ul>
