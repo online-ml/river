@@ -19,10 +19,7 @@ class RandomLeafMean(BaseRandomLeaf, LeafMean):
     max_features
         Number of attributes per subset for each node split.
     seed
-        If int, seed is the seed used by the random number generator;
-        If RandomState instance, seed is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        Random seed for reproducibility.
     kwargs
         Other parameters passed to the learning node.
     """
@@ -48,10 +45,7 @@ class RandomLeafModel(BaseRandomLeaf, LeafModel):
     max_features
         Number of attributes per subset for each node split.
     seed
-        If int, seed is the seed used by the random number generator;
-        If RandomState instance, seed is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        Random seed for reproducibility.
     leaf_model
         A `base.Regressor` instance used to learn from instances and provide
         responses.
@@ -84,10 +78,7 @@ class RandomLeafAdaptive(BaseRandomLeaf, LeafAdaptive):
     max_features
         Number of attributes per subset for each node split.
     seed
-        If int, seed is the seed used by the random number generator;
-        If RandomState instance, seed is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        Random seed for reproducibility.
     leaf_model
         A `base.Regressor` instance used to learn from instances and provide
         responses.

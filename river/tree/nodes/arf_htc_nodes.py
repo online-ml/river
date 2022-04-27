@@ -1,6 +1,5 @@
+import random
 import typing
-
-from river.utils.skmultiflow_utils import check_random_state
 
 from .htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
 from .leaf import HTLeaf
@@ -22,10 +21,7 @@ class BaseRandomLeaf(HTLeaf):
     max_features
         Number of attributes per subset for each node split.
     seed
-        If int, seed is the seed used by the random number generator;
-        If RandomState instance, seed is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        Random seed for reproducibility.
     kwargs
         Other parameters passed to the learning node.
     """
@@ -34,7 +30,7 @@ class BaseRandomLeaf(HTLeaf):
         super().__init__(stats, depth, splitter, **kwargs)
         self.max_features = max_features
         self.seed = seed
-        self._rng = check_random_state(self.seed)
+        self._rng = random.Random(self.seed)
         self.feature_indices = []
 
     def _iter_features(self, x) -> typing.Iterable:
@@ -48,9 +44,7 @@ class BaseRandomLeaf(HTLeaf):
                 yield att_id, x[att_id]
 
     def _sample_features(self, x, max_features):
-        selected = self._rng.choice(len(x), size=max_features, replace=False)
-        features = list(x.keys())
-        return [features[s] for s in selected]
+        return self._rng.choices(list(x.keys()), k=max_features)
 
 
 class RandomLeafMajorityClass(BaseRandomLeaf, LeafMajorityClass):
@@ -68,10 +62,7 @@ class RandomLeafMajorityClass(BaseRandomLeaf, LeafMajorityClass):
     max_features
         Number of attributes per subset for each node split.
     seed
-        If int, seed is the seed used by the random number generator;
-        If RandomState instance, seed is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        Random seed for reproducibility.
     kwargs
         Other parameters passed to the learning node.
 
@@ -97,10 +88,7 @@ class RandomLeafNaiveBayes(BaseRandomLeaf, LeafNaiveBayes):
     max_features
         Number of attributes per subset for each node split.
     seed
-        If int, seed is the seed used by the random number generator;
-        If RandomState instance, seed is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        Random seed for reproducibility.
     kwargs
         Other parameters passed to the learning node.
     """
@@ -124,10 +112,7 @@ class RandomLeafNaiveBayesAdaptive(BaseRandomLeaf, LeafNaiveBayesAdaptive):
     max_features
         Number of attributes per subset for each node split.
     seed
-        If int, seed is the seed used by the random number generator;
-        If RandomState instance, seed is the random number generator;
-        If None, the random number generator is the RandomState instance used
-        by `np.random`.
+        Random seed for reproducibility.
     kwargs
         Other parameters passed to the learning node.
     """
