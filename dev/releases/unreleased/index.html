@@ -7884,6 +7884,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    tree
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stats" class="md-nav__link">
     stats
   </a>
@@ -8247,6 +8254,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    tree
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stats" class="md-nav__link">
     stats
   </a>
@@ -8288,6 +8302,7 @@
 <h2 id="ensemble">ensemble<a class="headerlink" href="#ensemble" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Streamline <code>SRP{Classifier,Regressor}</code>, remove unneeded numpy usage, make SRP variants robust against missing features, and fix bugs.</li>
+<li>Remove unneeded numpy usage <code>AdaptiveRandomForest{Classifier,Regressor}</code>.</li>
 </ul>
 <h2 id="evaluate">evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h2>
 <ul>
@@ -8306,6 +8321,11 @@
 <ul>
 <li>AMRules's <code>debug_one</code> explicitly indicates the prediction strategy used by each rule.</li>
 <li>Fix bug in <code>debug_one</code> (AMRules) where prediction explanations were incorrectly displayed when <code>ordered_rule_set=True</code>.</li>
+</ul>
+<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fix bug in Naive Bayes-based leaf prediction.</li>
+<li>Remove unneeded numpy usage in <code>HoeffdingAdaptiveTree{Classifier,Regressor}</code>.</li>
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
