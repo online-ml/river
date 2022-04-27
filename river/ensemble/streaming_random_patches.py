@@ -335,7 +335,7 @@ def random_subspace(all_features: list, k: int, rng: random.Random):
     rng
         Random number generator (initialized).
     """
-    return rng.choices(all_features, k=k)
+    return rng.sample(all_features, k=k)
 
 
 class SRPClassifier(BaseSRPEnsemble, base.Classifier):
@@ -414,7 +414,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 73.17%
+    Accuracy: 73.27%
 
     Notes
     -----
@@ -687,7 +687,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     >>> metric = metrics.R2()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    R2: 0.558928
+    R2: 0.571263
 
     Notes
     -----
