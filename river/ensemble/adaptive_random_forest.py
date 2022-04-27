@@ -2,6 +2,7 @@ import abc
 import collections
 import copy
 import math
+import random
 import typing
 
 import numpy as np
@@ -19,7 +20,7 @@ from river.tree.nodes.arf_htr_nodes import (
     RandomLeafModel,
 )
 from river.tree.splitter import Splitter
-from river.utils.skmultiflow_utils import check_random_state
+from river.utils.random import poisson
 
 
 class BaseForest(base.Ensemble):
@@ -47,7 +48,7 @@ class BaseForest(base.Ensemble):
         self.drift_detector = drift_detector
         self.warning_detector = warning_detector
         self.seed = seed
-        self._rng = check_random_state(self.seed)  # Actual random number generator
+        self._rng = random.Random(self.seed)
 
         # Internal parameters
         self._n_samples_seen = 0
@@ -56,6 +57,13 @@ class BaseForest(base.Ensemble):
     @property
     def _min_number_of_models(self):
         return 0
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"n_models": 3}
+
+    def _unit_test_skips(self):
+        return {"check_shuffle_features_no_impact"}
 
     def learn_one(self, x: dict, y: base.typing.Target, **kwargs):
         self._n_samples_seen += 1
@@ -70,7 +78,7 @@ class BaseForest(base.Ensemble):
             # Update performance evaluator
             model.metric.update(y_true=y, y_pred=y_pred)
 
-            k = self._rng.poisson(lam=self.lambda_value)
+            k = poisson(rate=self.lambda_value, rng=self._rng)
             if k > 0:
                 # print(self._n_samples_seen)
                 model.learn_one(
@@ -83,7 +91,7 @@ class BaseForest(base.Ensemble):
         self._set_max_features(len(features))
 
         # Generate a different random seed per tree
-        seeds = self._rng.randint(0, 4294967295, size=self.n_models, dtype="u8")
+        seeds = [self._rng.randint(0, int(1e15)) for _ in range(self.n_models)]
 
         self.data = [
             self._base_member_class(
@@ -134,12 +142,6 @@ class BaseForest(base.Ensemble):
         if self.max_features > n_features:
             self.max_features = n_features
 
-    def reset(self):
-        """Reset the forest."""
-        self.models = []
-        self._n_samples_seen = 0
-        self._rng = check_random_state(self.seed)
-
 
 class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
     """Adaptive Random Forest Hoeffding Tree Classifier.
@@ -169,7 +171,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed=None,
+        seed: int = None,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -191,7 +193,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
 
         self.max_features = max_features
         self.seed = seed
-        self._rng = check_random_state(self.seed)
+        self._rng = random.Random(self.seed)
 
     def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
@@ -203,7 +205,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
             depth = parent.depth + 1
 
         # Generate a random seed for the new learning node
-        seed = self._rng.randint(0, 4294967295, dtype="u8")
+        seed = self._rng.randint(0, int(1e15))
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLeafMajorityClass(
@@ -266,7 +268,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed=None,
+        seed: int = None,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -289,7 +291,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
 
         self.max_features = max_features
         self.seed = seed
-        self._rng = check_random_state(self.seed)
+        self._rng = random.Random(self.seed)
 
     def _new_leaf(self, initial_stats=None, parent=None):  # noqa
         """Create a new learning node.
@@ -303,7 +305,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
             depth = 0
 
         # Generate a random seed for the new learning node
-        seed = self._rng.randint(0, 4294967295, dtype="u8")
+        seed = self._rng.randint(0, int(1e15))
 
         leaf_model = None
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
@@ -442,10 +444,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     merit_preprune
         [*Tree parameter*] If True, enable merit-based tree pre-pruning.
     seed
-        If `int`, `seed` is used to seed the random number generator;
-        If `RandomState`, `seed` is the random number generator;
-        If `None`, the random number generator is the `RandomState` instance
-        used by `np.random`.
+        Random seed for reproducibility.
 
     Examples
     --------
@@ -458,14 +457,13 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     ...                                    width=40).take(1000)
 
     >>> model = ensemble.AdaptiveRandomForestClassifier(
-    ...     n_models=3,
     ...     seed=42
     ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 70.77%
+    Accuracy: 74.37%
 
     References
     ----------
@@ -533,13 +531,6 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.stop_mem_management = stop_mem_management
         self.remove_poor_attrs = remove_poor_attrs
         self.merit_preprune = merit_preprune
-
-    @classmethod
-    def _unit_test_params(cls):
-        yield {"n_models": 3}
-
-    def _unit_test_skips(self):
-        return {"check_shuffle_features_no_impact"}
 
     def _multiclass(self):
         return True
@@ -695,10 +686,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     merit_preprune
         [*Tree parameter*] If True, enable merit-based tree pre-pruning.
     seed
-        If `int`, `seed` is used to seed the random number generator;
-        If `RandomState`, `seed` is the random number generator;
-        If `None`, the random number generator is the `RandomState` instance
-        used by `np.random`.
+        Random seed for reproducibility.
 
     References
     ----------
@@ -722,13 +710,13 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     ensemble.AdaptiveRandomForestRegressor(n_models=3, seed=42)
+    ...     ensemble.AdaptiveRandomForestRegressor(seed=42)
     ... )
 
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.874094
+    MAE: 0.994917
 
     """
 
@@ -805,13 +793,6 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                 f"Invalid aggregation_method: {aggregation_method}.\n"
                 f"Valid values are: {self._VALID_AGGREGATION_METHOD}"
             )
-
-    @classmethod
-    def _unit_test_params(cls):
-        yield {"n_models": 3}
-
-    def _unit_test_skips(self):
-        return {"check_shuffle_features_no_impact"}
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
 

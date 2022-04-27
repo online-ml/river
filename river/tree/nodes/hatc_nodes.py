@@ -1,9 +1,11 @@
 import abc
 import math
+import random
 import typing
 
 from river.drift import ADWIN
-from river.utils.skmultiflow_utils import check_random_state, normalize_values_in_dict
+from river.utils.random import poisson
+from river.utils.skmultiflow_utils import normalize_values_in_dict
 
 from ..utils import do_naive_bayes_prediction
 from .branch import (
@@ -65,7 +67,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self._error_change = False
-        self._rng = check_random_state(seed)
+        self._rng = random.Random(seed)
 
     @property
     def error_estimation(self):
@@ -86,7 +88,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
     ):
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
-            k = self._rng.poisson(1.0)
+            k = poisson(rate=1, rng=self._rng)
             if k > 0:
                 sample_weight *= k
 
@@ -165,7 +167,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
     adwin_delta
         The delta parameter of ADWIN.
     seed
-        Internal random state used to sample from poisson distributions.
+        Internal random seed used to sample from poisson distributions.
     children
         Sequence of children nodes of this branch.
     attributes
@@ -179,7 +181,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         self._alternate_tree = None
         self._error_change = False
 
-        self._rng = check_random_state(seed)
+        self._rng = random.Random(seed)
 
     def traverse(self, x, until_leaf=True) -> typing.List[HTLeaf]:
         """Return the leaves corresponding to the given input.
@@ -207,7 +209,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
                 else:
                     found_nodes.append(node._alternate_tree)
 
-        found_nodes.append(node)
+        found_nodes.append(node)  # noqa
         return found_nodes
 
     def iter_leaves(self):

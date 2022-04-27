@@ -19,6 +19,7 @@
 ## ensemble
 
 - Streamline `SRP{Classifier,Regressor}`, remove unneeded numpy usage, make SRP variants robust against missing features, and fix bugs.
+- Remove unneeded numpy usage `AdaptiveRandomForest{Classifier,Regressor}`.
 
 ## evaluate
 
@@ -37,6 +38,10 @@
 
 - AMRules's `debug_one` explicitly indicates the prediction strategy used by each rule.
 - Fix bug in `debug_one` (AMRules) where prediction explanations were incorrectly displayed when `ordered_rule_set=True`.
+
+## tree
+- Fix bug in Naive Bayes-based leaf prediction.
+- Remove unneeded numpy usage in `HoeffdingAdaptiveTree{Classifier,Regressor}`.
 
 ## stats
 
