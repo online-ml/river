@@ -177,7 +177,7 @@ class LeafNaiveBayesAdaptive(LeafMajorityClass):
                 self._mc_correct_weight += sample_weight
 
             nb_pred = do_naive_bayes_prediction(x, self.stats, self.splitters)
-            if nb_pred is not None and max(nb_pred, key=nb_pred.get) == y:
+            if len(nb_pred) > 0 and max(nb_pred, key=nb_pred.get) == y:
                 self._nb_correct_weight += sample_weight
 
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
