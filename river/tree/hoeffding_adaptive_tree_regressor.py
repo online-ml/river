@@ -86,11 +86,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     merit_preprune
         If True, enable merit-based tree pre-pruning.
     seed
-       If int, `seed` is the seed used by the random number generator;</br>
-       If RandomState instance, `seed` is the random number generator;</br>
-       If None, the random number generator is the RandomState instance used
-       by `np.random`. Only used when `bootstrap_sampling=True` to direct the
-       bootstrap sampling.</br>
+       Random seed for reproducibility.
 
     Notes
     -----
@@ -140,7 +136,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.719929
+    MAE: 0.795811
     """
 
     def __init__(
@@ -164,7 +160,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed=None,
+        seed: int = None,
     ):
 
         super().__init__(

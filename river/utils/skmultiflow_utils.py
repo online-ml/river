@@ -2,38 +2,10 @@ import copy
 import math
 import numbers
 import sys
+import typing
 from collections import deque
 
 import numpy as np
-
-
-def get_dimensions(X) -> tuple:
-    """Return the dimensions from a numpy.array, numpy.ndarray or list.
-
-    Parameters
-    ----------
-    X
-        numpy.array, numpy.ndarray, list, list of lists.
-
-    Returns
-    -------
-    A tuple representing the X structure's dimensions.
-
-    """
-    r, c = 1, 1
-    if isinstance(X, type(np.array([0]))):
-        if X.ndim > 1:
-            r, c = X.shape
-        else:
-            r, c = 1, X.size
-
-    elif isinstance(X, type([])):
-        if isinstance(X[0], type([])):
-            r, c = len(X), len(X[0])
-        else:
-            c = len(X)
-
-    return r, c
 
 
 def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=False):
@@ -103,27 +75,7 @@ def scale_values_in_dict(dictionary, multiplier, inplace=True):
     return dictionary
 
 
-def get_max_value_key(dictionary):
-    """Get the key of the maximum value in a dictionary.
-
-    Parameters
-    ----------
-    dictionary
-        Dictionary to evaluate.
-
-    Returns
-    -------
-    int
-        Key of the maximum value.
-
-    """
-    if dictionary and isinstance(dictionary, dict):
-        return max(dictionary, key=dictionary.get)
-    else:
-        return 0
-
-
-def calculate_object_size(obj, unit="byte") -> int:
+def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
     """Iteratively calculates the `obj` size in bytes.
 
     Visits all the elements related to obj accounting for their respective
@@ -131,9 +83,9 @@ def calculate_object_size(obj, unit="byte") -> int:
 
     Parameters
     ----------
-    object
+    obj
         Object to evaluate.
-    string
+    unit
         The unit in which the accounted value is going to be returned.
         Values: 'byte', 'kB', 'MB' (Default: 'byte').
 
@@ -187,37 +139,8 @@ def calculate_object_size(obj, unit="byte") -> int:
     return final_size
 
 
-def is_scalar_nan(x) -> bool:
-    """Tests if x is NaN
-
-    This function is meant to overcome the issue that np.isnan does not allow
-    non-numerical types as input, and that np.nan is not np.float('nan').
-
-    Parameters
-    ----------
-    x
-        any type
-
-    Examples
-    --------
-    >>> is_scalar_nan(np.nan)
-    True
-    >>> is_scalar_nan(float("nan"))
-    True
-    >>> is_scalar_nan(None)
-    False
-    >>> is_scalar_nan("")
-    False
-    >>> is_scalar_nan([np.nan])
-    False
-    """
-    # convert from numpy.bool_ to python bool to ensure that testing
-    # is_scalar_nan(x) is True does not fail.
-    return bool(isinstance(x, numbers.Real) and np.isnan(x))
-
-
 def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
-    """Adds two dictionaries, summing the values of elements with the same key.
+    """Add two dictionaries, summing the values of elements with the same key.
 
     This function iterates over the keys of dict_b and adds their corresponding
     values to the elements in dict_a. If dict_b has a (key, value) pair that
@@ -250,30 +173,6 @@ def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
         except KeyError:
             result[k] = v
     return result
-
-
-def add_delay_to_timestamps(timestamps, delay):
-    """Add a given delay to a list of timestamps.
-
-    This function iterates over the timestamps, adding a time delay to them.
-
-    Parameters
-    ----------
-    timestamps
-        np.ndarray(dtype=datetime64).
-    delay
-        np.timedelta64.
-
-    Returns
-    -------
-    A list of timestamps with a delay added to all timestamp.
-
-    """
-
-    delay_timestamps = []
-    for t in timestamps:
-        delay_timestamps.append(t + delay)
-    return np.array(delay_timestamps, dtype="datetime64")
 
 
 def check_random_state(seed):

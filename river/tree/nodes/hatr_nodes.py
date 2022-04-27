@@ -1,9 +1,10 @@
 import math
+import random
 import typing
 
 from river.drift.adwin import ADWIN
 from river.stats import Var
-from river.utils.skmultiflow_utils import check_random_state
+from river.utils.random import poisson
 
 from .branch import (
     DTBranch,
@@ -43,7 +44,7 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self._error_change = False
-        self._rng = check_random_state(seed)
+        self._rng = random.Random(seed)
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
         self._error_normalizer = Var(ddof=1)
@@ -70,7 +71,7 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
 
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
-            k = self._rng.poisson(1.0)
+            k = poisson(rate=1, rng=self._rng)
             if k > 0:
                 sample_weight *= k
 
@@ -120,7 +121,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
     adwin_delta
         The delta parameter of ADWIN.
     seed
-        Internal random state used to sample from poisson distributions.
+        Internal random seed used to sample from poisson distributions.
     attributes
         Other parameters passed to the split node.
     """
@@ -133,7 +134,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         self._alternate_tree = None
         self._error_change = False
 
-        self._rng = check_random_state(seed)
+        self._rng = random.Random(seed)
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
         self._error_normalizer = Var(ddof=1)
@@ -164,7 +165,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
                 else:
                     found_nodes.append(node._alternate_tree)
 
-        found_nodes.append(node)
+        found_nodes.append(node)  # noqa
         return found_nodes
 
     def iter_leaves(self):
