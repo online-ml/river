@@ -80,7 +80,6 @@ class BaseForest(base.Ensemble):
 
             k = poisson(rate=self.lambda_value, rng=self._rng)
             if k > 0:
-                # print(self._n_samples_seen)
                 model.learn_one(
                     x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen
                 )
@@ -456,9 +455,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
     ...                                    width=40).take(1000)
 
-    >>> model = ensemble.AdaptiveRandomForestClassifier(
-    ...     seed=42
-    ... )
+    >>> model = ensemble.AdaptiveRandomForestClassifier(seed=42)
 
     >>> metric = metrics.Accuracy()
 
