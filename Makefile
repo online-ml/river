@@ -11,8 +11,8 @@ execute-notebooks:
 
 render-notebooks:
 	jupyter nbconvert --to markdown docs/introduction/**.ipynb --output-dir docs/introduction
-	jupyter nbconvert --to markdown docs/user-guide/*.ipynb --output-dir docs/user-guide
-	jupyter nbconvert --to markdown docs/examples/*.ipynb --output-dir docs/examples
+	jupyter nbconvert --to markdown docs/recipes/**.ipynb --output-dir docs/recipes
+	jupyter nbconvert --to markdown docs/examples/**.ipynb --output-dir docs/examples
 
 doc: render-notebooks
 	yamp river --out docs/api
