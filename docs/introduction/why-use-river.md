@@ -19,4 +19,3 @@ In the streaming setting, data can evolve. Adaptive methods are specifically des
 River caters for different ml problems, including regression, classification, and unsupervised learning. It can also be used for adhoc tasks, such as computing online metrics, and concept drift detection.
 
 ### User experience
-
