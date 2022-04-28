@@ -1,12 +1,12 @@
 # Installation
 
-`river` is intended to work with **Python 3.6 or above**. Installation can be done via `pip`:
+River is meant to work with Python 3.7 and above. Installation can be done via `pip`:
 
 ```sh
 pip install river
 ```
 
-You can install the latest development version from GitHub as so:
+You can install the latest development version from GitHub, as so:
 
 ```sh
 pip install git+https://github.com/online-ml/river --upgrade

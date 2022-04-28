@@ -1,3 +1,9 @@
+.md-typeset h1,
+.md-typeset h2 {
+  font-weight: 1000;
+  letter-spacing: 0;
+}
+
 .md-typeset h2 {
   margin: 1.5em 0;
   padding-bottom: 0.4rem;

@@ -10,7 +10,7 @@ repo_url: https://github.com/online-ml/river
 edit_uri: ""
 
 # Copyright
-copyright: Copyright &copy; 2019 - 2020
+copyright: Copyright &copy; 2019 - 2022
 
 # Configuration
 theme:
@@ -28,6 +28,8 @@ theme:
   features:
     - navigation.tabs
     - navigation.instant
+    - navigation.expand
+    - navigation.indexes
 
 # Extras
 extra:
