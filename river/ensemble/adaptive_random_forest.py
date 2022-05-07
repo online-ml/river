@@ -455,12 +455,12 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
     ...                                    width=40).take(1000)
 
-    >>> model = ensemble.AdaptiveRandomForestClassifier(seed=42)
+    >>> model = ensemble.AdaptiveRandomForestClassifier(seed=8)
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 74.37%
+    Accuracy: 74.17%
 
     References
     ----------
