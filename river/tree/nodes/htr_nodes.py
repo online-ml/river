@@ -143,7 +143,6 @@ class LeafModel(LeafMean):
     def prediction(self, x, *, tree=None):
         return self._leaf_model.predict_one(x)
 
-
 class LeafAdaptive(LeafModel):
     """Learning Node for regression tasks that dynamically selects between predictors and
         might behave as a regression tree node or a model tree node, depending on which predictor

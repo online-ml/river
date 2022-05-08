@@ -18,7 +18,6 @@ import pandas as pd
 
 from river.base import Base
 
-
 class Branch(Base, abc.ABC):
     """A generic tree branch."""
 
@@ -69,6 +68,15 @@ class Branch(Base, abc.ABC):
     def n_branches(self):
         """Number of branches, including thyself."""
         return 1 + sum(child.n_branches for child in self.children)
+    
+    @property
+    def n_option_branches(self):
+        return 0 + sum(child.n_option_branches for child in self.children) # 0 unless is option node
+
+    @property
+    def n_option_nodes(self):
+        """Number of descendants, including thyself."""
+        return 0 + sum(child.n_option_nodes for child in self.children) # 0 unless is option node
 
     @property
     def n_leaves(self):
@@ -172,6 +180,15 @@ class Leaf(Base):
 
     @property
     def n_branches(self):
+        return 0
+    
+    @property
+    def n_option_branches(self):
+        return 0
+
+    @property
+    def n_option_nodes(self):
+        """Number of descendants, including thyself."""
         return 0
 
     @property
