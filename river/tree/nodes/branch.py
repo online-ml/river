@@ -41,6 +41,86 @@ class DTBranch(Branch):
         """
         pass
 
+class OptionNode(DTBranch):
+    """Wrapper node containing all parallel option branches as its children. Doesn't increment depth.
+    Options are branches too DEBUG: add reference to paper
+    
+    Parameters
+    ----------
+    num_options
+        Integer number of option leafs wrapped by this node, used to verify length of stars_per_splitter and 
+        splitters.
+    stats_per_splitter
+        A list of stats. Stats: In regression tasks the node keeps an instance of `river.stats.Var` to estimate
+        the target's statistics.
+    depth
+        The depth of the node.
+    splitters
+        A list of splitters. Splitter: The numeric attribute observer algorithm used to monitor target statistics
+        and perform split attempts.
+    leaf_model
+        A `river.base.Regressor` instance used to learn from instances and provide
+        responses.
+    kwargs
+        Other parameters passed to the learning node.
+    """
+    # def __init__(self, num_options, stats_per_splitter, depth, splitters, leaf_model, **kwargs):
+    #     assert num_options == len(stats_per_splitter) == len(splitters), \
+    #         'Length of stats_per_splitter and of splitters does not match number of leaf options in option node'
+    #     # create children (wrapped option nodes of some subclass of DTBranch)
+    #     wrapped_options = []
+    #     for i in range(num_options):
+    #         option = super().__init__(stats_per_splitter[i], depth, splitters[i], leaf_model, **kwargs)
+    #         wrapped_options.append(option)
+    #     self.wrapped_options = wrapped_options
+    def __init__(self, num_options, depth, *children, **kwargs):
+        super().__init__(*children)
+        self.num_options = num_options
+        self.depth = depth
+
+    def next(self, x):
+        return self.children
+
+    def walk(self, x, until_leaf=True) -> Iterable[Iterable[Union["Branch", "Leaf", "OptionNode"]]]:
+        """Iterate over the nodes of the path induced by x."""
+        yield self
+        try:
+            yield from self.next(x).walk(x, until_leaf)
+        except KeyError:
+            if until_leaf:
+                _, node = self.most_common_path()
+                yield node
+                yield from node.walk(x, until_leaf)
+    
+    def traverse(self, x, until_leaf=True) -> Iterable["Leaf"]:
+        """Return the leaves corresponding to the given input.
+
+        Alternate option branches are also included.
+
+        Parameters
+        ----------
+        x
+            The input instance.
+        until_leaf
+            Whether or not branch nodes can be returned in case of missing features or emerging
+            feature categories.
+        """
+
+        found_nodes = []
+        for node in self.walk(x, until_leaf=until_leaf):
+            if (
+                isinstance(node, AdaBranchRegressor)
+                and node._alternate_tree is not None
+            ):
+                if isinstance(node._alternate_tree, AdaBranchRegressor):
+                    found_nodes.append(
+                        node._alternate_tree.traverse(x, until_leaf=until_leaf)
+                    )
+                else:
+                    found_nodes.append(node._alternate_tree)
+
+        found_nodes.append(node)  # noqa
+        return found_nodes
 
 class NumericBinaryBranch(DTBranch):
     def __init__(self, stats, feature, threshold, depth, left, right, **attributes):

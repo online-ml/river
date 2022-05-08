@@ -18,7 +18,6 @@ import pandas as pd
 
 from river.base import Base
 
-
 class Branch(Base, abc.ABC):
     """A generic tree branch."""
 
