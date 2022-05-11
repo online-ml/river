@@ -89,13 +89,10 @@ class BaseForest(base.Ensemble):
     def _init_ensemble(self, features: list):
         self._set_max_features(len(features))
 
-        # Generate a different random seed per tree
-        seeds = [self._rng.randint(0, int(1e15)) for _ in range(self.n_models)]
-
         self.data = [
             self._base_member_class(
                 index_original=i,
-                model=self._new_base_model(seed=seeds[i]),
+                model=self._new_base_model(),
                 created_on=self._n_samples_seen,
                 drift_detector=self.drift_detector,
                 warning_detector=self.warning_detector,
@@ -106,7 +103,7 @@ class BaseForest(base.Ensemble):
         ]
 
     @abc.abstractmethod
-    def _new_base_model(self, seed: int):
+    def _new_base_model(self):
         raise NotImplementedError
 
     def _set_max_features(self, n_features):
@@ -170,7 +167,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed: int = None,
+        rng: random.Random = None,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -191,8 +188,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         )
 
         self.max_features = max_features
-        self.seed = seed
-        self._rng = random.Random(self.seed)
+        self.rng = rng
 
     def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
@@ -203,16 +199,13 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         else:
             depth = parent.depth + 1
 
-        # Generate a random seed for the new learning node
-        seed = self._rng.randint(0, int(1e15))
-
         if self._leaf_prediction == self._MAJORITY_CLASS:
             return RandomLeafMajorityClass(
                 initial_stats,
                 depth,
                 self.splitter,
                 self.max_features,
-                seed,
+                self.rng,
             )
         elif self._leaf_prediction == self._NAIVE_BAYES:
             return RandomLeafNaiveBayes(
@@ -220,7 +213,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
                 depth,
                 self.splitter,
                 self.max_features,
-                seed,
+                self.rng,
             )
         else:  # NAIVE BAYES ADAPTIVE (default)
             return RandomLeafNaiveBayesAdaptive(
@@ -228,13 +221,13 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
                 depth,
                 self.splitter,
                 self.max_features,
-                seed,
+                self.rng,
             )
 
     def new_instance(self):
         new_instance = self.clone()
         # Use existing rng to enforce a different model
-        new_instance._rng = self._rng
+        new_instance.rng = self.rng
         return new_instance
 
 
@@ -267,7 +260,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed: int = None,
+        rng: random.Random = None,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -289,8 +282,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         )
 
         self.max_features = max_features
-        self.seed = seed
-        self._rng = random.Random(self.seed)
+        self.rng = rng
 
     def _new_leaf(self, initial_stats=None, parent=None):  # noqa
         """Create a new learning node.
@@ -302,9 +294,6 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
             depth = parent.depth + 1
         else:
             depth = 0
-
-        # Generate a random seed for the new learning node
-        seed = self._rng.randint(0, int(1e15))
 
         leaf_model = None
         if self.leaf_prediction in {self._MODEL, self._ADAPTIVE}:
@@ -322,7 +311,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 depth,
                 self.splitter,
                 self.max_features,
-                seed,
+                self.rng,
             )
         elif self.leaf_prediction == self._MODEL:
             return RandomLeafModel(
@@ -330,7 +319,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 depth,
                 self.splitter,
                 self.max_features,
-                seed,
+                self.rng,
                 leaf_model=leaf_model,
             )
         else:  # adaptive learning node
@@ -339,7 +328,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
                 depth,
                 self.splitter,
                 self.max_features,
-                seed,
+                self.rng,
                 leaf_model=leaf_model,
             )
             if parent is not None and isinstance(parent, RandomLeafAdaptive):
@@ -351,7 +340,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
     def new_instance(self):
         new_instance = self.clone()
         # Use existing rng to enforce a different model
-        new_instance._rng = self._rng
+        new_instance.rng = self.rng
         return new_instance
 
 
@@ -460,7 +449,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 74.17%
+    Accuracy: 75.58%
 
     References
     ----------
@@ -554,7 +543,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             return {label: proba / total for label, proba in y_pred.items()}
         return y_pred
 
-    def _new_base_model(self, seed: int):
+    def _new_base_model(self):
         return BaseTreeClassifier(
             max_features=self.max_features,
             grace_period=self.grace_period,
@@ -572,7 +561,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             stop_mem_management=self.stop_mem_management,
             remove_poor_attrs=self.remove_poor_attrs,
             merit_preprune=self.merit_preprune,
-            seed=seed,
+            rng=self._rng,
         )
 
 
@@ -713,7 +702,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.994917
+    MAE: 0.984072
 
     """
 
@@ -824,7 +813,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
         return y_pred
 
-    def _new_base_model(self, seed: int):
+    def _new_base_model(self):
         return BaseTreeRegressor(
             max_features=self.max_features,
             grace_period=self.grace_period,
@@ -842,7 +831,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             stop_mem_management=self.stop_mem_management,
             remove_poor_attrs=self.remove_poor_attrs,
             merit_preprune=self.merit_preprune,
-            seed=seed,
+            rng=self._rng,
         )
 
     @property
@@ -893,7 +882,7 @@ class BaseForestMember:
         metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
     ):
         self.index_original = index_original
-        self.model = model.clone()
+        self.model = model
         self.created_on = created_on
         self.is_background_learner = is_background_learner
         self.metric = metric.clone()
@@ -934,7 +923,7 @@ class BaseForestMember:
             self.background_learner = None
         else:
             # Reset model
-            self.model = self.model.clone()
+            self.model = self.model.new_instance()
             self.metric = copy.deepcopy(self._original_metric)
             self.created_on = n_samples_seen
             self.drift_detector = self.drift_detector.clone()
