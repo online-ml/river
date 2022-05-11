@@ -41,6 +41,8 @@ def iter_arff(
     ]
 
     for r in buffer:
+        if len(r) == 0:
+            continue
         x = {
             name: typ(val) if typ else val
             for name, typ, val in zip(names, types, r.rstrip().split(","))
