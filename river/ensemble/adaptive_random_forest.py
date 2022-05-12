@@ -525,7 +525,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
         y_pred = collections.Counter()
 
-        if not self:
+        if len(self) == 0:
             self._init_ensemble(features=list(x.keys()))
             return y_pred
 
