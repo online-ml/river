@@ -886,9 +886,6 @@ class BaseForestMember:
         self.created_on = created_on
         self.is_background_learner = is_background_learner
         self.metric = metric.clone()
-        # Keep a copy of the original metric for background learners or reset
-        self._original_metric = copy.deepcopy(metric)
-
         self.background_learner = None
 
         # Drift and warning detection
@@ -924,11 +921,9 @@ class BaseForestMember:
         else:
             # Reset model
             self.model = self.model.new_instance()
-            self.metric = copy.deepcopy(self._original_metric)
+            self.metric = self.metric.clone()
             self.created_on = n_samples_seen
             self.drift_detector = self.drift_detector.clone()
-        # Make sure that the metric is not initialized, e.g. when creating background learners.
-        self.metric = self.metric.clone()
 
     def learn_one(
         self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int
