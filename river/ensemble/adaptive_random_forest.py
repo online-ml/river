@@ -68,7 +68,7 @@ class BaseForest(base.Ensemble):
     def learn_one(self, x: dict, y: base.typing.Target, **kwargs):
         self._n_samples_seen += 1
 
-        if not self:
+        if len(self) == 0:
             self._init_ensemble(list(x.keys()))
 
         for model in self:
@@ -525,11 +525,11 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
         y_pred = collections.Counter()
 
-        if not self.models:
+        if not self:
             self._init_ensemble(features=list(x.keys()))
             return y_pred
 
-        for model in self.models:
+        for model in self:
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
@@ -782,7 +782,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
 
-        if not self.models:
+        if len(self) == 0:
             self._init_ensemble(features=list(x.keys()))
             return 0.0
 
@@ -791,7 +791,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         if not self.disable_weighted_vote and self.aggregation_method != self._MEDIAN:
             weights = np.zeros(self.n_models)
             sum_weights = 0.0
-            for idx, model in enumerate(self.models):
+            for idx, model in enumerate(self):
                 y_pred[idx] = model.predict_one(x)
                 weights[idx] = model.metric.get()
                 sum_weights += weights[idx]
@@ -803,7 +803,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                 weights /= weights.sum()
                 y_pred *= weights
         else:
-            for idx, model in enumerate(self.models):
+            for idx, model in enumerate(self):
                 y_pred[idx] = model.predict_one(x)
 
         if self.aggregation_method == self._MEAN:
