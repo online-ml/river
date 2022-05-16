@@ -182,9 +182,9 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
             )
         self.average_method = average_method
         if average_method == self._AVERAGE_MIN:
-            self._generalized_average = _average_min
+            self._generalized_average = min
         elif average_method == self._AVERAGE_MAX:
-            self._generalized_average = _average_max
+            self._generalized_average = max
         elif average_method == self._AVERAGE_GEOMETRIC:
             self._generalized_average = _average_geometric
         else:  # average_method == self._AVERAGE_ARITHMETIC
@@ -297,9 +297,9 @@ class AdjustedMutualInfo(metrics.MultiClassMetric):
             )
         self.average_method = average_method
         if average_method == self._AVERAGE_MIN:
-            self._generalized_average = _average_min
+            self._generalized_average = min
         elif average_method == self._AVERAGE_MAX:
-            self._generalized_average = _average_max
+            self._generalized_average = max
         elif average_method == self._AVERAGE_GEOMETRIC:
             self._generalized_average = _average_geometric
         else:  # average_method == self._AVERAGE_ARITHMETIC
@@ -354,14 +354,6 @@ def _entropy(cm, y_true):
         if i in values and values[i] > 0:
             entropy -= (values[i] / n_samples) * (np.log(values[i]) - np.log(n_samples))
     return entropy
-
-
-def _average_min(u, v):
-    return min(u, v)
-
-
-def _average_max(u, v):
-    return max(u, v)
 
 
 def _average_geometric(u, v):

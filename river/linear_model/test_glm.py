@@ -257,7 +257,7 @@ def test_lin_reg_sklearn_learn_many_coherence(river_params, sklearn_params):
 log_reg_tests = {
     "Vanilla": (
         {"optimizer": optim.SGD(1e-2)},
-        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0, "loss": "log"},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 0, "loss": "log_loss"},
     ),
     "Hinge": (
         {"optimizer": optim.SGD(1e-2), "loss": optim.losses.Hinge()},
@@ -269,7 +269,7 @@ log_reg_tests = {
             "learning_rate": "constant",
             "eta0": 1e-2,
             "alpha": 0,
-            "loss": "log",
+            "loss": "log_loss",
             "fit_intercept": False,
         },
     ),
@@ -282,7 +282,7 @@ log_reg_tests = {
             "learning_rate": "constant",
             "eta0": 1e-2,
             "alpha": 1e-3,
-            "loss": "log",
+            "loss": "log_loss",
         },
     ),
     "Inverse-scaling": (
@@ -290,7 +290,7 @@ log_reg_tests = {
             "optimizer": optim.SGD(optim.schedulers.InverseScaling(1e-2)),
             "intercept_lr": optim.schedulers.InverseScaling(1e-2),
         },
-        {"eta0": 1e-2, "alpha": 0, "learning_rate": "invscaling", "loss": "log"},
+        {"eta0": 1e-2, "alpha": 0, "learning_rate": "invscaling", "loss": "log_loss"},
     ),
     "Optimal": (
         {
@@ -456,7 +456,7 @@ def test_log_reg_sklearn_l1_non_regression():
             "eta0": 1e-2,
             "alpha": 1e-3,
             "penalty": "l1",
-            "loss": "log",
+            "loss": "log_loss",
         }
     )
 
