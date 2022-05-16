@@ -197,20 +197,14 @@ lin_reg_tests = {
         },
     ),
     "L2 regu": (
-        {
-            "optimizer": optim.SGD(1e-2),
-            "loss": ScikitLearnSquaredLoss(),
-            "l2": 1e-3,
-        },
+        {"optimizer": optim.SGD(1e-2), "loss": ScikitLearnSquaredLoss(), "l2": 1e-3,},
         {"learning_rate": "constant", "eta0": 1e-2, "alpha": 1e-3},
     ),
 }
 
 
 @pytest.mark.parametrize(
-    "river_params, sklearn_params",
-    lin_reg_tests.values(),
-    ids=lin_reg_tests.keys(),
+    "river_params, sklearn_params", lin_reg_tests.values(), ids=lin_reg_tests.keys(),
 )
 def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
@@ -231,9 +225,7 @@ def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
 
 
 @pytest.mark.parametrize(
-    "river_params, sklearn_params",
-    lin_reg_tests.values(),
-    ids=lin_reg_tests.keys(),
+    "river_params, sklearn_params", lin_reg_tests.values(), ids=lin_reg_tests.keys(),
 )
 def test_lin_reg_sklearn_learn_many_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results
@@ -274,16 +266,8 @@ log_reg_tests = {
         },
     ),
     "L2 regu": (
-        {
-            "optimizer": optim.SGD(1e-2),
-            "l2": 1e-3,
-        },
-        {
-            "learning_rate": "constant",
-            "eta0": 1e-2,
-            "alpha": 1e-3,
-            "loss": "log_loss",
-        },
+        {"optimizer": optim.SGD(1e-2), "l2": 1e-3,},
+        {"learning_rate": "constant", "eta0": 1e-2, "alpha": 1e-3, "loss": "log_loss",},
     ),
     "Inverse-scaling": (
         {
@@ -318,9 +302,7 @@ log_reg_tests = {
 
 
 @pytest.mark.parametrize(
-    "river_params, sklearn_params",
-    log_reg_tests.values(),
-    ids=log_reg_tests.keys(),
+    "river_params, sklearn_params", log_reg_tests.values(), ids=log_reg_tests.keys(),
 )
 def test_log_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
@@ -341,19 +323,8 @@ def test_log_reg_sklearn_coherence(river_params, sklearn_params):
 
 
 perceptron_tests = {
-    "Vanilla": (
-        {},
-        {},
-    ),
-    "L2 regu": (
-        {
-            "l2": 1e-3,
-        },
-        {
-            "alpha": 1e-3,
-            "penalty": "l2",
-        },
-    ),
+    "Vanilla": ({}, {},),
+    "L2 regu": ({"l2": 1e-3,}, {"alpha": 1e-3, "penalty": "l2",},),
 }
 
 
@@ -384,11 +355,7 @@ def test_lin_reg_sklearn_l1_non_regression():
     """Checks that the river L1 implementation results are no worse than sklearn L1."""
 
     X, y, true_coeffs = make_regression(
-        n_samples=1000,
-        n_features=20,
-        n_informative=4,
-        coef=True,
-        random_state=273,
+        n_samples=1000, n_features=20, n_informative=4, coef=True, random_state=273,
     )
     X = pd.DataFrame(X)
     y = pd.Series(y)
@@ -396,20 +363,11 @@ def test_lin_reg_sklearn_l1_non_regression():
     ss = preprocessing.StandardScaler()
 
     rv = lm.LinearRegression(
-        **{
-            "optimizer": optim.SGD(1e-2),
-            "loss": ScikitLearnSquaredLoss(),
-            "l1": 1e-1,
-        }
+        **{"optimizer": optim.SGD(1e-2), "loss": ScikitLearnSquaredLoss(), "l1": 1e-1,}
     )
 
     sk = sklm.SGDRegressor(
-        **{
-            "learning_rate": "constant",
-            "eta0": 1e-2,
-            "alpha": 1e-1,
-            "penalty": "l1",
-        }
+        **{"learning_rate": "constant", "eta0": 1e-2, "alpha": 1e-1, "penalty": "l1",}
     )
 
     for xi, yi in stream.iter_pandas(X, y):
@@ -432,23 +390,14 @@ def test_log_reg_sklearn_l1_non_regression():
     """Checks that the river L1 implementation results are no worse than sklearn L1."""
 
     X, y, = make_classification(
-        n_samples=1000,
-        n_features=20,
-        n_informative=4,
-        n_classes=2,
-        random_state=273,
+        n_samples=1000, n_features=20, n_informative=4, n_classes=2, random_state=273,
     )
     X = pd.DataFrame(X)
     y = pd.Series(y)
 
     ss = preprocessing.StandardScaler()
 
-    rv = lm.LogisticRegression(
-        **{
-            "optimizer": optim.SGD(1e-2),
-            "l1": 1e-3,
-        }
-    )
+    rv = lm.LogisticRegression(**{"optimizer": optim.SGD(1e-2), "l1": 1e-3,})
 
     sk = sklm.SGDClassifier(
         **{
