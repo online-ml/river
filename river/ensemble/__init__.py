@@ -1,10 +1,9 @@
 """Ensemble learning.
 
-Broadly speaking, there are two kinds of ensemble approaches:
-
-1. Those that copy a model multiple and aggregate the predictions of said copies. This encompasses
-    bagging as well as boosting.
-2. Those that take as input an arbitrary list of models.
+Broadly speaking, there are two kinds of ensemble approaches. There are those that copy a single
+model several times and aggregate the predictions of said copies. This includes bagging as well as
+boosting. Then there are those that are composed of an arbitrary list of models, and can therefore
+aggregate predictions from different kinds of models.
 
 """
 from .adaptive_random_forest import (
