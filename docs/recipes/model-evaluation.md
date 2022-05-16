@@ -1,3 +1,0 @@
-# Model evaluation
-
-To do.

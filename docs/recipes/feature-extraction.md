@@ -1,3 +1,0 @@
-# Feature extraction
-
-To do.

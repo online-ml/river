@@ -1,3 +1,0 @@
-# Hyperparameter tuning
-
-To do.
