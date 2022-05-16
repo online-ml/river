@@ -1,5 +1,5 @@
 # Documentation
-docs/getting-started/getting-started.md
+docs/introduction/getting-started/*.md
 docs/getting-started/getting-started_files/
 docs/user-guide/*.md
 docs/user-guide/*_files/
