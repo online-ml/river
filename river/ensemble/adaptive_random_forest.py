@@ -436,20 +436,19 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
 
-    >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
-    ...                                    width=40).take(1000)
+    >>> dataset = datasets.ImageSegments()
 
     >>> model = ensemble.AdaptiveRandomForestClassifier(seed=8)
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 75.58%
+    Accuracy: 82.94%
 
     References
     ----------
