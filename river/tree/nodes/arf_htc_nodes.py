@@ -123,4 +123,3 @@ class RandomLeafNaiveBayesAdaptive(BaseRandomLeaf, LeafNaiveBayesAdaptive):
 
     def disable_attribute(self, att_index):
         pass
-
