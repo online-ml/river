@@ -40,7 +40,7 @@
 </br>
 
 <p align="center">
-  River is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. It is the result of a merger between <a href="https://github.com/MaxHalford/creme">creme</a> and <a href="https://github.com/scikit-multiflow/scikit-multiflow">scikit-multiflow</a>. River's ambition is to be the go-to library for doing machine learning on streaming data.
+  River is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. It aims to be the most user-friendly library for doing machine learning on streaming data. River is the result of a merger between <a href="https://github.com/MaxHalford/creme">creme</a> and <a href="https://github.com/scikit-multiflow/scikit-multiflow">scikit-multiflow</a>.
 </p>
 
 ## ⚡️ Quickstart
@@ -95,9 +95,11 @@ Accuracy: 89.20%
 
 ```
 
+Of course, this is just a contrived example. We welcome you to check the [introduction](https://riverml.xyz/dev/introduction/installation/) section of the documentation for a more thorough tutorial.
+
 ## 🛠 Installation
 
-River is intended to work with **Python 3.6 or above**. Installation can be done with `pip`:
+River is intended to work with **Python 3.7 or above**. Installation can be done with `pip`:
 
 ```sh
 pip install river
@@ -117,27 +119,12 @@ Or, through SSH:
 pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 ```
 
-## 🧠 Philosophy
-
-Machine learning is often done in a batch setting, whereby a model is fitted to a dataset in one go. This results in a static model which has to be retrained in order to learn from new data. In many cases, this isn't elegant nor efficient, and usually incurs [a fair amount of technical debt](https://research.google/pubs/pub43146/). Indeed, if you're using a batch model, then you need to think about maintaining a training set, monitoring real-time performance, model retraining, etc.
-
-With River, we encourage a different approach, which is to continuously learn a stream of data. This means that the model process one observation at a time, and can therefore be updated on the fly. This allows to learn from massive datasets that don't fit in main memory. Online machine learning also integrates nicely in cases where new data is constantly arriving. It shines in many use cases, such as time series forecasting, spam filtering, recommender systems, CTR prediction, and IoT applications. If you're bored with retraining models and want to instead build dynamic models, then online machine learning (and therefore River!) might be what you're looking for.
-
-Here are some benefits of using River (and online machine learning in general):
-
-- **Incremental**: models can update themselves in real-time.
-- **Adaptive**: models can adapt to [concept drift](https://www.wikiwand.com/en/Concept_drift).
-- **Production-ready**: working with data streams makes it simple to replicate production scenarios during model development.
-- **Efficient**: models don't have to be retrained and require little compute power, which [lowers their carbon footprint](https://arxiv.org/abs/1907.10597)
-- **Fast**: when the goal is to learn and predict with a single instance at a time, then River is an order of magnitude faster than PyTorch, Tensorflow, and scikit-learn.
-
 ## 🔥 Features
 
 - Linear models with a wide array of optimizers
 - Nearest neighbors, decision trees, naïve Bayes
-- [Progressive model validation](https://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf)
-- Model pipelines as a first-class citizen
 - Anomaly detection
+- Drift detection
 - Recommender systems
 - Time series forecasting
 - Imbalanced learning
@@ -145,43 +132,26 @@ Here are some benefits of using River (and online machine learning in general):
 - Feature extraction and selection
 - Online statistics and metrics
 - Built-in datasets
-- And [much more](https://riverml.xyz/latest/api/overview/)
+- Progressive model validation
+- Model pipelines as a first-class citizen
+- Check out [the API](https://riverml.xyz/latest/api/overview/) for a comprehensive overview
 
 ## 🔗 Useful links
 
 - [Documentation](https://riverml.xyz)
-- [Benchmarks](https://github.com/online-ml/river/tree/main/benchmarks)
-- [Issue tracker](https://github.com/online-ml/river/issues)
 - [Package releases](https://pypi.org/project/river/#history)
-
-## 👁️ Media
-
-- PyData Amsterdam 2019 presentation ([slides](https://maxhalford.github.io/slides/creme-pydata), [video](https://www.youtube.com/watch?v=P3M6dt7bY9U&list=PLGVZCDnMOq0q7_6SdrC2wRtdkojGBTAht&index=11))
-- [Toulouse Data Science Meetup presentation](https://maxhalford.github.io/slides/creme-tds)
-- [Machine learning for streaming data with creme](https://towardsdatascience.com/machine-learning-for-streaming-data-with-creme-dacf5fb469df)
-- [Hong Kong Data Science Meetup presentation](https://maxhalford.github.io/slides/hkml2020.pdf)
+- [awesome-online-machine-learning](https://github.com/online-ml/awesome-online-machine-learning)
+- [2022 presentation at GAIA](https://www.youtube.com/watch?v=nzFTmJnIakk&list=PLIU25-FciwNaz5PqWPiHmPCMOFYoEsJ8c&index=5)
 
 ## 👍 Contributing
 
 Feel free to contribute in any way you like, we're always open to new ideas and approaches.
 
-There are three ways for users to get involved:
+- [Open a discussion](https://github.com/online-ml/river/discussions/new) if you have any question or enquiry whatsoever. It's more useful to ask your question in public rather than sending us a private email. It's also encouraged to open a discussion before contributing, so that everyone is aligned and unnecessary work is avoided.
+- Feel welcome to [open an issue](https://github.com/online-ml/river/issues/new/choose) if you think you've spotted a bug or a performance issue.
+- Our [roadmap](https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1) is public. Feel free to work on anything that catches your eye, or to make suggestions. Simpler tasks are listed [here](https://www.notion.so/maxhalford/d1e86fcdf21e4deda16eedab2b3361fb?v=e74f58d5a1104e0ab1b29ba0761a7610).
 
-- [Issue tracker](https://github.com/online-ml/river/issues): this place is meant to report bugs, request for minor features, or small improvements. Issues should be short-lived and solved as fast as possible.
-- [Discussions](https://github.com/online-ml/river/discussions): you can ask for new features, submit your questions and get help, propose new ideas, or even show the community what you are achieving with River! If you have a new technique or want to port a new functionality to River, this is the place to discuss.
-- [Roadmap](https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1): you can check what we are doing, what are the next planned milestones for River, and look for cool ideas that still need someone to make them become a reality!
-
-Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/main/CONTRIBUTING.md) if you want to bring modifications to the code base. You can view the list of people who have contributed [here](https://github.com/online-ml/river/graphs/contributors).
-
-## ❤️ They've used us
-
-These are companies that we know have been using River, be it in production or for prototyping.
-
-<p align="center">
-  <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vQbCUQkTU74dBf411r4nDl4udmqOEbLqzRtokUC-N7JDJUA7BGTfnMGmiMNqbcSuOaWAmazp1rFGwDC/pub?w=1194&h=567" alt="companies">
-</p>
-
-Feel welcome to get in touch if you want us to add your company logo!
+Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/main/CONTRIBUTING.md) if you want to bring modifications to the code base.
 
 ## 🤝 Affiliations
 
@@ -199,19 +169,13 @@ Feel welcome to get in touch if you want us to add your company logo!
 
 ## 💬 Citation
 
-If `river` has been useful for your research and you would like to cite it in an scientific publication, please refer to this [paper](https://arxiv.org/abs/2012.04740):
+If River has been useful to you and you would like to cite it in an scientific publication, please refer to the [paper](https://www.jmlr.org/papers/volume22/20-1380/20-1380.pdf) published at JMLR:
 
 ```bibtex
-@misc{2020river,
-      title={River: machine learning for streaming data in Python},
-      author={Jacob Montiel and Max Halford and Saulo Martiello Mastelini
-              and Geoffrey Bolmier and Raphael Sourty and Robin Vaysse
-              and Adil Zouitine and Heitor Murilo Gomes and Jesse Read
-              and Talel Abdessalem and Albert Bifet},
-      year={2020},
-      eprint={2012.04740},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@article{montiel2021river,
+  title={River: machine learning for streaming data in Python},
+  author={Montiel, Jacob and Halford, Max and Mastelini, Saulo Martiello and Bolmier, Geoffrey and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil and Gomes, Heitor Murilo and Read, Jesse and Abdessalem, Talel and others},
+  year={2021}
 }
 ```
 
