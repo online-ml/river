@@ -94,6 +94,9 @@ class RandomLeafNaiveBayes(BaseRandomLeaf, LeafNaiveBayes):
     def __init__(self, stats, depth, splitter, max_features, rng, **kwargs):
         super().__init__(stats, depth, splitter, max_features, rng, **kwargs)
 
+    def disable_attribute(self, att_index):
+        pass
+
 
 class RandomLeafNaiveBayesAdaptive(BaseRandomLeaf, LeafNaiveBayesAdaptive):
     """ARF Naive Bayes Adaptive learning node class.
@@ -117,3 +120,7 @@ class RandomLeafNaiveBayesAdaptive(BaseRandomLeaf, LeafNaiveBayesAdaptive):
 
     def __init__(self, stats, depth, splitter, max_features, rng, **kwargs):
         super().__init__(stats, depth, splitter, max_features, rng, **kwargs)
+
+    def disable_attribute(self, att_index):
+        pass
+
