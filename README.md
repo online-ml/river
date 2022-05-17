@@ -136,6 +136,20 @@ pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 - Model pipelines as a first-class citizen
 - Check out [the API](https://riverml.xyz/latest/api/overview/) for a comprehensive overview
 
+## 🤔 Should I be using River?
+
+You should ask yourself if you need online machine learning. The answer is likely no. Most of the time batch learning does the job just fine. An online approach might fit the bill if:
+
+- You want a model that can learn from new data without having to revisit past data.
+- You want a model which is robust to [concept drift](https://www.wikiwand.com/en/Concept_drift).
+- You want to develop your model in a way that is closer to what occurs in a production context, which is usually event-based.
+
+Some specificities of River are that:
+
+- It focuses on clarity and user experience, more so than performance.
+- It's very fast at processing one sample at a time. Try it, you'll see.
+- It plays nicely with the rest of Python ecosystem.
+
 ## 🔗 Useful links
 
 - [Documentation](https://riverml.xyz)
