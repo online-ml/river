@@ -119,7 +119,7 @@ Or, through SSH:
 pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 ```
 
-## 🔥 Features
+## 🔮 Features
 
 - Linear models with a wide array of optimizers
 - Nearest neighbors, decision trees, naïve Bayes
