@@ -1,8 +1,8 @@
 # Documentation
-docs/getting-started/getting-started.md
-docs/getting-started/getting-started_files/
-docs/user-guide/*.md
-docs/user-guide/*_files/
+docs/introduction/getting-started/*.md
+docs/introduction/*_files/
+docs/recipes/*.md
+docs/recipes/*_files/
 docs/examples/*.md
 docs/examples/*_files/
 docs/api/
