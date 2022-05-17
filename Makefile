@@ -10,9 +10,9 @@ execute-notebooks:
 	jupyter nbconvert --execute --to notebook --inplace docs/*/*.ipynb --ExecutePreprocessor.timeout=-1
 
 render-notebooks:
-	jupyter nbconvert --to markdown docs/getting-started/getting-started.ipynb
-	jupyter nbconvert --to markdown docs/user-guide/*.ipynb --output-dir docs/user-guide
-	jupyter nbconvert --to markdown docs/examples/*.ipynb --output-dir docs/examples
+	jupyter nbconvert --to markdown docs/introduction/*/*.ipynb
+	jupyter nbconvert --to markdown docs/recipes/**.ipynb
+	jupyter nbconvert --to markdown docs/examples/**.ipynb
 
 doc: render-notebooks
 	yamp river --out docs/api

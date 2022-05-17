@@ -17,16 +17,16 @@ def to_html(obj) -> ET:
 
 def estimator_to_html(estimator) -> ET:
 
-    details = ET.Element("details", attrib={"class": "component estimator"})
+    details = ET.Element("details", attrib={"class": "river-component river-estimator"})
 
-    summary = ET.Element("summary")
+    summary = ET.Element("summary", attrib={"class": "river-summary"})
     details.append(summary)
 
-    pre = ET.Element("pre", attrib={"class": "estimator-name"})
+    pre = ET.Element("pre", attrib={"class": "river-estimator-name"})
     pre.text = str(estimator)
     summary.append(pre)
 
-    code = ET.Element("code", attrib={"class": "estimator-params"})
+    code = ET.Element("code", attrib={"class": "river-estimator-params"})
     if isinstance(estimator, compose.FuncTransformer):
         code.text = f"\n{inspect.getsource(estimator.func)}\n"
     else:
@@ -38,7 +38,7 @@ def estimator_to_html(estimator) -> ET:
 
 def pipeline_to_html(pipeline) -> ET:
 
-    div = ET.Element("div", attrib={"class": "component pipeline"})
+    div = ET.Element("div", attrib={"class": "river-component river-pipeline"})
 
     for step in pipeline.steps.values():
         div.append(to_html(step))
@@ -48,7 +48,7 @@ def pipeline_to_html(pipeline) -> ET:
 
 def union_to_html(union) -> ET:
 
-    div = ET.Element("div", attrib={"class": "component union"})
+    div = ET.Element("div", attrib={"class": "river-component river-union"})
 
     for transformer in union.transformers.values():
         div.append(to_html(transformer))
@@ -58,19 +58,19 @@ def union_to_html(union) -> ET:
 
 def wrapper_to_html(wrapper) -> ET:
 
-    div = ET.Element("div", attrib={"class": "component wrapper"})
+    div = ET.Element("div", attrib={"class": "river-component river-wrapper"})
 
-    details = ET.Element("details")
+    details = ET.Element("details", attrib={"class": "river-details"})
     div.append(details)
 
-    summary = ET.Element("summary")
+    summary = ET.Element("summary", attrib={"class": "river-summary"})
     details.append(summary)
 
-    pre = ET.Element("pre", attrib={"class": "estimator-name"})
+    pre = ET.Element("pre", attrib={"class": "river-estimator-name"})
     pre.text = str(wrapper.__class__.__name__)
     summary.append(pre)
 
-    code = ET.Element("code", attrib={"class": "estimator-params"})
+    code = ET.Element("code", attrib={"class": "river-estimator-params"})
     code.text = f"\n{pprint.pformat(wrapper.__dict__)}\n\n"
     details.append(code)
 
@@ -80,20 +80,20 @@ def wrapper_to_html(wrapper) -> ET:
 
 
 CSS = """
-.estimator {
+.river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
 }
 
-.pipeline {
+.river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
 }
 
-.union {
+.river-union {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -103,7 +103,7 @@ CSS = """
     background: white
 }
 
-.wrapper {
+.river-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -113,45 +113,45 @@ CSS = """
     background: white;
 }
 
-.wrapper > .estimator {
+.river-wrapper > .river-estimator {
     margin-top: 1em;
 }
 
 /* Vertical spacing between steps */
 
-.component + .component {
+.river-component + .river-component {
     margin-top: 2em;
 }
 
-.union > .estimator {
+.river-union > .river-estimator {
     margin-top: 0;
 }
 
-.union > .pipeline {
+.river-union > .pipeline {
     margin-top: 0;
 }
 
 /* Spacing within a union of estimators */
 
-.union > .component + .component {
+.river-union > .river-component + .river-component {
     margin-left: 1em;
 }
 
 /* Typography */
 
-.estimator-params {
+.river-estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
 }
 
-.estimator > code,
-.wrapper > details > code {
+.river-estimator > .river-estimator-params,
+.river-wrapper > .river-details > river-estimator-params {
     background-color: white !important;
 }
 
-.estimator-name {
+.river-estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
@@ -159,13 +159,13 @@ CSS = """
 
 /* Toggle */
 
-summary {
+.river-summary {
     display: flex;
     align-items:center;
     cursor: pointer;
 }
 
-summary > div {
+.river-summary > div {
     width: 100%;
 }
 """
