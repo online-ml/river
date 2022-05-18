@@ -44,6 +44,10 @@
 - Introduced `neighbors.NearestNeighbors` for searching nearest neighbors.
 - Vastly refactored and simplified the nearest neighbors logic.
 
+## proba
+
+- Added `proba.Rolling` to measure a probability distribution over a window.
+
 ## rules
 
 - AMRules's `debug_one` explicitly indicates the prediction strategy used by each rule.

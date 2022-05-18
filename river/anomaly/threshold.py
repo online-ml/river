@@ -14,8 +14,8 @@ class Thresholder(AnomalyDetector, Wrapper):
     def _wrapped_model(self):
         return self.anomaly_detector
 
-    def learn_one(self, x):
-        self.anomaly_detector.learn_one(x)
+    def learn_one(self, *args):
+        self.anomaly_detector.learn_one(*args)
         return self
 
 
@@ -84,8 +84,8 @@ class ConstantThresholder(Thresholder):
 
         yield {"anomaly_detector": HalfSpaceTrees(), "threshold": 0.5}
 
-    def score_one(self, x):
-        return self.anomaly_detector.score_one(x) > self.threshold
+    def score_one(self, *args):
+        return self.anomaly_detector.score_one(*args) > self.threshold
 
 
 class QuantileThresholder(Thresholder):
@@ -157,7 +157,7 @@ class QuantileThresholder(Thresholder):
     def q(self):
         return self.quantile.q
 
-    def score_one(self, x):
-        score = self.anomaly_detector.score_one(x)
+    def score_one(self, *args):
+        score = self.anomaly_detector.score_one(*args)
         self.quantile.update(score)
         return score > self.quantile.get()
