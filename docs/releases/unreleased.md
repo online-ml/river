@@ -49,7 +49,12 @@
 - AMRules's `debug_one` explicitly indicates the prediction strategy used by each rule.
 - Fix bug in `debug_one` (AMRules) where prediction explanations were incorrectly displayed when `ordered_rule_set=True`.
 
+## time_series
+
+- Added an `iter_evaluate` function to trace the evaluation at each sample in a dataset.
+
 ## tree
+
 - Fix bug in Naive Bayes-based leaf prediction.
 - Remove unneeded numpy usage in `HoeffdingAdaptiveTree{Classifier,Regressor}`.
 
