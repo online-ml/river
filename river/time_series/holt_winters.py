@@ -161,6 +161,10 @@ class HoltWinters(time_series.base.Forecaster):
         seasonality=0,
         multiplicative=False,
     ):
+
+        if seasonality and not gamma is None:
+            raise ValueError("gamma must be set if seasonality is set")
+
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
@@ -176,7 +180,7 @@ class HoltWinters(time_series.base.Forecaster):
                 if multiplicative
                 else AdditiveSeason(gamma, seasonality)
             )
-            if (gamma or seasonality)
+            if seasonality
             else None
         )
         self._first_values = []
@@ -198,8 +202,10 @@ class HoltWinters(time_series.base.Forecaster):
         # The components can be initialized now that enough values have been observed
         self.level.append(statistics.mean(self._first_values))
         diffs = [b - a for a, b in zip(self._first_values[:-1], self._first_values[1:])]
-        self.trend.append(statistics.mean(diffs))
-        self.season.extend([y / self.level[-1] for y in self._first_values])
+        if self.trend:
+            self.trend.append(statistics.mean(diffs))
+        if self.season:
+            self.season.extend([y / self.level[-1] for y in self._first_values])
 
         self._initialized = True
 
@@ -213,7 +219,7 @@ class HoltWinters(time_series.base.Forecaster):
                 (
                     self.season[-self.seasonality + h % self.seasonality]
                     if self.seasonality
-                    else 0
+                    else (1 if self.multiplicative else 0)
                 ),
             )
             for h in range(horizon)
