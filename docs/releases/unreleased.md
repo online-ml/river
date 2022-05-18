@@ -2,6 +2,10 @@
 
 - Moved all metrics in `metrics.cluster` except `metrics.Silhouette` to [river-extra](https://github.com/online-ml/river-extra).
 
+## dataset
+
+- Added the `datasets.WaterFlow` dataset.
+
 ## dist
 
 - A `revert` method has been added to `stats.Gaussian`.
