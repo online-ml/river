@@ -22,7 +22,12 @@ class Thresholder(AnomalyDetector, Wrapper):
 class ConstantThresholder(Thresholder):
     """Constant thresholder.
 
-    Each anomaly score is thresholded into a 0 or a 1.
+    A thresholder is a wrapper around an existing anomaly detector. It converts the latter's
+    anomaly score into a boolean. This allows turning the anomaly detector into a binary
+    classifier.
+
+    This thresholder converts the score into a `True` if the score is above a specified threshold,
+    and else converts the score into a `False`.
 
     Parameters
     ----------
@@ -80,13 +85,18 @@ class ConstantThresholder(Thresholder):
         yield {"anomaly_detector": HalfSpaceTrees(), "threshold": 0.5}
 
     def score_one(self, x):
-        return 1 if self.anomaly_detector.score_one(x) > self.threshold else 0
+        return self.anomaly_detector.score_one(x) > self.threshold
 
 
 class QuantileThresholder(Thresholder):
     """Quantile thresholder.
 
-    Each anomaly score is thresholded according to the value of the chosen quantile.
+    A thresholder is a wrapper around an existing anomaly detector. It converts the latter's
+    anomaly score into a boolean. This allows turning the anomaly detector into a binary
+    classifier.
+
+    This thresholder converts the score into a `True` if the score is above a specified quantile,
+    and else converts the score into a `False`.
 
     Parameters
     ----------
@@ -150,4 +160,4 @@ class QuantileThresholder(Thresholder):
     def score_one(self, x):
         score = self.anomaly_detector.score_one(x)
         self.quantile.update(score)
-        return 1 if score > self.quantile.get() else 0
+        return score > self.quantile.get()
