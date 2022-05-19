@@ -6,26 +6,20 @@ should have a low score, whereas anomalous observations should have a high score
 scores is relative to each estimator.
 
 Anomaly detectors are usually unsupervised, in that they analyze the distribution of the features
-they are shown. But River also has a notion of supervised anomaly detectors. This analyze the
-distribution of a target variable, and optionally the distribution of the features as well. These
-anomaly detectors are univariate. They are useful for detecting labelling anomalies, which can be
-detrimental if they learned by a model.
-
-An unsupervised anomaly detector can be combined with a thresholding method to convert its anomaly
-scores into booleans, thus turning it into a binary classifier of sorts.
+they are shown. But River also has a notion of supervised anomaly detectors. These analyze the
+distribution of a target variable, and optionally include the distribution of the features as well. They are useful for detecting labelling anomalies, which can be detrimental if they learned by a
+model.
 
 """
 from . import base
 from .hst import HalfSpaceTrees
 from .svm import OneClassSVM
-from .threshold import ConstantThresholder, QuantileThresholder
 from .gaussian import Gaussian
 
 __all__ = [
     "base",
-    "ConstantThresholder",
+    "AnomalyDetector",
     "HalfSpaceTrees",
-    "QuantileThresholder",
     "OneClassSVM",
     "Gaussian",
 ]
