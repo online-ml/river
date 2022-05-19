@@ -2,14 +2,12 @@ import collections
 import copy
 import typing
 
-from river import optim, stats, utils
-
-from .base import Ranker
+from river import optim, stats, utils, reco
 
 __all__ = ["Baseline"]
 
 
-class Baseline(Ranker):
+class Baseline(reco.base.Ranker):
     """Baseline for recommender systems.
 
     A first-order approximation of the bias involved in target. The model equation is defined as:
@@ -44,9 +42,9 @@ class Baseline(Ranker):
         The user bias weights.
     i_biases : collections.defaultdict
         The item bias weights.
-    u_optimizer : optim.Optimizer
+    u_optimizer : optim.base.Optimizer
         The sequential optimizer used for updating the user bias weights.
-    i_optimizer : optim.Optimizer
+    i_optimizer : optim.base.Optimizer
         The sequential optimizer used for updating the item bias weights.
 
     Examples
@@ -83,7 +81,7 @@ class Baseline(Ranker):
 
     def __init__(
         self,
-        optimizer: optim.Optimizer = None,
+        optimizer: optim.base.Optimizer = None,
         loss: optim.losses.Loss = None,
         l2=0.0,
         initializer: optim.initializers.Initializer = None,

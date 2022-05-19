@@ -13,7 +13,7 @@ The `utils.expand_param_grid` function can be used for this purpose.
 
 """
 
-from .base import ModelSelector
+from . import base
 from .epsilon_greedy import EpsilonGreedyRegressor
 from .greedy import GreedyRegressor
 from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
@@ -22,7 +22,6 @@ from .ucb import UCBRegressor
 __all__ = [
     "EpsilonGreedyRegressor",
     "GreedyRegressor",
-    "ModelSelector",
     "SuccessiveHalvingClassifier",
     "SuccessiveHalvingRegressor",
     "UCBRegressor",

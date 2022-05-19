@@ -1,10 +1,8 @@
 from copy import deepcopy
 from typing import List
 
-from river.base import Regressor
-from river.metrics import MAE, RegressionMetric
-
-from .base import ModelSelectionRegressor
+from river import base, metrics
+from river.model_selection.base import ModelSelectionRegressor
 
 
 class GreedyRegressor(ModelSelectionRegressor):
@@ -50,7 +48,9 @@ class GreedyRegressor(ModelSelectionRegressor):
 
     """
 
-    def __init__(self, models: List[Regressor], metric: RegressionMetric = None):
+    def __init__(
+        self, models: List[base.Regressor], metric: metrics.base.RegressionMetric = None
+    ):
         if metric is None:
             metric = MAE()
         super().__init__(models, metric)

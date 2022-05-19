@@ -2,7 +2,7 @@ import operator
 import statistics
 from collections import deque
 
-from .base import Forecaster
+from river import time_series
 
 __all__ = ["HoltWinters"]
 
@@ -70,7 +70,7 @@ class MultiplicativeSeason(Component):
         )
 
 
-class HoltWinters(Forecaster):
+class HoltWinters(time_series.base.Forecaster):
     r"""Holt-Winters forecaster.
 
     This is a standard implementation of the Holt-Winters forecasting method. Certain

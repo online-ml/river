@@ -5,14 +5,12 @@ import typing
 
 import numpy as np
 
-from river import optim, utils
-
-from .base import Ranker
+from river import optim, utils, reco
 
 __all__ = ["FunkMF"]
 
 
-class FunkMF(Ranker):
+class FunkMF(reco.base.Ranker):
     """Funk Matrix Factorization for recommender systems.
 
     The model equation is defined as:
@@ -47,9 +45,9 @@ class FunkMF(Ranker):
         The user latent vectors randomly initialized.
     i_latents : collections.defaultdict
         The item latent vectors randomly initialized.
-    u_optimizer : optim.Optimizer
+    u_optimizer : optim.base.Optimizer
         The sequential optimizer used for updating the user latent weights.
-    i_optimizer : optim.Optimizer
+    i_optimizer : optim.base.Optimizer
         The sequential optimizer used for updating the item latent weights.
 
     Examples
@@ -92,7 +90,7 @@ class FunkMF(Ranker):
     def __init__(
         self,
         n_factors=10,
-        optimizer: optim.Optimizer = None,
+        optimizer: optim.base.Optimizer = None,
         loss: optim.losses.Loss = None,
         l2=0.0,
         initializer: optim.initializers.Initializer = None,

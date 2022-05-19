@@ -2,10 +2,10 @@ import math
 
 from river import utils
 
-from . import base
+from river import metrics
 
 
-class Silhouette(base.ClusteringMetric):
+class Silhouette(metrics.base.ClusteringMetric):
     """
     Silhouette coefficient [^1], roughly speaking, is the ratio between cohesion and the average distances
     from the points to their second-closest centroid. It rewards the clustering algorithm where

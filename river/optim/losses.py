@@ -11,6 +11,7 @@ import numpy as np
 from scipy import special
 
 from river import base, utils
+from river.optim.base import Loss
 
 __all__ = [
     "Absolute",
@@ -32,71 +33,6 @@ __all__ = [
 
 def clamp_proba(p):
     return max(min(p, 1 - 1e-15), 1e-15)
-
-
-class Loss(base.Base, abc.ABC):
-    """Base class for all loss functions."""
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({vars(self)})"
-
-    @abc.abstractmethod
-    def __call__(self, y_true, y_pred):
-        """Returns the loss.
-
-        Parameters
-        ----------
-        y_true
-            Ground truth(s).
-        y_pred
-            Prediction(s).
-
-        Returns
-        -------
-        The loss(es).
-
-        """
-
-    @abc.abstractmethod
-    def gradient(self, y_true, y_pred):
-        """Return the gradient with respect to y_pred.
-
-        Parameters
-        ----------
-        y_true
-            Ground truth(s).
-        y_pred
-            Prediction(s).
-
-        Returns
-        -------
-        The gradient(s).
-
-        """
-
-    @abc.abstractmethod
-    def mean_func(self, y_pred):
-        """Mean function.
-
-        This is the inverse of the link function. Typically, a loss function takes as input the raw
-        output of a model. In the case of classification, the raw output would be logits. The mean
-        function can be used to convert the raw output into a value that makes sense to the user,
-        such as a probability.
-
-        Parameters
-        ----------
-        y_pred
-            Raw prediction(s).
-
-        Returns
-        -------
-        The adjusted prediction(s).
-
-        References
-        ----------
-        [^1]: [Wikipedia section on link and mean function](https://www.wikiwand.com/en/Generalized_linear_model#/Link_function)
-
-        """
 
 
 class BinaryLoss(Loss):

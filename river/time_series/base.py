@@ -1,6 +1,6 @@
 import abc
 
-from .. import base
+from river import base
 
 
 class Forecaster(base.Estimator):

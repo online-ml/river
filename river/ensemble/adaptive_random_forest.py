@@ -35,7 +35,9 @@ class BaseForest(base.Ensemble):
         lambda_value: int,
         drift_detector: typing.Optional[base.DriftDetector],
         warning_detector: typing.Optional[base.DriftDetector],
-        metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
+        metric: typing.Union[
+            metrics.base.MultiClassMetric, metrics.base.RegressionMetric
+        ],
         disable_weighted_vote,
         seed,
     ):
@@ -476,7 +478,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         n_models: int = 10,
         max_features: typing.Union[bool, str, int] = "sqrt",
         lambda_value: int = 6,
-        metric: metrics.MultiClassMetric = metrics.Accuracy(),
+        metric: metrics.base.MultiClassMetric = metrics.Accuracy(),
         disable_weighted_vote=False,
         drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
         warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
@@ -728,7 +730,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         max_features="sqrt",
         aggregation_method: str = "median",
         lambda_value: int = 6,
-        metric: metrics.RegressionMetric = metrics.MSE(),
+        metric: metrics.base.RegressionMetric = metrics.MSE(),
         disable_weighted_vote=True,
         drift_detector: base.DriftDetector = ADWIN(0.001),
         warning_detector: base.DriftDetector = ADWIN(0.01),
@@ -890,7 +892,9 @@ class BaseForestMember:
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: typing.Union[metrics.MultiClassMetric, metrics.RegressionMetric],
+        metric: typing.Union[
+            metrics.base.MultiClassMetric, metrics.base.RegressionMetric
+        ],
     ):
         self.index_original = index_original
         self.model = model.clone()
@@ -1007,7 +1011,7 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: metrics.MultiClassMetric,
+        metric: metrics.base.MultiClassMetric,
     ):
         super().__init__(
             index_original=index_original,
@@ -1042,7 +1046,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: metrics.RegressionMetric,
+        metric: metrics.base.RegressionMetric,
     ):
         super().__init__(
             index_original=index_original,

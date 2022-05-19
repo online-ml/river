@@ -1,13 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Iterator, List
 
-from river import compose, linear_model, metrics, optim, preprocessing
+from river import base, compose, linear_model, metrics, optim, preprocessing
 from river._bandit import Bandit, BanditPolicy
-from river.base import Classifier, Ensemble, Estimator, Regressor
-from river.metrics import Metric, RegressionMetric
 
 
-class ModelSelector(Ensemble, ABC):
+class ModelSelector(base.Ensemble, ABC):
     """
 
     Parameters
@@ -17,7 +15,7 @@ class ModelSelector(Ensemble, ABC):
 
     """
 
-    def __init__(self, models: Iterator[Estimator], metric: Metric):
+    def __init__(self, models: Iterator[base.Estimator], metric: metrics.base.Metric):
         super().__init__(models)
         for model in models:
             if not metric.works_with(model):
@@ -33,7 +31,7 @@ class ModelSelector(Ensemble, ABC):
         """The current best model."""
 
 
-class ModelSelectionRegressor(ModelSelector, Regressor):
+class ModelSelectionRegressor(ModelSelector, base.Regressor):
     def predict_one(self, x):
         return self.best_model.predict_one(x)
 
@@ -64,7 +62,7 @@ class ModelSelectionRegressor(ModelSelector, Regressor):
         }
 
 
-class ModelSelectionClassifier(ModelSelector, Classifier):
+class ModelSelectionClassifier(ModelSelector, base.Classifier):
     def predict_proba_one(self, x):
         return self.best_model.predict_proba_one(x)
 
@@ -72,8 +70,8 @@ class ModelSelectionClassifier(ModelSelector, Classifier):
 class BanditRegressor(ModelSelectionRegressor):
     def __init__(
         self,
-        models: List[Regressor],
-        metric: RegressionMetric,
+        models: List[base.Regressor],
+        metric: metrics.base.RegressionMetric,
         policy: BanditPolicy,
     ):
         super().__init__(models, metric)

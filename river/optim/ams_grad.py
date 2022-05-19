@@ -1,12 +1,12 @@
 import collections
 import typing
 
-from . import base, schedulers
+from river import optim
 
 __all__ = ["AMSGrad"]
 
 
-class AMSGrad(base.Optimizer):
+class AMSGrad(optim.base.Optimizer):
     """AMSGrad optimizer.
 
     Parameters
@@ -53,7 +53,7 @@ class AMSGrad(base.Optimizer):
 
     def __init__(
         self,
-        lr: typing.Union[float, schedulers.Scheduler] = 0.1,
+        lr: typing.Union[float, optim.base.Scheduler] = 0.1,
         beta_1=0.9,
         beta_2=0.999,
         eps=1e-8,

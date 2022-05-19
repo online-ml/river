@@ -1,10 +1,10 @@
 import collections
 import math
 
-from . import base
+from river import stats
 
 
-class Entropy(base.Univariate):
+class Entropy(stats.base.Univariate):
     """Running entropy.
 
     Parameters

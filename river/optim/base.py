@@ -1,13 +1,46 @@
+import abc
 import numbers
 from typing import Union
 
 import numpy as np
 
-from river import base, utils
-
-from . import schedulers
+from river import base, optim, utils
 
 VectorLike = Union[utils.VectorDict, np.ndarray]
+
+
+class Initializer(base.Base, abc.ABC):
+    """An initializer is used to set initial weights in a model."""
+
+    @abc.abstractmethod
+    def __call__(self, shape=1):
+        """Returns a fresh set of weights.
+
+        Parameters
+        ----------
+        shape
+            Indicates how many weights to return. If `1`, then a single scalar value will be
+            returned.
+
+        """
+
+
+class Scheduler(base.Base, abc.ABC):
+    """Can be used to program the learning rate schedule of an `optim.base.Optimizer`."""
+
+    @abc.abstractmethod
+    def get(self, t: int) -> float:
+        """Returns the learning rate at a given iteration.
+
+        Parameters
+        ----------
+        t
+            The iteration number.
+
+        """
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({vars(self)})"
 
 
 class Optimizer(base.Base):
@@ -26,9 +59,9 @@ class Optimizer(base.Base):
 
     """
 
-    def __init__(self, lr: Union[schedulers.Scheduler, float]):
+    def __init__(self, lr: Union[Scheduler, float]):
         if isinstance(lr, numbers.Number):
-            lr = schedulers.Constant(lr)
+            lr = optim.schedulers.Constant(lr)
         self.lr = lr
         self.n_iterations = 0
 
@@ -86,3 +119,68 @@ class Optimizer(base.Base):
 
     def __repr__(self):
         return f"{self.__class__.__name__}({vars(self)})"
+
+
+class Loss(base.Base, abc.ABC):
+    """Base class for all loss functions."""
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({vars(self)})"
+
+    @abc.abstractmethod
+    def __call__(self, y_true, y_pred):
+        """Returns the loss.
+
+        Parameters
+        ----------
+        y_true
+            Ground truth(s).
+        y_pred
+            Prediction(s).
+
+        Returns
+        -------
+        The loss(es).
+
+        """
+
+    @abc.abstractmethod
+    def gradient(self, y_true, y_pred):
+        """Return the gradient with respect to y_pred.
+
+        Parameters
+        ----------
+        y_true
+            Ground truth(s).
+        y_pred
+            Prediction(s).
+
+        Returns
+        -------
+        The gradient(s).
+
+        """
+
+    @abc.abstractmethod
+    def mean_func(self, y_pred):
+        """Mean function.
+
+        This is the inverse of the link function. Typically, a loss function takes as input the raw
+        output of a model. In the case of classification, the raw output would be logits. The mean
+        function can be used to convert the raw output into a value that makes sense to the user,
+        such as a probability.
+
+        Parameters
+        ----------
+        y_pred
+            Raw prediction(s).
+
+        Returns
+        -------
+        The adjusted prediction(s).
+
+        References
+        ----------
+        [^1]: [Wikipedia section on link and mean function](https://www.wikiwand.com/en/Generalized_linear_model#/Link_function)
+
+        """

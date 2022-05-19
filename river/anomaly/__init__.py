@@ -9,13 +9,13 @@ An anomaly detector can be combined with a thresholding method to turn its anoma
 and 1s.
 
 """
-from .base import AnomalyDetector
+from . import base
 from .hst import HalfSpaceTrees
 from .svm import OneClassSVM
 from .threshold import ConstantThresholder, QuantileThresholder
 
 __all__ = [
-    "AnomalyDetector",
+    "base",
     "ConstantThresholder",
     "HalfSpaceTrees",
     "QuantileThresholder",

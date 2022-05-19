@@ -1,7 +1,7 @@
-from . import base, cov, var
+from river import stats
 
 
-class PearsonCorr(base.Bivariate):
+class PearsonCorr(stats.base.Bivariate):
     """Online Pearson correlation.
 
     Parameters
@@ -41,9 +41,9 @@ class PearsonCorr(base.Bivariate):
     """
 
     def __init__(self, ddof=1):
-        self.var_x = var.Var(ddof=ddof)
-        self.var_y = var.Var(ddof=ddof)
-        self.cov_xy = cov.Cov(ddof=ddof)
+        self.var_x = stats.Var(ddof=ddof)
+        self.var_y = stats.Var(ddof=ddof)
+        self.cov_xy = stats.Cov(ddof=ddof)
 
     @property
     def ddof(self):
@@ -63,7 +63,7 @@ class PearsonCorr(base.Bivariate):
         return 0
 
 
-class RollingPearsonCorr(base.Bivariate):
+class RollingPearsonCorr(stats.base.Bivariate):
     """Rolling Pearson correlation.
 
     Parameters
@@ -105,9 +105,9 @@ class RollingPearsonCorr(base.Bivariate):
     """
 
     def __init__(self, window_size, ddof=1):
-        self.var_x = var.RollingVar(window_size=window_size, ddof=ddof)
-        self.var_y = var.RollingVar(window_size=window_size, ddof=ddof)
-        self.cov_xy = cov.RollingCov(window_size=window_size, ddof=ddof)
+        self.var_x = stats.RollingVar(window_size=window_size, ddof=ddof)
+        self.var_y = stats.RollingVar(window_size=window_size, ddof=ddof)
+        self.cov_xy = stats.RollingCov(window_size=window_size, ddof=ddof)
 
     @property
     def window_size(self):

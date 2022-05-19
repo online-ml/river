@@ -2,10 +2,10 @@ import math
 
 from river import utils
 
-from . import base
+from river import stats
 
 
-class Min(base.Univariate):
+class Min(stats.base.Univariate):
     """Running min.
 
     Attributes
@@ -27,7 +27,7 @@ class Min(base.Univariate):
         return self.min
 
 
-class RollingMin(base.RollingUnivariate):
+class RollingMin(stats.base.RollingUnivariate):
     """Running min over a window.
 
     Parameters

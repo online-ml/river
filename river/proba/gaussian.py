@@ -1,6 +1,6 @@
 import math
 
-from .. import stats
+from river import stats
 from . import base
 
 __all__ = ["Gaussian"]

@@ -4,12 +4,12 @@ import numpy as np
 
 from river import utils
 
-from . import base
+from river import optim
 
 __all__ = ["RMSProp"]
 
 
-class RMSProp(base.Optimizer):
+class RMSProp(optim.base.Optimizer):
     """RMSProp optimizer.
 
     Parameters

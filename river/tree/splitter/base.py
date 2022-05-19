@@ -15,10 +15,8 @@ class Splitter(base.Estimator, abc.ABC):
     feature, such as estimating its probability density function (classification case).
 
     This class should not be instantiated, as none of its methods are implemented.
-    """
 
-    def __init__(self):
-        super().__init__()
+    """
 
     @abc.abstractmethod
     def update(self, att_val, target_val: base.typing.Target, sample_weight: float):
@@ -99,10 +97,8 @@ class Quantizer(base.Estimator, abc.ABC):
     ----------
     [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
     In Asian Conference on Machine Learning (pp. 1094-1109).
-    """
 
-    def __init__(self):
-        super().__init__()
+    """
 
     @abc.abstractmethod
     def __len__(self):

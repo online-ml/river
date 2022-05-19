@@ -1,6 +1,6 @@
 import collections
 
-from . import base
+from river import metrics
 
 __all__ = ["AdjustedRand", "Rand"]
 
@@ -37,7 +37,7 @@ def _pair_confusion(cm):
     return pair_confusion_matrix
 
 
-class Rand(base.MultiClassMetric):
+class Rand(metrics.base.MultiClassMetric):
     """Rand Index.
 
     The Rand Index [^1] [^2] is a measure of the similarity between two data clusterings.
@@ -116,7 +116,7 @@ class Rand(base.MultiClassMetric):
             return 1.0
 
 
-class AdjustedRand(base.MultiClassMetric):
+class AdjustedRand(metrics.base.MultiClassMetric):
     """Adjusted Rand Index.
 
     The Adjusted Rand Index is the corrected-for-chance version of the Rand Index [^1] [^2].

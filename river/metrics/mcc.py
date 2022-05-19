@@ -1,11 +1,11 @@
 import math
 
-from . import base
+from river import metrics
 
 __all__ = ["MCC"]
 
 
-class MCC(base.BinaryMetric):
+class MCC(metrics.base.BinaryMetric):
     """Matthews correlation coefficient.
 
     Parameters

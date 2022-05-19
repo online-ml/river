@@ -57,7 +57,7 @@ class SoftmaxRegression(base.Classifier):
 
     def __init__(
         self,
-        optimizer: optim.Optimizer = None,
+        optimizer: optim.base.Optimizer = None,
         loss: optim.losses.MultiClassLoss = None,
         l2=0,
     ):

@@ -64,13 +64,13 @@ class BiasedMF(Ranker):
         The user latent vectors randomly initialized.
     i_latents : collections.defaultdict
         The item latent vectors randomly initialized.
-    u_bias_optimizer : optim.Optimizer
+    u_bias_optimizer : optim.base.Optimizer
         The sequential optimizer used for updating the user bias weights.
-    i_bias_optimizer : optim.Optimizer
+    i_bias_optimizer : optim.base.Optimizer
         The sequential optimizer used for updating the item bias weights.
-    u_latent_optimizer : optim.Optimizer
+    u_latent_optimizer : optim.base.Optimizer
         The sequential optimizer used for updating the user latent weights.
-    i_latent_optimizer : optim.Optimizer
+    i_latent_optimizer : optim.base.Optimizer
         The sequential optimizer used for updating the item latent weights.
 
     Examples
@@ -114,8 +114,8 @@ class BiasedMF(Ranker):
     def __init__(
         self,
         n_factors=10,
-        bias_optimizer: optim.Optimizer = None,
-        latent_optimizer: optim.Optimizer = None,
+        bias_optimizer: optim.base.Optimizer = None,
+        latent_optimizer: optim.base.Optimizer = None,
         loss: optim.losses.Loss = None,
         l2_bias=0.0,
         l2_latent=0.0,

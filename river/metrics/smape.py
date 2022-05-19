@@ -1,9 +1,9 @@
-from . import base
+from river import metrics
 
 __all__ = ["SMAPE"]
 
 
-class SMAPE(base.MeanMetric, base.RegressionMetric):
+class SMAPE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
     """Symmetric mean absolute percentage error.
 
     Examples

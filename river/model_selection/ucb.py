@@ -1,7 +1,7 @@
 from river import metrics
 from river._bandit import UCB
 
-from .base import BanditRegressor
+from river.model_selection.base import BanditRegressor
 
 
 class UCBRegressor(BanditRegressor):

@@ -3,15 +3,14 @@ import functools
 import random
 import typing
 
+from river import anomaly
 from river import base
-from river.tree.base import Branch, Leaf
-
-from .base import AnomalyDetector
+from river import tree
 
 __all__ = ["HalfSpaceTrees"]
 
 
-class HSTBranch(Branch):
+class HSTBranch(tree.base.Branch):
     def __init__(self, left, right, feature, threshold, l_mass, r_mass):
         super().__init__(left, right)
         self.feature = feature
@@ -53,7 +52,7 @@ class HSTBranch(Branch):
         return f"{self.feature} < {self.threshold:.5f}"
 
 
-class HSTLeaf(Leaf):
+class HSTLeaf(tree.base.Leaf):
     def __repr__(self):
         return str(self.r_mass)
 
@@ -94,7 +93,7 @@ def make_padded_tree(limits, height, padding, rng=random, **node_params):
     return HSTBranch(left=left, right=right, feature=on, threshold=at, **node_params)
 
 
-class HalfSpaceTrees(AnomalyDetector):
+class HalfSpaceTrees(anomaly.base.AnomalyDetector):
     """Half-Space Trees (HST).
 
     Half-space trees are an online variant of isolation forests. They work well when anomalies are

@@ -1,11 +1,11 @@
 import collections
 
-from . import base
+from river import optim
 
 __all__ = ["NesterovMomentum"]
 
 
-class NesterovMomentum(base.Optimizer):
+class NesterovMomentum(optim.base.Optimizer):
     """Nesterov Momentum optimizer.
 
     Parameters

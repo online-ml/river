@@ -2,10 +2,10 @@ import math
 
 from river import utils
 
-from . import base
+from river import stats
 
 
-class Quantile(base.Univariate):
+class Quantile(stats.base.Univariate):
     """Running quantile.
 
     Uses the P² algorithm, which is also known as the "Piecewise-Parabolic quantile estimator".
@@ -164,7 +164,7 @@ class Quantile(base.Univariate):
         return None
 
 
-class RollingQuantile(base.RollingUnivariate):
+class RollingQuantile(stats.base.RollingUnivariate):
     """Running quantile over a window.
 
     Parameters

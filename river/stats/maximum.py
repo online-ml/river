@@ -2,10 +2,10 @@ import math
 
 from river import utils
 
-from . import base
+from river import stats
 
 
-class Max(base.Univariate):
+class Max(stats.base.Univariate):
     """Running max.
 
     Attributes
@@ -43,7 +43,7 @@ class Max(base.Univariate):
         return self.max
 
 
-class RollingMax(base.RollingUnivariate):
+class RollingMax(stats.base.RollingUnivariate):
     """Running max over a window.
 
     Parameters
@@ -87,7 +87,7 @@ class RollingMax(base.RollingUnivariate):
             return None
 
 
-class AbsMax(base.Univariate):
+class AbsMax(stats.base.Univariate):
     """Running absolute max.
 
     Attributes
@@ -125,7 +125,7 @@ class AbsMax(base.Univariate):
         return self.abs_max
 
 
-class RollingAbsMax(base.RollingUnivariate):
+class RollingAbsMax(stats.base.RollingUnivariate):
     """Running absolute max over a window.
 
     Parameters

@@ -2,10 +2,11 @@ import copy
 
 import numpy as np
 
-from . import base, summing
+from river import stats
+from .summing import RollingSum
 
 
-class Mean(base.Univariate):
+class Mean(stats.base.Univariate):
     """Running mean.
 
     Attributes
@@ -103,7 +104,7 @@ class Mean(base.Univariate):
         return result
 
 
-class RollingMean(summing.RollingSum):
+class RollingMean(RollingSum):
     """Running average over a window.
 
     Parameters
@@ -144,7 +145,7 @@ class RollingMean(summing.RollingSum):
         return super().get() / len(self.window) if len(self.window) > 0 else 0
 
 
-class BayesianMean(base.Univariate):
+class BayesianMean(stats.base.Univariate):
     """Estimates a mean using outside information.
 
     Parameters

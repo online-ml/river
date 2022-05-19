@@ -3,25 +3,9 @@ import abc
 
 import numpy as np
 
-from river import base
+from river.optim.base import Initializer
 
 __all__ = ["Constant", "Normal", "Zeros"]
-
-
-class Initializer(base.Base, abc.ABC):
-    """An initializer is used to set initial weights in a model."""
-
-    @abc.abstractmethod
-    def __call__(self, shape=1):
-        """Returns a fresh set of weights.
-
-        Parameters
-        ----------
-        shape
-            Indicates how many weights to return. If `1`, then a single scalar value will be
-            returned.
-
-        """
 
 
 class Constant(Initializer):

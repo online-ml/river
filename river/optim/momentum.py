@@ -1,11 +1,11 @@
 import collections
 
-from . import base
+from river import optim
 
 __all__ = ["Momentum"]
 
 
-class Momentum(base.Optimizer):
+class Momentum(optim.base.Optimizer):
     """Momentum optimizer.
 
     Parameters

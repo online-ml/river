@@ -1,7 +1,7 @@
-from . import base, quantile
+from river import stats
 
 
-class IQR(base.Univariate):
+class IQR(stats.base.Univariate):
     """Computes the interquartile range.
 
     Parameters
@@ -41,8 +41,8 @@ class IQR(base.Univariate):
             raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.quantile_inf = quantile.Quantile(q=self.q_inf)
-        self.quantile_sup = quantile.Quantile(q=self.q_sup)
+        self.quantile_inf = stats.Quantile(q=self.q_inf)
+        self.quantile_sup = stats.Quantile(q=self.q_sup)
 
     @property
     def name(self):
@@ -63,7 +63,7 @@ class IQR(base.Univariate):
         return q_sup - q_inf
 
 
-class RollingIQR(base.RollingUnivariate):
+class RollingIQR(stats.base.RollingUnivariate):
     """Computes the rolling interquartile range.
 
     Parameters
@@ -108,10 +108,10 @@ class RollingIQR(base.RollingUnivariate):
             raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.quantile_inf = quantile.RollingQuantile(
+        self.quantile_inf = stats.RollingQuantile(
             q=self.q_inf, window_size=window_size
         )
-        self.quantile_sup = quantile.RollingQuantile(
+        self.quantile_sup = stats.RollingQuantile(
             q=self.q_sup, window_size=window_size
         )
 

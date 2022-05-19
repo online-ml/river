@@ -4,12 +4,12 @@ import numpy as np
 
 from river import utils
 
-from . import base
+from river import optim
 
 __all__ = ["Adam"]
 
 
-class Adam(base.Optimizer):
+class Adam(optim.base.Optimizer):
     """Adam optimizer.
 
     Parameters

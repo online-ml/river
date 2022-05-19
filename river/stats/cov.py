@@ -2,10 +2,10 @@ import copy
 
 import numpy as np
 
-from . import base, mean, summing
+from river import stats
 
 
-class Cov(base.Bivariate):
+class Cov(stats.base.Bivariate):
     """Covariance.
 
     Parameters
@@ -45,8 +45,8 @@ class Cov(base.Bivariate):
 
     def __init__(self, ddof=1):
         self.ddof = ddof
-        self.mean_x = mean.Mean()
-        self.mean_y = mean.Mean()
+        self.mean_x = stats.Mean()
+        self.mean_y = stats.Mean()
         self.n = 0
         self._C = 0
         self.cov = 0
@@ -141,7 +141,7 @@ class Cov(base.Bivariate):
         return result
 
 
-class RollingCov(base.Bivariate):
+class RollingCov(stats.base.Bivariate):
     """Rolling covariance.
 
     Parameters
@@ -195,9 +195,9 @@ class RollingCov(base.Bivariate):
 
     def __init__(self, window_size, ddof=1):
         self.ddof = ddof
-        self.sx = summing.RollingSum(window_size)
-        self.sy = summing.RollingSum(window_size)
-        self.sxy = summing.RollingSum(window_size)
+        self.sx = stats.RollingSum(window_size)
+        self.sy = stats.RollingSum(window_size)
+        self.sxy = stats.RollingSum(window_size)
 
     @property
     def window_size(self):
