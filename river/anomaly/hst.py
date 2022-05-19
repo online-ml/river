@@ -3,9 +3,7 @@ import functools
 import random
 import typing
 
-from river import anomaly
-from river import base
-from river import tree
+from river import anomaly, base, tree
 
 __all__ = ["HalfSpaceTrees"]
 

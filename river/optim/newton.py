@@ -1,5 +1,6 @@
-from .. import utils
 from river import optim
+
+from .. import utils
 
 __all__ = ["Newton"]
 

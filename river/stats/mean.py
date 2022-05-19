@@ -3,6 +3,7 @@ import copy
 import numpy as np
 
 from river import stats
+
 from .summing import RollingSum
 
 

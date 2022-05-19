@@ -2,7 +2,7 @@ import collections
 import copy
 import typing
 
-from river import optim, stats, utils, reco
+from river import optim, reco, stats, utils
 
 __all__ = ["Baseline"]
 

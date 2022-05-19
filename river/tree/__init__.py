@@ -50,8 +50,7 @@ dynamic and static feature quantizers to deal with numerical inputs.
 
 """
 
-from . import base
-from . import splitter
+from . import base, splitter
 from .extremely_fast_decision_tree import ExtremelyFastDecisionTreeClassifier
 from .hoeffding_adaptive_tree_classifier import HoeffdingAdaptiveTreeClassifier
 from .hoeffding_adaptive_tree_regressor import HoeffdingAdaptiveTreeRegressor

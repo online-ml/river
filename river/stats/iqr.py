@@ -108,12 +108,8 @@ class RollingIQR(stats.base.RollingUnivariate):
             raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self.quantile_inf = stats.RollingQuantile(
-            q=self.q_inf, window_size=window_size
-        )
-        self.quantile_sup = stats.RollingQuantile(
-            q=self.q_sup, window_size=window_size
-        )
+        self.quantile_inf = stats.RollingQuantile(q=self.q_inf, window_size=window_size)
+        self.quantile_sup = stats.RollingQuantile(q=self.q_sup, window_size=window_size)
 
     @property
     def name(self):

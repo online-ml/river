@@ -1,8 +1,6 @@
 import math
 
-from river import utils
-
-from river import stats
+from river import stats, utils
 
 
 class Quantile(stats.base.Univariate):

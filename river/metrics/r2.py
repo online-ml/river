@@ -1,6 +1,4 @@
-from river import stats
-
-from river import metrics
+from river import metrics, stats
 
 __all__ = ["R2"]
 

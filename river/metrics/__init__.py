@@ -6,6 +6,7 @@ predictive methods over time.
 """
 
 from river import metrics
+
 from . import multioutput
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy

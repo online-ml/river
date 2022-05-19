@@ -1,9 +1,7 @@
 import collections
 import math
 
-from river import utils
-
-from river import optim
+from river import optim, utils
 
 __all__ = ["AdaBound"]
 

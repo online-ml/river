@@ -2,9 +2,7 @@ import typing
 
 import pandas as pd
 
-from river import anomaly
-from river import optim
-from river import linear_model
+from river import anomaly, linear_model, optim
 
 
 class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):

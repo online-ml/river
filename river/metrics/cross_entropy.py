@@ -1,6 +1,4 @@
-from river import optim
-
-from river import metrics
+from river import metrics, optim
 
 __all__ = ["CrossEntropy"]
 

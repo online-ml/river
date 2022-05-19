@@ -2,9 +2,7 @@ import collections
 
 import numpy as np
 
-from river import utils
-
-from river import optim
+from river import optim, utils
 
 __all__ = ["RMSProp"]
 

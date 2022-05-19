@@ -1,8 +1,6 @@
 import math
 
-from river import utils
-
-from river import metrics
+from river import metrics, utils
 
 
 class Silhouette(metrics.base.ClusteringMetric):

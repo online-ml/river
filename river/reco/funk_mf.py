@@ -5,7 +5,7 @@ import typing
 
 import numpy as np
 
-from river import optim, utils, reco
+from river import optim, reco, utils
 
 __all__ = ["FunkMF"]
 
