@@ -18,7 +18,6 @@ import pandas as pd
 
 from river import base
 
-
 __all__ = ["Branch", "Leaf"]
 
 
