@@ -4,19 +4,9 @@ All the metrics are updated one sample at a time. This way we can track performa
 predictive methods over time.
 
 """
-
-from . import multioutput
+from . import base, multioutput
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
-from .base import (
-    BinaryMetric,
-    ClassificationMetric,
-    Metric,
-    Metrics,
-    MultiClassMetric,
-    RegressionMetric,
-    WrapperMetric,
-)
 from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
 from .fbeta import (
@@ -56,9 +46,8 @@ __all__ = [
     "AdjustedMutualInfo",
     "AdjustedRand",
     "BalancedAccuracy",
-    "BinaryMetric",
+    "base",
     "Completeness",
-    "ClassificationMetric",
     "ClassificationReport",
     "ClusteringReport",
     "CohenKappa",
@@ -78,13 +67,10 @@ __all__ = [
     "MacroPrecision",
     "MacroRecall",
     "MCC",
-    "Metric",
-    "Metrics",
     "MicroF1",
     "MicroFBeta",
     "MicroPrecision",
     "MicroRecall",
-    "MultiClassMetric",
     "MultiFBeta",
     "multioutput",
     "MSE",
@@ -93,7 +79,6 @@ __all__ = [
     "Precision",
     "Rand",
     "Recall",
-    "RegressionMetric",
     "RMSE",
     "FowlkesMallows",
     "RMSLE",
@@ -109,6 +94,5 @@ __all__ = [
     "WeightedFBeta",
     "WeightedPrecision",
     "WeightedRecall",
-    "WrapperMetric",
     "WeightedJaccard",
 ]

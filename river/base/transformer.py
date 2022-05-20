@@ -51,7 +51,7 @@ class Transformer(base.Estimator):
 
     def __add__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
-        from .. import compose
+        from river import compose
 
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
@@ -59,14 +59,14 @@ class Transformer(base.Estimator):
 
     def __radd__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
-        from .. import compose
+        from river import compose
 
         if isinstance(other, compose.TransformerUnion):
             return other.__add__(self)
         return compose.TransformerUnion(other, self)
 
     def __mul__(self, other):
-        from .. import compose
+        from river import compose
 
         if isinstance(other, (Transformer, compose.Pipeline)):
             return compose.TransformerProduct(self, other)

@@ -1,13 +1,11 @@
 from scipy import integrate
 
-from river import utils
-
-from . import base, confusion
+from river import metrics, utils
 
 __all__ = ["ROCAUC"]
 
 
-class ROCAUC(base.BinaryMetric):
+class ROCAUC(metrics.base.BinaryMetric):
     """Receiving Operating Characteristic Area Under the Curve.
 
     This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would
@@ -58,7 +56,7 @@ class ROCAUC(base.BinaryMetric):
         self.thresholds = [i / (n_thresholds - 1) for i in range(n_thresholds)]
         self.thresholds[0] -= 1e-7
         self.thresholds[-1] += 1e-7
-        self.cms = [confusion.ConfusionMatrix() for _ in range(n_thresholds)]
+        self.cms = [metrics.ConfusionMatrix() for _ in range(n_thresholds)]
 
     def works_with(self, model) -> bool:
         return super().works_with(model) or utils.inspect.isanomalydetector(model)

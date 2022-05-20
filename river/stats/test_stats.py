@@ -47,7 +47,7 @@ def test_pickling(stat):
     # Check the statistic has a working __str__ and name method
     assert isinstance(str(stat), str)
 
-    if isinstance(stat, stats.Univariate):
+    if isinstance(stat, stats.base.Univariate):
         assert isinstance(stat.name, str)
 
 
@@ -182,7 +182,7 @@ def test_rolling_bivariate(stat, func):
     "stat",
     filter(
         lambda stat: hasattr(stat, "update_many")
-        and issubclass(stat.__class__, stats.Univariate),
+        and issubclass(stat.__class__, stats.base.Univariate),
         load_stats(),
     ),
     ids=lambda stat: stat.__class__.__name__,
@@ -204,7 +204,7 @@ def test_update_many_univariate(stat):
     "stat",
     filter(
         lambda stat: hasattr(stat, "update_many")
-        and issubclass(stat.__class__, stats.Bivariate),
+        and issubclass(stat.__class__, stats.base.Bivariate),
         load_stats(),
     ),
     ids=lambda stat: stat.__class__.__name__,

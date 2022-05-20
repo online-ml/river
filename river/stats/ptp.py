@@ -1,7 +1,7 @@
-from . import base, maximum, minimum
+from river import stats
 
 
-class PeakToPeak(base.Univariate):
+class PeakToPeak(stats.base.Univariate):
     """Running peak to peak (max - min).
 
     Attributes
@@ -32,8 +32,8 @@ class PeakToPeak(base.Univariate):
     """
 
     def __init__(self):
-        self.max = maximum.Max()
-        self.min = minimum.Min()
+        self.max = stats.Max()
+        self.min = stats.Min()
 
     @property
     def name(self):
@@ -48,7 +48,7 @@ class PeakToPeak(base.Univariate):
         return self.max.get() - self.min.get()
 
 
-class RollingPeakToPeak(base.RollingUnivariate):
+class RollingPeakToPeak(stats.base.RollingUnivariate):
     """Running peak to peak (max - min) over a window.
 
     Parameters
@@ -82,8 +82,8 @@ class RollingPeakToPeak(base.RollingUnivariate):
     """
 
     def __init__(self, window_size: int):
-        self.max = maximum.RollingMax(window_size)
-        self.min = minimum.RollingMin(window_size)
+        self.max = stats.RollingMax(window_size)
+        self.min = stats.RollingMin(window_size)
 
     @property
     def window_size(self):

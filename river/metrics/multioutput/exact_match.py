@@ -1,11 +1,10 @@
-from river.metrics.base import MeanMetric
-
-from . import base
+from river import metrics
+from river.metrics.multioutput.base import MultiOutputClassificationMetric
 
 __all__ = ["ExactMatch"]
 
 
-class ExactMatch(MeanMetric, base.MultiOutputClassificationMetric):
+class ExactMatch(metrics.base.MeanMetric, MultiOutputClassificationMetric):
     """Exact match score.
 
     This is the most strict multi-label metric, defined as the number of

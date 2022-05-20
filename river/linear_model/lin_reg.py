@@ -3,12 +3,10 @@ import typing
 import numpy as np
 import pandas as pd
 
-from river import base, optim, utils
-
-from .glm import GLM
+from river import base, linear_model, optim, utils
 
 
-class LinearRegression(GLM, base.MiniBatchRegressor):
+class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
     """Linear regression.
 
     This estimator supports learning with mini-batches. On top of the single instance methods, it
@@ -110,14 +108,14 @@ class LinearRegression(GLM, base.MiniBatchRegressor):
 
     def __init__(
         self,
-        optimizer: optim.Optimizer = None,
+        optimizer: optim.base.Optimizer = None,
         loss: optim.losses.RegressionLoss = None,
         l2=0.0,
         l1=0.0,
         intercept_init=0.0,
-        intercept_lr: typing.Union[optim.schedulers.Scheduler, float] = 0.01,
+        intercept_lr: typing.Union[optim.base.Scheduler, float] = 0.01,
         clip_gradient=1e12,
-        initializer: optim.initializers.Initializer = None,
+        initializer: optim.base.Initializer = None,
     ):
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,

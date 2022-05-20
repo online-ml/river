@@ -3,8 +3,7 @@ import copy
 import math
 
 from river import metrics
-
-from .base import ModelSelectionClassifier, ModelSelectionRegressor
+from river.model_selection.base import ModelSelectionClassifier, ModelSelectionRegressor
 
 __all__ = ["SuccessiveHalvingClassifier", "SuccessiveHalvingRegressor"]
 
@@ -13,7 +12,7 @@ class SuccessiveHalving(abc.ABC):
     def __init__(
         self,
         models,
-        metric: metrics.Metric,
+        metric: metrics.base.Metric,
         budget: int,
         eta=2,
         verbose=False,

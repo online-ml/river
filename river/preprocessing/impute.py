@@ -56,7 +56,7 @@ class StatImputer(base.Transformer):
     ----------
     imputers
         A list of tuples where each tuple has two elements. The first elements is a
-        feature name and the second value is an instance of `stats.Univariate`. The second
+        feature name and the second value is an instance of `stats.base.Univariate`. The second
         value can also be an arbitrary value, such as -1, in which case the missing values will
         be replaced with it.
 
@@ -207,7 +207,7 @@ class StatImputer(base.Transformer):
     def __init__(self, *imputers):
         self.imputers = imputers
         self.stats = {
-            feature: stat if isinstance(stat, stats.Univariate) else Constant(stat)
+            feature: stat if isinstance(stat, stats.base.Univariate) else Constant(stat)
             for feature, stat in imputers
         }
 
@@ -231,8 +231,8 @@ class StatImputer(base.Transformer):
         return x
 
 
-class Constant(stats.Univariate):
-    """Implements the `stats.Univariate` interface but always returns the same value.
+class Constant(stats.base.Univariate):
+    """Implements the `stats.base.Univariate` interface but always returns the same value.
 
     Parameters
     ----------

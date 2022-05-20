@@ -1,9 +1,9 @@
-from . import base
+from river import metrics
 
 __all__ = ["Accuracy"]
 
 
-class Accuracy(base.MultiClassMetric):
+class Accuracy(metrics.base.MultiClassMetric):
     """Accuracy score, which is the percentage of exact matches.
 
     Parameters

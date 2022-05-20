@@ -3,7 +3,7 @@ from river import metrics
 __all__ = ["MacroRecall", "MicroRecall", "Recall", "WeightedRecall"]
 
 
-class Recall(metrics.BinaryMetric):
+class Recall(metrics.base.BinaryMetric):
     """Binary recall score.
 
     Parameters
@@ -43,7 +43,7 @@ class Recall(metrics.BinaryMetric):
             return 0.0
 
 
-class MacroRecall(metrics.MultiClassMetric):
+class MacroRecall(metrics.base.MultiClassMetric):
     """Macro-average recall score.
 
     Parameters
@@ -122,7 +122,7 @@ class MicroRecall(metrics.MicroPrecision):
     """
 
 
-class WeightedRecall(metrics.MultiClassMetric):
+class WeightedRecall(metrics.base.MultiClassMetric):
     """Weighted-average recall score.
 
     This uses the support of each label to compute an average score, whereas `MacroRecall`

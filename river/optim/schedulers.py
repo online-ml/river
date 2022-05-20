@@ -1,31 +1,12 @@
 """Learning rate schedulers."""
-import abc
 import math
 
-from river import base, optim
+from river import optim
 
-__all__ = ["Constant", "InverseScaling", "Optimal", "Scheduler"]
-
-
-class Scheduler(base.Base, abc.ABC):
-    """Can be used to program the learning rate schedule of an `optim.Optimizer`."""
-
-    @abc.abstractmethod
-    def get(self, t: int) -> float:
-        """Returns the learning rate at a given iteration.
-
-        Parameters
-        ----------
-        t
-            The iteration number.
-
-        """
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({vars(self)})"
+__all__ = ["Constant", "InverseScaling", "Optimal"]
 
 
-class Constant(Scheduler):
+class Constant(optim.base.Scheduler):
     """Always uses the same learning rate.
 
     Parameters
@@ -41,7 +22,7 @@ class Constant(Scheduler):
         return self.learning_rate
 
 
-class InverseScaling(Scheduler):
+class InverseScaling(optim.base.Scheduler):
     r"""Reduces the learning rate using a power schedule.
 
     Assuming an initial learning rate $\eta$, the learning rate at step $t$ is:
@@ -65,7 +46,7 @@ class InverseScaling(Scheduler):
         return self.learning_rate / pow(t + 1, self.power)
 
 
-class Optimal(Scheduler):
+class Optimal(optim.base.Scheduler):
     """Optimal learning schedule as proposed by Léon Bottou.
 
     Parameters

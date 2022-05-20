@@ -2,12 +2,11 @@ import itertools
 
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class AnomalySine(base.SyntheticDataset):
+class AnomalySine(datasets.base.SyntheticDataset):
     """Simulate a stream with anomalies in sine waves
 
     The data generated corresponds to sine (`attribute 1`) and cosine
@@ -78,7 +77,7 @@ class AnomalySine(base.SyntheticDataset):
             n_classes=1,
             n_outputs=1,
             n_samples=n_samples,
-            task=base.BINARY_CLF,
+            task=datasets.base.BINARY_CLF,
         )
         if n_anomalies > self.n_samples:
             raise ValueError(

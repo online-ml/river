@@ -9,6 +9,9 @@ ID = typing.Union[str, int]
 Reward = typing.Union[numbers.Number, bool]
 
 
+__all__ = ["Ranker"]
+
+
 class Ranker(base.Estimator):
     """Base class for ranking models.
 

@@ -1,11 +1,9 @@
-from river import stats
-
-from . import base
+from river import metrics, stats
 
 __all__ = ["R2"]
 
 
-class R2(base.RegressionMetric):
+class R2(metrics.base.RegressionMetric):
     """Coefficient of determination ($R^2$) score
 
     The coefficient of determination, denoted $R^2$ or $r^2$, is the proportion

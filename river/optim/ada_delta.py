@@ -1,11 +1,11 @@
 import collections
 
-from . import base
+from river import optim
 
 __all__ = ["AdaDelta"]
 
 
-class AdaDelta(base.Optimizer):
+class AdaDelta(optim.base.Optimizer):
     """AdaDelta optimizer.
 
     Parameters

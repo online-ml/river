@@ -3,7 +3,7 @@ from river import metrics
 __all__ = ["Jaccard", "MacroJaccard", "MicroJaccard", "WeightedJaccard"]
 
 
-class Jaccard(metrics.BinaryMetric):
+class Jaccard(metrics.base.BinaryMetric):
     """Jaccard score.
 
     Parameters
@@ -46,7 +46,7 @@ class Jaccard(metrics.BinaryMetric):
             return 0.0
 
 
-class MacroJaccard(metrics.MultiClassMetric):
+class MacroJaccard(metrics.base.MultiClassMetric):
     """Macro-average Jaccard score.
 
     Parameters
@@ -92,7 +92,7 @@ class MacroJaccard(metrics.MultiClassMetric):
             return 0.0
 
 
-class MicroJaccard(metrics.MultiClassMetric):
+class MicroJaccard(metrics.base.MultiClassMetric):
     """Micro-average Jaccard score.
 
     Parameters
@@ -134,7 +134,7 @@ class MicroJaccard(metrics.MultiClassMetric):
             return 0.0
 
 
-class WeightedJaccard(metrics.MultiClassMetric):
+class WeightedJaccard(metrics.base.MultiClassMetric):
     """Weighted average Jaccard score.
 
     Parameters

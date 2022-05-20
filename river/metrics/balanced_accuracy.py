@@ -1,9 +1,9 @@
-from . import base
+from river import metrics
 
 __all__ = ["BalancedAccuracy"]
 
 
-class BalancedAccuracy(base.MultiClassMetric):
+class BalancedAccuracy(metrics.base.MultiClassMetric):
     """Balanced accuracy.
 
     Balanced accuracy is the average of recall obtained on each class. It is used to

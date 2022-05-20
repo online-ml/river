@@ -128,7 +128,7 @@ class MiniBatchClassifier(Classifier):
         """Predict the outcome for each given sample.
 
         Parameters
-        ---------
+        ----------
         X
             A dataframe of features.
 

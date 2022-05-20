@@ -3,7 +3,7 @@ from river import metrics
 __all__ = ["MacroPrecision", "MicroPrecision", "Precision", "WeightedPrecision"]
 
 
-class Precision(metrics.BinaryMetric):
+class Precision(metrics.base.BinaryMetric):
     """Binary precision score.
 
     Parameters
@@ -43,7 +43,7 @@ class Precision(metrics.BinaryMetric):
             return 0.0
 
 
-class MacroPrecision(metrics.MultiClassMetric):
+class MacroPrecision(metrics.base.MultiClassMetric):
     """Macro-average precision score.
 
     Parameters
@@ -88,7 +88,7 @@ class MacroPrecision(metrics.MultiClassMetric):
             return 0.0
 
 
-class MicroPrecision(metrics.MultiClassMetric):
+class MicroPrecision(metrics.base.MultiClassMetric):
     """Micro-average precision score.
 
     The micro-average precision score is exactly equivalent to the micro-average recall as well as
@@ -134,7 +134,7 @@ class MicroPrecision(metrics.MultiClassMetric):
             return 0.0
 
 
-class WeightedPrecision(metrics.MultiClassMetric):
+class WeightedPrecision(metrics.base.MultiClassMetric):
     """Weighted-average precision score.
 
     This uses the support of each label to compute an average score, whereas

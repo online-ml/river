@@ -1,12 +1,12 @@
 import collections
 import math
 
-from . import base
+from river import optim
 
 __all__ = ["Nadam"]
 
 
-class Nadam(base.Optimizer):
+class Nadam(optim.base.Optimizer):
     """Nadam optimizer.
 
     Parameters

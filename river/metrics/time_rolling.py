@@ -2,12 +2,12 @@ import bisect
 import datetime as dt
 import typing
 
-from . import base, report
+from river import metrics
 
 __all__ = ["TimeRolling"]
 
 
-class TimeRolling(base.WrapperMetric):
+class TimeRolling(metrics.base.WrapperMetric):
     """Wrapper for computing metrics over a period of time.
 
     Parameters
@@ -39,7 +39,7 @@ class TimeRolling(base.WrapperMetric):
 
     """
 
-    def __init__(self, metric: base.Metric, period: dt.timedelta):
+    def __init__(self, metric: metrics.base.Metric, period: dt.timedelta):
         self._metric = metric
         self.period = period
         self._events: typing.List[
@@ -77,6 +77,6 @@ class TimeRolling(base.WrapperMetric):
         raise NotImplementedError
 
     def __repr__(self):
-        if isinstance(self.metric, report.ClassificationReport):
+        if isinstance(self.metric, metrics.ClassificationReport):
             return self.metric.__repr__()
         return f"{str(self.metric)}\t(rolling {self.period})"

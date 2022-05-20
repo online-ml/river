@@ -1,6 +1,6 @@
 """Running statistics"""
+from . import base
 from .auto_corr import AutoCorr
-from .base import Bivariate, Univariate
 from .count import Count
 from .cov import Cov, RollingCov
 from .entropy import Entropy
@@ -25,10 +25,10 @@ from .summing import RollingSum, Sum
 from .var import RollingVar, Var
 
 __all__ = [
+    "base",
     "AbsMax",
     "AutoCorr",
     "BayesianMean",
-    "Bivariate",
     "Count",
     "Cov",
     "Entropy",
@@ -63,6 +63,5 @@ __all__ = [
     "Shift",
     "Skew",
     "Sum",
-    "Univariate",
     "Var",
 ]

@@ -2,11 +2,7 @@ import collections
 import numbers
 from typing import Iterable, Iterator, Optional, Tuple
 
-from river.base.typing import Dataset
-from river.metrics import RegressionMetric
-
-from .base import Forecaster
-from .metrics import HorizonMetric
+from river import base, metrics, time_series
 
 TimeSeries = Iterator[
     Tuple[
@@ -18,7 +14,7 @@ TimeSeries = Iterator[
 ]
 
 
-def _iter_with_horizon(dataset: Dataset, horizon: int) -> TimeSeries:
+def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries:
     """
 
     Examples
@@ -76,14 +72,14 @@ def _iter_with_horizon(dataset: Dataset, horizon: int) -> TimeSeries:
 
 
 def _evaluate(
-    dataset: Dataset,
-    model: Forecaster,
-    metric: RegressionMetric,
+    dataset: base.typing.Dataset,
+    model: time_series.base.Forecaster,
+    metric: metrics.base.RegressionMetric,
     horizon: int,
     grace_period: int,
-) -> HorizonMetric:
+):
 
-    horizon_metric = HorizonMetric(metric)
+    horizon_metric = time_series.HorizonMetric(metric)
     steps = _iter_with_horizon(dataset, horizon)
 
     for _ in range(grace_period):
@@ -98,12 +94,12 @@ def _evaluate(
 
 
 def evaluate(
-    dataset: Dataset,
-    model: Forecaster,
-    metric: RegressionMetric,
+    dataset: base.typing.Dataset,
+    model: time_series.base.Forecaster,
+    metric: metrics.base.RegressionMetric,
     horizon: int,
     grace_period=1,
-) -> HorizonMetric:
+) -> "time_series.HorizonMetric":
     """Evaluates the performance of a forecaster on a time series dataset.
 
     To understand why this method is useful, it's important to understand the difference between

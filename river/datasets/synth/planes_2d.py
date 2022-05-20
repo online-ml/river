@@ -1,9 +1,9 @@
 import random
 
-from .. import base
+from river import datasets
 
 
-class Planes2D(base.SyntheticDataset):
+class Planes2D(datasets.base.SyntheticDataset):
     """2D Planes synthetic dataset.
 
     This dataset is described in [^1] and was adapted from [^2]. The features are generated
@@ -49,7 +49,7 @@ class Planes2D(base.SyntheticDataset):
     """
 
     def __init__(self, seed: int = None):
-        super().__init__(task=base.REG, n_features=10)
+        super().__init__(task=datasets.base.REG, n_features=10)
         self.seed = seed
 
     def __iter__(self):

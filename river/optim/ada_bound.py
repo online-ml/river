@@ -1,14 +1,12 @@
 import collections
 import math
 
-from river import utils
-
-from . import base
+from river import optim, utils
 
 __all__ = ["AdaBound"]
 
 
-class AdaBound(base.Optimizer):
+class AdaBound(optim.base.Optimizer):
     """AdaBound optimizer.
 
     Parameters

@@ -1,6 +1,8 @@
 import abc
 
-from .. import base
+from river import base
+
+__all__ = ["Forecaster"]
 
 
 class Forecaster(base.Estimator):

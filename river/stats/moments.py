@@ -1,7 +1,7 @@
-from . import base, count
+from river import stats
 
 
-class CentralMoments(base.Univariate):
+class CentralMoments(stats.base.Univariate):
     """Computes central moments using Welford's algorithm.
 
     Attributes
@@ -26,7 +26,7 @@ class CentralMoments(base.Univariate):
     """
 
     def __init__(self):
-        self.count = count.Count()
+        self.count = stats.Count()
 
         self.delta = 0
         self.sum_delta = 0
