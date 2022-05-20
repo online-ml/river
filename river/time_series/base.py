@@ -3,6 +3,9 @@ import abc
 from river import base
 
 
+__all__ = ["Forecaster"]
+
+
 class Forecaster(base.Estimator):
     @property
     def _supervised(self):

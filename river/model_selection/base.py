@@ -5,6 +5,9 @@ from river import base, compose, linear_model, metrics, optim, preprocessing
 from river._bandit import Bandit, BanditPolicy
 
 
+__all__ = ["ModelSelectionRegressor", "ModelSelectionClassifier"]
+
+
 class ModelSelector(base.Ensemble, ABC):
     """
 

@@ -3,6 +3,9 @@ import abc
 from river import base
 
 
+__all__ = ["AnomalyDetector"]
+
+
 class AnomalyDetector(base.Estimator):
     """An anomaly detector."""
 

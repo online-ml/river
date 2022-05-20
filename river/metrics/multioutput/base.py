@@ -7,6 +7,9 @@ from river.metrics.base import Metric
 from .confusion import MultiLabelConfusionMatrix
 
 
+__all__ = ["MultiOutputClassificationMetric", "MultiOutputRegressionMetric"]
+
+
 class MultiOutputMetric(Metric):
     """Mother class for all multi-output metrics."""
 

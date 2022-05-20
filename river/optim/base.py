@@ -9,6 +9,9 @@ from river import base, optim, utils
 VectorLike = Union[utils.VectorDict, np.ndarray]
 
 
+__all__ = ["Initializer", "Scheduler", "Optimizer", "Loss"]
+
+
 class Initializer(base.Base, abc.ABC):
     """An initializer is used to set initial weights in a model."""
 

@@ -4,6 +4,9 @@ from typing import Optional
 from river import base
 
 
+__all__ = ["Univariate", "Bivariate"]
+
+
 class Statistic(base.Base):
     """A statistic."""
 
