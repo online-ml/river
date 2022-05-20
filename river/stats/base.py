@@ -3,7 +3,6 @@ from typing import Optional
 
 from river import base
 
-
 __all__ = ["Univariate", "Bivariate"]
 
 

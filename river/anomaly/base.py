@@ -2,7 +2,6 @@ import abc
 
 from river import base
 
-
 __all__ = ["AnomalyDetector"]
 
 

@@ -7,7 +7,6 @@ import pandas as pd
 
 from river import optim, utils
 
-
 __all__ = ["GLM"]
 
 

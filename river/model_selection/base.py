@@ -4,7 +4,6 @@ from typing import Iterator, List
 from river import base, compose, linear_model, metrics, optim, preprocessing
 from river._bandit import Bandit, BanditPolicy
 
-
 __all__ = ["ModelSelectionRegressor", "ModelSelectionClassifier"]
 
 

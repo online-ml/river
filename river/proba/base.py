@@ -1,6 +1,5 @@
 import abc
 
-
 __all__ = ["DiscreteDistribution", "ContinuousDistribution"]
 
 

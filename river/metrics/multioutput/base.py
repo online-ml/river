@@ -6,7 +6,6 @@ from river.metrics.base import Metric
 
 from .confusion import MultiLabelConfusionMatrix
 
-
 __all__ = ["MultiOutputClassificationMetric", "MultiOutputRegressionMetric"]
 
 
@@ -38,8 +37,7 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
         y_pred: typing.Union[
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
             typing.Dict[
-                typing.Union[str, int],
-                typing.Dict[base.typing.ClfTarget, float],
+                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float],
             ],
         ],
         sample_weight: numbers.Number = 1.0,
@@ -54,8 +52,7 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
         y_pred: typing.Union[
             typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
             typing.Dict[
-                typing.Union[str, int],
-                typing.Dict[base.typing.ClfTarget, float],
+                typing.Union[str, int], typing.Dict[base.typing.ClfTarget, float],
             ],
         ],
         sample_weight: numbers.Number = 1.0,
