@@ -56,7 +56,6 @@ class Dataset(abc.ABC):
     sparse
         Whether the dataset is sparse or not.
 
-
     """
 
     def __init__(
