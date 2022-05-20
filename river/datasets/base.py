@@ -36,6 +36,25 @@ class Dataset(abc.ABC):
 
     All datasets inherit from this class, be they stored in a file or generated on the fly.
 
+    Parameters
+    ----------
+    task
+        Type of task the dataset is meant for. Should be one of:
+        - "Regression"
+        - "Binary classification"
+        - "Multi-class classification"
+        - "Multi-output binary classification"
+        - "Multi-output regression"
+    n_features
+        Number of features contained in the dataset.
+    n_samples
+        Number of samples contained in the dataset.
+    n_outputs
+        Number of outputs in the target is made of.
+    sparse
+        Whether the dataset is sparse or not.
+
+
     """
 
     def __init__(
@@ -152,14 +171,25 @@ class FileDataset(Dataset):
 
     Small datasets that are part of the river package inherit from this class.
 
+    Parameters
+    ----------
+    filename
+        The file's name.
+    directory
+        The directory where the file is contained. Defaults to the location of the `datasets`
+        module.
+
     """
 
-    def __init__(self, filename, **desc):
+    def __init__(self, filename, directory=None, **desc):
         super().__init__(**desc)
         self.filename = filename
+        self.directory = directory
 
     @property
     def path(self):
+        if self.directory:
+            return pathlib.Path(self.directory).joinpath(self.filename)
         return pathlib.Path(__file__).parent.joinpath(self.filename)
 
     @property
@@ -177,9 +207,20 @@ class RemoteDataset(FileDataset):
     The filename doesn't have to be provided if unpack is False. Indeed in the latter case the
     filename will be inferred from the URL.
 
+    Parameters
+    ----------
+    url
+        The URL the dataset is located at.
+    size
+        The expected download size.
+    unpack
+        Whether to unpack the download or not.
+    filename
+        An optional name to given to the file if the file is unpacked.
+
     """
 
-    def __init__(self, url, size, filename=None, unpack=True, **desc):
+    def __init__(self, url, size, unpack=True, filename=None, **desc):
 
         if filename is None:
             filename = os.path.basename(url)
