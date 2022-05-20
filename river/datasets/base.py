@@ -180,6 +180,8 @@ class FileDataset(Dataset):
     directory
         The directory where the file is contained. Defaults to the location of the `datasets`
         module.
+    desc
+        Extra dataset parameters to pass as keyword arguments.
 
     """
 
@@ -219,6 +221,8 @@ class RemoteDataset(FileDataset):
         Whether to unpack the download or not.
     filename
         An optional name to given to the file if the file is unpacked.
+    desc
+        Extra dataset parameters to pass as keyword arguments.
 
     """
 
