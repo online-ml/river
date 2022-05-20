@@ -9,7 +9,8 @@ from xml.etree import ElementTree as ET
 
 import pandas as pd
 
-from .. import base, utils
+from river import base, utils
+
 from . import func, union
 
 __all__ = ["Pipeline"]
@@ -352,7 +353,7 @@ class Pipeline(base.Estimator):
         return union.TransformerUnion(self, other)
 
     def __mul__(self, other):
-        from .. import compose
+        from river import compose
 
         if isinstance(other, (base.Transformer, Pipeline)):
             return compose.TransformerProduct(self, other)

@@ -1,11 +1,10 @@
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class Hyperplane(base.SyntheticDataset):
+class Hyperplane(datasets.base.SyntheticDataset):
     r"""Hyperplane stream generator.
 
     Generates a problem of prediction class of a rotation hyperplane. It was
@@ -88,7 +87,10 @@ class Hyperplane(base.SyntheticDataset):
         sigma: float = 0.1,
     ):
         super().__init__(
-            n_features=n_features, n_classes=2, n_outputs=1, task=base.BINARY_CLF
+            n_features=n_features,
+            n_classes=2,
+            n_outputs=1,
+            task=datasets.base.BINARY_CLF,
         )
 
         self.seed = seed

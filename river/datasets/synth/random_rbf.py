@@ -2,12 +2,11 @@ import warnings
 
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class RandomRBF(base.SyntheticDataset):
+class RandomRBF(datasets.base.SyntheticDataset):
     """Random Radial Basis Function generator.
 
     Produces a radial basis function stream. A number of centroids, having a
@@ -67,7 +66,10 @@ class RandomRBF(base.SyntheticDataset):
         n_centroids: int = 50,
     ):
         super().__init__(
-            n_features=n_features, n_classes=n_classes, n_outputs=1, task=base.MULTI_CLF
+            n_features=n_features,
+            n_classes=n_classes,
+            n_outputs=1,
+            task=datasets.base.MULTI_CLF,
         )
         self.seed_sample = seed_sample
         self.seed_model = seed_model

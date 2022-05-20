@@ -1,10 +1,9 @@
 """Learning rate schedulers."""
-import abc
 import math
 
 from river import optim
 
-__all__ = ["Constant", "InverseScaling", "Optimal", "Scheduler"]
+__all__ = ["Constant", "InverseScaling", "Optimal"]
 
 
 class Constant(optim.base.Scheduler):

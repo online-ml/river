@@ -1,7 +1,7 @@
 import numbers
 import typing
 
-from river import base, metrics, utils
+from river import base, utils
 from river.metrics.base import Metric
 
 from .confusion import MultiLabelConfusionMatrix

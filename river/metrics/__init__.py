@@ -4,10 +4,7 @@ All the metrics are updated one sample at a time. This way we can track performa
 predictive methods over time.
 
 """
-
-from river import metrics
-
-from . import multioutput
+from . import base, multioutput
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
 from .confusion import ConfusionMatrix
@@ -49,6 +46,7 @@ __all__ = [
     "AdjustedMutualInfo",
     "AdjustedRand",
     "BalancedAccuracy",
+    "base",
     "Completeness",
     "ClassificationReport",
     "ClusteringReport",

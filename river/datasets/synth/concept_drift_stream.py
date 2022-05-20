@@ -2,13 +2,11 @@ import textwrap
 
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
-from ..synth import Agrawal
 
-
-class ConceptDriftStream(base.SyntheticDataset):
+class ConceptDriftStream(datasets.base.SyntheticDataset):
     """Generates a stream with concept drift.
 
     A stream generator that adds concept drift or change by joining two
@@ -83,8 +81,8 @@ class ConceptDriftStream(base.SyntheticDataset):
 
     def __init__(
         self,
-        stream: base.SyntheticDataset = None,
-        drift_stream: base.SyntheticDataset = None,
+        stream: datasets.base.SyntheticDataset = None,
+        drift_stream: datasets.base.SyntheticDataset = None,
         position: int = 5000,
         width: int = 1000,
         seed: int = None,
@@ -92,10 +90,10 @@ class ConceptDriftStream(base.SyntheticDataset):
     ):
 
         if stream is None:
-            stream = Agrawal(seed=seed)
+            stream = datasets.synth.Agrawal(seed=seed)
 
         if drift_stream is None:
-            drift_stream = Agrawal(seed=seed, classification_function=2)
+            drift_stream = datasets.synth.Agrawal(seed=seed, classification_function=2)
 
         # Fairly simple check for consistent number of features
         if stream.n_features != drift_stream.n_features:
@@ -156,7 +154,7 @@ class ConceptDriftStream(base.SyntheticDataset):
 
         config = "\n\nConfiguration:\n"
         for k, v in params.items():
-            if not isinstance(v, base.SyntheticDataset):
+            if not isinstance(v, datasets.base.SyntheticDataset):
                 indent = 0
             else:
                 indent = l_len_config + 2

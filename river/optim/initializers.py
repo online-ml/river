@@ -1,6 +1,4 @@
 """Weight initializers."""
-import abc
-
 import numpy as np
 
 from river.optim.base import Initializer

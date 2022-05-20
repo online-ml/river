@@ -11,7 +11,6 @@ import pytest
 from sklearn import metrics as sk_metrics
 
 from river import metrics
-from river.metrics import base
 
 
 def load_metrics():

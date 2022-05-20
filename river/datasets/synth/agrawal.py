@@ -1,11 +1,10 @@
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class Agrawal(base.SyntheticDataset):
+class Agrawal(datasets.base.SyntheticDataset):
     r"""Agrawal stream generator.
 
     The generator was introduced by Agrawal et al. [^1], and was a common
@@ -113,7 +112,9 @@ class Agrawal(base.SyntheticDataset):
         balance_classes: bool = False,
         perturbation: float = 0.0,
     ):
-        super().__init__(n_features=9, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
+        super().__init__(
+            n_features=9, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF
+        )
 
         # Classification functions to use
         self._classification_functions = [

@@ -236,15 +236,15 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
             ]
 
         # Update each tree
-        for tree in self.trees:
-            for node in tree.walk(x):
+        for t in self.trees:
+            for node in t.walk(x):
                 node.l_mass += 1
 
         # Pivot the masses if necessary
         self.counter += 1
         if self.counter == self.window_size:
-            for tree in self.trees:
-                for node in tree.iter_dfs():
+            for t in self.trees:
+                for node in t.iter_dfs():
                     node.r_mass = node.l_mass
                     node.l_mass = 0
             self._first_window = False
@@ -258,8 +258,8 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
             return 0
 
         score = 0.0
-        for tree in self.trees:
-            for depth, node in enumerate(tree.walk(x)):
+        for t in self.trees:
+            for depth, node in enumerate(t.walk(x)):
                 score += node.r_mass * 2**depth
                 if node.r_mass < self.size_limit:
                     break

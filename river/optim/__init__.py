@@ -1,8 +1,5 @@
 """Stochastic optimization."""
-from river import optim  # type: ignore
-
-from . import losses  # type: ignore
-from . import initializers, schedulers
+from . import base, initializers, losses, schedulers
 from .ada_bound import AdaBound
 from .ada_delta import AdaDelta
 from .ada_grad import AdaGrad

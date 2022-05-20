@@ -20,6 +20,7 @@ from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
 from .ucb import UCBRegressor
 
 __all__ = [
+    "base",
     "EpsilonGreedyRegressor",
     "GreedyRegressor",
     "SuccessiveHalvingClassifier",

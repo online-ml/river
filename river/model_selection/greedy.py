@@ -52,7 +52,7 @@ class GreedyRegressor(ModelSelectionRegressor):
         self, models: List[base.Regressor], metric: metrics.base.RegressionMetric = None
     ):
         if metric is None:
-            metric = MAE()
+            metric = metrics.MAE()
         super().__init__(models, metric)
         self.metrics = [deepcopy(metric) for _ in range(len(self))]
         self._best_model = self[0]
