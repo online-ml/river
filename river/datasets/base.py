@@ -12,6 +12,8 @@ from urllib import request
 
 from river import utils
 
+__all__ = ["Dataset", "SyntheticDataset", "FileDataset", "RemoteDataset"]
+
 REG = "Regression"
 BINARY_CLF = "Binary classification"
 MULTI_CLF = "Multi-class classification"
