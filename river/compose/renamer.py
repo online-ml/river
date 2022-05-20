@@ -1,6 +1,6 @@
 from typing import Dict
 
-from .. import base
+from river import base
 
 __all__ = ["Renamer", "Prefixer", "Suffixer"]
 

@@ -99,7 +99,7 @@ class DBSTREAM(base.Clusterer):
           with Noise. In KDD-96 Proceedings, AAAI.
 
     Examples
-    ----------
+    --------
 
     >>> from river import cluster
     >>> from river import stream

@@ -1,7 +1,7 @@
 from river import stats
 
 
-class Link(stats.Univariate):
+class Link(stats.base.Univariate):
     """A link joins two univariate statistics as a sequence.
 
     This can be used to pipe the output of one statistic to the input of another. This can be used,
@@ -62,7 +62,7 @@ class Link(stats.Univariate):
 
     """
 
-    def __init__(self, left: stats.Univariate, right: stats.Univariate):
+    def __init__(self, left: stats.base.Univariate, right: stats.base.Univariate):
         self.left = left
         self.right = right
 

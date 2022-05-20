@@ -1,11 +1,11 @@
 import math
 
-from . import base
+from river import metrics
 
 __all__ = ["LogLoss"]
 
 
-class LogLoss(base.MeanMetric, base.BinaryMetric):
+class LogLoss(metrics.base.MeanMetric, metrics.base.BinaryMetric):
     """Binary logarithmic loss.
 
     Examples

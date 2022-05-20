@@ -1,9 +1,9 @@
 import random
 
-from .. import base
+from river import datasets
 
 
-class SEA(base.SyntheticDataset):
+class SEA(datasets.base.SyntheticDataset):
     """SEA synthetic dataset.
 
     Implementation of the data stream with abrupt drift described in [^1]. Each observation is
@@ -52,7 +52,7 @@ class SEA(base.SyntheticDataset):
 
     def __init__(self, variant=0, noise=0.0, seed: int = None):
 
-        super().__init__(n_features=3, task=base.BINARY_CLF)
+        super().__init__(n_features=3, task=datasets.base.BINARY_CLF)
 
         if variant not in (0, 1, 2, 3):
             raise ValueError("Unknown variant, possible choices are: 0, 1, 2, 3")

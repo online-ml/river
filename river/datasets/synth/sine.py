@@ -1,11 +1,10 @@
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class Sine(base.SyntheticDataset):
+class Sine(datasets.base.SyntheticDataset):
     r"""Sine generator.
 
     This generator is an implementation of the dara stream with abrupt
@@ -98,7 +97,7 @@ class Sine(base.SyntheticDataset):
             else self._N_FEATURES_INCLUDING_NOISE,
             n_classes=2,
             n_outputs=1,
-            task=base.BINARY_CLF,
+            task=datasets.base.BINARY_CLF,
         )
 
         # Classification functions to use

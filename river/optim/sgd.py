@@ -1,9 +1,9 @@
-from . import base
+from river import optim
 
 __all__ = ["SGD"]
 
 
-class SGD(base.Optimizer):
+class SGD(optim.base.Optimizer):
     """Plain stochastic gradient descent.
 
     Parameters

@@ -3,10 +3,10 @@ import math
 
 import numpy as np
 
-from . import base
+from river import stats
 
 
-class NUnique(base.Univariate):
+class NUnique(stats.base.Univariate):
     """Approximate number of unique values counter.
 
     This is basically an implementation of the HyperLogLog algorithm. Adapted from

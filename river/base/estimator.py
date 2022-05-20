@@ -20,7 +20,7 @@ class Estimator(base.Base, abc.ABC):
 
     def __or__(self, other):
         """Merge with another Transformer into a Pipeline."""
-        from .. import compose
+        from river import compose
 
         if isinstance(other, compose.Pipeline):
             return other.__ror__(self)
@@ -28,7 +28,7 @@ class Estimator(base.Base, abc.ABC):
 
     def __ror__(self, other):
         """Merge with another Transformer into a Pipeline."""
-        from .. import compose
+        from river import compose
 
         if isinstance(other, compose.Pipeline):
             return other.__or__(self)

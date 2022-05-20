@@ -92,7 +92,7 @@ class DenStream(base.Clusterer):
           Databases with Noise. In KDD-96 Proceedings, AAAI.
 
     Examples
-    ----------
+    --------
 
     The following example uses the default parameters of the algorithm to test its functionality.
     The set of evolving points `X` are designed so that clusters are easily identifiable.

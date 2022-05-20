@@ -125,7 +125,7 @@ class Agg(base.Transformer):
         self,
         on: str,
         by: typing.Optional[typing.Union[str, typing.List[str]]],
-        how: stats.Univariate,
+        how: stats.base.Univariate,
     ):
         self.on = on
         self.by = (by if isinstance(by, list) else [by]) if by is not None else by
@@ -304,7 +304,7 @@ class TargetAgg(Agg, base.SupervisedTransformer):
     def __init__(
         self,
         by: typing.Optional[typing.Union[str, typing.List[str]]],
-        how: stats.Univariate,
+        how: stats.base.Univariate,
         target_name="y",
     ):
         super().__init__(on=target_name, by=by, how=how)

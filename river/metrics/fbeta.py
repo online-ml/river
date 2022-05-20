@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-class FBeta(metrics.BinaryMetric):
+class FBeta(metrics.base.BinaryMetric):
     """Binary F-Beta score.
 
     The FBeta score is a weighted harmonic mean between precision and recall. The higher the
@@ -73,7 +73,7 @@ class FBeta(metrics.BinaryMetric):
             return 0.0
 
 
-class MacroFBeta(metrics.MultiClassMetric):
+class MacroFBeta(metrics.base.MultiClassMetric):
     """Macro-average F-Beta score.
 
     This works by computing the F-Beta score per class, and then performs a global average.
@@ -138,7 +138,7 @@ class MacroFBeta(metrics.MultiClassMetric):
             return 0.0
 
 
-class MicroFBeta(metrics.MultiClassMetric):
+class MicroFBeta(metrics.base.MultiClassMetric):
     """Micro-average F-Beta score.
 
     This computes the F-Beta score by merging all the predictions and true labels, and then
@@ -190,7 +190,7 @@ class MicroFBeta(metrics.MultiClassMetric):
             return 0.0
 
 
-class WeightedFBeta(metrics.MultiClassMetric):
+class WeightedFBeta(metrics.base.MultiClassMetric):
     """Weighted-average F-Beta score.
 
     This works by computing the F-Beta score per class, and then performs a global weighted average
@@ -256,7 +256,7 @@ class WeightedFBeta(metrics.MultiClassMetric):
             return 0.0
 
 
-class MultiFBeta(metrics.MultiClassMetric):
+class MultiFBeta(metrics.base.MultiClassMetric):
     """Multi-class F-Beta score with different betas per class.
 
     The multiclass F-Beta score is the arithmetic average of the binary F-Beta scores of each class.

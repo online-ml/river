@@ -1,12 +1,12 @@
 import collections
 import typing
 
-from . import base
+from river import stats
 
 __all__ = ["Mode"]
 
 
-class Mode(base.Univariate):
+class Mode(stats.base.Univariate):
     """Running mode.
 
     The mode is simply the most common value. An approximate mode can be computed by setting the
@@ -63,7 +63,7 @@ class Mode(base.Univariate):
         return max(self.counts, key=self.counts.get, default=None)
 
 
-class RollingMode(base.RollingUnivariate):
+class RollingMode(stats.base.RollingUnivariate):
     """Running mode over a window.
 
     The mode is the most common value.

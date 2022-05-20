@@ -1,9 +1,9 @@
-from . import base
+from river import metrics
 
 __all__ = ["CohenKappa"]
 
 
-class CohenKappa(base.MultiClassMetric):
+class CohenKappa(metrics.base.MultiClassMetric):
     r"""Cohen's Kappa score.
 
     Cohen's Kappa expresses the level of agreement between two annotators on a classification

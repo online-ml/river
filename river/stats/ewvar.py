@@ -1,7 +1,7 @@
-from . import base, ewmean
+from river import stats
 
 
-class EWVar(base.Univariate):
+class EWVar(stats.base.Univariate):
     """Exponentially weighted variance.
 
     To calculate the variance we use the fact that Var(X) = Mean(x^2) - Mean(x)^2 and internally
@@ -45,8 +45,8 @@ class EWVar(base.Univariate):
 
     def __init__(self, alpha=0.5):
         self.alpha = alpha
-        self.mean = ewmean.EWMean(alpha=alpha)
-        self.sq_mean = ewmean.EWMean(alpha=alpha)
+        self.mean = stats.EWMean(alpha=alpha)
+        self.sq_mean = stats.EWMean(alpha=alpha)
 
     @property
     def name(self):

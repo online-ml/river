@@ -15,10 +15,10 @@ specific to each and every recommendation task. Typically the reward is a number
 value. It is up to the user to determine how to translate a user session into training data.
 
 """
-from .base import Ranker
+from . import base
 from .baseline import Baseline
 from .biased_mf import BiasedMF
 from .funk_mf import FunkMF
 from .normal import RandomNormal
 
-__all__ = ["Baseline", "BiasedMF", "FunkMF", "RandomNormal", "Ranker"]
+__all__ = ["base", "Baseline", "BiasedMF", "FunkMF", "RandomNormal"]

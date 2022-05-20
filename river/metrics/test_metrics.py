@@ -11,7 +11,6 @@ import pytest
 from sklearn import metrics as sk_metrics
 
 from river import metrics
-from river.metrics import base
 
 
 def load_metrics():
@@ -76,7 +75,7 @@ def generate_test_cases(metric, n):
 
     sample_weights = [random.random() for _ in range(n)]
 
-    if isinstance(metric, base.ClassificationMetric):
+    if isinstance(metric, metrics.base.ClassificationMetric):
         y_true = [random.choice([False, True]) for _ in range(n)]
         if metric.requires_labels:
             y_pred = [random.choice([False, True]) for _ in range(n)]
@@ -87,7 +86,7 @@ def generate_test_cases(metric, n):
             ]
         yield y_true, y_pred, sample_weights
 
-    if isinstance(metric, base.MultiClassMetric):
+    if isinstance(metric, metrics.base.MultiClassMetric):
         y_true = [random.choice([0, 1, 2]) for _ in range(n)]
         if metric.requires_labels:
             y_pred = [random.choice([0, 1, 2]) for _ in range(n)]
@@ -97,7 +96,7 @@ def generate_test_cases(metric, n):
             ]
         yield y_true, y_pred, sample_weights
 
-    if isinstance(metric, base.RegressionMetric):
+    if isinstance(metric, metrics.base.RegressionMetric):
         yield (
             [random.random() for _ in range(n)],
             [random.random() for _ in range(n)],

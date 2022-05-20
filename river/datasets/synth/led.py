@@ -1,11 +1,10 @@
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class LED(base.SyntheticDataset):
+class LED(datasets.base.SyntheticDataset):
     """LED stream generator.
 
     This data source originates from the CART book [^1]. An implementation
@@ -94,7 +93,7 @@ class LED(base.SyntheticDataset):
             else self._N_RELEVANT_FEATURES,
             n_classes=10,
             n_outputs=1,
-            task=base.MULTI_CLF,
+            task=datasets.base.MULTI_CLF,
         )
         self.seed = seed
         self._rng = None  # This is the actual random_state object used internally

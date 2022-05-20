@@ -2,7 +2,7 @@ from river import datasets, metrics, stats, time_series
 from river.time_series.evaluate import _evaluate
 
 
-class MeanForecaster(time_series.Forecaster):
+class MeanForecaster(time_series.base.Forecaster):
     def __init__(self):
         self.mean = stats.Mean()
 

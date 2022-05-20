@@ -2,10 +2,10 @@ import math
 import random
 from typing import Tuple
 
-from .. import base
+from river import datasets
 
 
-class Friedman(base.SyntheticDataset):
+class Friedman(datasets.base.SyntheticDataset):
     """Friedman synthetic dataset.
 
     Each observation is composed of 10 features. Each feature value is sampled uniformly in [0, 1].
@@ -43,7 +43,7 @@ class Friedman(base.SyntheticDataset):
     """
 
     def __init__(self, seed: int = None):
-        super().__init__(task=base.REG, n_features=10)
+        super().__init__(task=datasets.base.REG, n_features=10)
         self.seed = seed
 
     def __iter__(self):

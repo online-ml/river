@@ -7,8 +7,8 @@ from typing import Iterator
 import numpy as np
 
 from river.base import Estimator
-from river.model_selection import ModelSelector
-from river.reco import Ranker
+from river.model_selection.base import ModelSelector
+from river.reco.base import Ranker
 
 from . import clf, common, model_selection, reco
 

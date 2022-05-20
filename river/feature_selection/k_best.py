@@ -62,7 +62,7 @@ class SelectKBest(base.SupervisedTransformer):
 
     """
 
-    def __init__(self, similarity: stats.Bivariate, k=10):
+    def __init__(self, similarity: stats.base.Bivariate, k=10):
         self.k = k
         self.similarity = similarity
         self.similarities = collections.defaultdict(

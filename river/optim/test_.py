@@ -33,12 +33,12 @@ def test_loss_batch_online_equivalence(loss):
         assert math.isclose(loss.gradient(yt, yp), g, abs_tol=1e-9)
 
 
-def optimizers() -> typing.Iterable[optim.Optimizer]:
+def optimizers() -> typing.Iterable[optim.base.Optimizer]:
     for _, optimizer in inspect.getmembers(
         importlib.import_module("river.optim"),
         lambda x: inspect.isclass(x)
-        and issubclass(x, optim.Optimizer)
-        and x is not optim.Optimizer,
+        and issubclass(x, optim.base.Optimizer)
+        and x is not optim.base.Optimizer,
     ):
         for params in optimizer._unit_test_params():
             yield optimizer(**params)

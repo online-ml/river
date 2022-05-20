@@ -265,7 +265,7 @@ class SGTClassifier(StochasticGradientTree, base.Classifier):
     Accuracy: 82.24%
 
     References
-    ---------
+    ----------
     [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
     In Asian Conference on Machine Learning (pp. 1094-1109).
 
@@ -379,7 +379,7 @@ class SGTRegressor(StochasticGradientTree, base.Regressor):
     feature is directly related to the tree's memory usage and runtime.
 
     References
-    ---------
+    ----------
     [^1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees.
     In Asian Conference on Machine Learning (pp. 1094-1109).
     [^2]: Mastelini, S.M. and de Leon Ferreira, A.C.P., 2021. Using dynamical quantization

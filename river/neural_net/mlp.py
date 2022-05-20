@@ -48,7 +48,7 @@ class MLP:
         hidden_dims: typing.Tuple[int],
         activations,
         loss: optim.losses.Loss,
-        optimizer: optim.Optimizer,
+        optimizer: optim.base.Optimizer,
         seed: int = None,
     ):
 
@@ -284,7 +284,7 @@ class MLPRegressor(base.Regressor, MLP):
         hidden_dims,
         activations,
         loss: optim.losses.Loss = None,
-        optimizer: optim.Optimizer = None,
+        optimizer: optim.base.Optimizer = None,
         seed: int = None,
     ):
         super().__init__(

@@ -16,11 +16,20 @@ from xml.etree import ElementTree as ET
 
 import pandas as pd
 
-from river.base import Base
+from river import base
+
+__all__ = ["Branch", "Leaf"]
 
 
-class Branch(Base, abc.ABC):
-    """A generic tree branch."""
+class Branch(base.Base, abc.ABC):
+    """A generic tree branch.
+
+    Parameters
+    ----------
+    children
+        Child branches and/or leaves.
+
+    """
 
     def __init__(self, *children):
         self.children = children
@@ -152,8 +161,15 @@ class Branch(Base, abc.ABC):
         return f"<div>{ET.tostring(div, encoding='unicode')}<style scoped>{viz.CSS}</style></div>"
 
 
-class Leaf(Base):
-    """A generic tree node."""
+class Leaf(base.Base):
+    """A generic tree node.
+
+    Parameters
+    ----------
+    kwargs
+        Each provided keyword argument is stored in the leaf as an attribute.
+
+    """
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)

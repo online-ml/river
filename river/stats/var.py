@@ -2,10 +2,10 @@ import copy
 
 import numpy as np
 
-from . import base, mean
+from river import stats
 
 
-class Var(base.Univariate):
+class Var(stats.base.Univariate):
     """Running variance using Welford's algorithm.
 
     Parameters
@@ -50,7 +50,7 @@ class Var(base.Univariate):
 
     def __init__(self, ddof=1):
         self.ddof = ddof
-        self.mean = mean.Mean()
+        self.mean = stats.Mean()
         self._S = 0
 
     def update(self, x, w=1.0):
@@ -84,7 +84,7 @@ class Var(base.Univariate):
     @classmethod
     def _from_state(cls, n, m, sig, *, ddof=1):
         new = cls(ddof=ddof)
-        new.mean = mean.Mean._from_state(n, m)  # noqa
+        new.mean = stats.Mean._from_state(n, m)  # noqa
         # scale the second order statistic
         new._S = (n - ddof) * sig
 
@@ -132,7 +132,7 @@ class Var(base.Univariate):
         return result
 
 
-class RollingVar(base.RollingUnivariate):
+class RollingVar(stats.base.RollingUnivariate):
     """Running variance over a window.
 
     Parameters
@@ -175,7 +175,7 @@ class RollingVar(base.RollingUnivariate):
     def __init__(self, window_size, ddof=1):
         self.ddof = ddof
         self._sos = 0
-        self._rolling_mean = mean.RollingMean(window_size=window_size)
+        self._rolling_mean = stats.RollingMean(window_size=window_size)
 
     @property
     def window_size(self):

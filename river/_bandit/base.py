@@ -15,7 +15,7 @@ class Arm:
     """
 
     index: int
-    metric: metrics.Metric
+    metric: metrics.base.Metric
     n_pulls: int = 0
 
 
@@ -26,7 +26,7 @@ class Bandit:
 
     """
 
-    def __init__(self, n_arms: int, metric: metrics.Metric):
+    def __init__(self, n_arms: int, metric: metrics.base.Metric):
         self.arms = [Arm(index=i, metric=metric.clone()) for i in range(n_arms)]
         self.metric = metric
         self.best_arm = self.arms[0]

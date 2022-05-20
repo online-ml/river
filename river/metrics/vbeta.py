@@ -5,7 +5,7 @@ from river import metrics
 __all__ = ["Completeness", "Homogeneity", "VBeta"]
 
 
-class Homogeneity(metrics.MultiClassMetric):
+class Homogeneity(metrics.base.MultiClassMetric):
     r"""Homogeneity Score.
 
     Homogeneity metric [^1] of a cluster labeling given a ground truth.
@@ -104,7 +104,7 @@ class Homogeneity(metrics.MultiClassMetric):
             return 1.0
 
 
-class Completeness(metrics.MultiClassMetric):
+class Completeness(metrics.base.MultiClassMetric):
     r"""Completeness Score.
 
     Completeness [^1] is symmetrical to homogeneity. In order to satisfy the
@@ -200,7 +200,7 @@ class Completeness(metrics.MultiClassMetric):
             return 1.0
 
 
-class VBeta(metrics.MultiClassMetric):
+class VBeta(metrics.base.MultiClassMetric):
     r"""VBeta.
 
     VBeta (or V-Measure) [^1] is an external entropy-based cluster evaluation measure.

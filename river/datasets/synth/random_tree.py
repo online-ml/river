@@ -1,11 +1,10 @@
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class RandomTree(base.SyntheticDataset):
+class RandomTree(datasets.base.SyntheticDataset):
     """Random Tree generator.
 
     This generator is based on [^1]. The generator creates a random
@@ -81,7 +80,7 @@ class RandomTree(base.SyntheticDataset):
             n_features=n_num_features + n_cat_features,
             n_classes=n_classes,
             n_outputs=1,
-            task=base.MULTI_CLF,
+            task=datasets.base.MULTI_CLF,
         )
 
         self.seed_tree = seed_tree
