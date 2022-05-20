@@ -131,7 +131,7 @@ class MultinomialNB(base.BaseNB):
             Target class.
 
         Returns
-        --------
+        -------
         self
 
         """
@@ -173,7 +173,7 @@ class MultinomialNB(base.BaseNB):
             Dictionary of term frequencies.
 
         Returns
-        --------
+        -------
         Mapping between classes and joint log likelihood.
 
         """
@@ -187,17 +187,17 @@ class MultinomialNB(base.BaseNB):
         }
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        """Updates the model with a term-frequency or TF-IDF pandas dataframe.
+        """Learn from a batch of count vectors.
 
         Parameters
         ----------
         X
-            Term-frequency or TF-IDF pandas dataframe.
+            Count vectors.
         y
             Target classes.
 
         Returns
-        --------
+        -------
         self
 
         """
@@ -253,7 +253,7 @@ class MultinomialNB(base.BaseNB):
             List of input features that are not part the vocabulary.
 
         Returns
-        --------
+        -------
         Log probabilities of input features.
 
         """
@@ -277,7 +277,7 @@ class MultinomialNB(base.BaseNB):
             Term-frequency or TF-IDF pandas dataframe.
 
         Returns
-        --------
+        -------
         Input samples joint log likelihood.
 
         """

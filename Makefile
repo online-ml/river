@@ -15,7 +15,7 @@ render-notebooks:
 	jupyter nbconvert --to markdown docs/examples/**.ipynb
 
 doc: render-notebooks
-	yamp river --out docs/api
+	yamp river --out docs/api --verbose
 	mkdocs build
 
 livedoc: doc

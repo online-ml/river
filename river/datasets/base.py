@@ -134,7 +134,29 @@ class Dataset(abc.ABC):
 
 
 class SyntheticDataset(Dataset):
-    """A synthetic dataset."""
+    """A synthetic dataset.
+
+    Parameters
+    ----------
+    task
+        Type of task the dataset is meant for. Should be one of:
+        - "Regression"
+        - "Binary classification"
+        - "Multi-class classification"
+        - "Multi-output binary classification"
+        - "Multi-output regression"
+    n_features
+        Number of features in the dataset.
+    n_samples
+        Number of samples in the dataset.
+    n_classes
+        Number of classes in the dataset, only applies to classification datasets.
+    n_outputs
+        Number of outputs the target is made of, only applies to multi-output datasets.
+    sparse
+        Whether the dataset is sparse or not.
+
+    """
 
     def __repr__(self):
         l_len_prop = max(map(len, self._repr_content.keys()))

@@ -8,7 +8,7 @@ __all__ = ["ModelSelectionRegressor", "ModelSelectionClassifier"]
 
 
 class ModelSelector(base.Ensemble, ABC):
-    """
+    """A generic model selector.
 
     Parameters
     ----------
@@ -34,6 +34,15 @@ class ModelSelector(base.Ensemble, ABC):
 
 
 class ModelSelectionRegressor(ModelSelector, base.Regressor):
+    """A model selector for regression.
+
+    Parameters
+    ----------
+    models
+    metric
+
+    """
+
     def predict_one(self, x):
         return self.best_model.predict_one(x)
 
@@ -65,6 +74,15 @@ class ModelSelectionRegressor(ModelSelector, base.Regressor):
 
 
 class ModelSelectionClassifier(ModelSelector, base.Classifier):
+    """A model selector for classification.
+
+    Parameters
+    ----------
+    models
+    metric
+
+    """
+
     def predict_proba_one(self, x):
         return self.best_model.predict_proba_one(x)
 

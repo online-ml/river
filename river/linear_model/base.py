@@ -15,6 +15,29 @@ class GLM:
 
     This serves as a base class for linear and logistic regression.
 
+    Parameters
+    ----------
+    optimizer
+        The sequential optimizer used for updating the weights. Note that the intercept updates are
+        handled separately.
+    loss
+        The loss function to optimize for.
+    l2
+        Amount of L2 regularization used to push weights towards 0.
+        For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.
+    l1
+        Amount of L1 regularization used to push weights towards 0.
+        For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.
+    intercept_init
+        Initial intercept value.
+    intercept_lr
+        Learning rate scheduler used for updating the intercept. A `optim.schedulers.Constant` is
+        used if a `float` is provided. The intercept is not updated when this is set to 0.
+    clip_gradient
+        Clips the absolute value of each gradient value.
+    initializer
+        Weights initialization scheme.
+
     """
 
     def __init__(

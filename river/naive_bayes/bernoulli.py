@@ -121,7 +121,7 @@ class BernoulliNB(base.BaseNB):
             Target class.
 
         Returns
-        --------
+        -------
         self
 
         """
@@ -154,7 +154,7 @@ class BernoulliNB(base.BaseNB):
             Dictionary of term frequencies.
 
         Returns
-        --------
+        -------
         Mapping between classes and joint log likelihood.
 
         """
@@ -175,17 +175,17 @@ class BernoulliNB(base.BaseNB):
         }
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series):
-        """Updates the model with a term-frequency or TF-IDF pandas dataframe.
+        """Learn from a batch of count vectors.
 
         Parameters
         ----------
         X
-            Term-frequency or TF-IDF pandas dataframe.
+            Count vectors.
         y
             Target classes.
 
         Returns
-        --------
+        -------
         self
 
         """
@@ -243,7 +243,7 @@ class BernoulliNB(base.BaseNB):
             List of input features.
 
         Returns
-        --------
+        -------
             Log probabilities of input features.
 
         """
@@ -267,7 +267,7 @@ class BernoulliNB(base.BaseNB):
             Term-frequency or TF-IDF pandas dataframe.
 
         Returns
-        --------
+        -------
         Input samples joint log likelihood.
 
         """

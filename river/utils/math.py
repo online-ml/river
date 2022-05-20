@@ -84,7 +84,7 @@ def dotvecmat(x, A):
     A
 
     Examples
-    ----------
+    --------
 
     >>> from river import utils
 
