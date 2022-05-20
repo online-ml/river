@@ -1,11 +1,10 @@
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class Waveform(base.SyntheticDataset):
+class Waveform(datasets.base.SyntheticDataset):
     """Waveform stream generator.
 
     Generates samples with 21 numeric features and 3 classes, based
@@ -84,7 +83,7 @@ class Waveform(base.SyntheticDataset):
             else self._N_FEATURES_INCLUDING_NOISE,
             n_classes=self._N_CLASSES,
             n_outputs=1,
-            task=base.MULTI_CLF,
+            task=datasets.base.MULTI_CLF,
         )
         self.seed = seed
         self.has_noise = has_noise

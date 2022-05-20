@@ -1,11 +1,11 @@
 import math
 
-from . import base
+from river import metrics
 
 __all__ = ["FowlkesMallows"]
 
 
-class FowlkesMallows(base.MultiClassMetric):
+class FowlkesMallows(metrics.base.MultiClassMetric):
     r"""Fowlkes-Mallows Index.
 
     The Fowlkes-Mallows Index [^1] [^2] is an external evaluation method that is

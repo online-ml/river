@@ -1,11 +1,11 @@
 import collections
 
-from . import base
+from river import optim
 
 __all__ = ["AdaMax"]
 
 
-class AdaMax(base.Optimizer):
+class AdaMax(optim.base.Optimizer):
     """AdaMax optimizer.
 
     Parameters

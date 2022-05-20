@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-class MutualInfo(metrics.MultiClassMetric):
+class MutualInfo(metrics.base.MultiClassMetric):
     r"""Mutual Information between two clusterings.
 
     The Mutual Information [^1] is a measure of the similarity between two labels of
@@ -105,7 +105,7 @@ class MutualInfo(metrics.MultiClassMetric):
         return mutual_info_score
 
 
-class NormalizedMutualInfo(metrics.MultiClassMetric):
+class NormalizedMutualInfo(metrics.base.MultiClassMetric):
     r"""Normalized Mutual Information between two clusterings.
 
     Normalized Mutual Information (NMI) is a normalized version of the Mutual Information (MI) score
@@ -214,7 +214,7 @@ class NormalizedMutualInfo(metrics.MultiClassMetric):
         return mutual_info_score / normalizer
 
 
-class AdjustedMutualInfo(metrics.MultiClassMetric):
+class AdjustedMutualInfo(metrics.base.MultiClassMetric):
     r"""Adjusted Mutual Information between two clusterings.
 
     Adjusted Mutual Information (AMI) is an adjustment of the Mutual Information score

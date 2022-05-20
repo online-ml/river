@@ -1,9 +1,9 @@
 import collections
 
-from . import base, sgd
+from river import optim
 
 
-class Averager(base.Optimizer):
+class Averager(optim.base.Optimizer):
 
     """Averaged stochastic gradient descent.
 
@@ -49,7 +49,7 @@ class Averager(base.Optimizer):
 
     """
 
-    def __init__(self, optimizer: base.Optimizer, start: int = 0):
+    def __init__(self, optimizer: optim.base.Optimizer, start: int = 0):
         self.optimizer = optimizer
         self.start = start
         self.avg_w = collections.defaultdict(float)
@@ -73,4 +73,4 @@ class Averager(base.Optimizer):
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"optimizer": sgd.SGD()}
+        yield {"optimizer": optim.SGD()}

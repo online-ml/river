@@ -1,9 +1,9 @@
 import collections
 
-from . import base
+from river import stats
 
 
-class Sum(base.Univariate):
+class Sum(stats.base.Univariate):
     """Running sum.
 
     Attributes
@@ -40,7 +40,7 @@ class Sum(base.Univariate):
         return self.sum
 
 
-class RollingSum(base.RollingUnivariate):
+class RollingSum(stats.base.RollingUnivariate):
     """Running sum over a window.
 
     Parameters

@@ -3,7 +3,7 @@ import collections
 from river import stats
 
 
-class Shift(stats.Univariate):
+class Shift(stats.base.Univariate):
     """Shifts a data stream by returning past values.
 
     This can be used to compute statistics over past data. For instance, if you're computing daily

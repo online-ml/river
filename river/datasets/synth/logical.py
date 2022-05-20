@@ -2,12 +2,11 @@ import itertools
 
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class Logical(base.SyntheticDataset):
+class Logical(datasets.base.SyntheticDataset):
     """Logical functions stream generator.
 
     Make a toy dataset with three labels that represent the logical
@@ -52,7 +51,10 @@ class Logical(base.SyntheticDataset):
         seed: int or np.random.RandomState = None,
     ):
         super().__init__(
-            n_features=2, n_outputs=3, n_samples=4 * n_tiles, task=base.MO_BINARY_CLF
+            n_features=2,
+            n_outputs=3,
+            n_samples=4 * n_tiles,
+            task=datasets.base.MO_BINARY_CLF,
         )
         self.n_tiles = n_tiles
         self.shuffle = shuffle

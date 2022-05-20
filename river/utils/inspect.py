@@ -37,7 +37,7 @@ def extract_relevant(model: base.Estimator):
 
 
 def isanomalydetector(model):
-    return isinstance(extract_relevant(model), anomaly.AnomalyDetector)
+    return isinstance(extract_relevant(model), anomaly.base.AnomalyDetector)
 
 
 def isclassifier(model):

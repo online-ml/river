@@ -2,11 +2,10 @@ import abc
 from numbers import Number
 from typing import List
 
-from river.base import Base
-from river.metrics import RegressionMetric
+from river import base, metrics
 
 
-class ForecastingMetric(Base, abc.ABC):
+class ForecastingMetric(base.Base, abc.ABC):
     @abc.abstractmethod
     def update(self, y_true: List[Number], y_pred: List[Number]) -> "ForecastingMetric":
         """Update the metric at each step along the horizon.
@@ -48,7 +47,7 @@ class HorizonMetric(ForecastingMetric):
 
     """
 
-    def __init__(self, metric: RegressionMetric):
+    def __init__(self, metric: metrics.base.RegressionMetric):
         self.metric = metric
         self.metrics = []
 

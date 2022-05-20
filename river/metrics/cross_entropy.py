@@ -1,11 +1,9 @@
-from river import optim
-
-from . import base
+from river import metrics, optim
 
 __all__ = ["CrossEntropy"]
 
 
-class CrossEntropy(base.MeanMetric, base.MultiClassMetric):
+class CrossEntropy(metrics.base.MeanMetric, metrics.base.MultiClassMetric):
     """Multiclass generalization of the logarithmic loss.
 
     Examples

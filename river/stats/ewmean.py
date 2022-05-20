@@ -1,7 +1,7 @@
-from . import base
+from river import stats
 
 
-class EWMean(base.Univariate):
+class EWMean(stats.base.Univariate):
     """Exponentially weighted mean.
 
     Parameters

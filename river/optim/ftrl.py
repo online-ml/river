@@ -2,12 +2,12 @@ import collections
 
 import numpy as np
 
-from . import base
+from river import optim
 
 __all__ = ["FTRLProximal"]
 
 
-class FTRLProximal(base.Optimizer):
+class FTRLProximal(optim.base.Optimizer):
     """FTRL-Proximal optimizer.
 
     Parameters

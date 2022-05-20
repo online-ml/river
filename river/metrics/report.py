@@ -1,8 +1,7 @@
-from .. import utils
-from . import accuracy, base, fbeta, precision, recall
+from river import metrics, utils
 
 
-class ClassificationReport(base.MultiClassMetric):
+class ClassificationReport(metrics.base.MultiClassMetric):
     """A report for monitoring a classifier.
 
     This class maintains a set of metrics and updates each of them every time `update` is called.
@@ -54,16 +53,16 @@ class ClassificationReport(base.MultiClassMetric):
         super().__init__(cm)
         self.decimals = decimals
         self._f1s = {}
-        self._macro_precision = precision.MacroPrecision(self.cm)
-        self._macro_recall = recall.MacroRecall(self.cm)
-        self._macro_f1 = fbeta.MacroF1(self.cm)
-        self._micro_precision = precision.MicroPrecision(self.cm)
-        self._micro_recall = recall.MicroRecall(self.cm)
-        self._micro_f1 = fbeta.MicroF1(self.cm)
-        self._weighted_precision = precision.WeightedPrecision(self.cm)
-        self._weighted_recall = recall.WeightedRecall(self.cm)
-        self._weighted_f1 = fbeta.WeightedF1(self.cm)
-        self._accuracy = accuracy.Accuracy(self.cm)
+        self._macro_precision = metrics.MacroPrecision(self.cm)
+        self._macro_recall = metrics.MacroRecall(self.cm)
+        self._macro_f1 = metrics.MacroF1(self.cm)
+        self._micro_precision = metrics.MicroPrecision(self.cm)
+        self._micro_recall = metrics.MicroRecall(self.cm)
+        self._micro_f1 = metrics.MicroF1(self.cm)
+        self._weighted_precision = metrics.WeightedPrecision(self.cm)
+        self._weighted_recall = metrics.WeightedRecall(self.cm)
+        self._weighted_f1 = metrics.WeightedF1(self.cm)
+        self._accuracy = metrics.Accuracy(self.cm)
 
     def get(self):
         raise NotImplementedError
@@ -77,7 +76,7 @@ class ClassificationReport(base.MultiClassMetric):
 
         for c in classes:
             if c not in self._f1s:
-                self._f1s[c] = fbeta.F1(cm=self.cm, pos_val=c)
+                self._f1s[c] = metrics.F1(cm=self.cm, pos_val=c)
 
         columns = [
             # Row names

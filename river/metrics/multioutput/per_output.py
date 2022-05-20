@@ -3,14 +3,12 @@ from copy import deepcopy
 from functools import partial
 
 from river import metrics, utils
-
-from ..base import WrapperMetric
-from . import base
+from river.metrics.multioutput.base import MultiOutputMetric
 
 __all__ = ["PerOutput"]
 
 
-class PerOutput(base.MultiOutputMetric, WrapperMetric):
+class PerOutput(MultiOutputMetric, metrics.base.WrapperMetric):
     """Per-output wrapper.
 
     A copy of the metric is maintained for each output.
@@ -31,7 +29,7 @@ class PerOutput(base.MultiOutputMetric, WrapperMetric):
         return self._metric
 
     def works_with(self, model) -> bool:
-        if isinstance(self.metric, metrics.ClassificationMetric):
+        if isinstance(self.metric, metrics.base.ClassificationMetric):
             return utils.inspect.ismoclassifier(model)
         return utils.inspect.ismoregressor(model)
 

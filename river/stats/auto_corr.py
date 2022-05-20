@@ -1,10 +1,10 @@
 import collections
 import typing
 
-from . import base, pearson
+from river import stats
 
 
-class AutoCorr(base.Univariate):
+class AutoCorr(stats.base.Univariate):
     """Measures the serial correlation.
 
     This method computes the Pearson correlation between the current value and the value seen `n`
@@ -50,7 +50,7 @@ class AutoCorr(base.Univariate):
     def __init__(self, lag: int):
         self.window: typing.Deque[float] = collections.deque(maxlen=lag)
         self.lag = lag
-        self.pearson = pearson.PearsonCorr(ddof=1)
+        self.pearson = stats.PearsonCorr(ddof=1)
 
     @property
     def name(self):

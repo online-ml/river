@@ -1,9 +1,9 @@
 import random
 
-from .. import base
+from river import datasets
 
 
-class Mv(base.SyntheticDataset):
+class Mv(datasets.base.SyntheticDataset):
     """Mv artificial dataset.
 
     Artificial dataset composed of both nominal and numeric features, whose features
@@ -81,7 +81,7 @@ class Mv(base.SyntheticDataset):
     """
 
     def __init__(self, seed: int = None):
-        super().__init__(task=base.REG, n_features=10)
+        super().__init__(task=datasets.base.REG, n_features=10)
         self.seed = seed
 
     def __iter__(self):

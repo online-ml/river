@@ -165,7 +165,7 @@ class StatisticRegressor(base.Regressor):
 
     """
 
-    def __init__(self, statistic: stats.Univariate):
+    def __init__(self, statistic: stats.base.Univariate):
         self.statistic = statistic
 
     @classmethod

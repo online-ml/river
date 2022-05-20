@@ -1,7 +1,7 @@
-from . import base
+from river import stats
 
 
-class Count(base.Univariate):
+class Count(stats.base.Univariate):
     """A simple counter.
 
     Attributes

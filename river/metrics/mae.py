@@ -1,9 +1,9 @@
-from . import base
+from river import metrics
 
 __all__ = ["MAE"]
 
 
-class MAE(base.MeanMetric, base.RegressionMetric):
+class MAE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
     """Mean absolute error.
 
     Examples

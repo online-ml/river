@@ -1,12 +1,12 @@
 import numpy as np
 from scipy import stats
 
-from . import base
+from river import metrics
 
 __all__ = ["GeometricMean"]
 
 
-class GeometricMean(base.MultiClassMetric):
+class GeometricMean(metrics.base.MultiClassMetric):
     r"""Geometric mean score.
 
     The geometric mean is a good indicator of a classifier's performance in the presence of class

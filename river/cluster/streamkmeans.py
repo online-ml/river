@@ -56,7 +56,7 @@ class STREAMKMeans(base.Clusterer):
           San Jose, CA, USA. DOI: 10.1109/ICDE.2002.994785.
 
     Examples
-    ----------
+    --------
 
     >>> from river import cluster
     >>> from river import stream

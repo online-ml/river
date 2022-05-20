@@ -5,7 +5,7 @@ from typing import Iterable
 
 import numpy as np
 
-from .. import optim, utils
+from river import optim, utils
 
 
 class BaseFM:

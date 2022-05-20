@@ -4,14 +4,12 @@ from copy import deepcopy
 from functools import partial
 
 from river import metrics, utils
-
-from ..base import WrapperMetric
-from . import base
+from river.metrics.multioutput.base import MultiOutputMetric
 
 __all__ = ["MacroAverage"]
 
 
-class MacroAverage(base.MultiOutputMetric, WrapperMetric):
+class MacroAverage(MultiOutputMetric, metrics.base.WrapperMetric):
     """Macro-average wrapper.
 
     A copy of the provided metric is made for each output. The arithmetic average of all the
@@ -33,7 +31,7 @@ class MacroAverage(base.MultiOutputMetric, WrapperMetric):
         return self._metric
 
     def works_with(self, model) -> bool:
-        if isinstance(self.metric, metrics.ClassificationMetric):
+        if isinstance(self.metric, metrics.base.ClassificationMetric):
             return utils.inspect.ismoclassifier(model)
         return utils.inspect.ismoregressor(model)
 

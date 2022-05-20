@@ -1,11 +1,11 @@
 import math
 
-from . import base
+from river import metrics
 
 __all__ = ["MSE", "RMSE", "RMSLE"]
 
 
-class MSE(base.MeanMetric, base.RegressionMetric):
+class MSE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
     """Mean squared error.
 
     Examples

@@ -1,11 +1,10 @@
 import numpy as np
 
+from river import datasets
 from river.utils.skmultiflow_utils import check_random_state
 
-from .. import base
 
-
-class STAGGER(base.SyntheticDataset):
+class STAGGER(datasets.base.SyntheticDataset):
     """STAGGER concepts stream generator.
 
     This generator is an implementation of the dara stream with abrupt concept
@@ -77,7 +76,9 @@ class STAGGER(base.SyntheticDataset):
         seed: int or np.random.RandomState = None,
         balance_classes: bool = False,
     ):
-        super().__init__(n_features=3, n_classes=2, n_outputs=1, task=base.BINARY_CLF)
+        super().__init__(
+            n_features=3, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF
+        )
 
         # Classification functions to use
         self._functions = [

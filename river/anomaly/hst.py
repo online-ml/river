@@ -3,15 +3,12 @@ import functools
 import random
 import typing
 
-from river import base
-from river.tree.base import Branch, Leaf
-
-from .base import AnomalyDetector
+from river import anomaly, base, tree
 
 __all__ = ["HalfSpaceTrees"]
 
 
-class HSTBranch(Branch):
+class HSTBranch(tree.base.Branch):
     def __init__(self, left, right, feature, threshold, l_mass, r_mass):
         super().__init__(left, right)
         self.feature = feature
@@ -53,7 +50,7 @@ class HSTBranch(Branch):
         return f"{self.feature} < {self.threshold:.5f}"
 
 
-class HSTLeaf(Leaf):
+class HSTLeaf(tree.base.Leaf):
     def __repr__(self):
         return str(self.r_mass)
 
@@ -94,7 +91,7 @@ def make_padded_tree(limits, height, padding, rng=random, **node_params):
     return HSTBranch(left=left, right=right, feature=on, threshold=at, **node_params)
 
 
-class HalfSpaceTrees(AnomalyDetector):
+class HalfSpaceTrees(anomaly.base.AnomalyDetector):
     """Half-Space Trees (HST).
 
     Half-space trees are an online variant of isolation forests. They work well when anomalies are
@@ -239,15 +236,15 @@ class HalfSpaceTrees(AnomalyDetector):
             ]
 
         # Update each tree
-        for tree in self.trees:
-            for node in tree.walk(x):
+        for t in self.trees:
+            for node in t.walk(x):
                 node.l_mass += 1
 
         # Pivot the masses if necessary
         self.counter += 1
         if self.counter == self.window_size:
-            for tree in self.trees:
-                for node in tree.iter_dfs():
+            for t in self.trees:
+                for node in t.iter_dfs():
                     node.r_mass = node.l_mass
                     node.l_mass = 0
             self._first_window = False
@@ -261,8 +258,8 @@ class HalfSpaceTrees(AnomalyDetector):
             return 0
 
         score = 0.0
-        for tree in self.trees:
-            for depth, node in enumerate(tree.walk(x)):
+        for t in self.trees:
+            for depth, node in enumerate(t.walk(x)):
                 score += node.r_mass * 2**depth
                 if node.r_mass < self.size_limit:
                     break

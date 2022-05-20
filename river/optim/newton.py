@@ -1,10 +1,9 @@
-from .. import utils
-from . import base
+from river import optim, utils
 
 __all__ = ["Newton"]
 
 
-class Newton(base.Optimizer):
+class Newton(optim.base.Optimizer):
     """Online Newton Step (ONS) optimizer.
 
     This optimizer uses second-order information (i.e. the Hessian of the cost function) in
