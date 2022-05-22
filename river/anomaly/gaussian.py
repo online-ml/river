@@ -2,7 +2,7 @@ from river import anomaly
 from river import proba
 
 
-class Gaussian(anomaly.base.SupervisedAnomalyDetector):
+class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
     """Univariate Gaussian anomaly detector.
 
     This is a supervised anomaly detector. It fits a Gaussian distribution to the target values.
@@ -28,7 +28,7 @@ class Gaussian(anomaly.base.SupervisedAnomalyDetector):
     >>> from river import anomaly
 
     >>> rng = random.Random(42)
-    >>> detector = anomaly.Gaussian()
+    >>> detector = anomaly.GaussianScorer()
 
     >>> for y in (rng.gauss(0, 1) for _ in range(100)):
     ...     detector = detector.learn_one(None, y)

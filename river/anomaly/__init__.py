@@ -15,13 +15,13 @@ from . import base
 from .filter import ThresholdFilter
 from .hst import HalfSpaceTrees
 from .svm import OneClassSVM
-from .gaussian import Gaussian
+from .gaussian import GaussianScorer
 
 __all__ = [
     "base",
     "AnomalyDetector",
-    "Gaussian",
+    "GaussianScorer",
     "HalfSpaceTrees",
     "OneClassSVM",
-    "ThresholdFilter"
+    "ThresholdFilter",
 ]

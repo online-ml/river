@@ -2,6 +2,13 @@
 
 - Moved all metrics in `metrics.cluster` except `metrics.Silhouette` to [river-extra](https://github.com/online-ml/river-extra).
 
+## anomaly
+
+- There is now a `anomaly.base.SupervisedAnomalyDetector` base class for supervised anomaly detection.
+- Added `anomaly.GaussianScorer`, which is the first supervised anomaly detector.
+- There is now a `anomaly.base.AnomalyFilter` base class for anomaly filtering methods. These allow to classify anomaly scores. They can also prevent models from learning on anomalous data, for instance by putting them as an initial step of a pipeline.
+- Added `anomaly.ConstantThresholder`, which is the first anomaly filter.
+
 ## dataset
 
 - Added the `datasets.WaterFlow` dataset.

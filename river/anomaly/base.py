@@ -140,5 +140,5 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
         score = self.score_one(*args)
         is_anomaly = self.classify(score)
         if not is_anomaly:
-            self.anomaly_detector.learn(*args)
+            self.anomaly_detector.learn_one(*args)
         return self
