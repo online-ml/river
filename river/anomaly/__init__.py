@@ -13,9 +13,9 @@ model.
 """
 from . import base
 from .filter import ThresholdFilter
+from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
 from .svm import OneClassSVM
-from .gaussian import GaussianScorer
 
 __all__ = [
     "base",

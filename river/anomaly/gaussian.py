@@ -1,5 +1,4 @@
-from river import anomaly
-from river import proba
+from river import anomaly, proba
 
 
 class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):

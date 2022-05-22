@@ -121,7 +121,7 @@ def evaluate(
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
     horizon: int,
-    grace_period=1
+    grace_period=1,
 ) -> "time_series.HorizonMetric":
     """Evaluates the performance of a forecaster on a time series dataset.
 
