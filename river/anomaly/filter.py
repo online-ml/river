@@ -47,33 +47,32 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
     ...     dataset,
     ...     model,
     ...     metric,
-    ...     horizon=period,
-    ...     grace_period=period
+    ...     horizon=period
     ... )
-    +1  SMAPE: 4.171129
-    +2  SMAPE: 4.247672
-    +3  SMAPE: 4.310317
-    +4  SMAPE: 4.358783
-    +5  SMAPE: 4.391414
-    +6  SMAPE: 4.414142
-    +7  SMAPE: 4.430198
-    +8  SMAPE: 4.440497
-    +9  SMAPE: 4.443099
-    +10 SMAPE: 4.439995
-    +11 SMAPE: 4.432997
-    +12 SMAPE: 4.424021
-    +13 SMAPE: 4.412978
-    +14 SMAPE: 4.396743
-    +15 SMAPE: 4.374385
-    +16 SMAPE: 4.343549
-    +17 SMAPE: 4.301792
-    +18 SMAPE: 4.256458
-    +19 SMAPE: 4.213859
-    +20 SMAPE: 4.180718
-    +21 SMAPE: 4.167248
-    +22 SMAPE: 4.1809
-    +23 SMAPE: 4.2127
-    +24 SMAPE: 4.263497
+    +1  SMAPE: 4.220171
+    +2  SMAPE: 4.322648
+    +3  SMAPE: 4.418546
+    +4  SMAPE: 4.504986
+    +5  SMAPE: 4.57924
+    +6  SMAPE: 4.64123
+    +7  SMAPE: 4.694042
+    +8  SMAPE: 4.740753
+    +9  SMAPE: 4.777291
+    +10 SMAPE: 4.804558
+    +11 SMAPE: 4.828114
+    +12 SMAPE: 4.849823
+    +13 SMAPE: 4.865871
+    +14 SMAPE: 4.871972
+    +15 SMAPE: 4.866274
+    +16 SMAPE: 4.842614
+    +17 SMAPE: 4.806214
+    +18 SMAPE: 4.763355
+    +19 SMAPE: 4.713455
+    +20 SMAPE: 4.672062
+    +21 SMAPE: 4.659102
+    +22 SMAPE: 4.693496
+    +23 SMAPE: 4.773707
+    +24 SMAPE: 4.880654
 
     """
 
