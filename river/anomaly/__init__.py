@@ -12,6 +12,7 @@ model.
 
 """
 from . import base
+from .filter import ThresholdFilter
 from .hst import HalfSpaceTrees
 from .svm import OneClassSVM
 from .gaussian import Gaussian
@@ -19,7 +20,8 @@ from .gaussian import Gaussian
 __all__ = [
     "base",
     "AnomalyDetector",
+    "Gaussian",
     "HalfSpaceTrees",
     "OneClassSVM",
-    "Gaussian",
+    "ThresholdFilter"
 ]

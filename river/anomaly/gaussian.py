@@ -2,7 +2,7 @@ from river import anomaly
 from river import proba
 
 
-class Gaussian(anomaly.SupervisedAnomalyDetector):
+class Gaussian(anomaly.base.SupervisedAnomalyDetector):
     """Univariate Gaussian anomaly detector.
 
     This is a supervised anomaly detector. It fits a Gaussian distribution to the target values.
@@ -16,6 +16,10 @@ class Gaussian(anomaly.SupervisedAnomalyDetector):
     ----------
     window_size
         Set this to fit the Gaussian distribution over a window of recent values.
+    grace_period
+        Number of samples before which a 0 is always returned. This is handy because the Gaussian
+        distribution needs time to stabilize, and will likely produce overly high anomaly score
+        for the first samples.
 
     Examples
     --------
@@ -43,12 +47,21 @@ class Gaussian(anomaly.SupervisedAnomalyDetector):
 
     """
 
-    def __init__(self, window_size=None):
+    def __init__(self, window_size=None, grace_period=100):
         self.window_size = window_size
         self.gaussian = (
             proba.Rolling(proba.Gaussian(), window_size=self.window_size)
             if window_size
             else proba.Gaussian()
+        )
+        self.grace_period = grace_period
+
+    @property
+    def _dist(self):
+        return (
+            self.gaussian
+            if isinstance(self.gaussian, proba.Gaussian)
+            else self.gaussian.dist
         )
 
     def learn_one(self, _, y):
@@ -56,9 +69,6 @@ class Gaussian(anomaly.SupervisedAnomalyDetector):
         return self
 
     def score_one(self, _, y):
-        dist = (
-            self.gaussian
-            if isinstance(self.gaussian, proba.Gaussian)
-            else self.gaussian.dist
-        )
-        return 2 * abs(dist.cdf(y) - 0.5)
+        if self._dist.n_samples < self.grace_period:
+            return 0
+        return 2 * abs(self._dist.cdf(y) - 0.5)
