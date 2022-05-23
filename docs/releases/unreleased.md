@@ -2,6 +2,18 @@
 
 - Moved all metrics in `metrics.cluster` except `metrics.Silhouette` to [river-extra](https://github.com/online-ml/river-extra).
 
+## anomaly
+
+- There is now a `anomaly.base.SupervisedAnomalyDetector` base class for supervised anomaly detection.
+- Added `anomaly.GaussianScorer`, which is the first supervised anomaly detector.
+- There is now a `anomaly.base.AnomalyFilter` base class for anomaly filtering methods. These allow to classify anomaly scores. They can also prevent models from learning on anomalous data, for instance by putting them as an initial step of a pipeline.
+- Added `anomaly.ConstantThresholder`, which is the first anomaly filter.
+- Removed `anomaly.ConstantThresholder` and `anomaly.QuantileThresholder`, as they overlap with the new anomaly filtering mechanism.
+
+## dataset
+
+- Added the `datasets.WaterFlow` dataset.
+
 ## dist
 
 - A `revert` method has been added to `stats.Gaussian`.
@@ -40,12 +52,21 @@
 - Introduced `neighbors.NearestNeighbors` for searching nearest neighbors.
 - Vastly refactored and simplified the nearest neighbors logic.
 
+## proba
+
+- Added `proba.Rolling` to measure a probability distribution over a window.
+
 ## rules
 
 - AMRules's `debug_one` explicitly indicates the prediction strategy used by each rule.
 - Fix bug in `debug_one` (AMRules) where prediction explanations were incorrectly displayed when `ordered_rule_set=True`.
 
+## time_series
+
+- Added an `iter_evaluate` function to trace the evaluation at each sample in a dataset.
+
 ## tree
+
 - Fix bug in Naive Bayes-based leaf prediction.
 - Remove unneeded numpy usage in `HoeffdingAdaptiveTree{Classifier,Regressor}`.
 

@@ -290,6 +290,9 @@ class Metrics(Metric, collections.UserList):
         self.append(other)
         return self
 
+    def clone(self):
+        return Metrics([m.clone() for m in self])
+
 
 class WrapperMetric(Metric):
     @property
