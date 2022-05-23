@@ -84,8 +84,29 @@ class SupervisedAnomalyDetector(base.Estimator):
 
 
 class AnomalyFilter(base.Wrapper, base.Estimator):
-    def __init__(self, anomaly_detector: AnomalyDetector):
+    """Anomaly filter base class.
+
+    An anomaly filter has the ability to classify an anomaly score as anomalous or not. It can then
+    be used to filter anomalies, in particular as part of a pipeline.
+
+    Parameters
+    ----------
+    anomaly_detector
+        An anomaly detector wrapped by the anomaly filter.
+    protect_anomaly_detector
+        Indicates whether or not the anomaly detector should be updated when the anomaly score is
+        anomalous. If the data contains sporadic anomalies, then the anomaly detector should likely
+        not be updated. Indeed, if it learns the anomaly score, then it will slowly start to
+        consider anomalous anomaly scores as normal. This might be desirable, for instance in the
+        case of drift.
+
+    """
+
+    def __init__(
+        self, anomaly_detector: AnomalyDetector, protect_anomaly_detector=True
+    ):
         self.anomaly_detector = anomaly_detector
+        self.protect_anomaly_detector = protect_anomaly_detector
 
     @property
     def _wrapped_model(self):
@@ -137,8 +158,8 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
         self
 
         """
-        score = self.score_one(*args)
-        is_anomaly = self.classify(score)
-        if not is_anomaly:
+        if not self.protect_anomaly_detector or not self.classify(
+            self.score_one(*args)
+        ):
             self.anomaly_detector.learn_one(*args)
         return self
