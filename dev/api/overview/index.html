@@ -1584,8 +1584,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../anomaly/ConstantThresholder/" class="md-nav__link">
-        ConstantThresholder
+      <a href="../anomaly/GaussianScorer/" class="md-nav__link">
+        GaussianScorer
       </a>
     </li>
   
@@ -1626,8 +1626,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../anomaly/QuantileThresholder/" class="md-nav__link">
-        QuantileThresholder
+      <a href="../anomaly/ThresholdFilter/" class="md-nav__link">
+        ThresholdFilter
       </a>
     </li>
   
@@ -2532,6 +2532,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_7">
@@ -2859,11 +2861,25 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../datasets/WaterFlow/" class="md-nav__link">
+        WaterFlow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_7_23" data-md-state="indeterminate" type="checkbox" id="__nav_4_7_23" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_7_24" data-md-state="indeterminate" type="checkbox" id="__nav_4_7_24" checked>
       
       
       
@@ -2878,13 +2894,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_7_23">
+        <label class="md-nav__link" for="__nav_4_7_24">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_7_23">
+        <label class="md-nav__title" for="__nav_4_7_24">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -7249,6 +7265,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_27">
@@ -7297,6 +7315,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../proba/Rolling/" class="md-nav__link">
+        Rolling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../proba/TimeRolling/" class="md-nav__link">
         TimeRolling
       </a>
@@ -7314,7 +7346,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27_4" data-md-state="indeterminate" type="checkbox" id="__nav_4_27_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27_5" data-md-state="indeterminate" type="checkbox" id="__nav_4_27_5" checked>
       
       
       
@@ -7325,13 +7357,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_27_4">
+        <label class="md-nav__link" for="__nav_4_27_5">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_27_4">
+        <label class="md-nav__title" for="__nav_4_27_5">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -8854,6 +8886,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_33">
@@ -8943,11 +8977,25 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../time-series/iter-evaluate/" class="md-nav__link">
+        iter_evaluate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33_6" data-md-state="indeterminate" type="checkbox" id="__nav_4_33_6" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33_7" data-md-state="indeterminate" type="checkbox" id="__nav_4_33_7" checked>
       
       
       
@@ -8956,13 +9004,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_33_6">
+        <label class="md-nav__link" for="__nav_4_33_7">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_33_6">
+        <label class="md-nav__title" for="__nav_4_33_7">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -10900,16 +10948,18 @@
 <h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <p>Anomaly detection.</p>
 <p>Estimators in the <code>anomaly</code> module have a bespoke API. Each anomaly detector has a <code>score_one</code>
-method instead of a <code>predict_one</code> method. This method returns an anomaly score. A high score
-indicates an anomaly, whereas a low score is indicative of a normal observation. The range of the
+method instead of a <code>predict_one</code> method. This method returns an anomaly score. Normal observations
+should have a low score, whereas anomalous observations should have a high score. The range of the
 scores is relative to each estimator.</p>
-<p>An anomaly detector can be combined with a thresholding method to turn its anomaly scores into 0s
-and 1s.</p>
+<p>Anomaly detectors are usually unsupervised, in that they analyze the distribution of the features
+they are shown. But River also has a notion of supervised anomaly detectors. These analyze the
+distribution of a target variable, and optionally include the distribution of the features as well. They are useful for detecting labelling anomalies, which can be detrimental if they learned by a
+model.</p>
 <ul>
-<li><a href="../anomaly/ConstantThresholder">ConstantThresholder</a></li>
+<li><a href="../anomaly/GaussianScorer">GaussianScorer</a></li>
 <li><a href="../anomaly/HalfSpaceTrees">HalfSpaceTrees</a></li>
 <li><a href="../anomaly/OneClassSVM">OneClassSVM</a></li>
-<li><a href="../anomaly/QuantileThresholder">QuantileThresholder</a></li>
+<li><a href="../anomaly/ThresholdFilter">ThresholdFilter</a></li>
 </ul>
 <h3 id="base">base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h3>
 <ul>
@@ -11017,6 +11067,7 @@ are interested in infinite synthetic data generators.</p>
 <li><a href="../datasets/TREC07">TREC07</a></li>
 <li><a href="../datasets/Taxis">Taxis</a></li>
 <li><a href="../datasets/TrumpApproval">TrumpApproval</a></li>
+<li><a href="../datasets/WaterFlow">WaterFlow</a></li>
 </ul>
 <h3 id="base_2">base<a class="headerlink" href="#base_2" title="Permanent link">&para;</a></h3>
 <ul>
@@ -11385,6 +11436,7 @@ the latter extracts new information from the data</p>
 <ul>
 <li><a href="../proba/Gaussian">Gaussian</a></li>
 <li><a href="../proba/Multinomial">Multinomial</a></li>
+<li><a href="../proba/Rolling">Rolling</a></li>
 <li><a href="../proba/TimeRolling">TimeRolling</a></li>
 </ul>
 <h3 id="base_8">base<a class="headerlink" href="#base_8" title="Permanent link">&para;</a></h3>
@@ -11524,6 +11576,7 @@ the majority of these methods are infinite data generators.</p>
 <p><strong>Functions</strong></p>
 <ul>
 <li><a href="../time-series/evaluate">evaluate</a></li>
+<li><a href="../time-series/iter-evaluate">iter_evaluate</a></li>
 </ul>
 <h3 id="base_11">base<a class="headerlink" href="#base_11" title="Permanent link">&para;</a></h3>
 <ul>
