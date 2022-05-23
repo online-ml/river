@@ -69,7 +69,7 @@ class BaseForest(base.Ensemble):
         self._n_samples_seen += 1
 
         if len(self) == 0:
-            self._init_ensemble(list(x.keys()))
+            self._init_ensemble(sorted(x.keys()))
 
         for model in self:
             # Get prediction for instance
@@ -436,19 +436,20 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     Examples
     --------
-    >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
+    >>> from river import synth
 
-    >>> dataset = datasets.ImageSegments()
+    >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
+    ...                                    width=40).take(1000)
 
-    >>> model = ensemble.AdaptiveRandomForestClassifier(seed=8)
+    >>> model = ensemble.AdaptiveRandomForestClassifier(seed=8, leaf_prediction="mc")
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 82.94%
+    Accuracy: 76.68%
 
     References
     ----------
@@ -525,7 +526,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         y_pred = collections.Counter()
 
         if len(self) == 0:
-            self._init_ensemble(features=list(x.keys()))
+            self._init_ensemble(sorted(x.keys()))
             return y_pred
 
         for model in self:
@@ -701,7 +702,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.984072
+    MAE: 1.134919
 
     """
 
@@ -782,7 +783,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     def predict_one(self, x: dict) -> base.typing.RegTarget:
 
         if len(self) == 0:
-            self._init_ensemble(features=list(x.keys()))
+            self._init_ensemble(sorted(x.keys()))
             return 0.0
 
         y_pred = np.zeros(self.n_models)
