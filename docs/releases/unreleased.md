@@ -7,7 +7,7 @@
 - There is now a `anomaly.base.SupervisedAnomalyDetector` base class for supervised anomaly detection.
 - Added `anomaly.GaussianScorer`, which is the first supervised anomaly detector.
 - There is now a `anomaly.base.AnomalyFilter` base class for anomaly filtering methods. These allow to classify anomaly scores. They can also prevent models from learning on anomalous data, for instance by putting them as an initial step of a pipeline.
-- Added `anomaly.ConstantThresholder`, which is the first anomaly filter.
+- Added `anomaly.ConstantFilter`, which is the first anomaly filter.
 - Removed `anomaly.ConstantThresholder` and `anomaly.QuantileThresholder`, as they overlap with the new anomaly filtering mechanism.
 
 ## dataset
