@@ -4,8 +4,6 @@ import typing
 
 from . import base
 
-__all__ = ["TimeRolling"]
-
 
 class TimeRolling(base.Distribution):
     """Wrapper for measuring probability distributions over a period of time.
@@ -35,17 +33,17 @@ class TimeRolling(base.Distribution):
     ...     dist = dist.update(x, dt.datetime(2019, 1, day))
     ...     print(dist)
     ...     print()
-    P(red) = 1.000	(rolling 2 days, 0:00:00)
+    P(red) = 1.000
     <BLANKLINE>
     P(red) = 0.500
-    P(green) = 0.500	(rolling 2 days, 0:00:00)
+    P(green) = 0.500
     <BLANKLINE>
     P(green) = 1.000
-    P(red) = 0.000	(rolling 2 days, 0:00:00)
+    P(red) = 0.000
     <BLANKLINE>
     P(green) = 0.500
     P(blue) = 0.500
-    P(red) = 0.000	(rolling 2 days, 0:00:00)
+    P(red) = 0.000
     <BLANKLINE>
 
     """
@@ -56,7 +54,7 @@ class TimeRolling(base.Distribution):
         self._events: typing.List[typing.Tuple[dt.datetime, typing.Any]] = []
         self._latest = dt.datetime(1, 1, 1)
 
-    def update(self, x, t):
+    def update(self, x, t: dt.datetime):
         self.dist.update(x)
         bisect.insort_left(self._events, (t, x))
 
@@ -86,4 +84,4 @@ class TimeRolling(base.Distribution):
         return self.dist.n_samples
 
     def __repr__(self):
-        return f"{repr(self.dist)}\t(rolling {self.period})"
+        return repr(self.dist)

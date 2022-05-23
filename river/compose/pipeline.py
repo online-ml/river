@@ -9,7 +9,7 @@ from xml.etree import ElementTree as ET
 
 import pandas as pd
 
-from river import base, utils
+from river import anomaly, base, utils
 
 from . import func, union
 
@@ -477,9 +477,25 @@ class Pipeline(base.Estimator):
         """
 
         steps = iter(self.steps.values())
+        is_anomaly = False
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
+
+            # There might be an anomaly filter in the pipeline. Its purpose is to prevent anomalous
+            # data from being learned by the subsequent parts of the pipeline.
+            if isinstance(t, anomaly.base.AnomalyFilter):
+                if t._supervised:
+                    t.learn_one(x, y)
+                    score = t.score_one(x, y)
+                else:
+                    t.learn_one(x)
+                    score = t.score_one(x)
+                # Skip the next parts of the pipeline if the score is classified as anomalous
+                if t.classify(score):
+                    is_anomaly = True
+                    break
+                continue
 
             if self._WARM_UP:
                 if isinstance(t, union.TransformerUnion):
@@ -502,11 +518,12 @@ class Pipeline(base.Estimator):
             elif t._supervised:
                 t.learn_one(x_pre, y)
 
-        last_step = next(steps)
-        if last_step._supervised:
-            last_step.learn_one(x=x, y=y, **params)
-        else:
-            last_step.learn_one(x, **params)
+        if not is_anomaly:
+            last_step = next(steps)
+            if last_step._supervised:
+                last_step.learn_one(x=x, y=y, **params)
+            else:
+                last_step.learn_one(x, **params)
 
         return self
 
@@ -520,6 +537,10 @@ class Pipeline(base.Estimator):
         steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):
+
+            # An anomaly filter is a no-op during inference
+            if isinstance(t, anomaly.base.AnomalyFilter):
+                continue
 
             if not self._STATELESS:
 
