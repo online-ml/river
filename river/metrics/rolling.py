@@ -58,14 +58,7 @@ class Rolling(metrics.base.WrapperMetric):
         if len(self.window) == self.window_size:
             self.metric.revert(*self.window[0])
         self.metric.update(y_true, y_pred, sample_weight)
-        try:
-            # For classification metrics that require additional information
-            self.window.append(
-                (y_true, y_pred, sample_weight, self.metric.sample_correction)
-            )
-        except AttributeError:
-            # Default case
-            self.window.append((y_true, y_pred, sample_weight))
+        self.window.append((y_true, y_pred, sample_weight))
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.0):

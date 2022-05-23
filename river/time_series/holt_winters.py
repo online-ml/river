@@ -129,8 +129,7 @@ class HoltWinters(time_series.base.Forecaster):
     ...     dataset,
     ...     model,
     ...     metric,
-    ...     horizon=12,
-    ...     grace_period=12
+    ...     horizon=12
     ... )
     +1  MAE: 25.899087
     +2  MAE: 26.26131
@@ -161,6 +160,13 @@ class HoltWinters(time_series.base.Forecaster):
         seasonality=0,
         multiplicative=False,
     ):
+
+        if seasonality and gamma is None:
+            raise ValueError("gamma must be set if seasonality is set")
+
+        if gamma and beta is None:
+            raise ValueError("beta must be set if gamma is set")
+
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
@@ -176,7 +182,7 @@ class HoltWinters(time_series.base.Forecaster):
                 if multiplicative
                 else AdditiveSeason(gamma, seasonality)
             )
-            if (gamma or seasonality)
+            if seasonality
             else None
         )
         self._first_values = []
@@ -185,9 +191,9 @@ class HoltWinters(time_series.base.Forecaster):
     def learn_one(self, y, x=None):
         if self._initialized:
             self.level.update(y, self.trend, self.season)
-            if self.trend:
+            if self.trend is not None:
                 self.trend.update(y, self.level)
-            if self.season:
+            if self.season is not None:
                 self.season.update(y, self.level, self.trend)
             return self
 
@@ -198,8 +204,10 @@ class HoltWinters(time_series.base.Forecaster):
         # The components can be initialized now that enough values have been observed
         self.level.append(statistics.mean(self._first_values))
         diffs = [b - a for a, b in zip(self._first_values[:-1], self._first_values[1:])]
-        self.trend.append(statistics.mean(diffs))
-        self.season.extend([y / self.level[-1] for y in self._first_values])
+        if self.trend is not None:
+            self.trend.append(statistics.mean(diffs))
+        if self.season is not None:
+            self.season.extend([y / self.level[-1] for y in self._first_values])
 
         self._initialized = True
 
@@ -212,8 +220,8 @@ class HoltWinters(time_series.base.Forecaster):
                 self.level[-1] + ((h + 1) * self.trend[-1] if self.trend else 0),
                 (
                     self.season[-self.seasonality + h % self.seasonality]
-                    if self.seasonality
-                    else 0
+                    if self.season
+                    else (1 if self.multiplicative else 0)
                 ),
             )
             for h in range(horizon)
