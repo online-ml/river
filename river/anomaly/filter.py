@@ -1,4 +1,5 @@
-from river import anomaly
+import math
+from river import anomaly, stats
 
 
 class ThresholdFilter(anomaly.base.AnomalyFilter):
@@ -10,6 +11,12 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
         An anomaly detector.
     threshold
         A threshold above which to classify an anomaly score as anomalous.
+    protect_anomaly_detector
+        Indicates whether or not the anomaly detector should be updated when the anomaly score is
+        anomalous. If the data contains sporadic anomalies, then the anomaly detector should likely
+        not be updated. Indeed, if it learns the anomaly score, then it will slowly start to
+        consider anomalous anomaly scores as normal. This might be desirable, for instance in the
+        case of drift.
 
     Examples
     --------
@@ -76,9 +83,91 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
 
     """
 
-    def __init__(self, anomaly_detector, threshold: float):
-        super().__init__(anomaly_detector, protect_anomaly_detector=False)
+    def __init__(
+        self, anomaly_detector, threshold: float, protect_anomaly_detector=True
+    ):
+        super().__init__(
+            anomaly_detector=anomaly_detector,
+            protect_anomaly_detector=protect_anomaly_detector,
+        )
         self.threshold = threshold
 
     def classify(self, score):
         return score >= self.threshold
+
+
+class QuantileFilter(anomaly.base.AnomalyFilter):
+    """Threshold anomaly filter.
+
+    Parameters
+    ----------
+    anomaly_detector
+        An anomaly detector.
+    q
+        The quantile level above which to classify an anomaly score as anomalous.
+    protect_anomaly_detector
+        Indicates whether or not the anomaly detector should be updated when the anomaly score is
+        anomalous. If the data contains sporadic anomalies, then the anomaly detector should likely
+        not be updated. Indeed, if it learns the anomaly score, then it will slowly start to
+        consider anomalous anomaly scores as normal. This might be desirable, for instance in the
+        case of drift.
+
+    Examples
+    --------
+
+    >>> from river import anomaly
+    >>> from river import compose
+    >>> from river import datasets
+    >>> from river import metrics
+    >>> from river import preprocessing
+
+    >>> model = compose.Pipeline(
+    ...     preprocessing.MinMaxScaler(),
+    ...     anomaly.QuantileFilter(
+    ...         anomaly.HalfSpaceTrees(seed=42),
+    ...         q=0.95
+    ...     )
+    ... )
+
+    >>> report = metrics.ClassificationReport()
+
+    >>> for x, y in datasets.CreditCard().take(8000):
+    ...     score = model.score_one(x)
+    ...     is_anomaly = model['QuantileFilter'].classify(score)
+    ...     model = model.learn_one(x)
+    ...     report = report.update(y, is_anomaly)
+
+    >>> report
+                   Precision   Recall   F1       Support
+    <BLANKLINE>
+           0      99.91%   97.78%   98.83%      7975
+           1       9.23%   72.00%   16.36%        25
+    <BLANKLINE>
+       Macro      54.57%   84.89%   57.60%
+       Micro      97.70%   97.70%   97.70%
+    Weighted      99.63%   97.70%   98.58%
+    <BLANKLINE>
+                     97.70% accuracy
+
+    """
+
+    def __init__(self, anomaly_detector, q: float, protect_anomaly_detector=True):
+        super().__init__(
+            anomaly_detector=anomaly_detector,
+            protect_anomaly_detector=protect_anomaly_detector,
+        )
+        self.quantile = stats.Quantile(q=q)
+
+    @property
+    def q(self):
+        return self.quantile.q
+
+    def classify(self, score):
+        return score >= (self.quantile.get() or math.inf)
+
+    def learn_one(self, *args):
+        score = self.score_one(*args)
+        if self.protect_anomaly_detector and not self.classify(score):
+            self.anomaly_detector.learn_one(*args)
+        self.quantile.update(score)
+        return self
