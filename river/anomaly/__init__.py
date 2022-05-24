@@ -12,7 +12,7 @@ model.
 
 """
 from . import base
-from .filter import ThresholdFilter
+from .filter import ThresholdFilter, QuantileFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
 from .svm import OneClassSVM
@@ -23,5 +23,6 @@ __all__ = [
     "GaussianScorer",
     "HalfSpaceTrees",
     "OneClassSVM",
+    "QuantileFilter",
     "ThresholdFilter",
 ]
