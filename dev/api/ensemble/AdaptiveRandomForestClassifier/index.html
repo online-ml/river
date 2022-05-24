@@ -10221,20 +10221,20 @@
 <li><strong>models</strong></li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">synth</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">ensemble</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">ensemble</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">synth</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">synth</span><span class="o">.</span><span class="n">ConceptDriftStream</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
 <span class="o">...</span>                                    <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">AdaptiveRandomForestClassifier</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">AdaptiveRandomForestClassifier</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">leaf_prediction</span><span class="o">=</span><span class="s2">&quot;mc&quot;</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">74.17</span><span class="o">%</span>
+<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">76.68</span><span class="o">%</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
