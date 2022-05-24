@@ -1,4 +1,3 @@
-import random
 import typing
 
 from .htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
@@ -20,17 +19,16 @@ class BaseRandomLeaf(HTLeaf):
         and perform split attempts.
     max_features
         Number of attributes per subset for each node split.
-    seed
-        Random seed for reproducibility.
+    rng
+        Random number generator.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
+    def __init__(self, stats, depth, splitter, max_features, rng, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
         self.max_features = max_features
-        self.seed = seed
-        self._rng = random.Random(self.seed)
+        self.rng = rng
         self.feature_indices = []
 
     def _iter_features(self, x) -> typing.Iterable:
@@ -44,7 +42,7 @@ class BaseRandomLeaf(HTLeaf):
                 yield att_id, x[att_id]
 
     def _sample_features(self, x, max_features):
-        return self._rng.sample(list(x.keys()), k=max_features)
+        return self.rng.sample(sorted(x.keys()), k=max_features)
 
 
 class RandomLeafMajorityClass(BaseRandomLeaf, LeafMajorityClass):
@@ -61,15 +59,15 @@ class RandomLeafMajorityClass(BaseRandomLeaf, LeafMajorityClass):
         and perform split attempts.
     max_features
         Number of attributes per subset for each node split.
-    seed
-        Random seed for reproducibility.
+    rng
+        Random number generator.
     kwargs
         Other parameters passed to the learning node.
 
     """
 
-    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
-        super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, max_features, rng, **kwargs):
+        super().__init__(stats, depth, splitter, max_features, rng, **kwargs)
 
 
 class RandomLeafNaiveBayes(BaseRandomLeaf, LeafNaiveBayes):
@@ -87,14 +85,14 @@ class RandomLeafNaiveBayes(BaseRandomLeaf, LeafNaiveBayes):
         Number of attributes per subset for each node split.
     max_features
         Number of attributes per subset for each node split.
-    seed
-        Random seed for reproducibility.
+    rng
+        Random number generator.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
-        super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, max_features, rng, **kwargs):
+        super().__init__(stats, depth, splitter, max_features, rng, **kwargs)
 
 
 class RandomLeafNaiveBayesAdaptive(BaseRandomLeaf, LeafNaiveBayesAdaptive):
@@ -111,11 +109,11 @@ class RandomLeafNaiveBayesAdaptive(BaseRandomLeaf, LeafNaiveBayesAdaptive):
         and perform split attempts.
     max_features
         Number of attributes per subset for each node split.
-    seed
-        Random seed for reproducibility.
+    rng
+        Random number generator.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
-        super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, max_features, rng, **kwargs):
+        super().__init__(stats, depth, splitter, max_features, rng, **kwargs)

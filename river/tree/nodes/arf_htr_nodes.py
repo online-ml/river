@@ -18,14 +18,14 @@ class RandomLeafMean(BaseRandomLeaf, LeafMean):
         and perform split attempts.
     max_features
         Number of attributes per subset for each node split.
-    seed
-        Random seed for reproducibility.
+    rng
+        Random number generator.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, max_features, seed, **kwargs):
-        super().__init__(stats, depth, splitter, max_features, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, max_features, rng, **kwargs):
+        super().__init__(stats, depth, splitter, max_features, rng, **kwargs)
 
 
 class RandomLeafModel(BaseRandomLeaf, LeafModel):
@@ -44,8 +44,8 @@ class RandomLeafModel(BaseRandomLeaf, LeafModel):
         and perform split attempts.
     max_features
         Number of attributes per subset for each node split.
-    seed
-        Random seed for reproducibility.
+    rng
+        Random number generator.
     leaf_model
         A `base.Regressor` instance used to learn from instances and provide
         responses.
@@ -53,11 +53,9 @@ class RandomLeafModel(BaseRandomLeaf, LeafModel):
         Other parameters passed to the learning node.
     """
 
-    def __init__(
-        self, stats, depth, splitter, max_features, seed, leaf_model, **kwargs
-    ):
+    def __init__(self, stats, depth, splitter, max_features, rng, leaf_model, **kwargs):
         super().__init__(
-            stats, depth, splitter, max_features, seed, leaf_model=leaf_model, **kwargs
+            stats, depth, splitter, max_features, rng, leaf_model=leaf_model, **kwargs
         )
 
 
@@ -77,8 +75,8 @@ class RandomLeafAdaptive(BaseRandomLeaf, LeafAdaptive):
         and perform split attempts.
     max_features
         Number of attributes per subset for each node split.
-    seed
-        Random seed for reproducibility.
+    rng
+        Random number generator.
     leaf_model
         A `base.Regressor` instance used to learn from instances and provide
         responses.
@@ -86,9 +84,7 @@ class RandomLeafAdaptive(BaseRandomLeaf, LeafAdaptive):
         Other parameters passed to the learning node.
     """
 
-    def __init__(
-        self, stats, depth, splitter, max_features, seed, leaf_model, **kwargs
-    ):
+    def __init__(self, stats, depth, splitter, max_features, rng, leaf_model, **kwargs):
         super().__init__(
-            stats, depth, splitter, max_features, seed, leaf_model=leaf_model, **kwargs
+            stats, depth, splitter, max_features, rng, leaf_model=leaf_model, **kwargs
         )

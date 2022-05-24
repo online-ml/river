@@ -267,7 +267,7 @@ class LDA(base.Transformer):
 
             exp_oov_weights[topic] = np.exp(psi_nu_1_nu_2_minus_psi_nu_2[0][-1])
 
-            psi_nu_1_nu_2_minus_psi_nu_2 = ndimage.interpolation.shift(
+            psi_nu_1_nu_2_minus_psi_nu_2 = ndimage.shift(
                 input=psi_nu_1_nu_2_minus_psi_nu_2[0], shift=1, cval=0
             )
 
@@ -290,7 +290,7 @@ class LDA(base.Transformer):
 
         for k in range(self.n_components):
 
-            reverse_cumulated_phi[k] = ndimage.interpolation.shift(
+            reverse_cumulated_phi[k] = ndimage.shift(
                 input=statistics[k], shift=-1, cval=0
             )
 
