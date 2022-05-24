@@ -99,7 +99,7 @@ Of course, this is just a contrived example. We welcome you to check the [introd
 
 ## 🛠 Installation
 
-River is intended to work with **Python 3.7 or above**. Installation can be done with `pip`:
+River is intended to work with **Python 3.8 or above**. Installation can be done with `pip`:
 
 ```sh
 pip install river
