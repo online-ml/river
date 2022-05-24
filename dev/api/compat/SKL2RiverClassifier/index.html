@@ -10108,7 +10108,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">|=</span> <span class="n">compat</span><span class="o">.</span><span class="n">convert_sklearn_to_river</span><span class="p">(</span>
 <span class="o">...</span>     <span class="n">estimator</span><span class="o">=</span><span class="n">linear_model</span><span class="o">.</span><span class="n">SGDClassifier</span><span class="p">(</span>
-<span class="o">...</span>         <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span>
+<span class="o">...</span>         <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;log_loss&#39;</span><span class="p">,</span>
 <span class="o">...</span>         <span class="n">eta0</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
 <span class="o">...</span>         <span class="n">learning_rate</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span>
 <span class="o">...</span>     <span class="p">),</span>
