@@ -12,14 +12,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        
+
     steps:
       - uses: actions/checkout@v2
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.0
         env:
-          CIBW_BUILD: "cp37-* cp38-* cp39-*"
+          CIBW_BUILD: "cp38-* cp39-* cp310-*"
           CIBW_BEFORE_BUILD: "pip install cython"
 
       - uses: actions/upload-artifact@v2
