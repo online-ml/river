@@ -74,6 +74,10 @@ def expected_mutual_info(confusion_matrix):
     a = np.array([confusion_matrix.sum_row[key] for key in confusion_matrix.classes if confusion_matrix.sum_row[key]]).astype(np.int32)
     b = np.array([confusion_matrix.sum_col[key] for key in confusion_matrix.classes if confusion_matrix.sum_col[key]]).astype(np.int32)
 
+    # any labelling with zero entropy implies EMI = 0
+    if a.size == 1 or b.size == 1:
+        return 0.0
+
     # we do not take into consideration the order of classes in numpy arrays constructed below,
     # as they will be consistent with each other, which is enough
 
