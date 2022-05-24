@@ -158,7 +158,7 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
         self
 
         """
-        if not self.protect_anomaly_detector or not self.classify(
+        if self.protect_anomaly_detector and not self.classify(
             self.score_one(*args)
         ):
             self.anomaly_detector.learn_one(*args)

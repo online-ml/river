@@ -38,7 +38,7 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
     >>> from river import metrics
     >>> from river import preprocessing
 
-    >>> model = anomaly.QuantileThresholder(
+    >>> model = anomaly.QuantileFilter(
     ...     anomaly.OneClassSVM(nu=0.2),
     ...     q=0.995
     ... )
@@ -47,11 +47,12 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
 
     >>> for x, y in datasets.CreditCard().take(2500):
     ...     score = model.score_one(x)
+    ...     is_anomaly = model.classify(score)
     ...     model = model.learn_one(x)
-    ...     auc = auc.update(y, score)
+    ...     auc = auc.update(y, is_anomaly)
 
     >>> auc
-    ROCAUC: 74.74%
+    ROCAUC: 74.68%
 
     """
 
