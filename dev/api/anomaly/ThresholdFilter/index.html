@@ -1069,6 +1069,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_2">
@@ -1119,6 +1121,20 @@
     <li class="md-nav__item">
       <a href="../OneClassSVM/" class="md-nav__link">
         OneClassSVM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../QuantileFilter/" class="md-nav__link">
+        QuantileFilter
       </a>
     </li>
   
@@ -1203,7 +1219,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2_5" data-md-state="indeterminate" type="checkbox" id="__nav_4_2_5" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2_6" data-md-state="indeterminate" type="checkbox" id="__nav_4_2_6" checked>
       
       
       
@@ -1212,13 +1228,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_2_5">
+        <label class="md-nav__link" for="__nav_4_2_6">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_2_5">
+        <label class="md-nav__title" for="__nav_4_2_6">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -10073,6 +10089,10 @@
 <li>
 <p><strong>threshold</strong> (<em>float</em>)</p>
 <p>A threshold above which to classify an anomaly score as anomalous.</p>
+</li>
+<li>
+<p><strong>protect_anomaly_detector</strong> – defaults to <code>True</code></p>
+<p>Indicates whether or not the anomaly detector should be updated when the anomaly score is anomalous. If the data contains sporadic anomalies, then the anomaly detector should likely not be updated. Indeed, if it learns the anomaly score, then it will slowly start to consider anomalous anomaly scores as normal. This might be desirable, for instance in the case of drift.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>

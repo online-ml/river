@@ -12,14 +12,14 @@
         <meta name="author" content="The river developers">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/datasets/Phishing/">
+        <link rel="canonical" href="https://riverml.xyz/dev/api/anomaly/QuantileFilter/">
       
       <link rel="icon" href="../../../img/favicon.ico">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.15">
     
     
       
-        <title>Phishing - River</title>
+        <title>QuantileFilter - River</title>
       
     
     
@@ -81,7 +81,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#phishing" class="md-skip">
+        <a href="#quantilefilter" class="md-skip">
           Skip to content
         </a>
       
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Phishing
+              QuantileFilter
             
           </span>
         </div>
@@ -1047,12 +1047,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" data-md-state="indeterminate" type="checkbox" id="__nav_4_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
       
       
       
@@ -1089,7 +1091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../anomaly/GaussianScorer/" class="md-nav__link">
+      <a href="../GaussianScorer/" class="md-nav__link">
         GaussianScorer
       </a>
     </li>
@@ -1103,7 +1105,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../anomaly/HalfSpaceTrees/" class="md-nav__link">
+      <a href="../HalfSpaceTrees/" class="md-nav__link">
         HalfSpaceTrees
       </a>
     </li>
@@ -1117,7 +1119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../anomaly/OneClassSVM/" class="md-nav__link">
+      <a href="../OneClassSVM/" class="md-nav__link">
         OneClassSVM
       </a>
     </li>
@@ -1129,11 +1131,73 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../anomaly/QuantileFilter/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          QuantileFilter
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         QuantileFilter
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1145,7 +1209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../anomaly/ThresholdFilter/" class="md-nav__link">
+      <a href="../ThresholdFilter/" class="md-nav__link">
         ThresholdFilter
       </a>
     </li>
@@ -1189,7 +1253,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../anomaly/base/AnomalyDetector/" class="md-nav__link">
+      <a href="../base/AnomalyDetector/" class="md-nav__link">
         AnomalyDetector
       </a>
     </li>
@@ -1995,14 +2059,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_7" type="checkbox" id="__nav_4_7" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_7" data-md-state="indeterminate" type="checkbox" id="__nav_4_7" checked>
       
       
       
@@ -2075,7 +2137,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../AirlinePassengers/" class="md-nav__link">
+      <a href="../../datasets/AirlinePassengers/" class="md-nav__link">
         AirlinePassengers
       </a>
     </li>
@@ -2089,7 +2151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Bananas/" class="md-nav__link">
+      <a href="../../datasets/Bananas/" class="md-nav__link">
         Bananas
       </a>
     </li>
@@ -2103,7 +2165,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Bikes/" class="md-nav__link">
+      <a href="../../datasets/Bikes/" class="md-nav__link">
         Bikes
       </a>
     </li>
@@ -2117,7 +2179,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ChickWeights/" class="md-nav__link">
+      <a href="../../datasets/ChickWeights/" class="md-nav__link">
         ChickWeights
       </a>
     </li>
@@ -2131,7 +2193,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CreditCard/" class="md-nav__link">
+      <a href="../../datasets/CreditCard/" class="md-nav__link">
         CreditCard
       </a>
     </li>
@@ -2145,7 +2207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Elec2/" class="md-nav__link">
+      <a href="../../datasets/Elec2/" class="md-nav__link">
         Elec2
       </a>
     </li>
@@ -2159,7 +2221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../HTTP/" class="md-nav__link">
+      <a href="../../datasets/HTTP/" class="md-nav__link">
         HTTP
       </a>
     </li>
@@ -2173,7 +2235,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Higgs/" class="md-nav__link">
+      <a href="../../datasets/Higgs/" class="md-nav__link">
         Higgs
       </a>
     </li>
@@ -2187,7 +2249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ImageSegments/" class="md-nav__link">
+      <a href="../../datasets/ImageSegments/" class="md-nav__link">
         ImageSegments
       </a>
     </li>
@@ -2201,7 +2263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Insects/" class="md-nav__link">
+      <a href="../../datasets/Insects/" class="md-nav__link">
         Insects
       </a>
     </li>
@@ -2215,7 +2277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Keystroke/" class="md-nav__link">
+      <a href="../../datasets/Keystroke/" class="md-nav__link">
         Keystroke
       </a>
     </li>
@@ -2229,7 +2291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MaliciousURL/" class="md-nav__link">
+      <a href="../../datasets/MaliciousURL/" class="md-nav__link">
         MaliciousURL
       </a>
     </li>
@@ -2243,7 +2305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MovieLens100K/" class="md-nav__link">
+      <a href="../../datasets/MovieLens100K/" class="md-nav__link">
         MovieLens100K
       </a>
     </li>
@@ -2257,7 +2319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Music/" class="md-nav__link">
+      <a href="../../datasets/Music/" class="md-nav__link">
         Music
       </a>
     </li>
@@ -2269,66 +2331,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Phishing
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../datasets/Phishing/" class="md-nav__link">
         Phishing
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    Methods
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2340,7 +2347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Restaurants/" class="md-nav__link">
+      <a href="../../datasets/Restaurants/" class="md-nav__link">
         Restaurants
       </a>
     </li>
@@ -2354,7 +2361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../SMSSpam/" class="md-nav__link">
+      <a href="../../datasets/SMSSpam/" class="md-nav__link">
         SMSSpam
       </a>
     </li>
@@ -2368,7 +2375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../SMTP/" class="md-nav__link">
+      <a href="../../datasets/SMTP/" class="md-nav__link">
         SMTP
       </a>
     </li>
@@ -2382,7 +2389,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../SolarFlare/" class="md-nav__link">
+      <a href="../../datasets/SolarFlare/" class="md-nav__link">
         SolarFlare
       </a>
     </li>
@@ -2396,7 +2403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../TREC07/" class="md-nav__link">
+      <a href="../../datasets/TREC07/" class="md-nav__link">
         TREC07
       </a>
     </li>
@@ -2410,7 +2417,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Taxis/" class="md-nav__link">
+      <a href="../../datasets/Taxis/" class="md-nav__link">
         Taxis
       </a>
     </li>
@@ -2424,7 +2431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../TrumpApproval/" class="md-nav__link">
+      <a href="../../datasets/TrumpApproval/" class="md-nav__link">
         TrumpApproval
       </a>
     </li>
@@ -2438,7 +2445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../WaterFlow/" class="md-nav__link">
+      <a href="../../datasets/WaterFlow/" class="md-nav__link">
         WaterFlow
       </a>
     </li>
@@ -2488,7 +2495,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/Dataset/" class="md-nav__link">
+      <a href="../../datasets/base/Dataset/" class="md-nav__link">
         Dataset
       </a>
     </li>
@@ -2502,7 +2509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/FileDataset/" class="md-nav__link">
+      <a href="../../datasets/base/FileDataset/" class="md-nav__link">
         FileDataset
       </a>
     </li>
@@ -2516,7 +2523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/RemoteDataset/" class="md-nav__link">
+      <a href="../../datasets/base/RemoteDataset/" class="md-nav__link">
         RemoteDataset
       </a>
     </li>
@@ -2530,7 +2537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/SyntheticDataset/" class="md-nav__link">
+      <a href="../../datasets/base/SyntheticDataset/" class="md-nav__link">
         SyntheticDataset
       </a>
     </li>
@@ -10044,6 +10051,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#attributes" class="md-nav__link">
     Attributes
   </a>
@@ -10051,15 +10065,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    Methods
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
+  <a href="#methods" class="md-nav__link">
+    Methods
   </a>
   
 </li>
@@ -10078,37 +10092,99 @@
                 
 
 
-<h1 id="phishing">Phishing<a class="headerlink" href="#phishing" title="Permanent link">&para;</a></h1>
-<p>Phishing websites.</p>
-<p>This dataset contains features from web pages that are classified as phishing or not.</p>
+<h1 id="quantilefilter">QuantileFilter<a class="headerlink" href="#quantilefilter" title="Permanent link">&para;</a></h1>
+<p>Threshold anomaly filter.</p>
+<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>anomaly_detector</strong></p>
+<p>An anomaly detector.</p>
+</li>
+<li>
+<p><strong>q</strong> (<em>float</em>)</p>
+<p>The quantile level above which to classify an anomaly score as anomalous.</p>
+</li>
+<li>
+<p><strong>protect_anomaly_detector</strong> – defaults to <code>True</code></p>
+<p>Indicates whether or not the anomaly detector should be updated when the anomaly score is anomalous. If the data contains sporadic anomalies, then the anomaly detector should likely not be updated. Indeed, if it learns the anomaly score, then it will slowly start to consider anomalous anomaly scores as normal. This might be desirable, for instance in the case of drift.</p>
+</li>
+</ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
-<li>
-<p><strong>desc</strong></p>
-<p>Return the description from the docstring.</p>
-</li>
-<li>
-<p><strong>path</strong></p>
-</li>
+<li><strong>q</strong></li>
 </ul>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">anomaly</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">(),</span>
+<span class="o">...</span>     <span class="n">anomaly</span><span class="o">.</span><span class="n">QuantileFilter</span><span class="p">(</span>
+<span class="o">...</span>         <span class="n">anomaly</span><span class="o">.</span><span class="n">HalfSpaceTrees</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+<span class="o">...</span>         <span class="n">q</span><span class="o">=</span><span class="mf">0.95</span>
+<span class="o">...</span>     <span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">report</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ClassificationReport</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">8000</span><span class="p">):</span>
+<span class="o">...</span>     <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">is_anomaly</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;QuantileFilter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">report</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">is_anomaly</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">report</span>
+               <span class="n">Precision</span>   <span class="n">Recall</span>   <span class="n">F1</span>       <span class="n">Support</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+       <span class="mi">0</span>      <span class="mf">99.91</span><span class="o">%</span>   <span class="mf">97.78</span><span class="o">%</span>   <span class="mf">98.83</span><span class="o">%</span>      <span class="mi">7975</span>
+       <span class="mi">1</span>       <span class="mf">9.23</span><span class="o">%</span>   <span class="mf">72.00</span><span class="o">%</span>   <span class="mf">16.36</span><span class="o">%</span>        <span class="mi">25</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+   <span class="n">Macro</span>      <span class="mf">54.57</span><span class="o">%</span>   <span class="mf">84.89</span><span class="o">%</span>   <span class="mf">57.60</span><span class="o">%</span>
+   <span class="n">Micro</span>      <span class="mf">97.70</span><span class="o">%</span>   <span class="mf">97.70</span><span class="o">%</span>   <span class="mf">97.70</span><span class="o">%</span>
+<span class="n">Weighted</span>      <span class="mf">99.63</span><span class="o">%</span>   <span class="mf">97.70</span><span class="o">%</span>   <span class="mf">98.58</span><span class="o">%</span>
+<span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
+                 <span class="mf">97.70</span><span class="o">%</span> <span class="n">accuracy</span>
+</code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
-<summary>take</summary>
-<p>Iterate over the k samples.</p>
+<summary>classify</summary>
+<p>Classify an anomaly score as anomalous or not.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>k</strong>     (<em>int</em>)    </li>
+<li><strong>score</strong>     (<em>float</em>)    </li>
 </ul>
+<p><strong>Returns</strong></p>
+<p><em>bool</em>:     A boolean value indicating whether the anomaly score is anomalous or not.</p>
 </details>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p><a href="http://archive.ics.uci.edu/ml/datasets/Website+Phishing">UCI page</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
+<details class="- note">
+<summary>clone</summary>
+<p>Return a fresh estimator with the same parameters.</p>
+<p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
+</details>
+<details class="- note">
+<summary>learn_one</summary>
+<p>Update the anomaly filter and the underlying anomaly detector.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>args</strong>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p>self</p>
+</details>
+<details class="- note">
+<summary>score_one</summary>
+<p>Return an outlier score.</p>
+<p>A high score is indicative of an anomaly. A low score corresponds to a normal observation.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>args</strong>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p>An anomaly score. A high score is indicative of an anomaly. A low score corresponds a</p>
+</details>
 
               
             </article>
