@@ -11,10 +11,6 @@
   <a href="https://github.com/online-ml/river/actions/workflows/unit-tests.yml">
     <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.yml/badge.svg" alt="tests">
   </a>
-  <!-- Code coverage -->
-  <a href="https://codecov.io/gh/online-ml/river">
-    <img src="https://codecov.io/gh/online-ml/river/branch/main/graph/badge.svg?token=luK6eFoMa9"/>
-  </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
     <img src="https://img.shields.io/website?label=docs&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
