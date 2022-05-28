@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/examples/bike-sharing-forecasting/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.15">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.16">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.c382b1dc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1c3799f8.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.cc9b2e1e.min.css">
@@ -10003,13 +10003,16 @@
 
 
 <h1 id="bike-sharing-forecasting">Bike-sharing forecasting<a class="headerlink" href="#bike-sharing-forecasting" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load_ext</span> <span class="n">autoreload</span>
+<span class="o">%</span><span class="n">autoreload</span> <span class="mi">2</span>
+</code></pre></div>
 <p>In this tutorial we're going to forecast the number of bikes in 5 bike stations from the city of Toulouse. We'll do so by building a simple model step by step. The dataset contains 182,470 observations. Let's first take a peak at the data.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 
-<span class="n">X_y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">()</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">()</span>
 
-<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">X_y</span><span class="p">:</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of available bikes: </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">break</span>
@@ -10032,15 +10035,13 @@ Number of available bikes: 1
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
 
-<span class="n">X_y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">()</span>
-
 <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;clouds&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;wind&#39;</span><span class="p">)</span>
 <span class="n">model</span> <span class="o">|=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
 <span class="n">model</span> <span class="o">|=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">0.001</span><span class="p">))</span>
 
 <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 
-<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">print_every</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span>
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">print_every</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>[20,000] MAE: 4.912727
 [40,000] MAE: 5.333554
@@ -10062,8 +10063,6 @@ MAE: 5.563893
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
 
-<span class="n">X_y</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">())</span>
-
 <span class="k">def</span> <span class="nf">get_hour</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">x</span><span class="p">[</span><span class="s1">&#39;hour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;moment&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hour</span>
     <span class="k">return</span> <span class="n">x</span>
@@ -10078,7 +10077,7 @@ MAE: 5.563893
 
 <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 
-<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">print_every</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span>
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">print_every</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>[20,000] MAE: 3.721246
 [40,000] MAE: 3.829972
@@ -10101,7 +10100,7 @@ MAE: 3.933498
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
 <div><div class="component pipeline"><div class="component union"><details class="component estimator"><summary><pre class="estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="estimator-params">
-{'keys': {'clouds', 'pressure', 'wind', 'humidity', 'temperature'}}
+{'keys': {'wind', 'humidity', 'temperature', 'clouds', 'pressure'}}
 
 </code></details><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">get_hour</pre></summary><code class="estimator-params">
 def get_hour(x):
@@ -10110,7 +10109,7 @@ def get_hour(x):
 
 </code></details><details class="component estimator"><summary><pre class="estimator-name">y_mean_by_station_and_hour</pre></summary><code class="estimator-params">
 {'_feature_name': 'y_mean_by_station_and_hour',
- '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f894b7b5790&gt;, Mean: 0.),
+ '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7fd9871cb4c0&gt;, Mean: 0.),
                         {('metro-canal-du-midi', 0): Mean: 7.93981,
                          ('metro-canal-du-midi', 1): Mean: 8.179704,
                          ('metro-canal-du-midi', 2): Mean: 8.35824,
@@ -10233,15 +10232,15 @@ def get_hour(x):
                          ('pomme', 23): Mean: 5.235756}),
  'by': ['station', 'hour'],
  'how': Mean: 0.,
- 'target_name': 'y'}
+ 'on': 'y'}
 
 </code></details></div></div><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
 {'counts': Counter({'y_mean_by_station_and_hour': 182470,
-                    'clouds': 182470,
-                    'pressure': 182470,
                     'wind': 182470,
                     'humidity': 182470,
-                    'temperature': 182470}),
+                    'temperature': 182470,
+                    'clouds': 182470,
+                    'pressure': 182470}),
  'means': defaultdict(&lt;class 'float'&gt;,
                       {'clouds': 30.315131254453505,
                        'humidity': 62.24244533347998,
@@ -10259,7 +10258,7 @@ def get_hour(x):
  'with_std': True}
 
 </code></details><details class="component estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
-{'_weights': {'y_mean_by_station_and_hour': 3.8719218238428725, 'clouds': -0.6106470619450345, 'pressure': 2.1481948468090333, 'wind': -0.2612193604527149, 'humidity': 3.881792987494522, 'temperature': -2.795077764828729},
+{'_weights': {'y_mean_by_station_and_hour': 3.8719218238428725, 'wind': -0.2612193604527138, 'humidity': 3.8817929874945234, 'temperature': -2.795077764828726, 'clouds': -0.6106470619450345, 'pressure': 2.148194846809032},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
  'initializer': Zeros (),
@@ -10364,8 +10363,6 @@ summary > div {
 <p>We can also use the <code>debug_one</code> method to see what happens to one particular instance. Let's train the model on the first 10,000 observations and then call <code>debug_one</code> on the next one. To do this, we will turn the <code>Bike</code> object into a Python generator with <code>iter()</code> function. The Pythonic way to read the first 10,000 elements of a generator is to use <code>itertools.islice</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">itertools</span>
 
-<span class="n">X_y</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">())</span>
-
 <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;clouds&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;wind&#39;</span><span class="p">)</span>
 <span class="n">model</span> <span class="o">+=</span> <span class="p">(</span>
     <span class="n">get_hour</span> <span class="o">|</span>
@@ -10374,181 +10371,100 @@ summary > div {
 <span class="n">model</span> <span class="o">|=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
 <span class="n">model</span> <span class="o">|=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">()</span>
 
-<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="mi">10000</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="mi">10000</span><span class="p">):</span>
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">X_y</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">debug_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>0. Input
 --------
-clouds: 0 (int)
-description: clear sky (str)
-humidity: 52 (int)
-moment: 2016-04-10 19:03:27 (datetime)
-pressure: 1,001.00000 (float)
-station: place-esquirol (str)
-temperature: 19.00000 (float)
-wind: 7.70000 (float)
+clouds: 75 (int)
+description: light rain (str)
+humidity: 81 (int)
+moment: 2016-04-01 00:00:07 (datetime)
+pressure: 1,017.00000 (float)
+station: metro-canal-du-midi (str)
+temperature: 6.54000 (float)
+wind: 9.30000 (float)
 
 1. Transformer union
 --------------------
     1.0 Select
     ----------
-    clouds: 0 (int)
-    humidity: 52 (int)
-    pressure: 1,001.00000 (float)
-    temperature: 19.00000 (float)
-    wind: 7.70000 (float)
+    clouds: 75 (int)
+    humidity: 81 (int)
+    pressure: 1,017.00000 (float)
+    temperature: 6.54000 (float)
+    wind: 9.30000 (float)
 
     1.1 get_hour | y_mean_by_station_and_hour
     -----------------------------------------
-    y_mean_by_station_and_hour: 7.97175 (float)
+    y_mean_by_station_and_hour: 4.43243 (float)
 
-clouds: 0 (int)
-humidity: 52 (int)
-pressure: 1,001.00000 (float)
-temperature: 19.00000 (float)
-wind: 7.70000 (float)
-y_mean_by_station_and_hour: 7.97175 (float)
+clouds: 75 (int)
+humidity: 81 (int)
+pressure: 1,017.00000 (float)
+temperature: 6.54000 (float)
+wind: 9.30000 (float)
+y_mean_by_station_and_hour: 4.43243 (float)
 
 2. StandardScaler
 -----------------
-clouds: -1.36138 (float)
-humidity: -1.73083 (float)
-pressure: -1.26076 (float)
-temperature: 1.76232 (float)
-wind: 1.45841 (float)
-y_mean_by_station_and_hour: 0.05496 (float)
+clouds: 0.47566 (float)
+humidity: 0.42247 (float)
+pressure: 1.05314 (float)
+temperature: -1.22098 (float)
+wind: 2.21104 (float)
+y_mean_by_station_and_hour: -0.59098 (float)
 
 3. LinearRegression
 -------------------
 Name                         Value      Weight     Contribution  
                  Intercept    1.00000    6.58252        6.58252  
-               temperature    1.76232    2.47030        4.35345  
-                    clouds   -1.36138   -1.92255        2.61732  
-y_mean_by_station_and_hour    0.05496    0.54167        0.02977  
-                      wind    1.45841   -0.77720       -1.13348  
-                  humidity   -1.73083    1.44921       -2.50833  
-                  pressure   -1.26076    3.78529       -4.77234
+                  pressure    1.05314    3.78529        3.98646  
+                  humidity    0.42247    1.44921        0.61225  
+y_mean_by_station_and_hour   -0.59098    0.54167       -0.32011  
+                    clouds    0.47566   -1.92255       -0.91448  
+                      wind    2.21104   -0.77720       -1.71843  
+               temperature   -1.22098    2.47030       -3.01619
 
-Prediction: 5.16889
+Prediction: 5.21201
 </code></pre></div>
 <p>The <code>debug_one</code> method shows what happens to an input set of features, step by step.</p>
-<p>And now comes the catch. Up until now we've been using the <code>progressive_val_score</code> method from the <code>evaluate</code> module. What this does it that it sequentially predicts the output of an observation and updates the model immediately afterwards. This way of doing is often used for evaluating online learning models, but in some cases it is the wrong approach.</p>
-<p>The following paragraph is extremely important. When evaluating a machine learning model, the goal is to simulate production conditions in order to get a trust-worthy assessment of the performance of the model. In our case, we typically want to forecast the number of bikes available in a station, say, 30 minutes ahead. Then, once the 30 minutes have passed, the true number of available bikes will be available and we will be able to update the model using the features available 30 minutes ago. If you think about, this is exactly how a real-time machine learning system should work. The problem is that this isn't what the <code>progressive_val_score</code> method is emulating, indeed it is simply asking the model to predict the next observation, which is only a few minutes ahead, and then updates the model immediately. We can prove that this is flawed by adding a feature that measures a running average of the very recent values.</p>
-<div class="highlight"><pre><span></span><code><span class="n">X_y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">()</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;clouds&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;wind&#39;</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">+=</span> <span class="p">(</span>
-    <span class="n">get_hour</span> <span class="o">|</span>
-    <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TargetAgg</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">,</span> <span class="s1">&#39;hour&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span> <span class="o">+</span> 
-    <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TargetAgg</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;station&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">EWMean</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
-<span class="p">)</span>
-<span class="n">model</span> <span class="o">|=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">|=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">()</span>
-
-<span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
-
-<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">print_every</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>[20,000] MAE: 20.159286
-[40,000] MAE: 10.458898
-[60,000] MAE: 7.2759
-[80,000] MAE: 5.715397
-[100,000] MAE: 4.775094
-[120,000] MAE: 4.138421
-[140,000] MAE: 3.682591
-[160,000] MAE: 3.35015
-[180,000] MAE: 3.091398
-
-
-
-
-
-MAE: 3.06414
-</code></pre></div>
-<p>The score we got is too good to be true. This is simply because the problem is too easy. What we really want is to evaluate the model by forecasting 30 minutes ahead and only updating the model once the true values are available. This can be done using the <code>moment</code> and <code>delay</code> parameters in the  <code>progressive_val_score</code> method. The idea is that each observation of the stream of the data is shown twice to the model: once for making a prediction, and once for updating the model when the true value is revealed. The <code>moment</code> parameter determines which variable should be used as a timestamp, while the <code>delay</code> parameter controls the duration to wait before revealing the true values to the model.</p>
+<p>And now comes the catch. Up until now we've been using the <code>progressive_val_score</code> method from the <code>evaluate</code> module. What this does it that it sequentially predicts the output of an observation and updates the model immediately afterwards. This way of proceeding is often used for evaluating online learning models. But in some cases it is the wrong approach.</p>
+<p>When evaluating a machine learning model, the goal is to simulate production conditions in order to get a trust-worthy assessment of the performance of the model. In our case, we typically want to forecast the number of bikes available in a station, say, 30 minutes ahead. Then, once the 30 minutes have passed, the true number of available bikes will be available and we will be able to update the model using the features available 30 minutes ago.</p>
+<p>What we really want is to evaluate the model by forecasting 30 minutes ahead and only updating the model once the true values are available. This can be done using the <code>moment</code> and <code>delay</code> parameters in the  <code>progressive_val_score</code> method. The idea is that each observation in the stream of the data is shown twice to the model: once for making a prediction, and once for updating the model when the true value is revealed. The <code>moment</code> parameter determines which variable should be used as a timestamp, while the <code>delay</code> parameter controls the duration to wait before revealing the true values to the model.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;clouds&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;wind&#39;</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">+=</span> <span class="p">(</span>
-    <span class="n">get_hour</span> <span class="o">|</span>
-    <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TargetAgg</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">,</span> <span class="s1">&#39;hour&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span> <span class="o">+</span> 
-    <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TargetAgg</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;station&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">EWMean</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
-<span class="p">)</span>
-<span class="n">model</span> <span class="o">|=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">|=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">()</span>
-
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
-    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">(),</span>
-    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span>
     <span class="n">moment</span><span class="o">=</span><span class="s1">&#39;moment&#39;</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
     <span class="n">print_every</span><span class="o">=</span><span class="mi">20_000</span>
 <span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[20,000] MAE: 2.24812
-[40,000] MAE: 2.240287
-[60,000] MAE: 2.270287
-[80,000] MAE: 2.28649
-[100,000] MAE: 2.294264
-[120,000] MAE: 2.275891
-[140,000] MAE: 2.261411
-[160,000] MAE: 2.285978
-[180,000] MAE: 2.289353
+<div class="highlight"><pre><span></span><code>[20,000] MAE: 4.378419
+[40,000] MAE: 4.328999
+[60,000] MAE: 4.277895
+[80,000] MAE: 4.287503
+[100,000] MAE: 4.236114
+[120,000] MAE: 4.238951
+[140,000] MAE: 4.278382
+[160,000] MAE: 4.24341
+[180,000] MAE: 4.230743
 
 
 
 
 
-MAE: 2.29304
+MAE: 4.231731
 </code></pre></div>
-<p>The score we now have is much more realistic, as it is comparable with the <a href="https://maxhalford.github.io/blog/openbikes-challenge/">related data science competition</a>. Moreover, we can see that the model gets better with time, which feels better than the previous situations. The point is that <code>progressive_val_score</code> method can be used to simulate a production scenario, and is thus extremely valuable.</p>
-<p>Now that we have a working pipeline in place, we can attempt to make it more accurate. As a simple example, we'll using a <code>EWARegressor</code> from the <code>expert</code> module to combine 3 linear regression model trained with different optimizers. The <code>EWARegressor</code> will run the 3 models in parallel and assign weights to each model based on their individual performance.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">ensemble</span>
-<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;clouds&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;wind&#39;</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">+=</span> <span class="p">(</span>
-    <span class="n">get_hour</span> <span class="o">|</span>
-    <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TargetAgg</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">,</span> <span class="s1">&#39;hour&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span>
-<span class="p">)</span>
-<span class="n">model</span> <span class="o">+=</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TargetAgg</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;station&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">EWMean</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
-<span class="n">model</span> <span class="o">|=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">|=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">EWARegressor</span><span class="p">([</span>
-    <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">()),</span>
-    <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">RMSProp</span><span class="p">()),</span>
-    <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">())</span>
-<span class="p">])</span>
-
-<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
-    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">(),</span>
-    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span>
-    <span class="n">moment</span><span class="o">=</span><span class="s1">&#39;moment&#39;</span><span class="p">,</span>
-    <span class="n">delay</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
-    <span class="n">print_every</span><span class="o">=</span><span class="mi">20_000</span>
-<span class="p">)</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>[20,000] MAE: 2.253263
-[40,000] MAE: 2.242859
-[60,000] MAE: 2.272001
-[80,000] MAE: 2.287776
-[100,000] MAE: 2.295292
-[120,000] MAE: 2.276748
-[140,000] MAE: 2.262146
-[160,000] MAE: 2.286621
-[180,000] MAE: 2.289925
-
-
-
-
-
-MAE: 2.293604
-</code></pre></div>
+<p>The performance is a bit worse, which is to be expected. Indeed, the task is more difficult: the model is only shown the ground truth 30 minutes after making a prediction.</p>
+<p>The takeaway of this notebook is that the <code>progressive_val_score</code> method can be used to simulate a production scenario, and is thus extremely valuable.</p>
 
               
             </article>
@@ -10606,7 +10522,7 @@ MAE: 2.293604
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.expand", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a6c66575.min.js"></script>
+      <script src="../../assets/javascripts/bundle.3a4b43e5.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       

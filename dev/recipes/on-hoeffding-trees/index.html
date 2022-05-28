@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/recipes/on-hoeffding-trees/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.15">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.16">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.c382b1dc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1c3799f8.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.cc9b2e1e.min.css">
@@ -10275,8 +10275,8 @@ Features  9
 
 <span class="n">model</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>CPU times: user 185 ms, sys: 4.11 ms, total: 189 ms
-Wall time: 191 ms
+<div class="highlight"><pre><span></span><code>CPU times: user 129 ms, sys: 2.77 ms, total: 132 ms
+Wall time: 133 ms
 
 
 
@@ -10499,7 +10499,7 @@ Class True:
 
         <span class="k">for</span> <span class="n">checkpoint</span> <span class="ow">in</span> <span class="n">track</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n_checkpoints</span><span class="p">):</span>
             <span class="n">step</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;Step&quot;</span><span class="p">])</span>
-            <span class="n">error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="n">metric_name</span><span class="p">])</span>
+            <span class="n">error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
 
             <span class="c1"># Convert timedelta object into seconds</span>
             <span class="n">r_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
@@ -10535,7 +10535,9 @@ Class True:
     <span class="mi">100</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_21_0.png" /></p>
+<div class="highlight"><pre><span></span><code>[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000, 4100, 4200, 4300, 4400, 4500, 4600, 4700, 4800, 4900, 5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500, 6600, 6700, 6800, 6900, 7000, 7100, 7200, 7300, 7400, 7500, 7600, 7700, 7800, 7900, 8000, 8100, 8200, 8300, 8400, 8500, 8600, 8700, 8800, 8900, 9000, 9100, 9200, 9300, 9400, 9500, 9600, 9700, 9800, 9900, 10000] [6.311936135605157, 4.426916277623943, 3.73235813142122, 3.3473428046148133, 3.130360658908175, 2.972692298348939, 2.817017637680579, 2.696179164634299, 2.63709303340789, 2.5566140161009447, 2.4937505469971324, 2.4371064440381973, 2.3987113035752614, 2.3609733473352295, 2.3381353138143943, 2.3194348576470287, 2.282226645299219, 2.2542334920848406, 2.2343625977975, 2.2178015281841166, 2.1834977649678318, 2.1531220972043585, 2.134676620751594, 2.1138849232248, 2.1019286980821055, 2.1042079251674215, 2.097925056455068, 2.084323908804759, 2.0714670190131135, 2.0705003322426436, 2.0552509010674473, 2.048484532008886, 2.033028358661703, 2.0263620862292595, 2.020823699681305, 2.0155642661224142, 2.0054633342111963, 1.9990365488688657, 1.9941001534967844, 1.9867407115187592, 1.9854599856579107, 1.9807035981982755, 1.9809803074696384, 1.9737005713616294, 1.9710292083747358, 1.9705759483713436, 1.9692307919722092, 1.9703311394214822, 1.9656243399539601, 1.967410063166392, 1.9613071559583721, 1.9634497255414836, 1.9653181059482623, 1.9636911356903617, 1.9593072042760353, 1.9587268700311737, 1.960482982627088, 1.9610614326336027, 1.957276133863555, 1.9550666111730721, 1.955606619358126, 1.9529361938108516, 1.9527382302874101, 1.9526135381384593, 1.9497421585163321, 1.9467881840140944, 1.9392583842434707, 1.936378853393644, 1.9370919519884757, 1.9352084113724375, 1.9339703151885246, 1.9333780192289418, 1.9308839551446142, 1.9303444353390795, 1.932093603469563, 1.9298811956165787, 1.926942156850576, 1.9241555532138186, 1.9206024084677338, 1.9195204998624347, 1.9149284363791255, 1.91471767334126, 1.9145856556453265, 1.9131725360709422, 1.9105749006422819, 1.9101627403460366, 1.9097330501127028, 1.9096186797090573, 1.9079813149104223, 1.9054177923042632, 1.9011385190369439, 1.90055515383512, 1.8979358270743927, 1.8956528123559242, 1.8958429257588902, 1.8921638474993872, 1.8891663307392776, 1.8873871016982733, 1.884230814735786, 1.885090436697188] Unbounded HTR
+</code></pre></div>
+<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_21_1.png" /></p>
 <p>As we can see, our tree uses more than 10 MB to keep its structure. Let's say we wanted to limit our memory usage to 5 MB. How could we do that?</p>
 <p>Note that we are using a illustration case here. In real applications, data may be unbounded, so the trees might grow indefinitely.</p>
 <p>HTs expose some parameters related to memory management. The user can refer to the documentation for more details on that matter. Here, we are going to focus on two parameters:</p>
@@ -10783,7 +10785,7 @@ Class True:
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.expand", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a6c66575.min.js"></script>
+      <script src="../../assets/javascripts/bundle.3a4b43e5.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
