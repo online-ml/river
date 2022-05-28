@@ -32,7 +32,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install wheel
-          pip install -e ".[compat,dev]" codecov
+          pip install -e ".[dev]" codecov
 
       - name: Cache datasets
         uses: actions/cache@v2
