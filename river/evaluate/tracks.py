@@ -1,7 +1,6 @@
 import typing
 
-from river import datasets, metrics
-from river.evaluate.progressive_validation import _progressive_validation
+from river import datasets, evaluate, metrics
 
 
 class Track:
@@ -41,20 +40,15 @@ class Track:
 
     def run(self, model, n_checkpoints=10):
 
-        # Do the checkpoint logic
-        step = self.n_samples // n_checkpoints
-        checkpoints = range(0, self.n_samples, step)
-        checkpoints = list(checkpoints)[1:] + [self.n_samples]
-
         # A model might be used in multiple tracks. It's a sane idea to keep things pure and clone
         # the model so that there's no side effects.
         model = model.clone()
 
-        yield from _progressive_validation(
+        yield from evaluate.iter_progressive_val_score(
             dataset=self.dataset,
             model=model,
             metric=self.metric,
-            checkpoints=iter(checkpoints),
+            step=self.n_samples // n_checkpoints,
             measure_time=True,
             measure_memory=True,
         )

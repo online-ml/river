@@ -2,6 +2,7 @@ import collections
 import contextlib
 import copy
 import inspect
+import itertools
 import logging
 import sys
 import types
@@ -231,6 +232,9 @@ class Base:
     @property
     def _raw_memory_usage(self) -> int:
         """Return the memory usage in bytes."""
+
+        import numpy as np
+
         buffer = collections.deque([self])
         seen = set()
         size = 0
@@ -250,6 +254,10 @@ class Base:
                 size += sys.getsizeof(contents)
                 buffer.extend([k for k in contents.keys()])
                 buffer.extend([v for v in contents.values()])
+            elif isinstance(obj, np.ndarray):
+                size += obj.nbytes
+            elif isinstance(obj, itertools.count):
+                ...
             elif hasattr(obj, "__iter__") and not isinstance(
                 obj, (str, bytes, bytearray)
             ):

@@ -44,21 +44,25 @@ def _progressive_validation(
 
         kwargs = kwargs[0] if kwargs else {}
 
-        # Question
+        # Case 1: no ground truth, just make a prediction
         if y is None:
             preds[i] = pred_func(x=x, **kwargs)
             continue
 
-        # Answer
+        # Case 2: there's a ground truth, model and metric can be updated
         y_pred = preds.pop(i)
+
+        # Update the metric
         if y_pred != {} and y_pred is not None:
             metric.update(y_true=y, y_pred=y_pred)
+
+        # Update the model
         if model._supervised:
             model.learn_one(x=x, y=y, **kwargs)
         else:
             model.learn_one(x=x, **kwargs)
 
-        # Update the answer counter
+        # Yield current results
         n_total_answers += 1
         if n_total_answers == next_checkpoint:
             if isinstance(metric, metrics.base.Metrics):
