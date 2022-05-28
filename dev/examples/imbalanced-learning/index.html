@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/examples/imbalanced-learning/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.15">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.16">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.c382b1dc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1c3799f8.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.cc9b2e1e.min.css">
@@ -10145,7 +10145,9 @@
 <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">count</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">:</span><span class="s1">.5%</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>0: 284315 (99.82725%)
+<div class="highlight"><pre><span></span><code>Downloading https://maxhalford.github.io/files/datasets/creditcardfraud.zip (65.95 MB)
+Uncompressing into /Users/max.halford/river_data/CreditCard
+0: 284315 (99.82725%)
 1: 492 (0.17275%)
 </code></pre></div>
 <h2 id="baseline">Baseline<a class="headerlink" href="#baseline" title="Permanent link">&para;</a></h2>
@@ -10167,7 +10169,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 0.891072
+<div class="highlight"><pre><span></span><code>ROCAUC: 89.11%
 </code></pre></div>
 <h2 id="importance-weighting">Importance weighting<a class="headerlink" href="#importance-weighting" title="Permanent link">&para;</a></h2>
 <p>The performance is already quite acceptable, but as we will now see we can do even better. The first thing we can do is to add weight to the 1s by using the <code>weight_pos</code> argument of the <code>Log</code> loss function.</p>
@@ -10184,7 +10186,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 0.914269
+<div class="highlight"><pre><span></span><code>ROCAUC: 91.43%
 </code></pre></div>
 <h2 id="focal-loss">Focal loss<a class="headerlink" href="#focal-loss" title="Permanent link">&para;</a></h2>
 <p>The deep learning for object detection community has produced a special loss function for imbalanced learning called <a href="https://arxiv.org/pdf/1708.02002.pdf">focal loss</a>. We are doing binary classification, so we can plug the binary version of focal loss into our logistic regression and see how well it fairs.</p>
@@ -10197,7 +10199,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 0.913072
+<div class="highlight"><pre><span></span><code>ROCAUC: 91.31%
 </code></pre></div>
 <h2 id="under-sampling-the-majority-class">Under-sampling the majority class<a class="headerlink" href="#under-sampling-the-majority-class" title="Permanent link">&para;</a></h2>
 <p>Adding importance weights only works with gradient-based models (which includes neural networks). A more generic, and potentially more effective approach, is to use undersamplig and oversampling. As an example, we'll under-sample the stream so that our logistic regression encounter 20% of 1s and 80% of 0s. Under-sampling has the additional benefit of requiring less training steps, and thus reduces the total training time.</p>
@@ -10216,7 +10218,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 0.948824
+<div class="highlight"><pre><span></span><code>ROCAUC: 94.75%
 </code></pre></div>
 <p>The <code>RandomUnderSampler</code> class is a wrapper for classifiers. This is represented by a rectangle around the logistic regression bubble when we visualize the model.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
@@ -10319,7 +10321,7 @@
 </code></details><div class="component wrapper"><details><summary><pre class="estimator-name">RandomUnderSampler</pre></summary><code class="estimator-params">
 {'_actual_dist': Counter({0: 284315, 1: 492}),
  '_pivot': 1,
- '_rng': RandomState(MT19937) at 0x7FB79EA22A40,
+ '_rng': &lt;random.Random object at 0x7fb73901e810&gt;,
  'classifier': LogisticRegression (
   optimizer=SGD (
     lr=Constant (
@@ -10342,16 +10344,16 @@
  'seed': 42}
 
 </code></details><details class="component estimator"><summary><pre class="estimator-name">LogisticRegression</pre></summary><code class="estimator-params">
-{'_weights': {'Time': -1.6641306264784972, 'V1': -0.1599659187750452, 'V2': 0.04344696123719202, 'V3': -0.2721170522268713, 'V4': 0.6916589139943812, 'V5': 0.17021248440050196, 'V6': -0.10985861853253961, 'V7': -0.06417467297089502, 'V8': -0.27620200713013304, 'V9': -0.03588628034795379, 'V10': -0.23052292417060072, 'V11': 0.2559724882472953, 'V12': -0.5896873005805503, 'V13': -0.00781916404772026, 'V14': -0.533977051320637, 'V15': -0.11682052362352723, 'V16': -0.21516217614349042, 'V17': -0.009152723158714259, 'V18': 0.07914978322313096, 'V19': -0.059805830541265016, 'V20': 0.027488030533780676, 'V21': 0.06830376534645256, 'V22': 0.1238012301169065, 'V23': -0.11595605141684359, 'V24': 0.04893230557346892, 'V25': -0.06549541465389698, 'V26': -0.05345696163492266, 'V27': 0.023779407654823708, 'V28': 0.1187553855561891, 'Amount': 0.2276158366259826},
+{'_weights': {'Time': -1.6435308107994573, 'V1': -0.0711798457459422, 'V2': 0.08689788816561662, 'V3': -0.22624828183952506, 'V4': 0.6827332420162909, 'V5': 0.18833620045466432, 'V6': -0.11695093658674378, 'V7': -0.13413474923347, 'V8': -0.2575447733912745, 'V9': -0.02888439300081377, 'V10': -0.2491688000120769, 'V11': 0.32422036210718175, 'V12': -0.6194078910255973, 'V13': -0.0302453737827456, 'V14': -0.5855987715566451, 'V15': -0.09972202536223844, 'V16': -0.2402670346526167, 'V17': -0.055365057905480845, 'V18': 0.032474863276146626, 'V19': -0.08494838975759278, 'V20': -0.12459547198256606, 'V21': 0.04276103699144131, 'V22': 0.10363988666872352, 'V23': -0.08712048453858105, 'V24': 0.043970621647021875, 'V25': -0.050376004211653315, 'V26': -0.02767069610819979, 'V27': 0.12223298288462736, 'V28': -0.019825032606385427, 'Amount': 0.027224523831184406},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
  'initializer': Zeros (),
- 'intercept': -1.0742178747798434,
+ 'intercept': -1.0699242219644576,
  'intercept_init': 0.0,
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l2': 0.0,
  'loss': Log({'weight_pos': 1.0, 'weight_neg': 1.0}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 3562})}
+ 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 3633})}
 
 </code></details></div></div><style scoped>
 .estimator {
@@ -10459,7 +10461,7 @@ summary > div {
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 0.918082
+<div class="highlight"><pre><span></span><code>ROCAUC: 91.71%
 </code></pre></div>
 <h2 id="sampling-with-a-desired-sample-size">Sampling with a desired sample size<a class="headerlink" href="#sampling-with-a-desired-sample-size" title="Permanent link">&para;</a></h2>
 <p>The downside of both <code>RandomUnderSampler</code> and <code>RandomOverSampler</code> is that you don't have any control on the amount of data the classifier trains on. The number of samples is adjusted so that the target distribution can be attained, either by under-sampling or over-sampling. However, you can do both at the same time and choose how much data the classifier will see. To do so, we can use the <code>RandomSampler</code> class. In addition to the desired class distribution, we can specify how much data to train on. The samples will both be under-sampled and over-sampled in order to fit your constraints. This is powerful because it allows you to control both the class distribution and the size of the training data (and thus the training time). In the following example we'll set it so that the model will train with 1 percent of the data.</p>
@@ -10477,7 +10479,7 @@ summary > div {
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 0.951296
+<div class="highlight"><pre><span></span><code>ROCAUC: 94.71%
 </code></pre></div>
 <h2 id="hybrid-approach">Hybrid approach<a class="headerlink" href="#hybrid-approach" title="Permanent link">&para;</a></h2>
 <p>As you might have guessed by now, nothing is stopping you from mixing imbalanced learning methods together. As an example, let's combine <code>sampling.RandomUnderSampler</code> and the <code>weight_pos</code> parameter from the <code>optim.losses.Log</code> loss function.</p>
@@ -10496,7 +10498,7 @@ summary > div {
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 0.968289
+<div class="highlight"><pre><span></span><code>ROCAUC: 96.52%
 </code></pre></div>
 
               
@@ -10555,7 +10557,7 @@ summary > div {
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.expand", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a6c66575.min.js"></script>
+      <script src="../../assets/javascripts/bundle.3a4b43e5.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       

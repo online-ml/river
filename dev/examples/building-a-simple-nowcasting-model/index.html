@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/examples/building-a-simple-nowcasting-model/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.15">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.16">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.c382b1dc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1c3799f8.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.cc9b2e1e.min.css">
@@ -10070,10 +10070,8 @@
 <p>Let's evaluate our first model.</p>
 <div class="highlight"><pre><span></span><code><span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>/Users/max.halford/anaconda3/envs/river/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:238: RuntimeWarning: Glyph 9 missing from current font.
-  font.set_text(s, 0.0, flags=flags)
-/Users/max.halford/anaconda3/envs/river/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:201: RuntimeWarning: Glyph 9 missing from current font.
-  font.set_text(s, 0, flags=flags)
+<div class="highlight"><pre><span></span><code>/Users/max.halford/anaconda3/lib/python3.9/site-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 9 ( ) missing from current font.
+  fig.canvas.print_figure(bytes_io, **kw)
 </code></pre></div>
 <p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_9_1.png" /></p>
 <p>The model has captured a trend but not the right one. Indeed it thinks the trend is linear whereas we can visually see that the growth of the data increases with time. In other words the second derivative of the series is positive. This is a well know problem in time series forecasting and there are thus many ways to handle it; for example by using a <a href="https://www.wikiwand.com/en/Power_transform">Box-Cox transform</a>. However we are going to do something a bit different, and instead linearly detrend the series using a <code>TargetStandardScaler</code>.</p>
@@ -10260,7 +10258,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.expand", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a6c66575.min.js"></script>
+      <script src="../../assets/javascripts/bundle.3a4b43e5.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       

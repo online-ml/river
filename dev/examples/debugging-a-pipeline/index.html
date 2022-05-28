@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/examples/debugging-a-pipeline/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.15">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.16">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.c382b1dc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1c3799f8.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.cc9b2e1e.min.css">
@@ -10073,11 +10073,11 @@ def add_time_features(x):
     }
 
 </code></details><div class="component union"><details class="component estimator"><summary><pre class="estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="estimator-params">
-{'keys': {'humidity', 'clouds', 'pressure', 'temperature', 'wind'}}
+{'keys': {'temperature', 'wind', 'humidity', 'pressure', 'clouds'}}
 
 </code></details><details class="component estimator"><summary><pre class="estimator-name">y_mean_by_station_and_hour</pre></summary><code class="estimator-params">
 {'_feature_name': 'y_mean_by_station_and_hour',
- '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7ffd24fb5790&gt;, Mean: 0.),
+ '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f8f928024c0&gt;, Mean: 0.),
                         {('metro-canal-du-midi', 0): Mean: 7.93981,
                          ('metro-canal-du-midi', 1): Mean: 8.179704,
                          ('metro-canal-du-midi', 2): Mean: 8.35824,
@@ -10200,11 +10200,11 @@ def add_time_features(x):
                          ('pomme', 23): Mean: 5.235756}),
  'by': ['station', 'hour'],
  'how': Mean: 0.,
- 'target_name': 'y'}
+ 'on': 'y'}
 
 </code></details><details class="component estimator"><summary><pre class="estimator-name">y_ewm_0.5_by_station</pre></summary><code class="estimator-params">
 {'_feature_name': 'y_ewm_0.5_by_station',
- '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7ffd24fb5790&gt;, EWMean: 0.),
+ '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f8f928024c0&gt;, EWMean: 0.),
                         {('metro-canal-du-midi',): EWMean: 4.690531,
                          ('place-des-carmes',): EWMean: 3.295317,
                          ('place-esquirol',): EWMean: 31.539759,
@@ -10212,16 +10212,16 @@ def add_time_features(x):
                          ('pomme',): EWMean: 11.803716}),
  'by': ['station'],
  'how': EWMean: 0.,
- 'target_name': 'y'}
+ 'on': 'y'}
 
 </code></details></div><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
 {'counts': Counter({'y_ewm_0.5_by_station': 182470,
                     'y_mean_by_station_and_hour': 182470,
-                    'humidity': 182470,
-                    'clouds': 182470,
-                    'pressure': 182470,
                     'temperature': 182470,
-                    'wind': 182470}),
+                    'wind': 182470,
+                    'humidity': 182470,
+                    'pressure': 182470,
+                    'clouds': 182470}),
  'means': defaultdict(&lt;class 'float'&gt;,
                       {'clouds': 30.315131254453505,
                        'humidity': 62.24244533347998,
@@ -10241,11 +10241,11 @@ def add_time_features(x):
  'with_std': True}
 
 </code></details><details class="component estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
-{'_weights': {'y_ewm_0.5_by_station': 9.264175276315452, 'y_mean_by_station_and_hour': 0.1980140007049774, 'humidity': 1.0125248437612977, 'clouds': -0.3269694794458268, 'pressure': 0.1813749890913746, 'temperature': -0.4211217806219108, 'wind': -0.04087954775179999},
+{'_weights': {'y_ewm_0.5_by_station': 9.264175276315452, 'y_mean_by_station_and_hour': 0.19801400070497754, 'temperature': -0.42112178062191985, 'wind': -0.04087954775179702, 'humidity': 1.0125248437612904, 'pressure': 0.18137498909137262, 'clouds': -0.3269694794458269},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
  'initializer': Zeros (),
- 'intercept': 9.22315869068917,
+ 'intercept': 9.223158690689175,
  'intercept_init': 0.0,
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l2': 0.0,
@@ -10478,7 +10478,7 @@ Prediction: 11.87982
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.expand", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a6c66575.min.js"></script>
+      <script src="../../assets/javascripts/bundle.3a4b43e5.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
