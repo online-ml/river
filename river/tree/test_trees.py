@@ -20,7 +20,7 @@ def get_regression_data():
             get_classification_data(),
             tree.HoeffdingTreeClassifier(
                 leaf_prediction="mc",
-                max_size=0.025,
+                max_size=0.05,
                 grace_period=50,
                 memory_estimate_period=50,
                 splitter=tree.splitter.ExhaustiveSplitter(),
@@ -30,7 +30,7 @@ def get_regression_data():
             get_classification_data(),
             tree.HoeffdingAdaptiveTreeClassifier(
                 leaf_prediction="mc",
-                max_size=0.025,
+                max_size=0.05,
                 grace_period=50,
                 memory_estimate_period=50,
                 splitter=tree.splitter.ExhaustiveSplitter(),
@@ -40,7 +40,7 @@ def get_regression_data():
             get_classification_data(),
             tree.ExtremelyFastDecisionTreeClassifier(
                 leaf_prediction="mc",
-                max_size=0.025,
+                max_size=0.05,
                 grace_period=50,
                 memory_estimate_period=50,
                 splitter=tree.splitter.ExhaustiveSplitter(),
@@ -52,7 +52,7 @@ def test_memory_usage_class(dataset, model):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model._raw_memory_usage / (2**20) < 0.025
+    assert model._raw_memory_usage / (2**20) < 0.05
 
 
 @pytest.mark.parametrize(

@@ -97,7 +97,7 @@ class LabelCombinationHoeffdingTreeClassifier(
         nominal_attributes: list = None,
         splitter: Splitter = None,
         binary_split: bool = False,
-        max_size: int = 100,
+        max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,

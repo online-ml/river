@@ -127,7 +127,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         splitter: Splitter = None,
         min_samples_split: int = 5,
         binary_split: bool = False,
-        max_size: int = 500,
+        max_size: float = 500.0,
         memory_estimate_period: int = 1000000,
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,

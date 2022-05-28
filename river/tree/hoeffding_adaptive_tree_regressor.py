@@ -155,7 +155,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         drift_window_threshold: int = 300,
         adwin_confidence: float = 0.002,
         binary_split: bool = False,
-        max_size: int = 100,
+        max_size: float = 500.0,
         memory_estimate_period: int = 1000000,
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
