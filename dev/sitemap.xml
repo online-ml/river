@@ -2216,6 +2216,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/releases/0.11.0/</loc>
+         <lastmod>2022-05-28</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/releases/0.2.0/</loc>
          <lastmod>2022-05-28</lastmod>
          <changefreq>daily</changefreq>
@@ -2282,11 +2287,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/dev/releases/0.9.0/</loc>
-         <lastmod>2022-05-28</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/releases/unreleased/</loc>
          <lastmod>2022-05-28</lastmod>
          <changefreq>daily</changefreq>
     </url>
