@@ -29,16 +29,18 @@ class Track:
         self.datasets = datasets
         self.metric = metric
 
-    def run(self, model, n_checkpoints=10):
-        for dataset in self.datasets:
-            yield evaluate.iter_progressive_val_score(
-                dataset=dataset,
-                model=model.clone(),
-                metric=self.metric.clone(),
-                step=dataset.n_samples // n_checkpoints,
-                measure_time=True,
-                measure_memory=True,
-            )
+    def __iter__(self):
+        yield from self.datasets
+
+    def run(self, model, dataset, n_checkpoints=10):
+        yield from evaluate.iter_progressive_val_score(
+            dataset=dataset,
+            model=model.clone(),
+            metric=self.metric.clone(),
+            step=dataset.n_samples // n_checkpoints,
+            measure_time=True,
+            measure_memory=True,
+        )
 
 
 class BinaryClassificationTrack(Track):
