@@ -5,10 +5,6 @@ from river import evaluate
 from river import linear_model
 from river import metrics
 from river import preprocessing
-from dominate.tags import *
-
-
-benchmarks = {}
 
 models = {
     "Logisitic regression": preprocessing.StandardScaler() | linear_model.LogisticRegression()
@@ -17,17 +13,15 @@ track = evaluate.BinaryClassificationTrack()
 results = []
 
 for model_name, model in models.items():
-    for dataset in track:
-        res = next(track.run(model, dataset, n_checkpoints=1))
-        res["Dataset"] = dataset.__class__.__name__
+    for run in track.run(model, n_checkpoints=1):
+        res = next(run)
         res["Model"] = model_name
+        res["Track"] = track.name
         for k, v in res.items():
             if isinstance(v, metrics.base.Metric):
                 res[k] = v.get()
         res["Time"] = res["Time"].seconds
         results.append(res)
 
-benchmarks[track.name] = results
-
 with open('results.json', 'w') as f:
-    json.dump(benchmarks, f, sort_keys=True, indent=4)
+    json.dump(results, f, sort_keys=True, indent=4)
