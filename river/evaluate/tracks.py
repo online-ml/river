@@ -1,5 +1,3 @@
-import typing
-
 from river import datasets, evaluate, metrics
 
 
@@ -41,7 +39,6 @@ class Track:
                 measure_time=True,
                 measure_memory=True,
             )
-
 
 
 class BinaryClassificationTrack(Track):
