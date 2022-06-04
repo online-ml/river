@@ -13,11 +13,12 @@ The `benchmarks` directory at the root of the River repository uses these tracks
 
 """
 from .progressive_validation import iter_progressive_val_score, progressive_val_score
-from .tracks import Track, load_binary_clf_tracks
+from .tracks import Track, BinaryClassificationTrack
 
 __all__ = [
     "load_binary_clf_tracks",
     "iter_progressive_val_score",
     "progressive_val_score",
+    "BinaryClassificationTrack",
     "Track",
 ]

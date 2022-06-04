@@ -1,0 +1,36 @@
+<link href="https://unpkg.com/tabulator-tables@5.2.6/dist/css/tabulator.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.2.6/dist/js/tabulator.min.js"></script>
+
+<h2>Binary classification</h2>
+<div id="results"></div>
+
+<script>
+    var results = [
+        {
+            "Accuracy": 0.892,
+            "F1": 0.8789237668161435,
+            "Memory": "5.67 KB",
+            "Model": "Logisitic regression",
+            "Step": 1250,
+            "Time": 0,
+            "Track": "Phishing"
+        },
+        {
+            "Accuracy": 0.5373584905660377,
+            "F1": 0.22109275730622616,
+            "Memory": "4.32 KB",
+            "Model": "Logisitic regression",
+            "Step": 5300,
+            "Time": 0,
+            "Track": "Bananas"
+        }
+    ]
+
+    var table = new Tabulator("#results", {
+        //height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+        data: results, //assign data to table
+        layout: "fitColumns", //fit columns to width of table (optional)
+        columns: Object.keys(results[0]).map(x => ({title: x, field: x}))
+    });
+
+</script>

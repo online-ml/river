@@ -23,49 +23,31 @@ class Track:
         is a data generator.
     metric
         The metric(s) used to track performance.
-    n_samples
-        The number of samples that are going to be processed by the track.
 
     """
 
-    def __init__(self, name: str, dataset, metric, n_samples: int = None):
-
-        if n_samples is None:
-            n_samples = dataset.n_samples
-
+    def __init__(self, name: str, datasets, metric):
         self.name = name
-        self.dataset = dataset
+        self.datasets = datasets
         self.metric = metric
-        self.n_samples = n_samples
 
     def run(self, model, n_checkpoints=10):
+        for dataset in self.datasets:
+            yield evaluate.iter_progressive_val_score(
+                dataset=dataset,
+                model=model.clone(),
+                metric=self.metric.clone(),
+                step=dataset.n_samples // n_checkpoints,
+                measure_time=True,
+                measure_memory=True,
+            )
 
-        # A model might be used in multiple tracks. It's a sane idea to keep things pure and clone
-        # the model so that there's no side effects.
-        model = model.clone()
 
-        yield from evaluate.iter_progressive_val_score(
-            dataset=self.dataset,
-            model=model,
-            metric=self.metric,
-            step=self.n_samples // n_checkpoints,
-            measure_time=True,
-            measure_memory=True,
+
+class BinaryClassificationTrack(Track):
+    def __init__(self):
+        super().__init__(
+            name="Binary classification",
+            datasets=[datasets.Phishing(), datasets.Bananas()],
+            metric=metrics.Accuracy() + metrics.F1(),
         )
-
-
-def load_binary_clf_tracks() -> typing.List[Track]:
-    """Return binary classification tracks."""
-
-    return [
-        Track(
-            name="Phishing",
-            dataset=datasets.Phishing(),
-            metric=metrics.Accuracy() + metrics.F1(),
-        ),
-        Track(
-            name="Bananas",
-            dataset=datasets.Bananas(),
-            metric=metrics.Accuracy() + metrics.F1(),
-        ),
-    ]
