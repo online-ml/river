@@ -30,42 +30,6 @@ EMAIL = "maxhalford25@gmail.com"
 AUTHOR = "Max Halford"
 REQUIRES_PYTHON = ">=3.8.0"
 
-# Package requirements.
-base_packages = ["numpy>=1.22", "scipy>=1.5", "pandas>=1.3"]
-
-compat_packages = base_packages + [
-    "scikit-learn",
-    "sqlalchemy>=1.4",
-    "torch",
-    "vaex",
-]
-
-dev_packages = base_packages + [
-    "black>=22.1.0",
-    "flake8>=4.0.1",
-    "graphviz>=0.10.1",
-    "isort>=5.9.3",
-    "matplotlib>=3.0.2",
-    "mypy>=0.761",
-    "pre-commit>=2.9.2",
-    "pytest>=4.5.0",
-    "pytest-cov>=2.6.1",
-    "scikit-learn>=1.0.1",
-    "sqlalchemy>=1.4",
-]
-
-docs_packages = dev_packages + [
-    "flask",
-    "ipykernel",
-    "jupyter-client",
-    "mike",
-    "mkdocs",
-    "mkdocs-awesome-pages-plugin",
-    "mkdocs-material",
-    "nbconvert",
-    "spacy",
-]
-
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
@@ -89,11 +53,43 @@ setuptools.setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=setuptools.find_packages(exclude=("tests",)),
-    install_requires=base_packages,
+    install_requires=(base_packages := ["numpy>=1.22", "scipy>=1.5", "pandas>=1.3"]),
     extras_require={
-        "dev": dev_packages,
-        "compat": compat_packages,
-        "docs": docs_packages,
+        "dev": (dev_packages := base_packages + [
+            "black>=22.1.0",
+            "flake8>=4.0.1",
+            "graphviz>=0.10.1",
+            "isort>=5.9.3",
+            "matplotlib>=3.0.2",
+            "mypy>=0.761",
+            "pre-commit>=2.9.2",
+            "pytest>=4.5.0",
+            "pytest-cov>=2.6.1",
+            "scikit-learn>=1.0.1",
+            "sqlalchemy>=1.4",
+        ]),
+        "benckmarks": base_packages + [
+            "dominate",
+            "scikit-learn",
+            "torch"
+        ],
+        "compat": base_packages + [
+            "scikit-learn",
+            "sqlalchemy>=1.4",
+            "torch",
+            "vaex",
+        ],
+        "docs": dev_packages + [
+            "flask",
+            "ipykernel",
+            "jupyter-client",
+            "mike",
+            "mkdocs",
+            "mkdocs-awesome-pages-plugin",
+            "mkdocs-material",
+            "nbconvert",
+            "spacy",
+        ],
         "extra": [f"river_extra=={about['__version__']}"],
         ":python_version == '3.6'": ["dataclasses"],
     },
