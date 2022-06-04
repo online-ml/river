@@ -1,4 +1,5 @@
 import json
+import dominate
 from dominate.tags import *
 
 with open('results.json') as f:
@@ -13,7 +14,7 @@ _body = _html.add(body())
 for track_name, results in benchmarks.items():
     _body.add(h2(track_name))
     _body.add(div(id=f"results"))
-    _body.add(script(f"""
+    _body.add(script(dominate.util.raw(f"""
     var results = {results}
 
     var table = new Tabulator('#results', {{
@@ -21,7 +22,9 @@ for track_name, results in benchmarks.items():
         layout: 'fitColumns',
         columns: Object.keys(results[0]).map(x => ({{title: x, field: x}}))
     }})
-    """))
+    """)))
+
+print(_body)
 
 with open('benchmarks.html', 'w') as f:
     print(_html, file=f)

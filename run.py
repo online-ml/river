@@ -24,7 +24,7 @@ for model_name, model in models.items():
         for k, v in res.items():
             if isinstance(v, metrics.base.Metric):
                 res[k] = v.get()
-        res["Time"] = res["Time"].seconds
+        res["Time"] = res["Time"].microseconds
         results.append(res)
 
 benchmarks[track.name] = results
