@@ -6,7 +6,7 @@
             "F1": 0.8789237668161435,
             "Memory": 5811,
             "Model": "Logistic regression",
-            "Time": 95.269
+            "Time": 68272
         },
         {
             "Accuracy": 0.5373584905660377,
@@ -14,7 +14,1593 @@
             "F1": 0.22109275730622616,
             "Memory": 4423,
             "Model": "Logistic regression",
-            "Time": 296.044
+            "Time": 168998
+        }
+    ],
+    "Single-target Regression": [
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.6529963616091732,
+            "Memory": 4882,
+            "Model": "MaxAbs | Linear Regression",
+            "R2": -1.6720795014462175,
+            "RMSE": 2.796120218684067,
+            "Time": 39633
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.1760265329216923,
+            "Memory": 5510,
+            "Model": "MaxAbs | Linear Regression",
+            "R2": 0.6809927040707857,
+            "RMSE": 2.797977178737465,
+            "Time": 322768
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.4414989951440096,
+            "Memory": 5510,
+            "Model": "MaxAbs | Linear Regression",
+            "R2": 0.6321762435294269,
+            "RMSE": 3.2397875270906824,
+            "Time": 470940
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.268101043220204,
+            "Memory": 5510,
+            "Model": "MaxAbs | Linear Regression",
+            "R2": 0.6617787872278118,
+            "RMSE": 2.9000549996748877,
+            "Time": 467892
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.8503314576056176,
+            "Memory": 5124,
+            "Model": "MaxAbs | Linear Regression with l1 regularization",
+            "R2": -1.7858364858333018,
+            "RMSE": 2.855018739581159,
+            "Time": 43443
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 3.3698107932214842,
+            "Memory": 5752,
+            "Model": "MaxAbs | Linear Regression with l1 regularization",
+            "R2": 0.3007770197817837,
+            "RMSE": 4.14239688555315,
+            "Time": 372344
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.6854404905993055,
+            "Memory": 5752,
+            "Model": "MaxAbs | Linear Regression with l1 regularization",
+            "R2": 0.25606728646403776,
+            "RMSE": 4.6074801168379365,
+            "Time": 542743
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 3.5869030045487995,
+            "Memory": 5752,
+            "Model": "MaxAbs | Linear Regression with l1 regularization",
+            "R2": 0.21510515779958428,
+            "RMSE": 4.4178559472816215,
+            "Time": 538187
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.7140592571078264,
+            "Memory": 4906,
+            "Model": "MaxAbs | Linear Regression with l2 regularization",
+            "R2": -2.5489230166585815,
+            "RMSE": 3.2223999456219565,
+            "Time": 40765
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 3.665882764310885,
+            "Memory": 5534,
+            "Model": "MaxAbs | Linear Regression with l2 regularization",
+            "R2": 0.16576463361718974,
+            "RMSE": 4.524683008201544,
+            "Time": 337612
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.947881621056973,
+            "Memory": 5534,
+            "Model": "MaxAbs | Linear Regression with l2 regularization",
+            "R2": 0.15175054497274287,
+            "RMSE": 4.919924475049507,
+            "Time": 491946
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 3.721705963074108,
+            "Memory": 5534,
+            "Model": "MaxAbs | Linear Regression with l2 regularization",
+            "R2": 0.15778374330767286,
+            "RMSE": 4.576333047468707,
+            "Time": 488812
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 3.0029323186064727,
+            "Memory": 4346,
+            "Model": "MaxAbs | Passive-Aggressive Regressor, mode 1",
+            "R2": -3.756790994568034,
+            "RMSE": 3.7306816157824643,
+            "Time": 46142
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 3.397625661781517,
+            "Memory": 5074,
+            "Model": "MaxAbs | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.2509988267789264,
+            "RMSE": 4.287312192334304,
+            "Time": 367530
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.63796275044764,
+            "Memory": 5074,
+            "Model": "MaxAbs | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.2385048179341991,
+            "RMSE": 4.661548652988019,
+            "Time": 536063
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 3.440381651490093,
+            "Memory": 5074,
+            "Model": "MaxAbs | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.24130994828594388,
+            "RMSE": 4.3434818179612185,
+            "Time": 534172
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 32.626243823931546,
+            "Memory": 4346,
+            "Model": "MaxAbs | Passive-Aggressive Regressor, mode 2",
+            "R2": -405.38983122292177,
+            "RMSE": 34.48280358324375,
+            "Time": 44892
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 10.484715512732862,
+            "Memory": 5074,
+            "Model": "MaxAbs | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.820391568620938,
+            "RMSE": 12.937444938011344,
+            "Time": 368220
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 10.956979512021539,
+            "Memory": 5074,
+            "Model": "MaxAbs | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.463843445590872,
+            "RMSE": 13.5813223122457,
+            "Time": 536449
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 10.613494795428103,
+            "Memory": 5074,
+            "Model": "MaxAbs | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.9365441204871985,
+            "RMSE": 13.13340659275881,
+            "Time": 531636
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.37352501178821196,
+            "Memory": 68788,
+            "Model": "MaxAbs | k-Nearest Neighbors",
+            "R2": 0.2715391234759795,
+            "RMSE": 1.4599375141259412,
+            "Time": 292739
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.8114184804527698,
+            "Memory": 78460,
+            "Model": "MaxAbs | k-Nearest Neighbors",
+            "R2": 0.49550958426292757,
+            "RMSE": 3.518603416054393,
+            "Time": 852945
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.0956259938648745,
+            "Memory": 78460,
+            "Model": "MaxAbs | k-Nearest Neighbors",
+            "R2": 0.44615660117471245,
+            "RMSE": 3.9754851293611755,
+            "Time": 96299
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.8719119645404723,
+            "Memory": 78460,
+            "Model": "MaxAbs | k-Nearest Neighbors",
+            "R2": 0.4868739062246792,
+            "RMSE": 3.572052746582878,
+            "Time": 92742
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.6128875757495994,
+            "Memory": 101421,
+            "Model": "MaxAbs | Hoeffding Tree",
+            "R2": -1.6073152096583283,
+            "RMSE": 2.7620270098568276,
+            "Time": 113836
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.0023392336879575,
+            "Memory": 7720029,
+            "Model": "MaxAbs | Hoeffding Tree",
+            "R2": 0.7256445784757564,
+            "RMSE": 2.594780546896382,
+            "Time": 952990
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.1466824097648307,
+            "Memory": 12608361,
+            "Model": "MaxAbs | Hoeffding Tree",
+            "R2": 0.7015879995525739,
+            "RMSE": 2.9181309944008236,
+            "Time": 951676
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.278790864641408,
+            "Memory": 12668289,
+            "Model": "MaxAbs | Hoeffding Tree",
+            "R2": 0.6563284769381553,
+            "RMSE": 2.923328273498934,
+            "Time": 4008
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.5637350008720478,
+            "Memory": 81545,
+            "Model": "MaxAbs | Hoeffding Adaptive Tree",
+            "R2": -1.2026216802085243,
+            "RMSE": 2.538639931511714,
+            "Time": 116532
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.9508854288731003,
+            "Memory": 10171673,
+            "Model": "MaxAbs | Hoeffding Adaptive Tree",
+            "R2": 0.7426918805208786,
+            "RMSE": 2.5128733784303217,
+            "Time": 339091
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.1717704476400246,
+            "Memory": 10486581,
+            "Model": "MaxAbs | Hoeffding Adaptive Tree",
+            "R2": 0.6933699680247511,
+            "RMSE": 2.9580396124521715,
+            "Time": 282101
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.2963077534141396,
+            "Memory": 12754513,
+            "Model": "MaxAbs | Hoeffding Adaptive Tree",
+            "R2": 0.6529805168310638,
+            "RMSE": 2.937532921131599,
+            "Time": 204262
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.28338108838611326,
+            "Memory": 1472033,
+            "Model": "MaxAbs | Adaptive Random Forest",
+            "R2": 0.18482770751944122,
+            "RMSE": 1.5443860034603814,
+            "Time": 39041
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.9023604823224043,
+            "Memory": 39478973,
+            "Model": "MaxAbs | Adaptive Random Forest",
+            "R2": 0.7559372815436293,
+            "RMSE": 2.4473415421875746,
+            "Time": 915976
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.1247661001325024,
+            "Memory": 57985341,
+            "Model": "MaxAbs | Adaptive Random Forest",
+            "R2": 0.7006084905783614,
+            "RMSE": 2.922916314328968,
+            "Time": 7493
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.273206369230288,
+            "Memory": 57100605,
+            "Model": "MaxAbs | Adaptive Random Forest",
+            "R2": 0.6570619060916703,
+            "RMSE": 2.9202072710802054,
+            "Time": 349503
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.5218562232408348,
+            "Memory": 190922,
+            "Model": "MaxAbs | Adaptive Model Rules",
+            "R2": 0.15268726159367874,
+            "RMSE": 1.5745375417004734,
+            "Time": 129805
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.2682660192499586,
+            "Memory": 29611126,
+            "Model": "MaxAbs | Adaptive Model Rules",
+            "R2": 0.6562498123456445,
+            "RMSE": 2.9044595465146026,
+            "Time": 815261
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.5609572742050255,
+            "Memory": 4186998,
+            "Model": "MaxAbs | Adaptive Model Rules",
+            "R2": 0.5954503077465247,
+            "RMSE": 3.3976808228711857,
+            "Time": 402265
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.4541629629415933,
+            "Memory": 5969498,
+            "Model": "MaxAbs | Adaptive Model Rules",
+            "R2": 0.6101775967572658,
+            "RMSE": 3.1134307500195892,
+            "Time": 489700
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 40.75458054545452,
+            "Memory": 11250,
+            "Model": "MaxAbs | Multi-layer Perceptron",
+            "R2": -567.6629514867817,
+            "RMSE": 40.7904615623717,
+            "Time": 628365
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.3691164980176604,
+            "Memory": 12154,
+            "Model": "MaxAbs | Multi-layer Perceptron",
+            "R2": 0.5694995928777101,
+            "RMSE": 3.2503538515914583,
+            "Time": 55019
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.5919732575936503,
+            "Memory": 12154,
+            "Model": "MaxAbs | Multi-layer Perceptron",
+            "R2": 0.561858589277296,
+            "RMSE": 3.535931088675525,
+            "Time": 207236
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.4085478697109726,
+            "Memory": 12154,
+            "Model": "MaxAbs | Multi-layer Perceptron",
+            "R2": 0.5835094344413585,
+            "RMSE": 3.218165666680366,
+            "Time": 201869
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.5951409658335913,
+            "Memory": 6358,
+            "Model": "MinMax | Linear Regression",
+            "R2": -6.141214165515236,
+            "RMSE": 4.571062727924009,
+            "Time": 44871
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.1796115815469896,
+            "Memory": 7686,
+            "Model": "MinMax | Linear Regression",
+            "R2": 0.6793273567662785,
+            "RMSE": 2.805270959129024,
+            "Time": 379208
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.444081726017737,
+            "Memory": 7686,
+            "Model": "MinMax | Linear Regression",
+            "R2": 0.6311325598615452,
+            "RMSE": 3.24438064823239,
+            "Time": 551360
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.270619626862072,
+            "Memory": 7686,
+            "Model": "MinMax | Linear Regression",
+            "R2": 0.660623709471659,
+            "RMSE": 2.905002847055159,
+            "Time": 548328
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.4615052058772149,
+            "Memory": 6600,
+            "Model": "MinMax | Linear Regression with l1 regularization",
+            "R2": -6.117794756641581,
+            "RMSE": 4.563561237498105,
+            "Time": 48928
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 3.378968152818583,
+            "Memory": 7928,
+            "Model": "MinMax | Linear Regression with l1 regularization",
+            "R2": 0.2965705556718097,
+            "RMSE": 4.154838350057832,
+            "Time": 429540
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.6918126816230195,
+            "Memory": 7928,
+            "Model": "MinMax | Linear Regression with l1 regularization",
+            "R2": 0.25354547448761056,
+            "RMSE": 4.615282817391542,
+            "Time": 625094
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 3.593776731081205,
+            "Memory": 7928,
+            "Model": "MinMax | Linear Regression with l1 regularization",
+            "R2": 0.2120188824752871,
+            "RMSE": 4.426533124224579,
+            "Time": 619695
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 2.0259756069927692,
+            "Memory": 6382,
+            "Model": "MinMax | Linear Regression with l2 regularization",
+            "R2": -7.046367629912716,
+            "RMSE": 4.852115024815267,
+            "Time": 47034
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 3.668189829941536,
+            "Memory": 7710,
+            "Model": "MinMax | Linear Regression with l2 regularization",
+            "R2": 0.1643090242870091,
+            "RMSE": 4.528628717418709,
+            "Time": 396378
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.949479548906326,
+            "Memory": 7710,
+            "Model": "MinMax | Linear Regression with l2 regularization",
+            "R2": 0.15088192597624217,
+            "RMSE": 4.922442865337936,
+            "Time": 576581
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 3.7233018286456114,
+            "Memory": 7710,
+            "Model": "MinMax | Linear Regression with l2 regularization",
+            "R2": 0.1567869220104703,
+            "RMSE": 4.5790404502344915,
+            "Time": 571507
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 2.1303666820149294,
+            "Memory": 5822,
+            "Model": "MinMax | Passive-Aggressive Regressor, mode 1",
+            "R2": -4.81062721072944,
+            "RMSE": 4.123278399935933,
+            "Time": 51157
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 3.389615356793304,
+            "Memory": 7250,
+            "Model": "MinMax | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.2546883823005017,
+            "RMSE": 4.276739575665037,
+            "Time": 426895
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.643740144715231,
+            "Memory": 7250,
+            "Model": "MinMax | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.2386919503157683,
+            "RMSE": 4.660975845490026,
+            "Time": 622635
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 3.463809120711425,
+            "Memory": 7250,
+            "Model": "MinMax | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.23699894615311334,
+            "RMSE": 4.355804528235847,
+            "Time": 621479
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 31.504437044606746,
+            "Memory": 5822,
+            "Model": "MinMax | Passive-Aggressive Regressor, mode 2",
+            "R2": -411.9826583200147,
+            "RMSE": 34.761384052723365,
+            "Time": 51265
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 10.61478857982385,
+            "Memory": 7250,
+            "Model": "MinMax | Passive-Aggressive Regressor, mode 2",
+            "R2": -6.002415250654627,
+            "RMSE": 13.108946489134526,
+            "Time": 428177
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 10.933024560169269,
+            "Memory": 7250,
+            "Model": "MinMax | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.395130510401614,
+            "RMSE": 13.508942319396047,
+            "Time": 621476
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 10.562594427125322,
+            "Memory": 7250,
+            "Model": "MinMax | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.878672900720688,
+            "RMSE": 13.078506187749392,
+            "Time": 616892
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.41663563656343666,
+            "Memory": 70264,
+            "Model": "MinMax | k-Nearest Neighbors",
+            "R2": 0.24601066960681006,
+            "RMSE": 1.485298533720372,
+            "Time": 296442
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.8102732572705595,
+            "Memory": 80636,
+            "Model": "MinMax | k-Nearest Neighbors",
+            "R2": 0.49641002972011494,
+            "RMSE": 3.5154619039715307,
+            "Time": 910569
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.094824337637313,
+            "Memory": 80636,
+            "Model": "MinMax | k-Nearest Neighbors",
+            "R2": 0.44669866432987004,
+            "RMSE": 3.973539189807457,
+            "Time": 189188
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.871110308312922,
+            "Memory": 80636,
+            "Model": "MinMax | k-Nearest Neighbors",
+            "R2": 0.48749596517773985,
+            "RMSE": 3.5698869034654397,
+            "Time": 175634
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.4776198434021046,
+            "Memory": 158961,
+            "Model": "MinMax | Hoeffding Tree",
+            "R2": -5.088868507522544,
+            "RMSE": 4.220845444942807,
+            "Time": 123287
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.0410755532133087,
+            "Memory": 8507301,
+            "Model": "MinMax | Hoeffding Tree",
+            "R2": 0.7184444475433561,
+            "RMSE": 2.6286085015614478,
+            "Time": 966333
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.159816953126042,
+            "Memory": 12847821,
+            "Model": "MinMax | Hoeffding Tree",
+            "R2": 0.7011661834766374,
+            "RMSE": 2.920192707544004,
+            "Time": 801709
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.305865362488893,
+            "Memory": 11861745,
+            "Model": "MinMax | Hoeffding Tree",
+            "R2": 0.6477748760226224,
+            "RMSE": 2.959483878162219,
+            "Time": 77128
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.4540378288871734,
+            "Memory": 118629,
+            "Model": "MinMax | Hoeffding Adaptive Tree",
+            "R2": -4.636105248588862,
+            "RMSE": 4.060885079912879,
+            "Time": 117859
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.9759141438122658,
+            "Memory": 8439545,
+            "Model": "MinMax | Hoeffding Adaptive Tree",
+            "R2": 0.7363854323466674,
+            "RMSE": 2.5434813827550404,
+            "Time": 108584
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.2017644305909863,
+            "Memory": 13570453,
+            "Model": "MinMax | Hoeffding Adaptive Tree",
+            "R2": 0.6911794811176221,
+            "RMSE": 2.9685865508778297,
+            "Time": 12700
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.296681726973852,
+            "Memory": 12752521,
+            "Model": "MinMax | Hoeffding Adaptive Tree",
+            "R2": 0.6505519908669972,
+            "RMSE": 2.9477937820538056,
+            "Time": 898784
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.8112508354277045,
+            "Memory": 1444701,
+            "Model": "MinMax | Adaptive Random Forest",
+            "R2": -0.8248188355043027,
+            "RMSE": 2.310686514204062,
+            "Time": 60828
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.8525082109381048,
+            "Memory": 39298293,
+            "Model": "MinMax | Adaptive Random Forest",
+            "R2": 0.7695973237821241,
+            "RMSE": 2.3778673277541986,
+            "Time": 895965
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.0869380235261437,
+            "Memory": 57315609,
+            "Model": "MinMax | Adaptive Random Forest",
+            "R2": 0.710674362146255,
+            "RMSE": 2.8733603926755196,
+            "Time": 426994
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.2623194145791583,
+            "Memory": 56252293,
+            "Model": "MinMax | Adaptive Random Forest",
+            "R2": 0.658422252541295,
+            "RMSE": 2.914409663640656,
+            "Time": 336761
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.0380689926633788,
+            "Memory": 213706,
+            "Model": "MinMax | Adaptive Model Rules",
+            "R2": -0.21857338884244948,
+            "RMSE": 1.888239146512775,
+            "Time": 128825
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.2689770344436178,
+            "Memory": 29610190,
+            "Model": "MinMax | Adaptive Model Rules",
+            "R2": 0.6558399285331695,
+            "RMSE": 2.9061906528882155,
+            "Time": 194730
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.547561537666227,
+            "Memory": 4020406,
+            "Model": "MinMax | Adaptive Model Rules",
+            "R2": 0.5918673420760898,
+            "RMSE": 3.4126937346283355,
+            "Time": 441220
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.4566793071352526,
+            "Memory": 5971674,
+            "Model": "MinMax | Adaptive Model Rules",
+            "R2": 0.6097466220220004,
+            "RMSE": 3.115151327546415,
+            "Time": 516490
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.5418518020568102,
+            "Memory": 12726,
+            "Model": "MinMax | Multi-layer Perceptron",
+            "R2": -9.92908634108785,
+            "RMSE": 5.65487592832198,
+            "Time": 623640
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.369401801939323,
+            "Memory": 14330,
+            "Model": "MinMax | Multi-layer Perceptron",
+            "R2": 0.5695331119794876,
+            "RMSE": 3.250227311569012,
+            "Time": 236918
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.592139902014196,
+            "Memory": 14330,
+            "Model": "MinMax | Multi-layer Perceptron",
+            "R2": 0.5618746246356091,
+            "RMSE": 3.535866383035535,
+            "Time": 694459
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.408485152277625,
+            "Memory": 14330,
+            "Model": "MinMax | Multi-layer Perceptron",
+            "R2": 0.5835861885620004,
+            "RMSE": 3.2178691187181547,
+            "Time": 345517
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.3474338935927912,
+            "Memory": 5215,
+            "Model": "Standard | Linear Regression",
+            "R2": -4.81891868547912,
+            "RMSE": 4.126219207359161,
+            "Time": 43173
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.23757758349508,
+            "Memory": 5447,
+            "Model": "Standard | Linear Regression",
+            "R2": 0.6549674406764808,
+            "RMSE": 2.9098720954400448,
+            "Time": 363664
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.521459611350154,
+            "Memory": 5447,
+            "Model": "Standard | Linear Regression",
+            "R2": 0.6037965552608275,
+            "RMSE": 3.3624494572844275,
+            "Time": 529868
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.2897103473066593,
+            "Memory": 5447,
+            "Model": "Standard | Linear Regression",
+            "R2": 0.6487787967935958,
+            "RMSE": 2.9552632714772367,
+            "Time": 526225
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.2151577407875496,
+            "Memory": 5457,
+            "Model": "Standard | Linear Regression with l1 regularization",
+            "R2": -4.650904180700232,
+            "RMSE": 4.0662129936129725,
+            "Time": 47425
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.3552263510654856,
+            "Memory": 5689,
+            "Model": "Standard | Linear Regression with l1 regularization",
+            "R2": 0.6357810009521413,
+            "RMSE": 2.989683112289033,
+            "Time": 413950
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.640726178462324,
+            "Memory": 5689,
+            "Model": "Standard | Linear Regression with l1 regularization",
+            "R2": 0.5768193415984122,
+            "RMSE": 3.4750379066060555,
+            "Time": 603345
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.5037061545634054,
+            "Memory": 5689,
+            "Model": "Standard | Linear Regression with l1 regularization",
+            "R2": 0.6003176271746284,
+            "RMSE": 3.1525596354441774,
+            "Time": 599159
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.9978419034436667,
+            "Memory": 5239,
+            "Model": "Standard | Linear Regression with l2 regularization",
+            "R2": -5.640263007309195,
+            "RMSE": 4.407819407941372,
+            "Time": 45186
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.5425853022401457,
+            "Memory": 5471,
+            "Model": "Standard | Linear Regression with l2 regularization",
+            "R2": 0.5818589220275194,
+            "RMSE": 3.203356525801635,
+            "Time": 381203
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.804691270416271,
+            "Memory": 5471,
+            "Model": "Standard | Linear Regression with l2 regularization",
+            "R2": 0.539341677314148,
+            "RMSE": 3.6256518778679254,
+            "Time": 553637
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.5905961448519443,
+            "Memory": 5471,
+            "Model": "Standard | Linear Regression with l2 regularization",
+            "R2": 0.5766652320365953,
+            "RMSE": 3.244500027385861,
+            "Time": 550674
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 4.903983530526025,
+            "Memory": 4651,
+            "Model": "Standard | Passive-Aggressive Regressor, mode 1",
+            "R2": -14.171985226958702,
+            "RMSE": 6.662732200837991,
+            "Time": 49939
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 6.016255319658246,
+            "Memory": 4983,
+            "Model": "Standard | Passive-Aggressive Regressor, mode 1",
+            "R2": -1.347670503657537,
+            "RMSE": 7.590361003168411,
+            "Time": 416393
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 6.210896502344477,
+            "Memory": 4983,
+            "Model": "Standard | Passive-Aggressive Regressor, mode 1",
+            "R2": -1.151193121824162,
+            "RMSE": 7.834952027785555,
+            "Time": 605548
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 6.044287566711288,
+            "Memory": 4983,
+            "Model": "Standard | Passive-Aggressive Regressor, mode 1",
+            "R2": -1.3389219567464345,
+            "RMSE": 7.6262963690899035,
+            "Time": 598947
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 31.12616606921402,
+            "Memory": 4651,
+            "Model": "Standard | Passive-Aggressive Regressor, mode 2",
+            "R2": -403.916378910996,
+            "RMSE": 34.42023446743753,
+            "Time": 49169
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 10.12033002328945,
+            "Memory": 4983,
+            "Model": "Standard | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.562891455099383,
+            "RMSE": 12.690872201368217,
+            "Time": 411218
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 10.42075346727717,
+            "Memory": 4983,
+            "Model": "Standard | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.005052424437335,
+            "RMSE": 13.090464069276372,
+            "Time": 597271
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 10.115920115372026,
+            "Memory": 4983,
+            "Model": "Standard | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.511166055168164,
+            "RMSE": 12.724338057614846,
+            "Time": 594866
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.49369847918747883,
+            "Memory": 69121,
+            "Model": "Standard | k-Nearest Neighbors",
+            "R2": 0.22347386899695654,
+            "RMSE": 1.5073329387274894,
+            "Time": 303588
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.8164610154113827,
+            "Memory": 78397,
+            "Model": "Standard | k-Nearest Neighbors",
+            "R2": 0.4947712815895522,
+            "RMSE": 3.5211771463760955,
+            "Time": 906285
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.1012647780473994,
+            "Memory": 78397,
+            "Model": "Standard | k-Nearest Neighbors",
+            "R2": 0.44465419180979704,
+            "RMSE": 3.9808736209297644,
+            "Time": 167511
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.875975531851087,
+            "Memory": 78397,
+            "Model": "Standard | k-Nearest Neighbors",
+            "R2": 0.4857931546887805,
+            "RMSE": 3.5758125153022364,
+            "Time": 165209
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.129776942075641,
+            "Memory": 524350,
+            "Model": "Standard | Hoeffding Tree",
+            "R2": -3.702185602750694,
+            "RMSE": 3.7092067026501065,
+            "Time": 609579
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.9208516648310645,
+            "Memory": 8946574,
+            "Model": "Standard | Hoeffding Tree",
+            "R2": 0.7412621621359594,
+            "RMSE": 2.5198450286661074,
+            "Time": 980912
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.1230741019111252,
+            "Memory": 12402706,
+            "Model": "Standard | Hoeffding Tree",
+            "R2": 0.7156070210963787,
+            "RMSE": 2.848761402779784,
+            "Time": 45801
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.160341849417782,
+            "Memory": 12124282,
+            "Model": "Standard | Hoeffding Tree",
+            "R2": 0.6728269925740609,
+            "RMSE": 2.852295693504879,
+            "Time": 234261
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.140435026253614,
+            "Memory": 547010,
+            "Model": "Standard | Hoeffding Adaptive Tree",
+            "R2": -3.7114560390466327,
+            "RMSE": 3.712861283297428,
+            "Time": 619832
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.9327832857630483,
+            "Memory": 8273250,
+            "Model": "Standard | Hoeffding Adaptive Tree",
+            "R2": 0.7386068659475168,
+            "RMSE": 2.5327419749635567,
+            "Time": 90496
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.1377401292260303,
+            "Memory": 12463062,
+            "Model": "Standard | Hoeffding Adaptive Tree",
+            "R2": 0.7116121602774277,
+            "RMSE": 2.8686998670541857,
+            "Time": 791586
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.10760176283711,
+            "Memory": 13810638,
+            "Model": "Standard | Hoeffding Adaptive Tree",
+            "R2": 0.6874032423195169,
+            "RMSE": 2.7880338847278057,
+            "Time": 29263
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.1349189151719374,
+            "Memory": 2410422,
+            "Model": "Standard | Adaptive Random Forest",
+            "R2": -3.132109663766241,
+            "RMSE": 3.4770991244853735,
+            "Time": 433532
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.0715443914050855,
+            "Memory": 39110662,
+            "Model": "Standard | Adaptive Random Forest",
+            "R2": 0.7027053826578435,
+            "RMSE": 2.701079601225446,
+            "Time": 957671
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.2549031139652906,
+            "Memory": 56216102,
+            "Model": "Standard | Adaptive Random Forest",
+            "R2": 0.6706281169960582,
+            "RMSE": 3.065772347776576,
+            "Time": 843286
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.4022303284252065,
+            "Memory": 56428418,
+            "Model": "Standard | Adaptive Random Forest",
+            "R2": 0.604885075330712,
+            "RMSE": 3.1344946322058447,
+            "Time": 334698
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.0233245255093981,
+            "Memory": 1932923,
+            "Model": "Standard | Adaptive Model Rules",
+            "R2": -0.7336119671283983,
+            "RMSE": 2.252200758055532,
+            "Time": 538775
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.266797239461916,
+            "Memory": 29614147,
+            "Model": "Standard | Adaptive Model Rules",
+            "R2": 0.6512347492119022,
+            "RMSE": 2.925569796880849,
+            "Time": 377675
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.4616387076740853,
+            "Memory": 8993671,
+            "Model": "Standard | Adaptive Model Rules",
+            "R2": 0.6220300776226204,
+            "RMSE": 3.2841672209717414,
+            "Time": 239227
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.3742139385673555,
+            "Memory": 5969323,
+            "Model": "Standard | Adaptive Model Rules",
+            "R2": 0.6239955593702382,
+            "RMSE": 3.057752290417493,
+            "Time": 846115
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.5898274221188347,
+            "Memory": 11583,
+            "Model": "Standard | Multi-layer Perceptron",
+            "R2": -8.045077068340989,
+            "RMSE": 5.144430305753038,
+            "Time": 625529
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.146869030920678,
+            "Memory": 12091,
+            "Model": "Standard | Multi-layer Perceptron",
+            "R2": 0.6318109228679125,
+            "RMSE": 3.0059330965111926,
+            "Time": 162282
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.4022330927696007,
+            "Memory": 12091,
+            "Model": "Standard | Multi-layer Perceptron",
+            "R2": 0.6097219798337612,
+            "RMSE": 3.3372111657174504,
+            "Time": 328591
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.337595204250624,
+            "Memory": 12091,
+            "Model": "Standard | Multi-layer Perceptron",
+            "R2": 0.6050096867242896,
+            "RMSE": 3.134000314576819,
+            "Time": 308494
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.9573068898771906,
+            "Memory": 23549,
+            "Model": "Robust | Linear Regression",
+            "R2": -8.248828149074564,
+            "RMSE": 5.2020498206330466,
+            "Time": 136529
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.155532705183389,
+            "Memory": 36425,
+            "Model": "Robust | Linear Regression",
+            "R2": 0.6765330732677564,
+            "RMSE": 2.8174667609996797,
+            "Time": 273559
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.4176896237408383,
+            "Memory": 36425,
+            "Model": "Robust | Linear Regression",
+            "R2": 0.6318936957095658,
+            "RMSE": 3.24103162723558,
+            "Time": 827812
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.2118163372371478,
+            "Memory": 36425,
+            "Model": "Robust | Linear Regression",
+            "R2": 0.6707697647357592,
+            "RMSE": 2.861249101644349,
+            "Time": 827700
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.855835711907839,
+            "Memory": 23791,
+            "Model": "Robust | Linear Regression with l1 regularization",
+            "R2": -7.996282488980411,
+            "RMSE": 5.130535467392839,
+            "Time": 140917
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.6180885381016603,
+            "Memory": 36667,
+            "Model": "Robust | Linear Regression with l1 regularization",
+            "R2": 0.563322049657804,
+            "RMSE": 3.2735915544713015,
+            "Time": 322939
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.8869391760977474,
+            "Memory": 36667,
+            "Model": "Robust | Linear Regression with l1 regularization",
+            "R2": 0.5160070125159896,
+            "RMSE": 3.716346299799084,
+            "Time": 927460
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.8692853898362847,
+            "Memory": 36667,
+            "Model": "Robust | Linear Regression with l1 regularization",
+            "R2": 0.4857818899595516,
+            "RMSE": 3.5758516827496654,
+            "Time": 379383
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 2.2194029436234275,
+            "Memory": 23573,
+            "Model": "Robust | Linear Regression with l2 regularization",
+            "R2": -8.46989887793376,
+            "RMSE": 5.263853853412254,
+            "Time": 84170
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 3.022023811059178,
+            "Memory": 36449,
+            "Model": "Robust | Linear Regression with l2 regularization",
+            "R2": 0.4266358185936362,
+            "RMSE": 3.751104294934101,
+            "Time": 788972
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.2809364836228707,
+            "Memory": 36449,
+            "Model": "Robust | Linear Regression with l2 regularization",
+            "R2": 0.3991023989678463,
+            "RMSE": 4.140920345090864,
+            "Time": 125454
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 3.067889843668714,
+            "Memory": 36449,
+            "Model": "Robust | Linear Regression with l2 regularization",
+            "R2": 0.42261687528984904,
+            "RMSE": 3.7891156112727336,
+            "Time": 135132
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 3.0189201279801265,
+            "Memory": 22957,
+            "Model": "Robust | Passive-Aggressive Regressor, mode 1",
+            "R2": -8.744670976837838,
+            "RMSE": 5.339673988611862,
+            "Time": 88313
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 3.4388965660183284,
+            "Memory": 35961,
+            "Model": "Robust | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.21881748146950597,
+            "RMSE": 4.378447211305957,
+            "Time": 826079
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.679439697175645,
+            "Memory": 35961,
+            "Model": "Robust | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.21490766080007628,
+            "RMSE": 4.733223490311041,
+            "Time": 170182
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 3.499803666271303,
+            "Memory": 35961,
+            "Model": "Robust | Passive-Aggressive Regressor, mode 1",
+            "R2": 0.20480883765773417,
+            "RMSE": 4.446738448136406,
+            "Time": 167076
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 31.895115227578945,
+            "Memory": 22985,
+            "Model": "Robust | Passive-Aggressive Regressor, mode 2",
+            "R2": -445.2300807151998,
+            "RMSE": 36.133545180681736,
+            "Time": 87780
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 10.808920398373909,
+            "Memory": 35961,
+            "Model": "Robust | Passive-Aggressive Regressor, mode 2",
+            "R2": -6.464054072316282,
+            "RMSE": 13.534158195708473,
+            "Time": 816581
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 11.124944879920173,
+            "Memory": 35961,
+            "Model": "Robust | Passive-Aggressive Regressor, mode 2",
+            "R2": -5.808566931479716,
+            "RMSE": 13.938771443907223,
+            "Time": 175468
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 10.836031089466791,
+            "Memory": 35961,
+            "Model": "Robust | Passive-Aggressive Regressor, mode 2",
+            "R2": -6.393703111975174,
+            "RMSE": 13.559285871081494,
+            "Time": 161476
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.5089102909756911,
+            "Memory": 87455,
+            "Model": "Robust | k-Nearest Neighbors",
+            "R2": 0.21530278012953274,
+            "RMSE": 1.5152427305979204,
+            "Time": 246945
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.8098858783986587,
+            "Memory": 109375,
+            "Model": "Robust | k-Nearest Neighbors",
+            "R2": 0.4965341833821648,
+            "RMSE": 3.5150285311891114,
+            "Time": 378423
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 3.098109762365417,
+            "Memory": 109375,
+            "Model": "Robust | k-Nearest Neighbors",
+            "R2": 0.445477863599661,
+            "RMSE": 3.977920370938622,
+            "Time": 460738
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.8733863747236095,
+            "Memory": 109375,
+            "Model": "Robust | k-Nearest Neighbors",
+            "R2": 0.4869965931601097,
+            "RMSE": 3.571625687416669,
+            "Time": 403810
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.7229056167884529,
+            "Memory": 1250632,
+            "Model": "Robust | Hoeffding Tree",
+            "R2": -5.819854511399046,
+            "RMSE": 4.467028333627847,
+            "Time": 258042
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.8637037458006203,
+            "Memory": 10108216,
+            "Model": "Robust | Hoeffding Tree",
+            "R2": 0.7526984646643723,
+            "RMSE": 2.4635266588961335,
+            "Time": 964963
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.031354408307971,
+            "Memory": 11715964,
+            "Model": "Robust | Hoeffding Tree",
+            "R2": 0.722595042946333,
+            "RMSE": 2.8135442510915545,
+            "Time": 271096
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.130954820396828,
+            "Memory": 11924904,
+            "Model": "Robust | Hoeffding Tree",
+            "R2": 0.675828647176354,
+            "RMSE": 2.839181325793831,
+            "Time": 548989
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.6596316706744132,
+            "Memory": 454156,
+            "Model": "Robust | Hoeffding Adaptive Tree",
+            "R2": -6.80297244584271,
+            "RMSE": 4.778165506954261,
+            "Time": 262919
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.8317626349316447,
+            "Memory": 9335528,
+            "Model": "Robust | Hoeffding Adaptive Tree",
+            "R2": 0.7630025453632816,
+            "RMSE": 2.411657893532463,
+            "Time": 978997
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.0571510744838335,
+            "Memory": 13611660,
+            "Model": "Robust | Hoeffding Adaptive Tree",
+            "R2": 0.7153609619532258,
+            "RMSE": 2.849993522219162,
+            "Time": 267390
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.078145531001339,
+            "Memory": 13859276,
+            "Model": "Robust | Hoeffding Adaptive Tree",
+            "R2": 0.6970488138556428,
+            "RMSE": 2.7446826800715884,
+            "Time": 482282
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 11.14458952345031,
+            "Memory": 1892265,
+            "Model": "Robust | Adaptive Random Forest",
+            "R2": -1019.9764251362636,
+            "RMSE": 54.65614656177113,
+            "Time": 141499
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 1.873850976518509,
+            "Memory": 39325465,
+            "Model": "Robust | Adaptive Random Forest",
+            "R2": 0.6947211472738792,
+            "RMSE": 2.737109805338004,
+            "Time": 322568
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.052093405344513,
+            "Memory": 56237201,
+            "Model": "Robust | Adaptive Random Forest",
+            "R2": 0.6759034979282441,
+            "RMSE": 3.0411217919518245,
+            "Time": 407239
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.323251575070172,
+            "Memory": 56556245,
+            "Model": "Robust | Adaptive Random Forest",
+            "R2": 0.5916536686405838,
+            "RMSE": 3.186545633446245,
+            "Time": 568237
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 0.9990868387646917,
+            "Memory": 472561,
+            "Model": "Robust | Adaptive Model Rules",
+            "R2": -0.19564588304512953,
+            "RMSE": 1.8703911486042404,
+            "Time": 305298
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.173340759547691,
+            "Memory": 29644837,
+            "Model": "Robust | Adaptive Model Rules",
+            "R2": 0.6766424067827916,
+            "RMSE": 2.8169905614975104,
+            "Time": 615677
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.3157211348835216,
+            "Memory": 10667165,
+            "Model": "Robust | Adaptive Model Rules",
+            "R2": 0.6707231328145715,
+            "RMSE": 3.0653301153106507,
+            "Time": 708125
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.321999654210419,
+            "Memory": 3022273,
+            "Model": "Robust | Adaptive Model Rules",
+            "R2": 0.6348736502293248,
+            "RMSE": 3.0131961293496863,
+            "Time": 961134
+        },
+        {
+            "Dataset": "TrumpApproval",
+            "MAE": 1.9895980348257511,
+            "Memory": 29865,
+            "Model": "Robust | Multi-layer Perceptron",
+            "R2": -10.338307002458212,
+            "RMSE": 5.759771548203133,
+            "Time": 457203
+        },
+        {
+            "Dataset": "Friedman7k",
+            "MAE": 2.276589866549111,
+            "Memory": 43069,
+            "Model": "Robust | Multi-layer Perceptron",
+            "R2": 0.6055603049865006,
+            "RMSE": 3.111244681232813,
+            "Time": 840053
+        },
+        {
+            "Dataset": "FriedmanLEA10k",
+            "MAE": 2.5097197954983685,
+            "Memory": 43069,
+            "Model": "Robust | Multi-layer Perceptron",
+            "R2": 0.5863975712116842,
+            "RMSE": 3.4354859881486837,
+            "Time": 479136
+        },
+        {
+            "Dataset": "FriedmanGSG10k",
+            "MAE": 2.2996540841835644,
+            "Memory": 43069,
+            "Model": "Robust | Multi-layer Perceptron",
+            "R2": 0.6202421618825993,
+            "RMSE": 3.0729761267867683,
+            "Time": 482696
         }
     ]
 }
