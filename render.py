@@ -2,6 +2,7 @@ import json
 import dominate
 from dominate.tags import *
 from river import datasets
+from slugify import slugify
 
 with open('results.json') as f:
     benchmarks = json.load(f)
@@ -13,6 +14,12 @@ _html.add(script(type="text/javascript", src="https://unpkg.com/tabulator-tables
 _body = _html.add(body())
 _body.add(h1("Online machine learning benchmarks"))
 
+_body.add(script(dominate.util.raw("""
+let baseColumns
+let metrics
+let columns
+""")))
+
 for track_name, results in benchmarks.items():
     _body.add(h2(track_name))
     _body.add(h3("Datasets"))
@@ -22,18 +29,18 @@ for track_name, results in benchmarks.items():
     #     detail.add(summary(dataset_name))
     #     detail.add(pre(repr(dataset)))
     _body.add(h3("Results"))
-    _body.add(div(id=f"results"))
+    _body.add(div(id=f"{slugify(track_name)}-results"))
     _body.add(script(dominate.util.raw(f"""
     var results = {results}
 
-    let baseColumns = [
+    baseColumns = [
         "Dataset",
         "Model",
         "Memory",
         "Time"
     ]
-    let metrics = Object.keys(results[0]).filter(x => !baseColumns.includes(x)).sort();
-    let columns = [...baseColumns, ...metrics].map(x => ({{title: x, field: x}}))
+    metrics = Object.keys(results[0]).filter(x => !baseColumns.includes(x)).sort();
+    columns = [...baseColumns, ...metrics].map(x => ({{title: x, field: x}}))
 
     function formatBytes(bytes, decimals = 2) {{
         if (bytes === 0) return '0 Bytes'
@@ -64,6 +71,12 @@ for track_name, results in benchmarks.items():
     }}
 
     columns.map((x, i) => {{
+        if (x.title === 'Dataset') {{
+            columns[i]["headerFilter"] = true
+        }}
+        if (x.title === 'Model') {{
+            columns[i]["headerFilter"] = true
+        }}
         if (x.title === 'Memory') {{
             columns[i]["formatter"] = function(cell, formatterParams, onRendered){{
                 return formatBytes(cell.getValue())
@@ -79,9 +92,14 @@ for track_name, results in benchmarks.items():
                 return (100 * cell.getValue()).toFixed(2) + "%"
             }}
         }}
+        if (['MAE', 'RMSE', 'R2'].includes(x.title)) {{
+            columns[i]["formatter"] = function(cell, formatterParams, onRendered) {{
+                return cell.getValue().toFixed(3)
+            }}
+        }}
     }})
 
-    var table = new Tabulator('#results', {{
+    new Tabulator('#{slugify(track_name)}-results', {{
         data: results,
         layout: 'fitColumns',
         columns: columns
