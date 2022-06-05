@@ -25,14 +25,69 @@ for track_name, results in benchmarks.items():
     _body.add(script(dominate.util.raw(f"""
     var results = {results}
 
+    let columns = [
+        "Dataset",
+        "Model",
+        "Memory",
+        "Time",
+        "Accuracy",
+        "F1"
+    ].map(x => ({{title: x, field: x}}))
+
+    function formatBytes(bytes, decimals = 2) {{
+        if (bytes === 0) return '0 Bytes'
+
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }}
+
+    function msToTime(s) {{
+        function pad(n, z) {{
+            z = z || 2;
+            return ('00' + n).slice(-z);
+        }}
+
+        var ms = s % 1000;
+        s = (s - ms) / 1000;
+        var secs = s % 60;
+        s = (s - secs) / 60;
+        var mins = s % 60;
+        var hrs = (s - mins) / 60;
+
+        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+    }}
+
+    columns.map((x, i) => {{
+        if (x.title === 'Memory') {{
+            columns[i]["formatter"] = function(cell, formatterParams, onRendered){{
+                return formatBytes(cell.getValue())
+            }}
+        }}
+        if (x.title === 'Time') {{
+            columns[i]["formatter"] = function(cell, formatterParams, onRendered) {{
+                return msToTime(cell.getValue())
+            }}
+        }}
+        if (['Accuracy', 'F1'].includes(x.title)) {{
+            columns[i]["formatter"] = function(cell, formatterParams, onRendered) {{
+                return (100 * cell.getValue()).toFixed(2) + "%"
+            }}
+        }}
+    }})
+
     var table = new Tabulator('#results', {{
         data: results,
         layout: 'fitColumns',
-        columns: Object.keys(results[0]).map(x => ({{title: x, field: x}}))
+        columns: columns
     }})
     """)))
 
-print(_body)
+print(_html)
 
 with open('benchmarks.html', 'w') as f:
     print(_html, file=f)

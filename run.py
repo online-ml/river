@@ -1,3 +1,4 @@
+import datetime as dt
 import itertools
 import json
 from tqdm import tqdm
@@ -5,8 +6,6 @@ from river import evaluate
 from river import linear_model
 from river import metrics
 from river import preprocessing
-from dominate.tags import *
-
 
 benchmarks = {}
 
@@ -19,12 +18,13 @@ results = []
 for model_name, model in models.items():
     for dataset in track:
         res = next(track.run(model, dataset, n_checkpoints=1))
+        del res["Step"]
         res["Dataset"] = dataset.__class__.__name__
         res["Model"] = model_name
         for k, v in res.items():
             if isinstance(v, metrics.base.Metric):
                 res[k] = v.get()
-        res["Time"] = res["Time"].microseconds
+        res["Time"] = round(res["Time"] / dt.timedelta(milliseconds=1))
         results.append(res)
 
 benchmarks[track.name] = results

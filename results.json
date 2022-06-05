@@ -5,18 +5,16 @@
             "Dataset": "Phishing",
             "F1": 0.8789237668161435,
             "Memory": 5811,
-            "Model": "Logisitic regression",
-            "Step": 1250,
-            "Time": 96614
+            "Model": "Logistic regression",
+            "Time": 95.269
         },
         {
             "Accuracy": 0.5373584905660377,
             "Dataset": "Bananas",
             "F1": 0.22109275730622616,
             "Memory": 4423,
-            "Model": "Logisitic regression",
-            "Step": 5300,
-            "Time": 280153
+            "Model": "Logistic regression",
+            "Time": 296.044
         }
     ]
 }
