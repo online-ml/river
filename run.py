@@ -29,7 +29,7 @@ def run_track(models, track):
             for k, v in res.items():
                 if isinstance(v, metrics.base.Metric):
                     res[k] = v.get()
-            res["Time"] = res["Time"].microseconds
+            res["Time"] = res["Time"] / dt.timedelta(milliseconds=1)
             results.append(res)
 
     return results
