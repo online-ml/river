@@ -1,8 +1,10 @@
 from river import anomaly, proba
-
+import datetime as dt
+import pytz
 
 class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
-    """Univariate Gaussian anomaly detector.
+
+     """Univariate Gaussian anomaly detector.
 
     This is a supervised anomaly detector. It fits a Gaussian distribution to the target values.
     The anomaly score is then computed as so:
@@ -46,11 +48,14 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
 
     """
 
-    def __init__(self, window_size=None, grace_period=100):
+    def __init__(self, window_size=None, window_size_t=None, timestamp_label=None, timestamp_format='%Y-%m-%dT%H:%M:%S%z', grace_period=100):
         self.window_size = window_size
+        self.window_size_t = window_size_t
+        self.timestamp_label=timestamp_label
+        self.timestamp_format=timestamp_format
         self.gaussian = (
-            proba.Rolling(proba.Gaussian(), window_size=self.window_size)
-            if window_size
+            proba.Rolling(proba.Gaussian(), window_size=self.window_size) if window_size 
+            else proba.TimeRolling(proba.Gaussian(), period=self.window_size_t) if window_size_t 
             else proba.Gaussian()
         )
         self.grace_period = grace_period
@@ -64,7 +69,17 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
         )
 
     def learn_one(self, _, y):
-        self.gaussian.update(y)
+        if isinstance(self.gaussian, proba.TimeRolling):
+            t = _[self.timestamp_label] if isinstance(_, dict) else _
+            parsed_t = (
+                t if isinstance(t,dt.datetime)
+                else dt.datetime.utcfromtimestamp(t)  if isinstance(t,int)
+                else dt.datetime.strptime(t,self.timestamp_format)
+            )
+            parsed_t =  parsed_t if parsed_t.tzinfo else pytz.utc.localize(parsed_t)
+            self.gaussian.update(y, parsed_t)
+        else:
+            self.gaussian.update(y)
         return self
 
     def score_one(self, _, y):
