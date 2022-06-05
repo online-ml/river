@@ -4,7 +4,7 @@ import pytz
 
 class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
 
-     """Univariate Gaussian anomaly detector.
+    """Univariate Gaussian anomaly detector.
 
     This is a supervised anomaly detector. It fits a Gaussian distribution to the target values.
     The anomaly score is then computed as so:
@@ -53,6 +53,8 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
         self.window_size_t = window_size_t
         self.timestamp_label=timestamp_label
         self.timestamp_format=timestamp_format
+        self.grace_period_passed = False
+        self.grace_period_counter = 0
         self.gaussian = (
             proba.Rolling(proba.Gaussian(), window_size=self.window_size) if window_size 
             else proba.TimeRolling(proba.Gaussian(), period=self.window_size_t) if window_size_t 
@@ -69,6 +71,10 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
         )
 
     def learn_one(self, _, y):
+        if not self.grace_period_passed and self.grace_period:
+            self.grace_period_counter += 1
+            if self.grace_period_counter > self.grace_period: 
+                self.grace_period_passed = True
         if isinstance(self.gaussian, proba.TimeRolling):
             t = _[self.timestamp_label] if isinstance(_, dict) else _
             parsed_t = (
@@ -83,6 +89,6 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
         return self
 
     def score_one(self, _, y):
-        if self._dist.n_samples < self.grace_period:
+        if self._dist.n_samples < self.grace_period and not self.grace_period_passed:
             return 0
         return 2 * abs(self._dist.cdf(y) - 0.5)
