@@ -26,14 +26,14 @@ for track_name, results in benchmarks.items():
     _body.add(script(dominate.util.raw(f"""
     var results = {results}
 
-    let columns = [
+    let baseColumns = [
         "Dataset",
         "Model",
         "Memory",
-        "Time",
-        "Accuracy",
-        "F1"
-    ].map(x => ({{title: x, field: x}}))
+        "Time"
+    ]
+    let metrics = Object.keys(results[0]).filter(x => !baseColumns.includes(x)).sort();
+    let columns = [...baseColumns, ...metrics].map(x => ({{title: x, field: x}}))
 
     function formatBytes(bytes, decimals = 2) {{
         if (bytes === 0) return '0 Bytes'

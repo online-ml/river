@@ -37,14 +37,14 @@ Features  9
     <script>
     var results = [{'Accuracy': 0.892, 'Dataset': 'Phishing', 'F1': 0.8789237668161435, 'Memory': 5811, 'Model': 'Logistic regression', 'Time': 95.269}, {'Accuracy': 0.5373584905660377, 'Dataset': 'Bananas', 'F1': 0.22109275730622616, 'Memory': 4423, 'Model': 'Logistic regression', 'Time': 296.044}]
 
-    let columns = [
+    let baseColumns = [
         "Dataset",
         "Model",
         "Memory",
-        "Time",
-        "Accuracy",
-        "F1"
-    ].map(x => ({title: x, field: x}))
+        "Time"
+    ]
+    let metrics = Object.keys(results[0]).filter(x => !baseColumns.includes(x)).sort();
+    let columns = [...baseColumns, ...metrics].map(x => ({title: x, field: x}))
 
     function formatBytes(bytes, decimals = 2) {
         if (bytes === 0) return '0 Bytes'
