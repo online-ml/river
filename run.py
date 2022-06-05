@@ -11,7 +11,7 @@ from dominate.tags import *
 benchmarks = {}
 
 models = {
-    "Logisitic regression": preprocessing.StandardScaler() | linear_model.LogisticRegression()
+    "Logistic regression": preprocessing.StandardScaler() | linear_model.LogisticRegression()
 }
 track = evaluate.BinaryClassificationTrack()
 results = []

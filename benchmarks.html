@@ -3,6 +3,35 @@
   <script src="https://unpkg.com/tabulator-tables@5.2.6/dist/js/tabulator.min.js" type="text/javascript"></script>
   <body>
     <h2>Binary classification</h2>
+    <h3>Datasets</h3>
+    <details>
+      <summary>Bananas</summary>
+      <pre>Bananas dataset.
+
+An artificial dataset where instances belongs to several clusters with a banana shape.
+There are two attributes that correspond to the x and y axis, respectively.
+
+    Name  Bananas                                                    
+    Task  Binary classification                                      
+ Samples  5,300                                                      
+Features  2                                                          
+  Sparse  False                                                      
+    Path  /Users/max.halford/projects/river/river/datasets/banana.zip</pre>
+    </details>
+    <details>
+      <summary>Phishing</summary>
+      <pre>Phishing websites.
+
+This dataset contains features from web pages that are classified as phishing or not.
+
+    Name  Phishing                                                        
+    Task  Binary classification                                           
+ Samples  1,250                                                           
+Features  9                                                               
+  Sparse  False                                                           
+    Path  /Users/max.halford/projects/river/river/datasets/phishing.csv.gz</pre>
+    </details>
+    <h3>Results</h3>
     <div id="results"></div>
     <script>
     var results = [{'Accuracy': 0.892, 'Dataset': 'Phishing', 'F1': 0.8789237668161435, 'Memory': 5811, 'Model': 'Logisitic regression', 'Step': 1250, 'Time': 96614}, {'Accuracy': 0.5373584905660377, 'Dataset': 'Bananas', 'F1': 0.22109275730622616, 'Memory': 4423, 'Model': 'Logisitic regression', 'Step': 5300, 'Time': 280153}]
