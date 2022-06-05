@@ -16,11 +16,11 @@ _body.add(h1("Online machine learning benchmarks"))
 for track_name, results in benchmarks.items():
     _body.add(h2(track_name))
     _body.add(h3("Datasets"))
-    for dataset_name in sorted(set(r["Dataset"] for r in results)):
-        dataset = eval(f"datasets.{dataset_name}()")
-        detail = _body.add(details())
-        detail.add(summary(dataset_name))
-        detail.add(pre(repr(dataset)))
+    # for dataset_name in sorted(set(r["Dataset"] for r in results)):
+    #     dataset = eval(f"datasets.{dataset_name}()")
+    #     detail = _body.add(details())
+    #     detail.add(summary(dataset_name))
+    #     detail.add(pre(repr(dataset)))
     _body.add(h3("Results"))
     _body.add(div(id=f"results"))
     _body.add(script(dominate.util.raw(f"""
