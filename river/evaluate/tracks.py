@@ -1,4 +1,4 @@
-from river import base, datasets, evaluate, metrics, synth
+from river import base, datasets, evaluate, metrics
 
 
 class WrappedGenerator(datasets.base.Dataset):
@@ -31,7 +31,7 @@ class Friedman7k(WrappedGenerator):
             n_samples=7000,
             n_features=10,
             task=base.REGRESSION,
-            gen=synth.Friedman(seed=42),
+            gen=datasets.synth.Friedman(seed=42),
         )
 
 
@@ -49,7 +49,7 @@ class FriedmanLEA10k(WrappedGenerator):
             n_samples=10000,
             n_features=10,
             task=base.REGRESSION,
-            gen=synth.FriedmanDrift(
+            gen=datasets.synth.FriedmanDrift(
                 drift_type="lea", position=(2000, 5000, 8000), seed=42
             ),
         )
@@ -70,7 +70,7 @@ class FriedmanGSG10k(WrappedGenerator):
             n_samples=10000,
             n_features=10,
             task=base.REGRESSION,
-            gen=synth.FriedmanDrift(
+            gen=datasets.synth.FriedmanDrift(
                 drift_type="gsg", position=(3500, 7000), transition_window=1000, seed=42
             ),
         )

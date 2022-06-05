@@ -11,6 +11,7 @@ _html.add(link(href="https://unpkg.com/tabulator-tables@5.2.6/dist/css/tabulator
 _html.add(script(type="text/javascript", src="https://unpkg.com/tabulator-tables@5.2.6/dist/js/tabulator.min.js"))
 
 _body = _html.add(body())
+_body.add(h1("Online machine learning benchmarks"))
 
 for track_name, results in benchmarks.items():
     _body.add(h2(track_name))
