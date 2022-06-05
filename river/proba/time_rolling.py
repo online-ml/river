@@ -1,6 +1,7 @@
 import bisect
 import datetime as dt
 import typing
+import pytz
 
 from . import base
 
@@ -52,7 +53,7 @@ class TimeRolling(base.Distribution):
         self.dist = dist
         self.period = period
         self._events: typing.List[typing.Tuple[dt.datetime, typing.Any]] = []
-        self._latest = dt.datetime(1, 1, 1)
+        self._latest =  pytz.utc.localize(dt.datetime.utcfromtimestamp(0))
 
     def update(self, x, t: dt.datetime):
         self.dist.update(x)
