@@ -34,6 +34,9 @@ class Estimator(base.Base, abc.ABC):
             return other.__or__(self)
         return compose.Pipeline(other, self)
 
+    def _more_tags(self):
+        return set()
+
     @property
     def _tags(self) -> typing.Dict[str, bool]:
         """Return the estimator's tags.
@@ -47,14 +50,11 @@ class Estimator(base.Base, abc.ABC):
 
         """
 
-        try:
-            tags = self._more_tags()
-        except AttributeError:
-            tags = set()
+        tags = self._more_tags()
 
         for parent in self.__class__.__mro__:
             try:
-                tags |= parent._more_tags(self)
+                tags |= parent._more_tags(self)  # type: ignore
             except AttributeError:
                 pass
 
