@@ -115,7 +115,7 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
     def _generate_subspaces(self, features: list):
         n_features = len(features)
 
-        self._subspaces = [None] * n_features
+        self._subspaces = [None] * self.n_models
 
         if self.training_method != self._TRAIN_RESAMPLING:
             # Set subspaces - This only applies to subspaces and random patches options
@@ -146,7 +146,7 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
                 # k is negative, calculate M - k
                 k = n_features + k
 
-            # Generate subspaces. The subspaces is a 2D array of shape
+            # 2. Generate subspaces. The subspaces is a 2D array of shape
             # (n_estimators, k) where each row contains the k-feature indices
             # to be used by each estimator.
             if k != 0 and k < n_features:
