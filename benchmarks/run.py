@@ -55,12 +55,12 @@ tracks = [
 ]
 
 models = {
-    tracks[0].name: {
+    "Binary classification": {
         "Logistic regression": preprocessing.StandardScaler() | linear_model.LogisticRegression(),
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
         "Stochastic Gradient Tree": tree.SGTClassifier(),
     },
-    tracks[1].name: {
+    "Multiclass classification": {
         "Naive Bayes": naive_bayes.GaussianNB(),
         "Hoeffding Tree": tree.HoeffdingTreeClassifier(),
         "Hoeffding Adaptive Tree": tree.HoeffdingAdaptiveTreeClassifier(seed=42),
@@ -101,7 +101,7 @@ models = {
         # Baseline
         "[baseline] Last Class": dummy.NoChangeClassifier(),
     },
-    tracks[2].name: {
+    "Regression": {
         "Linear Regression": preprocessing.StandardScaler()
         | linear_model.LinearRegression(),
         "Linear Regression with l1 regularization": preprocessing.StandardScaler()
