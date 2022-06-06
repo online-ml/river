@@ -68,7 +68,7 @@ class MultiClassClassificationTrack(Track):
 class RegressionTrack(Track):
     def __init__(self):
         super().__init__(
-            "Single-target Regression",
+            "Regression",
             datasets=[
                 datasets.TrumpApproval(),
                 Friedman7k(),

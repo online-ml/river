@@ -106,7 +106,7 @@ if __name__ == "__main__":
         "[baseline] Last Class": dummy.NoChangeClassifier(),
     }
 
-    # Single-target Regression
+    # Regression
     regressors = {
         "Linear Regression": preprocessing.StandardScaler()
         | linear_model.LinearRegression(),
@@ -205,7 +205,7 @@ if __name__ == "__main__":
         reg["Dataset"][dataset.__class__.__name__] = repr(dataset)
     for model_n, model in regressors.items():
         reg["Model"][model_n] = repr(model)
-    benchmark_info["Single-target regression"] = reg
+    benchmark_info["Regression"] = reg
 
     with open("benchmark-info.json", "w") as f:
         json.dump(benchmark_info, f, sort_keys=True, indent=4)
