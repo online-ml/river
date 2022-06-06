@@ -50,7 +50,7 @@ class Classifier(estimator.Estimator):
         # that a classifier does not support predict_proba_one.
         raise NotImplementedError
 
-    def predict_one(self, x: dict) -> base.typing.ClfTarget:
+    def predict_one(self, x: dict) -> typing.Optional[base.typing.ClfTarget]:
         """Predict the label of a set of features `x`.
 
         Parameters
@@ -68,7 +68,7 @@ class Classifier(estimator.Estimator):
         # individual basis.
         y_pred = self.predict_proba_one(x)
         if y_pred:
-            return max(y_pred, key=y_pred.get)
+            return max(y_pred, key=y_pred.get)  # type: ignore
         return None
 
     @property

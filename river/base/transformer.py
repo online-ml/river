@@ -5,49 +5,7 @@ import pandas as pd
 from river import base
 
 
-class Transformer(base.Estimator):
-    """A transformer."""
-
-    @property
-    def _supervised(self):
-        return False
-
-    def learn_one(self, x: dict, **kwargs) -> "Transformer":
-        """Update with a set of features `x`.
-
-        A lot of transformers don't actually have to do anything during the `learn_one` step
-        because they are stateless. For this reason the default behavior of this function is to do
-        nothing. Transformers that however do something during the `learn_one` can override this
-        method.
-
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
-
-        Returns
-        -------
-        self
-
-        """
-        return self
-
-    @abc.abstractmethod
-    def transform_one(self, x: dict) -> dict:
-        """Transform a set of features `x`.
-
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-
-        Returns
-        -------
-        The transformed values.
-
-        """
+class BaseTransformer:
 
     def __add__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
@@ -77,8 +35,52 @@ class Transformer(base.Estimator):
         """Creates a Grouper."""
         return self * other
 
+    abc.abstractmethod
+    def transform_one(self, x: dict) -> dict:
+        """Transform a set of features `x`.
 
-class SupervisedTransformer(Transformer):
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+
+        Returns
+        -------
+        The transformed values.
+
+        """
+
+class Transformer(base.Estimator, BaseTransformer):
+    """A transformer."""
+
+    @property
+    def _supervised(self):
+        return False
+
+    def learn_one(self, x: dict, **kwargs) -> "Transformer":
+        """Update with a set of features `x`.
+
+        A lot of transformers don't actually have to do anything during the `learn_one` step
+        because they are stateless. For this reason the default behavior of this function is to do
+        nothing. Transformers that however do something during the `learn_one` can override this
+        method.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+        kwargs
+            Some models might allow/require providing extra parameters, such as sample weights.
+
+        Returns
+        -------
+        self
+
+        """
+        return self
+
+
+class SupervisedTransformer(base.Estimator, BaseTransformer):
     """A supervised transformer."""
 
     @property
