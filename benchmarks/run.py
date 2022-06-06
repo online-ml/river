@@ -49,9 +49,9 @@ def run_track(models, track, benchmarks):
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "force":
-        benchmarks = shelve.open("results.db", protocol="n")
+        benchmarks = shelve.open("results", flag="n")
     else:
-        benchmarks = shelve.open("results.db", protocol="c")
+        benchmarks = shelve.open("results", flag="c")
 
     # Binary Classification
     bin_class_models = {
@@ -92,15 +92,15 @@ if __name__ == "__main__":
             ],
             meta_classifier=ensemble.AdaptiveRandomForestClassifier(seed=42),
         ),
-        # "Voting": ensemble.VotingClassifier(
-        #     [
-        #         preprocessing.StandardScaler() | linear_model.SoftmaxRegression(),
-        #         naive_bayes.GaussianNB(),
-        #         tree.HoeffdingTreeClassifier(),
-        #         preprocessing.StandardScaler()
-        #         | neighbors.KNNClassifier(window_size=100),
-        #     ]
-        # ),
+        "Voting": ensemble.VotingClassifier(
+            [
+                preprocessing.StandardScaler() | linear_model.SoftmaxRegression(),
+                naive_bayes.GaussianNB(),
+                tree.HoeffdingTreeClassifier(),
+                preprocessing.StandardScaler()
+                | neighbors.KNNClassifier(window_size=100),
+            ]
+        ),
         # Baseline
         "[baseline] Last Class": dummy.NoChangeClassifier(),
     }
