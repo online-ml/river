@@ -6,7 +6,6 @@ from river import base
 
 
 class BaseTransformer:
-
     def __add__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
@@ -35,7 +34,7 @@ class BaseTransformer:
         """Creates a Grouper."""
         return self * other
 
-    abc.abstractmethod
+    @abc.abstractmethod
     def transform_one(self, x: dict) -> dict:
         """Transform a set of features `x`.
 
@@ -49,6 +48,7 @@ class BaseTransformer:
         The transformed values.
 
         """
+
 
 class Transformer(base.Estimator, BaseTransformer):
     """A transformer."""
