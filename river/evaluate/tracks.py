@@ -52,6 +52,19 @@ class BinaryClassificationTrack(Track):
         )
 
 
+class MultiClassClassificationTrack(Track):
+    def __init__(self, name: str, datasets, metric):
+        super().__init__(
+            name="Multiclass classification",
+            datasets=[
+                datasets.ImageSegments(),
+                datasets.Insects(),
+                datasets.Keystroke(),
+            ],
+            metric=metrics.Accuracy() + metrics.MicroF1() + metrics.MacroF1(),
+        )
+
+
 class RegressionTrack(Track):
     def __init__(self):
         super().__init__(
