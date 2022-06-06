@@ -40,6 +40,7 @@ def run_track(models, track, benchmarks):
                 if isinstance(v, metrics.base.Metric):
                     res[k] = v.get()
             res["Time"] = res["Time"] / datetime.timedelta(milliseconds=1)
+            res.pop("Step")
             results.append(res)
 
             # Writes updated version to the shelf
@@ -171,10 +172,6 @@ if __name__ == "__main__":
         models=regressors, track=reg_track, benchmarks=benchmarks
     )
 
-    # Create json dump with all the results
-    with open("results.json", "w") as f:
-        json.dump(dict(benchmarks), f, sort_keys=True, indent=4)
-
     # Close the shelf
     benchmarks.close()
 
@@ -210,5 +207,5 @@ if __name__ == "__main__":
         reg["Model"][model_n] = repr(model)
     benchmark_info["Single-target regression"] = reg
 
-    with open("model-info.json", "w") as f:
+    with open("benchmark-info.json", "w") as f:
         json.dump(benchmark_info, f, sort_keys=True, indent=4)
