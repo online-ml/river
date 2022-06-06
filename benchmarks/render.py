@@ -8,31 +8,38 @@ from watermark import watermark
 with open('results.json') as f:
     benchmarks = json.load(f)
 
-_html = html()
-_html.add(link(href="https://unpkg.com/tabulator-tables@5.2.6/dist/css/tabulator.min.css", rel="stylesheet"))
-_html.add(script(type="text/javascript", src="https://unpkg.com/tabulator-tables@5.2.6/dist/js/tabulator.min.js"))
+with open('../docs/benchmarks/index.md', 'w') as f:
+    print_ = lambda x: print(x, file=f, end='\n\n')
+    print_("""---
+hide:
+- navigation
+---
+""")
+    print_('# Benchmarks')
 
-_body = _html.add(body())
-_body.add(h1("Online machine learning benchmarks"))
-_body.add(pre(watermark(python=True, packages='river,numpy,scikit-learn,pandas,scipy', machine=True)))
+    print_('## Environment')
+    print_(pre(watermark(python=True, packages='river,numpy,scikit-learn,pandas,scipy', machine=True)))
 
-_body.add(script(dominate.util.raw("""
-let baseColumns
-let metrics
-let columns
-""")))
+    imports = div()
+    imports.add(link(href="https://unpkg.com/tabulator-tables@5.2.6/dist/css/tabulator.min.css", rel="stylesheet"))
+    imports.add(script(type="text/javascript", src="https://unpkg.com/tabulator-tables@5.2.6/dist/js/tabulator.min.js"))
+    print_(imports)
 
-for track_name, results in benchmarks.items():
-    _body.add(h2(track_name))
-    _body.add(h3("Datasets"))
-    # for dataset_name in sorted(set(r["Dataset"] for r in results)):
-    #     dataset = eval(f"datasets.{dataset_name}()")
-    #     detail = _body.add(details())
-    #     detail.add(summary(dataset_name))
-    #     detail.add(pre(repr(dataset)))
-    _body.add(h3("Results"))
-    _body.add(div(id=f"{slugify(track_name)}-results"))
-    _body.add(script(dominate.util.raw(f"""
+    print_(script(dominate.util.raw("""
+        let baseColumns
+        let metrics
+        let columns
+        """)))
+
+
+    for track_name, results in benchmarks.items():
+        print_(f'## {track_name}')
+        print_(h3("Datasets"))
+        print_(h3("Models"))
+        print_(h3("Results"))
+        print_(div(id=f"{slugify(track_name)}-results"))
+
+        print_(script(dominate.util.raw(f"""
     var results = {results}
 
     baseColumns = [
@@ -107,8 +114,3 @@ for track_name, results in benchmarks.items():
         columns: columns
     }})
     """)))
-
-print(_html)
-
-with open('benchmarks.html', 'w') as f:
-    print(_html, file=f)
