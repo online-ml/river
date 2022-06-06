@@ -48,23 +48,19 @@ def run_track(models, track, benchmarks):
             print(f"\t\t[done] {data_name}")
 
 
-if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "force":
-        benchmarks = shelve.open("results", flag="n")
-    else:
-        benchmarks = shelve.open("results", flag="c")
+tracks = [
+    evaluate.BinaryClassificationTrack(),
+    evaluate.MultiClassClassificationTrack(),
+    evaluate.RegressionTrack(),
+]
 
-    # Binary Classification
-    bin_class_models = {
-        # Binary only
-        "Logistic regression": preprocessing.StandardScaler()
-        | linear_model.LogisticRegression(),
+models = {
+    tracks[0].name: {
+        "Logistic regression": preprocessing.StandardScaler() | linear_model.LogisticRegression(),
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
         "Stochastic Gradient Tree": tree.SGTClassifier(),
-    }
-
-    # Multiclass Classification
-    multi_class_models = {
+    },
+    tracks[1].name: {
         "Naive Bayes": naive_bayes.GaussianNB(),
         "Hoeffding Tree": tree.HoeffdingTreeClassifier(),
         "Hoeffding Adaptive Tree": tree.HoeffdingAdaptiveTreeClassifier(seed=42),
@@ -104,10 +100,8 @@ if __name__ == "__main__":
         ),
         # Baseline
         "[baseline] Last Class": dummy.NoChangeClassifier(),
-    }
-
-    # Regression
-    regressors = {
+    },
+    tracks[2].name: {
         "Linear Regression": preprocessing.StandardScaler()
         | linear_model.LinearRegression(),
         "Linear Regression with l1 regularization": preprocessing.StandardScaler()
@@ -154,58 +148,36 @@ if __name__ == "__main__":
         # Baseline
         "[baseline] Mean predictor": dummy.StatisticRegressor(stats.Mean()),
     }
+}
 
-    # Also include multiclass models
-    bin_class_models.update(multi_class_models)
-    bin_class_track = evaluate.BinaryClassificationTrack()
-    run_track(
-        models=bin_class_models, track=bin_class_track, benchmarks=benchmarks
-    )
 
-    multi_class_track = evaluate.MultiClassClassificationTrack()
-    run_track(
-        models=multi_class_models, track=multi_class_track, benchmarks=benchmarks
-    )
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "force":
+        benchmarks = shelve.open("results", flag="n")
+    else:
+        benchmarks = shelve.open("results", flag="c")
 
-    reg_track = evaluate.RegressionTrack()
-    run_track(
-        models=regressors, track=reg_track, benchmarks=benchmarks
-    )
+    models["Binary classification"].update(models["Multiclass classification"])
+    details = {}
+
+    for track_name, track in tracks.items():
+        run_track(
+            models=models[track_name], track=track, benchmarks=benchmarks
+        )
+        details[track_name] = {
+            "Dataset": {},
+            "Model": {}
+        }
+        for dataset in bin_class_track:
+            details[track_name]["Dataset"][dataset.__class__.__name__] = repr(dataset)
+        for model_n, model in bin_class_models.items():
+            details[track_name]["Model"][model_n] = repr(model)
 
     # Close the shelf
     benchmarks.close()
 
-    # Save info about the compared models and datasets
-    benchmark_info = {}
-    bin_c = {
-        "Dataset": {},
-        "Model": {}
-    }
-    for dataset in bin_class_track:
-        bin_c["Dataset"][dataset.__class__.__name__] = repr(dataset)
-    for model_n, model in bin_class_models.items():
-        bin_c["Model"][model_n] = repr(model)
-    benchmark_info["Binary Classification"] = bin_c
+    with open('results.json', 'w') as f:
+        json.dump(benchmarks, f, sort_keys=True, indent=4)
 
-    multi_c = {
-        "Dataset": {},
-        "Model": {}
-    }
-    for dataset in multi_class_track:
-        multi_c["Dataset"][dataset.__class__.__name__] = repr(dataset)
-    for model_n, model in multi_class_models.items():
-        multi_c["Model"][model_n] = repr(model)
-    benchmark_info["Multiclass Classification"] = multi_c
-
-    reg = {
-        "Dataset": {},
-        "Model": {}
-    }
-    for dataset in reg_track:
-        reg["Dataset"][dataset.__class__.__name__] = repr(dataset)
-    for model_n, model in regressors.items():
-        reg["Model"][model_n] = repr(model)
-    benchmark_info["Regression"] = reg
-
-    with open("benchmark-info.json", "w") as f:
-        json.dump(benchmark_info, f, sort_keys=True, indent=4)
+    with open('details.json', 'w') as f:
+        json.dump(details, f, sort_keys=True, indent=4)
