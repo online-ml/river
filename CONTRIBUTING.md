@@ -149,7 +149,7 @@ $ make execute-notebooks
 1. Checkout `main`
 2. Bump the version in `river/__version__.py`
 3. Tag and date the `docs/releases/unreleased.md` file
-4. Commit
+4. Commit and push
 5. Tag the commit with the version (e.g. `0.4.2`)
 6. Push the tag (i.e. `git push origin 0.4.2`)
 7. Wait for CI to run
