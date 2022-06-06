@@ -20,7 +20,7 @@ from river import optim, preprocessing, rules, stats, tree
 def run_track(models, track, benchmarks):
     print(track.name)
     if track.name in benchmarks:
-        completed = set((cr["Dataset"], cr["Model"]) for cr in dict(benchmarks[track.name]))
+        completed = set((cr["Dataset"], cr["Model"]) for cr in benchmarks[track.name])
     else:
         completed = set()
 
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         "Model": {}
     }
     for dataset in bin_class_track:
-        bin_c["Dataset"][dataset.__class__.name] = repr(dataset)
+        bin_c["Dataset"][dataset.__class__.__name__] = repr(dataset)
     for model_n, model in bin_class_models.items():
         bin_c["Model"][model_n] = repr(model)
     benchmark_info["Binary Classification"] = bin_c
@@ -195,9 +195,9 @@ if __name__ == "__main__":
         "Model": {}
     }
     for dataset in multi_class_track:
-        multi_c["Dataset"][dataset.__class__.name] = repr(dataset)
+        multi_c["Dataset"][dataset.__class__.__name__] = repr(dataset)
     for model_n, model in multi_class_models.items():
-        multi_c[model_n] = repr(model)
+        multi_c["Model"][model_n] = repr(model)
     benchmark_info["Multiclass Classification"] = multi_c
 
     reg = {
@@ -205,9 +205,9 @@ if __name__ == "__main__":
         "Model": {}
     }
     for dataset in reg_track:
-        reg["Dataset"][dataset.__class__.name] = repr(dataset)
+        reg["Dataset"][dataset.__class__.__name__] = repr(dataset)
     for model_n, model in regressors.items():
-        reg[model_n] = repr(model)
+        reg["Model"][model_n] = repr(model)
     benchmark_info["Single-target regression"] = reg
 
     with open("model-info.json", "w") as f:

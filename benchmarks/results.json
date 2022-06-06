@@ -287,6 +287,24 @@
             "Model": "k-Nearest Neighbors",
             "Step": 1250,
             "Time": 465.452
+        },
+        {
+            "Accuracy": 0.8903122497998399,
+            "Dataset": "Phishing",
+            "F1": 0.8769092542677449,
+            "Memory": 134873,
+            "Model": "Voting",
+            "Step": 1250,
+            "Time": 747.333
+        },
+        {
+            "Accuracy": 0.8301566333270428,
+            "Dataset": "Bananas",
+            "F1": 0.7949886104783599,
+            "Memory": 76293,
+            "Model": "Voting",
+            "Step": 5300,
+            "Time": 1649.353
         }
     ],
     "Multiclass classification": [
@@ -679,6 +697,36 @@
             "Model": "k-Nearest Neighbors",
             "Step": 20400,
             "Time": 20648.639
+        },
+        {
+            "Accuracy": 0.8033780857514076,
+            "Dataset": "ImageSegments",
+            "MacroF1": 0.7949621132813502,
+            "Memory": 322233,
+            "MicroF1": 0.8033780857514076,
+            "Model": "Voting",
+            "Step": 2310,
+            "Time": 3296.878
+        },
+        {
+            "Accuracy": 0.6482297954472345,
+            "Dataset": "Insects",
+            "MacroF1": 0.6362223941753196,
+            "Memory": 985469,
+            "MicroF1": 0.6482297954472345,
+            "Model": "Voting",
+            "Step": 52848,
+            "Time": 118584.905
+        },
+        {
+            "Accuracy": 0.793274180106868,
+            "Dataset": "Keystroke",
+            "MacroF1": 0.7984237858213096,
+            "Memory": 2391436,
+            "MicroF1": 0.793274180106868,
+            "Model": "Voting",
+            "Step": 20400,
+            "Time": 106985.492
         }
     ],
     "Single-target Regression": [
