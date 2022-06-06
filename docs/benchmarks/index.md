@@ -1,8 +1,33 @@
+---
+hide:
+  - navigation
+---
+
+# Benchmarks
+
 <html>
   <link href="https://unpkg.com/tabulator-tables@5.2.6/dist/css/tabulator.min.css" rel="stylesheet">
   <script src="https://unpkg.com/tabulator-tables@5.2.6/dist/js/tabulator.min.js" type="text/javascript"></script>
   <body>
-    <h1>Online machine learning benchmarks</h1>
+    <h2>Environment</h2>
+    <pre>Python implementation: CPython
+Python version       : 3.9.12
+IPython version      : 7.30.1
+
+river       : 0.10.1
+numpy       : 1.22.3
+scikit-learn: 1.1.0
+pandas      : 1.4.1
+scipy       : 1.8.0
+
+Compiler    : Clang 12.0.1
+OS          : Darwin
+Release     : 21.3.0
+Machine     : x86_64
+Processor   : i386
+CPU cores   : 8
+Architecture: 64bit
+</pre>
     <script>
 let baseColumns
 let metrics
@@ -66,7 +91,7 @@ let columns
         }
         if (x.title === 'Time') {
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
-                return msToTime(cell.getValue() / 1000)
+                return msToTime(cell.getValue())
             }
         }
         if (['Accuracy', 'F1'].includes(x.title)) {
@@ -145,7 +170,7 @@ let columns
         }
         if (x.title === 'Time') {
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
-                return msToTime(cell.getValue() / 1000)
+                return msToTime(cell.getValue())
             }
         }
         if (['Accuracy', 'F1'].includes(x.title)) {

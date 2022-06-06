@@ -3,6 +3,7 @@ import dominate
 from dominate.tags import *
 from river import datasets
 from slugify import slugify
+from watermark import watermark
 
 with open('results.json') as f:
     benchmarks = json.load(f)
@@ -13,6 +14,7 @@ _html.add(script(type="text/javascript", src="https://unpkg.com/tabulator-tables
 
 _body = _html.add(body())
 _body.add(h1("Online machine learning benchmarks"))
+_body.add(pre(watermark(python=True, packages='river,numpy,scikit-learn,pandas,scipy', machine=True)))
 
 _body.add(script(dominate.util.raw("""
 let baseColumns

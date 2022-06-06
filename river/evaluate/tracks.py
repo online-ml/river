@@ -18,9 +18,8 @@ class Track:
     ----------
     name
         The name of the track.
-    dataset
-        The dataset from which samples will be retrieved. A slice must be used if the dataset
-        is a data generator.
+    datasets
+        The datasets that compose the track.
     metric
         The metric(s) used to track performance.
 
