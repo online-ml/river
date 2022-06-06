@@ -71,7 +71,9 @@ setuptools.setup(
         "benckmarks": base_packages + [
             "dominate",
             "scikit-learn",
-            "torch"
+            "torch",
+            "vowpalwabbit",
+            "slugify"
         ],
         "compat": base_packages + [
             "scikit-learn",

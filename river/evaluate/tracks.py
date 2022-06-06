@@ -1,5 +1,7 @@
 from river import datasets, evaluate, metrics
 
+from .gen import Friedman7k, FriedmanGSG10k, FriedmanLEA10k
+
 
 class Track:
     """A track evaluate a model's performance.
@@ -16,9 +18,8 @@ class Track:
     ----------
     name
         The name of the track.
-    dataset
-        The dataset from which samples will be retrieved. A slice must be used if the dataset
-        is a data generator.
+    datasets
+        The datasets that compose the track.
     metric
         The metric(s) used to track performance.
 
@@ -49,4 +50,31 @@ class BinaryClassificationTrack(Track):
             name="Binary classification",
             datasets=[datasets.Phishing(), datasets.Bananas()],
             metric=metrics.Accuracy() + metrics.F1(),
+        )
+
+
+class MultiClassClassificationTrack(Track):
+    def __init__(self):
+        super().__init__(
+            name="Multiclass classification",
+            datasets=[
+                datasets.ImageSegments(),
+                datasets.Insects(),
+                datasets.Keystroke(),
+            ],
+            metric=metrics.Accuracy() + metrics.MicroF1() + metrics.MacroF1(),
+        )
+
+
+class RegressionTrack(Track):
+    def __init__(self):
+        super().__init__(
+            "Regression",
+            datasets=[
+                datasets.TrumpApproval(),
+                Friedman7k(),
+                FriedmanLEA10k(),
+                FriedmanGSG10k(),
+            ],
+            metric=metrics.MAE() + metrics.RMSE() + metrics.R2(),
         )
