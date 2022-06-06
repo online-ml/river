@@ -8,7 +8,7 @@ from watermark import watermark
 with open('results.json') as f:
     benchmarks = json.load(f)
 
-with open("model-info.json") as f:
+with open("details.json") as f:
     models = json.load(f)
 
 with open('../docs/benchmarks/index.md', 'w') as f:

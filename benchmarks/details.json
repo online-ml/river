@@ -47,7 +47,7 @@
             "k-Nearest Neighbors": "Pipeline (\n  StandardScaler (\n    with_std=True\n  ),\n  KNNClassifier (\n    n_neighbors=5\n    window_size=100\n    min_distance_keep=0.\n    weighted=True\n    cleanup_every=0\n    distance_func=None\n    softmax=False\n  )\n)"
         }
     },
-    "Single-target Regression": {
+    "Regression": {
         "Dataset": {
             "Friedman7k": "Sample from the stationary version of the Friedman dataset.\n\nThis sample contains 10k instances sampled from the Friedman generator.\n\n    Name  Friedman7k\n    Task  Regression\n Samples  7,000     \nFeatures  10        \n  Sparse  False     ",
             "FriedmanGSG10k": "Sample from the FriedmanGSG generator.\n\nThis sample contains 10k instances sampled from the Friedman generator and presents\nglobal and slow gradual concept drifts that affect the data and happen after\n3.5k and 7k instances. The transition window between different concepts has a length of\n1k instances.\n\n    Name  FriedmanGSG10k\n    Task  Regression    \n Samples  10,000        \nFeatures  10            \n  Sparse  False         ",
