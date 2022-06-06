@@ -1,11 +1,21 @@
 # Benchmarks
 
-Navigate to this directory and create a `conda` virtual environment, as so:
+Navigate to the root of this repo and create a `conda` virtual environment, as so:
 
 ```sh
-$ conda create -n river-benchmarks -y python==3.8.5
-$ conda activate river-benchmarks
-$ pip install -r requirements.txt
+conda create -n river-benchmarks -y python==3.8.5
+conda activate river-benchmarks
+pip install -e ".[benchmarks]"
 ```
 
-Note that this will install the development version of `river` from GitHub. You can change this behaviour by modifying `requirements.txt` before creating the virtual environment.
+Then run the benchmarks:
+
+```sh
+python run.py
+```
+
+This creates a `results.json` file. To generate the page that gets displayed in the docs, do this:
+
+```sh
+python render.py
+```
