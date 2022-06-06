@@ -43,6 +43,7 @@ class Track:
             measure_memory=True,
         )
 
+
 class BinaryClassificationTrack(Track):
     def __init__(self):
         super().__init__(
