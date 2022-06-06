@@ -150,7 +150,23 @@ $ make execute-notebooks
 2. Bump the version in `river/__version__.py`
 3. Tag and date the `docs/releases/unreleased.md` file
 4. Commit and push
-5. Tag the commit with the version (e.g. `0.4.2`)
-6. Push the tag (i.e. `git push origin 0.4.2`)
-7. Wait for CI to run
-8. [Create a release](https://github.com/online-ml/river/releases) with a link to the [release notes](https://riverml.xyz/latest/releases/unreleased/)
+5. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/unit-tests.yml)
+6. Push the tag:
+
+```sh
+VERSION=$(python -c "import river; print(river.__version__)"
+git tag $VERSION
+git push origin $VERSION
+```
+
+7. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml) and [publish the new docs](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
+8. Create a [release](https://github.com/online-ml/river/releases):
+
+```sh
+RELEASE_NOTES=$(cat <<-END
+- https://riverml.xyz/${VERSION}/releases/${VERSION}/
+- https://pypi.org/project/river/${VERSION}/
+END
+)
+gh release create $VERSION --notes $RELEASE_NOTES
+```
