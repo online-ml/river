@@ -8,6 +8,9 @@ from watermark import watermark
 with open('results.json') as f:
     benchmarks = json.load(f)
 
+with open("model-info.json") as f:
+    models = json.load(f)
+
 with open('../docs/benchmarks/index.md', 'w') as f:
     print_ = lambda x: print(x, file=f, end='\n\n')
     print_("""---
@@ -34,10 +37,23 @@ hide:
 
     for track_name, results in benchmarks.items():
         print_(f'## {track_name}')
-        print_(h3("Datasets"))
-        print_(h3("Models"))
-        print_(h3("Results"))
+
+        print_("### Results")
         print_(div(id=f"{slugify(track_name)}-results"))
+
+        print_("### Datasets")
+        for name, desc in models[track_name]["Dataset"].items():
+            _details = details()
+            _details.add(summary(name))
+            _details.add(pre(desc))
+            print_(_details)
+
+        print_("### Models")
+        for name, desc in models[track_name]["Model"].items():
+            _details = details()
+            _details.add(summary(name))
+            _details.add(pre(desc))
+            print_(_details)
 
         print_(script(dominate.util.raw(f"""
     var results = {results}
