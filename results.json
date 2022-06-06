@@ -1,0 +1,22 @@
+{
+    "Binary classification": [
+        {
+            "Accuracy": 0.892,
+            "Dataset": "Phishing",
+            "F1": 0.8789237668161435,
+            "Memory": 5811,
+            "Model": "Logisitic regression",
+            "Step": 1250,
+            "Time": 0
+        },
+        {
+            "Accuracy": 0.5373584905660377,
+            "Dataset": "Bananas",
+            "F1": 0.22109275730622616,
+            "Memory": 4423,
+            "Model": "Logisitic regression",
+            "Step": 5300,
+            "Time": 0
+        }
+    ]
+}

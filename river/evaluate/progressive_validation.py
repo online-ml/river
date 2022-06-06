@@ -74,7 +74,7 @@ def _progressive_validation(
                 now = time.perf_counter()
                 results["Time"] = dt.timedelta(seconds=now - start)
             if measure_memory:
-                results["Memory"] = model._memory_usage
+                results["Memory"] = model._raw_memory_usage
             yield results
             next_checkpoint = next(checkpoints, None)
 
@@ -348,7 +348,7 @@ def progressive_val_score(
             M, S = divmod(rem, 60)
             msg += f" – {H:02d}:{M:02d}:{S:02d}"
         if show_memory:
-            msg += f" – {checkpoint['Memory']}"
+            msg += f" – {utils.pretty.humanize_bytes(checkpoint['Memory'])}"
         print(msg, **print_kwargs)
 
     return metric
