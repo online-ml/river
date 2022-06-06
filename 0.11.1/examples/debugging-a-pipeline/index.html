@@ -10230,11 +10230,11 @@ def add_time_features(x):
     }
 
 </code></details><div class="river-component river-union"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="river-estimator-params">
-{'keys': {'wind', 'temperature', 'clouds', 'pressure', 'humidity'}}
+{'keys': {'temperature', 'clouds', 'pressure', 'wind', 'humidity'}}
 
 </code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_station_and_hour</pre></summary><code class="river-estimator-params">
 {'_feature_name': 'y_mean_by_station_and_hour',
- '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f8be15f7a60&gt;, Mean: 0.),
+ '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f8da9766a60&gt;, Mean: 0.),
                         {('metro-canal-du-midi', 0): Mean: 7.93981,
                          ('metro-canal-du-midi', 1): Mean: 8.179704,
                          ('metro-canal-du-midi', 2): Mean: 8.35824,
@@ -10361,7 +10361,7 @@ def add_time_features(x):
 
 </code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_ewm_0.5_by_station</pre></summary><code class="river-estimator-params">
 {'_feature_name': 'y_ewm_0.5_by_station',
- '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f8be15f7a60&gt;, EWMean: 0.),
+ '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7f8da9766a60&gt;, EWMean: 0.),
                         {('metro-canal-du-midi',): EWMean: 4.690531,
                          ('place-des-carmes',): EWMean: 3.295317,
                          ('place-esquirol',): EWMean: 31.539759,
@@ -10374,10 +10374,10 @@ def add_time_features(x):
 </code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">
 {'counts': Counter({'y_ewm_0.5_by_station': 182470,
                     'y_mean_by_station_and_hour': 182470,
-                    'wind': 182470,
                     'temperature': 182470,
                     'clouds': 182470,
                     'pressure': 182470,
+                    'wind': 182470,
                     'humidity': 182470}),
  'means': defaultdict(&lt;class 'float'&gt;,
                       {'clouds': 30.315131254453505,
@@ -10398,11 +10398,11 @@ def add_time_features(x):
  'with_std': True}
 
 </code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">
-{'_weights': {'y_ewm_0.5_by_station': 9.264175276315452, 'y_mean_by_station_and_hour': 0.19801400070497832, 'wind': -0.0408795477517989, 'temperature': -0.42112178062191596, 'clouds': -0.3269694794458273, 'pressure': 0.18137498909137706, 'humidity': 1.0125248437612968},
+{'_weights': {'y_ewm_0.5_by_station': 9.264175276315454, 'y_mean_by_station_and_hour': 0.1980140007049775, 'temperature': -0.4211217806219178, 'clouds': -0.3269694794458276, 'pressure': 0.18137498909137115, 'wind': -0.040879547751790944, 'humidity': 1.012524843761291},
  '_y_name': None,
  'clip_gradient': 1000000000000.0,
  'initializer': Zeros (),
- 'intercept': 9.223158690689168,
+ 'intercept': 9.22315869068918,
  'intercept_init': 0.0,
  'intercept_lr': Constant({'learning_rate': 0.01}),
  'l1': 0.0,
