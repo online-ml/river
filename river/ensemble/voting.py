@@ -71,7 +71,7 @@ class VotingClassifier(base.Classifier, base.Ensemble):
         agg = collections.Counter()
         for vote in votes:
             agg.update(vote)
-        return agg.most_common(1)[0][0]
+        return agg.most_common(1)[0][0] if agg else None
 
     @classmethod
     def _unit_test_params(cls):
