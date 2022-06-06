@@ -1,5 +1,6 @@
 import datetime
 import json
+import shelve
 import sys
 
 from river import (
@@ -18,8 +19,10 @@ from river import optim, preprocessing, rules, stats, tree
 
 def run_track(models, track, benchmarks):
     print(track.name)
-    results = benchmarks.get(track.name, [])
-    completed = set((cr["Dataset"], cr["Model"]) for cr in results)
+    if track.name in benchmarks:
+        completed = set((cr["Dataset"], cr["Model"]) for cr in dict(benchmarks[track.name]))
+    else:
+        completed = set()
 
     for model_name, model in models.items():
         print(f"\t{model_name}")
@@ -28,7 +31,8 @@ def run_track(models, track, benchmarks):
             if (data_name, model_name) in completed:
                 print(f"\t\t[skipped] {data_name}")
                 continue
-
+            # Get cached data from the shelf
+            results = benchmarks[track.name]
             res = next(track.run(model, dataset, n_checkpoints=1))
             res["Dataset"] = data_name
             res["Model"] = model_name
@@ -37,21 +41,17 @@ def run_track(models, track, benchmarks):
                     res[k] = v.get()
             res["Time"] = res["Time"] / datetime.timedelta(milliseconds=1)
             results.append(res)
-            print(f"\t\t[done] {data_name}")
 
-    results = sorted(results)
-    return results
+            # Writes updated version to the shelf
+            benchmarks[track.name] = results
+            print(f"\t\t[done] {data_name}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "force":
-        benchmarks = {}
+        benchmarks = shelve.open("results.db", protocol="n")
     else:
-        try:
-            with open("results.json", "r") as f:
-                benchmarks = json.load(f)
-        except FileNotFoundError:
-            benchmarks = {}
+        benchmarks = shelve.open("results.db", protocol="c")
 
     # Binary Classification
     bin_class_models = {
@@ -92,15 +92,15 @@ if __name__ == "__main__":
             ],
             meta_classifier=ensemble.AdaptiveRandomForestClassifier(seed=42),
         ),
-        "Voting": ensemble.VotingClassifier(
-            [
-                preprocessing.StandardScaler() | linear_model.SoftmaxRegression(),
-                naive_bayes.GaussianNB(),
-                tree.HoeffdingTreeClassifier(),
-                preprocessing.StandardScaler()
-                | neighbors.KNNClassifier(window_size=100),
-            ]
-        ),
+        # "Voting": ensemble.VotingClassifier(
+        #     [
+        #         preprocessing.StandardScaler() | linear_model.SoftmaxRegression(),
+        #         naive_bayes.GaussianNB(),
+        #         tree.HoeffdingTreeClassifier(),
+        #         preprocessing.StandardScaler()
+        #         | neighbors.KNNClassifier(window_size=100),
+        #     ]
+        # ),
         # Baseline
         "[baseline] Last Class": dummy.NoChangeClassifier(),
     }
@@ -157,38 +157,58 @@ if __name__ == "__main__":
     # Also include multiclass models
     bin_class_models.update(multi_class_models)
     bin_class_track = evaluate.BinaryClassificationTrack()
-    benchmarks[bin_class_track.name] = run_track(
+    run_track(
         models=bin_class_models, track=bin_class_track, benchmarks=benchmarks
     )
 
     multi_class_track = evaluate.MultiClassClassificationTrack()
-    benchmarks[multi_class_track.name] = run_track(
+    run_track(
         models=multi_class_models, track=multi_class_track, benchmarks=benchmarks
     )
 
     reg_track = evaluate.RegressionTrack()
-    benchmarks[reg_track.name] = run_track(
+    run_track(
         models=regressors, track=reg_track, benchmarks=benchmarks
     )
 
+    # Create json dump with all the results
     with open("results.json", "w") as f:
-        json.dump(benchmarks, f, sort_keys=True, indent=4)
+        json.dump(dict(benchmarks), f, sort_keys=True, indent=4)
 
-    model_info = {}
-    bin_c = {}
+    # Close the shelf
+    benchmarks.close()
+
+    # Save info about the compared models and datasets
+    benchmark_info = {}
+    bin_c = {
+        "Dataset": {},
+        "Model": {}
+    }
+    for dataset in bin_class_track:
+        bin_c["Dataset"][dataset.__class__.name] = repr(dataset)
     for model_n, model in bin_class_models.items():
-        bin_c[model_n] = repr(model)
-    model_info["Binary Classification"] = bin_c
+        bin_c["Model"][model_n] = repr(model)
+    benchmark_info["Binary Classification"] = bin_c
 
-    multi_c = {}
+    multi_c = {
+        "Dataset": {},
+        "Model": {}
+    }
+    for dataset in multi_class_track:
+        multi_c["Dataset"][dataset.__class__.name] = repr(dataset)
     for model_n, model in multi_class_models.items():
         multi_c[model_n] = repr(model)
-    model_info["Multiclass Classification"] = multi_c
+    benchmark_info["Multiclass Classification"] = multi_c
 
-    reg = {}
+    reg = {
+        "Dataset": {},
+        "Model": {}
+    }
+    for dataset in reg_track:
+        reg["Dataset"][dataset.__class__.name] = repr(dataset)
     for model_n, model in regressors.items():
         reg[model_n] = repr(model)
-    model_info["Single-target regression"] = reg
+    benchmark_info["Single-target regression"] = reg
 
     with open("model-info.json", "w") as f:
-        json.dump(model_info, f, sort_keys=True, indent=4)
+        json.dump(benchmark_info, f, sort_keys=True, indent=4)

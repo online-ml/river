@@ -53,7 +53,7 @@ class BinaryClassificationTrack(Track):
 
 
 class MultiClassClassificationTrack(Track):
-    def __init__(self, name: str, datasets, metric):
+    def __init__(self):
         super().__init__(
             name="Multiclass classification",
             datasets=[
