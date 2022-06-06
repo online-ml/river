@@ -112,7 +112,7 @@ hide:
                 return msToTime(cell.getValue())
             }}
         }}
-        if (['Accuracy', 'F1'].includes(x.title)) {{
+        if (['Accuracy', 'F1', 'MacroF1', 'MicroF1'].includes(x.title)) {{
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {{
                 return (100 * cell.getValue()).toFixed(2) + "%"
             }}
