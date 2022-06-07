@@ -183,7 +183,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
 
         self._rng = random.Random(seed)
 
-    def traverse(self, x, until_leaf=True) -> typing.List[HTLeaf]:
+    def traverse(self, x, until_leaf=True) -> typing.List[HTLeaf]:  # type: ignore
         """Return the leaves corresponding to the given input.
 
         Alternate subtree leaves are also included.
@@ -196,7 +196,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
             Whether or not branch nodes can be returned in case of missing features or emerging
             feature categories.
         """
-        found_nodes = []
+        found_nodes: typing.List[HTLeaf] = []
         for node in self.walk(x, until_leaf=until_leaf):
             if (
                 isinstance(node, AdaBranchClassifier)
@@ -204,12 +204,12 @@ class AdaBranchClassifier(DTBranch, AdaNode):
             ):
                 if isinstance(node._alternate_tree, AdaBranchClassifier):
                     found_nodes.append(
-                        node._alternate_tree.traverse(x, until_leaf=until_leaf)
+                        node._alternate_tree.traverse(x, until_leaf=until_leaf)  # type: ignore
                     )
                 else:
-                    found_nodes.append(node._alternate_tree)
+                    found_nodes.append(node._alternate_tree)  # type: ignore
 
-        found_nodes.append(node)  # noqa
+        found_nodes.append(node)  # type: ignore
         return found_nodes
 
     def iter_leaves(self):
