@@ -1,53 +1,44 @@
+import functools
+
 from river import base, utils
-
-from .base_neighbors import BaseKNN
-from .neighbors import DistanceFunc
-
-__all__ = ["KNNClassifier"]
+from river.neighbors import NearestNeighbors
+from river.neighbors.neighbors import DistanceFunc
 
 
-class KNNClassifier(BaseKNN, base.Classifier):
+class KNNClassifier(base.Classifier):
     """K-Nearest Neighbors (KNN) for classification.
 
     This works by storing a buffer with the `window_size` most recent observations.
     A brute-force search is used to find the `n_neighbors` nearest observations
-    in the buffer to make a prediction. See the NearestNeighbors parent class for model
+    in the buffer to make a prediction. See the NearestNeighbors parent class for more
     details.
 
     Parameters
     ----------
     n_neighbors
         The number of nearest neighbors to search for.
-
     window_size
         The maximum size of the window storing the last observed samples.
-
     min_distance_keep
         The minimum distance (similarity) to consider adding a point to the window.
         E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add
         similar but not exactly the same points.
-
     weighted
         Weight the contribution of each neighbor by it's inverse distance.
-
     cleanup_every
         This determines at which rate old classes are cleaned up. Classes that
         have been seen in the past but that are not present in the current
         window are dropped. Classes are never dropped when this is set to 0.
-
     distance_func
         An optional distance function that should accept an a=, b=, and any
-        custom set of kwargs (defined in distance_func_kwargs). If not defined,
-        the default Minkowski distance is used.
-
+        custom set of kwargs. If not defined, the Minkowski distance is used with
+        p=2 (Euclidean distance). See the example section for more details.
     softmax
         Whether or not to use softmax normalization to normalize the neighbors contributions.
         Votes are divided by the total number of votes if this is `False`.
 
     Notes
     -----
-    See the NearestNeighbors documentation for details about the base model,
-    along with KNNBase for an example of providing your own distance function.
     Note that since the window is moving and we keep track of all classes that
     are added at some point, a class might be returned in a result (with a
     value of 0) if it is no longer in the window. You can call
@@ -55,21 +46,36 @@ class KNNClassifier(BaseKNN, base.Classifier):
 
     Examples
     --------
-    >>> from river import datasets, neighbors, preprocessing
-    >>> from river import evaluate, metrics
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import neighbors
+    >>> from river import preprocessing
+
     >>> dataset = datasets.Phishing()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     neighbors.KNNClassifier()
+    ...     neighbors.KNNClassifier(window_size=50)
     ... )
 
-    >>> for x, y in dataset.take(100):
-    ...     model = model.learn_one(x, y)
+    >>> evaluate.progressive_val_score(dataset, model, metrics.Accuracy())
+    Accuracy: 84.55%
 
-    >>> for x, y in dataset.take(1):
-    ...     model.predict_one(x)
-    True
+    When defining a custom distance function you can rely on `functools.partial` to set default
+    parameter values. For instance, let's use the Manhattan function instead of the default Euclidean distance:
+
+    >>> import functools
+    >>> from river.utils.math import minkowski_distance
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     neighbors.KNNClassifier(
+    ...         window_size=50,
+    ...         distance_func=functools.partial(minkowski_distance, p=1)
+    ...     )
+    ... )
+    >>> evaluate.progressive_val_score(dataset, model, metrics.Accuracy())
+    Accuracy: 86.87%
 
     """
 
@@ -83,21 +89,37 @@ class KNNClassifier(BaseKNN, base.Classifier):
         distance_func: DistanceFunc = None,
         softmax: bool = False,
     ):
-        super().__init__(
-            n_neighbors=n_neighbors,
-            window_size=window_size,
-            min_distance_keep=min_distance_keep,
-            distance_func=distance_func,
+        self.n_neighbors = n_neighbors
+        self.window_size = window_size
+        self.min_distance_keep = min_distance_keep
+        self.distance_func = (
+            distance_func
+            if distance_func is not None
+            else functools.partial(utils.math.minkowski_distance, p=2)
         )
+
         self.weighted = weighted
         self.cleanup_every = cleanup_every
         self.classes = set()
         self.softmax = softmax
         self._cleanup_counter = cleanup_every
 
+        self._nn = NearestNeighbors(
+            window_size=self.window_size,
+            min_distance_keep=min_distance_keep,
+            distance_func=self._wrap_distance_func(self.distance_func),
+        )
+
     @property
     def _multiclass(self):
         return True
+
+    @staticmethod
+    def _wrap_distance_func(distance_func):
+        def wrap(a, b):
+            return distance_func(a[0], b[0])
+
+        return wrap
 
     def clean_up_classes(self) -> "KNNClassifier":
         """Clean up classes added to the window.
@@ -112,7 +134,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
 
     def learn_one(self, x, y):
         # Only add the class y to known classes if we actually add the point!
-        if self.nn.update((x, y), n_neighbors=self.n_neighbors):
+        if self._nn.update((x, y), n_neighbors=self.n_neighbors):
             self.classes.add(y)
 
         # Ensure classes known to instance reflect window
@@ -120,10 +142,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
         return self
 
     def _run_class_cleanup(self):
-        """
-        Helper function to run class cleanup, accounting for _cleanup_counter.
-
-        """
+        """Helper function to run class cleanup, accounting for _cleanup_counter."""
         # clean up classes every cleanup_every steps
         if self.cleanup_every:
             self._cleanup_counter -= 1
@@ -134,7 +153,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
         return self
 
     def predict_proba_one(self, x):
-        nearest = self.nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
+        nearest = self._nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
 
         # Default prediction for every class we know is 0.
         # If class_cleanup is false this can include classes not in window
@@ -148,7 +167,6 @@ class KNNClassifier(BaseKNN, base.Classifier):
 
         # If the closest is an exact match AND has a class, return it
         if nearest[0][-1] == 0 and nearest[0][0][1] is not None:
-
             # Update the class in our prediction from 0 to 1, 100% certain!
             y_pred[nearest[0][0][1]] = 1.0
             return y_pred
@@ -168,7 +186,7 @@ class KNNClassifier(BaseKNN, base.Classifier):
         if self.softmax:
             return utils.math.softmax(y_pred)
 
-        # Otherwise reuturn average
+        # Otherwise normalize by the total sum
         total = sum(y_pred.values())
         for y in y_pred:
             y_pred[y] /= total

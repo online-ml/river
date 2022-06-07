@@ -1,13 +1,11 @@
 import collections
-import functools
 import operator
-from typing import Any, Callable, Tuple
+import typing
 
-from river import utils
 
-__all__ = ["NearestNeighbors", "MinkowskiNeighbors"]
-
-DistanceFunc = Callable[[Any, Any], float]
+class DistanceFunc(typing.Protocol):
+    def __call__(self, a: typing.Any, b: typing.Any, **kwargs) -> float:
+        ...
 
 
 class NearestNeighbors:
@@ -15,21 +13,14 @@ class NearestNeighbors:
 
     Parameters
     ----------
-
-    n_neighbors
-        Number of neighbors to use.
-
     window_size
         Size of the sliding window use to search neighbors with.
-
     min_distance_keep
         The minimum distance (similarity) to consider adding a point to the window.
-        E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add
-        similar but not exactly the same points.
-
+        E.g., a value of 0.0 will add even exact duplicates.
     distance_func
-        An required distance function that accept two input items to compare
-        and optional parameters. It's recommended to use functools.partial.
+        A distance function that accept two input items to compare and optional
+        parameters.
 
     Notes
     -----
@@ -47,13 +38,8 @@ class NearestNeighbors:
     """
 
     def __init__(
-        self,
-        n_neighbors: int = 5,
-        window_size: int = 1000,
-        min_distance_keep: float = 0.0,
-        distance_func: DistanceFunc = None,
+        self, window_size: int, min_distance_keep: float, distance_func: DistanceFunc
     ):
-        self.n_neighbors = n_neighbors
         self.window_size = window_size
 
         # A minimum distance (similarity) to determine adding to window
@@ -62,9 +48,9 @@ class NearestNeighbors:
         self.min_distance_keep = min_distance_keep
 
         self.distance_func = distance_func
-        self.reset()
+        self.window = collections.deque(maxlen=self.window_size)
 
-    def append(self, item: Any, extra: [Tuple, list] = None):
+    def append(self, item: typing.Any, extra: typing.Optional[typing.Any] = None):
         """Add a point to the window, optionally with extra metadata.
 
         Parameters
@@ -81,7 +67,12 @@ class NearestNeighbors:
         """
         self.window.append((item, *(extra or [])))
 
-    def update(self, item: Any, n_neighbors=1, extra: [Tuple, list] = None):
+    def update(
+        self,
+        item: typing.Any,
+        n_neighbors: int = 1,
+        extra: typing.Optional[typing.Any] = None,
+    ):
         """Update the window with a new point, only added if > min distance.
 
         If min distance is 0, we do not need to do the calculation. The item
@@ -91,9 +82,7 @@ class NearestNeighbors:
         Parameters
         ----------
         item
-            The data intended to be provided to the distance function. For a
-            standard case, it is expected to be a tuple with x first and y
-            second.
+            The data intended to be provided to the distance function.
         extra
             Metadata that is separate from the item that should also be added
             to the window, but is not included to be passed to the distance
@@ -112,82 +101,17 @@ class NearestNeighbors:
         # Don't add VERY similar points to window
         nearest = self.find_nearest(item, n_neighbors)
 
-        # Distance always the last index, (x,y <extra> distance)
+        # Distance always in the last index, (item <extra> distance)
         if not nearest or nearest[0][-1] < self.min_distance_keep:
             self.append(item, extra=extra)
             return True
         return False
 
-    def find_nearest(self, item: Any, n_neighbors=1):
-        """Find the `n_neighbors` closest points to `x`, along with their distances.
-
-        This function assumes the x is a tuple or list with x[0] having relevant
-        data for the distance calculation.
-
-        """
+    def find_nearest(self, item: typing.Any, n_neighbors: int = 1):
+        """Find the `n_neighbors` closest points to `item`, along with their distances."""
         # Compute the distances to each point in the window
-        # Item is JUST the (x,y) however the window is (item, <extra>, distance)
+        # The window is (item, <extra>, distance)
         points = ((*p, self.distance_func(item, p[0])) for p in self.window)
 
         # Return the k closest points (last index is distance)
         return sorted(points, key=operator.itemgetter(-1))[:n_neighbors]
-
-    def reset(self) -> "NearestNeighbors":
-        """Reset window"""
-        self.window = collections.deque(maxlen=self.window_size)
-
-
-def custom_minkowski(a, b, p):
-    """Custom minkoski function. Must be global to be pickle-able."""
-    return utils.math.minkowski_distance(a[0], b[0], p=p)
-
-
-class MinkowskiNeighbors(NearestNeighbors):
-    """NearestNeighbors using the Minkowski metric as the distance with p=2.
-
-    You can still overwrite the distance_func here, however the default is
-    provided for the nearest neighbors classifiers to use, expecting that a
-    typical user will not provide a custom function.
-
-    Parameters
-    ----------
-
-    n_neighbors
-        Number of neighbors to use.
-
-    window_size
-        Size of the sliding window use to search neighbors with.
-
-    min_distance_keep
-        The minimum distance (similarity) to consider adding a point to the window.
-        E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add
-        similar but not exactly the same points.
-
-    distance_func
-        An optional distance function that should accept an a=, b=, and any
-        custom set of kwargs (defined in distance_func_kwargs). If not defined,
-        the default Minkowski distance is used.
-
-    p
-        p-norm value for the Minkowski metric. When `p=1`, this corresponds to the
-        Manhattan distance, while `p=2` corresponds to the Euclidean distance.
-        Valid values are in the interval $[1, +\\infty)$
-    """
-
-    def __init__(
-        self,
-        n_neighbors: int = 5,
-        window_size: int = 1000,
-        min_distance_keep: float = 0.0,
-        distance_func: DistanceFunc = None,
-        p: float = 2.0,
-    ):
-
-        self.p = p
-        super().__init__(
-            n_neighbors=n_neighbors,
-            window_size=window_size,
-            distance_func=distance_func
-            or functools.partial(custom_minkowski, p=self.p),
-            min_distance_keep=min_distance_keep,
-        )
