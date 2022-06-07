@@ -12,7 +12,7 @@ TimeSeries = Iterator[
         Optional[dict],  # x
         numbers.Number,  # y
         Optional[List[dict]],  # x_horizon
-        list[numbers.Number],  # y_horizon
+        List[numbers.Number],  # y_horizon
     ]
 ]
 
