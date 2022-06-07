@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 import collections
 import numbers
-from typing import Iterator, Optional
 import typing
+from typing import Iterator, Optional
 
 from river import base, metrics, time_series
 
