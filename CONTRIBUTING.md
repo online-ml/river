@@ -149,9 +149,10 @@ $ make execute-notebooks
 1. Checkout `main`
 2. Bump the version in `river/__version__.py`
 3. Tag and date the `docs/releases/unreleased.md` file
-4. Commit and push
-5. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/unit-tests.yml)
-6. Push the tag:
+4. Run the [benchmarks](benchmarks)
+5. Commit and push
+6. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/unit-tests.yml)
+7. Push the tag:
 
 ```sh
 VERSION=$(python -c "import river; print(river.__version__)"
