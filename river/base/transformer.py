@@ -57,7 +57,7 @@ class Transformer(base.Estimator, BaseTransformer):
     def _supervised(self):
         return False
 
-    def learn_one(self, x: dict, **kwargs) -> "Transformer":
+    def learn_one(self, x: dict) -> "Transformer":
         """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `learn_one` step
@@ -69,8 +69,6 @@ class Transformer(base.Estimator, BaseTransformer):
         ----------
         x
             A dictionary of features.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------
@@ -88,7 +86,7 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
         return True
 
     def learn_one(
-        self, x: dict, y: base.typing.Target, **kwargs
+        self, x: dict, y: base.typing.Target
     ) -> "SupervisedTransformer":
         """Update with a set of features `x` and a target `y`.
 
@@ -96,8 +94,8 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
         ----------
         x
             A dictionary of features.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
+        y
+            A target.
 
         Returns
         -------
@@ -125,7 +123,7 @@ class MiniBatchTransformer(Transformer):
 
         """
 
-    def learn_many(self, X: pd.DataFrame, **kwargs) -> "Transformer":
+    def learn_many(self, X: pd.DataFrame) -> "Transformer":
         """Update with a mini-batch of features.
 
         A lot of transformers don't actually have to do anything during the `learn_many` step
@@ -137,8 +135,6 @@ class MiniBatchTransformer(Transformer):
         ----------
         X
             A DataFrame of features.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------

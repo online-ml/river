@@ -16,7 +16,7 @@ class MeanRegressor(base.Regressor):
     def __init__(self):
         self.mean = stats.Mean()
 
-    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1, **kwargs):
+    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):
         self.mean.update(y, w)
         return self
 
@@ -38,7 +38,7 @@ class AdaptiveRegressor(base.Regressor):
         self._mae_mean = 0.0
         self._mae_model = 0.0
 
-    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1, **kwargs):
+    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):
         abs_error_mean = abs(y - self.mean_predictor.predict_one(x))  # type: ignore
         abs_error_model = abs(y - self.model_predictor.predict_one(x))  # type: ignore
 
@@ -47,11 +47,8 @@ class AdaptiveRegressor(base.Regressor):
 
         self.mean_predictor.learn_one(x, y, w)
 
-        try:
-            self.model_predictor.learn_one(x, y, w=w)
-        except TypeError:
-            for _ in range(int(w)):
-                self.model_predictor.learn_one(x, y)
+        for _ in range(int(w)):
+            self.model_predictor.learn_one(x, y)
 
         return self
 
@@ -145,7 +142,7 @@ class RegRule(HoeffdingRule, base.Regressor, anomaly.base.AnomalyDetector):
 
         return score / hits if hits > 0 else 0.0
 
-    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1, **kwargs):  # type: ignore
+    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):  # type: ignore
         self.update(x, y, w)
         self.pred_model.learn_one(x, y, w)
 
@@ -349,7 +346,7 @@ class AMRules(base.Regressor):
         )
 
     def learn_one(
-        self, x: dict, y: base.typing.RegTarget, w: int = 1, **kwargs
+        self, x: dict, y: base.typing.RegTarget, w: int = 1
     ) -> "AMRules":
         any_covered = False
         to_del = set()
