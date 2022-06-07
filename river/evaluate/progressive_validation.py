@@ -13,7 +13,7 @@ def _progressive_validation(
     model,
     metric: metrics.base.Metric,
     checkpoints: typing.Iterator[int],
-    moment: typing.Union[str, typing.Callable] = None,
+    moment: typing.Union[str, typing.Callable[[dict], dt.datetime]] = None,
     delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
     measure_time=False,
     measure_memory=False,
@@ -28,7 +28,7 @@ def _progressive_validation(
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     if utils.inspect.isanomalydetector(model):
         pred_func = model.score_one
-    elif utils.inspect.isclassifier(model) and not metric.requires_labels:
+    elif utils.inspect.isclassifier(model) and not metric.requires_labels:  # type: ignore
         pred_func = model.predict_proba_one
     else:
         pred_func = model.predict_one
@@ -88,7 +88,7 @@ def iter_progressive_val_score(
     step=1,
     measure_time=False,
     measure_memory=False,
-) -> metrics.base.Metric:
+) -> typing.Generator:
     """Evaluates the performance of a model on a streaming dataset and yields results.
 
     This does exactly the same as `evaluate.progressive_val_score`. The only difference is that
