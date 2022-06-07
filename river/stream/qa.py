@@ -133,7 +133,9 @@ def simulate_qa(
         if delay is None
         else (lambda x, _: x[delay])
         if isinstance(delay, str)
-        else (lambda _, __: delay)  # type: ignore
+        else (lambda _, __: delay)
+        if not callable(delay)
+        else delay  # type: ignore
     )
 
     mementos: typing.List[Memento] = []
@@ -145,7 +147,7 @@ def simulate_qa(
         kwargs = kwargs[0] if kwargs else None
 
         t = get_moment(i, x)
-        d = get_delay(x, y)
+        d = get_delay(x, y)  # type: ignore
 
         while mementos:
 
