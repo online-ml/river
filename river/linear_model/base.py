@@ -143,7 +143,7 @@ class GLM:
     def _raw_dot_one(self, x: dict) -> float:
         return self._weights @ utils.VectorDict(x) + self.intercept
 
-    def _eval_gradient_one(self, x: dict, y: float, w: float) -> (dict, float):
+    def _eval_gradient_one(self, x: dict, y: float, w: float) -> typing.Tuple[dict, float]:
 
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
@@ -170,7 +170,7 @@ class GLM:
 
     def _eval_gradient_many(
         self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
-    ) -> (dict, float):
+    ) -> typing.Tuple[dict, float]:
 
         loss_gradient = self.loss.gradient(
             y_true=y.values, y_pred=self._raw_dot_many(X)
