@@ -47,9 +47,7 @@ class MiniBatchRegressor(Regressor):
     """A regressor that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(
-        self, X: pd.DataFrame, y: pd.Series
-    ) -> "MiniBatchRegressor":
+    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> "MiniBatchRegressor":
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters

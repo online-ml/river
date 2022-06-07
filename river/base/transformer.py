@@ -85,9 +85,7 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
     def _supervised(self):
         return True
 
-    def learn_one(
-        self, x: dict, y: base.typing.Target
-    ) -> "SupervisedTransformer":
+    def learn_one(self, x: dict, y: base.typing.Target) -> "SupervisedTransformer":
         """Update with a set of features `x` and a target `y`.
 
         Parameters
