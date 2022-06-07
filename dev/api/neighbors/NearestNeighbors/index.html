@@ -10188,24 +10188,20 @@
 
 
 <h1 id="nearestneighbors">NearestNeighbors<a class="headerlink" href="#nearestneighbors" title="Permanent link">&para;</a></h1>
-<p>A basic data structure to hold nearest neighbors.</p>
+<p>Exact nearest neighbors search data structure.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>n_neighbors</strong> (<em>int</em>) – defaults to <code>5</code></p>
-<p>Number of neighbors to use.</p>
-</li>
-<li>
-<p><strong>window_size</strong> (<em>int</em>) – defaults to <code>1000</code></p>
+<p><strong>window_size</strong> (<em>int</em>)</p>
 <p>Size of the sliding window use to search neighbors with.</p>
 </li>
 <li>
-<p><strong>min_distance_keep</strong> (<em>float</em>) – defaults to <code>0.0</code></p>
-<p>The minimum distance (similarity) to consider adding a point to the window. E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add similar but not exactly the same points.</p>
+<p><strong>min_distance_keep</strong> (<em>float</em>)</p>
+<p>The minimum distance (similarity) to consider adding a point to the window. E.g., a value of 0.0 will add even exact duplicates.</p>
 </li>
 <li>
-<p><strong>distance_func</strong> (<em>Callable[[Any, Any], float]</em>) – defaults to <code>None</code></p>
-<p>An required distance function that accept two input items to compare and optional parameters. It's recommended to use functools.partial.</p>
+<p><strong>distance_func</strong> (<em>Union[river.neighbors.base.DistanceFunc, river.neighbors.base.FunctionWrapper]</em>)</p>
+<p>A distance function which accepts two input items to compare.</p>
 </li>
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
@@ -10215,23 +10211,17 @@
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>     (<em>Any</em>)    </li>
-<li><strong>extra</strong>     (<em>[typing.Tuple, <class 'list'>]</em>)     – defaults to <code>None</code>    </li>
+<li><strong>extra</strong>     (<em>Union[Any, NoneType]</em>)     – defaults to <code>None</code>    </li>
 </ul>
 </details>
 <details class="- note">
 <summary>find_nearest</summary>
-<p>Find the <code>n_neighbors</code> closest points to <code>x</code>, along with their distances.</p>
-<p>This function assumes the x is a tuple or list with x[0] having relevant data for the distance calculation.</p>
+<p>Find the <code>n_neighbors</code> closest points to <code>item</code>, along with their distances.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>     (<em>Any</em>)    </li>
-<li><strong>n_neighbors</strong>     – defaults to <code>1</code>  <br />
-    Number of neighbors to use.</li>
+<li><strong>n_neighbors</strong>     (<em>int</em>)     – defaults to <code>1</code>    </li>
 </ul>
-</details>
-<details class="- note">
-<summary>reset</summary>
-<p>Reset window</p>
 </details>
 <details class="- note">
 <summary>update</summary>
@@ -10240,9 +10230,8 @@
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>     (<em>Any</em>)    </li>
-<li><strong>n_neighbors</strong>     – defaults to <code>1</code>  <br />
-    Number of neighbors to use.</li>
-<li><strong>extra</strong>     (<em>[typing.Tuple, <class 'list'>]</em>)     – defaults to <code>None</code>    </li>
+<li><strong>n_neighbors</strong>     (<em>int</em>)     – defaults to <code>1</code>    </li>
+<li><strong>extra</strong>     (<em>Union[Any, NoneType]</em>)     – defaults to <code>None</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p>A boolean (true/false) to indicate if the point was added.</p>

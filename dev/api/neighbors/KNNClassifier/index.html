@@ -10203,7 +10203,7 @@
 
 <h1 id="knnclassifier">KNNClassifier<a class="headerlink" href="#knnclassifier" title="Permanent link">&para;</a></h1>
 <p>K-Nearest Neighbors (KNN) for classification.</p>
-<p>This works by storing a buffer with the <code>window_size</code> most recent observations. A brute-force search is used to find the <code>n_neighbors</code> nearest observations in the buffer to make a prediction. See the NearestNeighbors parent class for model details.</p>
+<p>This works by storing a buffer with the <code>window_size</code> most recent observations. A brute-force search is used to find the <code>n_neighbors</code> nearest observations in the buffer to make a prediction. See the NearestNeighbors parent class for more details.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10227,8 +10227,8 @@
 <p>This determines at which rate old classes are cleaned up. Classes that have been seen in the past but that are not present in the current window are dropped. Classes are never dropped when this is set to 0.</p>
 </li>
 <li>
-<p><strong>distance_func</strong> (<em>Callable[[Any, Any], float]</em>) – defaults to <code>None</code></p>
-<p>An optional distance function that should accept an a=, b=, and any custom set of kwargs (defined in distance_func_kwargs). If not defined, the default Minkowski distance is used.</p>
+<p><strong>distance_func</strong> (<em>river.neighbors.base.DistanceFunc</em>) – defaults to <code>None</code></p>
+<p>An optional distance function that should accept an a=, b=, and any custom set of kwargs. If not defined, the Minkowski distance is used with p=2 (Euclidean distance). See the example section for more details.</p>
 </li>
 <li>
 <p><strong>softmax</strong> (<em>bool</em>) – defaults to <code>False</code></p>
@@ -10236,21 +10236,35 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">neighbors</span><span class="p">,</span> <span class="n">preprocessing</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">metrics</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">neighbors</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
 <span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
-<span class="o">...</span>     <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNClassifier</span><span class="p">()</span>
+<span class="o">...</span>     <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNClassifier</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 <span class="o">...</span> <span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="kc">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">())</span>
+<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">84.55</span><span class="o">%</span>
+</code></pre></div>
+<p>When defining a custom distance function you can rely on <code>functools.partial</code> to set default
+parameter values. For instance, let's use the Manhattan function instead of the default Euclidean distance:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">functools</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
+<span class="o">...</span>     <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNClassifier</span><span class="p">(</span>
+<span class="o">...</span>         <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="o">...</span>         <span class="n">distance_func</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">minkowski_distance</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">...</span>     <span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">())</span>
+<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">86.87</span><span class="o">%</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
@@ -10268,11 +10282,11 @@
 <p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
-<li><strong>y</strong>    </li>
+<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>y</strong>     (<em>Union[bool, str, int]</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>self</p>
+<p><em>Classifier</em>:     self</p>
 </details>
 <details class="- note">
 <summary>predict_one</summary>
@@ -10289,15 +10303,13 @@
 <p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
+<li><strong>x</strong>     (<em>dict</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>A dictionary that associates a probability which each label.</p>
+<p><em>typing.Dict[typing.Union[bool, str, int], float]</em>:     A dictionary that associates a probability which each label.</p>
 </details>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>See the NearestNeighbors documentation for details about the base model,
-along with KNNBase for an example of providing your own distance function.
-Note that since the window is moving and we keep track of all classes that
+<p>Note that since the window is moving and we keep track of all classes that
 are added at some point, a class might be returned in a result (with a
 value of 0) if it is no longer in the window. You can call
 model.clean_up_classes(), or set <code>cleanup_every</code> to a non-zero value.</p>
