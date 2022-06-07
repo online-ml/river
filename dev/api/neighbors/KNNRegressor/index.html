@@ -5668,13 +5668,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    Notes
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -10180,13 +10173,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    Notes
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -10203,7 +10189,7 @@
 
 <h1 id="knnregressor">KNNRegressor<a class="headerlink" href="#knnregressor" title="Permanent link">&para;</a></h1>
 <p>K-Nearest Neighbors regressor.</p>
-<p>This non-parametric regression method keeps track of the last <code>window_size</code> training samples. Predictions are obtained by aggregating the values of the closest n_neighbors stored-samples with respect to a query sample.</p>
+<p>This non-parametric regression method keeps track of the last <code>window_size</code> training samples. Predictions are obtained by aggregating the values of the closest n_neighbors stored samples with respect to a query sample.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10220,25 +10206,39 @@
 </li>
 <li>
 <p><strong>min_distance_keep</strong> (<em>float</em>) – defaults to <code>0.0</code></p>
-<p>The minimum distance (similarity) to consider adding a point to the window. E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add similar but not exactly the same points.</p>
+<p>The minimum distance (similarity) to consider adding a point to the window. E.g., a value of 0.0 will add even exact duplicates.</p>
 </li>
 <li>
-<p><strong>distance_func</strong> (<em>Callable[[Any, Any], float]</em>) – defaults to <code>None</code></p>
-<p>An optional distance function that should accept an a=, b=, and any custom set of kwargs (defined in distance_func_kwargs). If not defined, the default Minkowski distance is used.</p>
+<p><strong>distance_func</strong> (<em>river.neighbors.base.DistanceFunc</em>) – defaults to <code>None</code></p>
+<p>An optional distance function that should accept an a=, b=, and any custom set of kwargs. If not defined, the Minkowski distance is used with p=2 (Euclidean distance). See the example section for more details.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">neighbors</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">metrics</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">neighbors</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNRegressor</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="mf">41.839342</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">RMSE</span><span class="p">())</span>
+<span class="n">RMSE</span><span class="p">:</span> <span class="mf">1.427746</span>
+</code></pre></div>
+<p>When defining a custom distance function you can rely on <code>functools.partial</code> to set default
+parameter values. For instance, let's use the Manhattan function instead of the default Euclidean distance:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">functools</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river.utils.math</span> <span class="kn">import</span> <span class="n">minkowski_distance</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
+<span class="o">...</span>     <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNRegressor</span><span class="p">(</span>
+<span class="o">...</span>         <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="o">...</span>         <span class="n">distance_func</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">minkowski_distance</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">...</span>     <span class="p">)</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">RMSE</span><span class="p">())</span>
+<span class="n">RMSE</span><span class="p">:</span> <span class="mf">1.460385</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
@@ -10248,28 +10248,25 @@
 </details>
 <details class="- note">
 <summary>learn_one</summary>
-<p>Learn a set of features <code>x</code> and optional class <code>y</code>. Parameters:     x: A dictionary of features.     y: A class (optional if known).     extra: an optional list or tuple of features to store Returns:     self</p>
+<p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
-<li><strong>y</strong>     – defaults to <code>None</code>    </li>
-<li><strong>extra</strong>     (<em>[typing.Tuple, <class 'list'>]</em>)     – defaults to <code>None</code>    </li>
+<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>y</strong>     (<em>numbers.Number</em>)    </li>
 </ul>
+<p><strong>Returns</strong></p>
+<p><em>Regressor</em>:     self</p>
 </details>
 <details class="- note">
 <summary>predict_one</summary>
-<p>Predict the target value of a set of features <code>x</code>.</p>
-<p>Search the window for the <code>n_neighbors</code> nearest neighbors. Return a default prediction if the size of the window is 0 (no neighbors yet)</p>
+<p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
+<li><strong>x</strong>     (<em>dict</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>The prediction.</p>
+<p><em>Number</em>:     The prediction.</p>
 </details>
-<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>See the NearestNeighbors documentation for details about the base model,
-along with KNNBase for an example of providing your own distance function.</p>
 
               
             </article>
