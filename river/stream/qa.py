@@ -111,25 +111,25 @@ def simulate_qa(
 
     """
 
-    #  Determine how to insert mementos into the queu
+    # Determine how to insert mementos into the queue
     queue = (
-        lambda q, el: bisect.insort(q, el)
-        if callable(delay) or isinstance(delay, str)
-        else lambda q, el: q.append(el)
+        (lambda q, el: bisect.insort(q, el)) if callable(delay) or isinstance(delay, str) else
+        (lambda q, el: q.append(el))
     )
 
     # Coerce moment to a function
     get_moment = (
-        lambda _, x: x[moment] if isinstance(moment, str) else lambda _, x: moment(x)
+        (lambda _, x: x[moment]) if isinstance(moment, str) else
+        (lambda _, x: moment(x)) if callable(moment) else
+        (lambda i, _: i)
     )
 
     # Coerce delay to a function
     get_delay = (
-        lambda i, _: 0
-        if delay is None
-        else lambda x, _: x[delay]
-        if isinstance(delay, str)
-        else lambda _, __: delay
+        (lambda i, _: 0) if delay is None else
+        (lambda x, _: x[delay]) if isinstance(delay, str) else
+        (lambda _, __: delay) if not callable(delay) else
+        delay
     )
 
     mementos: typing.List[Memento] = []
