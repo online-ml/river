@@ -1,4 +1,5 @@
 import functools
+import typing
 
 from river import base, utils
 from river.neighbors import NearestNeighbors
@@ -100,7 +101,7 @@ class KNNClassifier(base.Classifier):
 
         self.weighted = weighted
         self.cleanup_every = cleanup_every
-        self.classes = set()
+        self.classes: typing.Set[base.typing.ClfTarget] = set()
         self.softmax = softmax
         self._cleanup_counter = cleanup_every
 
@@ -114,7 +115,7 @@ class KNNClassifier(base.Classifier):
     def _multiclass(self):
         return True
 
-    def clean_up_classes(self) -> "KNNClassifier":
+    def clean_up_classes(self):
         """Clean up classes added to the window.
 
         Classes that are added (and removed) from the window may no longer be valid.
