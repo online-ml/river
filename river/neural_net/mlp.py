@@ -1,3 +1,4 @@
+from __future__ import annotations
 import collections
 import copy
 import functools
@@ -11,7 +12,7 @@ from river import base, optim
 __all__ = ["MLPRegressor"]
 
 
-def xavier_init(dims: typing.Tuple[int], seed: int = None):
+def xavier_init(dims: tuple[int, ...], seed: int = None):
     """Xavier weight initialization.
 
     References
@@ -57,7 +58,7 @@ class MLP:
         self.loss = loss
         self.optimizer = optimizer
         self.seed = seed
-        self._optimizers = collections.defaultdict(
+        self._optimizers: typing.DefaultDict = collections.defaultdict(
             functools.partial(copy.deepcopy, optimizer)
         )
 
@@ -71,7 +72,7 @@ class MLP:
         """
         return len(self.hidden_dims) + 2
 
-    def _forward(self, X: pd.DataFrame) -> (dict, dict):
+    def _forward(self, X: pd.DataFrame) -> tuple[dict, dict]:
         """Execute a forward pass through the neural network.
 
         Parameters
