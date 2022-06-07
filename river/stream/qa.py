@@ -17,8 +17,8 @@ class Memento(collections.namedtuple("Memento", "i x y kwargs t_expire")):
 
 def simulate_qa(
     dataset: base.typing.Dataset,
-    moment: typing.Union[str, typing.Callable],
-    delay: typing.Union[str, int, dt.timedelta, typing.Callable],
+    moment: typing.Union[str, typing.Callable[[dict], dt.datetime], None],
+    delay: typing.Union[str, int, dt.timedelta, typing.Callable, None],
     copy: bool = True,
 ):
     """Simulate a time-ordered question and answer session.
@@ -119,16 +119,14 @@ def simulate_qa(
     # Coerce moment to a function
     get_moment = (
         lambda _, x: x[moment] if isinstance(moment, str)
-        else lambda _, x: moment(x) if callable(moment)
-        else lambda i, _: i
+        else lambda _, x: moment(x)
     )
 
     # Coerce delay to a function
     get_delay = (
         lambda i, _: 0 if delay is None
         else lambda x, _: x[delay] if isinstance(delay, str)
-        else lambda _, __: delay if not callable(delay)
-        else delay
+        else lambda _, __: delay
     )
 
     mementos: typing.List[Memento] = []
