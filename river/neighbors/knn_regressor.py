@@ -3,7 +3,7 @@ import statistics
 
 from river import base, utils
 from river.neighbors import NearestNeighbors
-from river.neighbors.neighbors import DistanceFunc
+from river.neighbors.base import DistanceFunc, FunctionWrapper
 
 
 class KNNRegressor(base.Regressor):
@@ -87,7 +87,7 @@ class KNNRegressor(base.Regressor):
         self._nn = NearestNeighbors(
             window_size=self.window_size,
             min_distance_keep=min_distance_keep,
-            distance_func=self._wrap_distance_func(self.distance_func),
+            distance_func=FunctionWrapper(self.distance_func),
         )
 
         self._check_aggregation_method(aggregation_method)
@@ -110,13 +110,6 @@ class KNNRegressor(base.Regressor):
                     method, {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}
                 )
             )
-
-    @staticmethod
-    def _wrap_distance_func(distance_func):
-        def wrap(a, b):
-            return distance_func(a[0], b[0])
-
-        return wrap
 
     def learn_one(self, x, y):
         self._nn.update((x, y), n_neighbors=self.n_neighbors)

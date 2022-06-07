@@ -8,6 +8,28 @@ class DistanceFunc(typing.Protocol):
         ...
 
 
+class FunctionWrapper:
+    """Wrapper used to make distance function work with KNNClassifier and
+    KNNRegressor.
+
+    The k-NN-based classifier and regressor store tuples with `(x, y)`, but only
+    `x` is used for distance calculations. This wrapper makes sure `x` is accessed
+    when calculating the distances.
+
+    Parameters
+    ----------
+    distance_function
+        The custom distance function to be wrapped.
+    """
+
+    def __init__(self, distance_function: DistanceFunc):
+        self.distance_function = distance_function
+
+    def __call__(self, a, b):
+        # Access x, which is stored in a tuple (x, y)
+        return self.distance_function(a[0], b[0])
+
+
 class NearestNeighbors:
     """A basic data structure to hold nearest neighbors.
 

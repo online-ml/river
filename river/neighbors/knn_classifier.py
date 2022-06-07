@@ -2,7 +2,7 @@ import functools
 
 from river import base, utils
 from river.neighbors import NearestNeighbors
-from river.neighbors.neighbors import DistanceFunc
+from river.neighbors.base import DistanceFunc, FunctionWrapper
 
 
 class KNNClassifier(base.Classifier):
@@ -107,19 +107,12 @@ class KNNClassifier(base.Classifier):
         self._nn = NearestNeighbors(
             window_size=self.window_size,
             min_distance_keep=min_distance_keep,
-            distance_func=self._wrap_distance_func(self.distance_func),
+            distance_func=FunctionWrapper(self.distance_func),
         )
 
     @property
     def _multiclass(self):
         return True
-
-    @staticmethod
-    def _wrap_distance_func(distance_func):
-        def wrap(a, b):
-            return distance_func(a[0], b[0])
-
-        return wrap
 
     def clean_up_classes(self) -> "KNNClassifier":
         """Clean up classes added to the window.
