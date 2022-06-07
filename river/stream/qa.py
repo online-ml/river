@@ -1,3 +1,4 @@
+from __future__ import annotations
 import bisect
 import collections
 import datetime as dt
@@ -109,53 +110,30 @@ def simulate_qa(
 
     """
 
-    # Determine how to insert mementos into the queue
-    if callable(delay) or isinstance(delay, str):
-
-        def queue(q, el):
-            bisect.insort(q, el)
-
-    else:
-
-        def queue(q, el):
-            q.append(el)
+    #  Determine how to insert mementos into the queu
+    queue = (
+        lambda q, el: bisect.insort(q, el) if callable(delay) or isinstance(delay, str)
+        else lambda q, el: q.append(el)
+    )
 
     # Coerce moment to a function
-    if isinstance(moment, str):
-
-        def get_moment(_, x):
-            return x[moment]
-
-    elif callable(moment):
-
-        def get_moment(_, x):
-            return moment(x)
-
-    else:
-
-        def get_moment(i, _):
-            return i
+    get_moment = (
+        lambda _, x: x[moment] if isinstance(moment, str)
+        else lambda _, x: moment(x) if callable(moment)
+        else lambda i, _: i
+    )
 
     # Coerce delay to a function
-    if delay is None:
-
-        def get_delay(i, _):
-            return 0
-
-    elif isinstance(delay, str):
-
-        def get_delay(x, _):
-            return x[delay]
-
-    elif not callable(delay):
-
-        def get_delay(_, __):
-            return delay
-
-    else:
-        get_delay = delay
+    get_delay = (
+        lambda i, _: 0 if delay is None
+        else lambda x, _: x[delay] if isinstance(delay, str)
+        else lambda _, __: delay if not callable(delay)
+        else delay
+    )
 
     mementos: typing.List[Memento] = []
+
+    kwargs: list
 
     for i, (x, y, *kwargs) in enumerate(dataset):
 
