@@ -1,6 +1,4 @@
-import collections
 import itertools
-import typing
 
 import pandas as pd
 
