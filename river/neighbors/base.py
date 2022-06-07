@@ -32,7 +32,7 @@ class FunctionWrapper:
 
 
 class NearestNeighbors:
-    """A basic data structure to hold nearest neighbors.
+    """Exact nearest neighbors search data structure.
 
     Parameters
     ----------
