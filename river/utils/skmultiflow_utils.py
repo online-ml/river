@@ -95,7 +95,7 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
 
     """
     seen = set()
-    to_visit = deque()
+    to_visit: typing.Deque = deque()
     byte_size = 0
 
     to_visit.append(obj)
@@ -136,7 +136,7 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
     else:
         final_size = byte_size
 
-    return final_size
+    return int(final_size)
 
 
 def add_dict_values(dict_a: dict, dict_b: dict, inplace=False) -> dict:
