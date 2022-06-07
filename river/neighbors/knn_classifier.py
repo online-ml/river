@@ -67,12 +67,12 @@ class KNNClassifier(base.Classifier):
     parameter values. For instance, let's use the Manhattan function instead of the default Euclidean distance:
 
     >>> import functools
-    >>> from river.utils.math import minkowski_distance
+    >>> from river import utils
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     neighbors.KNNClassifier(
     ...         window_size=50,
-    ...         distance_func=functools.partial(minkowski_distance, p=1)
+    ...         distance_func=functools.partial(utils.math.minkowski_distance, p=1)
     ...     )
     ... )
     >>> evaluate.progressive_val_score(dataset, model, metrics.Accuracy())
