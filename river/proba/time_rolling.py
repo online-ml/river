@@ -5,7 +5,7 @@ import typing
 from . import base
 
 
-class TimeRolling(base.Distribution):
+class TimeRolling:
     """Wrapper for measuring probability distributions over a period of time.
 
     Parameters
@@ -54,7 +54,7 @@ class TimeRolling(base.Distribution):
         self._events: typing.List[typing.Tuple[dt.datetime, typing.Any]] = []
         self._latest = dt.datetime(1, 1, 1)
 
-    def update(self, x, t: dt.datetime):
+    def update(self, x, t: dt.datetime):  # type: ignore
         self.dist.update(x)
         bisect.insort_left(self._events, (t, x))
 
@@ -84,4 +84,4 @@ class TimeRolling(base.Distribution):
         return self.dist.n_samples
 
     def __repr__(self):
-        return repr(self.dist)
+        return str(self.dist)
