@@ -120,7 +120,7 @@ def simulate_qa(
     # Coerce moment to a function
     get_moment = (
         (lambda _, x: x[moment]) if isinstance(moment, str) else
-        (lambda _, x: moment(x)) if callable(moment) else
+        (lambda _, x: moment(x)) if callable(moment) else # type: ignore
         (lambda i, _: i)
     )
 
@@ -128,8 +128,7 @@ def simulate_qa(
     get_delay = (
         (lambda i, _: 0) if delay is None else
         (lambda x, _: x[delay]) if isinstance(delay, str) else
-        (lambda _, __: delay) if not callable(delay) else
-        delay
+        (lambda _, __: delay)  # type: ignore
     )
 
     mementos: typing.List[Memento] = []
