@@ -20,6 +20,7 @@ class FunctionWrapper:
     ----------
     distance_function
         The custom distance function to be wrapped.
+
     """
 
     def __init__(self, distance_function: DistanceFunc):
