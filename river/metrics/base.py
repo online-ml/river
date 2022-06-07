@@ -23,11 +23,11 @@ class Metric(base.Base, abc.ABC):
     """Mother class for all metrics."""
 
     @abc.abstractmethod
-    def update(self, y_true, y_pred, sample_weight) -> "Metric":
+    def update(self, y_true, y_pred) -> "Metric":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true, y_pred, sample_weight) -> "Metric":
+    def revert(self, y_true, y_pred) -> "Metric":
         """Revert the metric."""
 
     @abc.abstractmethod
