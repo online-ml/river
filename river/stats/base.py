@@ -1,4 +1,5 @@
 import abc
+import numbers
 from typing import Optional
 
 from river import base
@@ -28,11 +29,11 @@ class Statistic(base.Base):
 class Univariate(Statistic):
     """A univariate statistic measures a property of a variable."""
 
-    def update(self, x):
+    def update(self, x: numbers.Number):
         """Update and return the called instance."""
         raise NotImplementedError
 
-    def revert(self, x):
+    def revert(self, x: numbers.Number):
         """Revert and return the called instance."""
         raise NotImplementedError
 
