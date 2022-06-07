@@ -47,7 +47,7 @@ class MLP:
 
     def __init__(
         self,
-        hidden_dims: typing.Tuple[int],
+        hidden_dims: tuple[int],
         activations,
         loss: optim.losses.Loss,
         optimizer: optim.base.Optimizer,
