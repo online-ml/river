@@ -48,7 +48,9 @@ def iter_libsvm(
 
     # If a file is not opened, then we open it
     buffer = filepath_or_buffer
+    should_close = False
     if not hasattr(buffer, "read"):
+        should_close = False
         buffer = utils.open_filepath(buffer, compression)
 
     def split_pair(pair):
@@ -63,11 +65,11 @@ def iter_libsvm(
         # Remove potential end of line comments
         line = line.split("#")[0]
 
-        y, x = line.split(" ", maxsplit=1)
+        y, x_str = line.split(" ", maxsplit=1)
         y = target_type(y)
-        x = dict([split_pair(pair) for pair in x.split(" ")])
+        x = dict([split_pair(pair) for pair in x_str.split(" ")])
         yield x, y
 
     # Close the file if we opened it
-    if buffer is not filepath_or_buffer:
-        buffer.close()
+    if should_close:
+        buffer.close()  # type: ignore
