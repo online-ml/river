@@ -15,7 +15,7 @@ class Distribution(typing.Protocol):
         ...
 
 
-class DiscreteDistribution(Distribution):
+class DiscreteDistribution:
     """A probability distribution for discrete values."""
 
     @abc.abstractmethod
@@ -39,7 +39,7 @@ class DiscreteDistribution(Distribution):
         return str(self)
 
 
-class ContinuousDistribution(Distribution):
+class ContinuousDistribution:
     """A probability distribution for continuous values."""
 
     @abc.abstractmethod
