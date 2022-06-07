@@ -1,12 +1,13 @@
 import collections
 import itertools
+import typing
 
 import pandas as pd
 
 from river import stats, utils
 
 
-class CovMatrix(collections.UserDict):
+class CovMatrix:
     """Sample covariance matrix.
 
     Parameters
@@ -68,7 +69,7 @@ class CovMatrix(collections.UserDict):
     _fmt = ",.3f"
 
     def __init__(self, ddof=1):
-        super().__init__()
+        self._covs = {}
         self.ddof = ddof
 
     def update(self, x: dict):
@@ -85,7 +86,7 @@ class CovMatrix(collections.UserDict):
             try:
                 cov = self[i, j]
             except KeyError:
-                self[i, j] = stats.Cov(self.ddof)
+                self._covs[i, j] = stats.Cov(self.ddof)
                 cov = self[i, j]
             cov.update(x[i], x[j])
 
@@ -93,7 +94,7 @@ class CovMatrix(collections.UserDict):
             try:
                 var = self[i, i]
             except KeyError:
-                self[i, i] = stats.Var(self.ddof)
+                self._covs[i, i] = stats.Var(self.ddof)
                 var = self[i, i]
             var.update(xi)
 
@@ -113,7 +114,7 @@ class CovMatrix(collections.UserDict):
             try:
                 cov = self[i, j]
             except KeyError:
-                self[i, j] = stats.Cov(self.ddof)
+                self._covs[i, j] = stats.Cov(self.ddof)
                 cov = self[i, j]
             cov.update_many(X[i].values, X[j].values)
 
@@ -121,7 +122,7 @@ class CovMatrix(collections.UserDict):
             try:
                 var = self[i, i]
             except KeyError:
-                self[i, i] = stats.Var(self.ddof)
+                self._covs[i, i] = stats.Var(self.ddof)
                 var = self[i, i]
             var.update_many(X[i].values)
 
@@ -135,13 +136,13 @@ class CovMatrix(collections.UserDict):
         """
         x, y = key
         try:
-            return super().__getitem__((x, y))
+            return self._covs[x, y]
         except KeyError:
-            return super().__getitem__((y, x))
+            return self._covs[y, x]
 
     def __repr__(self):
 
-        names = sorted(set(i for i, _ in self))
+        names = sorted(set(i for i, _ in self._covs))
 
         headers = [""] + list(map(str, names))
         columns = [headers[1:]]
