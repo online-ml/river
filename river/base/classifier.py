@@ -12,7 +12,7 @@ class Classifier(estimator.Estimator):
     """A classifier."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> "Classifier":
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> "Classifier":
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters
@@ -21,8 +21,6 @@ class Classifier(estimator.Estimator):
             A dictionary of features.
         y
             A label.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------
@@ -85,7 +83,7 @@ class MiniBatchClassifier(Classifier):
 
     @abc.abstractmethod
     def learn_many(
-        self, X: pd.DataFrame, y: pd.Series, **kwargs
+        self, X: pd.DataFrame, y: pd.Series
     ) -> "MiniBatchClassifier":
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
@@ -95,8 +93,6 @@ class MiniBatchClassifier(Classifier):
             A dataframe of features.
         y
             A series of boolean target values.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------
