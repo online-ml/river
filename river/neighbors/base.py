@@ -42,8 +42,7 @@ class NearestNeighbors:
         The minimum distance (similarity) to consider adding a point to the window.
         E.g., a value of 0.0 will add even exact duplicates.
     distance_func
-        A distance function that accept two input items to compare and optional
-        parameters.
+        A distance function which accepts two input items to compare.
 
     Notes
     -----
