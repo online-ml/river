@@ -1,4 +1,5 @@
 import collections
+import numbers
 import typing
 
 from river import stats
@@ -109,7 +110,9 @@ class RollingMode(stats.base.RollingUnivariate):
     """
 
     def __init__(self, window_size: int):
-        self.window = collections.deque(maxlen=window_size)
+        self.window: typing.Deque[numbers.Number] = collections.deque(
+            maxlen=window_size
+        )
         self.counts: typing.DefaultDict[typing.Any, int] = collections.defaultdict(int)
 
     @property
