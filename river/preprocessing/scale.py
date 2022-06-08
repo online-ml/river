@@ -75,7 +75,7 @@ class Binarizer(base.Transformer):
         return x_tf
 
 
-class StandardScaler(base.Transformer):
+class StandardScaler(base.MiniBatchTransformer):
     """Scales the data so that it has zero mean and unit variance.
 
     Under the hood, a running mean and a running variance are maintained. The scaling is slightly

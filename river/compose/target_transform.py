@@ -1,3 +1,5 @@
+import typing
+
 from river import base
 
 
@@ -43,7 +45,10 @@ class TargetTransformRegressor(base.Regressor, base.Wrapper):
     """
 
     def __init__(
-        self, regressor: base.Regressor, func: callable, inverse_func: callable
+        self,
+        regressor: base.Regressor,
+        func: typing.Callable,
+        inverse_func: typing.Callable,
     ):
         self.regressor = regressor
         self.func = func
