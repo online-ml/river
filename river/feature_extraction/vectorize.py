@@ -129,7 +129,7 @@ class VectorizerMixin:
         )
         self.ngram_range = ngram_range
 
-        self.processing_steps = []
+        self.processing_steps: typing.List[typing.Any] = []
 
         # Text extraction
         if on is not None:
@@ -279,9 +279,10 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     def transform_many(self, X: pd.Series) -> pd.DataFrame:
         """Transform pandas series of string into term-frequency pandas sparse dataframe."""
         indptr, indices, data = [0], [], []
-        index = {}
+        index: typing.Dict[int, int] = {}
 
         for d in X:
+            t: int
             for t, f in collections.Counter(self.process_text(d)).items():
                 indices.append(index.setdefault(t, len(index)))
                 data.append(f)
@@ -394,7 +395,7 @@ class TFIDF(BagOfWords):
             ngram_range=ngram_range,
         )
         self.normalize = normalize
-        self.dfs = collections.Counter()
+        self.dfs: typing.Counter = collections.Counter()
         self.n = 0
 
     def learn_one(self, x):
