@@ -1,5 +1,6 @@
 import bisect
 import collections
+import typing
 
 
 class SortedWindow(collections.UserList):
@@ -37,7 +38,7 @@ class SortedWindow(collections.UserList):
 
     def __init__(self, size: int):
         super().__init__()
-        self.unsorted_window = collections.deque(maxlen=size)
+        self.unsorted_window: typing.Deque = collections.deque(maxlen=size)
 
     @property
     def size(self):

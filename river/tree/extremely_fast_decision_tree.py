@@ -575,7 +575,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         """
 
         leaf = self._new_leaf()
-        leaf.depth = node.depth  # noqa
+        leaf.depth = node.depth  # type: ignore
         leaf.stats = node.stats
         leaf.splitters = node.splitters
 

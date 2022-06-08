@@ -1,5 +1,6 @@
 import collections
 import random
+import typing
 
 from river import base, utils
 
@@ -77,7 +78,7 @@ class RandomUnderSampler(ClassificationSampler):
     ):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
-        self._actual_dist = collections.Counter()
+        self._actual_dist: typing.Counter = collections.Counter()
         self._pivot = None
 
     def learn_one(self, x, y):
@@ -155,7 +156,7 @@ class RandomOverSampler(ClassificationSampler):
     ):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
-        self._actual_dist = collections.Counter()
+        self._actual_dist: typing.Counter = collections.Counter()
         self._pivot = None
 
     def learn_one(self, x, y):
@@ -240,7 +241,7 @@ class RandomSampler(ClassificationSampler):
     ):
         super().__init__(classifier=classifier, seed=seed)
         self.sampling_rate = sampling_rate
-        self._actual_dist = collections.Counter()
+        self._actual_dist: typing.Counter = collections.Counter()
         if desired_dist is None:
             desired_dist = self._actual_dist
         self.desired_dist = desired_dist

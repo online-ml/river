@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 import numpy as np
 
 from river import datasets
@@ -75,7 +79,9 @@ class Waveform(datasets.base.SyntheticDataset):
     )
 
     def __init__(
-        self, seed: int or np.random.RandomState = None, has_noise: bool = False
+        self,
+        seed: Optional[int | np.random.RandomState] = None,
+        has_noise: bool = False,
     ):
         super().__init__(
             n_features=self._N_BASE_FEATURES

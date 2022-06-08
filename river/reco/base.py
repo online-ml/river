@@ -80,7 +80,7 @@ class Ranker(base.Estimator):
 
         """
         preferences = {item: self.predict_one(user, item, x) for item in items}
-        return sorted(preferences, key=preferences.get, reverse=True)
+        return sorted(preferences, key=preferences.__getitem__, reverse=True)  # type: ignore[arg-type]
 
     def _unit_test_skips(self):
         return {"check_emerging_features", "check_disappearing_features"}

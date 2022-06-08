@@ -1,4 +1,5 @@
 import math
+import typing
 
 from river.base import DriftDetector
 
@@ -124,7 +125,7 @@ class EDDM(DriftDetector):
         self.m_m2s_max = 0.0
         self.estimation = 0.0
 
-    def update(self, value) -> tuple:
+    def update(self, value) -> typing.Tuple[bool, bool]:
         """Update the change detector with a single data point.
 
         Parameters

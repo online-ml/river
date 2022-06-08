@@ -1,4 +1,6 @@
 import collections
+import numbers
+import typing
 
 from river import stats
 
@@ -72,7 +74,9 @@ class RollingSum(stats.base.RollingUnivariate):
     """
 
     def __init__(self, window_size: int):
-        self.window = collections.deque(maxlen=window_size)
+        self.window: typing.Deque[numbers.Number] = collections.deque(
+            maxlen=window_size
+        )
         self.sum = 0
 
     @property

@@ -61,7 +61,7 @@ setuptools.setup(
             "graphviz>=0.10.1",
             "isort>=5.9.3",
             "matplotlib>=3.0.2",
-            "mypy>=0.761",
+            "mypy>=0.961",
             "pre-commit>=2.9.2",
             "pytest>=4.5.0",
             "pytest-cov>=2.6.1",

@@ -23,11 +23,11 @@ class Metric(base.Base, abc.ABC):
     """Mother class for all metrics."""
 
     @abc.abstractmethod
-    def update(self, y_true, y_pred, sample_weight) -> "Metric":
+    def update(self, y_true, y_pred) -> "Metric":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true, y_pred, sample_weight) -> "Metric":
+    def revert(self, y_true, y_pred) -> "Metric":
         """Revert the metric."""
 
     @abc.abstractmethod
@@ -183,19 +183,13 @@ class RegressionMetric(Metric):
 
     @abc.abstractmethod
     def update(
-        self,
-        y_true: numbers.Number,
-        y_pred: numbers.Number,
-        sample_weight: numbers.Number,
+        self, y_true: numbers.Number, y_pred: numbers.Number
     ) -> "RegressionMetric":
         """Update the metric."""
 
     @abc.abstractmethod
     def revert(
-        self,
-        y_true: numbers.Number,
-        y_pred: numbers.Number,
-        sample_weight: numbers.Number,
+        self, y_true: numbers.Number, y_pred: numbers.Number
     ) -> "RegressionMetric":
         """Revert the metric."""
 

@@ -5,50 +5,7 @@ import pandas as pd
 from river import base
 
 
-class Transformer(base.Estimator):
-    """A transformer."""
-
-    @property
-    def _supervised(self):
-        return False
-
-    def learn_one(self, x: dict, **kwargs) -> "Transformer":
-        """Update with a set of features `x`.
-
-        A lot of transformers don't actually have to do anything during the `learn_one` step
-        because they are stateless. For this reason the default behavior of this function is to do
-        nothing. Transformers that however do something during the `learn_one` can override this
-        method.
-
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
-
-        Returns
-        -------
-        self
-
-        """
-        return self
-
-    @abc.abstractmethod
-    def transform_one(self, x: dict) -> dict:
-        """Transform a set of features `x`.
-
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-
-        Returns
-        -------
-        The transformed values.
-
-        """
-
+class BaseTransformer:
     def __add__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
@@ -77,25 +34,66 @@ class Transformer(base.Estimator):
         """Creates a Grouper."""
         return self * other
 
+    @abc.abstractmethod
+    def transform_one(self, x: dict) -> dict:
+        """Transform a set of features `x`.
 
-class SupervisedTransformer(Transformer):
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+
+        Returns
+        -------
+        The transformed values.
+
+        """
+
+
+class Transformer(base.Estimator, BaseTransformer):
+    """A transformer."""
+
+    @property
+    def _supervised(self):
+        return False
+
+    def learn_one(self, x: dict) -> "Transformer":
+        """Update with a set of features `x`.
+
+        A lot of transformers don't actually have to do anything during the `learn_one` step
+        because they are stateless. For this reason the default behavior of this function is to do
+        nothing. Transformers that however do something during the `learn_one` can override this
+        method.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+
+        Returns
+        -------
+        self
+
+        """
+        return self
+
+
+class SupervisedTransformer(base.Estimator, BaseTransformer):
     """A supervised transformer."""
 
     @property
     def _supervised(self):
         return True
 
-    def learn_one(
-        self, x: dict, y: base.typing.Target, **kwargs
-    ) -> "SupervisedTransformer":
+    def learn_one(self, x: dict, y: base.typing.Target) -> "SupervisedTransformer":
         """Update with a set of features `x` and a target `y`.
 
         Parameters
         ----------
         x
             A dictionary of features.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
+        y
+            A target.
 
         Returns
         -------
@@ -123,7 +121,7 @@ class MiniBatchTransformer(Transformer):
 
         """
 
-    def learn_many(self, X: pd.DataFrame, **kwargs) -> "Transformer":
+    def learn_many(self, X: pd.DataFrame) -> "Transformer":
         """Update with a mini-batch of features.
 
         A lot of transformers don't actually have to do anything during the `learn_many` step
@@ -135,8 +133,6 @@ class MiniBatchTransformer(Transformer):
         ----------
         X
             A DataFrame of features.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------
@@ -144,3 +140,46 @@ class MiniBatchTransformer(Transformer):
 
         """
         return self
+
+
+class MiniBatchSupervisedTransformer(Transformer):
+    """A supervised transformer that can operate on mini-batches."""
+
+    @property
+    def _supervised(self):
+        return True
+
+    @abc.abstractmethod
+    def learn_many(
+        self, X: pd.DataFrame, y: pd.Series
+    ) -> "MiniBatchSupervisedTransformer":
+        """Update the model with a mini-batch of features `X` and targets `y`.
+
+        Parameters
+        ----------
+        X
+            A dataframe of features.
+        y
+            A series of boolean target values.
+
+        Returns
+        -------
+        self
+
+        """
+        return self
+
+    @abc.abstractmethod
+    def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Transform a mini-batch of features.
+
+        Parameters
+        ----------
+        X
+            A DataFrame of features.
+
+        Returns
+        -------
+        A new DataFrame.
+
+        """

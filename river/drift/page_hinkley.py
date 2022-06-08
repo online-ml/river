@@ -1,3 +1,5 @@
+import typing
+
 from river.base import DriftDetector
 
 
@@ -64,7 +66,7 @@ class PageHinkley(DriftDetector):
         self.x_mean = 0.0
         self.sum = 0.0
 
-    def update(self, value) -> tuple:
+    def update(self, value) -> typing.Tuple[bool, bool]:
         """Update the change detector with a single data point.
 
         Parameters

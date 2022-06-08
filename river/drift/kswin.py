@@ -101,7 +101,7 @@ class KSWIN(DriftDetector):
             raise ValueError("stat_size must be smaller than window_size.")
 
         if window is None:
-            self.window = collections.deque(maxlen=self.window_size)
+            self.window: typing.Deque = collections.deque(maxlen=self.window_size)
         else:
             self.window = collections.deque(window, maxlen=self.window_size)
 

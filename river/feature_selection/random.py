@@ -1,4 +1,5 @@
 import random
+import typing
 
 from river import base
 
@@ -54,7 +55,7 @@ class PoissonInclusion(base.Transformer):
         self.p = p
         self.seed = seed
         self.rng = random.Random(seed)
-        self.included = set()
+        self.included: typing.Set[base.typing.FeatureName] = set()
 
     def transform_one(self, x):
 

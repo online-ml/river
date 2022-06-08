@@ -155,7 +155,7 @@ class BaseFM:
 
         x = self._ohe_cat_features(x)
 
-        def fmt_float(x):
+        def fmt_float(x: float) -> str:
             return "{: ,.{prec}f}".format(x, prec=decimals)
 
         names = (
@@ -196,12 +196,12 @@ class BaseFM:
             + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights
             + [self.intercept]  # intercept
         )
-        order = reversed(np.argsort(contributions))
-        contributions = list(map(fmt_float, contributions))
+        order = list(reversed(np.argsort(contributions)))
+        contributions_str = list(map(fmt_float, contributions))
 
         table = utils.pretty.print_table(
             headers=["Name", "Value", "Weight", "Contribution"],
-            columns=[names, values, weights, contributions],
+            columns=[names, values, weights, contributions_str],
             order=order,
         )
 

@@ -63,22 +63,22 @@ class SGTLeaf(Leaf):
                 # Update the set of nominal features
                 sgt.nominal_attributes.add(idx)
                 try:
-                    self._split_stats[idx][x_val].update(gh, w)
+                    self._split_stats[idx][x_val].update(gh, w)  # type: ignore
                 except KeyError:
-                    if idx not in self._split_stats:
+                    if idx not in self._split_stats:  # type: ignore
                         # Categorical features are treated with a simple dict structure
-                        self._split_stats[idx] = {}
-                    self._split_stats[idx][x_val] = GradHessStats()
-                    self._split_stats[idx][x_val].update(gh, w)
+                        self._split_stats[idx] = {}  # type: ignore
+                    self._split_stats[idx][x_val] = GradHessStats()  # type: ignore
+                    self._split_stats[idx][x_val].update(gh, w)  # type: ignore
             else:
                 try:
-                    self._split_stats[idx].update(x_val, gh, w)
+                    self._split_stats[idx].update(x_val, gh, w)  # type: ignore
                 except KeyError:
                     # Create a new quantizer
-                    self._split_stats[idx] = sgt.feature_quantizer._set_params(
+                    self._split_stats[idx] = sgt.feature_quantizer._set_params(  # type: ignore
                         self.split_params[idx]
                     )
-                    self._split_stats[idx].update(x_val, gh, w)
+                    self._split_stats[idx].update(x_val, gh, w)  # type: ignore
 
         self._update_stats.update(gh, w=w)
 
@@ -99,12 +99,12 @@ class SGTLeaf(Leaf):
         candidate.merit.delta_pred = {}
         all_dlms = stats.Var()
 
-        cat_collection = self._split_stats[feature_idx]
-        candidate.split_info = list(cat_collection.keys())
+        cat_collection = self._split_stats[feature_idx]  # type: ignore
+        candidate.split_info = list(cat_collection.keys())  # type: ignore
         for category in cat_collection:
-            dp = self.delta_prediction(cat_collection[category].mean, sgt.lambda_value)
+            dp = self.delta_prediction(cat_collection[category].mean, sgt.lambda_value)  # type: ignore
 
-            dlms = cat_collection[category].delta_loss_mean_var(dp)
+            dlms = cat_collection[category].delta_loss_mean_var(dp)  # type: ignore
             candidate.merit.delta_pred[category] = dp
 
             all_dlms += dlms
@@ -120,10 +120,10 @@ class SGTLeaf(Leaf):
         self, feature_idx, candidate, sgt
     ) -> typing.Tuple[BranchFactory, bool]:
         skip_candidate = True
-        quantizer = self._split_stats[feature_idx]
+        quantizer = self._split_stats[feature_idx]  # type: ignore
 
         # Get updated quantizer params
-        self.split_params[feature_idx].update(quantizer._get_params())
+        self.split_params[feature_idx].update(quantizer._get_params())  # type: ignore
 
         n_bins = len(quantizer)
         if n_bins == 1:  # Insufficient number of bins to perform splits
@@ -136,7 +136,7 @@ class SGTLeaf(Leaf):
         # Auxiliary gradient and hessian statistics
         left_ghs = GradHessStats()
         left_dlms = stats.Var()
-        for thresh, ghs in quantizer:
+        for thresh, ghs in quantizer:  # type: ignore
             left_ghs += ghs
             left_delta_pred = self.delta_prediction(left_ghs.mean, sgt.lambda_value)
             left_dlms += left_ghs.delta_loss_mean_var(left_delta_pred)
@@ -164,19 +164,19 @@ class SGTLeaf(Leaf):
 
     def find_best_split(self, sgt) -> BranchFactory:
         best_split = BranchFactory()
-        best_split.merit = GradHessMerit()
+        best_split.merit = GradHessMerit()  # type: ignore
 
         # Null split: update the prediction using the new gradient information
-        best_split.merit.delta_pred = self.delta_prediction(
+        best_split.merit.delta_pred = self.delta_prediction(  # type: ignore
             self._update_stats.mean, sgt.lambda_value
         )
-        dlms = self._update_stats.delta_loss_mean_var(best_split.merit.delta_pred)
-        best_split.merit.loss_mean = dlms.mean.get()
-        best_split.merit.loss_var = dlms.get()
+        dlms = self._update_stats.delta_loss_mean_var(best_split.merit.delta_pred)  # type: ignore
+        best_split.merit.loss_mean = dlms.mean.get()  # type: ignore
+        best_split.merit.loss_var = dlms.get()  # type: ignore
 
-        for feature_idx in self._split_stats:
+        for feature_idx in self._split_stats:  # type: ignore
             candidate = BranchFactory()
-            candidate.merit = GradHessMerit()
+            candidate.merit = GradHessMerit()  # type: ignore
             candidate.feature = feature_idx
 
             if feature_idx in sgt.nominal_attributes:
@@ -191,7 +191,7 @@ class SGTLeaf(Leaf):
             if skip_candidate:
                 continue
 
-            if candidate.merit.loss_mean < best_split.merit.loss_mean:
+            if candidate.merit.loss_mean < best_split.merit.loss_mean:  # type: ignore
                 best_split = candidate
 
         return best_split

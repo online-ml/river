@@ -99,8 +99,8 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
         if stream.n_features != drift_stream.n_features:
             raise AttributeError(
                 f"Inconsistent number of features between "
-                f"{stream.__name__} ({stream.n_features}) and "
-                f"{drift_stream.__name__} ({drift_stream.n_features})."
+                f"{stream.__class__.__name__} ({stream.n_features}) and "
+                f"{drift_stream.__class__.__name__} ({drift_stream.n_features})."
             )
         super().__init__(
             n_features=stream.n_features,

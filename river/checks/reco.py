@@ -9,8 +9,7 @@ def check_reco_routine(ranker):
     def get_reward(user, item) -> bool:
         if user == "Tom":
             return item in {"music", "politics"}
-        if user == "Anna":
-            return item in {"politics", "sports"}
+        return item in {"politics", "sports"}
 
     for i in range(100):
 

@@ -22,5 +22,5 @@ def test_cov_matrix():
         X_all = pd.concat((X_all, X)).astype(float)
         pd_cov = X_all.cov(ddof=ddof)
 
-        for i, j in cov:
+        for i, j in cov._covs:
             assert math.isclose(cov[i, j].get(), pd_cov.loc[i, j])

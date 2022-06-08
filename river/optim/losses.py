@@ -7,7 +7,7 @@ import math
 import typing
 
 import numpy as np
-from scipy import special
+from scipy import special  # type: ignore
 
 from river import base, utils
 from river.optim.base import Loss

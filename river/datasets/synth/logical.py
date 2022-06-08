@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import itertools
+from typing import Optional
 
 import numpy as np
 
 from river import datasets
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class Logical(datasets.base.SyntheticDataset):
@@ -48,7 +50,7 @@ class Logical(datasets.base.SyntheticDataset):
         self,
         n_tiles: int = 1,
         shuffle: bool = True,
-        seed: int or np.random.RandomState = None,
+        seed: Optional[int | np.random.RandomState] = None,
     ):
         super().__init__(
             n_features=2,
@@ -59,24 +61,21 @@ class Logical(datasets.base.SyntheticDataset):
         self.n_tiles = n_tiles
         self.shuffle = shuffle
         self.seed = seed
+        self.rng = (
+            seed
+            if isinstance(seed, np.random.RandomState)
+            else np.random.RandomState(seed)
+        )
         self.feature_names = ["A", "B"]
         self.target_names = ["OR", "XOR", "AND"]
 
     def __iter__(self):
-        rng = check_random_state(self.seed)
-        X, Y = self._make_logical(
-            n_tiles=self.n_tiles, shuffle=self.shuffle, random_state=rng
-        )
+        X, Y = self._make_logical(n_tiles=self.n_tiles, shuffle=self.shuffle)
 
         for xi, yi in itertools.zip_longest(X, Y if hasattr(Y, "__iter__") else []):
             yield dict(zip(self.feature_names, xi)), dict(zip(self.target_names, yi))
 
-    @staticmethod
-    def _make_logical(
-        n_tiles: int = 1,
-        shuffle: bool = True,
-        random_state: np.random.RandomState = None,
-    ):
+    def _make_logical(self, n_tiles: int = 1, shuffle: bool = True):
         """Make toy dataset"""
         base_pattern = np.array(
             [
@@ -98,7 +97,7 @@ class Logical(datasets.base.SyntheticDataset):
         pattern[:, L:E] = base_pattern[:, 0:D]
         pattern = np.tile(pattern, (n_tiles, 1))
         if shuffle:
-            random_state.shuffle(pattern)
+            self.rng.shuffle(pattern)
         # return X, Y
         return (
             np.array(pattern[:, L:E], dtype=int),

@@ -154,7 +154,7 @@ class GradHessMerit:
 
     loss_mean: float = 0.0
     loss_var: float = 0.0
-    delta_pred: typing.Union[float, typing.Dict] = None
+    delta_pred: typing.Optional[typing.Union[float, typing.Dict]] = None
 
     def __lt__(self, other):
         return self.loss_mean < other.loss_mean

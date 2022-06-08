@@ -12,7 +12,7 @@ class Classifier(estimator.Estimator):
     """A classifier."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> "Classifier":
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> "Classifier":
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters
@@ -21,8 +21,6 @@ class Classifier(estimator.Estimator):
             A dictionary of features.
         y
             A label.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------
@@ -50,7 +48,7 @@ class Classifier(estimator.Estimator):
         # that a classifier does not support predict_proba_one.
         raise NotImplementedError
 
-    def predict_one(self, x: dict) -> base.typing.ClfTarget:
+    def predict_one(self, x: dict) -> typing.Optional[base.typing.ClfTarget]:
         """Predict the label of a set of features `x`.
 
         Parameters
@@ -68,7 +66,7 @@ class Classifier(estimator.Estimator):
         # individual basis.
         y_pred = self.predict_proba_one(x)
         if y_pred:
-            return max(y_pred, key=y_pred.get)
+            return max(y_pred, key=y_pred.get)  # type: ignore
         return None
 
     @property
@@ -84,9 +82,7 @@ class MiniBatchClassifier(Classifier):
     """A classifier that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(
-        self, X: pd.DataFrame, y: pd.Series, **kwargs
-    ) -> "MiniBatchClassifier":
+    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> "MiniBatchClassifier":
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters
@@ -95,8 +91,6 @@ class MiniBatchClassifier(Classifier):
             A dataframe of features.
         y
             A series of boolean target values.
-        kwargs
-            Some models might allow/require providing extra parameters, such as sample weights.
 
         Returns
         -------

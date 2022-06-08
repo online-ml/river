@@ -1,6 +1,7 @@
 import collections
 import functools
 import random
+import typing
 
 from river import base
 
@@ -96,9 +97,9 @@ class KMeans(base.Clusterer):
         self.seed = seed
         self._rng = random.Random(seed)
         rand_gauss = functools.partial(self._rng.gauss, self.mu, self.sigma)
-        self.centers = {
+        self.centers: typing.Dict[int, typing.DefaultDict] = {
             i: collections.defaultdict(rand_gauss) for i in range(n_clusters)
-        }  # type: ignore
+        }
 
     def learn_predict_one(self, x):
         """Equivalent to `k_means.learn_one(x).predict_one(x)`, but faster."""

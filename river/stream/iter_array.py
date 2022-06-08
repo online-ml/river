@@ -58,7 +58,7 @@ def iter_array(
     feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
     multioutput = y is not None and not np.isscalar(y[0])
     if multioutput and target_names is None:
-        target_names = list(range(len(y[0])))
+        target_names = list(range(len(y[0])))  # type: ignore
 
     # Shuffle the data
     rng = random.Random(seed)
@@ -69,10 +69,10 @@ def iter_array(
 
     if multioutput:
 
-        for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):
-            yield dict(zip(feature_names, xi)), dict(zip(target_names, yi))
+        for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
+            yield dict(zip(feature_names, xi)), dict(zip(target_names, yi))  # type: ignore
 
     else:
 
-        for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):
+        for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
             yield dict(zip(feature_names, xi)), yi

@@ -44,7 +44,8 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
         seed: int = None,
         metric: Metric = None,
     ):
-        super().__init__([])  # List of models is properly initialized later
+        # List of models is properly initialized later
+        super().__init__([])  # type: ignore
         self.model = model  # Not restricted to a specific base estimator.
         self.n_models = n_models
         self.subspace_size = subspace_size
@@ -59,9 +60,12 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
         self._rng = random.Random(self.seed)
 
         self._n_samples_seen = 0
-        self._subspaces = None
+        self._subspaces: typing.List = []
 
-        self._base_learner_class = None  # defined by extended classes
+        # defined by extended classes
+        self._base_learner_class: typing.Optional[
+            typing.Union["BaseSRPClassifier", "BaseSRPRegressor"]
+        ] = None
 
     @property
     def _min_number_of_models(self):
@@ -199,7 +203,7 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
             # If self.training_method == self._TRAIN_RESAMPLING then subspace is None
             subspace = self._subspaces[subspace_indexes[i]]
             self.append(
-                self._base_learner_class(
+                self._base_learner_class(  # type: ignore
                     idx_original=i,
                     model=self.model,
                     metric=self.metric,
@@ -282,7 +286,7 @@ class BaseSRPEstimator:
         )
 
         # Initialize the background learner
-        self._background_learner = self.__class__(
+        self._background_learner = self.__class__(  # type: ignore
             idx_original=self.idx_original,
             model=self.model,
             metric=self.metric,
@@ -483,7 +487,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
             metric=metric,
         )
 
-        self._base_learner_class = BaseSRPClassifier
+        self._base_learner_class = BaseSRPClassifier  # type: ignore
 
     def predict_proba_one(self, x):
         y_pred = collections.Counter()
@@ -559,7 +563,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
             # Note: Pass the original instance x so features are correctly
             # selected based on the corresponding subspace
             self._background_learner.learn_one(
-                x=x, y=y, sample_weight=sample_weight, n_samples_seen=n_samples_seen
+                x=x, y=y, sample_weight=sample_weight, n_samples_seen=n_samples_seen  # type: ignore
             )
 
         if not self.disable_drift_detector and not self.is_background_learner:
@@ -600,6 +604,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
         y_pred = self.predict_proba_one(x)
         if y_pred:
             return max(y_pred, key=y_pred.get)
+        return None  # type: ignore
 
 
 class SRPRegressor(BaseSRPEnsemble, base.Regressor):
@@ -784,10 +789,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
             )
         self.drift_detection_criteria = drift_detection_criteria
 
-        self._base_learner_class = BaseSRPRegressor
-
-    def learn_one(self, x: dict, y: base.typing.RegTarget, **kwargs):
-        return super().learn_one(x=x, y=y, **kwargs)
+        self._base_learner_class = BaseSRPRegressor  # type: ignore
 
     def predict_one(self, x):
         y_pred = np.zeros(self.n_models)
@@ -875,7 +877,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
             # Note: Pass the original instance x so features are correctly
             # selected based on the corresponding subspace
             self._background_learner.learn_one(
-                x=x, y=y, sample_weight=sample_weight, n_samples_seen=n_samples_seen
+                x=x, y=y, sample_weight=sample_weight, n_samples_seen=n_samples_seen  # type: ignore
             )
 
         if not self.disable_drift_detector and not self.is_background_learner:
