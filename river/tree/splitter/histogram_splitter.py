@@ -1,6 +1,7 @@
 import bisect
 import collections
 import functools
+import typing
 
 from river import misc
 from river.misc.histogram import Bin  # noqa
@@ -27,7 +28,7 @@ class HistogramSplitter(Splitter):
         super().__init__()
         self.n_bins = n_bins
         self.n_splits = n_splits
-        self.hists = collections.defaultdict(
+        self.hists: typing.DefaultDict = collections.defaultdict(
             functools.partial(misc.Histogram, max_bins=self.n_bins)
         )
 

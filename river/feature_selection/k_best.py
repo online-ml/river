@@ -1,6 +1,7 @@
 import collections
 import copy
 import functools
+import typing
 
 from river import base, stats
 
@@ -65,10 +66,10 @@ class SelectKBest(base.SupervisedTransformer):
     def __init__(self, similarity: stats.base.Bivariate, k=10):
         self.k = k
         self.similarity = similarity
-        self.similarities = collections.defaultdict(
+        self.similarities: typing.DefaultDict = collections.defaultdict(
             functools.partial(copy.deepcopy, similarity)
         )
-        self.leaderboard = collections.Counter()
+        self.leaderboard: typing.Counter = collections.Counter()
 
     @classmethod
     def _unit_test_params(cls):

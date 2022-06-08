@@ -151,9 +151,9 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                 raise ValueError(
                     "The chosen splitter cannot be used in regression tasks."
                 )
-            self.splitter = splitter
+            self.splitter = splitter  # type: ignore
 
-    @HoeffdingTree.leaf_prediction.setter
+    @HoeffdingTree.leaf_prediction.setter  # type: ignore
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in self._VALID_LEAF_PREDICTION:
             print(
@@ -165,7 +165,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         else:
             self._leaf_prediction = leaf_prediction
 
-    @HoeffdingTree.split_criterion.setter
+    @HoeffdingTree.split_criterion.setter  # type: ignore
     def split_criterion(self, split_criterion):
         if split_criterion != "vr":  # variance reduction
             print(
@@ -394,7 +394,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                 )
                 leaves = tuple(
                     self._new_leaf(initial_stats, parent=leaf)
-                    for initial_stats in split_decision.children_stats
+                    for initial_stats in split_decision.children_stats  # type: ignore
                 )
 
                 new_split = split_decision.assemble(
@@ -420,6 +420,6 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             )
             last_check_vr = best_split_suggestions[-1].merit
 
-            leaf.manage_memory(
+            leaf.manage_memory(  # type: ignore
                 split_criterion, last_check_ratio, last_check_vr, hoeffding_bound
             )

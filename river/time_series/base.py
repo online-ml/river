@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import abc
+import typing
 
 from river import base
 
@@ -24,7 +27,7 @@ class Forecaster(base.Estimator):
         """
 
     @abc.abstractmethod
-    def forecast(self, horizon: int, xs: list = None) -> list:
+    def forecast(self, horizon: int, xs: typing.Optional[list[dict]] = None) -> list:
         """Makes forecast at each step of the given horizon.
 
         Parameters

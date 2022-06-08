@@ -1,6 +1,7 @@
 import collections
 import copy
 import random
+import typing
 
 from river import base, linear_model
 
@@ -88,7 +89,7 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         integers = list(range(2**code_size))
         self._rng.shuffle(integers)
         self._ints = iter(integers)
-        self.code_book = collections.defaultdict(self._next_code)
+        self.code_book: typing.DefaultDict = collections.defaultdict(self._next_code)
 
     def _next_code(self):
         i = next(self._ints)

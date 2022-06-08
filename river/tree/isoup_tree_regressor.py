@@ -139,7 +139,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             split_confidence=split_confidence,
             tie_threshold=tie_threshold,
             leaf_prediction=leaf_prediction,
-            leaf_model=leaf_model,
+            leaf_model=leaf_model,  # type: ignore
             model_selector_decay=model_selector_decay,
             nominal_attributes=nominal_attributes,
             splitter=splitter,
@@ -211,7 +211,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
 
             return new_adaptive
 
-    def learn_one(
+    def learn_one(  # type: ignore
         self,
         x: dict,
         y: typing.Dict[typing.Hashable, base.typing.RegTarget],
@@ -245,7 +245,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
 
         return self
 
-    def predict_one(
+    def predict_one(  # type: ignore
         self, x: dict
     ) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
         """Predict the target values for a given instance.
@@ -267,5 +267,5 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             else:
                 leaf = self._root
 
-            pred = leaf.prediction(x, tree=self)
+            pred = leaf.prediction(x, tree=self)  # type: ignore
         return pred
