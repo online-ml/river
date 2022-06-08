@@ -48,7 +48,7 @@ class MiniBatchRegressor(Regressor):
 
     @abc.abstractmethod
     def learn_many(self, X: pd.DataFrame, y: pd.Series) -> "MiniBatchRegressor":
-        """Update the model with a mini-batch of features `X` and boolean targets `y`.
+        """Update the model with a mini-batch of features `X` and real-valued targets `y`.
 
         Parameters
         ----------
