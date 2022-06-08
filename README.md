@@ -27,6 +27,10 @@
   <a href="https://pepy.tech/project/river">
     <img src="https://static.pepy.tech/badge/river?style=flat-square" alt="pepy">
   </a>
+  <!-- Mypy -->
+  <a href="http://mypy-lang.org/">
+    <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="mypy">
+  </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
