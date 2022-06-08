@@ -141,7 +141,7 @@ class Slot:
     def __init__(
         self,
         x: float,
-        y=typing.Union[float, utils.VectorDict],
+        y=typing.Union[float, "utils.VectorDict"],
         weight: float = 1.0,
     ):
         # Import river.utils here to prevent circular import of river.utils
@@ -210,7 +210,9 @@ class FeatureQuantizer:
     def __len__(self):
         return len(self.hash)
 
-    def update(self, x: float, y: typing.Union[float, utils.VectorDict], weight: float):
+    def update(
+        self, x: float, y: typing.Union[float, "utils.VectorDict"], weight: float
+    ):
         index = math.floor(x / self.radius)
         try:
             self.hash[index].update(x, y, weight)
