@@ -1,5 +1,4 @@
 import abc
-import numbers
 import typing
 
 from river import base, utils
@@ -42,7 +41,7 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
                 typing.Dict[base.typing.ClfTarget, float],
             ],
         ],
-        sample_weight = 1.0,
+        sample_weight=1.0,
     ) -> "MultiOutputClassificationMetric":
         """Update the metric."""
         self.cm.update(y_true, y_pred, sample_weight)
@@ -58,7 +57,7 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
                 typing.Dict[base.typing.ClfTarget, float],
             ],
         ],
-        sample_weight = 1.0,
+        sample_weight=1.0,
     ) -> "MultiOutputClassificationMetric":
         """Revert the metric."""
         self.cm.revert(y_true, y_pred, sample_weight)
