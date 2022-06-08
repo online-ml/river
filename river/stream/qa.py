@@ -122,7 +122,7 @@ def simulate_qa(
     get_moment = (
         (lambda _, x: x[moment])
         if isinstance(moment, str)
-        else (lambda _, x: moment(x))
+        else (lambda _, x: moment(x)) # type: ignore
         if callable(moment)
         else (lambda i, _: i)  # type: ignore
     )
@@ -133,7 +133,7 @@ def simulate_qa(
         if delay is None
         else (lambda x, _: x[delay])
         if isinstance(delay, str)
-        else (lambda _, __: delay)
+        else (lambda _, __: delay)  # type: ignore
         if not callable(delay)
         else delay  # type: ignore
     )
