@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import collections
-import numbers
-import typing
 
 from river import optim
 

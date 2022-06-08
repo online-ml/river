@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import math
-import numbers
 
 from river import optim
 
