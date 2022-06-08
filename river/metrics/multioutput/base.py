@@ -1,3 +1,4 @@
+import abc
 import numbers
 import typing
 
@@ -41,7 +42,7 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
                 typing.Dict[base.typing.ClfTarget, float],
             ],
         ],
-        sample_weight: numbers.Number = 1.0,
+        sample_weight = 1.0,
     ) -> "MultiOutputClassificationMetric":
         """Update the metric."""
         self.cm.update(y_true, y_pred, sample_weight)
@@ -57,11 +58,10 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
                 typing.Dict[base.typing.ClfTarget, float],
             ],
         ],
-        sample_weight: numbers.Number = 1.0,
-        correction=None,
+        sample_weight = 1.0,
     ) -> "MultiOutputClassificationMetric":
         """Revert the metric."""
-        self.cm.revert(y_true, y_pred, sample_weight, correction)
+        self.cm.revert(y_true, y_pred, sample_weight)
         return self
 
     def works_with(self, model) -> bool:
@@ -79,19 +79,19 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
 class MultiOutputRegressionMetric(Metric):
     """Mother class for all multi-output regression metrics."""
 
+    @abc.abstractmethod
     def update(
         self,
         y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        sample_weight: numbers.Number,
     ) -> "MultiOutputRegressionMetric":
         """Update the metric."""
 
+    @abc.abstractmethod
     def revert(
         self,
         y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
         y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        sample_weight: numbers.Number,
     ) -> "MultiOutputRegressionMetric":
         """Revert the metric."""
 

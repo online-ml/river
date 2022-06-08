@@ -185,8 +185,7 @@ class RegressionMetric(Metric):
     def update(
         self,
         y_true: numbers.Number,
-        y_pred: numbers.Number,
-        sample_weight: numbers.Number,
+        y_pred: numbers.Number
     ) -> "RegressionMetric":
         """Update the metric."""
 
@@ -194,8 +193,7 @@ class RegressionMetric(Metric):
     def revert(
         self,
         y_true: numbers.Number,
-        y_pred: numbers.Number,
-        sample_weight: numbers.Number,
+        y_pred: numbers.Number
     ) -> "RegressionMetric":
         """Revert the metric."""
 
