@@ -122,7 +122,7 @@ def simulate_qa(
     get_moment = (
         (lambda _, x: x[moment])
         if isinstance(moment, str)
-        else (lambda _, x: moment(x)) # type: ignore
+        else (lambda _, x: moment(x))  # type: ignore
         if callable(moment)
         else (lambda i, _: i)  # type: ignore
     )
