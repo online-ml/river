@@ -1,5 +1,4 @@
 import abc
-import numbers
 from typing import Union
 
 import numpy as np
@@ -62,8 +61,8 @@ class Optimizer(base.Base):
 
     """
 
-    def __init__(self, lr: Union[Scheduler, float]):
-        if isinstance(lr, numbers.Number):
+    def __init__(self, lr: Union[int, float, Scheduler]):
+        if isinstance(lr, (int, float)):
             lr = optim.schedulers.Constant(lr)
         self.lr = lr
         self.n_iterations = 0
@@ -84,7 +83,9 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: dict, g: dict) -> dict:
+    def _step_with_dict(
+        self, w: Union[dict, VectorLike], g: Union[dict, VectorLike]
+    ) -> dict:
         raise NotImplementedError
 
     def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
@@ -108,7 +109,7 @@ class Optimizer(base.Base):
 
         """
 
-        if isinstance(w, VectorLike.__args__) and isinstance(g, VectorLike.__args__):
+        if isinstance(w, VectorLike.__args__) and isinstance(g, VectorLike.__args__):  # type: ignore
             try:
                 w = self._step_with_vector(w, g)
                 self.n_iterations += 1

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 from numbers import Number
 from typing import List
@@ -49,7 +51,7 @@ class HorizonMetric(ForecastingMetric):
 
     def __init__(self, metric: metrics.base.RegressionMetric):
         self.metric = metric
-        self.metrics = []
+        self.metrics: list[int] = []
 
     def update(self, y_true, y_pred):
         for t, (yt, yp) in enumerate(zip(y_true, y_pred)):

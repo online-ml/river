@@ -9,9 +9,9 @@ intention is to provide utilities for walking over a tree and visualizing it.
 
 """
 import abc
+import typing
 from collections import defaultdict
 from queue import Queue
-from typing import Iterable, Tuple, Union
 from xml.etree import ElementTree as ET
 
 import pandas as pd
@@ -35,11 +35,11 @@ class Branch(base.Base, abc.ABC):
         self.children = children
 
     @abc.abstractmethod
-    def next(self, x) -> Union["Branch", "Leaf"]:
+    def next(self, x) -> typing.Union["Branch", "Leaf"]:
         """Move to the next node down the tree."""
 
     @abc.abstractmethod
-    def most_common_path(self) -> Tuple[int, Union["Leaf", "Branch"]]:
+    def most_common_path(self) -> typing.Tuple[int, typing.Union["Leaf", "Branch"]]:
         """Return a tuple with the branch index and the child node related to the most
         traversed path.
 
@@ -52,7 +52,9 @@ class Branch(base.Base, abc.ABC):
     def repr_split(self):
         """String representation of the split."""
 
-    def walk(self, x, until_leaf=True) -> Iterable[Union["Branch", "Leaf"]]:
+    def walk(
+        self, x, until_leaf=True
+    ) -> typing.Iterable[typing.Union["Branch", "Leaf"]]:
         """Iterate over the nodes of the path induced by x."""
         yield self
         try:
@@ -63,11 +65,11 @@ class Branch(base.Base, abc.ABC):
                 yield node
                 yield from node.walk(x, until_leaf)
 
-    def traverse(self, x, until_leaf=True) -> "Leaf":
+    def traverse(self, x, until_leaf=True) -> typing.Union["Branch", "Leaf"]:
         """Return the leaf corresponding to the given input."""
         for node in self.walk(x, until_leaf):
             pass
-        return node  # noqa
+        return node
 
     @property
     def n_nodes(self):
@@ -128,11 +130,10 @@ class Branch(base.Base, abc.ABC):
 
     def to_dataframe(self) -> pd.DataFrame:
         """Build a DataFrame containing one record for each node."""
-
-        node_ids = defaultdict(lambda: len(node_ids))
+        node_ids: typing.DefaultDict[typing.Hashable, int] = defaultdict(lambda: len(node_ids))  # type: ignore
         nodes = []
 
-        queue = Queue()
+        queue: "Queue" = Queue()
         queue.put((self, None, 0))
 
         while not queue.empty():

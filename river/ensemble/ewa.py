@@ -86,7 +86,7 @@ class EWARegressor(base.Ensemble, base.Regressor):
         loss: optim.losses.RegressionLoss = None,
         learning_rate=0.5,
     ):
-        super().__init__(models)
+        super().__init__(models)  # type: ignore
         self.loss = optim.losses.Squared() if loss is None else loss
         self.learning_rate = learning_rate
         self.weights = [1.0] * len(models)

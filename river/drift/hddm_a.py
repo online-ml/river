@@ -1,3 +1,4 @@
+import typing
 from math import log, sqrt
 
 from river.base import DriftDetector
@@ -79,7 +80,7 @@ class HDDM_A(DriftDetector):
         self.warning_confidence = warning_confidence
         self.two_sided_test = two_sided_test
 
-    def update(self, value) -> tuple:
+    def update(self, value) -> typing.Tuple[bool, bool]:
         """Update the change detector with a single data point.
 
         Parameters

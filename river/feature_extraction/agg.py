@@ -130,7 +130,9 @@ class Agg(base.Transformer):
         self.on = on
         self.by = (by if isinstance(by, list) else [by]) if by is not None else by
         self.how = how
-        self._groups = collections.defaultdict(functools.partial(copy.deepcopy, how))
+        self._groups: typing.DefaultDict = collections.defaultdict(
+            functools.partial(copy.deepcopy, how)
+        )
         self._feature_name = f"{self.on}_{self.how.name}"
         if self.by:
             self._feature_name += f"_by_{'_and_'.join(self.by)}"
@@ -192,7 +194,7 @@ class Agg(base.Transformer):
             (stat.get() for stat in self._groups.values()),
             index=(
                 pd.Index(key[0] for key in self._groups.keys())
-                if len(self.by) == 1
+                if self.by and len(self.by) == 1
                 else pd.MultiIndex.from_tuples(self._groups.keys(), names=self.by)
             ),
             name=self._feature_name,

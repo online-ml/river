@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 
 import pandas as pd
@@ -63,7 +65,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
 
     def __init__(self, classifier: base.Classifier):
         self.classifier = classifier
-        self.classifiers = {}
+        self.classifiers: dict[base.typing.ClfTarget, base.Classifier] = {}
         self._y_name = None
 
     @property

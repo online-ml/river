@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import collections
-import typing
 
 from river import optim
 
@@ -53,7 +54,7 @@ class AMSGrad(optim.base.Optimizer):
 
     def __init__(
         self,
-        lr: typing.Union[float, optim.base.Scheduler] = 0.1,
+        lr: int | float | optim.base.Scheduler = 0.1,
         beta_1=0.9,
         beta_2=0.999,
         eps=1e-8,
@@ -64,9 +65,9 @@ class AMSGrad(optim.base.Optimizer):
         self.beta_2 = beta_2
         self.eps = eps
         self.correct_bias = correct_bias
-        self.m = collections.defaultdict(float)
-        self.v = collections.defaultdict(float)
-        self.v_hat = collections.defaultdict(float)
+        self.m: dict[str, float] = collections.defaultdict(float)
+        self.v: dict[str, float] = collections.defaultdict(float)
+        self.v_hat: dict[str, float] = collections.defaultdict(float)
 
     def _step_with_dict(self, w, g):
 

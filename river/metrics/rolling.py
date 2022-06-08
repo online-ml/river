@@ -1,4 +1,5 @@
 import collections
+import typing
 
 from river import metrics
 
@@ -43,7 +44,7 @@ class Rolling(metrics.base.WrapperMetric):
     """
 
     def __init__(self, metric: metrics.base.Metric, window_size: int):
-        self.window = collections.deque(maxlen=window_size)
+        self.window: typing.Deque = collections.deque(maxlen=window_size)
         self._metric = metric
 
     @property

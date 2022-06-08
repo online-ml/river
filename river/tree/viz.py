@@ -4,8 +4,8 @@ from xml.etree import ElementTree as ET
 from river.tree.base import Branch, Leaf
 
 
-def tree_to_html(tree: Branch) -> ET:
-    def add_node(node: Union[Branch, Leaf], parent: ET):
+def tree_to_html(tree: Branch) -> ET.Element:
+    def add_node(node: Union[Branch, Leaf], parent: ET.Element):
 
         # We're building this:
         #
@@ -15,7 +15,7 @@ def tree_to_html(tree: Branch) -> ET:
         # <li>
 
         li = ET.Element("li")
-        parent.append(li)
+        parent.append(li)  # type: ignore
 
         code = ET.Element("code")
 
