@@ -3,12 +3,12 @@ from __future__ import annotations
 import collections
 import numbers
 import typing
-from typing import Iterator, List, Optional
+from typing import Iterator, List, Optional, Tuple
 
 from river import base, metrics, time_series
 
 TimeSeries = Iterator[
-    tuple[
+    Tuple[
         Optional[dict],  # x
         numbers.Number,  # y
         Optional[List[dict]],  # x_horizon
