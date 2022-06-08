@@ -259,7 +259,7 @@ class FriedmanDrift(Friedman):
         else:
             return x[1] > 0.7 and x[2] > 0.7
 
-    def _local_expanding_abrupt_gen(self, x, index: int, rc: random.Random):  # noqa
+    def _local_expanding_abrupt_gen(self, x, index: int):
         if self.__lea_in_r1(x, index):
             return 10 * x[0] * x[1] + 20 * (x[2] - 0.5) + 10 * x[3] + 5 * x[4]
 
@@ -279,7 +279,7 @@ class FriedmanDrift(Friedman):
             + 5 * x[4]
         )
 
-    def _global_recurring_abrupt_gen(self, x, index: int, rc: random.Random):  # noqa
+    def _global_recurring_abrupt_gen(self, x, index: int):
         if index < self._change_point1 or index >= self._change_point2:
             # The initial concept is recurring
             return (
