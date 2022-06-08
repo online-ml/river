@@ -2,7 +2,7 @@
 
 import copy
 import functools
-from typing import Iterator
+import typing
 
 import numpy as np
 
@@ -103,11 +103,11 @@ def _yield_datasets(model: Estimator):
         yield ((x, np.bool_(y)) for x, y in datasets.Phishing().take(200))
 
         # Multi-class classification
-        if model._multiclass and base.tags.POSITIVE_INPUT not in model._tags:
+        if model._multiclass and base.tags.POSITIVE_INPUT not in model._tags:  # type: ignore
             yield datasets.ImageSegments().take(200)
 
 
-def yield_checks(model: Estimator) -> Iterator[callable]:
+def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     """Generates unit tests for a given model.
 
     Parameters
@@ -152,7 +152,7 @@ def yield_checks(model: Estimator) -> Iterator[callable]:
             _allow_exception(clf.check_predict_proba_one, NotImplementedError)
         )
         # Specific checks for binary classifiers
-        if not model._multiclass:
+        if not model._multiclass:  # type: ignore
             checks.append(
                 _allow_exception(
                     clf.check_predict_proba_one_binary, NotImplementedError
