@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+import functools
 import math
 import random
-from typing import Tuple
+from typing import Any, Tuple
 
 from river import datasets
 
@@ -181,7 +184,7 @@ class FriedmanDrift(Friedman):
                 f"Valid options are: {self._VALID_DRIFT_TYPES}"
             )
 
-        self.drift_type = drift_type
+        self.drift_type: Any = drift_type
 
         if self.drift_type == self._LOCAL_EXPANDING_ABRUPT and len(position) < 3:
             raise ValueError(
@@ -202,6 +205,7 @@ class FriedmanDrift(Friedman):
         self.position = position
 
         if self.drift_type == self._LOCAL_EXPANDING_ABRUPT:
+            self._change_point3: int | float
             (
                 self._change_point1,
                 self._change_point2,
@@ -231,7 +235,9 @@ class FriedmanDrift(Friedman):
         elif self.drift_type == self._GLOBAL_RECURRING_ABRUPT:
             self._y_maker = self._global_recurring_abrupt_gen
         else:  # Global and slow gradual drifts
-            self._y_maker = self._global_and_slow_gradual_gen
+            # To produce True or False with equal probability. Only used in gradual drifts
+            rc = random.Random(self.seed)
+            self._y_maker = functools.partial(self._global_and_slow_gradual_gen, rc=rc)
 
     def __lea_in_r1(self, x, index):
         if index < self._change_point1:
@@ -253,9 +259,7 @@ class FriedmanDrift(Friedman):
         else:
             return x[1] > 0.7 and x[2] > 0.7
 
-    def _local_expanding_abrupt_gen(
-        self, x, index: int, rc: random.Random = None
-    ):  # noqa
+    def _local_expanding_abrupt_gen(self, x, index: int, rc: random.Random):  # noqa
         if self.__lea_in_r1(x, index):
             return 10 * x[0] * x[1] + 20 * (x[2] - 0.5) + 10 * x[3] + 5 * x[4]
 
@@ -275,9 +279,7 @@ class FriedmanDrift(Friedman):
             + 5 * x[4]
         )
 
-    def _global_recurring_abrupt_gen(
-        self, x, index: int, rc: random.Random = None
-    ):  # noqa
+    def _global_recurring_abrupt_gen(self, x, index: int, rc: random.Random):  # noqa
         if index < self._change_point1 or index >= self._change_point2:
             # The initial concept is recurring
             return (
@@ -344,16 +346,10 @@ class FriedmanDrift(Friedman):
     def __iter__(self):
         rng = random.Random(self.seed)
 
-        # To produce True or False with equal probability. Only used in gradual drifts
-        if self.drift_type == self._GLOBAL_AND_SLOW_GRADUAL:
-            rc = random.Random(self.seed)
-        else:
-            rc = None
-
         i = 0
         while True:
             x = {i: rng.uniform(a=0, b=1) for i in range(10)}
-            y = self._y_maker(x, i, rc) + rng.gauss(mu=0, sigma=1)
+            y = self._y_maker(x, i) + rng.gauss(mu=0, sigma=1)
 
             yield x, y
             i += 1
