@@ -7,9 +7,10 @@ import math
 import typing
 
 import numpy as np
+from scipy import special  # type: ignore
+
 from river import base, utils
 from river.optim.base import Loss
-from scipy import special  # type: ignore
 
 __all__ = [
     "Absolute",
@@ -181,7 +182,9 @@ class CrossEntropy(MultiClassLoss):
 
         for label, proba in y_pred.items():
             if y_true == label:
-                total += self.class_weight.get(label, 1.0) * math.log(clamp_proba(proba))
+                total += self.class_weight.get(label, 1.0) * math.log(
+                    clamp_proba(proba)
+                )
 
         return -total
 

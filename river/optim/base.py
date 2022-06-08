@@ -3,6 +3,7 @@ import numbers
 from typing import Union
 
 import numpy as np
+
 from river import base, optim, utils
 
 VectorLike = Union[utils.VectorDict, np.ndarray]
@@ -83,7 +84,9 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: Union[dict, VectorLike], g: Union[dict, VectorLike]) -> dict:
+    def _step_with_dict(
+        self, w: Union[dict, VectorLike], g: Union[dict, VectorLike]
+    ) -> dict:
         raise NotImplementedError
 
     def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
