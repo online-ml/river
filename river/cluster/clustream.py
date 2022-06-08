@@ -1,4 +1,5 @@
 import math
+import typing
 from abc import ABCMeta
 from collections import defaultdict
 
@@ -117,8 +118,8 @@ class CluStream(base.Clusterer):
         self.time_stamp = -1
         self.micro_clusters = {n: None for n in range(max_micro_clusters)}
         self.initialized = False
-        self.buffer = {}
-        self.centers = {}
+        self.buffer: typing.Dict[int, "CluStreamMicroCluster"] = {}
+        self.centers: typing.Dict[int, typing.DefaultDict] = {}
         self.micro_cluster_r_factor = micro_cluster_r_factor
         self.max_micro_clusters = max_micro_clusters
         self.n_macro_clusters = n_macro_clusters
@@ -293,7 +294,7 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
         self,
         x: dict = None,
         sample_weight: float = None,
-        micro_cluster=None,
+        micro_cluster: "CluStreamMicroCluster" = None,
         timestamp: int = None,
         micro_cluster_r_factor: int = None,
         max_micro_clusters: int = None,
@@ -310,9 +311,9 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
             for key in x.keys():
                 self.linear_sum[key] = x[key] * sample_weight
                 self.squared_sum[key] = x[key] * x[key] * sample_weight
-            self.linear_sum_timestamp = timestamp * sample_weight
+            self.linear_sum_timestamp = timestamp * sample_weight  # type: ignore
             self.squared_sum_timestamp = (
-                timestamp * sample_weight * timestamp * sample_weight
+                timestamp * sample_weight * timestamp * sample_weight  # type: ignore
             )
         elif micro_cluster is not None:
             # Initialize with micro-cluster

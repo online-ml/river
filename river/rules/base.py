@@ -92,13 +92,13 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
     ):
         self.template_splitter = template_splitter
         self.split_criterion = split_criterion
-        self.literals = []
-        self.splitters = {}
+        self.literals: typing.List[Literal] = []
+        self.splitters: typing.Dict[typing.Hashable, tree.splitter.Splitter] = {}
 
         self._total_weight = 0
         self._last_expansion_attempt_at = 0
 
-        self.nominal_features = set()
+        self.nominal_features: typing.Set[typing.Hashable] = set()
 
         self.__dict__.update(attributes)
 
@@ -130,12 +130,12 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
             (r_heur * r_heur * math.log(1.0 / delta)) / (2.0 * self.total_weight)
         )
 
-    @property
+    @property  # type: ignore
     @abc.abstractmethod
     def statistics(self):
         pass
 
-    @statistics.setter
+    @statistics.setter  # type: ignore
     @abc.abstractmethod
     def statistics(self, target_stats):
         pass

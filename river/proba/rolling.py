@@ -1,4 +1,5 @@
 import collections
+import typing
 
 from . import base
 
@@ -52,7 +53,7 @@ class Rolling(base.Distribution):
     def __init__(self, dist: base.Distribution, window_size: int):
         self.dist = dist
         self.window_size = window_size
-        self.window = collections.deque(maxlen=window_size)
+        self.window: typing.Deque = collections.deque(maxlen=window_size)
 
     def update(self, x):
         if len(self.window) == self.window_size:

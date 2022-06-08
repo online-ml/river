@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import contextlib
 import functools
@@ -431,7 +433,7 @@ class Pipeline(base.Estimator):
 
         estimator = _coerce_to_estimator(obj)
 
-        def infer_name(estimator: base.Estimator) -> str:
+        def infer_name(estimator: base.Estimator | typing.Callable) -> str:
             if isinstance(estimator, func.FuncTransformer):
                 return infer_name(estimator.func)
             if isinstance(estimator, (types.FunctionType, types.LambdaType)):
@@ -796,7 +798,7 @@ class Pipeline(base.Estimator):
 
         """
         X, last_step = self._transform_many(X=X)
-        if isinstance(last_step, base.Transformer):
+        if isinstance(last_step, base.MiniBatchTransformer):
             if not last_step._supervised:
                 last_step.learn_many(X)
             return last_step.transform_many(X)

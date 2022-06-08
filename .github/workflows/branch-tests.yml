@@ -32,7 +32,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install wheel
-          pip install -e ".[dev]" codecov
+          pip install -e ".[dev]"
 
       - name: Cache datasets
         uses: actions/cache@v2
@@ -44,7 +44,4 @@ jobs:
         run: python -c "from river import datasets; datasets.CreditCard().download()"
 
       - name: pytest
-        run: pytest --cov=river
-
-      - name: codecov
-        run: codecov
+        run: pytest

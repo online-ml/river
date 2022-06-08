@@ -1,14 +1,16 @@
 """Helper functions for making things readable by humans."""
+
+from __future__ import annotations
+
 import math
-import typing
 
 __all__ = ["humanize_bytes", "print_table"]
 
 
 def print_table(
-    headers: typing.List[str],
-    columns: typing.List[typing.List[str]],
-    order: typing.List[int] = None,
+    headers: list[str],
+    columns: list[list[str]],
+    order: list[int] = None,
 ):
     """Pretty-prints a table.
 

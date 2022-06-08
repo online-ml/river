@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import itertools
+from typing import Optional
 
 import numpy as np
 
@@ -70,7 +73,7 @@ class AnomalySine(datasets.base.SyntheticDataset):
         shift: int = 4,
         noise: float = 0.5,
         replace: bool = True,
-        seed: int or np.random.RandomState = None,
+        seed: Optional[int | np.random.RandomState] = None,
     ):
         super().__init__(
             n_features=2,

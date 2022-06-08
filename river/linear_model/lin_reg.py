@@ -166,7 +166,7 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
         contributions = [xi * self._weights.get(i, 0) for i, xi in x.items()] + [
             self.intercept
         ]
-        order = reversed(np.argsort(contributions))
+        order = list(reversed(np.argsort(contributions)))
         contributions = list(map(fmt_float, contributions))
 
         table = utils.pretty.print_table(

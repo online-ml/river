@@ -19,7 +19,7 @@ class SuccessiveHalving(abc.ABC):
         **print_kwargs,
     ):
 
-        super().__init__(models=models, metric=metric)
+        super().__init__(models=models, metric=metric)  # type: ignore
         self.budget = budget
         self.eta = eta
         self.verbose = verbose

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import typing
 from collections import defaultdict
@@ -143,11 +145,13 @@ class LDA(base.Transformer):
         self.truncation_size_prime = 1
         self.truncation_size = 1
 
-        self.word_to_index = {}
-        self.index_to_word = {}
+        self.word_to_index: dict[str, int] = {}
+        self.index_to_word: dict[int, str] = {}
 
-        self.nu_1 = defaultdict(functools.partial(np.ones, 1))
-        self.nu_2 = defaultdict(functools.partial(np.array, [self.alpha_beta]))
+        self.nu_1: typing.DefaultDict = defaultdict(functools.partial(np.ones, 1))
+        self.nu_2: typing.DefaultDict = defaultdict(
+            functools.partial(np.array, [self.alpha_beta])
+        )
 
         for topic in range(self.n_components):
             self.nu_1[topic] = np.ones(1)
@@ -170,7 +174,7 @@ class LDA(base.Transformer):
         self.counter += 1
 
         # Extracts words of the document as a list of words:
-        word_list = x.keys()
+        word_list: typing.Iterable[str] = x.keys()
 
         # Update words indexes:
         self._update_indexes(word_list=word_list)
@@ -212,7 +216,7 @@ class LDA(base.Transformer):
 
         return dict(enumerate(components))
 
-    def _update_indexes(self, word_list: list):
+    def _update_indexes(self, word_list: typing.Iterable[str]):
         """
         Adds the words of the document to the index if they are not part of the current vocabulary.
         Updates of the number of distinct words seen.
@@ -341,7 +345,9 @@ class LDA(base.Transformer):
         Computed statistics over the words. Document reprensetation across topics.
 
         """
-        statistics = defaultdict(lambda: np.zeros(self.truncation_size_prime))
+        statistics: typing.DefaultDict = defaultdict(
+            lambda: np.zeros(self.truncation_size_prime)
+        )
 
         exp_weights, exp_oov_weights = self._compute_weights(
             n_components=self.n_components, nu_1=self.nu_1, nu_2=self.nu_2

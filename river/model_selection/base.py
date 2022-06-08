@@ -94,7 +94,7 @@ class BanditRegressor(ModelSelectionRegressor):
         metric: metrics.base.RegressionMetric,
         policy: BanditPolicy,
     ):
-        super().__init__(models, metric)
+        super().__init__(models, metric)  # type: ignore
         self.bandit = Bandit(n_arms=len(models), metric=metric)
         self.policy = policy
 

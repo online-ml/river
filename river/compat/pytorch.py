@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import inspect
 import typing
@@ -5,6 +7,7 @@ import typing
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 
 from river import base
 
@@ -67,13 +70,13 @@ class PyTorch2RiverBase(base.Estimator):
         }
 
     def _learn_one(self, x: torch.Tensor, y: torch.Tensor):
-        self.net.zero_grad()
-        y_pred = self.net(x)
+        self.net_.zero_grad()
+        y_pred = self.net_(x)
         loss = self.loss(y_pred, y)
         loss.backward()
         self.optimizer.step()
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget):
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> "PyTorch2RiverBase":
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters
@@ -88,7 +91,7 @@ class PyTorch2RiverBase(base.Estimator):
         self
 
         """
-        if self.net is None:
+        if not hasattr(self, "net_"):
             self._init_net(n_features=len(list(x.values())))
 
         x = torch.Tensor([list(x.values())])
@@ -122,7 +125,7 @@ class PyTorch2RiverBase(base.Estimator):
         return res
 
     def _init_net(self, n_features):
-        self.net = self.build_fn(
+        self.net_: nn.Module = self.build_fn(
             n_features=n_features, **self._filter_torch_params(self.build_fn)
         )
         # Only optimizers with learning rate as parameter are supported, needs to be fixed
@@ -187,7 +190,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
         learning_rate=1e-3,
         **net_params,
     ):
-        self.classes = collections.Counter()
+        self.classes: typing.Counter = collections.Counter()
         self.n_classes = 1
         super().__init__(
             build_fn=build_fn,
@@ -226,7 +229,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
         self.net = torch.nn.Sequential(*new_net)
         self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget, **kwargs) -> base.Classifier:
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> "PyTorch2RiverClassifier":
         self.classes.update([y])
 
         # check if model is initialized
@@ -240,8 +243,8 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
         # training process
         proba = {c: 0.0 for c in self.classes}
         proba[y] = 1.0
-        x = list(x.values())
-        y = list(proba.values())
+        x: list[float] = list(x.values())  # type: ignore[no-redef]
+        y: list[float] = list(proba.values())  # type: ignore[no-redef]
 
         x = torch.Tensor([x])
         y = torch.Tensor([y])
@@ -249,27 +252,27 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
         return self
 
     def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
-        if self.net is None:
+        if not hasattr(self, "net_"):
             self._init_net(len(list(x.values())))
         x = torch.Tensor(list(x.values()))
-        yp = self.net(x).detach().numpy()
+        yp = self.net_(x).detach().numpy()
         proba = {c: 0.0 for c in self.classes}
         for idx, val in enumerate(self.classes):
             proba[val] = yp[idx]
         return proba
 
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        if self.net is None:
+        if not hasattr(self, "net_"):
             self._init_net(len(X.columns))
         x = torch.Tensor(list(X.to_numpy()))
-        yp = self.net(x).detach().numpy()
+        yp = self.net_(x).detach().numpy()
         proba = {c: [0.0] * len(X) for c in self.classes}
         for idx, val in enumerate(self.classes):
             proba[val] = yp[idx]
         return pd.DataFrame(proba)
 
 
-class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
+class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):  # type: ignore[misc]
     """Compatibility layer from PyTorch to River for regression.
 
     Parameters
@@ -335,8 +338,8 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
             **net_params,
         )
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series, **kwargs):
-        if self.net is None:
+    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+        if not hasattr(self, "net_"):
             self._init_net(n_features=len(X.columns))
 
         x = torch.Tensor(X.to_numpy())
@@ -345,13 +348,14 @@ class PyTorch2RiverRegressor(PyTorch2RiverBase, base.MiniBatchRegressor):
         return self
 
     def predict_one(self, x):
-        if self.net is None:
+
+        if not hasattr(self, "net_"):
             self._init_net(len(x))
         x = torch.Tensor(list(x.values()))
-        return self.net(x).item()
+        return self.net_(x).item()
 
     def predict_many(self, X: pd.DataFrame) -> pd.Series:
-        if self.net is None:
+        if not hasattr(self, "net_"):
             self._init_net(len(X.columns))
         x = torch.Tensor(X.to_numpy())
-        return pd.Series(self.net(x).item())
+        return pd.Series(self.net_(x).item())

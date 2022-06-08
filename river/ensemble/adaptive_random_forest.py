@@ -41,7 +41,7 @@ class BaseForest(base.Ensemble):
         disable_weighted_vote,
         seed,
     ):
-        super().__init__([])  # List of models is properly initialized later
+        super().__init__([])  # type: ignore
         self.n_models = n_models
         self.max_features = max_features
         self.lambda_value = lambda_value
@@ -54,7 +54,9 @@ class BaseForest(base.Ensemble):
 
         # Internal parameters
         self._n_samples_seen = 0
-        self._base_member_class = None
+        self._base_member_class: typing.Optional[
+            typing.Union["ForestMemberClassifier", "ForestMemberRegressor"]
+        ] = None
 
     @property
     def _min_number_of_models(self):
@@ -92,7 +94,7 @@ class BaseForest(base.Ensemble):
         self._set_max_features(len(features))
 
         self.data = [
-            self._base_member_class(
+            self._base_member_class(  # type: ignore
                 index_original=i,
                 model=self._new_base_model(),
                 created_on=self._n_samples_seen,
@@ -501,7 +503,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         )
 
         self._n_samples_seen = 0
-        self._base_member_class = ForestMemberClassifier
+        self._base_member_class = ForestMemberClassifier  # type: ignore
 
         # Tree parameters
         self.grace_period = grace_period
@@ -525,11 +527,11 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
 
-        y_pred = collections.Counter()
+        y_pred: typing.Counter = collections.Counter()
 
         if len(self) == 0:
             self._init_ensemble(sorted(x.keys()))
-            return y_pred
+            return y_pred  # type: ignore
 
         for model in self:
             y_proba_temp = model.predict_proba_one(x)
@@ -543,7 +545,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         total = sum(y_pred.values())
         if total > 0:
             return {label: proba / total for label, proba in y_pred.items()}
-        return y_pred
+        return y_pred  # type: ignore
 
     def _new_base_model(self):
         return BaseTreeClassifier(
@@ -754,7 +756,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         )
 
         self._n_samples_seen = 0
-        self._base_member_class = ForestMemberRegressor
+        self._base_member_class = ForestMemberRegressor  # type: ignore
 
         # Tree parameters
         self.grace_period = grace_period
@@ -786,7 +788,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
         if len(self) == 0:
             self._init_ensemble(sorted(x.keys()))
-            return 0.0
+            return 0.0  # type: ignore
 
         y_pred = np.zeros(self.n_models)
 
@@ -811,9 +813,9 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         if self.aggregation_method == self._MEAN:
             y_pred = y_pred.mean()
         else:
-            y_pred = np.median(y_pred)
+            y_pred = float(np.median(y_pred))  # type: ignore
 
-        return y_pred
+        return float(y_pred)  # type: ignore
 
     def _new_base_model(self):
         return BaseTreeRegressor(
@@ -943,7 +945,7 @@ class BaseForestMember:
 
         if self._use_drift_detector and not self.is_background_learner:
             drift_detector_input = self._drift_detector_input(
-                y_true=y, y_pred=self.model.predict_one(x)
+                y_true=y, y_pred=self.model.predict_one(x)  # type: ignore
             )
 
             # Check for warning only if use_background_learner is set
@@ -954,7 +956,7 @@ class BaseForestMember:
                     self.last_warning_on = n_samples_seen
                     self.n_warnings_detected += 1
                     # Create a new background learner object
-                    self.background_learner = self.__class__(
+                    self.background_learner = self.__class__(  # type: ignore
                         index_original=self.index_original,
                         model=self.model.new_instance(),
                         created_on=n_samples_seen,
@@ -984,7 +986,7 @@ class BaseForestMember:
         raise NotImplementedError
 
 
-class ForestMemberClassifier(BaseForestMember, base.Classifier):
+class ForestMemberClassifier(BaseForestMember, base.Classifier):  # type: ignore
     """Forest member class for classification"""
 
     def __init__(
@@ -1007,7 +1009,7 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
             metric=metric,
         )
 
-    def _drift_detector_input(
+    def _drift_detector_input(  # type: ignore
         self, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget
     ):
         return int(not y_true == y_pred)  # Not correctly_classifies
@@ -1019,7 +1021,7 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):
         return self.model.predict_proba_one(x)
 
 
-class ForestMemberRegressor(BaseForestMember, base.Regressor):
+class ForestMemberRegressor(BaseForestMember, base.Regressor):  # type: ignore
     """Forest member class for regression"""
 
     def __init__(
@@ -1043,7 +1045,7 @@ class ForestMemberRegressor(BaseForestMember, base.Regressor):
         )
         self._var = stats.Var()  # Used to track drift
 
-    def _drift_detector_input(self, y_true: float, y_pred: float):
+    def _drift_detector_input(self, y_true: float, y_pred: float):  # type: ignore
         drift_input = y_true - y_pred
         self._var.update(drift_input)
 

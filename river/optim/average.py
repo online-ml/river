@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 
 from river import optim
@@ -52,7 +54,7 @@ class Averager(optim.base.Optimizer):
     def __init__(self, optimizer: optim.base.Optimizer, start: int = 0):
         self.optimizer = optimizer
         self.start = start
-        self.avg_w = collections.defaultdict(float)
+        self.avg_w: dict[str, float] = collections.defaultdict(float)
         self.n_iterations = 0
 
     def look_ahead(self, w):

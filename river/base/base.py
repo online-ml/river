@@ -44,7 +44,7 @@ class Base:
 
         params = {}
 
-        for name, param in inspect.signature(self.__init__).parameters.items():
+        for name, param in inspect.signature(self.__init__).parameters.items():  # type: ignore
 
             # *args
             if param.kind == param.VAR_POSITIONAL:
@@ -261,7 +261,7 @@ class Base:
             elif hasattr(obj, "__iter__") and not isinstance(
                 obj, (str, bytes, bytearray)
             ):
-                buffer.extend([i for i in obj])  # noqa
+                buffer.extend([i for i in obj])  # type: ignore
 
         return size
 
@@ -345,13 +345,13 @@ def log_method_calls(
     old = Base.__getattribute__
     class_condition = class_condition or (lambda x: True)
     method_condition = method_condition or (lambda x: True)
-    Base.__getattribute__ = lambda self, name: _log_method_calls(
+    Base.__getattribute__ = lambda self, name: _log_method_calls(  # type: ignore
         self, name, class_condition, method_condition
     )
     try:
         yield
     finally:
-        Base.__getattribute__ = old
+        Base.__getattribute__ = old  # type: ignore
 
 
 def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:

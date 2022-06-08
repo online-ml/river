@@ -56,7 +56,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
             else tree.splitter.StaticQuantizer()
         )
 
-        self._root: SGTLeaf = SGTLeaf(prediction=self.init_pred)
+        self._root: typing.Union[SGTLeaf, DTBranch] = SGTLeaf(prediction=self.init_pred)
 
         # set used to check whether categorical feature has been already split
         self._split_features = set()
@@ -189,6 +189,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
     def height(self) -> int:
         if self._root:
             return self._root.height
+        return 0
 
     @property
     def n_nodes(self):
@@ -304,7 +305,7 @@ class SGTClassifier(StochasticGradientTree, base.Classifier):
         else:
             leaf = self._root
 
-        t_proba = self.loss_func.transfer(leaf.prediction())
+        t_proba = self.loss_func.transfer(leaf.prediction())  # type: ignore
 
         return {True: t_proba, False: 1 - t_proba}
 
@@ -416,4 +417,4 @@ class SGTRegressor(StochasticGradientTree, base.Regressor):
             leaf = self._root.traverse(x, until_leaf=True)
         else:
             leaf = self._root
-        return self.loss_func.transfer(leaf.prediction())
+        return self.loss_func.transfer(leaf.prediction())  # type: ignore
