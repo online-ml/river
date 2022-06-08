@@ -1,5 +1,6 @@
 import collections
 import math
+import typing
 
 from river import base, linear_model
 from river.utils.random import poisson
@@ -73,8 +74,8 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
 
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
         super().__init__(model, n_models, seed)
-        self.wrong_weight = collections.defaultdict(int)
-        self.correct_weight = collections.defaultdict(int)
+        self.wrong_weight: typing.DefaultDict = collections.defaultdict(int)
+        self.correct_weight: typing.DefaultDict = collections.defaultdict(int)
 
     @classmethod
     def _unit_test_params(cls):
