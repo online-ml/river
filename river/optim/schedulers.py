@@ -1,5 +1,8 @@
 """Learning rate schedulers."""
+from __future__ import annotations
+
 import math
+import numbers
 
 from river import optim
 
@@ -15,7 +18,7 @@ class Constant(optim.base.Scheduler):
 
     """
 
-    def __init__(self, learning_rate: float):
+    def __init__(self, learning_rate: int | float):
         self.learning_rate = learning_rate
 
     def get(self, t):
