@@ -129,7 +129,7 @@ class PyTorch2RiverBase(base.Estimator):
             n_features=n_features, **self._filter_torch_params(self.build_fn)
         )
         # Only optimizers with learning rate as parameter are supported, needs to be fixed
-        self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
+        self.optimizer = self.optimizer_fn(self.net_.parameters(), self.learning_rate)
 
 
 class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
