@@ -69,11 +69,9 @@ setuptools.setup(
             "sqlalchemy>=1.4",
         ]),
         "benckmarks": base_packages + [
-            "dominate",
             "scikit-learn",
             "torch",
-            "vowpalwabbit",
-            "slugify"
+            "vowpalwabbit"
         ],
         "compat": base_packages + [
             "scikit-learn",
@@ -81,6 +79,7 @@ setuptools.setup(
             "vaex",
         ],
         "docs": dev_packages + [
+            "dominate",
             "flask",
             "ipykernel",
             "jupyter-client",
@@ -89,6 +88,7 @@ setuptools.setup(
             "mkdocs-awesome-pages-plugin",
             "mkdocs-material",
             "nbconvert",
+            "slugify",
             "spacy",
         ],
         "extra": [f"river_extra=={about['__version__']}"],
