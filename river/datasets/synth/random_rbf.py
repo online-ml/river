@@ -45,7 +45,7 @@ class RandomRBF(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
     >>>
     >>> dataset = synth.RandomRBF(seed_model=42, seed_sample=42,
     ...                           n_classes=4, n_features=4, n_centroids=20)
@@ -166,7 +166,7 @@ class RandomRBFDrift(RandomRBF):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
     >>>
     >>> dataset = synth.RandomRBFDrift(seed_model=42, seed_sample=42,
     ...                                n_classes=4, n_features=4, n_centroids=20,

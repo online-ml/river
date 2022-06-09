@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import functools
 import math
 import typing
 
-from river import stats, utils
+from river import stats
 
 from ..utils import BranchFactory
 from .base import Splitter
+
+if typing.TYPE_CHECKING:
+    from river import utils
 
 
 class QOSplitter(Splitter):
@@ -134,8 +139,14 @@ class Slot:
     """
 
     def __init__(
-        self, x: float, y=typing.Union[float, utils.VectorDict], weight: float = 1.0
+        self,
+        x: float,
+        y=typing.Union[float, "utils.VectorDict"],
+        weight: float = 1.0,
     ):
+        # Import river.utils here to prevent circular import of river.utils
+        from river import utils
+
         self.x_stats = stats.Mean()
         self.x_stats.update(x, weight)
 
@@ -199,7 +210,9 @@ class FeatureQuantizer:
     def __len__(self):
         return len(self.hash)
 
-    def update(self, x: float, y: typing.Union[float, utils.VectorDict], weight: float):
+    def update(
+        self, x: float, y: typing.Union[float, "utils.VectorDict"], weight: float
+    ):
         index = math.floor(x / self.radius)
         try:
             self.hash[index].update(x, y, weight)
@@ -207,6 +220,9 @@ class FeatureQuantizer:
             self.hash[index] = Slot(x, y, weight)
 
     def __iter__(self):
+        # Import river.utils here to prevent circular import of river.utils
+        from river import utils
+
         aux_stats = (
             stats.Var()
             if next(iter(self.hash.values())).is_single_target

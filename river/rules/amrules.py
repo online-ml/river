@@ -444,7 +444,7 @@ class AMRules(base.Regressor):
         >>> from river import drift
         >>> from river import rules
         >>> from river import tree
-        >>> from river import synth
+        >>> from river.datasets import synth
 
         >>> dataset = synth.Friedman(seed=42).take(1001)
 
@@ -494,7 +494,7 @@ class AMRules(base.Regressor):
         >>> from river import drift
         >>> from river import rules
         >>> from river import tree
-        >>> from river import synth
+        >>> from river.datasets import synth
 
         >>> dataset = synth.Friedman(seed=42).take(1001)
 

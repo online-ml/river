@@ -284,7 +284,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
     >>> from river import metrics
     >>> from river import multioutput
     >>> from river import preprocessing
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Logical(seed=42, n_tiles=100)
 
@@ -380,7 +380,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     >>> from river import metrics
     >>> from river import multioutput
     >>> from river import preprocessing
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Logical(seed=42, n_tiles=100)
 

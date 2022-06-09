@@ -3,6 +3,7 @@ import textwrap
 import numpy as np
 
 from river import datasets
+from river.datasets import synth
 from river.utils.skmultiflow_utils import check_random_state
 
 
@@ -49,7 +50,7 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.ConceptDriftStream(stream=synth.SEA(seed=42, variant=0),
     ...                                    drift_stream=synth.SEA(seed=42, variant=1),
@@ -90,10 +91,10 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
     ):
 
         if stream is None:
-            stream = datasets.synth.Agrawal(seed=seed)
+            stream = synth.Agrawal(seed=seed)
 
         if drift_stream is None:
-            drift_stream = datasets.synth.Agrawal(seed=seed, classification_function=2)
+            drift_stream = synth.Agrawal(seed=seed, classification_function=2)
 
         # Fairly simple check for consistent number of features
         if stream.n_features != drift_stream.n_features:

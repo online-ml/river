@@ -28,7 +28,7 @@ class Planes2D(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Planes2D(seed=42)
 

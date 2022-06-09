@@ -11,7 +11,7 @@ from xml.etree import ElementTree as ET
 
 import pandas as pd
 
-from river import anomaly, base, utils
+from river import base, utils
 
 from . import func, union
 
@@ -76,7 +76,7 @@ def warm_up_mode():
     >>> sh.setLevel(logging.DEBUG)
     >>> logger.addHandler(sh)
 
-    >>> with utils.log_method_calls(class_condition), utils.warm_up_mode():
+    >>> with utils.log_method_calls(class_condition), compose.warm_up_mode():
     ...     for x, y in datasets.CreditCard().take(1):
     ...         model = model.learn_one(x)
 
@@ -150,7 +150,7 @@ def pure_inference_mode():
     >>> sh.setLevel(logging.DEBUG)
     >>> logger.addHandler(sh)
 
-    >>> with utils.log_method_calls(class_condition), utils.pure_inference_mode():
+    >>> with utils.log_method_calls(class_condition), compose.pure_inference_mode():
     ...     for x, y in datasets.TrumpApproval().take(1):
     ...         _ = model.predict_one(x)
 
@@ -486,7 +486,7 @@ class Pipeline(base.Estimator):
 
             # There might be an anomaly filter in the pipeline. Its purpose is to prevent anomalous
             # data from being learned by the subsequent parts of the pipeline.
-            if isinstance(t, anomaly.base.AnomalyFilter):
+            if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
                 if t._supervised:
                     t.learn_one(x, y)
                     score = t.score_one(x, y)
@@ -541,7 +541,7 @@ class Pipeline(base.Estimator):
         for t in itertools.islice(steps, len(self) - 1):
 
             # An anomaly filter is a no-op during inference
-            if isinstance(t, anomaly.base.AnomalyFilter):
+            if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
                 continue
 
             if not self._STATELESS:

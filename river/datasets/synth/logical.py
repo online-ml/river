@@ -32,7 +32,7 @@ class Logical(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Logical(n_tiles=2, shuffle=True, seed=42)
 

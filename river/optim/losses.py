@@ -30,8 +30,8 @@ __all__ = [
 ]
 
 
-def clamp_proba(p):
-    return max(min(p, 1 - 1e-15), 1e-15)
+def clamp_proba(x: float) -> float:
+    return utils.math.clamp(x=x, minimum=1e-15, maximum=1 - 1e-15)
 
 
 class BinaryLoss(Loss):

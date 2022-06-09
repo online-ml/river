@@ -46,7 +46,7 @@ class AnomalySine(datasets.base.SyntheticDataset):
     Examples
     --------
 
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.AnomalySine(seed=12345,
     ...                             n_samples=100,

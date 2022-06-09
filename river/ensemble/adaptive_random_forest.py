@@ -443,7 +443,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
     ...                                    width=40).take(1000)
