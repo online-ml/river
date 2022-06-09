@@ -78,7 +78,6 @@ setuptools.setup(
         "compat": base_packages + [
             "scikit-learn",
             "sqlalchemy>=1.4",
-            "torch",
             "vaex",
         ],
         "docs": dev_packages + [
