@@ -51,7 +51,7 @@ class CrossEntropy(metrics.base.MeanMetric, metrics.base.MultiClassMetric):
 
         for label, proba in y_pred.items():
             if y_true == label:
-                total += self.class_weight.get(label, 1.0) * math.log(
+                total += math.log(
                     utils.math.clamp(x=proba, minimum=1e-15, maximum=1 - 1e-15)
                 )
 
