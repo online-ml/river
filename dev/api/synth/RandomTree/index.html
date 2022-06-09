@@ -1272,6 +1272,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_3">
@@ -1392,6 +1394,20 @@
     <li class="md-nav__item">
       <a href="../../base/MiniBatchRegressor/" class="md-nav__link">
         MiniBatchRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MiniBatchSupervisedTransformer/" class="md-nav__link">
+        MiniBatchSupervisedTransformer
       </a>
     </li>
   
@@ -10223,39 +10239,39 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>seed_tree</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p><strong>seed_tree</strong> (<em>'Optional[int | np.random.RandomState]'</em>) – defaults to <code>None</code></p>
 <p>Seed for random generation of tree.</p>
 </li>
 <li>
-<p><strong>seed_sample</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p><strong>seed_sample</strong> (<em>'Optional[int | np.random.RandomState]'</em>) – defaults to <code>None</code></p>
 <p>Seed for random generation of instances.</p>
 </li>
 <li>
-<p><strong>n_classes</strong> (<em>int</em>) – defaults to <code>2</code></p>
+<p><strong>n_classes</strong> (<em>'int'</em>) – defaults to <code>2</code></p>
 <p>The number of classes to generate.</p>
 </li>
 <li>
-<p><strong>n_num_features</strong> (<em>int</em>) – defaults to <code>5</code></p>
+<p><strong>n_num_features</strong> (<em>'int'</em>) – defaults to <code>5</code></p>
 <p>The number of numerical features to generate.</p>
 </li>
 <li>
-<p><strong>n_cat_features</strong> (<em>int</em>) – defaults to <code>5</code></p>
+<p><strong>n_cat_features</strong> (<em>'int'</em>) – defaults to <code>5</code></p>
 <p>The number of categorical features to generate.</p>
 </li>
 <li>
-<p><strong>n_categories_per_feature</strong> (<em>int</em>) – defaults to <code>5</code></p>
+<p><strong>n_categories_per_feature</strong> (<em>'int'</em>) – defaults to <code>5</code></p>
 <p>The number of values to generate per categorical feature.</p>
 </li>
 <li>
-<p><strong>max_tree_depth</strong> (<em>int</em>) – defaults to <code>5</code></p>
+<p><strong>max_tree_depth</strong> (<em>'int'</em>) – defaults to <code>5</code></p>
 <p>The maximum depth of the tree concept.</p>
 </li>
 <li>
-<p><strong>first_leaf_level</strong> (<em>int</em>) – defaults to <code>3</code></p>
+<p><strong>first_leaf_level</strong> (<em>'int'</em>) – defaults to <code>3</code></p>
 <p>The first level of the tree above <code>max_tree_depth</code> that can have leaves.</p>
 </li>
 <li>
-<p><strong>fraction_leaves_per_level</strong> (<em>float</em>) – defaults to <code>0.15</code></p>
+<p><strong>fraction_leaves_per_level</strong> (<em>'float'</em>) – defaults to <code>0.15</code></p>
 <p>The fraction of leaves per level from <code>first_leaf_level</code> onwards.</p>
 </li>
 </ul>
