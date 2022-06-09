@@ -283,18 +283,18 @@ if __name__ == "__main__":
     models["Binary classification"].update(models["Multiclass classification"])
     details = {}
 
-    for track_name, track in tracks.items():
+    for track in tracks:
         run_track(
-            models=models[track_name], track=track, benchmarks=benchmarks
+            models=models[track.name], track=track, benchmarks=benchmarks
         )
-        details[track_name] = {
+        details[track.name] = {
             "Dataset": {},
             "Model": {}
         }
         for dataset in bin_class_track:
-            details[track_name]["Dataset"][dataset.__class__.__name__] = repr(dataset)
+            details[track.name]["Dataset"][dataset.__class__.__name__] = repr(dataset)
         for model_n, model in bin_class_models.items():
-            details[track_name]["Model"][model_n] = repr(model)
+            details[track.name]["Model"][model_n] = repr(model)
 
     # Close the shelf
     benchmarks.close()
