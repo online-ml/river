@@ -27,7 +27,7 @@ class Friedman(datasets.base.SyntheticDataset):
     Examples
     --------
 
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Friedman(seed=42)
 
@@ -107,7 +107,7 @@ class FriedmanDrift(Friedman):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.FriedmanDrift(
     ...     drift_type='lea',

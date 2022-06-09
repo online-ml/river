@@ -59,7 +59,7 @@ class Agrawal(datasets.base.SyntheticDataset):
     Examples
     --------
 
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Agrawal(
     ...     classification_function=0,

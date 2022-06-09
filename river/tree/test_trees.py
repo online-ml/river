@@ -2,7 +2,8 @@ import random
 
 import pytest
 
-from river import datasets, synth, tree
+from river import datasets, tree
+from river.datasets import synth
 
 
 def get_classification_data():

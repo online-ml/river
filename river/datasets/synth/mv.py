@@ -61,7 +61,7 @@ class Mv(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Mv(seed=42)
 

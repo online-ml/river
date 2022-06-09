@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import abc
-from typing import Union
+import typing
 
 import numpy as np
 
 from river import base, optim, utils
 
-VectorLike = Union[utils.VectorDict, np.ndarray]
-
-
 __all__ = ["Initializer", "Scheduler", "Optimizer", "Loss"]
+
+VectorLike = typing.Union[utils.VectorDict, np.ndarray]
 
 
 class Initializer(base.Base, abc.ABC):
@@ -61,7 +62,7 @@ class Optimizer(base.Base):
 
     """
 
-    def __init__(self, lr: Union[int, float, Scheduler]):
+    def __init__(self, lr: int | float | Scheduler):
         if isinstance(lr, (int, float)):
             lr = optim.schedulers.Constant(lr)
         self.lr = lr
@@ -83,17 +84,13 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(
-        self, w: Union[dict, VectorLike], g: Union[dict, VectorLike]
-    ) -> dict:
+    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict:
         raise NotImplementedError
 
     def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
         raise NotImplementedError
 
-    def step(
-        self, w: Union[dict, VectorLike], g: Union[dict, VectorLike]
-    ) -> Union[dict, VectorLike]:
+    def step(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:
         """Updates a weight vector given a gradient.
 
         Parameters
@@ -109,7 +106,9 @@ class Optimizer(base.Base):
 
         """
 
-        if isinstance(w, VectorLike.__args__) and isinstance(g, VectorLike.__args__):  # type: ignore
+        if isinstance(w, (utils.VectorDict, np.ndarray)) and isinstance(
+            g, (utils.VectorDict, np.ndarray)
+        ):
             try:
                 w = self._step_with_vector(w, g)
                 self.n_iterations += 1

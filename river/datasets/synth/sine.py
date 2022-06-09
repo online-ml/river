@@ -65,7 +65,7 @@ class Sine(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Sine(classification_function = 2, seed = 112,
     ...                      balance_classes = False, has_noise = True)
