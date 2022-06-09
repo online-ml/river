@@ -8,7 +8,7 @@ thus provides utilities for determining an arbitrary model's type.
 """
 import inspect
 
-from river import base, compose
+from river import base
 
 # TODO: maybe all of this could be done by monkeypatching isintance for pipelines?
 
@@ -33,22 +33,16 @@ def extract_relevant(model: base.Estimator):
 
     """
 
-    if isinstance(model, compose.Pipeline):
-        return extract_relevant(model._last_step)
+    if ischildobject(obj=model, class_name="Pipeline"):
+        return extract_relevant(model._last_step)  # type: ignore[attr-defined]
     return model
 
 
-def isanomalydetector(model):
-    """Checks weather or not the given model inherits from AnomalyDetector.
+def ischildobject(obj: object, class_name: str) -> bool:
+    """Checks weather or not the given object inherits from a class with the given class name.
 
-    Parameters
-    ----------
-    model
-
-    Returns
-    -------
-
-    True if the input model object has inherited from AnomalyDetector else False.
+    Workaround isinstance function to not have to import modules defining classes and become
+    dependent on them. class_name is case-sensitive.
 
     Examples
     --------
@@ -56,18 +50,24 @@ def isanomalydetector(model):
     >>> from river import anomaly
     >>> from river import utils
 
-    >>> utils.inspect.isanomalydetector(model=anomaly.HalfSpaceTrees())
+    >>> class_name = "AnomalyDetector"
+
+    >>> utils.inspect.ischildobject(obj=anomaly.HalfSpaceTrees(), class_name=class_name)
     True
 
-    >>> utils.inspect.isanomalydetector(model=anomaly.OneClassSVM())
+    >>> utils.inspect.ischildobject(obj=anomaly.OneClassSVM(), class_name=class_name)
     True
 
-    >>> utils.inspect.isanomalydetector(model=anomaly.GaussianScorer())
+    >>> utils.inspect.ischildobject(obj=anomaly.GaussianScorer(), class_name=class_name)
     False
     """
+    parent_classes = inspect.getmro(obj.__class__)
+    return any(cls.__name__ == class_name for cls in parent_classes)
+
+
+def isanomalydetector(model):
     model = extract_relevant(model)
-    parent_classes = inspect.getmro(model.__class__)
-    return any(cls.__name__ == "AnomalyDetector" for cls in parent_classes)
+    return ischildobject(obj=model, class_name="AnomalyDetector")
 
 
 def isclassifier(model):

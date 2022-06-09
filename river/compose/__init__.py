@@ -6,7 +6,7 @@ pipelines are not the only way to process a stream of data, we highly encourage 
 """
 from .func import FuncTransformer
 from .grouper import Grouper
-from .pipeline import Pipeline
+from .pipeline import Pipeline, pure_inference_mode, warm_up_mode
 from .product import TransformerProduct
 from .renamer import Prefixer, Renamer, Suffixer
 from .select import Discard, Select, SelectType
@@ -19,6 +19,7 @@ __all__ = [
     "Grouper",
     "Pipeline",
     "Prefixer",
+    "pure_inference_mode",
     "Renamer",
     "Select",
     "SelectType",
@@ -26,4 +27,5 @@ __all__ = [
     "TargetTransformRegressor",
     "TransformerProduct",
     "TransformerUnion",
+    "warm_up_mode",
 ]
