@@ -91,7 +91,7 @@ hide:
             (hrs > 0 ? hrs + 'h ' : '') +
             (mins > 0 ? mins + 'm ' : '') +
             (secs > 0 ? secs + 's' : '') +
-            (ms > 0 ? ' ' + ms + 'ms' : '')
+            (ms > 0 ? ' ' + Math.round(ms) + 'ms' : '')
         )
     }}
 
