@@ -50,7 +50,7 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.ConceptDriftStream(stream=synth.SEA(seed=42, variant=0),
     ...                                    drift_stream=synth.SEA(seed=42, variant=1),

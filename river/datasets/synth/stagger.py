@@ -47,7 +47,7 @@ class STAGGER(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.STAGGER(classification_function = 2, seed = 112,
     ...                      balance_classes = False)

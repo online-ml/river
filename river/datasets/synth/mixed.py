@@ -44,7 +44,7 @@ class Mixed(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
     >>>
     >>> dataset = synth.Mixed(seed = 42, classification_function=1, balance_classes = True)
     >>>

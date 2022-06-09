@@ -398,7 +398,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
-    >>> from river import synth
+    >>> from river.datasets import synth
     >>> from river import tree
 
     >>> dataset = synth.ConceptDriftStream(
@@ -671,7 +671,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
-    >>> from river import synth
+    >>> from river.datasets import synth
     >>> from river import tree
 
     >>> dataset = synth.FriedmanDrift(

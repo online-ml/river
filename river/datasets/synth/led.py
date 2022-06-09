@@ -35,7 +35,7 @@ class LED(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.LED(seed = 112, noise_percentage = 0.28, irrelevant_features= False)
 
@@ -157,7 +157,7 @@ class LEDDrift(LED):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.LEDDrift(seed = 112, noise_percentage = 0.28,
     ...                          irrelevant_features= True, n_drift_features=4)
