@@ -202,7 +202,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
 
     def _update_classes(self):
         self.n_classes = len(self.classes)
-        layers = list(self.net.children())
+        layers = list(self.net_.children())
         # Get last trainable layer
         i = -1
         layer_to_convert = layers[i]
@@ -212,7 +212,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
         if i == -1:
             i = -2
         # Get first Layers
-        new_net = list(self.net.children())[: i + 1]
+        new_net = list(self.net_.children())[: i + 1]
         new_layer = torch.nn.Linear(
             in_features=layer_to_convert.in_features, out_features=self.n_classes
         )
@@ -227,7 +227,7 @@ class PyTorch2RiverClassifier(PyTorch2RiverBase, base.Classifier):
             for layer in layers[i + 2 :]:
                 new_net.append(layer)
         self.net = torch.nn.Sequential(*new_net)
-        self.optimizer = self.optimizer_fn(self.net.parameters(), self.learning_rate)
+        self.optimizer = self.optimizer_fn(self.net_.parameters(), self.learning_rate)
 
     def learn_one(self, x: dict, y: base.typing.ClfTarget) -> "PyTorch2RiverClassifier":
         self.classes.update([y])
