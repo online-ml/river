@@ -150,10 +150,10 @@ models = {
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
         "Stochastic Gradient Tree": tree.SGTClassifier(),
         'sklearn SGDClassifier': (
-            StandardScaler() |
+            preprocessing.StandardScaler() |
             compat.SKL2RiverClassifier(
                 SGDClassifier(
-                    loss='log',
+                    loss='log_loss',
                     learning_rate='constant',
                     eta0=LEARNING_RATE,
                     penalty='none'
@@ -291,16 +291,16 @@ if __name__ == "__main__":
             "Dataset": {},
             "Model": {}
         }
-        for dataset in bin_class_track:
+        for dataset in track.datasets:
             details[track.name]["Dataset"][dataset.__class__.__name__] = repr(dataset)
-        for model_n, model in bin_class_models.items():
-            details[track.name]["Model"][model_n] = repr(model)
-
-    # Close the shelf
-    benchmarks.close()
+        for model_name, model in models[track.name].items():
+            details[track.name]["Model"][model_name] = repr(model)
 
     with open('results.json', 'w') as f:
-        json.dump(benchmarks, f, sort_keys=True, indent=4)
+        json.dump(dict(benchmarks), f, sort_keys=True, indent=4)
+    
+    # Close the shelf
+    benchmarks.close()
 
     with open('details.json', 'w') as f:
         json.dump(details, f, sort_keys=True, indent=4)
