@@ -202,7 +202,7 @@ class FeatureQuantizer:
 
     def __init__(self, radius: float):
         self.radius = radius
-        self.hash: dict = {}
+        self.hash: typing.Dict[int, Slot] = {}
 
     def __getitem__(self, k):
         return self.hash[k]

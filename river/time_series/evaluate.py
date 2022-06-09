@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import collections
 import numbers
-from typing import Iterable, Iterator, Optional, Tuple
+import typing
+from typing import Iterator, List, Optional, Tuple
 
 from river import base, metrics, time_series
 
@@ -8,8 +11,8 @@ TimeSeries = Iterator[
     Tuple[
         Optional[dict],  # x
         numbers.Number,  # y
-        Iterable[Optional[dict]],  # x_horizon
-        Iterable[numbers.Number],  # y_horizon
+        Optional[List[dict]],  # x_horizon
+        List[numbers.Number],  # y_horizon
     ]
 ]
 
@@ -53,8 +56,8 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
 
     """
 
-    x_horizon = collections.deque(maxlen=horizon)
-    y_horizon = collections.deque(maxlen=horizon)
+    x_horizon: typing.Deque[dict] = collections.deque(maxlen=horizon)
+    y_horizon: typing.Deque = collections.deque(maxlen=horizon)
 
     stream = iter(dataset)
 
@@ -68,7 +71,7 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
         y_now = y_horizon.popleft()
         x_horizon.append(x)
         y_horizon.append(y)
-        yield x_now, y_now, x_horizon, y_horizon
+        yield x_now, y_now, x_horizon, y_horizon  # type: ignore
 
 
 def iter_evaluate(
@@ -107,12 +110,12 @@ def iter_evaluate(
     grace_period = horizon if grace_period is None else grace_period
     for _ in range(grace_period):
         x, y, x_horizon, y_horizon = next(steps)
-        model.learn_one(y=y, x=x)
+        model.learn_one(y=y, x=x)  # type: ignore
 
     for x, y, x_horizon, y_horizon in steps:
         y_pred = model.forecast(horizon, xs=x_horizon)
         horizon_metric.update(y_horizon, y_pred)
-        model.learn_one(y=y, x=x)
+        model.learn_one(y=y, x=x)  # type: ignore
         yield x, y, y_pred, horizon_metric
 
 

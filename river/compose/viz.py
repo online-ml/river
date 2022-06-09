@@ -5,7 +5,7 @@ from xml.etree import ElementTree as ET
 from river import base, compose
 
 
-def to_html(obj) -> ET:
+def to_html(obj) -> ET.Element:
     if isinstance(obj, compose.Pipeline):
         return pipeline_to_html(obj)
     if isinstance(obj, compose.TransformerUnion):
@@ -15,7 +15,7 @@ def to_html(obj) -> ET:
     return estimator_to_html(obj)
 
 
-def estimator_to_html(estimator) -> ET:
+def estimator_to_html(estimator) -> ET.Element:
 
     details = ET.Element("details", attrib={"class": "river-component river-estimator"})
 
@@ -36,7 +36,7 @@ def estimator_to_html(estimator) -> ET:
     return details
 
 
-def pipeline_to_html(pipeline) -> ET:
+def pipeline_to_html(pipeline) -> ET.Element:
 
     div = ET.Element("div", attrib={"class": "river-component river-pipeline"})
 
@@ -46,7 +46,7 @@ def pipeline_to_html(pipeline) -> ET:
     return div
 
 
-def union_to_html(union) -> ET:
+def union_to_html(union) -> ET.Element:
 
     div = ET.Element("div", attrib={"class": "river-component river-union"})
 
@@ -56,7 +56,7 @@ def union_to_html(union) -> ET:
     return div
 
 
-def wrapper_to_html(wrapper) -> ET:
+def wrapper_to_html(wrapper) -> ET.Element:
 
     div = ET.Element("div", attrib={"class": "river-component river-wrapper"})
 

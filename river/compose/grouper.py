@@ -33,7 +33,7 @@ class Grouper(base.Transformer):
 
         self.transformer = transformer
         self.by = by if isinstance(by, list) else [by]
-        self.transformers = collections.defaultdict(
+        self.transformers: typing.DefaultDict = collections.defaultdict(
             functools.partial(copy.deepcopy, transformer)
         )
 

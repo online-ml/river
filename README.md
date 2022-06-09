@@ -27,6 +27,10 @@
   <a href="https://pepy.tech/project/river">
     <img src="https://static.pepy.tech/badge/river?style=flat-square" alt="pepy">
   </a>
+  <!-- Mypy -->
+  <a href="http://mypy-lang.org/">
+    <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="mypy">
+  </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
@@ -184,7 +188,9 @@ If River has been useful to you and you would like to cite it in an scientific p
 ```bibtex
 @article{montiel2021river,
   title={River: machine learning for streaming data in Python},
-  author={Montiel, Jacob and Halford, Max and Mastelini, Saulo Martiello and Bolmier, Geoffrey and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil and Gomes, Heitor Murilo and Read, Jesse and Abdessalem, Talel and others},
+  author={Montiel, Jacob and Halford, Max and Mastelini, Saulo Martiello
+          and Bolmier, Geoffrey and Sourty, Raphael and Vaysse, Robin and Zouitine, Adil
+          and Gomes, Heitor Murilo and Read, Jesse and Abdessalem, Talel and others},
   year={2021}
 }
 ```

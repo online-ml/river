@@ -58,7 +58,7 @@ class StackingClassifier(base.Ensemble, base.Classifier):
         meta_classifier: base.Classifier,
         include_features=True,
     ):
-        super().__init__(models)
+        super().__init__(models)  # type: ignore
         self.meta_classifier = meta_classifier
         self.include_features = include_features
 

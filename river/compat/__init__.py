@@ -36,10 +36,3 @@ try:
     ]
 except ModuleNotFoundError:
     pass
-
-try:
-    from .pytorch import PyTorch2RiverClassifier, PyTorch2RiverRegressor
-
-    __all__ += ["PyTorch2RiverClassifier", "PyTorch2RiverRegressor"]
-except ModuleNotFoundError:
-    pass

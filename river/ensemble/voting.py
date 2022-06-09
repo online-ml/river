@@ -51,7 +51,7 @@ class VotingClassifier(base.Classifier, base.Ensemble):
     """
 
     def __init__(self, models: List[base.Classifier], use_probabilities=True):
-        super().__init__(models)
+        super().__init__(models)  # type: ignore
         self.use_probabilities = use_probabilities
 
     @property

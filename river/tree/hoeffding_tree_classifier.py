@@ -160,12 +160,12 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                 raise ValueError(
                     "The chosen splitter cannot be used in classification tasks."
                 )
-            self.splitter = splitter
+            self.splitter = splitter  # type: ignore
 
         # To keep track of the observed classes
         self.classes: set = set()
 
-    @HoeffdingTree.split_criterion.setter
+    @HoeffdingTree.split_criterion.setter  # type: ignore
     def split_criterion(self, split_criterion):
         if split_criterion not in self._VALID_SPLIT_CRITERIA:
             print(
@@ -177,7 +177,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         else:
             self._split_criterion = split_criterion
 
-    @HoeffdingTree.leaf_prediction.setter
+    @HoeffdingTree.leaf_prediction.setter  # type: ignore
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in self._VALID_LEAF_PREDICTION:
             print(
@@ -243,7 +243,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         kwargs
             Other parameters passed to the new branch.
         """
-        if not leaf.observed_class_distribution_is_pure():  # noqa
+        if not leaf.observed_class_distribution_is_pure():  # type: ignore
             split_criterion = self._new_split_criterion()
 
             best_split_suggestions = leaf.best_split_suggestions(split_criterion, self)
@@ -290,7 +290,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     )
                     leaves = tuple(
                         self._new_leaf(initial_stats, parent=leaf)
-                        for initial_stats in split_decision.children_stats
+                        for initial_stats in split_decision.children_stats  # type: ignore
                     )
 
                     new_split = split_decision.assemble(

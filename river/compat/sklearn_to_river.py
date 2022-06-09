@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import functools
 
@@ -39,7 +41,7 @@ def convert_sklearn_to_river(
 
     for base_type, wrapper in wrappers:
         if isinstance(estimator, base_type):
-            return wrapper(copy.deepcopy(estimator))
+            return wrapper(copy.deepcopy(estimator))  # type: ignore
 
     raise ValueError("Couldn't find an appropriate wrapper")
 

@@ -36,7 +36,7 @@ class DynamicQuantizer(Quantizer):
         self.std_prop = std_prop
 
         self.feat_var = stats.Var()
-        self.hash = {}
+        self.hash: typing.Dict[int, GradHessStats] = {}
 
     def update(self, x_val, gh: GradHess, w: float):
         self.feat_var.update(x_val, w)
@@ -105,11 +105,11 @@ class StaticQuantizer(Quantizer):
         self.buckets = buckets
 
         if self.buckets is None:
-            self._buffer = []
+            self._buffer: typing.List[typing.Tuple] = []
             self._min = None
             self._radius = None
         else:
-            self._buffer = None
+            self._buffer = None  # type: ignore
             # Define the quantization radius and the minimum value to data perform shift
             self._radius = self.buckets[1][0][1] - self.buckets[1][0][0]
             self._min = self.buckets[0][0][1] - self._radius
@@ -144,7 +144,7 @@ class StaticQuantizer(Quantizer):
                 self.buckets[pos][1].update(gh, w)
 
             # And empty it
-            self._buffer = None
+            self._buffer = None  # type: ignore
 
         # Projection scheme
         pos = math.floor((x_val - self._min) / self._radius)

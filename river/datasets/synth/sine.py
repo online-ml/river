@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 import numpy as np
 
 from river import datasets
@@ -87,7 +91,7 @@ class Sine(datasets.base.SyntheticDataset):
     def __init__(
         self,
         classification_function: int = 0,
-        seed: int or np.random.RandomState = None,
+        seed: Optional[int | np.random.RandomState] = None,
         balance_classes: bool = False,
         has_noise: bool = False,
     ):

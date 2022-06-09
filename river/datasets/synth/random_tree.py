@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 import numpy as np
 
 from river import datasets
@@ -66,8 +70,8 @@ class RandomTree(datasets.base.SyntheticDataset):
 
     def __init__(
         self,
-        seed_tree: int or np.random.RandomState = None,
-        seed_sample: int or np.random.RandomState = None,
+        seed_tree: Optional[int | np.random.RandomState] = None,
+        seed_sample: Optional[int | np.random.RandomState] = None,
         n_classes: int = 2,
         n_num_features: int = 5,
         n_cat_features: int = 5,
@@ -269,9 +273,9 @@ class TreeNode:
         self,
         class_label: int = None,
         split_feature_idx: int = None,
-        split_feature_val: int or float = None,
+        split_feature_val: Optional[int | float] = None,
     ):
         self.class_label = class_label
         self.split_feature_idx = split_feature_idx
         self.split_feature_val = split_feature_val
-        self.children = []
+        self.children: list = []

@@ -194,13 +194,15 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         self.n_trees = n_trees
         self.window_size = window_size
         self.height = height
-        self.limits = collections.defaultdict(functools.partial(tuple, (0, 1)))
+        self.limits: typing.DefaultDict = collections.defaultdict(
+            functools.partial(tuple, (0.0, 1.0))
+        )
         if limits is not None:
             self.limits.update(limits)
         self.seed = seed
         self.rng = random.Random(seed)
 
-        self.trees = []
+        self.trees: typing.List[HSTBranch] = []
         self.counter = 0
         self._first_window = True
 

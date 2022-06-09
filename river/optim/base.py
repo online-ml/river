@@ -3,17 +3,13 @@ from __future__ import annotations
 import abc
 import typing
 
-from river import base, optim
+import numpy as np
 
-if typing.TYPE_CHECKING:
-    import numpy as np
-
-    from river import utils
-
-    VectorLike = typing.Union[utils.VectorDict, np.ndarray]
-
+from river import base, optim, utils
 
 __all__ = ["Initializer", "Scheduler", "Optimizer", "Loss"]
+
+VectorLike = typing.Union[utils.VectorDict, np.ndarray]
 
 
 class Initializer(base.Base, abc.ABC):
@@ -66,10 +62,10 @@ class Optimizer(base.Base):
 
     """
 
-    def __init__(self, lr: int | float):
+    def __init__(self, lr: int | float | Scheduler):
         if isinstance(lr, (int, float)):
-            lr_ = optim.schedulers.Constant(lr)
-        self.lr = lr_
+            lr = optim.schedulers.Constant(lr)
+        self.lr = lr
         self.n_iterations = 0
 
     @property
@@ -88,7 +84,7 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: dict, g: dict) -> dict:
+    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict:
         raise NotImplementedError
 
     def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:

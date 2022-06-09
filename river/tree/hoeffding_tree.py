@@ -77,7 +77,7 @@ class HoeffdingTree(ABC):
         self.remove_poor_attrs: bool = remove_poor_attrs
         self.merit_preprune: bool = merit_preprune
 
-        self._root: typing.Union[DTBranch, HTLeaf, None] = None
+        self._root: typing.Union[DTBranch, HTLeaf] = None  # type: ignore
         self._n_active_leaves: int = 0
         self._n_inactive_leaves: int = 0
         self._inactive_leaf_size_estimate: float = 0.0
@@ -133,6 +133,7 @@ class HoeffdingTree(ABC):
     def height(self) -> int:
         if self._root:
             return self._root.height
+        return 0
 
     @property
     def n_nodes(self):
@@ -227,7 +228,7 @@ class HoeffdingTree(ABC):
         """Return a string with the name of the split criterion being used by the tree."""
         return self._split_criterion
 
-    @split_criterion.setter
+    @split_criterion.setter  # type: ignore
     @abstractmethod
     def split_criterion(self, split_criterion):
         """Define the split criterion to be used by the tree."""
@@ -237,7 +238,7 @@ class HoeffdingTree(ABC):
         """Return the prediction strategy used by the tree at its leaves."""
         return self._leaf_prediction
 
-    @leaf_prediction.setter
+    @leaf_prediction.setter  # type: ignore
     @abstractmethod
     def leaf_prediction(self, leaf_prediction):
         """Define the prediction strategy used by the tree in its leaves."""
@@ -367,13 +368,13 @@ class HoeffdingTree(ABC):
         for node in self._root.walk(x, until_leaf=True):
             if isinstance(node, HTLeaf):
                 _print(repr(node))
-            else:
+            elif isinstance(node, DTBranch):
                 try:
-                    child_index = node.branch_no(x)  # noqa
+                    child_index = node.branch_no(x)
                 except KeyError:
                     child_index, _ = node.most_common_path()
 
-                _print(node.repr_branch(child_index))  # noqa
+                _print(node.repr_branch(child_index))
 
         return buffer.getvalue()
 
@@ -431,7 +432,7 @@ class HoeffdingTree(ABC):
                         yield from iterate(child)
 
         if max_depth is None:
-            max_depth = math.inf
+            max_depth = -1
 
         dot = graphviz.Digraph(
             graph_attr={"splines": "ortho", "forcelabels": "true", "overlap": "false"},
@@ -446,20 +447,20 @@ class HoeffdingTree(ABC):
         )
 
         if isinstance(self, base.Classifier):
-            n_colors = len(self.classes)  # noqa
+            n_colors = len(self.classes)  # type: ignore
         else:
             n_colors = 1
 
         # Pick a color palette which maps classes to colors
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
-        palette = collections.defaultdict(new_color)
+        palette: typing.DefaultDict = collections.defaultdict(new_color)
 
         for parent_no, parent, child, child_no, branch_index in iterate():
-            if child.depth > max_depth:
+            if child.depth > max_depth and max_depth != -1:
                 continue
 
             if isinstance(child, DTBranch):
-                text = f"{child.feature}"  # noqa
+                text = f"{child.feature}"  # type: ignore
             else:
                 text = f"{repr(child)}\nsamples: {int(child.total_weight)}"
 

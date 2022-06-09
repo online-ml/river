@@ -39,19 +39,16 @@ class AdaptiveRegressor(base.Regressor):
         self._mae_model = 0.0
 
     def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):
-        abs_error_mean = abs(y - self.mean_predictor.predict_one(x))  # noqa
-        abs_error_model = abs(y - self.model_predictor.predict_one(x))  # noqa
+        abs_error_mean = abs(y - self.mean_predictor.predict_one(x))  # type: ignore
+        abs_error_model = abs(y - self.model_predictor.predict_one(x))  # type: ignore
 
         self._mae_mean = self.alpha * self._mae_mean + abs_error_mean
         self._mae_model = self.alpha * self._mae_model + abs_error_model
 
         self.mean_predictor.learn_one(x, y, w)
 
-        try:
-            self.model_predictor.learn_one(x, y, w)  # noqa
-        except TypeError:
-            for _ in range(int(w)):
-                self.model_predictor.learn_one(x, y)
+        for _ in range(int(w)):
+            self.model_predictor.learn_one(x, y)
 
         return self
 
@@ -145,7 +142,7 @@ class RegRule(HoeffdingRule, base.Regressor, anomaly.base.AnomalyDetector):
 
         return score / hits if hits > 0 else 0.0
 
-    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):
+    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):  # type: ignore
         self.update(x, y, w)
         self.pred_model.learn_one(x, y, w)
 
@@ -302,7 +299,7 @@ class AMRules(base.Regressor):
         if splitter is None:
             self.splitter = tree.splitter.EBSTSplitter()
         else:
-            self.splitter = splitter
+            self.splitter = splitter  # type: ignore
 
         self.drift_detector = (
             drift_detector if drift_detector is not None else drift.PageHinkley()
@@ -339,7 +336,7 @@ class AMRules(base.Regressor):
             predictor = AdaptiveRegressor(
                 model_predictor=self.pred_model.clone(),
                 alpha=self.alpha,
-            )
+            )  # type: ignore
 
         return RegRule(
             template_splitter=self.splitter,
@@ -422,7 +419,7 @@ class AMRules(base.Regressor):
                     break
 
         if hits > 0:
-            return y_pred / hits
+            return y_pred / hits  # type: ignore
         else:
             return self._default_rule.predict_one(x)
 
