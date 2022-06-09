@@ -90,6 +90,7 @@ setuptools.setup(
             "nbconvert",
             "slugify",
             "spacy",
+            "watermark"
         ],
         "extra": [f"river_extra=={about['__version__']}"],
         ":python_version == '3.6'": ["dataclasses"],
