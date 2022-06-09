@@ -280,6 +280,7 @@ if __name__ == "__main__":
     else:
         benchmarks = shelve.open("results", flag="c")
 
+    # Every multiclass model can also handle binary classification
     models["Binary classification"].update(models["Multiclass classification"])
     details = {}
 
@@ -296,8 +297,13 @@ if __name__ == "__main__":
         for model_name, model in models[track.name].items():
             details[track.name]["Model"][model_name] = repr(model)
 
+    
+    log = {}
+    for track in tracks:
+        log[track.name] = benchmarks[track.name]
+
     with open('results.json', 'w') as f:
-        json.dump(dict(benchmarks), f, sort_keys=True, indent=4)
+        json.dump(log, f, sort_keys=True, indent=4)
     
     # Close the shelf
     benchmarks.close()
