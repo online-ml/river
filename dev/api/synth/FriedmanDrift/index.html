@@ -1272,6 +1272,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_3">
@@ -1392,6 +1394,20 @@
     <li class="md-nav__item">
       <a href="../../base/MiniBatchRegressor/" class="md-nav__link">
         MiniBatchRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MiniBatchSupervisedTransformer/" class="md-nav__link">
+        MiniBatchSupervisedTransformer
       </a>
     </li>
   
@@ -10222,19 +10238,19 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>drift_type</strong> (<em>str</em>) – defaults to <code>lea</code></p>
+<p><strong>drift_type</strong> (<em>'str'</em>) – defaults to <code>lea</code></p>
 <p>The variant of concept drift.</br> - <code>'lea'</code>: Local Expanding Abrupt drift. The concept drift appears in two distinct regions of the instance space, while the remaining regions are left unaltered. There are three points of abrupt change in the training dataset. At every consecutive change the regions of drift are expanded.</br> - <code>'gra'</code>: Global Recurring Abrupt drift. The concept drift appears over the whole instance space. There are two points of concept drift. At the second point of drift the old concept reoccurs.</br> - <code>'gsg'</code>: Global and Slow Gradual drift. The concept drift affects all the instance space. However, the change is gradual and not abrupt. After each one of the two change points covered by this variant, and during a window of length <code>transition_window</code>, examples from both old and the new concepts are generated with equal probability. After the transition period, only the examples from the new concept are generated.</p>
 </li>
 <li>
-<p><strong>position</strong> (<em>Tuple[int, ...]</em>) – defaults to <code>(50000, 100000, 150000)</code></p>
+<p><strong>position</strong> (<em>'Tuple[int, ...]'</em>) – defaults to <code>(50000, 100000, 150000)</code></p>
 <p>The amount of monitored instances after which each concept drift occurs. A tuple with at least two element must be passed, where each number is greater than the preceding one. If <code>drift_type='lea'</code>, then the tuple must have three elements.</p>
 </li>
 <li>
-<p><strong>transition_window</strong> (<em>int</em>) – defaults to <code>10000</code></p>
+<p><strong>transition_window</strong> (<em>'int'</em>) – defaults to <code>10000</code></p>
 <p>The length of the transition window between two concepts. Only applicable when  <code>drift_type='gsg'</code>. If set to zero, the drifts will be abrupt. Anytime  <code>transition_window &gt; 0</code>, it defines a window in which instances of the new  concept are gradually introduced among the examples from the old concept.  During this transition phase, both old and new concepts appear with equal probability.</p>
 </li>
 <li>
-<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p><strong>seed</strong> (<em>'int'</em>) – defaults to <code>None</code></p>
 <p>Random seed number used for reproducibility.</p>
 </li>
 </ul>

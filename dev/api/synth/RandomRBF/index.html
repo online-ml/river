@@ -1272,6 +1272,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_3">
@@ -1392,6 +1394,20 @@
     <li class="md-nav__item">
       <a href="../../base/MiniBatchRegressor/" class="md-nav__link">
         MiniBatchRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MiniBatchSupervisedTransformer/" class="md-nav__link">
+        MiniBatchSupervisedTransformer
       </a>
     </li>
   
@@ -10208,23 +10224,23 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>seed_model</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p><strong>seed_model</strong> (<em>'Optional[int | np.random.RandomState]'</em>) – defaults to <code>None</code></p>
 <p>Model's seed to generate centroids If int, <code>seed</code> is used to seed the random number generator; If RandomState instance, <code>seed</code> is the random number generator; If None, the random number generator is the <code>RandomState</code> instance used by <code>np.random</code>.</p>
 </li>
 <li>
-<p><strong>seed_sample</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p><strong>seed_sample</strong> (<em>'Optional[int | np.random.RandomState]'</em>) – defaults to <code>None</code></p>
 <p>Sample's seed If int, <code>seed</code> is used to seed the random number generator; If RandomState instance, <code>seed</code> is the random number generator; If None, the random number generator is the <code>RandomState</code> instance used by <code>np.random</code>.</p>
 </li>
 <li>
-<p><strong>n_classes</strong> (<em>int</em>) – defaults to <code>2</code></p>
+<p><strong>n_classes</strong> (<em>'int'</em>) – defaults to <code>2</code></p>
 <p>The number of class labels to generate.</p>
 </li>
 <li>
-<p><strong>n_features</strong> (<em>int</em>) – defaults to <code>10</code></p>
+<p><strong>n_features</strong> (<em>'int'</em>) – defaults to <code>10</code></p>
 <p>The number of numerical features to generate.</p>
 </li>
 <li>
-<p><strong>n_centroids</strong> (<em>int</em>) – defaults to <code>50</code></p>
+<p><strong>n_centroids</strong> (<em>'int'</em>) – defaults to <code>50</code></p>
 <p>The number of centroids to generate.</p>
 </li>
 </ul>

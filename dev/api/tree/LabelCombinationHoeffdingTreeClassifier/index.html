@@ -1272,6 +1272,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_3">
@@ -1392,6 +1394,20 @@
     <li class="md-nav__item">
       <a href="../../base/MiniBatchRegressor/" class="md-nav__link">
         MiniBatchRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MiniBatchSupervisedTransformer/" class="md-nav__link">
+        MiniBatchSupervisedTransformer
       </a>
     </li>
   
@@ -10336,7 +10352,7 @@
 <li><strong>x</strong>     (<em>dict</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[str, NoneType]</em>:     A representation of the path followed by the tree to predict <code>x</code>; <code>None</code> if</p>
+<p><em>typing.Optional[str]</em>:     A representation of the path followed by the tree to predict <code>x</code>; <code>None</code> if</p>
 </details>
 <details class="- note">
 <summary>draw</summary>
@@ -10368,7 +10384,7 @@
 <li><strong>x</strong>     (<em>dict</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int]</em>:     Predicted labels.</p>
+<p><em>typing.Union[bool, str, int, NoneType]</em>:     Predicted labels.</p>
 </details>
 <details class="- note">
 <summary>predict_proba_one</summary>

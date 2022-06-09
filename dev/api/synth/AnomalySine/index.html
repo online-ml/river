@@ -1272,6 +1272,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_3">
@@ -1392,6 +1394,20 @@
     <li class="md-nav__item">
       <a href="../../base/MiniBatchRegressor/" class="md-nav__link">
         MiniBatchRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MiniBatchSupervisedTransformer/" class="md-nav__link">
+        MiniBatchSupervisedTransformer
       </a>
     </li>
   
@@ -10207,35 +10223,35 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>n_samples</strong> (<em>int</em>) – defaults to <code>10000</code></p>
+<p><strong>n_samples</strong> (<em>'int'</em>) – defaults to <code>10000</code></p>
 <p>Number of samples</p>
 </li>
 <li>
-<p><strong>n_anomalies</strong> (<em>int</em>) – defaults to <code>2500</code></p>
+<p><strong>n_anomalies</strong> (<em>'int'</em>) – defaults to <code>2500</code></p>
 <p>Number of anomalies. Can't be larger than <code>n_samples</code>.</p>
 </li>
 <li>
-<p><strong>contextual</strong> (<em>bool</em>) – defaults to <code>False</code></p>
+<p><strong>contextual</strong> (<em>'bool'</em>) – defaults to <code>False</code></p>
 <p>If True, will add contextual anomalies</p>
 </li>
 <li>
-<p><strong>n_contextual</strong> (<em>int</em>) – defaults to <code>2500</code></p>
+<p><strong>n_contextual</strong> (<em>'int'</em>) – defaults to <code>2500</code></p>
 <p>Number of contextual anomalies. Can't be larger than <code>n_samples</code>.</p>
 </li>
 <li>
-<p><strong>shift</strong> (<em>int</em>) – defaults to <code>4</code></p>
+<p><strong>shift</strong> (<em>'int'</em>) – defaults to <code>4</code></p>
 <p>Shift in number of samples applied when retrieving contextual anomalies</p>
 </li>
 <li>
-<p><strong>noise</strong> (<em>float</em>) – defaults to <code>0.5</code></p>
+<p><strong>noise</strong> (<em>'float'</em>) – defaults to <code>0.5</code></p>
 <p>Amount of noise</p>
 </li>
 <li>
-<p><strong>replace</strong> (<em>bool</em>) – defaults to <code>True</code></p>
+<p><strong>replace</strong> (<em>'bool'</em>) – defaults to <code>True</code></p>
 <p>If True, anomalies are randomly sampled with replacement</p>
 </li>
 <li>
-<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p><strong>seed</strong> (<em>'Optional[int | np.random.RandomState]'</em>) – defaults to <code>None</code></p>
 <p>If int, <code>seed</code> is used to seed the random number generator; If RandomState instance, <code>seed</code> is the random number generator; If None, the random number generator is the <code>RandomState</code> instance used by <code>np.random</code>.</p>
 </li>
 </ul>

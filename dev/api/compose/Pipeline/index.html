@@ -1272,6 +1272,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_3">
@@ -1392,6 +1394,20 @@
     <li class="md-nav__item">
       <a href="../../base/MiniBatchRegressor/" class="md-nav__link">
         MiniBatchRegressor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/MiniBatchSupervisedTransformer/" class="md-nav__link">
+        MiniBatchSupervisedTransformer
       </a>
     </li>
   
@@ -10329,7 +10345,7 @@ flows and changes throughout the pipeline.</p>
 <p>Displays the state of a set of features as it goes through the pipeline.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>x</strong>     (<em>'dict'</em>)    </li>
 <li><strong>show_types</strong>     – defaults to <code>True</code>    </li>
 <li><strong>n_decimals</strong>     – defaults to <code>5</code>    </li>
 </ul>
@@ -10340,8 +10356,8 @@ flows and changes throughout the pipeline.</p>
 <p>Only works if each estimator has a <code>transform_one</code> method and the final estimator has a <code>forecast</code> method. This is the case of time series models from the <code>time_series</code> module.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>horizon</strong>     (<em>int</em>)    </li>
-<li><strong>xs</strong>     (<em>List[dict]</em>)     – defaults to <code>None</code>    </li>
+<li><strong>horizon</strong>     (<em>'int'</em>)    </li>
+<li><strong>xs</strong>     (<em>'typing.List[dict]'</em>)     – defaults to <code>None</code>    </li>
 </ul>
 </details>
 <details class="- note">
@@ -10349,8 +10365,8 @@ flows and changes throughout the pipeline.</p>
 <p>Fit to a mini-batch.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
-<li><strong>y</strong>     (<em>pandas.core.series.Series</em>)     – defaults to <code>None</code>    </li>
+<li><strong>X</strong>     (<em>'pd.DataFrame'</em>)    </li>
+<li><strong>y</strong>     (<em>'pd.Series'</em>)     – defaults to <code>None</code>    </li>
 <li><strong>params</strong>    </li>
 </ul>
 </details>
@@ -10359,7 +10375,7 @@ flows and changes throughout the pipeline.</p>
 <p>Fit to a single instance.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>x</strong>     (<em>'dict'</em>)    </li>
 <li><strong>y</strong>     – defaults to <code>None</code>    </li>
 <li><strong>params</strong>    </li>
 </ul>
@@ -10372,7 +10388,7 @@ flows and changes throughout the pipeline.</p>
 <p>Call <code>transform_one</code> on the first steps and <code>predict_one</code> on the last step.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>x</strong>     (<em>'dict'</em>)    </li>
 <li><strong>params</strong>    </li>
 </ul>
 </details>
@@ -10384,7 +10400,7 @@ flows and changes throughout the pipeline.</p>
 <p>Call <code>transform_one</code> on the first steps and <code>predict_proba_one</code> on the last step.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>x</strong>     (<em>'dict'</em>)    </li>
 <li><strong>params</strong>    </li>
 </ul>
 </details>
@@ -10393,7 +10409,7 @@ flows and changes throughout the pipeline.</p>
 <p>Call <code>transform_one</code> on the first steps and <code>score_one</code> on the last step.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>x</strong>     (<em>'dict'</em>)    </li>
 <li><strong>params</strong>    </li>
 </ul>
 </details>
@@ -10403,7 +10419,7 @@ flows and changes throughout the pipeline.</p>
 <p>The final step in the pipeline will be applied if it is a transformer. If not, then it will be ignored and the output from the penultimate step will be returned. Note that the steps that precede the final step are assumed to all be transformers.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     (<em>pandas.core.frame.DataFrame</em>)    </li>
+<li><strong>X</strong>     (<em>'pd.DataFrame'</em>)    </li>
 </ul>
 </details>
 <details class="- note">
@@ -10412,7 +10428,7 @@ flows and changes throughout the pipeline.</p>
 <p>The final step in the pipeline will be applied if it is a transformer. If not, then it will be ignored and the output from the penultimate step will be returned. Note that the steps that precede the final step are assumed to all be transformers.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>x</strong>     (<em>'dict'</em>)    </li>
 <li><strong>params</strong>    </li>
 </ul>
 </details>
