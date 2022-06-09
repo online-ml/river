@@ -76,7 +76,7 @@ def warm_up_mode():
     >>> sh.setLevel(logging.DEBUG)
     >>> logger.addHandler(sh)
 
-    >>> with utils.log_method_calls(class_condition), utils.warm_up_mode():
+    >>> with utils.log_method_calls(class_condition), compose.warm_up_mode():
     ...     for x, y in datasets.CreditCard().take(1):
     ...         model = model.learn_one(x)
 
@@ -150,7 +150,7 @@ def pure_inference_mode():
     >>> sh.setLevel(logging.DEBUG)
     >>> logger.addHandler(sh)
 
-    >>> with utils.log_method_calls(class_condition), utils.pure_inference_mode():
+    >>> with utils.log_method_calls(class_condition), compose.pure_inference_mode():
     ...     for x, y in datasets.TrumpApproval().take(1):
     ...         _ = model.predict_one(x)
 
