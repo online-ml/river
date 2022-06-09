@@ -19,3 +19,5 @@ This creates a `results.json` file. To generate the page that gets displayed in 
 ```sh
 python render.py
 ```
+
+This `render.py` script gets run anyway when the docs are built. See the [Makefile](../Makefile).
