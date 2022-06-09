@@ -2315,4 +2315,9 @@
          <lastmod>2022-06-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
+    <url>
+         <loc>https://riverml.xyz/dev/releases/unreleased/</loc>
+         <lastmod>2022-06-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
 </urlset>
