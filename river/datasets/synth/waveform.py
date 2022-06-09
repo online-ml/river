@@ -27,7 +27,7 @@ class Waveform(datasets.base.SyntheticDataset):
 
     Examples
     --------
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.Waveform(seed=42, has_noise=True)
 

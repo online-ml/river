@@ -1,4 +1,6 @@
-from river import metrics, optim
+import math
+
+from river import metrics, utils
 
 __all__ = ["CrossEntropy"]
 
@@ -45,4 +47,12 @@ class CrossEntropy(metrics.base.MeanMetric, metrics.base.MultiClassMetric):
         return False
 
     def _eval(self, y_true, y_pred):
-        return optim.losses.CrossEntropy()(y_true, y_pred)
+        total = 0
+
+        for label, proba in y_pred.items():
+            if y_true == label:
+                total += math.log(
+                    utils.math.clamp(x=proba, minimum=1e-15, maximum=1 - 1e-15)
+                )
+
+        return -total

@@ -6,7 +6,9 @@ some models the model's type is only known at runtime. For instance, we can't do
 thus provides utilities for determining an arbitrary model's type.
 
 """
-from river import anomaly, base, compose
+import inspect
+
+from river import base
 
 # TODO: maybe all of this could be done by monkeypatching isintance for pipelines?
 
@@ -31,13 +33,42 @@ def extract_relevant(model: base.Estimator):
 
     """
 
-    if isinstance(model, compose.Pipeline):
-        return extract_relevant(model._last_step)
+    if ischildobject(obj=model, class_name="Pipeline"):
+        return extract_relevant(model._last_step)  # type: ignore[attr-defined]
     return model
 
 
+def ischildobject(obj: object, class_name: str) -> bool:
+    """Checks weather or not the given object inherits from a class with the given class name.
+
+    Workaround isinstance function to not have to import modules defining classes and become
+    dependent on them. class_name is case-sensitive.
+
+    Examples
+    --------
+
+    >>> from river import anomaly
+    >>> from river import utils
+
+    >>> class_name = "AnomalyDetector"
+
+    >>> utils.inspect.ischildobject(obj=anomaly.HalfSpaceTrees(), class_name=class_name)
+    True
+
+    >>> utils.inspect.ischildobject(obj=anomaly.OneClassSVM(), class_name=class_name)
+    True
+
+    >>> utils.inspect.ischildobject(obj=anomaly.GaussianScorer(), class_name=class_name)
+    False
+    
+    """
+    parent_classes = inspect.getmro(obj.__class__)
+    return any(cls.__name__ == class_name for cls in parent_classes)
+
+
 def isanomalydetector(model):
-    return isinstance(extract_relevant(model), anomaly.base.AnomalyDetector)
+    model = extract_relevant(model)
+    return ischildobject(obj=model, class_name="AnomalyDetector")
 
 
 def isclassifier(model):

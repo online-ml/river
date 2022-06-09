@@ -1,6 +1,6 @@
 import pandas as pd
 
-from river import compose, linear_model, preprocessing, utils
+from river import compose, linear_model, preprocessing
 
 
 def test_pipeline_funcs():
@@ -63,7 +63,7 @@ def test_learn_one_warm_up_mode():
 
     for x, y in dataset:
         counts_pre = dict(pipeline["scale"].counts)
-        with utils.warm_up_mode():
+        with compose.warm_up_mode():
             pipeline.learn_one(x, y)
         counts_post = dict(pipeline["scale"].counts)
         pipeline.learn_one(x, y)
@@ -86,7 +86,7 @@ def test_learn_many_warm_up_mode():
         y = pd.Series([bool(y % 2) for _, y in dataset][i : i + 5])
 
         counts_pre = dict(pipeline["scale"].counts)
-        with utils.warm_up_mode():
+        with compose.warm_up_mode():
             pipeline.learn_many(X, y)
         counts_post = dict(pipeline["scale"].counts)
         pipeline.learn_many(X, y)

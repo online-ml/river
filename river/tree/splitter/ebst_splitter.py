@@ -2,7 +2,6 @@ import functools
 import typing
 
 from river.stats import Var
-from river.utils import VectorDict
 
 from ..utils import BranchFactory
 from .base import Splitter
@@ -67,6 +66,9 @@ class EBSTSplitter(Splitter):
         self._criterion = criterion
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
+
+        # Import VectorDict here to prevent circular import of river.utils
+        from river.utils import VectorDict
 
         # Handles both single-target and multi-target tasks
         if isinstance(pre_split_dist, VectorDict):
@@ -171,6 +173,9 @@ class EBSTSplitter(Splitter):
         self._last_check_vr = last_check_vr
         self._last_check_e = last_check_e
 
+        # Import VectorDict here to prevent circular import of river.utils
+        from river.utils import VectorDict
+
         # Handles both single-target and multi-target tasks
         if isinstance(pre_split_dist, VectorDict):
             self._aux_estimator = VectorDict(default_factory=functools.partial(Var))
@@ -247,6 +252,9 @@ class EBSTNode:
         self.att_val = att_val
 
         if isinstance(target_val, dict):
+            # Import VectorDict here to prevent circular import of river.utils
+            from river.utils import VectorDict
+
             self.estimator = VectorDict(default_factory=functools.partial(Var))
             self._update_estimator = self._update_estimator_multivariate
         else:

@@ -32,7 +32,7 @@ class SEA(datasets.base.SyntheticDataset):
     Examples
     --------
 
-    >>> from river import synth
+    >>> from river.datasets import synth
 
     >>> dataset = synth.SEA(variant=0, seed=42)
 
