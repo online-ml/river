@@ -88,7 +88,7 @@ setuptools.setup(
             "mkdocs-awesome-pages-plugin",
             "mkdocs-material",
             "nbconvert",
-            "slugify",
+            "python-slugify",
             "spacy",
             "watermark"
         ],
