@@ -6,7 +6,9 @@ some models the model's type is only known at runtime. For instance, we can't do
 thus provides utilities for determining an arbitrary model's type.
 
 """
-from river import anomaly, base, compose
+import inspect
+
+from river import base, compose
 
 # TODO: maybe all of this could be done by monkeypatching isintance for pipelines?
 
@@ -37,7 +39,35 @@ def extract_relevant(model: base.Estimator):
 
 
 def isanomalydetector(model):
-    return isinstance(extract_relevant(model), anomaly.base.AnomalyDetector)
+    """[One-line summary].
+
+    Parameters
+    ----------
+    model
+
+    Returns
+    -------
+
+    True if the input model object has inherited from AnomalyDetector else False.
+
+    Examples
+    --------
+
+    >>> from river import anomaly
+    >>> from river import utils
+
+    >>> utils.inspect.isanomalydetector(model=anomaly.HalfSpaceTrees())
+    True
+
+    >>> utils.inspect.isanomalydetector(model=anomaly.OneClassSVM())
+    True
+
+    >>> utils.inspect.isanomalydetector(model=anomaly.GaussianScorer())
+    False
+    """
+    model = extract_relevant(model)
+    parent_classes = inspect.getmro(model.__class__)
+    return any(cls.__name__ == "AnomalyDetector" for cls in parent_classes)
 
 
 def isclassifier(model):
