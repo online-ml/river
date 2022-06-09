@@ -39,7 +39,7 @@ def extract_relevant(model: base.Estimator):
 
 
 def isanomalydetector(model):
-    """[One-line summary].
+    """Checks weather or not the given model inherits from AnomalyDetector.
 
     Parameters
     ----------
