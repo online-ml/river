@@ -10257,21 +10257,21 @@
 <h1 id="benchmarks">Benchmarks<a class="headerlink" href="#benchmarks" title="Permanent link">&para;</a></h1>
 <h2 id="environment">Environment<a class="headerlink" href="#environment" title="Permanent link">&para;</a></h2>
 <pre>Python implementation: CPython
-Python version       : 3.9.12
-IPython version      : 7.30.1
+Python version       : 3.9.13
+IPython version      : 8.4.0
 
-river       : 0.10.1
-numpy       : 1.22.3
-scikit-learn: 1.1.0
-pandas      : 1.4.1
-scipy       : 1.8.0
+river       : 0.11.1
+numpy       : 1.22.4
+scikit-learn: 1.1.1
+pandas      : 1.4.2
+scipy       : 1.8.1
 
-Compiler    : Clang 12.0.1 
-OS          : Darwin
-Release     : 21.3.0
+Compiler    : GCC 9.4.0
+OS          : Linux
+Release     : 5.13.0-1025-azure
 Machine     : x86_64
-Processor   : i386
-CPU cores   : 8
+Processor   : x86_64
+CPU cores   : 2
 Architecture: 64bit
 </pre>
 
@@ -11402,11 +11402,6 @@ Features  9
     }
 
     function msToTime(s) {
-        function pad(n, z) {
-            z = z || 2;
-            return ('00' + n).slice(-z);
-        }
-
         var ms = s % 1000;
         s = (s - ms) / 1000;
         var secs = s % 60;
@@ -11414,7 +11409,12 @@ Features  9
         var mins = s % 60;
         var hrs = (s - mins) / 60;
 
-        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+        return (
+            (hrs > 0 ? hrs + 'h ' : '') +
+            (mins > 0 ? mins + 'm ' : '') +
+            (secs > 0 ? secs + 's' : '') +
+            (ms > 0 ? ' ' + ms + 'ms' : '')
+        )
     }
 
     columns.map((x, i) => {
@@ -11434,7 +11434,7 @@ Features  9
                 return msToTime(cell.getValue())
             }
         }
-        if (['Accuracy', 'F1'].includes(x.title)) {
+        if (['Accuracy', 'F1', 'MacroF1', 'MicroF1'].includes(x.title)) {
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
                 return (100 * cell.getValue()).toFixed(2) + "%"
             }
@@ -12554,11 +12554,6 @@ Downloaded  True                                                            </pr
     }
 
     function msToTime(s) {
-        function pad(n, z) {
-            z = z || 2;
-            return ('00' + n).slice(-z);
-        }
-
         var ms = s % 1000;
         s = (s - ms) / 1000;
         var secs = s % 60;
@@ -12566,7 +12561,12 @@ Downloaded  True                                                            </pr
         var mins = s % 60;
         var hrs = (s - mins) / 60;
 
-        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+        return (
+            (hrs > 0 ? hrs + 'h ' : '') +
+            (mins > 0 ? mins + 'm ' : '') +
+            (secs > 0 ? secs + 's' : '') +
+            (ms > 0 ? ' ' + ms + 'ms' : '')
+        )
     }
 
     columns.map((x, i) => {
@@ -12586,7 +12586,7 @@ Downloaded  True                                                            </pr
                 return msToTime(cell.getValue())
             }
         }
-        if (['Accuracy', 'F1'].includes(x.title)) {
+        if (['Accuracy', 'F1', 'MacroF1', 'MicroF1'].includes(x.title)) {
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
                 return (100 * cell.getValue()).toFixed(2) + "%"
             }
@@ -13165,11 +13165,6 @@ Features  6
     }
 
     function msToTime(s) {
-        function pad(n, z) {
-            z = z || 2;
-            return ('00' + n).slice(-z);
-        }
-
         var ms = s % 1000;
         s = (s - ms) / 1000;
         var secs = s % 60;
@@ -13177,7 +13172,12 @@ Features  6
         var mins = s % 60;
         var hrs = (s - mins) / 60;
 
-        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+        return (
+            (hrs > 0 ? hrs + 'h ' : '') +
+            (mins > 0 ? mins + 'm ' : '') +
+            (secs > 0 ? secs + 's' : '') +
+            (ms > 0 ? ' ' + ms + 'ms' : '')
+        )
     }
 
     columns.map((x, i) => {
@@ -13197,7 +13197,7 @@ Features  6
                 return msToTime(cell.getValue())
             }
         }
-        if (['Accuracy', 'F1'].includes(x.title)) {
+        if (['Accuracy', 'F1', 'MacroF1', 'MicroF1'].includes(x.title)) {
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
                 return (100 * cell.getValue()).toFixed(2) + "%"
             }
