@@ -10139,11 +10139,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#multiclass-classification" class="md-nav__link">
-    Multiclass classification
+  <a href="#binary-classification" class="md-nav__link">
+    Binary classification
   </a>
   
-    <nav class="md-nav" aria-label="Multiclass classification">
+    <nav class="md-nav" aria-label="Binary classification">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -10173,11 +10173,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#regression" class="md-nav__link">
-    Regression
+  <a href="#multiclass-classification" class="md-nav__link">
+    Multiclass classification
   </a>
   
-    <nav class="md-nav" aria-label="Regression">
+    <nav class="md-nav" aria-label="Multiclass classification">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -10196,6 +10196,40 @@
         
           <li class="md-nav__item">
   <a href="#models_1" class="md-nav__link">
+    Models
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regression" class="md-nav__link">
+    Regression
+  </a>
+  
+    <nav class="md-nav" aria-label="Regression">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#results_2" class="md-nav__link">
+    Results
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#datasets_2" class="md-nav__link">
+    Datasets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#models_2" class="md-nav__link">
     Models
   </a>
   
@@ -10252,11 +10286,1211 @@ Architecture: 64bit
         let columns
         </script>
 
-<h2 id="multiclass-classification">Multiclass classification<a class="headerlink" href="#multiclass-classification" title="Permanent link">&para;</a></h2>
+<h2 id="binary-classification">Binary classification<a class="headerlink" href="#binary-classification" title="Permanent link">&para;</a></h2>
 <h3 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h3>
-<div id="multiclass-classification-results"></div>
+<div id="binary-classification-results"></div>
 
 <h3 id="datasets">Datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h3>
+<details>
+  <summary>Bananas</summary>
+  <pre>Bananas dataset.
+
+An artificial dataset where instances belongs to several clusters with a banana shape.
+There are two attributes that correspond to the x and y axis, respectively.
+
+    Name  Bananas                                                   
+    Task  Binary classification                                     
+ Samples  5,300                                                     
+Features  2                                                         
+  Sparse  False                                                     
+    Path  /Users/mastelini/Documents/river/river/datasets/banana.zip</pre>
+</details>
+
+<details>
+  <summary>Phishing</summary>
+  <pre>Phishing websites.
+
+This dataset contains features from web pages that are classified as phishing or not.
+
+    Name  Phishing                                                       
+    Task  Binary classification                                          
+ Samples  1,250                                                          
+Features  9                                                              
+  Sparse  False                                                          
+    Path  /Users/mastelini/Documents/river/river/datasets/phishing.csv.gz</pre>
+</details>
+
+<h3 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h3>
+<details>
+  <summary>ADWIN Bagging</summary>
+  <pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+</details>
+
+<details>
+  <summary>ALMA</summary>
+  <pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  ALMAClassifier (
+    p=2
+    alpha=0.9
+    B=1.111111
+    C=1.414214
+  )
+)</pre>
+</details>
+
+<details>
+  <summary>AdaBoost</summary>
+  <pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+</details>
+
+<details>
+  <summary>Adaptive Random Forest</summary>
+  <pre>[]</pre>
+</details>
+
+<details>
+  <summary>Bagging</summary>
+  <pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+</details>
+
+<details>
+  <summary>Extremely Fast Decision Tree</summary>
+  <pre>ExtremelyFastDecisionTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  min_samples_reevaluate=20
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)</pre>
+</details>
+
+<details>
+  <summary>Hoeffding Adaptive Tree</summary>
+  <pre>HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=True
+  drift_window_threshold=300
+  adwin_confidence=0.002
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=42
+)</pre>
+</details>
+
+<details>
+  <summary>Hoeffding Tree</summary>
+  <pre>HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)</pre>
+</details>
+
+<details>
+  <summary>Leveraging Bagging</summary>
+  <pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+</details>
+
+<details>
+  <summary>Logistic regression</summary>
+  <pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  LogisticRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.005
+      )
+    )
+    loss=Log (
+      weight_pos=1.
+      weight_neg=1.
+    )
+    l2=0.
+    l1=0.
+    intercept_init=0.
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  )
+)</pre>
+</details>
+
+<details>
+  <summary>Naive Bayes</summary>
+  <pre>GaussianNB ()</pre>
+</details>
+
+<details>
+  <summary>PyTorch logistic regression</summary>
+  <pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  PyTorchBinaryClassifier (
+    network_func=&lt;class '__main__.PyTorchLogReg'&gt;
+    loss=BCELoss()
+    optimizer_func=&quot;&lt;lambda&gt;&quot;
+  )
+)</pre>
+</details>
+
+<details>
+  <summary>Stacking</summary>
+  <pre>[Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SoftmaxRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=CrossEntropy (
+      class_weight={}
+    )
+    l2=0
+  )
+), GaussianNB (), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
+    softmax=False
+  )
+)]</pre>
+</details>
+
+<details>
+  <summary>Stochastic Gradient Tree</summary>
+  <pre>SGTClassifier (
+  delta=1e-07
+  grace_period=200
+  init_pred=0.
+  max_depth=inf
+  lambda_value=0.1
+  gamma=1.
+  nominal_attributes=[]
+  feature_quantizer=StaticQuantizer (
+    n_bins=64
+    warm_start=100
+    buckets=None
+  )
+)</pre>
+</details>
+
+<details>
+  <summary>Streaming Random Patches</summary>
+  <pre>SRPClassifier (
+  model=HoeffdingTreeClassifier (
+    grace_period=50
+    max_depth=inf
+    split_criterion=&quot;info_gain&quot;
+    split_confidence=0.01
+    tie_threshold=0.05
+    leaf_prediction=&quot;nba&quot;
+    nb_threshold=0
+    nominal_attributes=None
+    splitter=GaussianSplitter (
+      n_splits=10
+    )
+    binary_split=False
+    max_size=100.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+  )
+  n_models=10
+  subspace_size=0.6
+  training_method=&quot;patches&quot;
+  lam=6
+  drift_detector=ADWIN (
+    delta=1e-05
+  )
+  warning_detector=ADWIN (
+    delta=0.0001
+  )
+  disable_detector=&quot;off&quot;
+  disable_weighted_vote=False
+  seed=None
+  metric=Accuracy (
+    cm=ConfusionMatrix (
+      classes=[]
+    )
+  )
+)</pre>
+</details>
+
+<details>
+  <summary>Voting</summary>
+  <pre>VotingClassifier (
+  models=[Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SoftmaxRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=CrossEntropy (
+      class_weight={}
+    )
+    l2=0
+  )
+), GaussianNB (), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  split_confidence=1e-07
+  tie_threshold=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
+    softmax=False
+  )
+)]
+  use_probabilities=True
+)</pre>
+</details>
+
+<details>
+  <summary>Vowpal Wabbit logistic regression</summary>
+  <pre>VW2RiverClassifier ()</pre>
+</details>
+
+<details>
+  <summary>[baseline] Last Class</summary>
+  <pre>NoChangeClassifier ()</pre>
+</details>
+
+<details>
+  <summary>k-Nearest Neighbors</summary>
+  <pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
+    softmax=False
+  )
+)</pre>
+</details>
+
+<details>
+  <summary>sklearn SGDClassifier</summary>
+  <pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SKL2RiverClassifier (
+    estimator=SGDClassifier(eta0=0.005, learning_rate='constant', loss='log_loss',
+                penalty='none')
+    classes=[False, True]
+  )
+)</pre>
+</details>
+
+<script>
+    var results = [{'Accuracy': 0.6257784487639177, 'Dataset': 'Bananas', 'F1': 0.4477861319966584, 'Memory': 165670, 'Model': 'ADWIN Bagging', 'Time': 2618.05}, {'Accuracy': 0.5064150943396226, 'Dataset': 'Bananas', 'F1': 0.4825949367088608, 'Memory': 3063, 'Model': 'ALMA', 'Time': 163.789}, {'Accuracy': 0.6778637478769579, 'Dataset': 'Bananas', 'F1': 0.64504054897068, 'Memory': 171980, 'Model': 'AdaBoost', 'Time': 2489.237}, {'Accuracy': 0.8856387997735422, 'Dataset': 'Bananas', 'F1': 0.8696213425129088, 'Memory': 8567570, 'Model': 'Adaptive Random Forest', 'Time': 5560.815}, {'Accuracy': 0.6335157576901302, 'Dataset': 'Bananas', 'F1': 0.45875139353400224, 'Memory': 208556, 'Model': 'Bagging', 'Time': 1883.013}, {'Accuracy': 0.6252123042083412, 'Dataset': 'Bananas', 'F1': 0.4513812154696133, 'Memory': 29602, 'Model': 'Extremely Fast Decision Tree', 'Time': 303.313}, {'Accuracy': 0.6165314210228345, 'Dataset': 'Bananas', 'F1': 0.4408365437534397, 'Memory': 43404, 'Model': 'Hoeffding Adaptive Tree', 'Time': 484.379}, {'Accuracy': 0.6421966408756369, 'Dataset': 'Bananas', 'F1': 0.5034049240440022, 'Memory': 24843, 'Model': 'Hoeffding Tree', 'Time': 251.493}, {'Accuracy': 0.8284581996603133, 'Dataset': 'Bananas', 'F1': 0.8028627195836044, 'Memory': 1244447, 'Model': 'Leveraging Bagging', 'Time': 9075.224}, {'Accuracy': 0.5373584905660377, 'Dataset': 'Bananas', 'F1': 0.22109275730622616, 'Memory': 4423, 'Model': 'Logistic regression', 'Time': 170.88}, {'Accuracy': 0.6152104170598226, 'Dataset': 'Bananas', 'F1': 0.4139120436907157, 'Memory': 3901, 'Model': 'Naive Bayes', 'Time': 240.513}, {'Accuracy': 0.8514814115870919, 'Dataset': 'Bananas', 'F1': 0.8321603753465558, 'Memory': 9988024, 'Model': 'Stacking', 'Time': 8676.398}, {'Accuracy': 0.6575471698113208, 'Dataset': 'Bananas', 'F1': 0.560639070442992, 'Memory': 2186974, 'Model': 'Stochastic Gradient Tree', 'Time': 586.001}, {'Accuracy': 0.8694093225136819, 'Dataset': 'Bananas', 'F1': 0.8508620689655172, 'Memory': 4420472, 'Model': 'Streaming Random Patches', 'Time': 11370.613}, {'Accuracy': 0.5095301000188714, 'Dataset': 'Bananas', 'F1': 0.4529572721532309, 'Memory': 535, 'Model': '[baseline] Last Class', 'Time': 75.535}, {'Accuracy': 0.8484619739573505, 'Dataset': 'Bananas', 'F1': 0.8274231678486997, 'Memory': 43826, 'Model': 'k-Nearest Neighbors', 'Time': 990.766}, {'Accuracy': 0.8935148118494796, 'Dataset': 'Phishing', 'F1': 0.8792007266121706, 'Memory': 416562, 'Model': 'ADWIN Bagging', 'Time': 1383.466}, {'Accuracy': 0.8264, 'Dataset': 'Phishing', 'F1': 0.8117953165654813, 'Memory': 4803, 'Model': 'ALMA', 'Time': 64.185}, {'Accuracy': 0.8783026421136909, 'Dataset': 'Phishing', 'F1': 0.8635547576301617, 'Memory': 293828, 'Model': 'AdaBoost', 'Time': 1524.644}, {'Accuracy': 0.9087269815852682, 'Dataset': 'Phishing', 'F1': 0.8969258589511755, 'Memory': 1460226, 'Model': 'Adaptive Random Forest', 'Time': 1276.841}, {'Accuracy': 0.8935148118494796, 'Dataset': 'Phishing', 'F1': 0.8792007266121706, 'Memory': 399544, 'Model': 'Bagging', 'Time': 1045.51}, {'Accuracy': 0.8879103282626101, 'Dataset': 'Phishing', 'F1': 0.8734177215189873, 'Memory': 132210, 'Model': 'Extremely Fast Decision Tree', 'Time': 1240.158}, {'Accuracy': 0.8670936749399519, 'Dataset': 'Phishing', 'F1': 0.8445692883895132, 'Memory': 57312, 'Model': 'Hoeffding Adaptive Tree', 'Time': 188.008}, {'Accuracy': 0.8799039231385108, 'Dataset': 'Phishing', 'F1': 0.8605947955390334, 'Memory': 43223, 'Model': 'Hoeffding Tree', 'Time': 133.039}, {'Accuracy': 0.8951160928742994, 'Dataset': 'Phishing', 'F1': 0.8783658310120707, 'Memory': 1236851, 'Model': 'Leveraging Bagging', 'Time': 4427.237}, {'Accuracy': 0.892, 'Dataset': 'Phishing', 'F1': 0.8789237668161435, 'Memory': 5811, 'Model': 'Logistic regression', 'Time': 68.847}, {'Accuracy': 0.8847077662129704, 'Dataset': 'Phishing', 'F1': 0.8714285714285714, 'Memory': 12021, 'Model': 'Naive Bayes', 'Time': 99.403}, {'Accuracy': 0.899119295436349, 'Dataset': 'Phishing', 'F1': 0.8866906474820143, 'Memory': 1692234, 'Model': 'Stacking', 'Time': 2583.277}, {'Accuracy': 0.8232, 'Dataset': 'Phishing', 'F1': 0.8141295206055509, 'Memory': 3911518, 'Model': 'Stochastic Gradient Tree', 'Time': 433.726}, {'Accuracy': 0.9095276220976781, 'Dataset': 'Phishing', 'F1': 0.8962350780532599, 'Memory': 2561969, 'Model': 'Streaming Random Patches', 'Time': 3259.081}, {'Accuracy': 0.5156124899919936, 'Dataset': 'Phishing', 'F1': 0.4474885844748858, 'Memory': 535, 'Model': '[baseline] Last Class', 'Time': 28.997}, {'Accuracy': 0.8670936749399519, 'Dataset': 'Phishing', 'F1': 0.847985347985348, 'Memory': 74814, 'Model': 'k-Nearest Neighbors', 'Time': 465.452}, {'Accuracy': 0.8903122497998399, 'Dataset': 'Phishing', 'F1': 0.8769092542677449, 'Memory': 134873, 'Model': 'Voting', 'Time': 747.333}, {'Accuracy': 0.8301566333270428, 'Dataset': 'Bananas', 'F1': 0.7949886104783599, 'Memory': 76293, 'Model': 'Voting', 'Time': 1649.353}, {'Accuracy': 0.8888, 'Dataset': 'Phishing', 'F1': 0.8753363228699551, 'Memory': 7206, 'Model': 'sklearn SGDClassifier', 'Time': 187.416}, {'Accuracy': 0.5466037735849056, 'Dataset': 'Bananas', 'F1': 0.20509427720807144, 'Memory': 5762, 'Model': 'sklearn SGDClassifier', 'Time': 712.98}, {'Accuracy': 0.8896, 'Dataset': 'Phishing', 'F1': 0.8763440860215054, 'Memory': 22362, 'Model': 'PyTorch logistic regression', 'Time': 127.547}, {'Accuracy': 0.5464150943396227, 'Dataset': 'Bananas', 'F1': 0.205026455026455, 'Memory': 20974, 'Model': 'PyTorch logistic regression', 'Time': 433.289}, {'Accuracy': 0.7736, 'Dataset': 'Phishing', 'F1': 0.6697782963827306, 'Memory': 678, 'Model': 'Vowpal Wabbit logistic regression', 'Time': 41.274}, {'Accuracy': 0.5513207547169812, 'Dataset': 'Bananas', 'F1': 0.0, 'Memory': 678, 'Model': 'Vowpal Wabbit logistic regression', 'Time': 121.882}]
+
+    baseColumns = [
+        "Dataset",
+        "Model",
+        "Memory",
+        "Time"
+    ]
+    metrics = Object.keys(results[0]).filter(x => !baseColumns.includes(x)).sort();
+    columns = [...baseColumns, ...metrics].map(x => ({title: x, field: x}))
+
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes'
+
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+    function msToTime(s) {
+        var ms = s % 1000;
+        s = (s - ms) / 1000;
+        var secs = s % 60;
+        s = (s - secs) / 60;
+        var mins = s % 60;
+        var hrs = (s - mins) / 60;
+
+        return (
+            (hrs > 0 ? hrs + 'h ' : '') +
+            (mins > 0 ? mins + 'm ' : '') +
+            (secs > 0 ? secs + 's' : '') +
+            (ms > 0 ? ' ' + ms + 'ms' : '')
+        )
+    }
+
+    columns.map((x, i) => {
+        if (x.title === 'Dataset') {
+            columns[i]["headerFilter"] = true
+        }
+        if (x.title === 'Model') {
+            columns[i]["headerFilter"] = true
+        }
+        if (x.title === 'Memory') {
+            columns[i]["formatter"] = function(cell, formatterParams, onRendered){
+                return formatBytes(cell.getValue())
+            }
+        }
+        if (x.title === 'Time') {
+            columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
+                return msToTime(cell.getValue())
+            }
+        }
+        if (['Accuracy', 'F1', 'MacroF1', 'MicroF1'].includes(x.title)) {
+            columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
+                return (100 * cell.getValue()).toFixed(2) + "%"
+            }
+        }
+        if (['MAE', 'RMSE', 'R2'].includes(x.title)) {
+            columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
+                return cell.getValue().toFixed(3)
+            }
+        }
+    })
+
+    new Tabulator('#binary-classification-results', {
+        data: results,
+        layout: 'fitColumns',
+        columns: columns
+    })
+    </script>
+
+<h2 id="multiclass-classification">Multiclass classification<a class="headerlink" href="#multiclass-classification" title="Permanent link">&para;</a></h2>
+<h3 id="results_1">Results<a class="headerlink" href="#results_1" title="Permanent link">&para;</a></h3>
+<div id="multiclass-classification-results"></div>
+
+<h3 id="datasets_1">Datasets<a class="headerlink" href="#datasets_1" title="Permanent link">&para;</a></h3>
 <details>
   <summary>ImageSegments</summary>
   <pre>Image segments classification.
@@ -10332,7 +11566,7 @@ have been dropped.
 Downloaded  True                                                            </pre>
 </details>
 
-<h3 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h3>
+<h3 id="models_1">Models<a class="headerlink" href="#models_1" title="Permanent link">&para;</a></h3>
 <details>
   <summary>ADWIN Bagging</summary>
   <pre>[HoeffdingTreeClassifier (
@@ -11202,7 +12436,7 @@ Downloaded  True                                                            </pr
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=functools.partial(&lt;function minkowski_distance at 0x1220e3a60&gt;, p=2)
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )]</pre>
@@ -11297,7 +12531,7 @@ Downloaded  True                                                            </pr
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=functools.partial(&lt;function minkowski_distance at 0x1220e3a60&gt;, p=2)
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )]
@@ -11322,7 +12556,7 @@ Downloaded  True                                                            </pr
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=functools.partial(&lt;function minkowski_distance at 0x1220e3a60&gt;, p=2)
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )</pre>
@@ -11405,10 +12639,10 @@ Downloaded  True                                                            </pr
     </script>
 
 <h2 id="regression">Regression<a class="headerlink" href="#regression" title="Permanent link">&para;</a></h2>
-<h3 id="results_1">Results<a class="headerlink" href="#results_1" title="Permanent link">&para;</a></h3>
+<h3 id="results_2">Results<a class="headerlink" href="#results_2" title="Permanent link">&para;</a></h3>
 <div id="regression-results"></div>
 
-<h3 id="datasets_1">Datasets<a class="headerlink" href="#datasets_1" title="Permanent link">&para;</a></h3>
+<h3 id="datasets_2">Datasets<a class="headerlink" href="#datasets_2" title="Permanent link">&para;</a></h3>
 <details>
   <summary>Friedman7k</summary>
   <pre>Sample from the stationary version of the Friedman dataset.
@@ -11470,7 +12704,7 @@ Features  6
     Path  /Users/mastelini/Documents/river/river/datasets/trump_approval.csv.gz</pre>
 </details>
 
-<h3 id="models_1">Models<a class="headerlink" href="#models_1" title="Permanent link">&para;</a></h3>
+<h3 id="models_2">Models<a class="headerlink" href="#models_2" title="Permanent link">&para;</a></h3>
 <details>
   <summary>Adaptive Model Rules</summary>
   <pre>Pipeline (
@@ -11583,7 +12817,7 @@ Features  6
     window_size=100
     aggregation_method=&quot;mean&quot;
     min_distance_keep=0.
-    distance_func=functools.partial(&lt;function minkowski_distance at 0x1220e3a60&gt;, p=2)
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
   ), AMRules (
     n_min=200
     delta=1e-07
@@ -11934,7 +13168,7 @@ Features  6
     window_size=100
     aggregation_method=&quot;mean&quot;
     min_distance_keep=0.
-    distance_func=functools.partial(&lt;function minkowski_distance at 0x1220e3a60&gt;, p=2)
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
   )
 )</pre>
 </details>
