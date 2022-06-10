@@ -144,7 +144,7 @@ Some specificities of River are that:
 
 - It focuses on clarity and user experience, more so than performance.
 - It's very fast at processing one sample at a time. Try it, you'll see.
-- It plays nicely with the rest of Python ecosystem.
+- It plays nicely with the rest of Python's ecosystem.
 
 ## 🔗 Useful links
 
