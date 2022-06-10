@@ -150,9 +150,7 @@ def test_drift_adaptation_hatc():
     for i in range(1000):
         if i % 200 == 0 and i > 0:
             dataset = iter(
-                synth.Sine(
-                    seed=8, classification_function=rng.randint(0, 3), has_noise=False
-                )
+                synth.Sine(seed=8, classification_function=rng.randint(0, 3), has_noise=False)
             )
 
         x, y = next(dataset)

@@ -52,9 +52,7 @@ class FFM(BaseFM):
         )
 
     def _init_latents(self):
-        random_latents = functools.partial(
-            self.latent_initializer, shape=self.n_factors
-        )
+        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         field_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(field_latents_dict)
 
@@ -72,9 +70,7 @@ class FFM(BaseFM):
 
     def _interaction_coefficient(self, combination):
         j1, j2 = combination
-        return np.dot(
-            self.latents[j1][self._field(j2)], self.latents[j2][self._field(j1)]
-        )
+        return np.dot(self.latents[j1][self._field(j2)], self.latents[j2][self._field(j1)])
 
     def _calculate_weights_gradients(self, x, g_loss):
 

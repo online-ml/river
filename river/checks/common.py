@@ -67,9 +67,7 @@ def check_emerging_features(model, dataset):
         features = list(x.keys())
         random.shuffle(features)
         model.predict_one(x)
-        model.learn_one(
-            {i: x[i] for i in features[:-3]}, y
-        )  # drop 3 features at random
+        model.learn_one({i: x[i] for i in features[:-3]}, y)  # drop 3 features at random
 
 
 def check_disappearing_features(model, dataset):

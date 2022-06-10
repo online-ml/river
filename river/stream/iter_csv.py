@@ -42,7 +42,7 @@ def iter_csv(
     compression="infer",
     seed: int = None,
     field_size_limit: int = None,
-    **kwargs
+    **kwargs,
 ) -> base.typing.Stream:
     """Iterates over rows from a CSV file.
 

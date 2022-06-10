@@ -46,10 +46,7 @@ def optimizers() -> typing.Iterable[optim.base.Optimizer]:
 
 @pytest.mark.parametrize(
     "optimizer",
-    [
-        pytest.param(optimizer, id=optimizer.__class__.__name__)
-        for optimizer in optimizers()
-    ],
+    [pytest.param(optimizer, id=optimizer.__class__.__name__) for optimizer in optimizers()],
 )
 def test_optimizer_step_with_dict_same_as_step_with_vector_dict(optimizer):
 
@@ -71,10 +68,7 @@ def test_optimizer_step_with_dict_same_as_step_with_vector_dict(optimizer):
 
 @pytest.mark.parametrize(
     "optimizer",
-    [
-        pytest.param(optimizer, id=optimizer.__class__.__name__)
-        for optimizer in optimizers()
-    ],
+    [pytest.param(optimizer, id=optimizer.__class__.__name__) for optimizer in optimizers()],
 )
 def test_optimizer_step_with_dict_same_as_step_with_numpy_array(optimizer):
 

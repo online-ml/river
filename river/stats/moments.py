@@ -53,9 +53,7 @@ class CentralMoments(stats.base.Univariate):
         return self
 
     def _update_m3(self):
-        self.M3 += (
-            self.M1 * self.delta * (self.count.get() - 2) - 3 * self.delta * self.M2
-        )
+        self.M3 += self.M1 * self.delta * (self.count.get() - 2) - 3 * self.delta * self.M2
         return self
 
     def _update_m4(self):

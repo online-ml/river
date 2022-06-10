@@ -252,16 +252,10 @@ def test_austourists_additive(printer, austourists):
     for t, y in enumerate(austourists, start=1):
         y_pred = model.forecast(1)[0]
         model.learn_one(y)
-        printer(
-            template.format(
-                t, y, model.level[-1], model.trend[-1], model.season[-1], y_pred
-            )
-        )
+        printer(template.format(t, y, model.level[-1], model.trend[-1], model.season[-1], y_pred))
 
     for h, y_pred in enumerate(model.forecast(8), start=1):
-        printer(
-            f"{t + h:>2d} |          |          |          |             |    {y_pred:.2f}"
-        )
+        printer(f"{t + h:>2d} |          |          |          |             |    {y_pred:.2f}")
 
     expected = """
 t  | y        | level    | trend    | seasonality | y_pred
@@ -325,9 +319,7 @@ t  | y        | level    | trend    | seasonality | y_pred
 def test_austourists_multiplicative(printer, austourists):
     """https://otexts.com/fpp2/holt-winters.html#example-international-tourist-visitor-nights-in-australia"""
 
-    model = HoltWinters(
-        alpha=0.441, beta=0.03, gamma=0.002, seasonality=4, multiplicative=True
-    )
+    model = HoltWinters(alpha=0.441, beta=0.03, gamma=0.002, seasonality=4, multiplicative=True)
     model.level.append(32.4875)
     model.trend.append(0.6974)
     model.season.extend([1.2442, 0.7704, 0.9618, 1.0237])
@@ -340,16 +332,10 @@ def test_austourists_multiplicative(printer, austourists):
     for t, y in enumerate(austourists, start=1):
         y_pred = model.forecast(1)[0]
         model.learn_one(y)
-        printer(
-            template.format(
-                t, y, model.level[-1], model.trend[-1], model.season[-1], y_pred
-            )
-        )
+        printer(template.format(t, y, model.level[-1], model.trend[-1], model.season[-1], y_pred))
 
     for h, y_pred in enumerate(model.forecast(8), start=1):
-        printer(
-            f"{t + h:>2d} |          |          |          |             |    {y_pred:.2f}"
-        )
+        printer(f"{t + h:>2d} |          |          |          |             |    {y_pred:.2f}")
 
     expected = """
 t  | y        | level    | trend    | seasonality | y_pred

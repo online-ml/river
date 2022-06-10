@@ -75,9 +75,7 @@ class QOSplitter(Splitter):
     def cond_proba(self, att_val, target_val):
         raise NotImplementedError
 
-    def best_evaluated_split_suggestion(
-        self, criterion, pre_split_dist, att_idx, binary_only=True
-    ):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only=True):
         candidate = BranchFactory()
 
         # In case the hash carries just one element return the null split
@@ -163,9 +161,7 @@ class Slot:
     def _init_estimator(self, y):
         if isinstance(y, dict):
             self.is_single_target = False
-            self.y_stats = utils.VectorDict(
-                default_factory=functools.partial(stats.Var)
-            )
+            self.y_stats = utils.VectorDict(default_factory=functools.partial(stats.Var))
             self._update_estimator = self._update_estimator_multivariate
         else:
             self.y_stats = stats.Var()
@@ -210,9 +206,7 @@ class FeatureQuantizer:
     def __len__(self):
         return len(self.hash)
 
-    def update(
-        self, x: float, y: typing.Union[float, "utils.VectorDict"], weight: float
-    ):
+    def update(self, x: float, y: typing.Union[float, "utils.VectorDict"], weight: float):
         index = math.floor(x / self.radius)
         try:
             self.hash[index].update(x, y, weight)

@@ -80,9 +80,7 @@ class STAGGER(datasets.base.SyntheticDataset):
         seed: Optional[int | np.random.RandomState] = None,
         balance_classes: bool = False,
     ):
-        super().__init__(
-            n_features=3, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF
-        )
+        super().__init__(n_features=3, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF)
 
         # Classification functions to use
         self._functions = [
@@ -132,9 +130,7 @@ class STAGGER(datasets.base.SyntheticDataset):
                         (not self.next_class_should_be_zero) and (y == 1)
                     ):
                         desired_class_found = True
-                        self.next_class_should_be_zero = (
-                            not self.next_class_should_be_zero
-                        )
+                        self.next_class_should_be_zero = not self.next_class_should_be_zero
 
             x = {"size": size, "color": color, "shape": shape}
 

@@ -33,9 +33,6 @@ def test_forecasts_at_each_step():
     assert y_pred == [(112 + 118 + 132 + 129) / 4] * horizon
 
     n_steps = sum(
-        1
-        for _ in time_series.iter_evaluate(
-            dataset, model, metric, horizon, grace_period
-        )
+        1 for _ in time_series.iter_evaluate(dataset, model, metric, horizon, grace_period)
     )
     assert n_steps == dataset.n_samples - horizon - grace_period

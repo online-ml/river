@@ -161,10 +161,7 @@ class DBSTREAM(base.Clusterer):
     def _find_fixed_radius_nn(self, x):
         fixed_radius_nn = {}
         for i in self.micro_clusters.keys():
-            if (
-                self._distance(self.micro_clusters[i].center, x)
-                < self.clustering_threshold
-            ):
+            if self._distance(self.micro_clusters[i].center, x) < self.clustering_threshold:
                 fixed_radius_nn[i] = self.micro_clusters[i]
         return fixed_radius_nn
 
@@ -192,8 +189,7 @@ class DBSTREAM(base.Clusterer):
                     self.micro_clusters[i].weight
                     * 2
                     ** (
-                        -self.fading_factor
-                        * (self.time_stamp - self.micro_clusters[i].last_update)
+                        -self.fading_factor * (self.time_stamp - self.micro_clusters[i].last_update)
                     )
                     + 1
                 )
@@ -214,11 +210,7 @@ class DBSTREAM(base.Clusterer):
                         try:
                             self.s[i][j] = (
                                 self.s[i][j]
-                                * 2
-                                ** (
-                                    -self.fading_factor
-                                    * (self.time_stamp - self.s_t[i][j])
-                                )
+                                * 2 ** (-self.fading_factor * (self.time_stamp - self.s_t[i][j]))
                                 + 1
                             )
                             self.s_t[i][j] = self.time_stamp
@@ -256,9 +248,7 @@ class DBSTREAM(base.Clusterer):
         for i, micro_cluster_i in self.micro_clusters.items():
 
             try:
-                value = 2 ** (
-                    self.fading_factor * (self.time_stamp - micro_cluster_i.last_update)
-                )
+                value = 2 ** (self.fading_factor * (self.time_stamp - micro_cluster_i.last_update))
             except OverflowError:
                 continue
 
@@ -271,9 +261,7 @@ class DBSTREAM(base.Clusterer):
         for i in self.s.keys():
             for j in self.s[i].keys():
                 try:
-                    value = 2 ** (
-                        self.fading_factor * (self.time_stamp - self.s_t[i][j])
-                    )
+                    value = 2 ** (self.fading_factor * (self.time_stamp - self.s_t[i][j]))
                 except OverflowError:
                     continue
 
@@ -292,8 +280,7 @@ class DBSTREAM(base.Clusterer):
                     and self.micro_clusters[j].weight >= self.minimum_weight
                 ):
                     value = self.s[i][j] / (
-                        (self.micro_clusters[i].weight + self.micro_clusters[j].weight)
-                        / 2
+                        (self.micro_clusters[i].weight + self.micro_clusters[j].weight) / 2
                     )
                     if value > self.intersection_factor:
                         try:
@@ -419,10 +406,7 @@ class DBSTREAMMicroCluster(metaclass=ABCMeta):
     def merge(self, cluster):
         # Using cluster.center.get allows updating clusters with different features
         self.center = {
-            i: (
-                self.center[i] * self.weight
-                + cluster.center.get(i, 0.0) * cluster.weight
-            )
+            i: (self.center[i] * self.weight + cluster.center.get(i, 0.0) * cluster.weight)
             / (self.weight + cluster.weight)
             for i in self.center.keys()
         }

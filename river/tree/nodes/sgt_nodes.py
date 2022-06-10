@@ -151,9 +151,7 @@ class SGTLeaf(Leaf):
             loss_var = all_dlms.get()
 
             if loss_mean < candidate.merit.loss_mean:
-                candidate.merit.loss_mean = (
-                    loss_mean + 2.0 * sgt.gamma / self.total_weight
-                )
+                candidate.merit.loss_mean = loss_mean + 2.0 * sgt.gamma / self.total_weight
                 candidate.merit.loss_var = loss_var
                 candidate.merit.delta_pred[0] = left_delta_pred
                 candidate.merit.delta_pred[1] = right_delta_pred
@@ -184,9 +182,7 @@ class SGTLeaf(Leaf):
                     feature_idx, candidate, sgt
                 )
             else:  # Numerical features
-                candidate, skip_candidate = self._eval_numerical_splits(
-                    feature_idx, candidate, sgt
-                )
+                candidate, skip_candidate = self._eval_numerical_splits(feature_idx, candidate, sgt)
 
             if skip_candidate:
                 continue
@@ -207,9 +203,7 @@ class SGTLeaf(Leaf):
         sgt._n_splits += 1
         sgt._split_features.add(split.feature)
 
-        branch = (
-            NumericBinaryBranch if split.numerical_feature else NominalMultiwayBranch
-        )
+        branch = NumericBinaryBranch if split.numerical_feature else NominalMultiwayBranch
         child_depth = self.depth + 1
         leaves = tuple(
             SGTLeaf(
@@ -220,9 +214,7 @@ class SGTLeaf(Leaf):
             for delta_pred in split.merit.delta_pred.values()
         )
 
-        new_split = split.assemble(
-            branch, self.split_params.copy(), self.depth, *leaves
-        )
+        new_split = split.assemble(branch, self.split_params.copy(), self.depth, *leaves)
 
         if p_branch is None:
             sgt._root = new_split

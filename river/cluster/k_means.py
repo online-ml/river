@@ -86,9 +86,7 @@ class KMeans(base.Clusterer):
 
     """
 
-    def __init__(
-        self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int = None
-    ):
+    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int = None):
         self.n_clusters = n_clusters
         self.halflife = halflife
         self.mu = mu
@@ -121,8 +119,7 @@ class KMeans(base.Clusterer):
         def get_distance(c):
             center = self.centers[c]
             return sum(
-                (abs(center[k] - x.get(k, 0))) ** self.p
-                for k in set([*center.keys(), *x.keys()])
+                (abs(center[k] - x.get(k, 0))) ** self.p for k in set([*center.keys(), *x.keys()])
             )
 
         return min(self.centers, key=get_distance)

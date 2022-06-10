@@ -128,12 +128,8 @@ class DDM(DriftDetector):
         if self._in_concept_change:
             self.reset()
 
-        self.miss_prob = self.miss_prob + (value - self.miss_prob) / float(
-            self.sample_count
-        )
-        self.miss_std = math.sqrt(
-            self.miss_prob * (1 - self.miss_prob) / float(self.sample_count)
-        )
+        self.miss_prob = self.miss_prob + (value - self.miss_prob) / float(self.sample_count)
+        self.miss_std = math.sqrt(self.miss_prob * (1 - self.miss_prob) / float(self.sample_count))
         self.sample_count += 1
 
         self.estimation = self.miss_prob

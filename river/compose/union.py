@@ -173,17 +173,12 @@ class TransformerUnion(base.MiniBatchTransformer):
     def __repr__(self):
         return (
             "TransformerUnion (\n\t"
-            + "\t".join(
-                ",\n".join(map(repr, self.transformers.values())).splitlines(True)
-            )
+            + "\t".join(",\n".join(map(repr, self.transformers.values())).splitlines(True))
             + "\n)"
         ).expandtabs(2)
 
     def _get_params(self):
-        return {
-            name: transformer._get_params()
-            for name, transformer in self.transformers.items()
-        }
+        return {name: transformer._get_params() for name, transformer in self.transformers.items()}
 
     def _set_params(self, new_params: dict = None):
 
@@ -262,11 +257,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
-        return dict(
-            collections.ChainMap(
-                *(t.transform_one(x) for t in self.transformers.values())
-            )
-        )
+        return dict(collections.ChainMap(*(t.transform_one(x) for t in self.transformers.values())))
 
     # Mini-batch methods
 

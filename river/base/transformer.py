@@ -150,9 +150,7 @@ class MiniBatchSupervisedTransformer(Transformer):
         return True
 
     @abc.abstractmethod
-    def learn_many(
-        self, X: pd.DataFrame, y: pd.Series
-    ) -> "MiniBatchSupervisedTransformer":
+    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> "MiniBatchSupervisedTransformer":
         """Update the model with a mini-batch of features `X` and targets `y`.
 
         Parameters

@@ -182,15 +182,11 @@ class RegressionMetric(Metric):
     _fmt = ",.6f"  # use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(
-        self, y_true: numbers.Number, y_pred: numbers.Number
-    ) -> "RegressionMetric":
+    def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> "RegressionMetric":
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(
-        self, y_true: numbers.Number, y_pred: numbers.Number
-    ) -> "RegressionMetric":
+    def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> "RegressionMetric":
         """Revert the metric."""
 
     @property
@@ -318,11 +314,7 @@ class WrapperMetric(Metric):
 
     def __repr__(self):
         name = self.__class__.__name__
-        return (
-            super()
-            .__repr__()
-            .replace(name, f"{name}({self.metric.__class__.__name__})")
-        )
+        return super().__repr__().replace(name, f"{name}({self.metric.__class__.__name__})")
 
 
 class MeanMetric(abc.ABC):

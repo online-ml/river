@@ -52,8 +52,7 @@ class AdditiveSeason(Component):
 
     def update(self, y, level, trend):
         self.append(
-            self.gamma * (y - level[-2] - trend[-2])
-            + (1 - self.gamma) * self[-self.seasonality]
+            self.gamma * (y - level[-2] - trend[-2]) + (1 - self.gamma) * self[-self.seasonality]
         )
 
 
@@ -65,8 +64,7 @@ class MultiplicativeSeason(Component):
 
     def update(self, y, level, trend):
         self.append(
-            self.gamma * y / (level[-2] + trend[-2])
-            + (1 - self.gamma) * self[-self.seasonality]
+            self.gamma * y / (level[-2] + trend[-2]) + (1 - self.gamma) * self[-self.seasonality]
         )
 
 
@@ -172,9 +170,7 @@ class HoltWinters(time_series.base.Forecaster):
         self.gamma = gamma
         self.seasonality = seasonality
         self.multiplicative = multiplicative
-        self.level = (
-            MultiplicativeLevel(alpha) if multiplicative else AdditiveLevel(alpha)
-        )
+        self.level = MultiplicativeLevel(alpha) if multiplicative else AdditiveLevel(alpha)
         self.trend = Trend(beta) if beta else None
         self.season = (
             (

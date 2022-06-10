@@ -42,9 +42,7 @@ class NominalSplitterReg(Splitter):
                 estimator = self._statistics[att_val]
             except KeyError:
                 if isinstance(target_val, dict):  # Multi-target case
-                    self._statistics[att_val] = VectorDict(
-                        default_factory=functools.partial(Var)
-                    )
+                    self._statistics[att_val] = VectorDict(default_factory=functools.partial(Var))
                     self._update_estimator = self._update_estimator_multivariate
                 else:
                     self._statistics[att_val] = Var()
@@ -55,9 +53,7 @@ class NominalSplitterReg(Splitter):
         """Not implemented in regression splitters."""
         raise NotImplementedError
 
-    def best_evaluated_split_suggestion(
-        self, criterion, pre_split_dist, att_idx, binary_only
-    ):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         current_best = BranchFactory()
         ordered_feature_values = sorted(list(self._statistics.keys()))
         if not binary_only and len(self._statistics) > 2:

@@ -3,6 +3,10 @@ import json
 import shelve
 import sys
 
+import torch
+from sklearn.linear_model import SGDClassifier
+from vowpalwabbit import pyvw
+
 from river import (
     base,
     compat,
@@ -14,13 +18,9 @@ from river import (
     metrics,
     naive_bayes,
     neighbors,
-    optim
 )
 from river import neural_net as nn
 from river import optim, preprocessing, rules, stats, tree
-from sklearn.linear_model import SGDClassifier
-import torch
-from vowpalwabbit import pyvw
 
 
 def run_track(models, track, benchmarks):
@@ -60,8 +60,8 @@ tracks = [
     evaluate.RegressionTrack(),
 ]
 
-class PyTorchLogReg(torch.nn.Module):
 
+class PyTorchLogReg(torch.nn.Module):
     def __init__(self, n_features):
         super().__init__()
         self.linear = torch.nn.Linear(n_features, 1)
@@ -71,6 +71,7 @@ class PyTorchLogReg(torch.nn.Module):
 
     def forward(self, x):
         return self.sigmoid(self.linear(x))
+
 
 class PyTorchModel:
     def __init__(self, network_func, loss, optimizer_func):
@@ -99,8 +100,8 @@ class PyTorchModel:
 
         return self
 
-class PyTorchBinaryClassifier(PyTorchModel, base.Classifier):
 
+class PyTorchBinaryClassifier(PyTorchModel, base.Classifier):
     def predict_proba_one(self, x):
 
         # We only know how many features a dataset contains at runtime
@@ -112,17 +113,16 @@ class PyTorchBinaryClassifier(PyTorchModel, base.Classifier):
         p = self.network(x).item()
         return {True: p, False: 1.0 - p}
 
-class VW2RiverBase:
 
+class VW2RiverBase:
     def __init__(self, *args, **kwargs):
         self.vw = pyvw.Workspace(*args, **kwargs)
 
     def _format_x(self, x):
-        return ' '.join(f'{k}:{v}' for k, v in x.items())
+        return " ".join(f"{k}:{v}" for k, v in x.items())
 
 
 class VW2RiverClassifier(VW2RiverBase, base.Classifier):
-
     def learn_one(self, x, y):
 
         # Convert {False, True} to {-1, 1}
@@ -130,58 +130,56 @@ class VW2RiverClassifier(VW2RiverBase, base.Classifier):
         y_vw = 2 * y - 1
 
         ex = self._format_x(x)
-        ex = f'{y_vw} | {ex}'
+        ex = f"{y_vw} | {ex}"
         self.vw.learn(ex)
         return self
 
     def predict_proba_one(self, x):
-        ex = '| ' + self._format_x(x)
+        ex = "| " + self._format_x(x)
         y_pred = self.vw.predict(ex)
         return {True: y_pred, False: 1.0 - y_pred}
+
 
 LEARNING_RATE = 0.005
 
 models = {
     "Binary classification": {
         "Logistic regression": (
-            preprocessing.StandardScaler() |
-            linear_model.LogisticRegression(optimizer=optim.SGD(LEARNING_RATE))
+            preprocessing.StandardScaler()
+            | linear_model.LogisticRegression(optimizer=optim.SGD(LEARNING_RATE))
         ),
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
         "Stochastic Gradient Tree": tree.SGTClassifier(),
-        'sklearn SGDClassifier': (
-            preprocessing.StandardScaler() |
-            compat.SKL2RiverClassifier(
+        "sklearn SGDClassifier": (
+            preprocessing.StandardScaler()
+            | compat.SKL2RiverClassifier(
                 SGDClassifier(
-                    loss='log_loss',
-                    learning_rate='constant',
-                    eta0=LEARNING_RATE,
-                    penalty='none'
+                    loss="log_loss", learning_rate="constant", eta0=LEARNING_RATE, penalty="none"
                 ),
-                classes=[False, True]
+                classes=[False, True],
             )
         ),
-        'PyTorch logistic regression': (
-            preprocessing.StandardScaler() |
-            PyTorchBinaryClassifier(
+        "PyTorch logistic regression": (
+            preprocessing.StandardScaler()
+            | PyTorchBinaryClassifier(
                 network_func=PyTorchLogReg,
                 loss=torch.nn.BCELoss(),
-                optimizer_func=lambda params: torch.optim.SGD(params, lr=LEARNING_RATE)
+                optimizer_func=lambda params: torch.optim.SGD(params, lr=LEARNING_RATE),
             )
         ),
-        'Vowpal Wabbit logistic regression': VW2RiverClassifier(
+        "Vowpal Wabbit logistic regression": VW2RiverClassifier(
             sgd=True,
             learning_rate=LEARNING_RATE,
-            loss_function='logistic',
-            link='logistic',
+            loss_function="logistic",
+            link="logistic",
             adaptive=False,
             normalized=False,
             invariant=False,
-            l2=0.,
-            l1=0.,
+            l2=0.0,
+            l1=0.0,
             power_t=0,
-            quiet=True
-        )
+            quiet=True,
+        ),
     },
     "Multiclass classification": {
         "Naive Bayes": naive_bayes.GaussianNB(),
@@ -192,12 +190,8 @@ models = {
         "Streaming Random Patches": ensemble.SRPClassifier(),
         "k-Nearest Neighbors": preprocessing.StandardScaler()
         | neighbors.KNNClassifier(window_size=100),
-        "ADWIN Bagging": ensemble.ADWINBaggingClassifier(
-            tree.HoeffdingTreeClassifier(), seed=42
-        ),
-        "AdaBoost": ensemble.AdaBoostClassifier(
-            tree.HoeffdingTreeClassifier(), seed=42
-        ),
+        "ADWIN Bagging": ensemble.ADWINBaggingClassifier(tree.HoeffdingTreeClassifier(), seed=42),
+        "AdaBoost": ensemble.AdaBoostClassifier(tree.HoeffdingTreeClassifier(), seed=42),
         "Bagging": ensemble.BaggingClassifier(tree.HoeffdingTreeClassifier(), seed=42),
         "Leveraging Bagging": ensemble.LeveragingBaggingClassifier(
             tree.HoeffdingTreeClassifier(), seed=42
@@ -207,8 +201,7 @@ models = {
                 preprocessing.StandardScaler() | linear_model.SoftmaxRegression(),
                 naive_bayes.GaussianNB(),
                 tree.HoeffdingTreeClassifier(),
-                preprocessing.StandardScaler()
-                | neighbors.KNNClassifier(window_size=100),
+                preprocessing.StandardScaler() | neighbors.KNNClassifier(window_size=100),
             ],
             meta_classifier=ensemble.AdaptiveRandomForestClassifier(seed=42),
         ),
@@ -217,16 +210,14 @@ models = {
                 preprocessing.StandardScaler() | linear_model.SoftmaxRegression(),
                 naive_bayes.GaussianNB(),
                 tree.HoeffdingTreeClassifier(),
-                preprocessing.StandardScaler()
-                | neighbors.KNNClassifier(window_size=100),
+                preprocessing.StandardScaler() | neighbors.KNNClassifier(window_size=100),
             ]
         ),
         # Baseline
         "[baseline] Last Class": dummy.NoChangeClassifier(),
     },
     "Regression": {
-        "Linear Regression": preprocessing.StandardScaler()
-        | linear_model.LinearRegression(),
+        "Linear Regression": preprocessing.StandardScaler() | linear_model.LinearRegression(),
         "Linear Regression with l1 regularization": preprocessing.StandardScaler()
         | linear_model.LinearRegression(l1=1.0),
         "Linear Regression with l2 regularization": preprocessing.StandardScaler()
@@ -237,8 +228,7 @@ models = {
         | linear_model.PARegressor(mode=2),
         "k-Nearest Neighbors": preprocessing.StandardScaler()
         | neighbors.KNNRegressor(window_size=100),
-        "Hoeffding Tree": preprocessing.StandardScaler()
-        | tree.HoeffdingAdaptiveTreeRegressor(),
+        "Hoeffding Tree": preprocessing.StandardScaler() | tree.HoeffdingAdaptiveTreeRegressor(),
         "Hoeffding Adaptive Tree": preprocessing.StandardScaler()
         | tree.HoeffdingAdaptiveTreeRegressor(seed=42),
         "Stochastic Gradient Tree": tree.SGTRegressor(),
@@ -246,8 +236,7 @@ models = {
         | ensemble.AdaptiveRandomForestRegressor(seed=42),
         "Adaptive Model Rules": preprocessing.StandardScaler()
         | rules.AMRules(drift_detector=drift.ADWIN()),
-        "Streaming Random Patches": preprocessing.StandardScaler()
-        | ensemble.SRPRegressor(seed=42),
+        "Streaming Random Patches": preprocessing.StandardScaler() | ensemble.SRPRegressor(seed=42),
         "Exponentially Weighted Average": preprocessing.StandardScaler()
         | ensemble.EWARegressor(
             models=[
@@ -270,7 +259,7 @@ models = {
         ),
         # Baseline
         "[baseline] Mean predictor": dummy.StatisticRegressor(stats.Mean()),
-    }
+    },
 }
 
 
@@ -285,28 +274,22 @@ if __name__ == "__main__":
     details = {}
 
     for track in tracks:
-        run_track(
-            models=models[track.name], track=track, benchmarks=benchmarks
-        )
-        details[track.name] = {
-            "Dataset": {},
-            "Model": {}
-        }
+        run_track(models=models[track.name], track=track, benchmarks=benchmarks)
+        details[track.name] = {"Dataset": {}, "Model": {}}
         for dataset in track.datasets:
             details[track.name]["Dataset"][dataset.__class__.__name__] = repr(dataset)
         for model_name, model in models[track.name].items():
             details[track.name]["Model"][model_name] = repr(model)
 
-
     log = {}
     for track in tracks:
         log[track.name] = benchmarks[track.name]
 
-    with open('results.json', 'w') as f:
+    with open("results.json", "w") as f:
         json.dump(log, f, sort_keys=True, indent=4)
 
     # Close the shelf
     benchmarks.close()
 
-    with open('details.json', 'w') as f:
+    with open("details.json", "w") as f:
         json.dump(details, f, sort_keys=True, indent=4)

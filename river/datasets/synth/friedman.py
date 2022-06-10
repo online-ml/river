@@ -216,9 +216,7 @@ class FriedmanDrift(Friedman):
             self._change_point3 = math.inf
 
         if not self._change_point1 < self._change_point2 < self._change_point3:
-            raise ValueError(
-                "The concept drift locations must be defined in an increasing order."
-            )
+            raise ValueError("The concept drift locations must be defined in an increasing order.")
 
         if (
             transition_window > self._change_point2 - self._change_point1
@@ -264,52 +262,31 @@ class FriedmanDrift(Friedman):
             return 10 * x[0] * x[1] + 20 * (x[2] - 0.5) + 10 * x[3] + 5 * x[4]
 
         if self.__lea_in_r2(x, index):
-            return (
-                10 * math.cos(x[0] * x[1])
-                + 20 * (x[2] - 0.5)
-                + math.exp(x[3])
-                + 5 * x[4] ** 2
-            )
+            return 10 * math.cos(x[0] * x[1]) + 20 * (x[2] - 0.5) + math.exp(x[3]) + 5 * x[4] ** 2
 
         # default case
-        return (
-            10 * math.sin(math.pi * x[0] * x[1])
-            + 20 * (x[2] - 0.5) ** 2
-            + 10 * x[3]
-            + 5 * x[4]
-        )
+        return 10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - 0.5) ** 2 + 10 * x[3] + 5 * x[4]
 
     def _global_recurring_abrupt_gen(self, x, index: int):
         if index < self._change_point1 or index >= self._change_point2:
             # The initial concept is recurring
             return (
-                10 * math.sin(math.pi * x[0] * x[1])
-                + 20 * (x[2] - 0.5) ** 2
-                + 10 * x[3]
-                + 5 * x[4]
+                10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - 0.5) ** 2 + 10 * x[3] + 5 * x[4]
             )
         else:
             # Drift: the positions of the features are swapped
             return (
-                10 * math.sin(math.pi * x[3] * x[5])
-                + 20 * (x[1] - 0.5) ** 2
-                + 10 * x[0]
-                + 5 * x[2]
+                10 * math.sin(math.pi * x[3] * x[5]) + 20 * (x[1] - 0.5) ** 2 + 10 * x[0] + 5 * x[2]
             )
 
     def _global_and_slow_gradual_gen(self, x, index: int, rc: random.Random):
         if index < self._change_point1:
             # default function
             return (
-                10 * math.sin(math.pi * x[0] * x[1])
-                + 20 * (x[2] - 0.5) ** 2
-                + 10 * x[3]
-                + 5 * x[4]
+                10 * math.sin(math.pi * x[0] * x[1]) + 20 * (x[2] - 0.5) ** 2 + 10 * x[3] + 5 * x[4]
             )
         elif self._change_point1 <= index < self._change_point2:
-            if index < self._change_point1 + self.transition_window and bool(
-                rc.getrandbits(1)
-            ):
+            if index < self._change_point1 + self.transition_window and bool(rc.getrandbits(1)):
                 # default function
                 return (
                     10 * math.sin(math.pi * x[0] * x[1])
@@ -325,9 +302,7 @@ class FriedmanDrift(Friedman):
                     + 5 * x[2]
                 )
         elif index >= self._change_point2:
-            if index < self._change_point2 + self.transition_window and bool(
-                rc.getrandbits(1)
-            ):
+            if index < self._change_point2 + self.transition_window and bool(rc.getrandbits(1)):
                 # First new function
                 return (
                     10 * math.sin(math.pi * x[3] * x[4])

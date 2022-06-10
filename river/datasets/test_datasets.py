@@ -56,10 +56,7 @@ def test_dimensions(dataset):
 
 @pytest.mark.parametrize(
     "dataset",
-    [
-        pytest.param(dataset, id=dataset.__class__.__name__)
-        for dataset in _iter_datasets()
-    ],
+    [pytest.param(dataset, id=dataset.__class__.__name__) for dataset in _iter_datasets()],
 )
 def test_repr(dataset):
     assert repr(dataset)
@@ -68,9 +65,7 @@ def test_repr(dataset):
 def _iter_synth_datasets():
 
     for variant in range(10):
-        dataset = functools.partial(
-            datasets.synth.Agrawal, classification_function=variant
-        )
+        dataset = functools.partial(datasets.synth.Agrawal, classification_function=variant)
         functools.update_wrapper(dataset, datasets.synth.Agrawal)
         yield dataset
 
@@ -84,10 +79,7 @@ def _iter_synth_datasets():
 
 @pytest.mark.parametrize(
     "dataset",
-    [
-        pytest.param(dataset(seed=42), id=dataset.__name__)
-        for dataset in _iter_synth_datasets()
-    ],
+    [pytest.param(dataset(seed=42), id=dataset.__name__) for dataset in _iter_synth_datasets()],
 )
 def test_synth_idempotent(dataset):
     """Checks that a synthetic dataset produces identical results when seeded."""
@@ -96,10 +88,7 @@ def test_synth_idempotent(dataset):
 
 @pytest.mark.parametrize(
     "dataset",
-    [
-        pytest.param(dataset(seed=None), id=dataset.__name__)
-        for dataset in _iter_synth_datasets()
-    ],
+    [pytest.param(dataset(seed=None), id=dataset.__name__) for dataset in _iter_synth_datasets()],
 )
 def test_synth_non_idempotent(dataset):
     """Checks that a synthetic dataset produces different results when not seeded."""
@@ -108,10 +97,7 @@ def test_synth_non_idempotent(dataset):
 
 @pytest.mark.parametrize(
     "dataset",
-    [
-        pytest.param(dataset(seed=42), id=dataset.__name__)
-        for dataset in _iter_synth_datasets()
-    ],
+    [pytest.param(dataset(seed=42), id=dataset.__name__) for dataset in _iter_synth_datasets()],
 )
 def test_synth_pausable(dataset):
     stream = iter(dataset)

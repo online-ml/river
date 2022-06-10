@@ -116,9 +116,7 @@ class Agrawal(datasets.base.SyntheticDataset):
         balance_classes: bool = False,
         perturbation: float = 0.0,
     ):
-        super().__init__(
-            n_features=9, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF
-        )
+        super().__init__(n_features=9, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF)
 
         # Classification functions to use
         self._classification_functions = [
@@ -142,8 +140,7 @@ class Agrawal(datasets.base.SyntheticDataset):
         self.balance_classes = balance_classes
         if not 0.0 <= perturbation <= 1.0:
             raise ValueError(
-                f"noise percentage should be in [0.0..1.0] "
-                f"and {perturbation} was passed"
+                f"noise percentage should be in [0.0..1.0] " f"and {perturbation} was passed"
             )
         self.perturbation = perturbation
         self.seed = seed
@@ -172,9 +169,7 @@ class Agrawal(datasets.base.SyntheticDataset):
             desired_class_found = False
             while not desired_class_found:
                 salary = 20000 + 130000 * self._rng.rand()
-                commission = (
-                    0 if (salary >= 75000) else (10000 + 75000 * self._rng.rand())
-                )
+                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.rand())
                 age = 20 + self._rng.randint(61)
                 elevel = self._rng.randint(5)
                 car = self._rng.randint(20)
@@ -192,9 +187,7 @@ class Agrawal(datasets.base.SyntheticDataset):
                         (not self._next_class_should_be_zero) and (y == 1)
                     ):
                         desired_class_found = True
-                        self._next_class_should_be_zero = (
-                            not self._next_class_should_be_zero
-                        )
+                        self._next_class_should_be_zero = not self._next_class_should_be_zero
 
             if self.perturbation > 0.0:
                 salary = self._perturb_value(salary, 20000, 150000)

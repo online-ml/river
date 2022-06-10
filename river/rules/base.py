@@ -126,9 +126,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
         delta
             The significance level.
         """
-        return math.sqrt(
-            (r_heur * r_heur * math.log(1.0 / delta)) / (2.0 * self.total_weight)
-        )
+        return math.sqrt((r_heur * r_heur * math.log(1.0 / delta)) / (2.0 * self.total_weight))
 
     @property  # type: ignore
     @abc.abstractmethod
@@ -189,9 +187,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
             b_split = suggestions[-1]
             sb_split = suggestions[-2]
 
-            hb = self._hoeffding_bound(
-                self.split_criterion.range_of_merit(self.statistics), delta
-            )
+            hb = self._hoeffding_bound(self.split_criterion.range_of_merit(self.statistics), delta)
 
             if b_split.merit > 0 and (b_split.merit - sb_split.merit > hb or hb < tau):
                 should_expand = True
@@ -202,9 +198,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
             branch_no = self.split_criterion.select_best_branch(b_split.children_stats)
 
             if is_numerical:
-                lit = NumericLiteral(
-                    b_split.feature, b_split.split_info, branch_no != 0
-                )
+                lit = NumericLiteral(b_split.feature, b_split.split_info, branch_no != 0)
 
                 literal_updated = False
                 for literal in self.literals:
@@ -223,9 +217,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
                 if not literal_updated:
                     self.literals.append(lit)
             else:
-                lit = NominalLiteral(
-                    b_split.feature, b_split.split_info, branch_no != 0
-                )
+                lit = NominalLiteral(b_split.feature, b_split.split_info, branch_no != 0)
                 # Add a new literal
                 self.literals.append(lit)
 

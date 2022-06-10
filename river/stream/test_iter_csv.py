@@ -13,9 +13,7 @@ def test_iter_csv_custom_converter():
         except ValueError:
             return None
 
-    params = {
-        "converters": {"col1": int_or_none, "col2": int_or_none, "col3": int_or_none}
-    }
+    params = {"converters": {"col1": int_or_none, "col2": int_or_none, "col3": int_or_none}}
     dataset = stream.iter_csv(example, **params)
     assert list(dataset) == [
         ({"col1": None, "col2": 1, "col3": 2}, None),
