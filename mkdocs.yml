@@ -23,7 +23,7 @@ theme:
   font:
     text: Rubik
     code: Roboto Mono
-  logo: img/river_square.svg
+  logo: img/icon.png
   favicon: img/favicon.ico
   features:
     - navigation.tabs
