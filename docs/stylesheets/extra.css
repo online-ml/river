@@ -1,3 +1,7 @@
+:root > * {
+    --md-primary-fg-color:#286bc8;
+}
+
 .md-typeset h1,
 .md-typeset h2 {
   font-weight: 1000;
@@ -12,6 +16,10 @@
 
 .md-footer {
   margin-top: 2em;
+}
+
+.md-tabs__link {
+  font-weight: bold;
 }
 
 .md-typeset pre > code {

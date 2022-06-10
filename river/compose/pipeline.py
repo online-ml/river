@@ -175,7 +175,7 @@ class Pipeline(base.Estimator):
     learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or
     a classifier. It is highly recommended to use pipelines with `river`. Indeed, in an online
     learning setting, it is very practical to have a model defined as a single object. Take a look
-    at the [user guide](../../recipes/pipelines.md) for further information and
+    at the [user guide](/recipes/pipelines) for further information and
     practical examples.
 
     One special thing to take notice to is the way transformers are handled. It is usual to predict
