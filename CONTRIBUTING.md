@@ -32,16 +32,10 @@ $ conda create -n river -y python=3.9
 $ conda activate river
 ```
 
-Then, navigate to your cloned fork and install the required dependencies:
+Then, navigate to your cloned fork and install `river` and the required dependencies in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
 
 ```sh
 $ pip install -e ".[dev]"
-```
-
-Next, install `river` in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
-
-```sh
-$ python setup.py develop
 ```
 
 Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will run some code quality checks every time you push to GitHub.
