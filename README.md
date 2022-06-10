@@ -1,10 +1,6 @@
-</br>
-
 <p align="center">
-  <img height="240px" src="docs/img/logo.svg" alt="river_logo">
+  <img height="220px" src="docs/img/logo.svg" alt="river_logo">
 </p>
-
-</br>
 
 <p align="center">
   <!-- Tests -->
