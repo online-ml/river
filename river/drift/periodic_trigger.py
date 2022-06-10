@@ -49,8 +49,8 @@ class PeriodicTrigger(base.DriftDetector):
 
     >>> ptrigger = PeriodicTrigger(t_0=500, seed=42)
     >>> for i, v in enumerate(data):
-    ...     in_drift, _ = ptrigger.update(v)
-    ...     if in_drift:
+    ...     _ = ptrigger.update(v)
+    ...     if ptrigger.drift_detected:
     ...         print(f"Drift detected at instance {i}.")
     Drift detected at instance 499.
     Drift detected at instance 999.
@@ -65,8 +65,8 @@ class PeriodicTrigger(base.DriftDetector):
     ...     seed=42
     ... )
     >>> for i, v in enumerate(data):
-    ...     in_drift, _ = rtrigger.update(v)
-    ...     if in_drift:
+    ...     _ = rtrigger.update(v)
+    ...     if rtrigger.drift_detected:
     ...         print(f"Drift detected at instance {i}.")
     Drift detected at instance 368.
     Drift detected at instance 817.
@@ -84,8 +84,8 @@ class PeriodicTrigger(base.DriftDetector):
 
     >>> rtrigger = rtrigger.clone()
     >>> for i, v in enumerate(data):
-    ...     in_drift, _ = rtrigger.update(v)
-    ...     if in_drift:
+    ...     _ = rtrigger.update(v)
+    ...     if rtrigger.drift_detected:
     ...         print(f"Drift detected at instance {i}.")
     Drift detected at instance 429.
     Drift detected at instance 728.
@@ -157,26 +157,27 @@ class PeriodicTrigger(base.DriftDetector):
                 self._n = 0
                 self._warmup_done = True
         elif self._n >= self.t_0:
-            self._in_concept_change = True
+            self._drift_detected = True
             self._n = 0
 
     def _random_trigger(self):
         t = self._n
         t_0 = self.t_0
         threshold = 1 / (1 + math.exp(-4 * (t - t_0) / self.w))
-        self._in_concept_change = self._rng.random() < threshold
+        self._drift_detected = self._rng.random() < threshold
 
-        if self._in_concept_change:
+        if self._drift_detected:
             self._n = 0
 
-    def update(self, value):
+    def update(self, x):
         self._n += 1
-        self._in_concept_change = False
+        self._drift_detected = False
         self._trigger()
 
-        return self._in_concept_change, False
+        return self
 
     def reset(self):
+        super().reset()
         self._n = 0
 
     def clone(self):

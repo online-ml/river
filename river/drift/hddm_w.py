@@ -4,14 +4,14 @@ from river.base import DriftDetector
 
 
 class HDDM_W(DriftDetector):
-    r"""Drift Detection Method based on Hoeffding’s bounds with moving weighted average-test.
+    r"""Drift Detection Method based on Hoeffding's bounds with moving weighted average-test.
 
     HDDM_W is an online drift detection method based on McDiarmid's bounds.
     HDDM_W uses the Exponentially Weighted Moving Average (EWMA) statistic as
     estimator. It receives as input a stream of real predictions and returns
     the estimated status of the stream: STABLE, WARNING or DRIFT.
 
-    **Input:** `value` must be a binary signal, where 1 indicates error.
+    **Input:** `x` must be a binary signal, where 1 indicates error.
     For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
     true target label $y$:
 
@@ -49,8 +49,8 @@ class HDDM_W(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = hddm_w.update(val)
-    ...     if in_drift:
+    ...     _ = hddm_w.update(val)
+    ...     if hddm_w.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1014, input value: 1
 
@@ -74,7 +74,17 @@ class HDDM_W(DriftDetector):
         two_sided_test=False,
     ):
         super().__init__()
+        self.drift_confidence = drift_confidence
+        self.warning_confidence = warning_confidence
+        self.lambda_option = lambda_option
+        self.two_sided_test = two_sided_test
+        self.estimation = None
+        self.reset()
+
+    def reset(self):
+        """Reset the change detector."""
         super().reset()
+        self._warning_detected = False
         self.total = self.SampleInfo()
         self.sample1_decr_monitor = self.SampleInfo()
         self.sample1_incr_monitor = self.SampleInfo()
@@ -84,65 +94,62 @@ class HDDM_W(DriftDetector):
         self.decr_cutpoint = float("inf")
         self.width = 0
         self.delay = 0
-        self.drift_confidence = drift_confidence
-        self.warning_confidence = warning_confidence
-        self.lambda_option = lambda_option
-        self.two_sided_test = two_sided_test
-        self.estimation = None
 
-    def update(self, value):
+    @property
+    def warning_detected(self) -> bool:
+        return self._warning_detected
+
+    def update(self, x):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value: Input value (0 or 1)
+        x
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
 
         Returns
         -------
-        tuple
-            A tuple (drift, warning) where its elements indicate if a drift or a warning is
-            detected.
+        self
 
         """
         aux_decay_rate = 1.0 - self.lambda_option
         self.width += 1
         if self.total.EWMA_estimator < 0:
-            self.total.EWMA_estimator = value
+            self.total.EWMA_estimator = x
             self.total.independent_bounded_condition_sum = 1
         else:
             self.total.EWMA_estimator = (
-                self.lambda_option * value + aux_decay_rate * self.total.EWMA_estimator
+                self.lambda_option * x + aux_decay_rate * self.total.EWMA_estimator
             )
             self.total.independent_bounded_condition_sum = (
                 self.lambda_option * self.lambda_option
                 + aux_decay_rate * aux_decay_rate * self.total.independent_bounded_condition_sum
             )
 
-        self._update_incr_statistics(value, self.drift_confidence)
+        self._update_incr_statistics(x, self.drift_confidence)
         if self._monitor_mean_incr(self.drift_confidence):
             self.reset()
-            self._in_concept_change = True
-            self._in_warning_zone = False
+            self._drift_detected = True
+            self._warning_detected = False
         elif self._monitor_mean_incr(self.warning_confidence):
-            self._in_concept_change = False
-            self._in_warning_zone = True
+            self._drift_detected = False
+            self._warning_detected = True
         else:
-            self._in_concept_change = False
-            self._in_warning_zone = False
+            self._drift_detected = False
+            self._warning_detected = False
 
-        self._update_decr_statistics(value, self.drift_confidence)
+        self._update_decr_statistics(x, self.drift_confidence)
         if self.two_sided_test:
             if self._monitor_mean_decr(self.drift_confidence):
                 self.reset()
-                self._in_concept_change = True
+                self._drift_detected = True
             elif self._monitor_mean_decr(self.warning_confidence):
-                self._in_warning_zone = True
+                self._warning_detected = True
 
         self.estimation = self.total.EWMA_estimator
 
-        return self._in_concept_change, self._in_warning_zone
+        return self
 
     @staticmethod
     def _detect_mean_increment(sample1, sample2, confidence):
@@ -219,16 +226,3 @@ class HDDM_W(DriftDetector):
                     * aux_decay
                     * self.sample2_decr_monitor.independent_bounded_condition_sum
                 )
-
-    def reset(self):
-        """Reset the change detector."""
-        super().reset()
-        self.total = self.SampleInfo()
-        self.sample1_decr_monitor = self.SampleInfo()
-        self.sample1_incr_monitor = self.SampleInfo()
-        self.sample2_decr_monitor = self.SampleInfo()
-        self.sample2_incr_monitor = self.SampleInfo()
-        self.incr_cutpoint = float("inf")
-        self.decr_cutpoint = float("inf")
-        self.width = 0
-        self.delay = 0

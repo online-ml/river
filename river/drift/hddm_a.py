@@ -1,4 +1,3 @@
-import typing
 from math import log, sqrt
 
 from river.base import DriftDetector
@@ -12,7 +11,7 @@ class HDDM_A(DriftDetector):
     values and returns the estimated status of the stream: STABLE, WARNING or
     DRIFT.
 
-    **Input:** `value` must be a binary signal, where 1 indicates error.
+    **Input:** `x` must be a binary signal, where 1 indicates error.
     For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
     true target label $y$:
 
@@ -48,8 +47,8 @@ class HDDM_A(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = hddm_a.update(val)
-    ...     if in_drift:
+    ...     _ = hddm_a.update(val)
+    ...     if hddm_a.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1046, input value: 1
 
@@ -62,7 +61,14 @@ class HDDM_A(DriftDetector):
 
     def __init__(self, drift_confidence=0.001, warning_confidence=0.005, two_sided_test=False):
         super().__init__()
+        self.drift_confidence = drift_confidence
+        self.warning_confidence = warning_confidence
+        self.two_sided_test = two_sided_test
+        self.reset()
+
+    def reset(self):
         super().reset()
+        self._warning_detected = False
         self.n_min = 0
         self.c_min = 0
         self.total_n = 0
@@ -74,11 +80,11 @@ class HDDM_A(DriftDetector):
         self.estimation = None
         self.delay = None
 
-        self.drift_confidence = drift_confidence
-        self.warning_confidence = warning_confidence
-        self.two_sided_test = two_sided_test
+    @property
+    def warning_detected(self) -> bool:
+        return self._warning_detected
 
-    def update(self, value) -> typing.Tuple[bool, bool]:
+    def update(self, x):
         """Update the change detector with a single data point.
 
         Parameters
@@ -89,11 +95,11 @@ class HDDM_A(DriftDetector):
 
         Returns
         -------
-        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
+        self
 
         """
         self.total_n += 1
-        self.total_c += value
+        self.total_c += x
         if self.n_min == 0:
             self.n_min = self.total_n
             self.c_min = self.total_c
@@ -120,16 +126,16 @@ class HDDM_A(DriftDetector):
             self.c_estimation = self.total_c - self.c_min
             self.n_min = self.n_max = self.total_n = 0
             self.c_min = self.c_max = self.total_c = 0
-            self._in_concept_change = True
-            self._in_warning_zone = False
+            self._drift_detected = True
+            self._warning_detected = False
         elif self._mean_incr(
             self.c_min, self.n_min, self.total_c, self.total_n, self.warning_confidence
         ):
-            self._in_concept_change = False
-            self._in_warning_zone = True
+            self._drift_detected = False
+            self._warning_detected = True
         else:
-            self._in_concept_change = False
-            self._in_warning_zone = False
+            self._drift_detected = False
+            self._warning_detected = False
 
         if self.two_sided_test:
             if self._mean_decr(
@@ -143,7 +149,7 @@ class HDDM_A(DriftDetector):
                 self.c_estimation = self.total_c - self.c_max
                 self.n_min = self.n_max = self.total_n = 0
                 self.c_min = self.c_max = self.total_c = 0
-                self._in_concept_change = True
+                self._drift_detected = True
             elif self._mean_decr(
                 self.c_max,
                 self.n_max,
@@ -151,11 +157,11 @@ class HDDM_A(DriftDetector):
                 self.total_n,
                 self.warning_confidence,
             ):
-                self._in_warning_zone = True
+                self._warning_detected = True
 
         self._update_estimations()
 
-        return self._in_concept_change, self._in_warning_zone
+        return self
 
     @staticmethod
     def _mean_incr(c_min, n_min, total_c, total_n, confidence):
@@ -173,18 +179,6 @@ class HDDM_A(DriftDetector):
         m = (total_n - n_max) / n_max * (1.0 / total_n)
         cota = sqrt(m / 2 * log(2.0 / confidence))
         return c_max / n_max - total_c / total_n >= cota
-
-    def reset(self):
-        """Reset the change detector."""
-        super().reset()
-        self.n_min = 0
-        self.c_min = 0
-        self.total_n = 0
-        self.total_c = 0
-        self.n_max = 0
-        self.c_max = 0
-        self.c_estimation = 0
-        self.n_estimation = 0
 
     def _update_estimations(self):
         if self.total_n >= self.n_estimation:

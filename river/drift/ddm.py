@@ -1,5 +1,4 @@
 import math
-import numbers
 
 from river.base import DriftDetector
 
@@ -37,7 +36,7 @@ class DDM(DriftDetector):
 
     * if $p_i + s_i \geq p_{min} + 3 * s_{min}$ -> Change detected
 
-    **Input:** `value` must be a binary signal, where 1 indicates error.
+    **Input:** `x` must be a binary signal, where 1 indicates error.
     For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
     true target label $y$:
 
@@ -72,8 +71,8 @@ class DDM(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = ddm.update(val)
-    ...     if in_drift:
+    ...     _ = ddm.update(val)
+    ...     if ddm.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1101, input value: 1
 
@@ -103,11 +102,13 @@ class DDM(DriftDetector):
         self.warning_level = warning_level
         self.out_control_level = out_control_level
         self.estimation = None
+
         self.reset()
 
     def reset(self):
         """Reset the change detector."""
         super().reset()
+        self._warning_detected = False
         self.sample_count = 1
         self.miss_prob = 1.0
         self.miss_std = 0.0
@@ -115,48 +116,58 @@ class DDM(DriftDetector):
         self.miss_prob_min = float("inf")
         self.miss_sd_min = float("inf")
 
-    def update(self, value: numbers.Number):
+    @property
+    def warning_detected(self):
+        return self._warning_detected
+
+    def update(self, x):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value
+        x
             This parameter indicates whether the last sample analyzed was correctly classified or
             not. 1 indicates an error (miss-classification).
 
+        Returns
+        -------
+        self
+
         """
-        if self._in_concept_change:
+        if self._drift_detected:
             self.reset()
 
-        self.miss_prob = self.miss_prob + (value - self.miss_prob) / float(self.sample_count)
-        self.miss_std = math.sqrt(self.miss_prob * (1 - self.miss_prob) / float(self.sample_count))
+        self.miss_prob = self.miss_prob + (x - self.miss_prob) / float(
+            self.sample_count
+        )
+        self.miss_std = math.sqrt(
+            self.miss_prob * (1 - self.miss_prob) / float(self.sample_count)
+        )
         self.sample_count += 1
 
         self.estimation = self.miss_prob
-        self._in_concept_change = False
-        self._in_warning_zone = False
+        self._drift_detected = False
+        self._warning_detected = False
 
-        if self.sample_count <= self.min_num_instances:
-            return self._in_concept_change, self._in_warning_zone
+        if self.sample_count > self.min_num_instances:
+            if self.miss_prob + self.miss_std <= self.miss_prob_sd_min:
+                self.miss_prob_min = self.miss_prob
+                self.miss_sd_min = self.miss_std
+                self.miss_prob_sd_min = self.miss_prob + self.miss_std
 
-        if self.miss_prob + self.miss_std <= self.miss_prob_sd_min:
-            self.miss_prob_min = self.miss_prob
-            self.miss_sd_min = self.miss_std
-            self.miss_prob_sd_min = self.miss_prob + self.miss_std
+            if (
+                self.miss_prob + self.miss_std
+                > self.miss_prob_min + self.out_control_level * self.miss_sd_min
+            ):
+                self._drift_detected = True
 
-        if (
-            self.miss_prob + self.miss_std
-            > self.miss_prob_min + self.out_control_level * self.miss_sd_min
-        ):
-            self._in_concept_change = True
+            elif (
+                self.miss_prob + self.miss_std
+                > self.miss_prob_min + self.warning_level * self.miss_sd_min
+            ):
+                self._warning_detected = True
 
-        elif (
-            self.miss_prob + self.miss_std
-            > self.miss_prob_min + self.warning_level * self.miss_sd_min
-        ):
-            self._in_warning_zone = True
+            else:
+                self._warning_detected = False
 
-        else:
-            self._in_warning_zone = False
-
-        return self._in_concept_change, self._in_warning_zone
+        return self

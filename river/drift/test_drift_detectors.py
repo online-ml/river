@@ -108,7 +108,7 @@ def test_page_hinkley():
 def perform_test(drift_detector, data_stream):
     detected_indices = []
     for i, val in enumerate(data_stream):
-        in_drift, in_warning = drift_detector.update(val)
-        if in_drift:
+        drift_detector.update(val)
+        if drift_detector.drift_detected:
             detected_indices.append(i)
     return detected_indices

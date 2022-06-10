@@ -18,7 +18,7 @@ class ADWIN(DriftDetector):
     $\delta=\in(0,1)$ to determine if the two sub-windows correspond to the
     same distribution.
 
-    **Input**: `value` can be any numeric value related to the definition of
+    **Input**: `x` can be any numeric value related to the definition of
     concept change for the data analyzed. For example, using 0's or 1's
     to track drift in a classifier's performance as follows:
 
@@ -44,8 +44,8 @@ class ADWIN(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, _ = adwin.update(val)
-    ...     if in_drift:
+    ...     _ = adwin.update(val)
+    ...     if adwin.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     ...         adwin.reset()  # Good practice
     Change detected at index 1023, input value: 4
@@ -91,7 +91,7 @@ class ADWIN(DriftDetector):
             return 0.0
         return self.total / self.width
 
-    def update(self, value):
+    def update(self, x):
         """Update the change detector with a single data point.
 
         Apart from adding the element value to the window, by inserting it in
@@ -101,18 +101,16 @@ class ADWIN(DriftDetector):
 
         Parameters
         ----------
-        value
+        x
             Input value
 
         Returns
         -------
-        tuple
-            A tuple (drift, warning) where its elements indicate if a drift or a warning is
-            detected.
+        self
 
         """
-        self._in_concept_change = self._helper.update(value)
-        return self._in_concept_change, self._in_warning_zone
+        self._drift_detected = self._helper.update(x)
+        return self
 
     def reset(self):
         """Reset the change detector."""

@@ -1,5 +1,4 @@
 import math
-import typing
 
 from river.base import DriftDetector
 
@@ -33,7 +32,7 @@ class EDDM(DriftDetector):
 
     $\alpha$ and $\beta$ are set to 0.95 and 0.9, respectively.
 
-    **Input:** `value` must be a binary signal, where 1 indicates error.
+    **Input:** `x` must be a binary signal, where 1 indicates error.
     For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
     true target label $y$:
 
@@ -68,8 +67,8 @@ class EDDM(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = eddm.update(val)
-    ...     if in_drift:
+    ...     _ = eddm.update(val)
+    ...     if eddm.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 105, input value: 1
     Change detected at index 245, input value: 1
@@ -111,11 +110,13 @@ class EDDM(DriftDetector):
         self.m_last_level = None
         self.estimation = None
         self.delay = None
+
         self.reset()
 
     def reset(self):
         """Reset the change detector."""
         super().reset()
+        self._warning_detected = False
         self.m_n = 1
         self.m_num_errors = 0
         self.m_d = 0
@@ -125,56 +126,64 @@ class EDDM(DriftDetector):
         self.m_m2s_max = 0.0
         self.estimation = 0.0
 
-    def update(self, value) -> typing.Tuple[bool, bool]:
+    @property
+    def warning_detected(self):
+        return self._warning_detected
+
+    def update(self, x):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value
+        x
             This parameter indicates whether the last sample analyzed was correctly classified or
             not. 1 indicates an error (miss-classification).
 
         Returns
         -------
-        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
+        self
 
         """
 
-        if self._in_concept_change:
+        if self._drift_detected:
             self.reset()
 
-        self._in_concept_change = False
+        self._drift_detected = False
 
         self.m_n += 1
 
-        if value == 1.0:
-            self._in_warning_zone = False
+        if x == 1.0:
+            self._warning_detected = False
             self.delay = 0
             self.m_num_errors += 1
             self.m_lastd = self.m_d
             self.m_d = self.m_n - 1
             distance = self.m_d - self.m_lastd
             old_mean = self.m_mean
-            self.m_mean = self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
+            self.m_mean = (
+                self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
+            )
             self.estimation = self.m_mean
             self.m_std_temp += (distance - self.m_mean) * (distance - old_mean)
             std = math.sqrt(self.m_std_temp / self.m_num_errors)
             m2s = self.m_mean + 2 * std
 
-            if self.m_n < self.min_num_instances:
-                return self._in_concept_change, self._in_warning_zone
-
-            if m2s > self.m_m2s_max:
-                self.m_m2s_max = m2s
-            else:
-                p = m2s / self.m_m2s_max
-                if (self.m_num_errors > self.m_min_num_errors) and (p < self.outcontrol):
-                    self._in_concept_change = True
-
-                elif (self.m_num_errors > self.m_min_num_errors) and (p < self.warning):
-                    self._in_warning_zone = True
-
+            if self.m_n >= self.min_num_instances:
+                if m2s > self.m_m2s_max:
+                    self.m_m2s_max = m2s
                 else:
-                    self._in_warning_zone = False
+                    p = m2s / self.m_m2s_max
+                    if (self.m_num_errors > self.m_min_num_errors) and (
+                        p < self.outcontrol
+                    ):
+                        self._drift_detected = True
 
-        return self._in_concept_change, self._in_warning_zone
+                    elif (self.m_num_errors > self.m_min_num_errors) and (
+                        p < self.warning
+                    ):
+                        self._warning_detected = True
+
+                    else:
+                        self._warning_detected = False
+
+        return self

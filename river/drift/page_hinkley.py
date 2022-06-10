@@ -1,5 +1,3 @@
-import typing
-
 from river.base import DriftDetector
 
 
@@ -37,8 +35,8 @@ class PageHinkley(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, _ = ph.update(val)
-    ...     if in_drift:
+    ...     _ = ph.update(val)
+    ...     if ph.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1006, input value: 5
 
@@ -66,33 +64,19 @@ class PageHinkley(DriftDetector):
         self.x_mean = 0.0
         self.sum = 0.0
 
-    def update(self, value) -> typing.Tuple[bool, bool]:
-        """Update the change detector with a single data point.
-
-        Parameters
-        ----------
-        value
-            Input value
-
-        Returns
-        -------
-        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
-
-        """
-        if self._in_concept_change:
+    def update(self, x):
+        if self._drift_detected:
             self.reset()
 
-        self.x_mean += (value - self.x_mean) / float(self.sample_count)
-        self.sum = max(0.0, self.alpha * self.sum + (value - self.x_mean - self.delta))
+        self.x_mean += (x - self.x_mean) / float(self.sample_count)
+        self.sum = max(0.0, self.alpha * self.sum + (x - self.x_mean - self.delta))
 
         self.sample_count += 1
 
-        self._in_concept_change = False
+        self._drift_detected = False
 
-        if self.sample_count < self.min_instances:
-            return False, False
+        if self.sample_count >= self.min_instances:
+            if self.sum >= self.threshold:
+                self._drift_detected = True
 
-        if self.sum >= self.threshold:
-            self._in_concept_change = True
-
-        return self._in_concept_change, self._in_warning_zone
+        return self
