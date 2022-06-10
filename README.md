@@ -153,7 +153,7 @@ Some specificities of River are that:
 - [awesome-online-machine-learning](https://github.com/online-ml/awesome-online-machine-learning)
 - [2022 presentation at GAIA](https://www.youtube.com/watch?v=nzFTmJnIakk&list=PLIU25-FciwNaz5PqWPiHmPCMOFYoEsJ8c&index=5)
 
-## 👍 Contributing
+## 👐 Contributing
 
 Feel free to contribute in any way you like, we're always open to new ideas and approaches.
 
