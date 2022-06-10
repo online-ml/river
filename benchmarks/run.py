@@ -115,7 +115,7 @@ class PyTorchBinaryClassifier(PyTorchModel, base.Classifier):
 class VW2RiverBase:
 
     def __init__(self, *args, **kwargs):
-        self.vw = pyvw.vw(*args, **kwargs)
+        self.vw = pyvw.Workspace(*args, **kwargs)
 
     def _format_x(self, x):
         return ' '.join(f'{k}:{v}' for k, v in x.items())
@@ -297,14 +297,14 @@ if __name__ == "__main__":
         for model_name, model in models[track.name].items():
             details[track.name]["Model"][model_name] = repr(model)
 
-    
+
     log = {}
     for track in tracks:
         log[track.name] = benchmarks[track.name]
 
     with open('results.json', 'w') as f:
         json.dump(log, f, sort_keys=True, indent=4)
-    
+
     # Close the shelf
     benchmarks.close()
 
