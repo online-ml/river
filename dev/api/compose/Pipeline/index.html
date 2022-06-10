@@ -104,7 +104,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../../.." title="River" class="md-header__button md-logo" aria-label="River" data-md-component="logo">
       
-  <img src="../../../img/river_square.svg" alt="logo">
+  <img src="../../../img/icon.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -326,7 +326,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="../../.." title="River" class="md-nav__button md-logo" aria-label="River" data-md-component="logo">
       
-  <img src="../../../img/river_square.svg" alt="logo">
+  <img src="../../../img/icon.png" alt="logo">
 
     </a>
     River
@@ -19226,7 +19226,7 @@
 
 <h1 id="pipeline">Pipeline<a class="headerlink" href="#pipeline" title="Permanent link">&para;</a></h1>
 <p>A pipeline of estimators.</p>
-<p>Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or a classifier. It is highly recommended to use pipelines with <code>river</code>. Indeed, in an online learning setting, it is very practical to have a model defined as a single object. Take a look at the <a href="../../../recipes/pipelines/">user guide</a> for further information and practical examples. </p>
+<p>Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or a classifier. It is highly recommended to use pipelines with <code>river</code>. Indeed, in an online learning setting, it is very practical to have a model defined as a single object. Take a look at the <a href="/recipes/pipelines">user guide</a> for further information and practical examples. </p>
 <p>One special thing to take notice to is the way transformers are handled. It is usual to predict something for a sample and wait for the ground truth to arrive. In such a scenario, the features are seen before the ground truth arrives. Therefore, the unsupervised parts of the pipeline are updated when <code>predict_one</code> and <code>predict_proba_one</code> are called. Usually the unsupervised parts of the pipeline are all the steps that precede the final step, which is a supervised model. However, some transformers are supervised and are therefore also updated during calls to <code>learn_one</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
