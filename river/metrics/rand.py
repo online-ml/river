@@ -25,9 +25,7 @@ def _pair_confusion(cm):
 
     false_negatives -= sum_squares
 
-    true_negatives = (
-        cm.n_samples * cm.n_samples - (false_positives + false_negatives) - sum_squares
-    )
+    true_negatives = cm.n_samples * cm.n_samples - (false_positives + false_negatives) - sum_squares
 
     pair_confusion_matrix[0][0] = true_negatives
     pair_confusion_matrix[0][1] = false_positives
@@ -189,10 +187,8 @@ class AdjustedRand(metrics.base.MultiClassMetric):
                 2.0
                 * (true_positives * true_negatives - false_negatives * false_positives)
                 / (
-                    (true_positives + false_negatives)
-                    * (false_negatives + true_negatives)
-                    + (true_positives + false_positives)
-                    * (false_positives + true_negatives)
+                    (true_positives + false_negatives) * (false_negatives + true_negatives)
+                    + (true_positives + false_positives) * (false_positives + true_negatives)
                 )
             )
         except ZeroDivisionError:

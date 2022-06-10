@@ -127,9 +127,7 @@ class MLP:
 
         # Go through the layers in reverse order
         for i in range(self.n_layers - 2, 0, -1):
-            delta = np.dot(delta, self.w[i + 1].T) * self.activations[i - 1].gradient(
-                z[i + 1]
-            )
+            delta = np.dot(delta, self.w[i + 1].T) * self.activations[i - 1].gradient(z[i + 1])
             dw = np.dot(a[i].T, delta)
             update_params[i] = (dw, delta)
 

@@ -16,9 +16,7 @@ def test_log_loss():
         metric.update(yt, yp)
 
         if i >= 1:
-            assert math.isclose(
-                metric.get(), sk_metrics.log_loss(y_true[: i + 1], y_pred[: i + 1])
-            )
+            assert math.isclose(metric.get(), sk_metrics.log_loss(y_true[: i + 1], y_pred[: i + 1]))
 
     metric.revert(y_true[-1], y_pred[-1])
     assert math.isclose(metric.get(), sk_metrics.log_loss(y_true[:-1], y_pred[:-1]))

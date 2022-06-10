@@ -96,9 +96,7 @@ class Sine(datasets.base.SyntheticDataset):
         has_noise: bool = False,
     ):
         super().__init__(
-            n_features=self._N_BASE_FEATURES
-            if not has_noise
-            else self._N_FEATURES_INCLUDING_NOISE,
+            n_features=self._N_BASE_FEATURES if not has_noise else self._N_FEATURES_INCLUDING_NOISE,
             n_classes=2,
             n_outputs=1,
             task=datasets.base.BINARY_CLF,
@@ -144,9 +142,7 @@ class Sine(datasets.base.SyntheticDataset):
                         (not self.next_class_should_be_zero) and (y == 1)
                     ):
                         desired_class_found = True
-                        self.next_class_should_be_zero = (
-                            not self.next_class_should_be_zero
-                        )
+                        self.next_class_should_be_zero = not self.next_class_should_be_zero
 
             if self.has_noise:
                 x[2] = self._rng.rand()

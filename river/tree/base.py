@@ -52,9 +52,7 @@ class Branch(base.Base, abc.ABC):
     def repr_split(self):
         """String representation of the split."""
 
-    def walk(
-        self, x, until_leaf=True
-    ) -> typing.Iterable[typing.Union["Branch", "Leaf"]]:
+    def walk(self, x, until_leaf=True) -> typing.Iterable[typing.Union["Branch", "Leaf"]]:
         """Iterate over the nodes of the path induced by x."""
         yield self
         try:

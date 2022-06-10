@@ -63,9 +63,7 @@ class SDFT:
         else:
             diff = x - self.window[0]
             for i, c in enumerate(self.coefficients):
-                self.coefficients[i] = (c + diff) * np.exp(
-                    2j * np.pi * i / self.window_size
-                )
+                self.coefficients[i] = (c + diff) * np.exp(2j * np.pi * i / self.window_size)
             self.window.append(x)
 
         return self

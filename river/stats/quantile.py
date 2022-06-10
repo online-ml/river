@@ -116,9 +116,7 @@ class Quantile(stats.base.Univariate):
                 if qm1 < qn and qn < qp1:
                     self.heights[i] = qn
                 else:
-                    self.heights[i] = q + d * (self.heights[i + d] - q) / (
-                        self.position[i + d] - n
-                    )
+                    self.heights[i] = q + d * (self.heights[i + d] - q) / (self.position[i + d] - n)
 
                 self.position[i] = n + d
 
@@ -141,8 +139,7 @@ class Quantile(stats.base.Univariate):
             # Increment all positions greater than k
             self.position = [j if i < k else j + 1 for i, j in enumerate(self.position)]
             self.marker_position = [
-                x + y
-                for x, y in zip(self.marker_position, self.desired_marker_position)
+                x + y for x, y in zip(self.marker_position, self.desired_marker_position)
             ]
 
             # Adjust heights of markers 2-4 if necessary
@@ -238,8 +235,6 @@ class RollingQuantile(stats.base.RollingUnivariate):
     def get(self):
         lower, higher, frac = self._prepare()
         try:
-            return (
-                self.window[lower] + (self.window[higher] - self.window[lower]) * frac
-            )
+            return self.window[lower] + (self.window[higher] - self.window[lower]) * frac
         except IndexError:
             return None

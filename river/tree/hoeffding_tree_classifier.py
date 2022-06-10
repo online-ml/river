@@ -4,11 +4,7 @@ from .hoeffding_tree import HoeffdingTree
 from .nodes.branch import DTBranch
 from .nodes.htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
 from .nodes.leaf import HTLeaf
-from .split_criterion import (
-    GiniSplitCriterion,
-    HellingerDistanceCriterion,
-    InfoGainSplitCriterion,
-)
+from .split_criterion import GiniSplitCriterion, HellingerDistanceCriterion, InfoGainSplitCriterion
 from .splitter import GaussianSplitter, Splitter
 
 
@@ -157,9 +153,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             self.splitter = GaussianSplitter()
         else:
             if not splitter.is_target_class:
-                raise ValueError(
-                    "The chosen splitter cannot be used in classification tasks."
-                )
+                raise ValueError("The chosen splitter cannot be used in classification tasks.")
             self.splitter = splitter  # type: ignore
 
         # To keep track of the observed classes
@@ -216,9 +210,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
         return split_criterion
 
-    def _attempt_to_split(
-        self, leaf: HTLeaf, parent: DTBranch, parent_branch: int, **kwargs
-    ):
+    def _attempt_to_split(self, leaf: HTLeaf, parent: DTBranch, parent_branch: int, **kwargs):
         """Attempt to split a leaf.
 
         If the samples seen so far are not from the same class then:
@@ -260,8 +252,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
                 if (
-                    best_suggestion.merit - second_best_suggestion.merit
-                    > hoeffding_bound
+                    best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
                     or hoeffding_bound < self.tie_threshold
                 ):
                     should_split = True
@@ -271,8 +262,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     for suggestion in best_split_suggestions:
                         if (
                             suggestion.feature
-                            and best_suggestion.merit - suggestion.merit
-                            > hoeffding_bound
+                            and best_suggestion.merit - suggestion.merit > hoeffding_bound
                         ):
                             poor_atts.add(suggestion.feature)
                     for poor_att in poor_atts:
@@ -368,11 +358,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     weight_seen = node.total_weight
                     weight_diff = weight_seen - node.last_split_attempt_at
                     if weight_diff >= self.grace_period:
-                        p_branch = (
-                            p_node.branch_no(x)
-                            if isinstance(p_node, DTBranch)
-                            else None
-                        )
+                        p_branch = p_node.branch_no(x) if isinstance(p_node, DTBranch) else None
                         self._attempt_to_split(node, p_node, p_branch)
                         node.last_split_attempt_at = weight_seen
         else:

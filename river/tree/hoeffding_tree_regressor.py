@@ -148,9 +148,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             self.splitter = EBSTSplitter()
         else:
             if splitter.is_target_class:
-                raise ValueError(
-                    "The chosen splitter cannot be used in regression tasks."
-                )
+                raise ValueError("The chosen splitter cannot be used in regression tasks.")
             self.splitter = splitter  # type: ignore
 
     @HoeffdingTree.leaf_prediction.setter  # type: ignore
@@ -259,11 +257,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                     weight_seen = node.total_weight
                     weight_diff = weight_seen - node.last_split_attempt_at
                     if weight_diff >= self.grace_period:
-                        p_branch = (
-                            p_node.branch_no(x)
-                            if isinstance(p_node, DTBranch)
-                            else None
-                        )
+                        p_branch = p_node.branch_no(x) if isinstance(p_node, DTBranch) else None
                         self._attempt_to_split(node, p_node, p_branch)
                         node.last_split_attempt_at = weight_seen
         else:
@@ -317,9 +311,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             pred = leaf.prediction(x, tree=self)
         return pred
 
-    def _attempt_to_split(
-        self, leaf: HTLeaf, parent: DTBranch, parent_branch: int, **kwargs
-    ):
+    def _attempt_to_split(self, leaf: HTLeaf, parent: DTBranch, parent_branch: int, **kwargs):
         """Attempt to split a node.
 
         If the target's variance is high at the leaf node, then:
@@ -362,8 +354,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
             if best_suggestion.merit > 0.0 and (
-                second_best_suggestion.merit / best_suggestion.merit
-                < 1 - hoeffding_bound
+                second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
                 or hoeffding_bound < self.tie_threshold
             ):
                 should_split = True
@@ -415,9 +406,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             and best_split_suggestions[-1].merit > 0
             and best_split_suggestions[-2].merit > 0
         ):
-            last_check_ratio = (
-                best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
-            )
+            last_check_ratio = best_split_suggestions[-2].merit / best_split_suggestions[-1].merit
             last_check_vr = best_split_suggestions[-1].merit
 
             leaf.manage_memory(  # type: ignore

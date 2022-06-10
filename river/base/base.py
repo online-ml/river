@@ -161,9 +161,7 @@ class Base:
 
         def instantiate(klass, params, new_params):
 
-            params = {
-                name: new_params.get(name, param) for name, param in params.items()
-            }
+            params = {name: new_params.get(name, param) for name, param in params.items()}
 
             return klass(
                 **{
@@ -258,9 +256,7 @@ class Base:
                 size += obj.nbytes
             elif isinstance(obj, itertools.count):
                 ...
-            elif hasattr(obj, "__iter__") and not isinstance(
-                obj, (str, bytes, bytearray)
-            ):
+            elif hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes, bytearray)):
                 buffer.extend([i for i in obj])  # type: ignore
 
         return size

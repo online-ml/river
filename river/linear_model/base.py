@@ -143,9 +143,7 @@ class GLM:
     def _raw_dot_one(self, x: dict) -> float:
         return self._weights @ utils.VectorDict(x) + self.intercept
 
-    def _eval_gradient_one(
-        self, x: dict, y: float, w: float
-    ) -> typing.Tuple[dict, float]:
+    def _eval_gradient_one(self, x: dict, y: float, w: float) -> typing.Tuple[dict, float]:
 
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
@@ -174,9 +172,7 @@ class GLM:
         self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
     ) -> typing.Tuple[dict, float]:
 
-        loss_gradient = self.loss.gradient(
-            y_true=y.values, y_pred=self._raw_dot_many(X)
-        )
+        loss_gradient = self.loss.gradient(y_true=y.values, y_pred=self._raw_dot_many(X))
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
 
@@ -191,9 +187,7 @@ class GLM:
 
         return dict(zip(X.columns, gradient)), loss_gradient.mean()
 
-    def learn_many(
-        self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1
-    ):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series] = 1):
         self._y_name = y.name
         with self._learn_mode(set(X)):
             return self._fit(X, y, w, get_grad=self._eval_gradient_many)

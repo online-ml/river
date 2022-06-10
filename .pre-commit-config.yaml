@@ -17,6 +17,12 @@ repos:
         types: [python]
         entry: black
 
+      - id: isort
+        name: isort
+        language: python
+        types: [python]
+        entry: isort
+
       - id: flake8
         name: flake8
         language: python
@@ -28,10 +34,3 @@ repos:
         language: python
         types: [python]
         entry: mypy
-
-      - id: isort
-        name: isort
-        language: python
-        types: [python]
-        entry: isort
-        args: ["--profile", "black"]

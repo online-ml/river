@@ -95,9 +95,7 @@ class StaticQuantizer(Quantizer):
 
     """
 
-    def __init__(
-        self, n_bins: int = 64, warm_start: int = 100, *, buckets: typing.List = None
-    ):
+    def __init__(self, n_bins: int = 64, warm_start: int = 100, *, buckets: typing.List = None):
         super().__init__()
 
         self.n_bins = n_bins
@@ -132,8 +130,7 @@ class StaticQuantizer(Quantizer):
             )
 
             self.buckets = [
-                ((splits[i], splits[i + 1]), GradHessStats())
-                for i in range(self.n_bins)
+                ((splits[i], splits[i + 1]), GradHessStats()) for i in range(self.n_bins)
             ]
 
             # Replay buffer

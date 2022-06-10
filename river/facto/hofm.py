@@ -54,9 +54,7 @@ class HOFM(BaseFM):
         self.degree = degree
 
     def _init_latents(self):
-        random_latents = functools.partial(
-            self.latent_initializer, shape=self.n_factors
-        )
+        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         order_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(order_latents_dict)
 
@@ -103,9 +101,7 @@ class HOFM(BaseFM):
         for d in range(2, self.degree + 1):
 
             for combination in itertools.combinations(x.keys(), d):
-                feature_product = functools.reduce(
-                    lambda x, y: x * y, (x[j] for j in combination)
-                )
+                feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
 
                 for f in range(self.n_factors):
                     latent_product = functools.reduce(
@@ -113,9 +109,7 @@ class HOFM(BaseFM):
                     )
 
                     for j in combination:
-                        gradients[j][d][f] += (
-                            feature_product * latent_product / v[j][d][f]
-                        )
+                        gradients[j][d][f] += feature_product * latent_product / v[j][d][f]
 
         # Finally update the latent weights
         for j in x.keys():
@@ -123,9 +117,7 @@ class HOFM(BaseFM):
                 self.latents[j][d] = self.latent_optimizer.step(
                     w=v[j][d],
                     g={
-                        f: g_loss * gradients[j][d][f]
-                        + l1 * sign(v[j][d][f])
-                        + 2 * l2 * v[j][d][f]
+                        f: g_loss * gradients[j][d][f] + l1 * sign(v[j][d][f]) + 2 * l2 * v[j][d][f]
                         for f in range(self.n_factors)
                     },
                 )

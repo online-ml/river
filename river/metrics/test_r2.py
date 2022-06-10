@@ -85,6 +85,4 @@ def test_rolling_r2():
         r2.update(yt, yp)
 
         if i >= 2:
-            assert math.isclose(
-                r2.get(), sk_r2(tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n))
-            )
+            assert math.isclose(r2.get(), sk_r2(tail(y_true[: i + 1], n), tail(y_pred[: i + 1], n)))

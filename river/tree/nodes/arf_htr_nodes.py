@@ -54,9 +54,7 @@ class RandomLeafModel(BaseRandomLeaf, LeafModel):
     """
 
     def __init__(self, stats, depth, splitter, max_features, rng, leaf_model, **kwargs):
-        super().__init__(
-            stats, depth, splitter, max_features, rng, leaf_model=leaf_model, **kwargs
-        )
+        super().__init__(stats, depth, splitter, max_features, rng, leaf_model=leaf_model, **kwargs)
 
 
 class RandomLeafAdaptive(BaseRandomLeaf, LeafAdaptive):
@@ -85,6 +83,4 @@ class RandomLeafAdaptive(BaseRandomLeaf, LeafAdaptive):
     """
 
     def __init__(self, stats, depth, splitter, max_features, rng, leaf_model, **kwargs):
-        super().__init__(
-            stats, depth, splitter, max_features, rng, leaf_model=leaf_model, **kwargs
-        )
+        super().__init__(stats, depth, splitter, max_features, rng, leaf_model=leaf_model, **kwargs)

@@ -92,9 +92,7 @@ class SuccessiveHalving(abc.ABC):
 
             # Determine where the next rung is located
             self._s = cutoff
-            self._r = math.floor(
-                self.budget / (self._s * math.ceil(math.log(self._n, self.eta)))
-            )
+            self._r = math.floor(self.budget / (self._s * math.ceil(math.log(self._n, self.eta))))
 
         return self
 

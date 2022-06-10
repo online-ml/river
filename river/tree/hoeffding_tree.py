@@ -6,10 +6,7 @@ import typing
 from abc import ABC, abstractmethod
 
 from river import base
-from river.utils.skmultiflow_utils import (
-    calculate_object_size,
-    normalize_values_in_dict,
-)
+from river.utils.skmultiflow_utils import calculate_object_size, normalize_values_in_dict
 
 from .nodes.branch import (
     DTBranch,
@@ -115,9 +112,7 @@ class HoeffdingTree(ABC):
         n
             Number of processed samples.
         """
-        return math.sqrt(
-            (range_val * range_val * math.log(1.0 / confidence)) / (2.0 * n)
-        )
+        return math.sqrt((range_val * range_val * math.log(1.0 / confidence)) / (2.0 * n))
 
     @property
     def max_size(self):
@@ -309,9 +304,7 @@ class HoeffdingTree(ABC):
         if total_active_size > 0:
             self._active_leaf_size_estimate = total_active_size / self._n_active_leaves
         if total_inactive_size > 0:
-            self._inactive_leaf_size_estimate = (
-                total_inactive_size / self._n_inactive_leaves
-            )
+            self._inactive_leaf_size_estimate = total_inactive_size / self._n_inactive_leaves
         actual_model_size = calculate_object_size(self)
         estimated_model_size = (
             self._n_active_leaves * self._active_leaf_size_estimate
@@ -531,9 +524,7 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
         r, g, b = rgb[int(h_bar)]
 
         # Shift the initial RGB values to match value and store
-        colors.append(
-            ((int(255 * (r + m))), (int(255 * (g + m))), (int(255 * (b + m))))
-        )
+        colors.append(((int(255 * (r + m))), (int(255 * (g + m))), (int(255 * (b + m)))))
 
     return colors
 
@@ -541,6 +532,4 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
 # Utility adapted from the original creme's implementation
 def transparency_hex(color: typing.Tuple[int, int, int], alpha: float) -> str:
     """Apply alpha coefficient on hexadecimal color."""
-    return "#%02x%02x%02x" % tuple(
-        [int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]
-    )
+    return "#%02x%02x%02x" % tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color])

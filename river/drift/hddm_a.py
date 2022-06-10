@@ -60,9 +60,7 @@ class HDDM_A(DriftDetector):
 
     """
 
-    def __init__(
-        self, drift_confidence=0.001, warning_confidence=0.005, two_sided_test=False
-    ):
+    def __init__(self, drift_confidence=0.001, warning_confidence=0.005, two_sided_test=False):
         super().__init__()
         super().reset()
         self.n_min = 0

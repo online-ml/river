@@ -38,9 +38,7 @@ class Bandit:
         arm.metric.update(**metric_kwargs)
         self.best_arm = max(
             self.arms,
-            key=lambda arm: arm.metric.get()
-            if self.metric.bigger_is_better
-            else -arm.metric.get(),
+            key=lambda arm: arm.metric.get() if self.metric.bigger_is_better else -arm.metric.get(),
         )
 
     @property

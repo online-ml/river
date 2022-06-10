@@ -47,13 +47,9 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
 
         self.lambda_value = lambda_value
         self.gamma = gamma
-        self.nominal_attributes = (
-            set(nominal_attributes) if nominal_attributes else set()
-        )
+        self.nominal_attributes = set(nominal_attributes) if nominal_attributes else set()
         self.feature_quantizer = (
-            feature_quantizer
-            if feature_quantizer is not None
-            else tree.splitter.StaticQuantizer()
+            feature_quantizer if feature_quantizer is not None else tree.splitter.StaticQuantizer()
         )
 
         self._root: typing.Union[SGTLeaf, DTBranch] = SGTLeaf(prediction=self.init_pred)
@@ -141,9 +137,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
                 best_split.merit.delta_pred = node.delta_prediction(
                     node.update_stats.mean, self.lambda_value
                 )
-                dlms = node.update_stats.delta_loss_mean_var(
-                    best_split.merit.delta_pred
-                )
+                dlms = node.update_stats.delta_loss_mean_var(best_split.merit.delta_pred)
                 best_split.merit.loss_mean = dlms.mean.get()
                 best_split.merit.loss_var = dlms.get()
             else:  # Proceed with the standard split attempt procedure

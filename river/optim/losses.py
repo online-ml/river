@@ -182,9 +182,7 @@ class CrossEntropy(MultiClassLoss):
 
         for label, proba in y_pred.items():
             if y_true == label:
-                total += self.class_weight.get(label, 1.0) * math.log(
-                    clamp_proba(proba)
-                )
+                total += self.class_weight.get(label, 1.0) * math.log(clamp_proba(proba))
 
         return -total
 

@@ -51,9 +51,7 @@ class AdaBound(optim.base.Optimizer):
 
     """
 
-    def __init__(
-        self, lr=1e-3, beta_1=0.9, beta_2=0.999, eps=1e-8, gamma=1e-3, final_lr=0.1
-    ):
+    def __init__(self, lr=1e-3, beta_1=0.9, beta_2=0.999, eps=1e-8, gamma=1e-3, final_lr=0.1):
         super().__init__(lr)
         self.base_lr = lr
         self.final_lr = final_lr
@@ -72,9 +70,7 @@ class AdaBound(optim.base.Optimizer):
         step_size = self.learning_rate * math.sqrt(bias_2) / bias_1
         self.final_lr *= self.learning_rate / self.base_lr
 
-        lower_bound = self.final_lr * (
-            1 - 1 / (self.gamma * (self.n_iterations + 1) + 1)
-        )
+        lower_bound = self.final_lr * (1 - 1 / (self.gamma * (self.n_iterations + 1) + 1))
         upper_bound = self.final_lr * (1 + 1 / (self.gamma * (self.n_iterations + 1)))
 
         for i, gi in g.items():
@@ -83,8 +79,6 @@ class AdaBound(optim.base.Optimizer):
 
             step_size_bound = step_size / (math.sqrt(self.v[i]) + self.eps)
 
-            w[i] -= (
-                utils.math.clamp(step_size_bound, lower_bound, upper_bound) * self.m[i]
-            )
+            w[i] -= utils.math.clamp(step_size_bound, lower_bound, upper_bound) * self.m[i]
 
         return w

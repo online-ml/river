@@ -12,9 +12,7 @@ from river import base
 __all__ = ["convert_sklearn_to_river", "SKL2RiverClassifier", "SKL2RiverRegressor"]
 
 
-def convert_sklearn_to_river(
-    estimator: sklearn_base.BaseEstimator, classes: list = None
-):
+def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: list = None):
     """Wraps a scikit-learn estimator to make it compatible with river.
 
     Parameters
