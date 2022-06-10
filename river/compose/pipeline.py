@@ -332,6 +332,8 @@ class Pipeline(base.Estimator):
 
     def __getitem__(self, key):
         """Just for convenience."""
+        if isinstance(key, int):
+            return self.steps[list(self.steps.keys())[key]]
         return self.steps[key]
 
     def __len__(self):
