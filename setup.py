@@ -19,7 +19,7 @@ try:
 except ImportError:
     try:
         subprocess.run(
-            args=[sys.executable, "-m", "pip", "install", "numpy"],
+            args=["python", "-m", "pip", "install", "numpy"],
             capture_output=True,
             check=True,
             text=True,
