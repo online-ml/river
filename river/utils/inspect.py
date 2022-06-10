@@ -60,7 +60,7 @@ def ischildobject(obj: object, class_name: str) -> bool:
 
     >>> utils.inspect.ischildobject(obj=anomaly.GaussianScorer(), class_name=class_name)
     False
-    
+
     """
     parent_classes = inspect.getmro(obj.__class__)
     return any(cls.__name__ == class_name for cls in parent_classes)
