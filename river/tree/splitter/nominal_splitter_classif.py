@@ -42,9 +42,7 @@ class NominalSplitterClassif(Splitter):
         except ZeroDivisionError:
             return 0.0
 
-    def best_evaluated_split_suggestion(
-        self, criterion, pre_split_dist, att_idx, binary_only
-    ):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         best_suggestion = BranchFactory()
 
         if not binary_only:

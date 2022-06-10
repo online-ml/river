@@ -430,17 +430,13 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     or hoeffding_bound < self.tie_threshold
                 ) and (id_current != id_best):
                     # Create a new branch
-                    branch = self._branch_selector(
-                        x_best.numerical_feature, x_best.multiway_split
-                    )
+                    branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
                     leaves = tuple(
                         self._new_leaf(initial_stats, parent=node)
                         for initial_stats in x_best.children_stats
                     )
 
-                    new_split = x_best.assemble(
-                        branch, node.stats, node.depth, *leaves, **kwargs
-                    )
+                    new_split = x_best.assemble(branch, node.stats, node.depth, *leaves, **kwargs)
                     # Update weights in new_split
                     new_split.last_split_reevaluation_at = node.total_weight
 
@@ -470,9 +466,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     x_best.merit - x_current.merit > hoeffding_bound
                     or hoeffding_bound < self.tie_threshold
                 ) and (id_current == id_best):
-                    branch = self._branch_selector(
-                        x_best.numerical_feature, x_best.multiway_split
-                    )
+                    branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
                     # Change the branch but keep the existing children nodes
                     new_split = x_best.assemble(
                         branch, node.stats, node.depth, *tuple(node.children), **kwargs
@@ -537,16 +531,12 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     or hoeffding_bound < self.tie_threshold
                 ):
                     # Create a new branch
-                    branch = self._branch_selector(
-                        x_best.numerical_feature, x_best.multiway_split
-                    )
+                    branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
                     leaves = tuple(
                         self._new_leaf(initial_stats, parent=node)
                         for initial_stats in x_best.children_stats
                     )
-                    new_split = x_best.assemble(
-                        branch, node.stats, node.depth, *leaves, **kwargs
-                    )
+                    new_split = x_best.assemble(branch, node.stats, node.depth, *leaves, **kwargs)
 
                     new_split.last_split_reevaluation_at = node.total_weight
 

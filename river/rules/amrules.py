@@ -301,9 +301,7 @@ class AMRules(base.Regressor):
         else:
             self.splitter = splitter  # type: ignore
 
-        self.drift_detector = (
-            drift_detector if drift_detector is not None else drift.PageHinkley()
-        )
+        self.drift_detector = drift_detector if drift_detector is not None else drift.PageHinkley()
 
         self.alpha = alpha
         self.anomaly_threshold = anomaly_threshold
@@ -354,10 +352,7 @@ class AMRules(base.Regressor):
                 continue
 
             # Anomaly detected skip training
-            if (
-                rule.total_weight > self.m_min
-                and rule.score_one(x) < self.anomaly_threshold
-            ):
+            if rule.total_weight > self.m_min and rule.score_one(x) < self.anomaly_threshold:
                 continue
 
             y_pred = rule.predict_one(x)
@@ -387,8 +382,7 @@ class AMRules(base.Regressor):
 
             expanded = False
             if (
-                self._default_rule.total_weight
-                - self._default_rule.last_expansion_attempt_at
+                self._default_rule.total_weight - self._default_rule.last_expansion_attempt_at
                 >= self.n_min
             ):
                 updated_rule, expanded = self._default_rule.expand(self.delta, self.tau)
@@ -538,8 +532,6 @@ class AMRules(base.Regressor):
                 _print(f"Final prediction: {self.predict_one(x):.4f}")
         else:
             _print("Default rule triggered:")
-            _print(
-                f"\tPrediction ({self.pred_type}): {self._default_rule.predict_one(x):.4f}"
-            )
+            _print(f"\tPrediction ({self.pred_type}): {self._default_rule.predict_one(x):.4f}")
 
         return buffer.getvalue()

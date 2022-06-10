@@ -21,9 +21,7 @@ def _progressive_validation(
 
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
-        raise ValueError(
-            f"{metric.__class__.__name__} metric is not compatible with {model}"
-        )
+        raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     if utils.inspect.isanomalydetector(model):

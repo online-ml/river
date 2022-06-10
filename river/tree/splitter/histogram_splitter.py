@@ -58,9 +58,7 @@ class HistogramSplitter(Splitter):
         else:
             return (b.count * (att_val - b.left) / (b.right - b.left)) / total_weight
 
-    def best_evaluated_split_suggestion(
-        self, criterion, pre_split_dist, att_idx, binary_only
-    ):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         best_suggestion = BranchFactory()
 
         low = min(h[0].right for h in self.hists.values())

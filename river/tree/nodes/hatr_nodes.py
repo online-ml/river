@@ -63,9 +63,7 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
     def kill_tree_children(self, hatr):
         pass
 
-    def learn_one(
-        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None
-    ):
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         y_pred = self.prediction(x, tree=tree)
         normalized_error = normalize_error(y, y_pred, self)
 
@@ -154,10 +152,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         """
         found_nodes: typing.List[HTLeaf] = []
         for node in self.walk(x, until_leaf=until_leaf):
-            if (
-                isinstance(node, AdaBranchRegressor)
-                and node._alternate_tree is not None
-            ):
+            if isinstance(node, AdaBranchRegressor) and node._alternate_tree is not None:
                 if isinstance(node._alternate_tree, AdaBranchRegressor):
                     found_nodes.append(
                         node._alternate_tree.traverse(x, until_leaf=until_leaf)  # type: ignore
@@ -176,10 +171,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         for child in self.children:
             yield from child.iter_leaves()
 
-            if (
-                isinstance(child, AdaBranchRegressor)
-                and child._alternate_tree is not None
-            ):
+            if isinstance(child, AdaBranchRegressor) and child._alternate_tree is not None:
                 yield from child._alternate_tree.iter_leaves()
 
     @property
@@ -197,9 +189,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
     def error_is_null(self):
         return self._adwin is None
 
-    def learn_one(
-        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None
-    ):
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
         y_pred = leaf.prediction(x, tree=tree)
         normalized_error = normalize_error(y, y_pred, self)
@@ -226,10 +216,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
             tree._n_alternate_trees += 1
 
         # Condition to replace alternate tree
-        elif (
-            self._alternate_tree is not None
-            and not self._alternate_tree.error_is_null()
-        ):
+        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
             if (
                 self.error_width > tree.drift_window_threshold
                 and self._alternate_tree.error_width > tree.drift_window_threshold
@@ -354,12 +341,8 @@ class AdaNomMultiwayBranchReg(AdaBranchRegressor, NominalMultiwayBranch):
 
 
 class AdaNumMultiwayBranchReg(AdaBranchRegressor, NumericMultiwayBranch):
-    def __init__(
-        self, stats, feature, radius_and_slots, depth, *children, **attributes
-    ):
-        super().__init__(
-            stats, feature, radius_and_slots, depth, *children, **attributes
-        )
+    def __init__(self, stats, feature, radius_and_slots, depth, *children, **attributes):
+        super().__init__(stats, feature, radius_and_slots, depth, *children, **attributes)
 
 
 class AdaLeafRegMean(AdaLeafRegressor, LeafMean):

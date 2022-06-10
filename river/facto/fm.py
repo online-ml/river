@@ -52,9 +52,7 @@ class FM(BaseFM):
         )
 
     def _init_latents(self):
-        random_latents = functools.partial(
-            self.latent_initializer, shape=self.n_factors
-        )
+        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         return collections.defaultdict(random_latents)
 
     def _interaction_names(self, x):

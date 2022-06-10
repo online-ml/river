@@ -57,11 +57,7 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
 
     @property
     def _dist(self):
-        return (
-            self.gaussian
-            if isinstance(self.gaussian, proba.Gaussian)
-            else self.gaussian.dist
-        )
+        return self.gaussian if isinstance(self.gaussian, proba.Gaussian) else self.gaussian.dist
 
     def learn_one(self, _, y):
         self.gaussian.update(y)

@@ -111,7 +111,7 @@ class CluStream(base.Clusterer):
         max_micro_clusters: int = 100,
         micro_cluster_r_factor: int = 2,
         n_macro_clusters: int = 5,
-        **kwargs
+        **kwargs,
     ):
         super().__init__()
         self.time_window = time_window
@@ -266,21 +266,16 @@ class CluStream(base.Clusterer):
     def predict_one(self, x):
 
         micro_cluster_centers = {
-            i: result.center
-            for i, result in self._get_micro_clustering_result().items()
+            i: result.center for i, result in self._get_micro_clustering_result().items()
         }
 
-        kmeans = cluster.KMeans(
-            n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs
-        )
+        kmeans = cluster.KMeans(n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs)
         for center in micro_cluster_centers.values():
             kmeans = kmeans.learn_one(center)
 
         self.centers = kmeans.centers
 
-        index, _ = self._get_closest_micro_cluster(
-            x, self._get_micro_clustering_result()
-        )
+        index, _ = self._get_closest_micro_cluster(x, self._get_micro_clustering_result())
         try:
             return kmeans.predict_one(micro_cluster_centers[index])
         except KeyError:
@@ -325,10 +320,7 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
 
     @property
     def center(self):
-        return {
-            i: linear_sum_i / self.n_samples
-            for i, linear_sum_i in self.linear_sum.items()
-        }
+        return {i: linear_sum_i / self.n_samples for i, linear_sum_i in self.linear_sum.items()}
 
     def is_empty(self):
         return self.n_samples == 0
@@ -370,9 +362,7 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
     def insert(self, x, sample_weight, timestamp):
         self.n_samples += 1
         self.linear_sum_timestamp += timestamp * sample_weight
-        self.squared_sum_timestamp += (
-            timestamp * sample_weight * timestamp * sample_weight
-        )
+        self.squared_sum_timestamp += timestamp * sample_weight * timestamp * sample_weight
         for x_idx, x_val in x.items():
             self.linear_sum[x_idx] += x_val * sample_weight
             self.squared_sum[x_idx] += x_val * sample_weight * x_val * sample_weight

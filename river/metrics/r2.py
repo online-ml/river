@@ -57,9 +57,7 @@ class R2(metrics.base.RegressionMetric):
 
     def revert(self, y_true, y_pred, sample_weight):
         self._y_var.update(y_true, w=-sample_weight)
-        self._residual_sum_of_squares -= (
-            (y_true - y_pred) * (y_true - y_pred) * sample_weight
-        )
+        self._residual_sum_of_squares -= (y_true - y_pred) * (y_true - y_pred) * sample_weight
         return self
 
     def get(self):

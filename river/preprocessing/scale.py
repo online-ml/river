@@ -170,10 +170,7 @@ class StandardScaler(base.MiniBatchTransformer):
 
     def transform_one(self, x):
         if self.with_std:
-            return {
-                i: safe_div(xi - self.means[i], self.vars[i] ** 0.5)
-                for i, xi in x.items()
-            }
+            return {i: safe_div(xi - self.means[i], self.vars[i] ** 0.5) for i, xi in x.items()}
         return {i: xi - self.means[i] for i, xi in x.items()}
 
     def learn_many(self, X: pd.DataFrame):
@@ -218,9 +215,7 @@ class StandardScaler(base.MiniBatchTransformer):
 
             self.means[col] = a * old_mean + b * new_mean
             if self.with_std:
-                self.vars[col] = (
-                    a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
-                )
+                self.vars[col] = a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
             self.counts[col] += new_count
 
         return self
@@ -417,9 +412,7 @@ class RobustScaler(base.Transformer):
         self.q_inf = q_inf
         self.q_sup = q_sup
         self.median = collections.defaultdict(functools.partial(stats.Quantile, 0.5))
-        self.iqr = collections.defaultdict(
-            functools.partial(stats.IQR, self.q_inf, self.q_sup)
-        )
+        self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
 
     def learn_one(self, x):
 
@@ -588,9 +581,7 @@ class TargetStandardScaler(compose.TargetTransformRegressor):
 
     def __init__(self, regressor: base.Regressor):
         self.var = stats.Var()
-        super().__init__(
-            regressor=regressor, func=self._scale, inverse_func=self._unscale
-        )
+        super().__init__(regressor=regressor, func=self._scale, inverse_func=self._unscale)
 
     def learn_one(self, x, y):
         self.var.update(y)

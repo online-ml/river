@@ -61,9 +61,7 @@ def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
     return zip(*[tokens[i:] for i in range(n)])
 
 
-def find_all_ngrams(
-    tokens: typing.List[str], ngram_range: range
-) -> typing.Iterator[N_GRAM]:
+def find_all_ngrams(tokens: typing.List[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
     """Generates all n-grams in a given range.
 
     Examples
@@ -124,9 +122,7 @@ class VectorizerMixin:
         self.strip_accents = strip_accents
         self.lowercase = lowercase
         self.preprocessor = preprocessor
-        self.tokenizer = (
-            re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
-        )
+        self.tokenizer = re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
         self.ngram_range = ngram_range
 
         self.processing_steps: typing.List[typing.Any] = []

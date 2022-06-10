@@ -188,9 +188,9 @@ def test_learn_many_not_fit(batch_model):
         pd.Series(["new", "unseen"], index=["river", "rocks"])
     ).equals(pd.DataFrame(index=["river", "rocks"]))
 
-    assert batch_model.predict_many(
-        pd.Series(["new", "unseen"], index=["river", "rocks"])
-    ).equals(pd.DataFrame(index=["river", "rocks"]))
+    assert batch_model.predict_many(pd.Series(["new", "unseen"], index=["river", "rocks"])).equals(
+        pd.DataFrame(index=["river", "rocks"])
+    )
 
 
 @pytest.mark.parametrize(
@@ -229,18 +229,12 @@ def test_river_vs_sklearn(model, sk_model, bag):
         model.predict_proba_many(X).values,
     ):
         for sk_pred, river_pred in zip(sk_preds, river_preds):
-            assert river_pred == pytest.approx(
-                1 - sk_pred
-            ) or river_pred == pytest.approx(sk_pred)
+            assert river_pred == pytest.approx(1 - sk_pred) or river_pred == pytest.approx(sk_pred)
 
     # Assert river produce same results as sklearn using dense dataframe:
     for sk_preds, river_preds in zip(
         sk_model.predict_proba(bag.transform_many(X).sparse.to_dense()),
-        model["model"]
-        .predict_proba_many(bag.transform_many(X).sparse.to_dense())
-        .values,
+        model["model"].predict_proba_many(bag.transform_many(X).sparse.to_dense()).values,
     ):
         for sk_pred, river_pred in zip(sk_preds, river_preds):
-            assert river_pred == pytest.approx(
-                1 - sk_pred
-            ) or river_pred == pytest.approx(sk_pred)
+            assert river_pred == pytest.approx(1 - sk_pred) or river_pred == pytest.approx(sk_pred)

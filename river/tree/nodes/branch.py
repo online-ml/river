@@ -118,9 +118,7 @@ class NominalBinaryBranch(DTBranch):
 
 
 class NumericMultiwayBranch(DTBranch):
-    def __init__(
-        self, stats, feature, radius_and_slots, depth, *children, **attributes
-    ):
+    def __init__(self, stats, feature, radius_and_slots, depth, *children, **attributes):
         super().__init__(stats, *children, **attributes)
 
         self.feature = feature
@@ -141,9 +139,7 @@ class NumericMultiwayBranch(DTBranch):
 
     def most_common_path(self):
         # Get the most traversed path
-        pos = max(
-            range(len(self.children)), key=lambda i: self.children[i].total_weight
-        )
+        pos = max(range(len(self.children)), key=lambda i: self.children[i].total_weight)
 
         return pos, self.children[pos]
 
@@ -186,9 +182,7 @@ class NominalMultiwayBranch(DTBranch):
 
     def most_common_path(self):
         # Get the most traversed path
-        pos = max(
-            range(len(self.children)), key=lambda i: self.children[i].total_weight
-        )
+        pos = max(range(len(self.children)), key=lambda i: self.children[i].total_weight)
 
         return pos, self.children[pos]
 

@@ -160,12 +160,8 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
 
         names = list(map(str, x.keys())) + ["Intercept"]
         values = list(map(fmt_float, list(x.values()) + [1]))
-        weights = list(
-            map(fmt_float, [self._weights.get(i, 0) for i in x] + [self.intercept])
-        )
-        contributions = [xi * self._weights.get(i, 0) for i, xi in x.items()] + [
-            self.intercept
-        ]
+        weights = list(map(fmt_float, [self._weights.get(i, 0) for i in x] + [self.intercept]))
+        contributions = [xi * self._weights.get(i, 0) for i, xi in x.items()] + [self.intercept]
         order = list(reversed(np.argsort(contributions)))
         contributions = list(map(fmt_float, contributions))
 

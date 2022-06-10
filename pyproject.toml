@@ -1,0 +1,56 @@
+[build-system]
+requires = ["cython", "numpy", "setuptools", "wheel"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--doctest-modules",
+    "--doctest-glob=README.md",
+    "--ignore=benchmarks",
+    "--ignore=docs/scripts",
+    "--verbose",
+    "-ra",
+    "-m not datasets and not slow",
+    "--color=yes",
+]
+doctest_optionflags = "NORMALIZE_WHITESPACE NUMBER ELLIPSIS"
+norecursedirs = [
+    "build",
+    "docs",
+    "node_modules",
+    ".eggs",
+    "scikit-multiflow",
+    "site",
+    "benchmarks",
+]
+markers = [
+    "datasets: tests that pertain to the datasets module",
+    "slow: tests that take a long time to run",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+# line_length should be kept in sync with black `line-length` config flag
+line_length = 100
+
+[tool.mypy]
+files = "river"
+
+[[tool.mypy.overrides]]
+module = [
+    "river.*",
+    "mmh3.*",
+    "numpy.*",
+    "sklearn.*",
+    "pytest.*",
+    "pandas.*",
+    "scipy.*",
+    "graphviz.*",
+    "vaex.*",
+    "torch.*",
+    "sqlalchemy.*"
+]
+ignore_missing_imports = true

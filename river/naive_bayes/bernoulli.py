@@ -141,9 +141,9 @@ class BernoulliNB(base.BaseNB):
         return self.class_counts[c] / sum(self.class_counts.values())
 
     def p_class_many(self) -> pd.DataFrame:
-        return base.from_dict(self.class_counts).T[
-            list(self.class_counts.keys())
-        ] / sum(self.class_counts.values())
+        return base.from_dict(self.class_counts).T[list(self.class_counts.keys())] / sum(
+            self.class_counts.values()
+        )
 
     def joint_log_likelihood(self, x):
         """Computes the joint log likelihood of input features.
@@ -194,9 +194,7 @@ class BernoulliNB(base.BaseNB):
         columns, classes = X.columns, y.columns
         y = sparse.csc_matrix(y.sparse.to_coo()).T
 
-        self.class_counts.update(
-            {c: count.item() for c, count in zip(classes, y.sum(axis=1))}
-        )
+        self.class_counts.update({c: count.item() for c, count in zip(classes, y.sum(axis=1))})
 
         if hasattr(X, "sparse"):
             X = sparse.csr_matrix(X.sparse.to_coo())
@@ -212,11 +210,7 @@ class BernoulliNB(base.BaseNB):
 
             if sparse.issparse(fc):
 
-                counts = {
-                    c: {
-                        columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)
-                    }
-                }
+                counts = {c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}}
 
             else:
 
@@ -248,9 +242,7 @@ class BernoulliNB(base.BaseNB):
 
         """
         smooth_fc = np.log(
-            base.from_dict(self.feature_counts)[
-                list(self.class_counts.keys())
-            ].T.fillna(0)
+            base.from_dict(self.feature_counts)[list(self.class_counts.keys())].T.fillna(0)
             + self.alpha
         )[columns]
 
@@ -295,8 +287,7 @@ class BernoulliNB(base.BaseNB):
         neg_p = np.log(1 - np.exp(flp))
 
         return pd.DataFrame(
-            X @ (flp - neg_p).T
-            + (np.log(self.p_class_many()) + neg_p.sum(axis=1).T).values,
+            X @ (flp - neg_p).T + (np.log(self.p_class_many()) + neg_p.sum(axis=1).T).values,
             index=index,
             columns=self.class_counts.keys(),
         )

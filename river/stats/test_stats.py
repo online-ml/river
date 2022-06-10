@@ -16,9 +16,7 @@ from river import stats
 
 
 def load_stats():
-    for _, obj in inspect.getmembers(
-        importlib.import_module("river.stats"), inspect.isclass
-    ):
+    for _, obj in inspect.getmembers(importlib.import_module("river.stats"), inspect.isclass):
         try:
 
             if inspect.isabstract(obj):

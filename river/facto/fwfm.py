@@ -60,9 +60,7 @@ class FwFM(BaseFM):
         self.interaction_weights = collections.defaultdict(one)
 
     def _init_latents(self):
-        random_latents = functools.partial(
-            self.latent_initializer, shape=self.n_factors
-        )
+        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         return collections.defaultdict(random_latents)
 
     def _interaction_names(self, x):
@@ -101,9 +99,7 @@ class FwFM(BaseFM):
 
         # Precompute feature independent sum for time efficiency
         precomputed_sum = {
-            f"{j1}_{f}": sum(
-                v[j2][f] * xj2 * w_int[field(j1) + field(j2)] for j2, xj2 in x.items()
-            )
+            f"{j1}_{f}": sum(v[j2][f] * xj2 * w_int[field(j1) + field(j2)] for j2, xj2 in x.items())
             for j1, xj1 in x.items()
             for f in range(self.n_factors)
         }

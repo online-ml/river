@@ -32,19 +32,14 @@ def test_size():
 
     assert tree.n_nodes == tree.n_branches + tree.n_leaves == 6 + 7
     assert (
-        tree.children[0].n_nodes
-        == tree.children[0].n_branches + tree.children[0].n_leaves
-        == 4 + 5
+        tree.children[0].n_nodes == tree.children[0].n_branches + tree.children[0].n_leaves == 4 + 5
     )
     assert (
-        tree.children[1].n_nodes
-        == tree.children[1].n_branches + tree.children[1].n_leaves
-        == 1 + 2
+        tree.children[1].n_nodes == tree.children[1].n_branches + tree.children[1].n_leaves == 1 + 2
     )
     assert (
         tree.children[1].children[0].n_nodes
-        == tree.children[1].children[0].n_branches
-        + tree.children[1].children[0].n_leaves
+        == tree.children[1].children[0].n_branches + tree.children[1].children[0].n_leaves
         == 0 + 1
     )
 

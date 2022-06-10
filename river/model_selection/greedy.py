@@ -48,9 +48,7 @@ class GreedyRegressor(ModelSelectionRegressor):
 
     """
 
-    def __init__(
-        self, models: List[base.Regressor], metric: metrics.base.RegressionMetric = None
-    ):
+    def __init__(self, models: List[base.Regressor], metric: metrics.base.RegressionMetric = None):
         if metric is None:
             metric = metrics.MAE()
         super().__init__(models, metric)  # type: ignore

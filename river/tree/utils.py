@@ -56,9 +56,7 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: d
     # Max log-likelihood
     max_ll = max(votes.values())
     # Apply the log-sum-exp trick (https://stats.stackexchange.com/a/253319)
-    lse = max_ll + math.log(
-        sum(math.exp(log_proba - max_ll) for log_proba in votes.values())
-    )
+    lse = max_ll + math.log(sum(math.exp(log_proba - max_ll) for log_proba in votes.values()))
 
     for class_index in votes:
         votes[class_index] = math.exp(votes[class_index] - lse)
@@ -93,7 +91,7 @@ class BranchFactory:
         stats: typing.Union[typing.Dict, Var],
         depth: int,
         *children,
-        **kwargs
+        **kwargs,
     ):
         return branch(stats, self.feature, self.split_info, depth, *children, **kwargs)
 

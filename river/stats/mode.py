@@ -110,9 +110,7 @@ class RollingMode(stats.base.RollingUnivariate):
     """
 
     def __init__(self, window_size: int):
-        self.window: typing.Deque[numbers.Number] = collections.deque(
-            maxlen=window_size
-        )
+        self.window: typing.Deque[numbers.Number] = collections.deque(maxlen=window_size)
         self.counts: typing.DefaultDict[typing.Any, int] = collections.defaultdict(int)
 
     @property

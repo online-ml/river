@@ -165,8 +165,7 @@ class DenStream(base.Clusterer):
         self.o_micro_clusters: typing.Dict[int, "DenStreamMicroCluster"] = {}
 
         self._time_period = math.ceil(
-            (1 / self.decaying_factor)
-            * math.log((self.mu * self.beta) / (self.mu * self.beta - 1))
+            (1 / self.decaying_factor) * math.log((self.mu * self.beta) / (self.mu * self.beta - 1))
         )
         self._init_buffer: typing.Deque[typing.Dict] = deque()
         self._n_samples_seen = 0
@@ -179,10 +178,7 @@ class DenStream(base.Clusterer):
 
     @property
     def centers(self):
-        return {
-            k: cluster.calc_center(self.timestamp)
-            for k, cluster in self.clusters.items()
-        }
+        return {k: cluster.calc_center(self.timestamp) for k, cluster in self.clusters.items()}
 
     @staticmethod
     def _distance(point_a, point_b):
@@ -205,9 +201,7 @@ class DenStream(base.Clusterer):
 
         if len(self.p_micro_clusters) != 0:
             # try to merge p into its nearest p-micro-cluster c_p
-            closest_pmc_key = self._get_closest_cluster_key(
-                point, self.p_micro_clusters
-            )
+            closest_pmc_key = self._get_closest_cluster_key(point, self.p_micro_clusters)
             updated_pmc = copy.copy(self.p_micro_clusters[closest_pmc_key])
             updated_pmc.insert(point, self.timestamp)
             if updated_pmc.calc_radius(self.timestamp) <= self.epsilon:
@@ -216,9 +210,7 @@ class DenStream(base.Clusterer):
                 merged_status = True
 
         if not merged_status and len(self.o_micro_clusters) != 0:
-            closest_omc_key = self._get_closest_cluster_key(
-                point, self.o_micro_clusters
-            )
+            closest_omc_key = self._get_closest_cluster_key(point, self.o_micro_clusters)
             updated_omc = copy.copy(self.o_micro_clusters[closest_omc_key])
             updated_omc.insert(point, self.timestamp)
             if updated_omc.calc_radius(self.timestamp) <= self.epsilon:
@@ -248,10 +240,7 @@ class DenStream(base.Clusterer):
             merged_status = True
 
     def _is_directly_density_reachable(self, c_p, c_q):
-        if (
-            c_p.calc_weight(self.timestamp) > self.mu
-            and c_q.calc_weight(self.timestamp) > self.mu
-        ):
+        if c_p.calc_weight(self.timestamp) > self.mu and c_q.calc_weight(self.timestamp) > self.mu:
             # check distance of two clusters and compare with 2*epsilon
             c_p_center = c_p.calc_center(self.timestamp)
             c_q_center = c_q.calc_center(self.timestamp)
@@ -353,11 +342,7 @@ class DenStream(base.Clusterer):
                     2
                     ** (
                         -self.decaying_factor
-                        * (
-                            self.timestamp
-                            - o_micro_cluster_j.creation_time
-                            + self._time_period
-                        )
+                        * (self.timestamp - o_micro_cluster_j.creation_time + self._time_period)
                     )
                     - 1
                 ) / (2 ** (-self.decaying_factor * self._time_period) - 1)

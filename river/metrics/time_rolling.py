@@ -42,9 +42,7 @@ class TimeRolling(metrics.base.WrapperMetric):
     def __init__(self, metric: metrics.base.Metric, period: dt.timedelta):
         self._metric = metric
         self.period = period
-        self._events: typing.List[
-            typing.Tuple[dt.datetime, typing.Any, typing.Any]
-        ] = []
+        self._events: typing.List[typing.Tuple[dt.datetime, typing.Any, typing.Any]] = []
         self._latest = dt.datetime(1, 1, 1)
 
     @property

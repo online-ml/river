@@ -73,9 +73,7 @@ class RandomUnderSampler(ClassificationSampler):
 
     """
 
-    def __init__(
-        self, classifier: base.Classifier, desired_dist: dict, seed: int = None
-    ):
+    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int = None):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
         self._actual_dist: typing.Counter = collections.Counter()
@@ -151,9 +149,7 @@ class RandomOverSampler(ClassificationSampler):
 
     """
 
-    def __init__(
-        self, classifier: base.Classifier, desired_dist: dict, seed: int = None
-    ):
+    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int = None):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
         self._actual_dist: typing.Counter = collections.Counter()

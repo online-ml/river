@@ -4,11 +4,7 @@ from copy import deepcopy
 from river import base, tree
 
 from .nodes.branch import DTBranch
-from .nodes.isouptr_nodes import (
-    LeafAdaptiveMultiTarget,
-    LeafMeanMultiTarget,
-    LeafModelMultiTarget,
-)
+from .nodes.isouptr_nodes import LeafAdaptiveMultiTarget, LeafMeanMultiTarget, LeafModelMultiTarget
 from .split_criterion import IntraClusterVarianceReductionSplitCriterion
 from .splitter import Splitter
 
@@ -171,9 +167,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             self._split_criterion = split_criterion
 
     def _new_split_criterion(self):
-        return IntraClusterVarianceReductionSplitCriterion(
-            min_samples_split=self.min_samples_split
-        )
+        return IntraClusterVarianceReductionSplitCriterion(min_samples_split=self.min_samples_split)
 
     def _new_leaf(self, initial_stats=None, parent=None):
         """Create a new learning node. The type of learning node depends on
@@ -198,13 +192,9 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         if self.leaf_prediction == self._TARGET_MEAN:
             return LeafMeanMultiTarget(initial_stats, depth, self.splitter)
         elif self.leaf_prediction == self._MODEL:
-            return LeafModelMultiTarget(
-                initial_stats, depth, self.splitter, leaf_models
-            )
+            return LeafModelMultiTarget(initial_stats, depth, self.splitter, leaf_models)
         else:  # adaptive learning node
-            new_adaptive = LeafAdaptiveMultiTarget(
-                initial_stats, depth, self.splitter, leaf_models
-            )
+            new_adaptive = LeafAdaptiveMultiTarget(initial_stats, depth, self.splitter, leaf_models)
             if parent is not None and isinstance(parent, LeafAdaptiveMultiTarget):
                 new_adaptive._fmse_mean = parent._fmse_mean.copy()  # noqa
                 new_adaptive._fmse_model = parent._fmse_model.copy()  # noqa
@@ -216,7 +206,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         x: dict,
         y: typing.Dict[typing.Hashable, base.typing.RegTarget],
         *,
-        sample_weight: float = 1.0
+        sample_weight: float = 1.0,
     ) -> "iSOUPTreeRegressor":
         """Incrementally train the model with one sample.
 

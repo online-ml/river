@@ -24,12 +24,7 @@ class HellingerDistanceCriterion(SplitCriterion):
         self.best_idx = 0
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
-        if (
-            self.num_subsets_greater_than_frac(
-                post_split_dist, self.min_branch_frac_option
-            )
-            < 2
-        ):
+        if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_frac_option) < 2:
             return -math.inf
         return self.compute_hellinger(post_split_dist)
 

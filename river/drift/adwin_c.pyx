@@ -1,10 +1,13 @@
 # cython: boundscheck=False
 
-from libc.math cimport sqrt, log, fabs, pow
+from libc.math cimport fabs, log, pow, sqrt
+
 import numpy as np
+
 cimport numpy as np
-from typing import Deque
+
 from collections import deque
+from typing import Deque
 
 
 cdef class AdaptiveWindowing:

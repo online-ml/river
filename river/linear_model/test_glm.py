@@ -90,13 +90,9 @@ def test_finite_differences(lm, dataset):
         for d in iter_perturbations(weights.keys()):
 
             # Pertubate the weights and obtain the loss with the new weights
-            lm._weights = utils.VectorDict(
-                {i: weights[i] + eps * di for i, di in d.items()}
-            )
+            lm._weights = utils.VectorDict({i: weights[i] + eps * di for i, di in d.items()})
             forward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
-            lm._weights = utils.VectorDict(
-                {i: weights[i] - eps * di for i, di in d.items()}
-            )
+            lm._weights = utils.VectorDict({i: weights[i] - eps * di for i, di in d.items()})
             backward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
 
             # We expect g and h to be equal
@@ -294,9 +290,7 @@ log_reg_tests = {
     ),
     "Optimal": (
         {
-            "optimizer": optim.SGD(
-                optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3)
-            ),
+            "optimizer": optim.SGD(optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3)),
             "loss": optim.losses.Hinge(),
             "intercept_lr": optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3),
             "l2": 1e-3,
@@ -305,9 +299,7 @@ log_reg_tests = {
     ),
     "Optimal no intercept": (
         {
-            "optimizer": optim.SGD(
-                optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3)
-            ),
+            "optimizer": optim.SGD(optim.schedulers.Optimal(optim.losses.Hinge(), alpha=1e-3)),
             "loss": optim.losses.Hinge(),
             "intercept_lr": 0,
             "l2": 1e-3,

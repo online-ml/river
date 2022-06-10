@@ -84,9 +84,7 @@ class Waveform(datasets.base.SyntheticDataset):
         has_noise: bool = False,
     ):
         super().__init__(
-            n_features=self._N_BASE_FEATURES
-            if not has_noise
-            else self._N_FEATURES_INCLUDING_NOISE,
+            n_features=self._N_BASE_FEATURES if not has_noise else self._N_FEATURES_INCLUDING_NOISE,
             n_classes=self._N_CLASSES,
             n_outputs=1,
             task=datasets.base.MULTI_CLF,
