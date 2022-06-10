@@ -8,6 +8,12 @@ import sys
 
 import setuptools
 
+
+class CustomError(Exception):
+    def __init__(self, msg) -> None:
+        super().__init__(msg)
+
+
 try:
     from numpy import get_include
 except ImportError:
@@ -20,8 +26,7 @@ except ImportError:
         )
         from numpy import get_include
     except subprocess.CalledProcessError as e:
-        print(e.stderr)
-        raise
+        raise CustomError(msg=e.stderr)
 
 try:
     from Cython.Build import cythonize
