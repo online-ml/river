@@ -18,11 +18,7 @@ try:
         River2SKLTransformer,
         convert_river_to_sklearn,
     )
-    from .sklearn_to_river import (
-        SKL2RiverClassifier,
-        SKL2RiverRegressor,
-        convert_sklearn_to_river,
-    )
+    from .sklearn_to_river import SKL2RiverClassifier, SKL2RiverRegressor, convert_sklearn_to_river
 
     __all__ += [
         "convert_river_to_sklearn",

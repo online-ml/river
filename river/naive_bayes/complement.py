@@ -177,8 +177,7 @@ class ComplementNB(base.BaseNB):
         return {
             c: sum(
                 {
-                    f: frequency
-                    * -math.log(cc[c].get(f, self.alpha) / sum(cc[c].values()))
+                    f: frequency * -math.log(cc[c].get(f, self.alpha) / sum(cc[c].values()))
                     for f, frequency in x.items()
                 }.values()
             )
@@ -204,33 +203,24 @@ class ComplementNB(base.BaseNB):
         columns, classes = X.columns, y.columns
         y = sparse.csc_matrix(y.sparse.to_coo()).T
 
-        self.class_counts.update(
-            {c: count.item() for c, count in zip(classes, y.sum(axis=1))}
-        )
+        self.class_counts.update({c: count.item() for c, count in zip(classes, y.sum(axis=1))})
 
         if hasattr(X, "sparse"):
             X = sparse.csr_matrix(X.sparse.to_coo())
 
         fc = y @ X
 
-        self.class_totals.update(
-            {c: count.item() for c, count in zip(classes, fc.sum(axis=1))}
-        )
+        self.class_totals.update({c: count.item() for c, count in zip(classes, fc.sum(axis=1))})
 
         self.feature_totals.update(
-            {
-                c: count.item()
-                for c, count in zip(columns, np.array(fc.sum(axis=0)).flatten())
-            }
+            {c: count.item() for c, count in zip(columns, np.array(fc.sum(axis=0)).flatten())}
         )
 
         # Update feature counts by slicing the sparse matrix per column.
         # Each column correspond to a class.
         for c, i in zip(classes, range(fc.shape[0])):
 
-            counts = {
-                c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}
-            }
+            counts = {c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}}
 
             # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
             # [{token_1: {classe_i: f_1}},.. {token_n: {class_i: f_n}}]

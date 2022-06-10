@@ -83,9 +83,7 @@ class Mixed(datasets.base.SyntheticDataset):
         seed: Optional[int | np.random.RandomState] = None,
         balance_classes: bool = False,
     ):
-        super().__init__(
-            n_features=4, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF
-        )
+        super().__init__(n_features=4, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF)
 
         # Classification functions to use
         self._functions = [
@@ -123,9 +121,7 @@ class Mixed(datasets.base.SyntheticDataset):
                 att_2 = self._rng.rand()
                 att_3 = self._rng.rand()
 
-                y = self._functions[self.classification_function](
-                    att_0, att_1, att_2, att_3
-                )
+                y = self._functions[self.classification_function](att_0, att_1, att_2, att_3)
 
                 if not self.balance_classes:
                     desired_class_found = True
@@ -134,9 +130,7 @@ class Mixed(datasets.base.SyntheticDataset):
                         (not self.next_class_should_be_zero) and (y == 1)
                     ):
                         desired_class_found = True
-                        self.next_class_should_be_zero = (
-                            not self.next_class_should_be_zero
-                        )
+                        self.next_class_should_be_zero = not self.next_class_should_be_zero
 
             x = {0: att_0, 1: att_1, 2: att_2, 3: att_3}
 

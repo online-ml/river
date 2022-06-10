@@ -110,9 +110,7 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
                 k = poisson(rate=self.lam, rng=self._rng)
                 if k == 0:
                     continue
-            model.learn_one(
-                x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen
-            )
+            model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
 
         return self
 
@@ -280,9 +278,7 @@ class BaseSRPEstimator:
         subspace = (
             None
             if self.features is None
-            else random_subspace(
-                all_features=all_features, k=len(self.features), rng=self.rng
-            )
+            else random_subspace(all_features=all_features, k=len(self.features), rng=self.rng)
         )
 
         # Initialize the background learner
@@ -315,9 +311,7 @@ class BaseSRPEstimator:
             subspace = (
                 None
                 if self.features is None
-                else random_subspace(
-                    all_features=all_features, k=len(self.features), rng=self.rng
-                )
+                else random_subspace(all_features=all_features, k=len(self.features), rng=self.rng)
             )
             # Reset model
             self.model = self.model.clone()
@@ -500,9 +494,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
-                y_proba_temp = {
-                    k: val * metric_value for k, val in y_proba_temp.items()
-                }
+                y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
             y_pred.update(y_proba_temp)
 
         total = sum(y_pred.values())
@@ -576,9 +568,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
                 if self.warning_detector.change_detected:
                     all_features = list(x.keys())
                     self.n_warnings_detected += 1
-                    self._trigger_warning(
-                        all_features=all_features, n_samples_seen=n_samples_seen
-                    )
+                    self._trigger_warning(all_features=all_features, n_samples_seen=n_samples_seen)
 
             # ===== Drift detection =====
             # Update the drift detection method
@@ -592,11 +582,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
 
     def predict_proba_one(self, x):
         # Select the features to use
-        x_subset = (
-            {k: x[k] for k in self.features if k in x}
-            if self.features is not None
-            else x
-        )
+        x_subset = {k: x[k] for k in self.features if k in x} if self.features is not None else x
 
         return self.model.predict_proba_one(x_subset)
 
@@ -888,9 +874,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
                 # Check if there was a change
                 if self.warning_detector.change_detected:
                     self.n_warnings_detected += 1
-                    self._trigger_warning(
-                        all_features=all_features, n_samples_seen=n_samples_seen
-                    )
+                    self._trigger_warning(all_features=all_features, n_samples_seen=n_samples_seen)
 
             # ===== Drift detection =====
             # Update the drift detection method
@@ -903,10 +887,6 @@ class BaseSRPRegressor(BaseSRPEstimator):
 
     def predict_one(self, x):
         # Select the features to use
-        x_subset = (
-            {k: x[k] for k in self.features if k in x}
-            if self.features is not None
-            else x
-        )
+        x_subset = {k: x[k] for k in self.features if k in x} if self.features is not None else x
 
         return self.model.predict_one(x_subset)

@@ -4,9 +4,7 @@ import pytest
 from river.drift import ADWIN, DDM, EDDM, HDDM_A, HDDM_W, KSWIN, PageHinkley
 
 np.random.seed(12345)
-data_stream_1 = np.concatenate(
-    (np.random.randint(2, size=1000), np.random.randint(8, size=1000))
-)
+data_stream_1 = np.concatenate((np.random.randint(2, size=1000), np.random.randint(8, size=1000)))
 
 np.random.seed(12345)
 data_stream_2 = np.concatenate(

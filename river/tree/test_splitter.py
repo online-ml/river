@@ -58,9 +58,7 @@ def test_nominal_reg_splitter():
 
     # Evaluates nominal binary splits
     dataset = synth.Mv(seed=42).take(200)
-    model = tree.HoeffdingTreeRegressor(
-        grace_period=10, leaf_prediction="mean", binary_split=True
-    )
+    model = tree.HoeffdingTreeRegressor(grace_period=10, leaf_prediction="mean", binary_split=True)
 
     for x, y in dataset:
         model.learn_one(x, y)

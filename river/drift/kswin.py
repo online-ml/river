@@ -129,14 +129,10 @@ class KSWIN(DriftDetector):
         if len(self.window) >= self.window_size:
             rnd_window = [
                 self.window[r]
-                for r in self._rng.sample(
-                    range(self.window_size - self.stat_size), self.stat_size
-                )
+                for r in self._rng.sample(range(self.window_size - self.stat_size), self.stat_size)
             ]
             most_recent = list(
-                itertools.islice(
-                    self.window, self.window_size - self.stat_size, self.window_size
-                )
+                itertools.islice(self.window, self.window_size - self.stat_size, self.window_size)
             )
 
             st, self.p_value = stats.ks_2samp(rnd_window, most_recent)

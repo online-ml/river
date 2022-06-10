@@ -91,12 +91,8 @@ class Baseline(reco.base.Ranker):
         super().__init__(seed=seed)
 
         self.optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
-        self.u_optimizer = (
-            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
-        )
-        self.i_optimizer = (
-            optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
-        )
+        self.u_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
+        self.i_optimizer = optim.SGD() if optimizer is None else copy.deepcopy(optimizer)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2 = l2
 
@@ -125,9 +121,7 @@ class Baseline(reco.base.Ranker):
         g_loss = self.loss.gradient(y, self.predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(
-            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
-        )
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
         # Calculate bias gradients
         u_grad_bias = {user: g_loss + self.l2 * self.u_biases[user]}

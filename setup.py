@@ -55,30 +55,31 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=("tests",)),
     install_requires=(base_packages := ["numpy>=1.22", "scipy>=1.5", "pandas>=1.3"]),
     extras_require={
-        "dev": (dev_packages := base_packages + [
-            "black>=22.1.0",
-            "flake8>=4.0.1",
-            "graphviz>=0.10.1",
-            "isort>=5.9.3",
-            "matplotlib>=3.0.2",
-            "mypy>=0.961",
-            "pre-commit>=2.9.2",
-            "pytest>=4.5.0",
-            "pytest-cov>=2.6.1",
-            "scikit-learn>=1.0.1",
-            "sqlalchemy>=1.4",
-        ]),
-        "benckmarks": base_packages + [
-            "scikit-learn",
-            "torch",
-            "vowpalwabbit"
-        ],
-        "compat": base_packages + [
+        "dev": (
+            dev_packages := base_packages
+            + [
+                "black>=22.1.0",
+                "flake8>=4.0.1",
+                "graphviz>=0.10.1",
+                "isort>=5.9.3",
+                "matplotlib>=3.0.2",
+                "mypy>=0.961",
+                "pre-commit>=2.9.2",
+                "pytest>=4.5.0",
+                "pytest-cov>=2.6.1",
+                "scikit-learn>=1.0.1",
+                "sqlalchemy>=1.4",
+            ]
+        ),
+        "benckmarks": base_packages + ["scikit-learn", "torch", "vowpalwabbit"],
+        "compat": base_packages
+        + [
             "scikit-learn",
             "sqlalchemy>=1.4",
             "vaex",
         ],
-        "docs": dev_packages + [
+        "docs": dev_packages
+        + [
             "dominate",
             "flask",
             "ipykernel",
@@ -90,7 +91,7 @@ setuptools.setup(
             "nbconvert",
             "python-slugify",
             "spacy",
-            "watermark"
+            "watermark",
         ],
         "extra": [f"river_extra=={about['__version__']}"],
         ":python_version == '3.6'": ["dataclasses"],

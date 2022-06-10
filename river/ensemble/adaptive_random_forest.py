@@ -14,11 +14,7 @@ from river.tree.nodes.arf_htc_nodes import (
     RandomLeafNaiveBayes,
     RandomLeafNaiveBayesAdaptive,
 )
-from river.tree.nodes.arf_htr_nodes import (
-    RandomLeafAdaptive,
-    RandomLeafMean,
-    RandomLeafModel,
-)
+from river.tree.nodes.arf_htr_nodes import RandomLeafAdaptive, RandomLeafMean, RandomLeafModel
 from river.tree.splitter import Splitter
 from river.utils.random import poisson
 
@@ -35,9 +31,7 @@ class BaseForest(base.Ensemble):
         lambda_value: int,
         drift_detector: typing.Optional[base.DriftDetector],
         warning_detector: typing.Optional[base.DriftDetector],
-        metric: typing.Union[
-            metrics.base.MultiClassMetric, metrics.base.RegressionMetric
-        ],
+        metric: typing.Union[metrics.base.MultiClassMetric, metrics.base.RegressionMetric],
         disable_weighted_vote,
         seed,
     ):
@@ -84,9 +78,7 @@ class BaseForest(base.Ensemble):
 
             k = poisson(rate=self.lambda_value, rng=self._rng)
             if k > 0:
-                model.learn_one(
-                    x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen
-                )
+                model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
 
         return self
 
@@ -537,9 +529,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             y_proba_temp = model.predict_proba_one(x)
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
-                y_proba_temp = {
-                    k: val * metric_value for k, val in y_proba_temp.items()
-                }
+                y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
             y_pred.update(y_proba_temp)
 
         total = sum(y_pred.values())
@@ -883,9 +873,7 @@ class BaseForestMember:
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: typing.Union[
-            metrics.base.MultiClassMetric, metrics.base.RegressionMetric
-        ],
+        metric: typing.Union[metrics.base.MultiClassMetric, metrics.base.RegressionMetric],
     ):
         self.index_original = index_original
         self.model = model
@@ -931,17 +919,13 @@ class BaseForestMember:
             self.created_on = n_samples_seen
             self.drift_detector = self.drift_detector.clone()
 
-    def learn_one(
-        self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int
-    ):
+    def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int):
 
         self.model.learn_one(x, y, sample_weight=sample_weight)
 
         if self.background_learner:
             # Train the background learner
-            self.background_learner.model.learn_one(
-                x=x, y=y, sample_weight=sample_weight
-            )
+            self.background_learner.model.learn_one(x=x, y=y, sample_weight=sample_weight)
 
         if self._use_drift_detector and not self.is_background_learner:
             drift_detector_input = self._drift_detector_input(

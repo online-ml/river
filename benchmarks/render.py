@@ -1,42 +1,63 @@
 import json
+
 import dominate
 from dominate.tags import *
-from river import datasets
 from slugify import slugify
 from watermark import watermark
 
-with open('results.json') as f:
+from river import datasets
+
+with open("results.json") as f:
     benchmarks = json.load(f)
 
 with open("details.json") as f:
     models = json.load(f)
 
-with open('../docs/benchmarks/index.md', 'w') as f:
-    print_ = lambda x: print(x, file=f, end='\n\n')
-    print_("""---
+with open("../docs/benchmarks/index.md", "w") as f:
+    print_ = lambda x: print(x, file=f, end="\n\n")
+    print_(
+        """---
 hide:
 - navigation
 ---
-""")
-    print_('# Benchmarks')
+"""
+    )
+    print_("# Benchmarks")
 
-    print_('## Environment')
-    print_(pre(watermark(python=True, packages='river,numpy,scikit-learn,pandas,scipy', machine=True)))
+    print_("## Environment")
+    print_(
+        pre(watermark(python=True, packages="river,numpy,scikit-learn,pandas,scipy", machine=True))
+    )
 
     imports = div()
-    imports.add(link(href="https://unpkg.com/tabulator-tables@5.2.6/dist/css/tabulator.min.css", rel="stylesheet"))
-    imports.add(script(type="text/javascript", src="https://unpkg.com/tabulator-tables@5.2.6/dist/js/tabulator.min.js"))
+    imports.add(
+        link(
+            href="https://unpkg.com/tabulator-tables@5.2.6/dist/css/tabulator.min.css",
+            rel="stylesheet",
+        )
+    )
+    imports.add(
+        script(
+            type="text/javascript",
+            src="https://unpkg.com/tabulator-tables@5.2.6/dist/js/tabulator.min.js",
+        )
+    )
     print_(imports)
 
-    print_(script(dominate.util.raw("""
+    print_(
+        script(
+            dominate.util.raw(
+                """
         let baseColumns
         let metrics
         let columns
-        """)))
-
+        """
+            )
+        )
+    )
 
     for track_name, results in benchmarks.items():
-        print_(f'## {track_name}')
+        print_(f"## {track_name}")
 
         print_("### Results")
         print_(div(id=f"{slugify(track_name)}-results"))
@@ -55,7 +76,10 @@ hide:
             _details.add(pre(desc))
             print_(_details)
 
-        print_(script(dominate.util.raw(f"""
+        print_(
+            script(
+                dominate.util.raw(
+                    f"""
     var results = {results}
 
     baseColumns = [
@@ -129,4 +153,7 @@ hide:
         layout: 'fitColumns',
         columns: columns
     }})
-    """)))
+    """
+                )
+            )
+        )

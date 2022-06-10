@@ -6,9 +6,7 @@ from river.utils.skmultiflow_utils import normalize_values_in_dict
 from .splitter import Splitter
 
 
-class LabelCombinationHoeffdingTreeClassifier(
-    tree.HoeffdingTreeClassifier, base.MultiOutputMixin
-):
+class LabelCombinationHoeffdingTreeClassifier(tree.HoeffdingTreeClassifier, base.MultiOutputMixin):
     """Label Combination Hoeffding Tree for multi-label classification.
 
     Label combination transforms the problem from multi-label to multi-class.

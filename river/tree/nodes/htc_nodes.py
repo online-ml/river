@@ -86,9 +86,7 @@ class LeafMajorityClass(HTLeaf):
             return ""
 
         text = f"Class {max(self.stats, key=self.stats.get)}:"
-        for label, proba in sorted(
-            normalize_values_in_dict(self.stats, inplace=False).items()
-        ):
+        for label, proba in sorted(normalize_values_in_dict(self.stats, inplace=False).items()):
             text += f"\n\tP({label}) = {round_sig_fig(proba)}"
 
         return text

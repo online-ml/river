@@ -16,9 +16,7 @@ from river import metrics
 def load_metrics():
     """Yields all the metrics."""
 
-    for name, obj in inspect.getmembers(
-        importlib.import_module("river.metrics"), inspect.isclass
-    ):
+    for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
 
         if name == "Metrics":
             continue
@@ -80,10 +78,7 @@ def generate_test_cases(metric, n):
         if metric.requires_labels:
             y_pred = [random.choice([False, True]) for _ in range(n)]
         else:
-            y_pred = [
-                dict(zip([False, True], np.random.dirichlet(np.ones(2))))
-                for _ in range(n)
-            ]
+            y_pred = [dict(zip([False, True], np.random.dirichlet(np.ones(2)))) for _ in range(n)]
         yield y_true, y_pred, sample_weights
 
     if isinstance(metric, metrics.base.MultiClassMetric):
@@ -91,9 +86,7 @@ def generate_test_cases(metric, n):
         if metric.requires_labels:
             y_pred = [random.choice([0, 1, 2]) for _ in range(n)]
         else:
-            y_pred = [
-                dict(zip([0, 1, 2], np.random.dirichlet(np.ones(3)))) for _ in range(n)
-            ]
+            y_pred = [dict(zip([0, 1, 2], np.random.dirichlet(np.ones(3)))) for _ in range(n)]
         yield y_true, y_pred, sample_weights
 
     if isinstance(metric, metrics.base.RegressionMetric):
@@ -234,10 +227,7 @@ def test_metric(metric, sk_metric):
                     kwargs = {"sample_weight": sample_weights[: i + 1]}
                 else:
                     kwargs = {}
-                assert (
-                    abs(m.get() - sk_metric(y_true[: i + 1], y_pred[: i + 1], **kwargs))
-                    < 1e-6
-                )
+                assert abs(m.get() - sk_metric(y_true[: i + 1], y_pred[: i + 1], **kwargs)) < 1e-6
 
 
 @pytest.mark.parametrize(

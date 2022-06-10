@@ -1,0 +1,8 @@
+[tool.black]
+line-length = 100
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+# line_length should be kept in sync with black `line-length` config flag
+line_length = 100

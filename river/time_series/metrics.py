@@ -72,6 +72,5 @@ class HorizonMetric(ForecastingMetric):
         prefixes = [f"+{t+1}" for t in range(len(self.metrics))]
         prefix_pad = max(map(len, prefixes))
         return "\n".join(
-            f"{prefix:<{prefix_pad}} {metric}"
-            for prefix, metric in zip(prefixes, self.metrics)
+            f"{prefix:<{prefix_pad}} {metric}" for prefix, metric in zip(prefixes, self.metrics)
         )

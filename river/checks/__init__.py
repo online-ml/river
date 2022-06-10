@@ -80,9 +80,9 @@ def _yield_datasets(model: Estimator):
             """One-hot encoded version of `datasets.SolarFlare"""
 
             def __iter__(self):
-                oh = (
-                    compose.SelectType(str) | preprocessing.OneHotEncoder()
-                ) + compose.SelectType(int)
+                oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(
+                    int
+                )
                 for x, y in datasets.SolarFlare().take(200):
                     yield oh.transform_one(x), y
 
@@ -148,16 +148,10 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     # Classifier checks
     if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
-        checks.append(
-            _allow_exception(clf.check_predict_proba_one, NotImplementedError)
-        )
+        checks.append(_allow_exception(clf.check_predict_proba_one, NotImplementedError))
         # Specific checks for binary classifiers
         if not model._multiclass:  # type: ignore
-            checks.append(
-                _allow_exception(
-                    clf.check_predict_proba_one_binary, NotImplementedError
-                )
-            )
+            checks.append(_allow_exception(clf.check_predict_proba_one_binary, NotImplementedError))
 
     if isinstance(utils.inspect.extract_relevant(model), ModelSelector):
         checks.append(model_selection.check_model_selection_order_does_not_matter)

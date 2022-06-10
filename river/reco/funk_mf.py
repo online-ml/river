@@ -102,12 +102,8 @@ class FunkMF(reco.base.Ranker):
         self.optimizer = optimizer
 
         self.n_factors = n_factors
-        self.u_optimizer = (
-            optim.SGD(0.1) if optimizer is None else copy.deepcopy(optimizer)
-        )
-        self.i_optimizer = (
-            optim.SGD(0.1) if optimizer is None else copy.deepcopy(optimizer)
-        )
+        self.u_optimizer = optim.SGD(0.1) if optimizer is None else copy.deepcopy(optimizer)
+        self.i_optimizer = optim.SGD(0.1) if optimizer is None else copy.deepcopy(optimizer)
         self.loss = optim.losses.Squared() if loss is None else loss
         self.l2 = l2
 
@@ -134,17 +130,11 @@ class FunkMF(reco.base.Ranker):
         g_loss = self.loss.gradient(y, self.predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(
-            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
-        )
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
         # Calculate latent gradients
-        u_latent_grad = {
-            user: g_loss * self.i_latents[item] + self.l2 * self.u_latents[user]
-        }
-        i_latent_grad = {
-            item: g_loss * self.u_latents[user] + self.l2 * self.i_latents[item]
-        }
+        u_latent_grad = {user: g_loss * self.i_latents[item] + self.l2 * self.u_latents[user]}
+        i_latent_grad = {item: g_loss * self.u_latents[user] + self.l2 * self.i_latents[item]}
 
         # Update latent weights
         self.u_latents = self.u_optimizer.step(self.u_latents, u_latent_grad)

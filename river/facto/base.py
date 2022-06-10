@@ -30,12 +30,8 @@ class BaseFM:
         seed,
     ):
         self.n_factors = n_factors
-        self.weight_optimizer = (
-            optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
-        )
-        self.latent_optimizer = (
-            optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
-        )
+        self.weight_optimizer = optim.SGD(0.01) if weight_optimizer is None else weight_optimizer
+        self.latent_optimizer = optim.SGD(0.01) if latent_optimizer is None else latent_optimizer
         self.loss = loss
         self.sample_normalization = sample_normalization
         self.l1_weight = l1_weight
@@ -78,9 +74,7 @@ class BaseFM:
 
     def _ohe_cat_features(self, x):
         """One hot encodes string features considering them as categorical."""
-        return dict(
-            (f"{j}_{xj}", 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items()
-        )
+        return dict((f"{j}_{xj}", 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
 
     def _learn_one(self, x, y, sample_weight=1.0):
 
@@ -88,9 +82,7 @@ class BaseFM:
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(
-            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
-        )
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
         # Apply the sample weight
         g_loss *= sample_weight
@@ -133,8 +125,7 @@ class BaseFM:
         interaction_coefficient: latents[xi] * latents[xj]
         """
         return sum(
-            self._interaction_coefficient(combination)
-            * self._interaction_val(x, combination)
+            self._interaction_coefficient(combination) * self._interaction_val(x, combination)
             for combination in self._interaction_combination_keys(x)
         )
 
@@ -189,8 +180,7 @@ class BaseFM:
         )
         contributions = (
             [
-                self._interaction_coefficient(combination)
-                * self._interaction_val(x, combination)
+                self._interaction_coefficient(combination) * self._interaction_val(x, combination)
                 for combination in self._interaction_combination_keys(x)
             ]  # latents
             + [xi * self.weights.get(i, 0) for i, xi in x.items()]  # weights

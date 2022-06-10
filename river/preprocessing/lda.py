@@ -149,9 +149,7 @@ class LDA(base.Transformer):
         self.index_to_word: dict[int, str] = {}
 
         self.nu_1: typing.DefaultDict = defaultdict(functools.partial(np.ones, 1))
-        self.nu_2: typing.DefaultDict = defaultdict(
-            functools.partial(np.array, [self.alpha_beta])
-        )
+        self.nu_2: typing.DefaultDict = defaultdict(functools.partial(np.array, [self.alpha_beta]))
 
         for topic in range(self.n_components):
             self.nu_1[topic] = np.ones(1)
@@ -275,9 +273,7 @@ class LDA(base.Transformer):
                 input=psi_nu_1_nu_2_minus_psi_nu_2[0], shift=1, cval=0
             )
 
-            exp_weights[topic] = np.exp(
-                psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2
-            )
+            exp_weights[topic] = np.exp(psi_nu_1 - psi_nu_1_nu_2 + psi_nu_1_nu_2_minus_psi_nu_2)
 
         return exp_weights, exp_oov_weights
 
@@ -294,9 +290,7 @@ class LDA(base.Transformer):
 
         for k in range(self.n_components):
 
-            reverse_cumulated_phi[k] = ndimage.shift(
-                input=statistics[k], shift=-1, cval=0
-            )
+            reverse_cumulated_phi[k] = ndimage.shift(input=statistics[k], shift=-1, cval=0)
 
             reverse_cumulated_phi[k] = np.flip(reverse_cumulated_phi[k])
             reverse_cumulated_phi[k] = np.cumsum(reverse_cumulated_phi[k])
@@ -310,9 +304,7 @@ class LDA(base.Transformer):
 
             if self.truncation_size < self.truncation_size_prime:
 
-                difference_truncation = (
-                    self.truncation_size_prime - self.truncation_size
-                )
+                difference_truncation = self.truncation_size_prime - self.truncation_size
 
                 self.nu_1[k] = np.append(self.nu_1[k], np.ones(difference_truncation))
                 self.nu_2[k] = np.append(self.nu_2[k], np.ones(difference_truncation))
@@ -330,9 +322,7 @@ class LDA(base.Transformer):
 
         self.truncation_size = self.truncation_size_prime
 
-    def _compute_statistics_components(
-        self, words_indexes_list: list
-    ) -> typing.Tuple[dict, dict]:
+    def _compute_statistics_components(self, words_indexes_list: list) -> typing.Tuple[dict, dict]:
         """Extract latent variables from the document and words.
 
         Parameters
@@ -345,9 +335,7 @@ class LDA(base.Transformer):
         Computed statistics over the words. Document reprensetation across topics.
 
         """
-        statistics: typing.DefaultDict = defaultdict(
-            lambda: np.zeros(self.truncation_size_prime)
-        )
+        statistics: typing.DefaultDict = defaultdict(lambda: np.zeros(self.truncation_size_prime))
 
         exp_weights, exp_oov_weights = self._compute_weights(
             n_components=self.n_components, nu_1=self.nu_1, nu_2=self.nu_2

@@ -83,9 +83,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
     def kill_tree_children(self, hat):
         pass
 
-    def learn_one(
-        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None
-    ):
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
             k = poisson(rate=1, rng=self._rng)
@@ -198,10 +196,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         """
         found_nodes: typing.List[HTLeaf] = []
         for node in self.walk(x, until_leaf=until_leaf):
-            if (
-                isinstance(node, AdaBranchClassifier)
-                and node._alternate_tree is not None
-            ):
+            if isinstance(node, AdaBranchClassifier) and node._alternate_tree is not None:
                 if isinstance(node._alternate_tree, AdaBranchClassifier):
                     found_nodes.append(
                         node._alternate_tree.traverse(x, until_leaf=until_leaf)  # type: ignore
@@ -220,10 +215,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         for child in self.children:
             yield from child.iter_leaves()
 
-            if (
-                isinstance(child, AdaBranchClassifier)
-                and child._alternate_tree is not None
-            ):
+            if isinstance(child, AdaBranchClassifier) and child._alternate_tree is not None:
                 yield from child._alternate_tree.iter_leaves()
 
     @property
@@ -241,9 +233,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
     def error_is_null(self):
         return self._adwin is None
 
-    def learn_one(
-        self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None
-    ):
+    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
         aux = leaf.prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
@@ -274,10 +264,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
         # Condition to replace alternate tree
-        elif (
-            self._alternate_tree is not None
-            and not self._alternate_tree.error_is_null()
-        ):
+        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
             if (
                 self.error_width > tree.drift_window_threshold
                 and self._alternate_tree.error_width > tree.drift_window_threshold
@@ -288,11 +275,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
                 f_n = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
 
                 bound = math.sqrt(
-                    2.0
-                    * old_error_rate
-                    * (1.0 - old_error_rate)
-                    * math.log(2.0 / f_delta)
-                    * f_n
+                    2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / f_delta) * f_n
                 )
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves
@@ -400,9 +383,5 @@ class AdaNomMultiwayBranchClass(AdaBranchClassifier, NominalMultiwayBranch):
 
 
 class AdaNumMultiwayBranchClass(AdaBranchClassifier, NumericMultiwayBranch):
-    def __init__(
-        self, stats, feature, radius_and_slots, depth, *children, **attributes
-    ):
-        super().__init__(
-            stats, feature, radius_and_slots, depth, *children, **attributes
-        )
+    def __init__(self, stats, feature, radius_and_slots, depth, *children, **attributes):
+        super().__init__(stats, feature, radius_and_slots, depth, *children, **attributes)

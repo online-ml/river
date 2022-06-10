@@ -18,15 +18,9 @@ def test_multi_fbeta():
         fbeta.update(yt, yp)
 
         if i >= 2:
-            fbeta_0, _, _ = sk_fbeta(
-                y_true[: i + 1], y_pred[: i + 1], beta=0.25, average=None
-            )
-            _, fbeta_1, _ = sk_fbeta(
-                y_true[: i + 1], y_pred[: i + 1], beta=1, average=None
-            )
-            _, _, fbeta_2 = sk_fbeta(
-                y_true[: i + 1], y_pred[: i + 1], beta=4, average=None
-            )
+            fbeta_0, _, _ = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=0.25, average=None)
+            _, fbeta_1, _ = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=1, average=None)
+            _, _, fbeta_2 = sk_fbeta(y_true[: i + 1], y_pred[: i + 1], beta=4, average=None)
 
             multi_fbeta = fbeta_0 * 1 + fbeta_1 * 1 + fbeta_2 * 2
             multi_fbeta /= 1 + 1 + 2
@@ -39,9 +33,7 @@ def test_rolling_multi_fbeta():
         return collections.deque(iterable, maxlen=n)
 
     fbeta = metrics.Rolling(
-        metric=metrics.MultiFBeta(
-            betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}
-        ),
+        metric=metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}),
         window_size=3,
     )
     n = fbeta.window_size

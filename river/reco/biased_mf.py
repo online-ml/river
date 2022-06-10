@@ -164,9 +164,7 @@ class BiasedMF(Ranker):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(weight_initializer)
 
-        random_latents = functools.partial(
-            self.latent_initializer, shape=self.n_factors
-        )
+        random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         self.u_latents: typing.DefaultDict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
@@ -199,9 +197,7 @@ class BiasedMF(Ranker):
         g_loss = self.loss.gradient(y, self.predict_one(user, item))
 
         # Clamp the gradient to avoid numerical instability
-        g_loss = utils.math.clamp(
-            g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient
-        )
+        g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
         # Calculate weights gradients
         u_grad_bias = {user: g_loss + self.l2_bias * self.u_biases[user]}

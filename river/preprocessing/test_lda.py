@@ -142,9 +142,7 @@ def test_statistics_two_components():
 
         word_indexes = [lda.word_to_index[word] for word in word_list]
 
-        statistics, _ = lda._compute_statistics_components(
-            words_indexes_list=word_indexes
-        )
+        statistics, _ = lda._compute_statistics_components(words_indexes_list=word_indexes)
 
         statistics_list.append(statistics)
 
@@ -184,9 +182,7 @@ def test_statistics_five_components():
 
         word_indexes = [lda.word_to_index[word] for word in word_list]
 
-        statistics, _ = lda._compute_statistics_components(
-            words_indexes_list=word_indexes
-        )
+        statistics, _ = lda._compute_statistics_components(words_indexes_list=word_indexes)
 
         statistics_list.append(statistics)
 
@@ -223,9 +219,7 @@ def test_five_components():
         components_list.append(lda.learn_transform_one(tokens))
 
     for index, component in enumerate(components_list):
-        assert np.array_equal(
-            a1=list(component.values()), a2=REFERENCE_FIVE_COMPONENTS[index]
-        )
+        assert np.array_equal(a1=list(component.values()), a2=REFERENCE_FIVE_COMPONENTS[index])
 
 
 def test_prunning_vocabulary():

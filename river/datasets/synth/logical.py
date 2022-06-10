@@ -61,11 +61,7 @@ class Logical(datasets.base.SyntheticDataset):
         self.n_tiles = n_tiles
         self.shuffle = shuffle
         self.seed = seed
-        self.rng = (
-            seed
-            if isinstance(seed, np.random.RandomState)
-            else np.random.RandomState(seed)
-        )
+        self.rng = seed if isinstance(seed, np.random.RandomState) else np.random.RandomState(seed)
         self.feature_names = ["A", "B"]
         self.target_names = ["OR", "XOR", "AND"]
 

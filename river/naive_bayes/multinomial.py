@@ -160,9 +160,9 @@ class MultinomialNB(base.BaseNB):
         return self.class_counts[c] / sum(self.class_counts.values())
 
     def p_class_many(self) -> pd.DataFrame:
-        return base.from_dict(self.class_counts).T[
-            list(self.class_counts.keys())
-        ] / sum(self.class_counts.values())
+        return base.from_dict(self.class_counts).T[list(self.class_counts.keys())] / sum(
+            self.class_counts.values()
+        )
 
     def joint_log_likelihood(self, x):
         """Computes the joint log likelihood of input features.
@@ -180,8 +180,7 @@ class MultinomialNB(base.BaseNB):
         return {
             c: math.log(self.p_class(c))
             + sum(
-                frequency * math.log(self.p_feature_given_class(f, c))
-                for f, frequency in x.items()
+                frequency * math.log(self.p_feature_given_class(f, c)) for f, frequency in x.items()
             )
             for c in self.classes_
         }
@@ -205,26 +204,20 @@ class MultinomialNB(base.BaseNB):
         columns, classes = X.columns, y.columns
         y = sparse.csc_matrix(y.sparse.to_coo()).T
 
-        self.class_counts.update(
-            {c: count.item() for c, count in zip(classes, y.sum(axis=1))}
-        )
+        self.class_counts.update({c: count.item() for c, count in zip(classes, y.sum(axis=1))})
 
         if hasattr(X, "sparse"):
             X = sparse.csr_matrix(X.sparse.to_coo())
 
         fc = y @ X
 
-        self.class_totals.update(
-            {c: count.item() for c, count in zip(classes, fc.sum(axis=1))}
-        )
+        self.class_totals.update({c: count.item() for c, count in zip(classes, fc.sum(axis=1))})
 
         # Update feature counts by slicing the sparse matrix per column.
         # Each column correspond to a class.
         for c, i in zip(classes, range(fc.shape[0])):
 
-            counts = {
-                c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}
-            }
+            counts = {c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}}
 
             # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
             # [{token_1: {classe_i: f_1}},.. {token_n: {class_i: f_n}}]
@@ -238,9 +231,7 @@ class MultinomialNB(base.BaseNB):
 
         return self
 
-    def _feature_log_prob(
-        self, columns: list, known: list, unknown: list
-    ) -> pd.DataFrame:
+    def _feature_log_prob(self, columns: list, known: list, unknown: list) -> pd.DataFrame:
         """Compute log probabilities of input features.
 
         Parameters
@@ -257,14 +248,10 @@ class MultinomialNB(base.BaseNB):
         Log probabilities of input features.
 
         """
-        smooth_fc = np.log(
-            base.from_dict(self.feature_counts).fillna(0).T[known] + self.alpha
-        )
+        smooth_fc = np.log(base.from_dict(self.feature_counts).fillna(0).T[known] + self.alpha)
         smooth_fc[unknown] = np.log(self.alpha)
 
-        smooth_cc = np.log(
-            base.from_dict(self.class_totals) + self.alpha * self.n_terms
-        )
+        smooth_cc = np.log(base.from_dict(self.class_totals) + self.alpha * self.n_terms)
 
         return smooth_fc.subtract(smooth_cc.values, axis="rows")[columns].T
 

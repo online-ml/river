@@ -100,19 +100,14 @@ class Hyperplane(datasets.base.SyntheticDataset):
         self.seed = seed
         self.n_drift_features = n_drift_features
         if not (0.0 <= mag_change <= 1.0):
-            raise ValueError(
-                f"Invalid mag_change ({mag_change}). " "Valid range is [0.0, 1.0]"
-            )
+            raise ValueError(f"Invalid mag_change ({mag_change}). " "Valid range is [0.0, 1.0]")
         self.mag_change = mag_change
         if not (0.0 <= sigma <= 1.0):
-            raise ValueError(
-                f"Invalid sigma_percentage ({sigma}). " "Valid range is [0.0, 1.0]"
-            )
+            raise ValueError(f"Invalid sigma_percentage ({sigma}). " "Valid range is [0.0, 1.0]")
         self.sigma = sigma
         if not (0.0 <= noise_percentage <= 1.0):
             raise ValueError(
-                f"Invalid noise_percentage ({noise_percentage}). "
-                "Valid range is [0.0, 1.0]"
+                f"Invalid noise_percentage ({noise_percentage}). " "Valid range is [0.0, 1.0]"
             )
         self.noise_percentage = noise_percentage
         self.target_values = [0, 1]

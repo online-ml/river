@@ -305,9 +305,5 @@ class EFDTNumericBinaryBranch(BaseEFDTBranch, NumericBinaryBranch):
 
 
 class EFDTNumericMultiwayBranch(BaseEFDTBranch, NumericMultiwayBranch):
-    def __init__(
-        self, stats, feature, radius_and_slots, depth, *children, **attributes
-    ):
-        super().__init__(
-            stats, feature, radius_and_slots, depth, *children, **attributes
-        )
+    def __init__(self, stats, feature, radius_and_slots, depth, *children, **attributes):
+        super().__init__(stats, feature, radius_and_slots, depth, *children, **attributes)

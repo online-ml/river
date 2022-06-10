@@ -71,9 +71,7 @@ class Var(stats.base.Univariate):
         mean_old = self.mean.get()
         self.mean.update_many(X)
         mean_new = self.mean.get()
-        self._S += np.sum(
-            np.multiply(np.subtract(X, mean_old), np.subtract(X, mean_new))
-        )
+        self._S += np.sum(np.multiply(np.subtract(X, mean_old), np.subtract(X, mean_new)))
         return self
 
     def get(self):
@@ -198,9 +196,7 @@ class RollingVar(stats.base.RollingUnivariate):
 
     def get(self):
         try:
-            var = (
-                self._sos / len(self._rolling_mean.window)
-            ) - self._rolling_mean.get() ** 2
+            var = (self._sos / len(self._rolling_mean.window)) - self._rolling_mean.get() ** 2
             return self.correction_factor * var
         except ZeroDivisionError:
             return 0.0

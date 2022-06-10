@@ -55,9 +55,7 @@ class EBSTSplitter(Splitter):
         """Not implemented in regression splitters."""
         raise NotImplementedError
 
-    def best_evaluated_split_suggestion(
-        self, criterion, pre_split_dist, att_idx, binary_only=True
-    ):
+    def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only=True):
         candidate = BranchFactory()
 
         if self._root is None:
@@ -100,9 +98,7 @@ class EBSTSplitter(Splitter):
 
         merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
         if merit > candidate.merit:
-            candidate = BranchFactory(
-                merit, self._att_idx, node.att_val, post_split_dists
-            )
+            candidate = BranchFactory(merit, self._att_idx, node.att_val, post_split_dists)
 
         if node._right is not None:
             self._aux_estimator += node.estimator
@@ -196,9 +192,7 @@ class EBSTSplitter(Splitter):
         is_bad = False
 
         if current_node._left is not None:
-            is_bad = self._remove_bad_split_nodes(
-                current_node._left, current_node, True
-            )
+            is_bad = self._remove_bad_split_nodes(current_node._left, current_node, True)
         else:  # Every leaf node is potentially a bad candidate
             is_bad = True
 
@@ -206,9 +200,7 @@ class EBSTSplitter(Splitter):
             if current_node._right is not None:
                 self._aux_estimator += current_node.estimator
 
-                is_bad = self._remove_bad_split_nodes(
-                    current_node._right, current_node, False
-                )
+                is_bad = self._remove_bad_split_nodes(current_node._right, current_node, False)
 
                 self._aux_estimator -= current_node.estimator
             else:  # Every leaf node is potentially a bad candidate
@@ -223,12 +215,8 @@ class EBSTSplitter(Splitter):
             right_dist = self._pre_split_dist - left_dist
 
             post_split_dists = [left_dist, right_dist]
-            merit = self._criterion.merit_of_split(
-                self._pre_split_dist, post_split_dists
-            )
-            if (merit / self._last_check_vr) < (
-                self._last_check_ratio - 2 * self._last_check_e
-            ):
+            merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
+            if (merit / self._last_check_vr) < (self._last_check_ratio - 2 * self._last_check_e):
                 # Remove children nodes
                 current_node._left = None
                 current_node._right = None

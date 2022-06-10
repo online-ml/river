@@ -5,9 +5,7 @@ from river import base
 from . import utils
 
 
-def iter_arff(
-    filepath_or_buffer, target: str = None, compression="infer"
-) -> base.typing.Stream:
+def iter_arff(filepath_or_buffer, target: str = None, compression="infer") -> base.typing.Stream:
     """Iterates over rows from an ARFF file.
 
     Parameters
@@ -36,9 +34,7 @@ def iter_arff(
         raise arffread.ParseArffError(msg)
 
     names = [attr.name for attr in attrs]
-    types = [
-        float if isinstance(attr, arffread.NumericAttribute) else None for attr in attrs
-    ]
+    types = [float if isinstance(attr, arffread.NumericAttribute) else None for attr in attrs]
 
     for r in buffer:
         if len(r) == 0:
