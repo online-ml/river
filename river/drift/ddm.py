@@ -137,12 +137,8 @@ class DDM(DriftDetector):
         if self._drift_detected:
             self.reset()
 
-        self.miss_prob = self.miss_prob + (x - self.miss_prob) / float(
-            self.sample_count
-        )
-        self.miss_std = math.sqrt(
-            self.miss_prob * (1 - self.miss_prob) / float(self.sample_count)
-        )
+        self.miss_prob = self.miss_prob + (x - self.miss_prob) / float(self.sample_count)
+        self.miss_std = math.sqrt(self.miss_prob * (1 - self.miss_prob) / float(self.sample_count))
         self.sample_count += 1
 
         self.estimation = self.miss_prob

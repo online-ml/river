@@ -66,7 +66,6 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
         super().__init__(stats, depth, splitter, **kwargs)
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
-        self._error_change = False
         self._rng = random.Random(seed)
 
     @property
@@ -101,11 +100,12 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
         old_error = self.error_estimation
 
         # Update ADWIN
-        self._error_change, _ = self._adwin.update(int(not is_correct))
+        self._adwin.update(int(not is_correct))
+        error_change = self._adwin.drift_detected
 
         # Error is decreasing
-        if self._error_change and old_error > self.error_estimation:
-            self._error_change = False
+        if error_change and old_error > self.error_estimation:
+            error_change = False
 
         # Update statistics
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
@@ -177,7 +177,6 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self._alternate_tree = None
-        self._error_change = False
 
         self._rng = random.Random(seed)
 
@@ -252,14 +251,15 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         old_error = self.error_estimation
 
         # Update ADWIN
-        self._error_change, _ = self._adwin.update(int(not is_correct))
+        self._adwin.update(int(not is_correct))
+        error_change = self._adwin.drift_detected
 
         # Classification error is decreasing: skip drift adaptation
-        if self._error_change and old_error > self.error_estimation:
-            self._error_change = False
+        if error_change and old_error > self.error_estimation:
+            error_change = False
 
         # Condition to build a new alternate tree
-        if self._error_change:
+        if error_change:
             self._alternate_tree = tree._new_leaf(parent=self)
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1

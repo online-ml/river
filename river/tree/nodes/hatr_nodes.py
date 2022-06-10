@@ -43,7 +43,6 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
 
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
-        self._error_change = False
         self._rng = random.Random(seed)
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
@@ -79,11 +78,12 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
         old_error = self.error_estimation
 
         # Update ADWIN
-        self._error_change, _ = self._adwin.update(normalized_error)
+        self._adwin.update(normalized_error)
+        error_change = self._adwin.drift_detected
 
         # Error is decreasing
-        if self._error_change and old_error > self.error_estimation:
-            self._error_change = False
+        if error_change and old_error > self.error_estimation:
+            error_change = False
 
         # Update learning model
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
@@ -130,7 +130,6 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         self.adwin_delta = adwin_delta
         self._adwin = ADWIN(delta=self.adwin_delta)
         self._alternate_tree = None
-        self._error_change = False
 
         self._rng = random.Random(seed)
 
@@ -204,13 +203,14 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         old_error = self.error_estimation
 
         # Update ADWIN
-        self._error_change, _ = self._adwin.update(normalized_error)
+        self._adwin.update(normalized_error)
+        error_change = self._adwin.drift_detected
 
-        if self._error_change and old_error > self.error_estimation:
-            self._error_change = False
+        if error_change and old_error > self.error_estimation:
+            error_change = False
 
         # Condition to build a new alternate tree
-        if self._error_change:
+        if error_change:
             self._alternate_tree = tree._new_leaf(parent=self)
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1

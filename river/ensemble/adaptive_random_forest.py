@@ -936,7 +936,7 @@ class BaseForestMember:
             if self._use_background_learner:
                 self.warning_detector.update(drift_detector_input)
                 # Check if there was a (warning) change
-                if self.warning_detector.change_detected:
+                if self.warning_detector.drift_detected:
                     self.last_warning_on = n_samples_seen
                     self.n_warnings_detected += 1
                     # Create a new background learner object
@@ -956,7 +956,7 @@ class BaseForestMember:
             self.drift_detector.update(drift_detector_input)
 
             # Check if there was a change
-            if self.drift_detector.change_detected:
+            if self.drift_detector.drift_detected:
                 self.last_drift_on = n_samples_seen
                 self.n_drifts_detected += 1
                 self.reset(n_samples_seen)

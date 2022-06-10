@@ -565,7 +565,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
                 # Update the warning detection method
                 self.warning_detector.update(int(not correctly_classifies))
                 # Check if there was a change
-                if self.warning_detector.change_detected:
+                if self.warning_detector.drift_detected:
                     all_features = list(x.keys())
                     self.n_warnings_detected += 1
                     self._trigger_warning(all_features=all_features, n_samples_seen=n_samples_seen)
@@ -574,7 +574,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
             # Update the drift detection method
             self.drift_detector.update(int(not correctly_classifies))
             # Check if there was a change
-            if self.drift_detector.change_detected:
+            if self.drift_detector.drift_detected:
                 all_features = list(x.keys())
                 self.n_drifts_detected += 1
                 # There was a change, reset the model
@@ -872,7 +872,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
                 # Update the warning detection method
                 self.warning_detector.update(drift_detector_input)
                 # Check if there was a change
-                if self.warning_detector.change_detected:
+                if self.warning_detector.drift_detected:
                     self.n_warnings_detected += 1
                     self._trigger_warning(all_features=all_features, n_samples_seen=n_samples_seen)
 
@@ -880,7 +880,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
             # Update the drift detection method
             self.drift_detector.update(drift_detector_input)
             # Check if the was a change
-            if self.drift_detector.change_detected:
+            if self.drift_detector.drift_detected:
                 self.n_drifts_detected += 1
                 # There was a change, reset the model
                 self.reset(all_features=all_features, n_samples_seen=n_samples_seen)

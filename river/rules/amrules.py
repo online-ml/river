@@ -97,9 +97,9 @@ class RegRule(HoeffdingRule, base.Regressor, anomaly.base.AnomalyDetector):
 
     def drift_test(self, y, y_pred):
         abs_error = abs(y - y_pred)
-        in_drift, _ = self.drift_detector.update(abs_error)
+        self.drift_detector.update(abs_error)
 
-        return in_drift
+        return self.drift_detector.drift_detected
 
     def score_one(self, x) -> float:
         """Rule anomaly score.
