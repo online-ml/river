@@ -9,24 +9,11 @@ import sys
 import setuptools
 
 
-class CustomError(Exception):
-    def __init__(self, msg) -> None:
-        super().__init__(msg)
-
-
 try:
     from numpy import get_include
 except ImportError:
-    try:
-        subprocess.run(
-            args=["python", "-m", "pip", "install", "numpy"],
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-        from numpy import get_include
-    except subprocess.CalledProcessError as e:
-        raise CustomError(msg=e.stderr)
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
+    from numpy import get_include
 
 try:
     from Cython.Build import cythonize
