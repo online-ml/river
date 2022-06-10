@@ -93,7 +93,7 @@ setuptools.setup(
             "spacy",
             "watermark",
         ],
-        "extra": [f"river_extra=={about['__version__']}"],
+        "extra": ["river_extra"],
         ":python_version == '3.6'": ["dataclasses"],
     },
     include_package_data=True,
