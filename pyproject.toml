@@ -9,3 +9,22 @@ target-version = ['py38']
 profile = "black"
 # line_length should be kept in sync with black `line-length` config flag
 line_length = 100
+
+[tool.mypy]
+files = "river"
+
+[[tool.mypy.overrides]]
+module = [
+    "river.*",
+    "mmh3.*",
+    "numpy.*",
+    "scikit-learn.*",
+    "pytest.*",
+    "pandas.*",
+    "scipy.*",
+    "graphviz.*",
+    "vaex.*",
+    "torch.*",
+    "sqlalchemy."
+]
+ignore_missing_imports = true
