@@ -19312,11 +19312,6 @@ parameter values. For instance, let's use the Manhattan function instead of the 
 <p>Classes that are added (and removed) from the window may no longer be valid. This method cleans up the window and and ensures only known classes are added, and we do not consider "None" a class. It is called every <code>cleanup_every</code> step, or can be called manually.</p>
 </details>
 <details class="- note">
-<summary>clone</summary>
-<p>Return a fresh estimator with the same parameters.</p>
-<p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if it's a River classes. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
-</details>
-<details class="- note">
 <summary>learn_one</summary>
 <p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
