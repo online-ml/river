@@ -12,7 +12,7 @@ hide:
 Python version       : 3.9.12
 IPython version      : 7.30.1
 
-river       : 0.10.1
+river       : 0.11.1
 numpy       : 1.22.3
 scikit-learn: 1.1.0
 pandas      : 1.4.1
@@ -920,7 +920,7 @@ Features  9
   LogisticRegression (
     optimizer=SGD (
       lr=Constant (
-        learning_rate=0.01
+        learning_rate=0.005
       )
     )
     loss=Log (
@@ -942,6 +942,20 @@ Features  9
 <details>
   <summary>Naive Bayes</summary>
   <pre>GaussianNB ()</pre>
+</details>
+
+<details>
+  <summary>PyTorch logistic regression</summary>
+  <pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  PyTorchBinaryClassifier (
+    network_func=&lt;class '__main__.PyTorchLogReg'&gt;
+    loss=BCELoss()
+    optimizer_func=&quot;&lt;lambda&gt;&quot;
+  )
+)</pre>
 </details>
 
 <details>
@@ -989,7 +1003,7 @@ Features  9
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=None
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )]</pre>
@@ -1102,12 +1116,17 @@ Features  9
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=None
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )]
   use_probabilities=True
 )</pre>
+</details>
+
+<details>
+  <summary>Vowpal Wabbit logistic regression</summary>
+  <pre>VW2RiverClassifier ()</pre>
 </details>
 
 <details>
@@ -1127,14 +1146,28 @@ Features  9
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=None
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )</pre>
 </details>
 
+<details>
+  <summary>sklearn SGDClassifier</summary>
+  <pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SKL2RiverClassifier (
+    estimator=SGDClassifier(eta0=0.005, learning_rate='constant', loss='log_loss',
+                penalty='none')
+    classes=[False, True]
+  )
+)</pre>
+</details>
+
 <script>
-    var results = [{'Accuracy': 0.6257784487639177, 'Dataset': 'Bananas', 'F1': 0.4477861319966584, 'Memory': 165670, 'Model': 'ADWIN Bagging', 'Time': 2618.05}, {'Accuracy': 0.5064150943396226, 'Dataset': 'Bananas', 'F1': 0.4825949367088608, 'Memory': 3063, 'Model': 'ALMA', 'Time': 163.789}, {'Accuracy': 0.6778637478769579, 'Dataset': 'Bananas', 'F1': 0.64504054897068, 'Memory': 171980, 'Model': 'AdaBoost', 'Time': 2489.237}, {'Accuracy': 0.8856387997735422, 'Dataset': 'Bananas', 'F1': 0.8696213425129088, 'Memory': 8567570, 'Model': 'Adaptive Random Forest', 'Time': 5560.815}, {'Accuracy': 0.6335157576901302, 'Dataset': 'Bananas', 'F1': 0.45875139353400224, 'Memory': 208556, 'Model': 'Bagging', 'Time': 1883.013}, {'Accuracy': 0.6252123042083412, 'Dataset': 'Bananas', 'F1': 0.4513812154696133, 'Memory': 29602, 'Model': 'Extremely Fast Decision Tree', 'Time': 303.313}, {'Accuracy': 0.6165314210228345, 'Dataset': 'Bananas', 'F1': 0.4408365437534397, 'Memory': 43404, 'Model': 'Hoeffding Adaptive Tree', 'Time': 484.379}, {'Accuracy': 0.6421966408756369, 'Dataset': 'Bananas', 'F1': 0.5034049240440022, 'Memory': 24843, 'Model': 'Hoeffding Tree', 'Time': 251.493}, {'Accuracy': 0.8284581996603133, 'Dataset': 'Bananas', 'F1': 0.8028627195836044, 'Memory': 1244447, 'Model': 'Leveraging Bagging', 'Time': 9075.224}, {'Accuracy': 0.5373584905660377, 'Dataset': 'Bananas', 'F1': 0.22109275730622616, 'Memory': 4423, 'Model': 'Logistic regression', 'Time': 170.88}, {'Accuracy': 0.6152104170598226, 'Dataset': 'Bananas', 'F1': 0.4139120436907157, 'Memory': 3901, 'Model': 'Naive Bayes', 'Time': 240.513}, {'Accuracy': 0.8514814115870919, 'Dataset': 'Bananas', 'F1': 0.8321603753465558, 'Memory': 9988024, 'Model': 'Stacking', 'Time': 8676.398}, {'Accuracy': 0.6575471698113208, 'Dataset': 'Bananas', 'F1': 0.560639070442992, 'Memory': 2186974, 'Model': 'Stochastic Gradient Tree', 'Time': 586.001}, {'Accuracy': 0.8694093225136819, 'Dataset': 'Bananas', 'F1': 0.8508620689655172, 'Memory': 4420472, 'Model': 'Streaming Random Patches', 'Time': 11370.613}, {'Accuracy': 0.5095301000188714, 'Dataset': 'Bananas', 'F1': 0.4529572721532309, 'Memory': 535, 'Model': '[baseline] Last Class', 'Time': 75.535}, {'Accuracy': 0.8484619739573505, 'Dataset': 'Bananas', 'F1': 0.8274231678486997, 'Memory': 43826, 'Model': 'k-Nearest Neighbors', 'Time': 990.766}, {'Accuracy': 0.8935148118494796, 'Dataset': 'Phishing', 'F1': 0.8792007266121706, 'Memory': 416562, 'Model': 'ADWIN Bagging', 'Time': 1383.466}, {'Accuracy': 0.8264, 'Dataset': 'Phishing', 'F1': 0.8117953165654813, 'Memory': 4803, 'Model': 'ALMA', 'Time': 64.185}, {'Accuracy': 0.8783026421136909, 'Dataset': 'Phishing', 'F1': 0.8635547576301617, 'Memory': 293828, 'Model': 'AdaBoost', 'Time': 1524.644}, {'Accuracy': 0.9087269815852682, 'Dataset': 'Phishing', 'F1': 0.8969258589511755, 'Memory': 1460226, 'Model': 'Adaptive Random Forest', 'Time': 1276.841}, {'Accuracy': 0.8935148118494796, 'Dataset': 'Phishing', 'F1': 0.8792007266121706, 'Memory': 399544, 'Model': 'Bagging', 'Time': 1045.51}, {'Accuracy': 0.8879103282626101, 'Dataset': 'Phishing', 'F1': 0.8734177215189873, 'Memory': 132210, 'Model': 'Extremely Fast Decision Tree', 'Time': 1240.158}, {'Accuracy': 0.8670936749399519, 'Dataset': 'Phishing', 'F1': 0.8445692883895132, 'Memory': 57312, 'Model': 'Hoeffding Adaptive Tree', 'Time': 188.008}, {'Accuracy': 0.8799039231385108, 'Dataset': 'Phishing', 'F1': 0.8605947955390334, 'Memory': 43223, 'Model': 'Hoeffding Tree', 'Time': 133.039}, {'Accuracy': 0.8951160928742994, 'Dataset': 'Phishing', 'F1': 0.8783658310120707, 'Memory': 1236851, 'Model': 'Leveraging Bagging', 'Time': 4427.237}, {'Accuracy': 0.892, 'Dataset': 'Phishing', 'F1': 0.8789237668161435, 'Memory': 5811, 'Model': 'Logistic regression', 'Time': 68.847}, {'Accuracy': 0.8847077662129704, 'Dataset': 'Phishing', 'F1': 0.8714285714285714, 'Memory': 12021, 'Model': 'Naive Bayes', 'Time': 99.403}, {'Accuracy': 0.899119295436349, 'Dataset': 'Phishing', 'F1': 0.8866906474820143, 'Memory': 1692234, 'Model': 'Stacking', 'Time': 2583.277}, {'Accuracy': 0.8232, 'Dataset': 'Phishing', 'F1': 0.8141295206055509, 'Memory': 3911518, 'Model': 'Stochastic Gradient Tree', 'Time': 433.726}, {'Accuracy': 0.9095276220976781, 'Dataset': 'Phishing', 'F1': 0.8962350780532599, 'Memory': 2561969, 'Model': 'Streaming Random Patches', 'Time': 3259.081}, {'Accuracy': 0.5156124899919936, 'Dataset': 'Phishing', 'F1': 0.4474885844748858, 'Memory': 535, 'Model': '[baseline] Last Class', 'Time': 28.997}, {'Accuracy': 0.8670936749399519, 'Dataset': 'Phishing', 'F1': 0.847985347985348, 'Memory': 74814, 'Model': 'k-Nearest Neighbors', 'Time': 465.452}, {'Accuracy': 0.8903122497998399, 'Dataset': 'Phishing', 'F1': 0.8769092542677449, 'Memory': 134873, 'Model': 'Voting', 'Time': 747.333}, {'Accuracy': 0.8301566333270428, 'Dataset': 'Bananas', 'F1': 0.7949886104783599, 'Memory': 76293, 'Model': 'Voting', 'Time': 1649.353}]
+    var results = [{'Accuracy': 0.6257784487639177, 'Dataset': 'Bananas', 'F1': 0.4477861319966584, 'Memory': 165670, 'Model': 'ADWIN Bagging', 'Time': 2618.05}, {'Accuracy': 0.5064150943396226, 'Dataset': 'Bananas', 'F1': 0.4825949367088608, 'Memory': 3063, 'Model': 'ALMA', 'Time': 163.789}, {'Accuracy': 0.6778637478769579, 'Dataset': 'Bananas', 'F1': 0.64504054897068, 'Memory': 171980, 'Model': 'AdaBoost', 'Time': 2489.237}, {'Accuracy': 0.8856387997735422, 'Dataset': 'Bananas', 'F1': 0.8696213425129088, 'Memory': 8567570, 'Model': 'Adaptive Random Forest', 'Time': 5560.815}, {'Accuracy': 0.6335157576901302, 'Dataset': 'Bananas', 'F1': 0.45875139353400224, 'Memory': 208556, 'Model': 'Bagging', 'Time': 1883.013}, {'Accuracy': 0.6252123042083412, 'Dataset': 'Bananas', 'F1': 0.4513812154696133, 'Memory': 29602, 'Model': 'Extremely Fast Decision Tree', 'Time': 303.313}, {'Accuracy': 0.6165314210228345, 'Dataset': 'Bananas', 'F1': 0.4408365437534397, 'Memory': 43404, 'Model': 'Hoeffding Adaptive Tree', 'Time': 484.379}, {'Accuracy': 0.6421966408756369, 'Dataset': 'Bananas', 'F1': 0.5034049240440022, 'Memory': 24843, 'Model': 'Hoeffding Tree', 'Time': 251.493}, {'Accuracy': 0.8284581996603133, 'Dataset': 'Bananas', 'F1': 0.8028627195836044, 'Memory': 1244447, 'Model': 'Leveraging Bagging', 'Time': 9075.224}, {'Accuracy': 0.5373584905660377, 'Dataset': 'Bananas', 'F1': 0.22109275730622616, 'Memory': 4423, 'Model': 'Logistic regression', 'Time': 170.88}, {'Accuracy': 0.6152104170598226, 'Dataset': 'Bananas', 'F1': 0.4139120436907157, 'Memory': 3901, 'Model': 'Naive Bayes', 'Time': 240.513}, {'Accuracy': 0.8514814115870919, 'Dataset': 'Bananas', 'F1': 0.8321603753465558, 'Memory': 9988024, 'Model': 'Stacking', 'Time': 8676.398}, {'Accuracy': 0.6575471698113208, 'Dataset': 'Bananas', 'F1': 0.560639070442992, 'Memory': 2186974, 'Model': 'Stochastic Gradient Tree', 'Time': 586.001}, {'Accuracy': 0.8694093225136819, 'Dataset': 'Bananas', 'F1': 0.8508620689655172, 'Memory': 4420472, 'Model': 'Streaming Random Patches', 'Time': 11370.613}, {'Accuracy': 0.5095301000188714, 'Dataset': 'Bananas', 'F1': 0.4529572721532309, 'Memory': 535, 'Model': '[baseline] Last Class', 'Time': 75.535}, {'Accuracy': 0.8484619739573505, 'Dataset': 'Bananas', 'F1': 0.8274231678486997, 'Memory': 43826, 'Model': 'k-Nearest Neighbors', 'Time': 990.766}, {'Accuracy': 0.8935148118494796, 'Dataset': 'Phishing', 'F1': 0.8792007266121706, 'Memory': 416562, 'Model': 'ADWIN Bagging', 'Time': 1383.466}, {'Accuracy': 0.8264, 'Dataset': 'Phishing', 'F1': 0.8117953165654813, 'Memory': 4803, 'Model': 'ALMA', 'Time': 64.185}, {'Accuracy': 0.8783026421136909, 'Dataset': 'Phishing', 'F1': 0.8635547576301617, 'Memory': 293828, 'Model': 'AdaBoost', 'Time': 1524.644}, {'Accuracy': 0.9087269815852682, 'Dataset': 'Phishing', 'F1': 0.8969258589511755, 'Memory': 1460226, 'Model': 'Adaptive Random Forest', 'Time': 1276.841}, {'Accuracy': 0.8935148118494796, 'Dataset': 'Phishing', 'F1': 0.8792007266121706, 'Memory': 399544, 'Model': 'Bagging', 'Time': 1045.51}, {'Accuracy': 0.8879103282626101, 'Dataset': 'Phishing', 'F1': 0.8734177215189873, 'Memory': 132210, 'Model': 'Extremely Fast Decision Tree', 'Time': 1240.158}, {'Accuracy': 0.8670936749399519, 'Dataset': 'Phishing', 'F1': 0.8445692883895132, 'Memory': 57312, 'Model': 'Hoeffding Adaptive Tree', 'Time': 188.008}, {'Accuracy': 0.8799039231385108, 'Dataset': 'Phishing', 'F1': 0.8605947955390334, 'Memory': 43223, 'Model': 'Hoeffding Tree', 'Time': 133.039}, {'Accuracy': 0.8951160928742994, 'Dataset': 'Phishing', 'F1': 0.8783658310120707, 'Memory': 1236851, 'Model': 'Leveraging Bagging', 'Time': 4427.237}, {'Accuracy': 0.892, 'Dataset': 'Phishing', 'F1': 0.8789237668161435, 'Memory': 5811, 'Model': 'Logistic regression', 'Time': 68.847}, {'Accuracy': 0.8847077662129704, 'Dataset': 'Phishing', 'F1': 0.8714285714285714, 'Memory': 12021, 'Model': 'Naive Bayes', 'Time': 99.403}, {'Accuracy': 0.899119295436349, 'Dataset': 'Phishing', 'F1': 0.8866906474820143, 'Memory': 1692234, 'Model': 'Stacking', 'Time': 2583.277}, {'Accuracy': 0.8232, 'Dataset': 'Phishing', 'F1': 0.8141295206055509, 'Memory': 3911518, 'Model': 'Stochastic Gradient Tree', 'Time': 433.726}, {'Accuracy': 0.9095276220976781, 'Dataset': 'Phishing', 'F1': 0.8962350780532599, 'Memory': 2561969, 'Model': 'Streaming Random Patches', 'Time': 3259.081}, {'Accuracy': 0.5156124899919936, 'Dataset': 'Phishing', 'F1': 0.4474885844748858, 'Memory': 535, 'Model': '[baseline] Last Class', 'Time': 28.997}, {'Accuracy': 0.8670936749399519, 'Dataset': 'Phishing', 'F1': 0.847985347985348, 'Memory': 74814, 'Model': 'k-Nearest Neighbors', 'Time': 465.452}, {'Accuracy': 0.8903122497998399, 'Dataset': 'Phishing', 'F1': 0.8769092542677449, 'Memory': 134873, 'Model': 'Voting', 'Time': 747.333}, {'Accuracy': 0.8301566333270428, 'Dataset': 'Bananas', 'F1': 0.7949886104783599, 'Memory': 76293, 'Model': 'Voting', 'Time': 1649.353}, {'Accuracy': 0.8888, 'Dataset': 'Phishing', 'F1': 0.8753363228699551, 'Memory': 7206, 'Model': 'sklearn SGDClassifier', 'Time': 187.416}, {'Accuracy': 0.5466037735849056, 'Dataset': 'Bananas', 'F1': 0.20509427720807144, 'Memory': 5762, 'Model': 'sklearn SGDClassifier', 'Time': 712.98}, {'Accuracy': 0.8896, 'Dataset': 'Phishing', 'F1': 0.8763440860215054, 'Memory': 22362, 'Model': 'PyTorch logistic regression', 'Time': 127.547}, {'Accuracy': 0.5464150943396227, 'Dataset': 'Bananas', 'F1': 0.205026455026455, 'Memory': 20974, 'Model': 'PyTorch logistic regression', 'Time': 433.289}, {'Accuracy': 0.7736, 'Dataset': 'Phishing', 'F1': 0.6697782963827306, 'Memory': 678, 'Model': 'Vowpal Wabbit logistic regression', 'Time': 41.274}, {'Accuracy': 0.5513207547169812, 'Dataset': 'Bananas', 'F1': 0.0, 'Memory': 678, 'Model': 'Vowpal Wabbit logistic regression', 'Time': 121.882}]
 
     baseColumns = [
         "Dataset",
@@ -1158,11 +1191,6 @@ Features  9
     }
 
     function msToTime(s) {
-        function pad(n, z) {
-            z = z || 2;
-            return ('00' + n).slice(-z);
-        }
-
         var ms = s % 1000;
         s = (s - ms) / 1000;
         var secs = s % 60;
@@ -1170,7 +1198,12 @@ Features  9
         var mins = s % 60;
         var hrs = (s - mins) / 60;
 
-        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+        return (
+            (hrs > 0 ? hrs + 'h ' : '') +
+            (mins > 0 ? mins + 'm ' : '') +
+            (secs > 0 ? secs + 's' : '') +
+            (ms > 0 ? ' ' + Math.round(ms) + 'ms' : '')
+        )
     }
 
     columns.map((x, i) => {
@@ -1190,7 +1223,7 @@ Features  9
                 return msToTime(cell.getValue())
             }
         }
-        if (['Accuracy', 'F1'].includes(x.title)) {
+        if (['Accuracy', 'F1', 'MacroF1', 'MicroF1'].includes(x.title)) {
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
                 return (100 * cell.getValue()).toFixed(2) + "%"
             }
@@ -2163,7 +2196,7 @@ Downloaded  True                                                            </pr
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=None
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )]</pre>
@@ -2258,7 +2291,7 @@ Downloaded  True                                                            </pr
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=None
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )]
@@ -2283,7 +2316,7 @@ Downloaded  True                                                            </pr
     min_distance_keep=0.
     weighted=True
     cleanup_every=0
-    distance_func=None
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
     softmax=False
   )
 )</pre>
@@ -2314,11 +2347,6 @@ Downloaded  True                                                            </pr
     }
 
     function msToTime(s) {
-        function pad(n, z) {
-            z = z || 2;
-            return ('00' + n).slice(-z);
-        }
-
         var ms = s % 1000;
         s = (s - ms) / 1000;
         var secs = s % 60;
@@ -2326,7 +2354,12 @@ Downloaded  True                                                            </pr
         var mins = s % 60;
         var hrs = (s - mins) / 60;
 
-        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+        return (
+            (hrs > 0 ? hrs + 'h ' : '') +
+            (mins > 0 ? mins + 'm ' : '') +
+            (secs > 0 ? secs + 's' : '') +
+            (ms > 0 ? ' ' + Math.round(ms) + 'ms' : '')
+        )
     }
 
     columns.map((x, i) => {
@@ -2346,7 +2379,7 @@ Downloaded  True                                                            </pr
                 return msToTime(cell.getValue())
             }
         }
-        if (['Accuracy', 'F1'].includes(x.title)) {
+        if (['Accuracy', 'F1', 'MacroF1', 'MicroF1'].includes(x.title)) {
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
                 return (100 * cell.getValue()).toFixed(2) + "%"
             }
@@ -2548,7 +2581,7 @@ Features  6
     window_size=100
     aggregation_method=&quot;mean&quot;
     min_distance_keep=0.
-    distance_func=None
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
   ), AMRules (
     n_min=200
     delta=1e-07
@@ -2899,7 +2932,7 @@ Features  6
     window_size=100
     aggregation_method=&quot;mean&quot;
     min_distance_keep=0.
-    distance_func=None
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x116424a60&gt;, p=2)
   )
 )</pre>
 </details>
@@ -2929,11 +2962,6 @@ Features  6
     }
 
     function msToTime(s) {
-        function pad(n, z) {
-            z = z || 2;
-            return ('00' + n).slice(-z);
-        }
-
         var ms = s % 1000;
         s = (s - ms) / 1000;
         var secs = s % 60;
@@ -2941,7 +2969,12 @@ Features  6
         var mins = s % 60;
         var hrs = (s - mins) / 60;
 
-        return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+        return (
+            (hrs > 0 ? hrs + 'h ' : '') +
+            (mins > 0 ? mins + 'm ' : '') +
+            (secs > 0 ? secs + 's' : '') +
+            (ms > 0 ? ' ' + Math.round(ms) + 'ms' : '')
+        )
     }
 
     columns.map((x, i) => {
@@ -2961,7 +2994,7 @@ Features  6
                 return msToTime(cell.getValue())
             }
         }
-        if (['Accuracy', 'F1'].includes(x.title)) {
+        if (['Accuracy', 'F1', 'MacroF1', 'MicroF1'].includes(x.title)) {
             columns[i]["formatter"] = function(cell, formatterParams, onRendered) {
                 return (100 * cell.getValue()).toFixed(2) + "%"
             }
