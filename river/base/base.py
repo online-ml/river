@@ -184,7 +184,9 @@ class Base:
                 }
             )
 
-        return instantiate(klass=self.__class__, params=self._get_params(), new_params=new_params or {})
+        return instantiate(
+            klass=self.__class__, params=self._get_params(), new_params=new_params or {}
+        )
 
     @property
     def _mutable_attributes(self) -> set:
@@ -279,12 +281,8 @@ class Base:
         """
 
         def _edit(obj, new_attrs):
-
             def is_class_attr(name, attr):
-                return (
-                    hasattr(getattr(obj, name), "edit") and
-                    isinstance(attr, dict)
-                )
+                return hasattr(getattr(obj, name), "edit") and isinstance(attr, dict)
 
             for name, attr in new_attrs.items():
 
@@ -293,7 +291,9 @@ class Base:
 
                 # Check the attribute is mutable
                 if name not in obj._mutable_attributes:
-                    raise ValueError(f"'{name}' is not a mutable attribute of {obj.__class__.__name__}")
+                    raise ValueError(
+                        f"'{name}' is not a mutable attribute of {obj.__class__.__name__}"
+                    )
 
                 if is_class_attr(name, attr):
                     _edit(obj=getattr(obj, name), new_attrs=attr)

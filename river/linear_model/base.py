@@ -83,9 +83,7 @@ class GLM:
 
     @property
     def _mutable_attributes(self):
-        return {
-            "optimizer", "l2", "l1", "loss", "intercept_lr", "clip_gradient", "initializer"
-        }
+        return {"optimizer", "l2", "l1", "loss", "intercept_lr", "clip_gradient", "initializer"}
 
     @property
     def weights(self):

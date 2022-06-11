@@ -181,14 +181,17 @@ class PeriodicTrigger(base.DriftDetector):
 
     def clone(self):
 
-        new = (super().clone({
-                "seed": self._rng.randint(0, int(1e15)),
-                "w": (
-                    self._rng.randint(0, self.t_0 + 1)
-                    if self.trigger_method == self._FIXED_TRIGGER
-                    else self.w
-                )
-            })
+        new = (
+            super().clone(
+                {
+                    "seed": self._rng.randint(0, int(1e15)),
+                    "w": (
+                        self._rng.randint(0, self.t_0 + 1)
+                        if self.trigger_method == self._FIXED_TRIGGER
+                        else self.w
+                    ),
+                }
+            )
             if self.dynamic_cloning
             else super().clone()
         )
