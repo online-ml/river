@@ -129,6 +129,7 @@ def check_edit_can_be_idempotent(model):
     after = model._get_params()
     assert before == after
 
+
 def check_init_has_default_params_for_tests(model):
     for params in model._unit_test_params():
         assert isinstance(model.__class__(**params), model.__class__)
