@@ -114,8 +114,20 @@ def check_tags(model):
 
 
 def check_clone_is_idempotent(model):
-    assert len(model.__dict__) == len(model.clone().__dict__)
+    before = model._get_params()
+    after = model.clone()._get_params()
+    assert len(before) == len(after)
+    if isinstance(before, dict):
+        assert len(before.keys()) == len(after.keys())
+    else:
+        assert before == after
 
+
+def check_edit_can_be_idempotent(model):
+    before = model._get_params()
+    model.edit({})
+    after = model._get_params()
+    assert before == after
 
 def check_init_has_default_params_for_tests(model):
     for params in model._unit_test_params():
