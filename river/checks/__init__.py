@@ -122,11 +122,11 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     yield common.check_repr
     yield common.check_str
     yield common.check_tags
-    yield common.check_set_params_idempotent
+    yield common.check_clone_is_idempotent
     yield common.check_init_has_default_params_for_tests
     yield common.check_init_default_params_are_not_mutable
     yield common.check_doc
-    yield common.check_clone
+    yield common.check_clone_changes_memory_addresses
 
     if utils.inspect.isclassifier(model):
         yield clf.check_multiclass_is_bool

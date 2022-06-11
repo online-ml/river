@@ -180,7 +180,7 @@ class TransformerUnion(base.MiniBatchTransformer):
     def _get_params(self):
         return {name: transformer._get_params() for name, transformer in self.transformers.items()}
 
-    def _set_params(self, new_params: dict = None):
+    def clone(self, new_params: dict = None):
 
         if new_params is None:
             new_params = {}
@@ -189,10 +189,14 @@ class TransformerUnion(base.MiniBatchTransformer):
             *[
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)
-                else (name, step._set_params(new_params.get(name, {})))
+                else (name, step.clone(new_params.get(name, {})))
                 for name, step in self.transformers.items()
             ]
         )
+
+    def edit(self, new_params: dict):
+        for step_name, step_params in new_params.items():
+            self[step_name].edit(step_params)
 
     @property
     def _supervised(self):

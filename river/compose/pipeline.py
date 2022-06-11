@@ -386,7 +386,7 @@ class Pipeline(base.Estimator):
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
 
-    def _set_params(self, new_params: dict = None):
+    def clone(self, new_params: dict = None):
 
         if new_params is None:
             new_params = {}
@@ -395,10 +395,14 @@ class Pipeline(base.Estimator):
             *[
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)
-                else (name, step._set_params(new_params.get(name, {})))
+                else (name, step.clone(new_params.get(name, {})))
                 for name, step in self.steps.items()
             ]
         )
+
+    def edit(self, new_params: dict):
+        for step_name, step_params in new_params.items():
+            self[step_name].edit(step_params)
 
     @property
     def _supervised(self):

@@ -20,6 +20,10 @@ class Constant(optim.base.Scheduler):
     def __init__(self, learning_rate: int | float):
         self.learning_rate = learning_rate
 
+    @property
+    def _mutable_attributes(self):
+        return {"learning_rate"}
+
     def get(self, t):
         return self.learning_rate
 

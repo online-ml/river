@@ -1,6 +1,10 @@
 # Unreleased
 
-- Moved all the public modules imports from `river/__init__.py` to `river/api.py` and removed unnecessary dependencies between modules enabling faster cherry-pick imports times (≈ 3X).
+- Moved all the public modules imports from `river/__init__.py` to `river/api.py` and removed unnecessary dependencies between modules enabling faster cherry-picked import times (≈3x).
+
+## base
+
+- Introduced an `edit` method to the `base.Base` class. This allows setting attributes in a controlled manner, which paves the way for online AutoML. See [/recipes/cloning-and-editing-parameters] for more information.
 
 ## compat
 

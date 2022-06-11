@@ -31,7 +31,7 @@ def check_shuffle_features_no_impact(model, dataset):
     from river import utils
 
     params = seed_params(model._get_params(), seed=42)
-    model = model._set_params(params)
+    model = model.clone(params)
     shuffled = copy.deepcopy(model)
 
     for x, y in dataset:
@@ -113,8 +113,8 @@ def check_tags(model):
     assert isinstance(model._tags, set)
 
 
-def check_set_params_idempotent(model):
-    assert len(model.__dict__) == len(model._set_params().__dict__)
+def check_clone_is_idempotent(model):
+    assert len(model.__dict__) == len(model.clone().__dict__)
 
 
 def check_init_has_default_params_for_tests(model):
@@ -140,7 +140,7 @@ def check_doc(model):
     assert model.__doc__
 
 
-def check_clone(model):
+def check_clone_changes_memory_addresses(model):
     clone = model.clone()
     assert id(clone) != id(model)
     assert dir(clone) == dir(model)
@@ -151,8 +151,8 @@ def check_seeding_is_idempotent(model, dataset):
     params = model._get_params()
     seeded_params = seed_params(params, seed=42)
 
-    A = model._set_params(seeded_params)
-    B = model._set_params(seeded_params)
+    A = model.clone(seeded_params)
+    B = model.clone(seeded_params)
 
     for x, y in dataset:
         assert A.predict_one(x) == B.predict_one(x)
