@@ -196,7 +196,10 @@ class Base:
         """Modify attributes.
 
         This edits parameters inplace. Although you can edit attributes yourself, this is the
-        recommended way to proceed.
+        recommended way to proceed. By default, all attributes are immutable, meaning they
+        shouldn't be edited. Calling `edit` on an immutable attribute raises a `ValueError`.
+        Mutable attributes are specified via the `_mutable_attributes` property, and are thus
+        specified on a per-estimator basis.
 
         Parameters
         ----------
