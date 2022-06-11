@@ -219,7 +219,7 @@ class Base:
         ...     'optimizer': {'lr': optim.schedulers.Constant(0.001)}
         ... }
 
-        >>> model.edit(new_params)
+        >>> model.mutate(new_params)
         >>> model
         LinearRegression (
           optimizer=SGD (
@@ -257,7 +257,7 @@ class Base:
         ...     }
         ... }
 
-        >>> model.edit(new_params)
+        >>> model.mutate(new_params)
         >>> model
         Pipeline (
           StandardScaler (

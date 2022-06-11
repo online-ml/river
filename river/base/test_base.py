@@ -71,19 +71,19 @@ def test_edit():
     >>> len(model[-1].weights)
     6
 
-    >>> model.edit({'LinearRegression': {'optimizer': {'lr': {'learning_rate': 42}}}})
+    >>> model.mutate({'LinearRegression': {'optimizer': {'lr': {'learning_rate': 42}}}})
     >>> model[-1].optimizer
     SGD({'lr': Constant({'learning_rate': 42}), 'n_iterations': 1001})
 
-    >>> model.edit({'LinearRegression': {'optimizer': {'lr': optim.schedulers.Constant(43)}}})
+    >>> model.mutate({'LinearRegression': {'optimizer': {'lr': optim.schedulers.Constant(43)}}})
     >>> model[-1].optimizer
     SGD({'lr': Constant({'learning_rate': 43}), 'n_iterations': 1001})
 
-    >>> model.edit({'LinearRegression': {'optimizer': optim.SGD(44)}})
+    >>> model.mutate({'LinearRegression': {'optimizer': optim.SGD(44)}})
     >>> model[-1].optimizer
     SGD({'lr': Constant({'learning_rate': 44}), 'n_iterations': 0})
 
-    >>> model.edit({'LinearRegression': {'l2': 0.123}})
+    >>> model.mutate({'LinearRegression': {'l2': 0.123}})
     >>> model[-1].l2
     0.123
 
@@ -91,13 +91,13 @@ def test_edit():
     6
 
     >>> try:
-    ...     model.edit({'LinearRegression': {'weights': 'this is weird'}})
+    ...     model.mutate({'LinearRegression': {'weights': 'this is weird'}})
     ... except ValueError as e:
     ...     print(e)
     'weights' is not a mutable attribute of LinearRegression
 
     >>> try:
-    ...     model.edit({'LinearRegression': {'l3': 123}})
+    ...     model.mutate({'LinearRegression': {'l3': 123}})
     ... except ValueError as e:
     ...     print(e)
     'l3' is not an attribute of LinearRegression
