@@ -4,7 +4,7 @@
 
 ## base
 
-- Introduced an `edit` method to the `base.Base` class. This allows setting attributes in a controlled manner, which paves the way for online AutoML. See [/recipes/cloning-and-editing-parameters] for more information.
+- Introduced an `mutate` method to the `base.Base` class. This allows setting attributes in a controlled manner, which paves the way for online AutoML. See [/recipes/cloning-and-mutating] for more information.
 
 ## compat
 
