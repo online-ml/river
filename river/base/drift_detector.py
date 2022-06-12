@@ -8,7 +8,6 @@ class DriftDetector(base.Base):
     """A drift detector."""
 
     def __init__(self):
-        super().__init__()
         self._drift_detected = False
 
     def reset(self):
