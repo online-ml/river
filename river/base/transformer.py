@@ -2,6 +2,8 @@ import abc
 
 from river import base
 
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 class BaseTransformer:
     def __add__(self, other):

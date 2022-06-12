@@ -5,6 +5,9 @@ from river import base
 
 from . import estimator
 
+if typing.TYPE_CHECKING:
+    import pandas as pd
+
 
 class Classifier(estimator.Estimator):
     """A classifier."""
