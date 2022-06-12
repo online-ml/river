@@ -192,12 +192,12 @@ class Base:
     def _mutable_attributes(self) -> set:
         return set()
 
-    def edit(self, new_attrs: dict):
+    def mutate(self, new_attrs: dict):
         """Modify attributes.
 
-        This edits parameters inplace. Although you can edit attributes yourself, this is the
+        This changes parameters inplace. Although you can change attributes yourself, this is the
         recommended way to proceed. By default, all attributes are immutable, meaning they
-        shouldn't be edited. Calling `edit` on an immutable attribute raises a `ValueError`.
+        shouldn't be mutated. Calling `mutate` on an immutable attribute raises a `ValueError`.
         Mutable attributes are specified via the `_mutable_attributes` property, and are thus
         specified on a per-estimator basis.
 
@@ -283,9 +283,9 @@ class Base:
 
         """
 
-        def _edit(obj, new_attrs):
+        def _mutate(obj, new_attrs):
             def is_class_attr(name, attr):
-                return hasattr(getattr(obj, name), "edit") and isinstance(attr, dict)
+                return hasattr(getattr(obj, name), "mutate") and isinstance(attr, dict)
 
             for name, attr in new_attrs.items():
 
@@ -299,11 +299,11 @@ class Base:
                     )
 
                 if is_class_attr(name, attr):
-                    _edit(obj=getattr(obj, name), new_attrs=attr)
+                    _mutate(obj=getattr(obj, name), new_attrs=attr)
                 else:
                     setattr(obj, name, attr)
 
-        _edit(obj=self, new_attrs=new_attrs)
+        _mutate(obj=self, new_attrs=new_attrs)
 
     @property
     def _is_stochastic(self):
