@@ -1,6 +1,9 @@
 import datetime as dt
+
 import pytest
+
 from river import stats, utils
+
 
 def test_with_counter():
     """
@@ -24,9 +27,11 @@ def test_with_counter():
 
     """
 
+
 def test_rolling_with_not_rollable():
     with pytest.raises(ValueError):
         utils.Rolling(stats.Cov(), window_size=10)
+
 
 def test_time_rolling_with_not_rollable():
     with pytest.raises(ValueError):

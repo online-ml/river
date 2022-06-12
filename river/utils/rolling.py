@@ -57,6 +57,7 @@ class Rolling(BaseRolling):
     5.0
 
     """
+
     def __init__(self, obj: Rollable, window_size: int):
         super().__init__(obj)
         self.window: typing.Deque = collections.deque(maxlen=window_size)
@@ -101,6 +102,7 @@ class TimeRolling(BaseRolling):
     9.0
 
     """
+
     def __init__(self, obj: Rollable, period: dt.timedelta):
         super().__init__(obj)
         self.period = period
