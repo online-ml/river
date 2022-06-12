@@ -18,6 +18,10 @@
 
 - Removed dependency to `optim`.
 
+## stream
+
+- `stream.iter_array` now handles text data.
+
 ## utils
 
 - Removed dependencies to `anomaly` and `compose`.
