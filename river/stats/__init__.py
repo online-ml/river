@@ -9,7 +9,7 @@ from .ewvar import EWVar
 from .iqr import IQR, RollingIQR
 from .kurtosis import Kurtosis
 from .link import Link
-from .mean import Mean
+from .mean import Mean, BayesianMean
 from .mad import MAD
 from .maximum import AbsMax, Max, RollingAbsMax, RollingMax
 from .minimum import Min, RollingMin
@@ -18,11 +18,11 @@ from .n_unique import NUnique
 from .pearson import PearsonCorr, RollingPearsonCorr
 from .ptp import PeakToPeak, RollingPeakToPeak
 from .quantile import Quantile, RollingQuantile
-from .sem import SEM, RollingSEM
+from .sem import SEM
 from .shift import Shift
 from .skew import Skew
 from .summing import RollingSum, Sum
-from .var import RollingVar, Var
+from .var import Var
 
 __all__ = [
     "base",
@@ -54,9 +54,7 @@ __all__ = [
     "RollingPeakToPeak",
     "RollingPearsonCorr",
     "RollingQuantile",
-    "RollingSEM",
     "RollingSum",
-    "RollingVar",
     "SEM",
     "Shift",
     "Skew",

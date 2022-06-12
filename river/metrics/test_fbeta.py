@@ -3,7 +3,7 @@ import math
 
 from sklearn import metrics as sk_metrics
 
-from river import metrics
+from river import metrics, utils
 
 
 def test_multi_fbeta():
@@ -32,8 +32,8 @@ def test_rolling_multi_fbeta():
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
 
-    fbeta = metrics.Rolling(
-        metric=metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}),
+    fbeta = utils.Rolling(
+        metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}),
         window_size=3,
     )
     n = fbeta.window_size

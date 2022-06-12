@@ -12,14 +12,14 @@ class Skew(moments.CentralMoments):
     Examples
     --------
 
-    >>> import river.stats
+    >>> from river import stats
     >>> import scipy.stats
     >>> import numpy as np
 
     >>> np.random.seed(42)
     >>> X = np.random.normal(loc=0, scale=1, size=10)
 
-    >>> skew = river.stats.Skew(bias=False)
+    >>> skew = stats.Skew(bias=False)
     >>> for x in X:
     ...     print(skew.update(x).get())
     0
@@ -46,7 +46,7 @@ class Skew(moments.CentralMoments):
     0.4536710660918703
     0.4123070197493223
 
-    >>> skew = river.stats.Skew(bias=True)
+    >>> skew = stats.Skew(bias=True)
     >>> for x in X:
     ...     print(skew.update(x).get())
     0

@@ -17,13 +17,18 @@
 ## metrics
 
 - Removed dependency to `optim`.
-- Removed `stats.RollingMean`, due to the addition of `utils.Rolling`.
+- Removed `metrics.Rolling`, due to the addition of `utils.Rolling`.
+- Removed `metrics.TimeRolling`, due to the addition of `utils.Rolling`.
 
 ## proba
 
 - Removed `proba.Rolling`, due to the addition of `utils.Rolling`.
 - Removed `proba.TimeRolling`, due to the addition of `utils.Rolling`.
 
+## stats
+
+- Removed `stats.RollingMean`, due to the addition of `utils.Rolling`.
+- Removed `stats.RollingVar`, due to the addition of `utils.Rolling`.
 ## stream
 
 - `stream.iter_array` now handles text data.

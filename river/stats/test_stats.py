@@ -85,8 +85,8 @@ def test_univariate(stat, func):
     [
         (utils.Rolling(stats.Mean(), 3), statistics.mean),
         (utils.Rolling(stats.Mean(), 10), statistics.mean),
-        (stats.RollingVar(3, ddof=0), np.var),
-        (stats.RollingVar(10, ddof=0), np.var),
+        (utils.Rolling(stats.Var(ddof=0), 3), np.var),
+        (utils.Rolling(stats.Var(ddof=0), 10), np.var),
         (
             stats.RollingQuantile(0.0, 10),
             functools.partial(np.quantile, q=0.0, interpolation="linear"),

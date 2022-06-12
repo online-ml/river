@@ -3,6 +3,20 @@
 All the metrics are updated one sample at a time. This way we can track performance of
 predictive methods over time.
 
+>>> from river import metrics, utils
+
+>>> y_true = [True, False, True, True]
+>>> y_pred = [False, False, True, True]
+
+>>> metric = utils.Rolling(metrics.Accuracy(), window_size=3)
+
+>>> for yt, yp in zip(y_true, y_pred):
+...     print(metric.update(yt, yp))
+Accuracy: 0.00%
+Accuracy: 50.00%
+Accuracy: 66.67%
+Accuracy: 100.00%
+
 """
 from . import base, multioutput
 from .accuracy import Accuracy
@@ -35,10 +49,8 @@ from .rand import AdjustedRand, Rand
 from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
-from .rolling import Rolling
 from .silhouette import Silhouette
 from .smape import SMAPE
-from .time_rolling import TimeRolling
 from .vbeta import Completeness, Homogeneity, VBeta
 
 __all__ = [
@@ -83,12 +95,10 @@ __all__ = [
     "FowlkesMallows",
     "RMSLE",
     "ROCAUC",
-    "Rolling",
     "R2",
     "Precision",
     "Silhouette",
     "SMAPE",
-    "TimeRolling",
     "VBeta",
     "WeightedF1",
     "WeightedFBeta",
