@@ -194,7 +194,7 @@ class TransformerUnion(base.MiniBatchTransformer):
             ]
         )
 
-    def edit(self, new_params: dict):
+    def mutate(self, new_params: dict):
         for step_name, step_params in new_params.items():
             self[step_name].mutate(step_params)
 
