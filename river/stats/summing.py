@@ -1,7 +1,3 @@
-import collections
-import numbers
-import typing
-
 from river import stats
 
 
@@ -29,39 +25,10 @@ class Sum(stats.base.Univariate):
     -5.0
     0.0
 
-    """
-
-    def __init__(self):
-        self.sum = 0.0
-
-    def update(self, x):
-        self.sum += x
-        return self
-
-    def get(self):
-        return self.sum
-
-
-class RollingSum(stats.base.RollingUnivariate):
-    """Running sum over a window.
-
-    Parameters
-    ----------
-    window_size
-        Size of the rolling window.
-
-    Attributes
-    ----------
-    sum : int
-        The running rolling sum.
-
-    Examples
-    --------
-
-    >>> from river import stats
+    >>> from river import utils
 
     >>> X = [1, -4, 3, -2, 2, 1]
-    >>> rolling_sum = stats.RollingSum(2)
+    >>> rolling_sum = utils.Rolling(stats.Sum(), window_size=2)
     >>> for x in X:
     ...     print(rolling_sum.update(x).get())
     1
@@ -73,19 +40,15 @@ class RollingSum(stats.base.RollingUnivariate):
 
     """
 
-    def __init__(self, window_size: int):
-        self.window: typing.Deque[numbers.Number] = collections.deque(maxlen=window_size)
-        self.sum = 0
-
-    @property
-    def window_size(self):
-        return self.window.maxlen
+    def __init__(self):
+        self.sum = 0.0
 
     def update(self, x):
-        if len(self.window) == self.window_size:
-            self.sum -= self.window[0]
         self.sum += x
-        self.window.append(x)
+        return self
+
+    def revert(self, x):
+        self.sum -= x
         return self
 
     def get(self):

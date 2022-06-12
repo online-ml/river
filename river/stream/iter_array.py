@@ -72,11 +72,14 @@ def iter_array(
     # If the first row of X is actually a string, then we assume all the rows are strings and will
     # pass them through
     if isinstance(X[0], str):
+
         def handle_features(x):
             return x
+
     # If not we assume each row if a set of features, and will convert them to a dictionary
     else:
         feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
+
         def handle_features(x):
             return dict(zip(feature_names, xi))
 

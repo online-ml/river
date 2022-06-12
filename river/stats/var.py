@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from river import stats, utils
+from river import stats
 
 
 class Var(stats.base.Univariate):

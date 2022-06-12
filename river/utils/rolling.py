@@ -1,10 +1,10 @@
 import bisect
-import datetime as dt
 import collections
+import datetime as dt
 import typing
 
-class Rollable(typing.Protocol):
 
+class Rollable(typing.Protocol):
     def update(self, *args, **kwargs):
         ...
 
@@ -13,7 +13,6 @@ class Rollable(typing.Protocol):
 
 
 class BaseRolling:
-
     def __init__(self, obj: Rollable):
         self.obj = obj
 
@@ -31,7 +30,6 @@ class BaseRolling:
 
 
 class Rolling(BaseRolling):
-
     def __init__(self, obj: Rollable, window_size: int):
         super().__init__(obj)
         self.window: typing.Deque = collections.deque(maxlen=window_size)
@@ -49,7 +47,6 @@ class Rolling(BaseRolling):
 
 
 class TimeRolling(BaseRolling):
-
     def __init__(self, obj: Rollable, period: dt.timedelta):
         super().__init__(obj)
         self.period = period

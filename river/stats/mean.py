@@ -4,8 +4,6 @@ import numpy as np
 
 from river import stats
 
-from .summing import RollingSum
-
 
 class Mean(stats.base.Univariate):
     """Running mean.

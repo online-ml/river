@@ -1,7 +1,9 @@
-from river import utils
+
+
 
 def test_with_counter():
     """
+    >>> from river import utils
     >>> import collections
     >>> collections.Counter.revert = collections.Counter.subtract
 
