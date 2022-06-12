@@ -97,25 +97,13 @@ class EDDM(DriftDetector):
     ):
         super().__init__()
         self.min_num_instances = min_num_instances
-        self.warning = warning_level
+        self.warning_level = warning_level
         self.outcontrol = out_control_level
-        self.m_num_errors = None
-        self.m_min_num_errors = 30
-        self.m_n = None
-        self.m_d = None
-        self.m_lastd = None
-        self.m_mean = None
-        self.m_std_temp = None
-        self.m_m2s_max = None
-        self.m_last_level = None
-        self.estimation = None
-        self.delay = None
 
-        self.reset()
+        self._reset()
 
-    def reset(self):
-        """Reset the change detector."""
-        super().reset()
+    def _reset(self):
+        super()._reset()
         self._warning_detected = False
         self.m_n = 1
         self.m_num_errors = 0
@@ -124,7 +112,9 @@ class EDDM(DriftDetector):
         self.m_mean = 0.0
         self.m_std_temp = 0.0
         self.m_m2s_max = 0.0
-        self.estimation = 0.0
+        self.m_last_level = None
+        self.m_num_errors = 0
+        self.m_min_num_errors = 30
 
     @property
     def warning_detected(self):
@@ -146,7 +136,7 @@ class EDDM(DriftDetector):
         """
 
         if self._drift_detected:
-            self.reset()
+            self._reset()
 
         self._drift_detected = False
 
@@ -154,14 +144,12 @@ class EDDM(DriftDetector):
 
         if x == 1.0:
             self._warning_detected = False
-            self.delay = 0
             self.m_num_errors += 1
             self.m_lastd = self.m_d
             self.m_d = self.m_n - 1
             distance = self.m_d - self.m_lastd
             old_mean = self.m_mean
             self.m_mean = self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
-            self.estimation = self.m_mean
             self.m_std_temp += (distance - self.m_mean) * (distance - old_mean)
             std = math.sqrt(self.m_std_temp / self.m_num_errors)
             m2s = self.m_mean + 2 * std
@@ -174,7 +162,7 @@ class EDDM(DriftDetector):
                     if (self.m_num_errors > self.m_min_num_errors) and (p < self.outcontrol):
                         self._drift_detected = True
 
-                    elif (self.m_num_errors > self.m_min_num_errors) and (p < self.warning):
+                    elif (self.m_num_errors > self.m_min_num_errors) and (p < self.warning_level):
                         self._warning_detected = True
 
                     else:

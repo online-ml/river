@@ -64,10 +64,10 @@ class HDDM_A(DriftDetector):
         self.drift_confidence = drift_confidence
         self.warning_confidence = warning_confidence
         self.two_sided_test = two_sided_test
-        self.reset()
+        self._reset()
 
-    def reset(self):
-        super().reset()
+    def _reset(self):
+        super()._reset()
         self._warning_detected = False
         self.n_min = 0
         self.c_min = 0

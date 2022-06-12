@@ -103,11 +103,10 @@ class DDM(DriftDetector):
         self.out_control_level = out_control_level
         self.estimation = None
 
-        self.reset()
+        self._reset()
 
-    def reset(self):
-        """Reset the change detector."""
-        super().reset()
+    def _reset(self):
+        super()._reset()
         self._warning_detected = False
         self.sample_count = 1
         self.miss_prob = 1.0
@@ -135,7 +134,7 @@ class DDM(DriftDetector):
 
         """
         if self._drift_detected:
-            self.reset()
+            self._reset()
 
         self.miss_prob = self.miss_prob + (x - self.miss_prob) / float(self.sample_count)
         self.miss_std = math.sqrt(self.miss_prob * (1 - self.miss_prob) / float(self.sample_count))

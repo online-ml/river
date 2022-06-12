@@ -65,7 +65,6 @@ class KSWIN(DriftDetector):
     ...     _ = kswin.update(val)
     ...     if kswin.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
-    ...         kswin.reset()  # Good practice
     Change detected at index 1016, input value: 6
 
     References
@@ -84,27 +83,30 @@ class KSWIN(DriftDetector):
         window: typing.Iterable = None,
     ):
         super().__init__()
+        if alpha < 0 or alpha > 1:
+            raise ValueError("Alpha must be between 0 and 1.")
+
+        if window_size < 0:
+            raise ValueError("window_size must be greater than 0.")
+
+        if window_size < stat_size:
+            raise ValueError("stat_size must be smaller than window_size.")
+
         self.alpha = alpha
         self.window_size = window_size
         self.stat_size = stat_size
         self.seed = seed
 
-        self.p_value = 0
-        self.n = 0
-        if self.alpha < 0 or self.alpha > 1:
-            raise ValueError("Alpha must be between 0 and 1.")
+        self._reset()
 
-        if self.window_size < 0:
-            raise ValueError("window_size must be greater than 0.")
-
-        if self.window_size < self.stat_size:
-            raise ValueError("stat_size must be smaller than window_size.")
-
-        if window is None:
-            self.window: typing.Deque = collections.deque(maxlen=self.window_size)
-        else:
+        if window:
             self.window = collections.deque(window, maxlen=self.window_size)
 
+    def _reset(self):
+        super()._reset()
+        self.p_value = 0
+        self.n = 0
+        self.window: typing.Deque = collections.deque(maxlen=self.window_size)
         self._rng = random.Random(self.seed)
 
     def update(self, x):
@@ -123,6 +125,10 @@ class KSWIN(DriftDetector):
         self
 
         """
+
+        if self._drift_detected:
+            self._reset()
+
         self.n += 1
 
         self.window.append(x)

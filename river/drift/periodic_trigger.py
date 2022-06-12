@@ -176,10 +176,6 @@ class PeriodicTrigger(base.DriftDetector):
 
         return self
 
-    def reset(self):
-        super().reset()
-        self._n = 0
-
     def clone(self):
         new = super().clone()
 

@@ -26,7 +26,7 @@ data_stream_3 = np.concatenate(
 
 
 def test_adwin():
-    expected_indices = [1055, 1087, 1215]
+    expected_indices = [1055]
     detected_indices = perform_test(ADWIN(), data_stream_1)
 
     assert detected_indices == expected_indices
@@ -72,7 +72,7 @@ def test_hddm_w():
 
 def test_kswin():
     kswin = KSWIN(alpha=0.0001, window_size=200, stat_size=100, seed=42)
-    expected_indices = [1042, 1142]
+    expected_indices = [1042]
     detected_indices = perform_test(kswin, data_stream_1)
     assert detected_indices == expected_indices
 

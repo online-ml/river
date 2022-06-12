@@ -78,12 +78,10 @@ class HDDM_W(DriftDetector):
         self.warning_confidence = warning_confidence
         self.lambda_option = lambda_option
         self.two_sided_test = two_sided_test
-        self.estimation = None
-        self.reset()
+        self._reset()
 
-    def reset(self):
-        """Reset the change detector."""
-        super().reset()
+    def _reset(self):
+        super()._reset()
         self._warning_detected = False
         self.total = self.SampleInfo()
         self.sample1_decr_monitor = self.SampleInfo()
@@ -129,7 +127,7 @@ class HDDM_W(DriftDetector):
 
         self._update_incr_statistics(x, self.drift_confidence)
         if self._monitor_mean_incr(self.drift_confidence):
-            self.reset()
+            self._reset()
             self._drift_detected = True
             self._warning_detected = False
         elif self._monitor_mean_incr(self.warning_confidence):
@@ -142,12 +140,10 @@ class HDDM_W(DriftDetector):
         self._update_decr_statistics(x, self.drift_confidence)
         if self.two_sided_test:
             if self._monitor_mean_decr(self.drift_confidence):
-                self.reset()
+                self._reset()
                 self._drift_detected = True
             elif self._monitor_mean_decr(self.warning_confidence):
                 self._warning_detected = True
-
-        self.estimation = self.total.EWMA_estimator
 
         return self
 

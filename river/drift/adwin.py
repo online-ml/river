@@ -18,14 +18,6 @@ class ADWIN(DriftDetector):
     $\delta=\in(0,1)$ to determine if the two sub-windows correspond to the
     same distribution.
 
-    **Input**: `x` can be any numeric value related to the definition of
-    concept change for the data analyzed. For example, using 0's or 1's
-    to track drift in a classifier's performance as follows:
-
-    - 0: Means the learners prediction was wrong
-
-    - 1: Means the learners prediction was correct
-
     Parameters
     ----------
     delta
@@ -47,7 +39,6 @@ class ADWIN(DriftDetector):
     ...     _ = adwin.update(val)
     ...     if adwin.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
-    ...         adwin.reset()  # Good practice
     Change detected at index 1023, input value: 4
 
     References
@@ -61,11 +52,12 @@ class ADWIN(DriftDetector):
 
     def __init__(self, delta=0.002):
         super().__init__()
-        self._helper = AdaptiveWindowing(delta)
+        self.delta = delta
+        self._reset()
 
-    @property
-    def delta(self):
-        return self._helper.get_delta()
+    def _reset(self):
+        super()._reset()
+        self._helper = AdaptiveWindowing(delta=self.delta)
 
     @property
     def width(self):
@@ -109,9 +101,8 @@ class ADWIN(DriftDetector):
         self
 
         """
+        if self._drift_detected:
+            self._reset()
+
         self._drift_detected = self._helper.update(x)
         return self
-
-    def reset(self):
-        """Reset the change detector."""
-        self._helper = AdaptiveWindowing(delta=self.delta)

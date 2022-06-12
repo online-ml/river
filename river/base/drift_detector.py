@@ -10,7 +10,7 @@ class DriftDetector(base.Base):
     def __init__(self):
         self._drift_detected = False
 
-    def reset(self):
+    def _reset(self):
         """Reset the change detector."""
         self._drift_detected = False
 

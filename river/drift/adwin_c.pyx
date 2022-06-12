@@ -42,14 +42,6 @@ cdef class AdaptiveWindowing:
         self.max_n_buckets = 0
         self.min_window_length = 5
 
-    def reset(self):
-        """Reset the change detector.
-        """
-        self.__init__(delta=self.delta)
-
-    def get_delta(self):
-        return self.delta
-
     def get_n_detections(self):
         return self.n_detections
 
