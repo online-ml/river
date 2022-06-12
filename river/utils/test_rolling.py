@@ -1,6 +1,3 @@
-
-
-
 def test_with_counter():
     """
     >>> from river import utils
