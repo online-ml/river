@@ -4,6 +4,7 @@ import datetime as dt
 import typing
 
 
+@typing.runtime_checkable
 class Rollable(typing.Protocol):
     def update(self, *args, **kwargs):
         ...
@@ -14,6 +15,10 @@ class Rollable(typing.Protocol):
 
 class BaseRolling:
     def __init__(self, obj: Rollable):
+
+        if not isinstance(obj, Rollable):
+            raise ValueError(f"{obj} does not satisfy the necessary protocol")
+
         self.obj = obj
 
     def __getattribute__(self, name):
@@ -30,6 +35,28 @@ class BaseRolling:
 
 
 class Rolling(BaseRolling):
+    """A generic wrapper for performing rolling computations.
+
+    This can be wrapped around any object which implements both an `update` and a `revert` method.
+
+    Examples
+    --------
+
+    For instance, here is how you can compute a rolling average over a window of size 3:
+
+    >>> from river import stats, utils
+
+    >>> X = [1, 3, 5, 7]
+    >>> rmean = utils.Rolling(stats.Mean(), window_size=3)
+
+    >>> for x in X:
+    ...     print(rmean.update(x).get())
+    1.0
+    2.0
+    3.0
+    5.0
+
+    """
     def __init__(self, obj: Rollable, window_size: int):
         super().__init__(obj)
         self.window: typing.Deque = collections.deque(maxlen=window_size)
@@ -47,6 +74,33 @@ class Rolling(BaseRolling):
 
 
 class TimeRolling(BaseRolling):
+    """A generic wrapper for performing time rolling computations.
+
+    This can be wrapped around any object which implements both an `update` and a `revert` method.
+
+    Examples
+    --------
+
+    For instance, here is how you can compute a rolling average over a period of 3 days:
+
+    >>> from river import stats, utils
+
+    >>> X = {
+    ...     dt.datetime(2019, 1, 1): 1,
+    ...     dt.datetime(2019, 1, 2): 5,
+    ...     dt.datetime(2019, 1, 3): 9,
+    ...     dt.datetime(2019, 1, 4): 13
+    ... }
+
+    >>> rmean = utils.TimeRolling(stats.Mean(), period=dt.timedelta(days=3))
+    >>> for t, x in X.items():
+    ...     print(rmean.update(x, t=t).get())
+    1.0
+    3.0
+    5.0
+    9.0
+
+    """
     def __init__(self, obj: Rollable, period: dt.timedelta):
         super().__init__(obj)
         self.period = period
