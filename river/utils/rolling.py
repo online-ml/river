@@ -1,8 +1,9 @@
+import collections
 import typing
 
 class Rollable(typing.Protocol):
 
-    def subtract(self, *args, **kwargs):
+    def revert(self, *args, **kwargs):
         ...
 
 class Rolling:
@@ -24,15 +25,12 @@ class Rolling:
     def window_size(self):
         return self.window.maxlen
 
-    def _update(self, *args, **kwargs):
+    def update(self, *args, **kwargs):
         if len(self.window) == self.window_size:
-            self.obj.subtract(*self.window[0][0], **self.window[0][1])
+            self.obj.revert(*self.window[0][0], **self.window[0][1])
         self.obj.update(*args, **kwargs)
         self.window.append((args, kwargs))
         return self
-
-    def update(self, *args, **kwargs):
-        return self._update(*args, **kwargs)
 
     def __repr__(self):
         return repr(self.obj)

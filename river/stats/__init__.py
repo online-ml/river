@@ -11,7 +11,6 @@ from .kurtosis import Kurtosis
 from .link import Link
 from .mad import MAD
 from .maximum import AbsMax, Max, RollingAbsMax, RollingMax
-from .mean import BayesianMean, Mean, RollingMean
 from .minimum import Min, RollingMin
 from .mode import Mode, RollingMode
 from .n_unique import NUnique
@@ -51,7 +50,6 @@ __all__ = [
     "RollingIQR",
     "RollingMax",
     "RollingMean",
-    "RollingMin",
     "RollingMode",
     "RollingPeakToPeak",
     "RollingPearsonCorr",
