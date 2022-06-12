@@ -17,6 +17,12 @@
 ## metrics
 
 - Removed dependency to `optim`.
+- Removed `stats.RollingMean`, due to the addition of `utils.Rolling`.
+
+## proba
+
+- Removed `proba.Rolling`, due to the addition of `utils.Rolling`.
+- Removed `proba.TimeRolling`, due to the addition of `utils.Rolling`.
 
 ## stream
 
@@ -25,4 +31,5 @@
 ## utils
 
 - Removed dependencies to `anomaly` and `compose`.
-- Use binary search to speed-up element removal in `SortedWindow`.
+- Added `utils.Rolling` and `utils.TimeRolling`, which are generic wrappers for computing over a window (of time).
+- Use binary search to speed-up element removal in `utils.SortedWindow`.

@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from river import stats
+from river import stats, utils
 
 
 class Var(stats.base.Univariate):
@@ -173,7 +173,7 @@ class RollingVar(stats.base.RollingUnivariate):
     def __init__(self, window_size, ddof=1):
         self.ddof = ddof
         self._sos = 0
-        self._rolling_mean = stats.RollingMean(window_size=window_size)
+        self._rolling_mean = utils.Rolling(stats.Mean(), window_size=window_size)
 
     @property
     def window_size(self):
@@ -181,7 +181,7 @@ class RollingVar(stats.base.RollingUnivariate):
 
     def update(self, x):
         if len(self._rolling_mean.window) >= self._rolling_mean.window_size:
-            self._sos -= self._rolling_mean.window[0] ** 2
+            self._sos -= self._rolling_mean.window[0][0][0] ** 2
 
         self._sos += x * x
         self._rolling_mean.update(x)

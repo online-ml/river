@@ -4,7 +4,7 @@ from .context_managers import log_method_calls
 from .data_conversion import dict2numpy, numpy2dict
 from .param_grid import expand_param_grid
 from .sorted_window import SortedWindow
-from .rolling import Rolling
+from .rolling import Rolling, TimeRolling
 from .vectordict import VectorDict
 
 __all__ = [
@@ -20,4 +20,5 @@ __all__ = [
     "Rolling",
     "SortedWindow",
     "VectorDict",
+    "TimeRolling",
 ]

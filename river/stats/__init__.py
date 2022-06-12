@@ -9,6 +9,7 @@ from .ewvar import EWVar
 from .iqr import IQR, RollingIQR
 from .kurtosis import Kurtosis
 from .link import Link
+from .mean import Mean
 from .mad import MAD
 from .maximum import AbsMax, Max, RollingAbsMax, RollingMax
 from .minimum import Min, RollingMin
@@ -49,7 +50,6 @@ __all__ = [
     "RollingCov",
     "RollingIQR",
     "RollingMax",
-    "RollingMean",
     "RollingMode",
     "RollingPeakToPeak",
     "RollingPearsonCorr",

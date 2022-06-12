@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 from scipy import stats as sp_stats
 
-from river import stats
+from river import stats, utils
 
 
 def load_stats():
@@ -83,8 +83,8 @@ def test_univariate(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        (stats.RollingMean(3), statistics.mean),
-        (stats.RollingMean(10), statistics.mean),
+        (utils.Rolling(stats.Mean(), 3), statistics.mean),
+        (utils.Rolling(stats.Mean(), 10), statistics.mean),
         (stats.RollingVar(3, ddof=0), np.var),
         (stats.RollingVar(10, ddof=0), np.var),
         (
