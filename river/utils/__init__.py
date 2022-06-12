@@ -4,6 +4,7 @@ from .context_managers import log_method_calls
 from .data_conversion import dict2numpy, numpy2dict
 from .param_grid import expand_param_grid
 from .sorted_window import SortedWindow
+from .rolling import Rolling
 from .vectordict import VectorDict
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
     "numpy2dict",
     "random",
     "skmultiflow_utils",
+    "Rolling",
     "SortedWindow",
     "VectorDict",
 ]
