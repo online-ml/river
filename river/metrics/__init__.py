@@ -3,6 +3,9 @@
 All the metrics are updated one sample at a time. This way we can track performance of
 predictive methods over time.
 
+Note that all metrics have a `revert` method, enabling them to be wrapped in `utils.Rolling`.
+This allows computirng rolling metrics:
+
 >>> from river import metrics, utils
 
 >>> y_true = [True, False, True, True]
