@@ -38,6 +38,15 @@ class Rolling(BaseRolling):
     """A generic wrapper for performing rolling computations.
 
     This can be wrapped around any object which implements both an `update` and a `revert` method.
+    Inputs to `update` are stored in a queue. Elements of the queue are popped when the window is
+    full.
+
+    Parameters
+    ----------
+    obj
+        An object that implements both an `update` method and a `rolling `method.
+    window_size
+        Size of the window.
 
     Examples
     --------
@@ -78,6 +87,15 @@ class TimeRolling(BaseRolling):
     """A generic wrapper for performing time rolling computations.
 
     This can be wrapped around any object which implements both an `update` and a `revert` method.
+    Inputs to `update` are stored in a queue. Elements of the queue are popped when they are too
+    old.
+
+    Parameters
+    ----------
+    obj
+        An object that implements both an `update` method and a `rolling `method.
+    period
+        A duration of time, expressed as a `datetime.timedelta`.
 
     Examples
     --------
