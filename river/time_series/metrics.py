@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import abc
 from numbers import Number
-from typing import List
+import typing
 
 from river import base, metrics
 
 
 class ForecastingMetric(base.Base, abc.ABC):
     @abc.abstractmethod
-    def update(self, y_true: List[Number], y_pred: List[Number]) -> "ForecastingMetric":
+    def update(self, y_true: typing.List[Number], y_pred: typing.List[Number]) -> "ForecastingMetric":
         """Update the metric at each step along the horizon.
 
         Parameters
@@ -135,7 +135,9 @@ class HorizonAggMetric(HorizonMetric):
 
     """
 
-    def __init__(self, metric: metrics.base.RegressionMetric, agg_func: typing.Callable[[list[float]], float]):
+    def __init__(
+        self, metric: metrics.base.RegressionMetric, agg_func: typing.Callable[[list[float]], float]
+    ):
         super().__init__(metric)
         self.agg_func = agg_func
 

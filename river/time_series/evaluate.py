@@ -107,7 +107,9 @@ def iter_evaluate(
     """
 
     horizon_metric = (
-        time_series.HorizonAggMetric(metric, agg_func) if agg_func else time_series.HorizonMetric(metric)
+        time_series.HorizonAggMetric(metric, agg_func)
+        if agg_func
+        else time_series.HorizonMetric(metric)
     )
     steps = _iter_with_horizon(dataset, horizon)
 
