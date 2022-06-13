@@ -1,11 +1,12 @@
 import abc
 import typing
 
-import pandas as pd
-
 from river import base
 
 from . import estimator
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 class Classifier(estimator.Estimator):
@@ -82,7 +83,7 @@ class MiniBatchClassifier(Classifier):
     """A classifier that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> "MiniBatchClassifier":
+    def learn_many(self, X: "pd.DataFrame", y: "pd.Series") -> "MiniBatchClassifier":
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters
@@ -98,7 +99,7 @@ class MiniBatchClassifier(Classifier):
 
         """
 
-    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
+    def predict_proba_many(self, X: "pd.DataFrame") -> "pd.DataFrame":
         """Predict the outcome probabilities for each given sample.
 
         Parameters
@@ -118,7 +119,7 @@ class MiniBatchClassifier(Classifier):
         # that a classifier does not support predict_proba_many.
         raise NotImplementedError
 
-    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+    def predict_many(self, X: "pd.DataFrame") -> "pd.Series":
         """Predict the outcome for each given sample.
 
         Parameters

@@ -1,8 +1,10 @@
 import abc
-
-import pandas as pd
+import typing
 
 from river import base
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 class BaseTransformer:
@@ -107,7 +109,7 @@ class MiniBatchTransformer(Transformer):
     """A transform that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform_many(self, X: "pd.DataFrame") -> "pd.DataFrame":
         """Transform a mini-batch of features.
 
         Parameters
@@ -121,7 +123,7 @@ class MiniBatchTransformer(Transformer):
 
         """
 
-    def learn_many(self, X: pd.DataFrame) -> "Transformer":
+    def learn_many(self, X: "pd.DataFrame") -> "Transformer":
         """Update with a mini-batch of features.
 
         A lot of transformers don't actually have to do anything during the `learn_many` step
@@ -150,7 +152,7 @@ class MiniBatchSupervisedTransformer(Transformer):
         return True
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> "MiniBatchSupervisedTransformer":
+    def learn_many(self, X: "pd.DataFrame", y: "pd.Series") -> "MiniBatchSupervisedTransformer":
         """Update the model with a mini-batch of features `X` and targets `y`.
 
         Parameters
@@ -168,7 +170,7 @@ class MiniBatchSupervisedTransformer(Transformer):
         return self
 
     @abc.abstractmethod
-    def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform_many(self, X: "pd.DataFrame") -> "pd.DataFrame":
         """Transform a mini-batch of features.
 
         Parameters
