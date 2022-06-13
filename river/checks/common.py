@@ -123,7 +123,7 @@ def check_clone_is_idempotent(model):
         assert before == after
 
 
-def check_edit_can_be_idempotent(model):
+def check_mutate_can_be_idempotent(model):
     before = model._get_params()
     model.mutate({})
     after = model._get_params()
