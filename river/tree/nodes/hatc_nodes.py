@@ -44,7 +44,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
         self.seed = seed
         self._rng = random.Random(seed)
         self._mean_error = Mean()
-    
+
     def kill_tree_children(self, hat):
         pass
 

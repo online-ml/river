@@ -1,7 +1,7 @@
 import typing
 
-from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
 from river import base, drift
+from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
 
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .nodes.branch import DTBranch
