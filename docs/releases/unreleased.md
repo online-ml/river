@@ -21,3 +21,4 @@
 ## utils
 
 - Removed dependencies to `anomaly` and `compose`.
+- Use binary search to speed-up element removal in `SortedWindow`.
