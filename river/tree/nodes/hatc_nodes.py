@@ -185,8 +185,8 @@ class AdaBranchClassifier(DTBranch):
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
         aux = leaf.prediction(x, tree=tree)
-        class_prediction = max(aux, key=aux.get) if aux else None
-        detec_in = 0 if y == class_prediction else 1
+        y_pred = max(aux, key=aux.get) if aux else None
+        detec_in = 0 if y == y_pred else 1
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
@@ -219,12 +219,13 @@ class AdaBranchClassifier(DTBranch):
                 alt_error_rate = self._alternate_tree._mean_error.get()
                 n_obs = self._mean_error.n
 
-                f_delta = 0.05
-                f_n = 1.0 / alt_n_obs + 1.0 / n_obs
+                f_delta = 0.05  # TODO make this a parameter
+                f_n = 1.0 / alt_n_obs + 1.0 / n_obs  # TODO Number observations Hoeffding bound
 
                 bound = math.sqrt(
                     2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / f_delta) * f_n
-                )
+                ) # TODO This is a form of the Hoeffding Bound
+
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves
                     tree._n_active_leaves += self._alternate_tree.n_leaves
