@@ -1,5 +1,4 @@
 import math
-import random
 import typing
 
 from river.stats import Mean
@@ -32,17 +31,16 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
         and perform split attempts.
     drift_detector
         The detector used internally to monitor drifts.
-    seed
-        Seed to control the generation of random numbers and support reproducibility.
+    rng
+        Random number generator used in Poisson sampling.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
+    def __init__(self, stats, depth, splitter, drift_detector, rng, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
         self.drift_detector = drift_detector
-        self.seed = seed
-        self._rng = random.Random(seed)
+        self.rng = rng
         self._mean_error = Mean()
 
     def kill_tree_children(self, hat):
@@ -51,14 +49,14 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
-            k = poisson(rate=1, rng=self._rng)
+            k = poisson(rate=1, rng=self.rng)
             if k > 0:
                 sample_weight *= k
 
         aux = self.prediction(x, tree=tree)
-        class_prediction = max(aux, key=aux.get) if aux else None
+        y_pred = max(aux, key=aux.get) if aux else None
 
-        detec_in = 0 if y == class_prediction else 1
+        detec_in = 0 if y == y_pred else 1
         old_error = self._mean_error.get()
 
         # Update the drift detector
@@ -87,7 +85,6 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
                     parent,
                     parent_branch,
                     drift_detector=tree.drift_detector.clone(),
-                    seed=tree.seed,
                 )
                 self.last_split_attempt_at = weight_seen
 
@@ -128,22 +125,17 @@ class AdaBranchClassifier(DTBranch):
         Class observations
     adwin_delta
         The delta parameter of ADWIN.
-    seed
-        Internal random seed used to sample from poisson distributions.
     children
         Sequence of children nodes of this branch.
     attributes
         Other parameters passed to the split node.
     """
 
-    def __init__(self, stats, *children, drift_detector, seed, **attributes):
+    def __init__(self, stats, *children, drift_detector, **attributes):
         super().__init__(stats, *children, **attributes)
         self.drift_detector = drift_detector
-        self.seed = seed
         self._alternate_tree = None
         self._mean_error = Mean()
-
-        self._rng = random.Random(seed)
 
     def traverse(self, x, until_leaf=True) -> typing.List[HTLeaf]:  # type: ignore
         """Return the leaves corresponding to the given input.

@@ -1,3 +1,4 @@
+import random
 import typing
 
 from river import base, drift
@@ -166,6 +167,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
         self.seed = seed
 
+        self._rng = random.Random(self.seed)
+
     @property
     def n_alternate_trees(self):
         return self._n_alternate_trees
@@ -237,7 +240,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             depth=depth,
             splitter=self.splitter,
             drift_detector=self.drift_detector.clone(),
-            seed=self.seed,
+            rng=self._rng,
         )
 
     def _branch_selector(

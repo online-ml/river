@@ -1,3 +1,4 @@
+import random
 import typing
 from copy import deepcopy
 
@@ -132,7 +133,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.795811
+    MAE: 0.811488
     """
 
     def __init__(
@@ -186,6 +187,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self.drift_window_threshold = drift_window_threshold
         self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
         self.seed = seed
+
+        self._rng = random.Random(self.seed)
 
     @property
     def n_alternate_trees(self):
@@ -263,7 +266,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 depth,
                 self.splitter,
                 drift_detector=self.drift_detector.clone(),
-                seed=self.seed,
+                rng=self._rng,
             )
         elif self.leaf_prediction == self._MODEL:
             return AdaLeafRegModel(
@@ -271,7 +274,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 depth,
                 self.splitter,
                 drift_detector=self.drift_detector.clone(),
-                seed=self.seed,
+                rng=self._rng,
                 leaf_model=leaf_model,
             )
         else:  # adaptive learning node
@@ -280,7 +283,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 depth,
                 self.splitter,
                 drift_detector=self.drift_detector.clone(),
-                seed=self.seed,
+                rng=self._rng,
                 leaf_model=leaf_model,
             )
             if parent is not None and isinstance(parent, AdaLeafRegressor):

@@ -1,5 +1,4 @@
 import math
-import random
 import typing
 
 from river.stats import Mean, Var
@@ -30,19 +29,18 @@ class AdaLeafRegressor(HTLeaf):
         and perform split attempts.
     drift_detector
         The detector used to monitor concept drifts.
-    seed
-        Seed to control the generation of random numbers and support reproducibility.
+    rng
+        Random number generator used in Poisson sampling.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
+    def __init__(self, stats, depth, splitter, drift_detector, rng, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
 
         self.drift_detector = drift_detector
-        self.seed = seed
+        self.rng = rng
         self._mean_error = Mean()
-        self._rng = random.Random(seed)
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
         self._error_normalizer = Var(ddof=1)
@@ -56,7 +54,7 @@ class AdaLeafRegressor(HTLeaf):
 
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
-            k = poisson(rate=1, rng=self._rng)
+            k = poisson(rate=1, rng=self.rng)
             if k > 0:
                 sample_weight *= k
 
@@ -88,7 +86,6 @@ class AdaLeafRegressor(HTLeaf):
                     parent,
                     parent_branch,
                     drift_detector=tree.drift_detector.clone(),
-                    seed=tree.seed,
                 )
                 self.last_split_attempt_at = weight_seen
 
@@ -104,21 +101,16 @@ class AdaBranchRegressor(DTBranch):
         The depth of the node.
     drift_detector
         The detector used to monitor concept drifts.
-    seed
-        Internal random seed used to sample from poisson distributions.
     attributes
         Other parameters passed to the split node.
     """
 
-    def __init__(self, stats, *children, drift_detector, seed, **attributes):
+    def __init__(self, stats, *children, drift_detector, **attributes):
         stats = stats if stats else Var()
         super().__init__(stats, *children, **attributes)
         self.drift_detector = drift_detector
-        self.seed = seed
         self._mean_error = Mean()
         self._alternate_tree = None
-
-        self._rng = random.Random(seed)
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
         self._error_normalizer = Var(ddof=1)
@@ -315,18 +307,18 @@ class AdaNumMultiwayBranchReg(AdaBranchRegressor, NumericMultiwayBranch):
 
 
 class AdaLeafRegMean(AdaLeafRegressor, LeafMean):
-    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
-        super().__init__(stats, depth, splitter, drift_detector, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, drift_detector, rng, **kwargs):
+        super().__init__(stats, depth, splitter, drift_detector, rng, **kwargs)
 
 
 class AdaLeafRegModel(AdaLeafRegressor, LeafModel):
-    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
-        super().__init__(stats, depth, splitter, drift_detector, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, drift_detector, rng, **kwargs):
+        super().__init__(stats, depth, splitter, drift_detector, rng, **kwargs)
 
 
 class AdaLeafRegAdaptive(AdaLeafRegressor, LeafAdaptive):
-    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
-        super().__init__(stats, depth, splitter, drift_detector, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, drift_detector, rng, **kwargs):
+        super().__init__(stats, depth, splitter, drift_detector, rng, **kwargs)
 
 
 def normalize_error(y_true, y_pred, node):
