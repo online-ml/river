@@ -2,7 +2,7 @@
 from . import base
 from .evaluate import evaluate, iter_evaluate
 from .holt_winters import HoltWinters
-from .metrics import ForecastingMetric, HorizonMetric
+from .metrics import ForecastingMetric, HorizonMetric, HorizonAggMetric
 from .snarimax import SNARIMAX
 
 __all__ = [
@@ -10,6 +10,7 @@ __all__ = [
     "evaluate",
     "iter_evaluate",
     "ForecastingMetric",
+    "HorizonAggMetric",
     "HorizonMetric",
     "HoltWinters",
     "SNARIMAX",

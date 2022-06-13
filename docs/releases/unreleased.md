@@ -18,6 +18,10 @@
 
 - Removed dependency to `optim`.
 
+## time_series
+
+- Added `time_series.HorizonAggMetric`.
+
 ## utils
 
 - Removed dependencies to `anomaly` and `compose`.
