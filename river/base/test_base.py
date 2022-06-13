@@ -52,7 +52,7 @@ def test_memory_usage():
     assert isinstance(model._memory_usage, str)
 
 
-def test_edit():
+def test_mutate():
     """
 
     >>> from river import datasets, linear_model, optim, preprocessing
