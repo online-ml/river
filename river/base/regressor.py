@@ -8,6 +8,7 @@ from . import estimator
 if typing.TYPE_CHECKING:
     import pandas as pd
 
+
 class Regressor(estimator.Estimator):
     """A regressor."""
 
