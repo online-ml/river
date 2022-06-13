@@ -1,10 +1,12 @@
 import abc
-
-import pandas as pd
+import typing
 
 from river import base
 
 from . import estimator
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 class Regressor(estimator.Estimator):
@@ -47,7 +49,7 @@ class MiniBatchRegressor(Regressor):
     """A regressor that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> "MiniBatchRegressor":
+    def learn_many(self, X: "pd.DataFrame", y: "pd.Series") -> "MiniBatchRegressor":
         """Update the model with a mini-batch of features `X` and real-valued targets `y`.
 
         Parameters
@@ -64,7 +66,7 @@ class MiniBatchRegressor(Regressor):
         """
 
     @abc.abstractmethod
-    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+    def predict_many(self, X: "pd.DataFrame") -> "pd.Series":
         """Predict the outcome for each given sample.
 
         Parameters
