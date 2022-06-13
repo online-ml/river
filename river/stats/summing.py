@@ -31,12 +31,12 @@ class Sum(stats.base.Univariate):
     >>> rolling_sum = utils.Rolling(stats.Sum(), window_size=2)
     >>> for x in X:
     ...     print(rolling_sum.update(x).get())
-    1
-    -3
-    -1
-    1
-    0
-    3
+    1.0
+    -3.0
+    -1.0
+    1.0
+    0.0
+    3.0
 
     """
 

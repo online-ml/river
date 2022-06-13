@@ -7,15 +7,15 @@ from river import base
 __all__ = ["Univariate", "Bivariate"]
 
 
-class Statistic(base.Base):
+class Statistic(abc.ABC, base.Base):
     """A statistic."""
 
     # Define the format specification used for string representation.
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
+    @abc.abstractmethod
     def get(self) -> Optional[float]:
         """Return the current value of the statistic."""
-        raise NotImplementedError
 
     def __repr__(self):
         try:
@@ -29,12 +29,9 @@ class Statistic(base.Base):
 class Univariate(Statistic):
     """A univariate statistic measures a property of a variable."""
 
+    @abc.abstractmethod
     def update(self, x: numbers.Number):
         """Update and return the called instance."""
-        raise NotImplementedError
-
-    def revert(self, x: numbers.Number):
-        """Revert and return the called instance."""
         raise NotImplementedError
 
     @property
@@ -63,6 +60,6 @@ class RollingUnivariate(Univariate):
 class Bivariate(Statistic):
     """A bivariate statistic measures a relationship between two variables."""
 
+    @abc.abstractmethod
     def update(self, x, y):
         """Update and return the called instance."""
-        raise NotImplementedError

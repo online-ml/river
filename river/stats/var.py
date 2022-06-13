@@ -43,6 +43,8 @@ class Var(stats.base.Univariate):
 
     You can measure a rolling variance by using a `utils.Rolling` wrapper:
 
+    >>> from river import utils
+
     >>> X = [1, 4, 2, -4, -8, 0]
     >>> rvar = utils.Rolling(stats.Var(ddof=1), window_size=3)
     >>> for x in X:
