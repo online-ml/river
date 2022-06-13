@@ -1,6 +1,7 @@
 import typing
 
 from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
+from river import base, drift
 
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .nodes.branch import DTBranch
@@ -55,8 +56,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     drift_window_threshold
         Minimum number of examples an alternate tree must observe before being considered as a
         potential replacement to the current one.
-    adwin_confidence
-        The delta parameter used in the nodes' ADWIN drift detectors.
+    drift_detector
+        The drift detector used to build the tree. If `None` then `drift.ADWIN` is used.
     binary_split
         If True, only allow binary splits.
     max_size
@@ -75,9 +76,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     Notes
     -----
-    The Hoeffding Adaptive Tree [^1] uses ADWIN [^2] to monitor performance of branches on the tree
-    and to replace them with new branches when their accuracy decreases if the new branches are
-    more accurate.
+    The Hoeffding Adaptive Tree [^1] uses a drift detector to monitor performance of branches in
+    the tree and to replace them with new branches when their accuracy decreases.
 
     The bootstrap sampling strategy is an improvement over the original Hoeffding Adaptive Tree
     algorithm. It is enabled by default since, in general, it results in better performance.
@@ -87,9 +87,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     [^1]: Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
        In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
        Heidelberg, 2009.
-    [^2]: Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
-       windowing." In Proceedings of the 2007 SIAM international conference on data mining,
-       pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     Examples
     --------
@@ -119,10 +116,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     """
 
-    # =============================================
-    # == Hoeffding Adaptive Tree implementation ===
-    # =============================================
-
     def __init__(
         self,
         grace_period: int = 200,
@@ -136,7 +129,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         splitter: Splitter = None,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
-        adwin_confidence: float = 0.002,
+        drift_detector: typing.Optional[base.DriftDetector] = None,
         binary_split: bool = False,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
@@ -170,7 +163,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
         self.bootstrap_sampling = bootstrap_sampling
         self.drift_window_threshold = drift_window_threshold
-        self.adwin_confidence = adwin_confidence
+        self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
         self.seed = seed
 
     @property
@@ -243,7 +236,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             stats=initial_stats,
             depth=depth,
             splitter=self.splitter,
-            adwin_delta=self.adwin_confidence,
+            drift_detector=self.drift_detector.clone(),
             seed=self.seed,
         )
 

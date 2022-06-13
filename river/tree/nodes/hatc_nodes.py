@@ -1,9 +1,8 @@
-import abc
 import math
 import random
 import typing
 
-from river.drift import ADWIN
+from river.stats import Mean
 from river.utils.random import poisson
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
@@ -19,30 +18,7 @@ from .htc_nodes import LeafNaiveBayesAdaptive
 from .leaf import HTLeaf
 
 
-class AdaNode(abc.ABC):
-    """Abstract Class to create a new Node for the Hoeffding Adaptive Tree
-    Classifier/Regressor"""
-
-    @property
-    @abc.abstractmethod
-    def error_estimation(self):
-        pass
-
-    @property
-    @abc.abstractmethod
-    def error_width(self):
-        pass
-
-    @abc.abstractmethod
-    def error_is_null(self):
-        pass
-
-    @abc.abstractmethod
-    def kill_tree_children(self, hat):
-        pass
-
-
-class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
+class AdaLeafClassifier(LeafNaiveBayesAdaptive):
     """Learning node for Hoeffding Adaptive Tree.
 
     Parameters
@@ -54,31 +30,21 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    adwin_delta
-        The delta parameter of ADWIN.
+    drift_detector
+        The detector used internally to monitor drifts.
     seed
         Seed to control the generation of random numbers and support reproducibility.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
+    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
-        self.adwin_delta = adwin_delta
-        self._adwin = ADWIN(delta=self.adwin_delta)
+        self.drift_detector = drift_detector
+        self.seed = seed
         self._rng = random.Random(seed)
-
-    @property
-    def error_estimation(self):
-        return self._adwin.estimation
-
-    @property
-    def error_width(self):
-        return self._adwin.width
-
-    def error_is_null(self):
-        return self._adwin is None
-
+        self._mean_error = Mean()
+    
     def kill_tree_children(self, hat):
         pass
 
@@ -92,19 +58,16 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
         aux = self.prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
 
-        is_correct = y == class_prediction
+        detec_in = 0 if y == class_prediction else 1
+        old_error = self._mean_error.get()
 
-        if self._adwin is None:
-            self._adwin = ADWIN(delta=self.adwin_delta)
-
-        old_error = self.error_estimation
-
-        # Update ADWIN
-        self._adwin.update(int(not is_correct))
-        error_change = self._adwin.drift_detected
+        # Update the drift detector
+        self.drift_detector.update(detec_in)
+        self._mean_error.update(detec_in)
+        error_change = self.drift_detector.drift_detected
 
         # Error is decreasing
-        if error_change and old_error > self.error_estimation:
+        if error_change and old_error > self._mean_error.get():
             error_change = False
 
         # Update statistics
@@ -123,7 +86,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
                     self,
                     parent,
                     parent_branch,
-                    adwin_delta=tree.adwin_confidence,
+                    drift_detector=tree.drift_detector.clone(),
                     seed=tree.seed,
                 )
                 self.last_split_attempt_at = weight_seen
@@ -145,7 +108,8 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
             dist = super().prediction(x, tree=tree)
 
         dist_sum = sum(dist.values())
-        normalization_factor = dist_sum * self.error_estimation * self.error_estimation
+        curr_error = self._mean_error.get()
+        normalization_factor = dist_sum * curr_error * curr_error
 
         # Weight node's responses accordingly to the estimated error monitored by ADWIN
         # Useful if both the predictions of the alternate tree and the ones from the main tree
@@ -155,7 +119,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive, AdaNode):
         return dist
 
 
-class AdaBranchClassifier(DTBranch, AdaNode):
+class AdaBranchClassifier(DTBranch):
     """Node that splits the data in a Hoeffding Adaptive Tree.
 
     Parameters
@@ -172,11 +136,12 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         Other parameters passed to the split node.
     """
 
-    def __init__(self, stats, *children, adwin_delta, seed, **attributes):
+    def __init__(self, stats, *children, drift_detector, seed, **attributes):
         super().__init__(stats, *children, **attributes)
-        self.adwin_delta = adwin_delta
-        self._adwin = ADWIN(delta=self.adwin_delta)
+        self.drift_detector = drift_detector
+        self.seed = seed
         self._alternate_tree = None
+        self._mean_error = Mean()
 
         self._rng = random.Random(seed)
 
@@ -195,7 +160,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         """
         found_nodes: typing.List[HTLeaf] = []
         for node in self.walk(x, until_leaf=until_leaf):
-            if isinstance(node, AdaBranchClassifier) and node._alternate_tree is not None:
+            if isinstance(node, AdaBranchClassifier) and node._alternate_tree:
                 if isinstance(node._alternate_tree, AdaBranchClassifier):
                     found_nodes.append(
                         node._alternate_tree.traverse(x, until_leaf=until_leaf)  # type: ignore
@@ -214,29 +179,14 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         for child in self.children:
             yield from child.iter_leaves()
 
-            if isinstance(child, AdaBranchClassifier) and child._alternate_tree is not None:
+            if isinstance(child, AdaBranchClassifier) and child._alternate_tree:
                 yield from child._alternate_tree.iter_leaves()
-
-    @property
-    def error_estimation(self):
-        return self._adwin.estimation
-
-    @property
-    def error_width(self):
-        w = 0.0
-        if not self.error_is_null():
-            w = self._adwin.width
-
-        return w
-
-    def error_is_null(self):
-        return self._adwin is None
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
         aux = leaf.prediction(x, tree=tree)
         class_prediction = max(aux, key=aux.get) if aux else None
-        is_correct = y == class_prediction
+        detec_in = 0 if y == class_prediction else 1
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
@@ -245,17 +195,15 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         except KeyError:
             self.stats[y] = sample_weight
 
-        if self._adwin is None:
-            self._adwin = ADWIN(self.adwin_delta)
-
-        old_error = self.error_estimation
+        old_error = self._mean_error.get()
 
         # Update ADWIN
-        self._adwin.update(int(not is_correct))
-        error_change = self._adwin.drift_detected
+        self.drift_detector.update(detec_in)
+        self._mean_error.update(detec_in)
+        error_change = self.drift_detector.drift_detected
 
         # Classification error is decreasing: skip drift adaptation
-        if error_change and old_error > self.error_estimation:
+        if error_change and old_error > self._mean_error.get():
             error_change = False
 
         # Condition to build a new alternate tree
@@ -264,15 +212,15 @@ class AdaBranchClassifier(DTBranch, AdaNode):
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
         # Condition to replace alternate tree
-        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
-            if (
-                self.error_width > tree.drift_window_threshold
-                and self._alternate_tree.error_width > tree.drift_window_threshold
-            ):
-                old_error_rate = self.error_estimation
-                alt_error_rate = self._alternate_tree.error_estimation
+        elif self._alternate_tree:
+            alt_n_obs = self._alternate_tree._mean_error.n
+            if alt_n_obs > tree.drift_window_threshold:
+                old_error_rate = self._mean_error.get()
+                alt_error_rate = self._alternate_tree._mean_error.get()
+                n_obs = self._mean_error.n
+
                 f_delta = 0.05
-                f_n = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
+                f_n = 1.0 / alt_n_obs + 1.0 / n_obs
 
                 bound = math.sqrt(
                     2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / f_delta) * f_n
@@ -296,7 +244,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
                     tree._n_pruned_alternate_trees += 1
 
         # Learn one sample in alternate tree and child nodes
-        if self._alternate_tree is not None:
+        if self._alternate_tree:
             self._alternate_tree.learn_one(
                 x,
                 y,
@@ -311,7 +259,7 @@ class AdaBranchClassifier(DTBranch, AdaNode):
         except KeyError:
             child = None
 
-        if child is not None:
+        if child:
             child.learn_one(
                 x,
                 y,
@@ -348,12 +296,11 @@ class AdaBranchClassifier(DTBranch, AdaNode):
                     parent_branch=child_id,
                 )
 
-    # Override AdaNode
     def kill_tree_children(self, tree):
         for child in self.children:
             # Delete alternate tree if it exists
             if isinstance(child, DTBranch):
-                if child._alternate_tree is not None:
+                if child._alternate_tree:
                     child._alternate_tree.kill_tree_children(tree)
                     tree._n_pruned_alternate_trees += 1
                     child._alternate_tree = None

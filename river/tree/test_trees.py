@@ -2,7 +2,7 @@ import random
 
 import pytest
 
-from river import datasets, tree
+from river import datasets, drift, tree
 from river.datasets import synth
 
 
@@ -140,7 +140,7 @@ def test_drift_adaptation_hatc():
     model = tree.HoeffdingAdaptiveTreeClassifier(
         leaf_prediction="mc",
         grace_period=10,
-        adwin_confidence=0.1,
+        drift_detector=drift.ADWIN(0.1),
         split_confidence=0.1,
         drift_window_threshold=2,
         seed=42,
@@ -166,7 +166,7 @@ def test_drift_adaptation_hatr():
         leaf_prediction="model",
         grace_period=50,
         split_confidence=0.1,
-        adwin_confidence=0.1,
+        drift_detector=drift.ADWIN(0.1),
         drift_window_threshold=10,
         seed=7,
         max_depth=3,

@@ -2,8 +2,7 @@ import math
 import random
 import typing
 
-from river.drift.adwin import ADWIN
-from river.stats import Var
+from river.stats import Mean, Var
 from river.utils.random import poisson
 
 from .branch import (
@@ -13,12 +12,11 @@ from .branch import (
     NumericBinaryBranch,
     NumericMultiwayBranch,
 )
-from .hatc_nodes import AdaNode
 from .htr_nodes import LeafAdaptive, LeafMean, LeafModel
 from .leaf import HTLeaf
 
 
-class AdaLeafRegressor(HTLeaf, AdaNode):
+class AdaLeafRegressor(HTLeaf):
     """Learning Node of the Hoeffding Adaptive Tree regressor.
 
     Parameters
@@ -30,34 +28,24 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
-    adwin_delta
-        The delta parameter of ADWIN.
+    drift_detector
+        The detector used to monitor concept drifts.
     seed
         Seed to control the generation of random numbers and support reproducibility.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
+    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
 
-        self.adwin_delta = adwin_delta
-        self._adwin = ADWIN(delta=self.adwin_delta)
+        self.drift_detector = drift_detector
+        self.seed = seed
+        self._mean_error = Mean()
         self._rng = random.Random(seed)
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
         self._error_normalizer = Var(ddof=1)
-
-    @property
-    def error_estimation(self):
-        return self._adwin.estimation
-
-    @property
-    def error_width(self):
-        return self._adwin.width
-
-    def error_is_null(self):
-        return self._adwin is None
 
     def kill_tree_children(self, hatr):
         pass
@@ -72,17 +60,15 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
             if k > 0:
                 sample_weight *= k
 
-        if self._adwin is None:
-            self._adwin = ADWIN(delta=self.adwin_delta)
+        old_error = self._mean_error.get()
 
-        old_error = self.error_estimation
-
-        # Update ADWIN
-        self._adwin.update(normalized_error)
-        error_change = self._adwin.drift_detected
+        # Update the drift detector
+        self.drift_detector.update(normalized_error)
+        self._mean_error.update(normalized_error)
+        error_change = self.drift_detector.drift_detected
 
         # Error is decreasing
-        if error_change and old_error > self.error_estimation:
+        if error_change and old_error > self._mean_error.get():
             error_change = False
 
         # Update learning model
@@ -101,13 +87,13 @@ class AdaLeafRegressor(HTLeaf, AdaNode):
                     self,
                     parent,
                     parent_branch,
-                    adwin_delta=tree.adwin_confidence,
+                    drift_detector=tree.drift_detector.clone(),
                     seed=tree.seed,
                 )
                 self.last_split_attempt_at = weight_seen
 
 
-class AdaBranchRegressor(DTBranch, AdaNode):
+class AdaBranchRegressor(DTBranch):
     """Node that splits the data in a Hoeffding Adaptive Tree Regression.
 
     Parameters
@@ -116,19 +102,20 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         Target stats.
     depth
         The depth of the node.
-    adwin_delta
-        The delta parameter of ADWIN.
+    drift_detector
+        The detector used to monitor concept drifts.
     seed
         Internal random seed used to sample from poisson distributions.
     attributes
         Other parameters passed to the split node.
     """
 
-    def __init__(self, stats, *children, adwin_delta, seed, **attributes):
+    def __init__(self, stats, *children, drift_detector, seed, **attributes):
         stats = stats if stats else Var()
         super().__init__(stats, *children, **attributes)
-        self.adwin_delta = adwin_delta
-        self._adwin = ADWIN(delta=self.adwin_delta)
+        self.drift_detector = drift_detector
+        self.seed = seed
+        self._mean_error = Mean()
         self._alternate_tree = None
 
         self._rng = random.Random(seed)
@@ -151,7 +138,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         """
         found_nodes: typing.List[HTLeaf] = []
         for node in self.walk(x, until_leaf=until_leaf):
-            if isinstance(node, AdaBranchRegressor) and node._alternate_tree is not None:
+            if isinstance(node, AdaBranchRegressor) and node._alternate_tree:
                 if isinstance(node._alternate_tree, AdaBranchRegressor):
                     found_nodes.append(
                         node._alternate_tree.traverse(x, until_leaf=until_leaf)  # type: ignore
@@ -170,23 +157,8 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         for child in self.children:
             yield from child.iter_leaves()
 
-            if isinstance(child, AdaBranchRegressor) and child._alternate_tree is not None:
+            if isinstance(child, AdaBranchRegressor) and child._alternate_tree:
                 yield from child._alternate_tree.iter_leaves()
-
-    @property
-    def error_estimation(self):
-        return self._adwin.estimation
-
-    @property
-    def error_width(self):
-        w = 0.0
-        if not self.error_is_null():
-            w = self._adwin.width
-
-        return w
-
-    def error_is_null(self):
-        return self._adwin is None
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
@@ -197,16 +169,13 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         # to provide responses)
         self.stats.update(y, sample_weight)
 
-        if self._adwin is None:
-            self._adwin = ADWIN(self.adwin_delta)
+        old_error = self._mean_error.get()
 
-        old_error = self.error_estimation
+        self.drift_detector.update(normalized_error)
+        self._mean_error.update(normalized_error)
+        error_change = self.drift_detector.drift_detected
 
-        # Update ADWIN
-        self._adwin.update(normalized_error)
-        error_change = self._adwin.drift_detected
-
-        if error_change and old_error > self.error_estimation:
+        if error_change and old_error > self._mean_error.get():
             error_change = False
 
         # Condition to build a new alternate tree
@@ -216,15 +185,15 @@ class AdaBranchRegressor(DTBranch, AdaNode):
             tree._n_alternate_trees += 1
 
         # Condition to replace alternate tree
-        elif self._alternate_tree is not None and not self._alternate_tree.error_is_null():
-            if (
-                self.error_width > tree.drift_window_threshold
-                and self._alternate_tree.error_width > tree.drift_window_threshold
-            ):
-                old_error_rate = self.error_estimation
-                alt_error_rate = self._alternate_tree.error_estimation
+        elif self._alternate_tree:
+            alt_n_obs = self._alternate_tree._mean_error.n
+            if alt_n_obs > tree.drift_window_threshold:
+                old_error_rate = self._mean_error.get()
+                alt_error_rate = self._alternate_tree._mean_error.get()
+                n_obs = self._mean_error.n
+
                 f_delta = 0.05
-                f_n = 1.0 / self._alternate_tree.error_width + 1.0 / self.error_width
+                f_n = 1.0 / alt_n_obs + 1.0 / n_obs
 
                 try:
                     bound = math.sqrt(
@@ -255,7 +224,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
                     tree._n_pruned_alternate_trees += 1
 
         # Learn one sample in alternate tree and child nodes
-        if self._alternate_tree is not None:
+        if self._alternate_tree:
             self._alternate_tree.learn_one(
                 x,
                 y,
@@ -311,7 +280,7 @@ class AdaBranchRegressor(DTBranch, AdaNode):
         for child in self.children:
             # Delete alternate tree if it exists
             if isinstance(child, DTBranch):
-                if child._alternate_tree is not None:
+                if child._alternate_tree:
                     child._alternate_tree.kill_tree_children(tree)
                     tree._n_pruned_alternate_trees += 1
                     child._alternate_tree = None
@@ -346,22 +315,22 @@ class AdaNumMultiwayBranchReg(AdaBranchRegressor, NumericMultiwayBranch):
 
 
 class AdaLeafRegMean(AdaLeafRegressor, LeafMean):
-    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
-        super().__init__(stats, depth, splitter, adwin_delta, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
+        super().__init__(stats, depth, splitter, drift_detector, seed, **kwargs)
 
 
 class AdaLeafRegModel(AdaLeafRegressor, LeafModel):
-    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
-        super().__init__(stats, depth, splitter, adwin_delta, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
+        super().__init__(stats, depth, splitter, drift_detector, seed, **kwargs)
 
 
 class AdaLeafRegAdaptive(AdaLeafRegressor, LeafAdaptive):
-    def __init__(self, stats, depth, splitter, adwin_delta, seed, **kwargs):
-        super().__init__(stats, depth, splitter, adwin_delta, seed, **kwargs)
+    def __init__(self, stats, depth, splitter, drift_detector, seed, **kwargs):
+        super().__init__(stats, depth, splitter, drift_detector, seed, **kwargs)
 
 
 def normalize_error(y_true, y_pred, node):
-    drift_input = y_true - y_pred
+    drift_input = abs(y_true - y_pred)
     node._error_normalizer.update(drift_input)
 
     if node._error_normalizer.mean.n == 1:

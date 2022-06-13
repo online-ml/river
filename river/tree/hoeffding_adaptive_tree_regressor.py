@@ -1,7 +1,7 @@
 import typing
 from copy import deepcopy
 
-from river import base
+from river import base, drift
 
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .nodes.branch import DTBranch
@@ -71,8 +71,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     drift_window_threshold
         Minimum number of examples an alternate tree must observe before being considered as a
         potential replacement to the current one.
-    adwin_confidence
-        The delta parameter used in the nodes' ADWIN drift detectors.
+    drift_detector
+        The drift detector used to build the tree. If `None` then `drift.ADWIN` is used.
     binary_split
         If True, only allow binary splits.
     max_size
@@ -90,9 +90,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     Notes
     -----
-    The Hoeffding Adaptive Tree [^1] uses ADWIN [^2] to monitor performance of branches on the tree
-    and to replace them with new branches when their accuracy decreases if the new branches are
-    more accurate.
+    The Hoeffding Adaptive Tree [^1] uses drift detectors to monitor performance of branches
+    in the tree and to replace them with new branches when their accuracy decreases.
 
     The bootstrap sampling strategy is an improvement over the original Hoeffding Adaptive Tree
     algorithm. It is enabled by default since, in general, it results in better performance.
@@ -109,9 +108,6 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     [^1]: Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
     In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
     Heidelberg, 2009.
-    [^2]: Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
-    windowing." In Proceedings of the 2007 SIAM international conference on data mining,
-    pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     Examples
     --------
@@ -153,7 +149,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         min_samples_split: int = 5,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
-        adwin_confidence: float = 0.002,
+        drift_detector: typing.Optional[base.DriftDetector] = None,
         binary_split: bool = False,
         max_size: float = 500.0,
         memory_estimate_period: int = 1000000,
@@ -188,7 +184,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
         self.bootstrap_sampling = bootstrap_sampling
         self.drift_window_threshold = drift_window_threshold
-        self.adwin_confidence = adwin_confidence
+        self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
         self.seed = seed
 
     @property
@@ -266,7 +262,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 initial_stats,
                 depth,
                 self.splitter,
-                adwin_delta=self.adwin_confidence,
+                drift_detector=self.drift_detector.clone(),
                 seed=self.seed,
             )
         elif self.leaf_prediction == self._MODEL:
@@ -274,7 +270,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 initial_stats,
                 depth,
                 self.splitter,
-                adwin_delta=self.adwin_confidence,
+                drift_detector=self.drift_detector.clone(),
                 seed=self.seed,
                 leaf_model=leaf_model,
             )
@@ -283,7 +279,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 initial_stats,
                 depth,
                 self.splitter,
-                adwin_delta=self.adwin_confidence,
+                drift_detector=self.drift_detector.clone(),
                 seed=self.seed,
                 leaf_model=leaf_model,
             )
