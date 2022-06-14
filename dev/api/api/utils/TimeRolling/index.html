@@ -12,10 +12,10 @@
         <meta name="author" content="The river developers">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/api/metrics/TimeRolling/">
+        <link rel="canonical" href="https://riverml.xyz/dev/api/api/utils/TimeRolling/">
       
       <link rel="icon" href="../../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.4">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.5">
     
     
       
@@ -561,6 +561,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_2">
@@ -667,6 +669,20 @@
     <li class="md-nav__item">
       <a href="../../../../recipes/on-hoeffding-trees/" class="md-nav__link">
         Incremental decision trees in river: the Hoeffding Tree case
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../recipes/rolling-computations/" class="md-nav__link">
+        Rolling computations
       </a>
     </li>
   
@@ -1243,8 +1259,6 @@
       
       
       
-        
-          
         
           
         
@@ -4499,21 +4513,15 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_16" type="checkbox" id="__nav_4_3_16" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_16" type="checkbox" id="__nav_4_3_16" >
       
       
       
-        
-          
-        
-          
         
           
         
@@ -4633,7 +4641,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Accuracy/" class="md-nav__link">
+      <a href="../../metrics/Accuracy/" class="md-nav__link">
         Accuracy
       </a>
     </li>
@@ -4647,7 +4655,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../AdjustedMutualInfo/" class="md-nav__link">
+      <a href="../../metrics/AdjustedMutualInfo/" class="md-nav__link">
         AdjustedMutualInfo
       </a>
     </li>
@@ -4661,7 +4669,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../AdjustedRand/" class="md-nav__link">
+      <a href="../../metrics/AdjustedRand/" class="md-nav__link">
         AdjustedRand
       </a>
     </li>
@@ -4675,7 +4683,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../BalancedAccuracy/" class="md-nav__link">
+      <a href="../../metrics/BalancedAccuracy/" class="md-nav__link">
         BalancedAccuracy
       </a>
     </li>
@@ -4689,7 +4697,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ClassificationReport/" class="md-nav__link">
+      <a href="../../metrics/ClassificationReport/" class="md-nav__link">
         ClassificationReport
       </a>
     </li>
@@ -4703,7 +4711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CohenKappa/" class="md-nav__link">
+      <a href="../../metrics/CohenKappa/" class="md-nav__link">
         CohenKappa
       </a>
     </li>
@@ -4717,7 +4725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Completeness/" class="md-nav__link">
+      <a href="../../metrics/Completeness/" class="md-nav__link">
         Completeness
       </a>
     </li>
@@ -4731,7 +4739,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ConfusionMatrix/" class="md-nav__link">
+      <a href="../../metrics/ConfusionMatrix/" class="md-nav__link">
         ConfusionMatrix
       </a>
     </li>
@@ -4745,7 +4753,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CrossEntropy/" class="md-nav__link">
+      <a href="../../metrics/CrossEntropy/" class="md-nav__link">
         CrossEntropy
       </a>
     </li>
@@ -4759,7 +4767,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../F1/" class="md-nav__link">
+      <a href="../../metrics/F1/" class="md-nav__link">
         F1
       </a>
     </li>
@@ -4773,7 +4781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../FBeta/" class="md-nav__link">
+      <a href="../../metrics/FBeta/" class="md-nav__link">
         FBeta
       </a>
     </li>
@@ -4787,7 +4795,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../FowlkesMallows/" class="md-nav__link">
+      <a href="../../metrics/FowlkesMallows/" class="md-nav__link">
         FowlkesMallows
       </a>
     </li>
@@ -4801,7 +4809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../GeometricMean/" class="md-nav__link">
+      <a href="../../metrics/GeometricMean/" class="md-nav__link">
         GeometricMean
       </a>
     </li>
@@ -4815,7 +4823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Homogeneity/" class="md-nav__link">
+      <a href="../../metrics/Homogeneity/" class="md-nav__link">
         Homogeneity
       </a>
     </li>
@@ -4829,7 +4837,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Jaccard/" class="md-nav__link">
+      <a href="../../metrics/Jaccard/" class="md-nav__link">
         Jaccard
       </a>
     </li>
@@ -4843,7 +4851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../LogLoss/" class="md-nav__link">
+      <a href="../../metrics/LogLoss/" class="md-nav__link">
         LogLoss
       </a>
     </li>
@@ -4857,7 +4865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MAE/" class="md-nav__link">
+      <a href="../../metrics/MAE/" class="md-nav__link">
         MAE
       </a>
     </li>
@@ -4871,7 +4879,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MCC/" class="md-nav__link">
+      <a href="../../metrics/MCC/" class="md-nav__link">
         MCC
       </a>
     </li>
@@ -4885,7 +4893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MSE/" class="md-nav__link">
+      <a href="../../metrics/MSE/" class="md-nav__link">
         MSE
       </a>
     </li>
@@ -4899,7 +4907,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MacroF1/" class="md-nav__link">
+      <a href="../../metrics/MacroF1/" class="md-nav__link">
         MacroF1
       </a>
     </li>
@@ -4913,7 +4921,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MacroFBeta/" class="md-nav__link">
+      <a href="../../metrics/MacroFBeta/" class="md-nav__link">
         MacroFBeta
       </a>
     </li>
@@ -4927,7 +4935,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MacroJaccard/" class="md-nav__link">
+      <a href="../../metrics/MacroJaccard/" class="md-nav__link">
         MacroJaccard
       </a>
     </li>
@@ -4941,7 +4949,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MacroPrecision/" class="md-nav__link">
+      <a href="../../metrics/MacroPrecision/" class="md-nav__link">
         MacroPrecision
       </a>
     </li>
@@ -4955,7 +4963,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MacroRecall/" class="md-nav__link">
+      <a href="../../metrics/MacroRecall/" class="md-nav__link">
         MacroRecall
       </a>
     </li>
@@ -4969,7 +4977,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MicroF1/" class="md-nav__link">
+      <a href="../../metrics/MicroF1/" class="md-nav__link">
         MicroF1
       </a>
     </li>
@@ -4983,7 +4991,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MicroFBeta/" class="md-nav__link">
+      <a href="../../metrics/MicroFBeta/" class="md-nav__link">
         MicroFBeta
       </a>
     </li>
@@ -4997,7 +5005,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MicroJaccard/" class="md-nav__link">
+      <a href="../../metrics/MicroJaccard/" class="md-nav__link">
         MicroJaccard
       </a>
     </li>
@@ -5011,7 +5019,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MicroPrecision/" class="md-nav__link">
+      <a href="../../metrics/MicroPrecision/" class="md-nav__link">
         MicroPrecision
       </a>
     </li>
@@ -5025,7 +5033,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MicroRecall/" class="md-nav__link">
+      <a href="../../metrics/MicroRecall/" class="md-nav__link">
         MicroRecall
       </a>
     </li>
@@ -5039,7 +5047,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MultiFBeta/" class="md-nav__link">
+      <a href="../../metrics/MultiFBeta/" class="md-nav__link">
         MultiFBeta
       </a>
     </li>
@@ -5053,7 +5061,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../MutualInfo/" class="md-nav__link">
+      <a href="../../metrics/MutualInfo/" class="md-nav__link">
         MutualInfo
       </a>
     </li>
@@ -5067,7 +5075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../NormalizedMutualInfo/" class="md-nav__link">
+      <a href="../../metrics/NormalizedMutualInfo/" class="md-nav__link">
         NormalizedMutualInfo
       </a>
     </li>
@@ -5081,7 +5089,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Precision/" class="md-nav__link">
+      <a href="../../metrics/Precision/" class="md-nav__link">
         Precision
       </a>
     </li>
@@ -5095,7 +5103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../R2/" class="md-nav__link">
+      <a href="../../metrics/R2/" class="md-nav__link">
         R2
       </a>
     </li>
@@ -5109,7 +5117,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RMSE/" class="md-nav__link">
+      <a href="../../metrics/RMSE/" class="md-nav__link">
         RMSE
       </a>
     </li>
@@ -5123,7 +5131,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../RMSLE/" class="md-nav__link">
+      <a href="../../metrics/RMSLE/" class="md-nav__link">
         RMSLE
       </a>
     </li>
@@ -5137,7 +5145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ROCAUC/" class="md-nav__link">
+      <a href="../../metrics/ROCAUC/" class="md-nav__link">
         ROCAUC
       </a>
     </li>
@@ -5151,7 +5159,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Rand/" class="md-nav__link">
+      <a href="../../metrics/Rand/" class="md-nav__link">
         Rand
       </a>
     </li>
@@ -5165,7 +5173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Recall/" class="md-nav__link">
+      <a href="../../metrics/Recall/" class="md-nav__link">
         Recall
       </a>
     </li>
@@ -5179,21 +5187,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Rolling/" class="md-nav__link">
-        Rolling
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../SMAPE/" class="md-nav__link">
+      <a href="../../metrics/SMAPE/" class="md-nav__link">
         SMAPE
       </a>
     </li>
@@ -5207,7 +5201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Silhouette/" class="md-nav__link">
+      <a href="../../metrics/Silhouette/" class="md-nav__link">
         Silhouette
       </a>
     </li>
@@ -5219,85 +5213,9 @@
               
   
   
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          TimeRolling
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        TimeRolling
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    Methods
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
   
     <li class="md-nav__item">
-      <a href="../VBeta/" class="md-nav__link">
+      <a href="../../metrics/VBeta/" class="md-nav__link">
         VBeta
       </a>
     </li>
@@ -5311,7 +5229,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../WeightedF1/" class="md-nav__link">
+      <a href="../../metrics/WeightedF1/" class="md-nav__link">
         WeightedF1
       </a>
     </li>
@@ -5325,7 +5243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../WeightedFBeta/" class="md-nav__link">
+      <a href="../../metrics/WeightedFBeta/" class="md-nav__link">
         WeightedFBeta
       </a>
     </li>
@@ -5339,7 +5257,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../WeightedJaccard/" class="md-nav__link">
+      <a href="../../metrics/WeightedJaccard/" class="md-nav__link">
         WeightedJaccard
       </a>
     </li>
@@ -5353,7 +5271,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../WeightedPrecision/" class="md-nav__link">
+      <a href="../../metrics/WeightedPrecision/" class="md-nav__link">
         WeightedPrecision
       </a>
     </li>
@@ -5367,7 +5285,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../WeightedRecall/" class="md-nav__link">
+      <a href="../../metrics/WeightedRecall/" class="md-nav__link">
         WeightedRecall
       </a>
     </li>
@@ -5384,7 +5302,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_16_50" type="checkbox" id="__nav_4_3_16_50" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_16_48" type="checkbox" id="__nav_4_3_16_48" >
       
       
       
@@ -5405,13 +5323,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_16_50">
+        <label class="md-nav__link" for="__nav_4_3_16_48">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_16_50">
+        <label class="md-nav__title" for="__nav_4_3_16_48">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -5423,7 +5341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/BinaryMetric/" class="md-nav__link">
+      <a href="../../metrics/base/BinaryMetric/" class="md-nav__link">
         BinaryMetric
       </a>
     </li>
@@ -5437,7 +5355,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/ClassificationMetric/" class="md-nav__link">
+      <a href="../../metrics/base/ClassificationMetric/" class="md-nav__link">
         ClassificationMetric
       </a>
     </li>
@@ -5451,7 +5369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/Metric/" class="md-nav__link">
+      <a href="../../metrics/base/Metric/" class="md-nav__link">
         Metric
       </a>
     </li>
@@ -5465,7 +5383,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/Metrics/" class="md-nav__link">
+      <a href="../../metrics/base/Metrics/" class="md-nav__link">
         Metrics
       </a>
     </li>
@@ -5479,7 +5397,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/MultiClassMetric/" class="md-nav__link">
+      <a href="../../metrics/base/MultiClassMetric/" class="md-nav__link">
         MultiClassMetric
       </a>
     </li>
@@ -5493,7 +5411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/RegressionMetric/" class="md-nav__link">
+      <a href="../../metrics/base/RegressionMetric/" class="md-nav__link">
         RegressionMetric
       </a>
     </li>
@@ -5507,7 +5425,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../base/WrapperMetric/" class="md-nav__link">
+      <a href="../../metrics/base/WrapperMetric/" class="md-nav__link">
         WrapperMetric
       </a>
     </li>
@@ -5531,7 +5449,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_16_51" type="checkbox" id="__nav_4_3_16_51" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_16_49" type="checkbox" id="__nav_4_3_16_49" >
       
       
       
@@ -5550,13 +5468,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_16_51">
+        <label class="md-nav__link" for="__nav_4_3_16_49">
           multioutput
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="multioutput" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_16_51">
+        <label class="md-nav__title" for="__nav_4_3_16_49">
           <span class="md-nav__icon md-icon"></span>
           multioutput
         </label>
@@ -5568,7 +5486,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../multioutput/ExactMatch/" class="md-nav__link">
+      <a href="../../metrics/multioutput/ExactMatch/" class="md-nav__link">
         ExactMatch
       </a>
     </li>
@@ -5582,7 +5500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../multioutput/MacroAverage/" class="md-nav__link">
+      <a href="../../metrics/multioutput/MacroAverage/" class="md-nav__link">
         MacroAverage
       </a>
     </li>
@@ -5596,7 +5514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../multioutput/MicroAverage/" class="md-nav__link">
+      <a href="../../metrics/multioutput/MicroAverage/" class="md-nav__link">
         MicroAverage
       </a>
     </li>
@@ -5610,7 +5528,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../multioutput/MultiLabelConfusionMatrix/" class="md-nav__link">
+      <a href="../../metrics/multioutput/MultiLabelConfusionMatrix/" class="md-nav__link">
         MultiLabelConfusionMatrix
       </a>
     </li>
@@ -5624,7 +5542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../multioutput/PerOutput/" class="md-nav__link">
+      <a href="../../metrics/multioutput/PerOutput/" class="md-nav__link">
         PerOutput
       </a>
     </li>
@@ -5641,7 +5559,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_16_51_6" type="checkbox" id="__nav_4_3_16_51_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_16_49_6" type="checkbox" id="__nav_4_3_16_49_6" >
       
       
       
@@ -5652,13 +5570,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_16_51_6">
+        <label class="md-nav__link" for="__nav_4_3_16_49_6">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="5">
-        <label class="md-nav__title" for="__nav_4_3_16_51_6">
+        <label class="md-nav__title" for="__nav_4_3_16_49_6">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -5670,7 +5588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../multioutput/base/MultiOutputClassificationMetric/" class="md-nav__link">
+      <a href="../../metrics/multioutput/base/MultiOutputClassificationMetric/" class="md-nav__link">
         MultiOutputClassificationMetric
       </a>
     </li>
@@ -5684,7 +5602,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../multioutput/base/MultiOutputRegressionMetric/" class="md-nav__link">
+      <a href="../../metrics/multioutput/base/MultiOutputRegressionMetric/" class="md-nav__link">
         MultiOutputRegressionMetric
       </a>
     </li>
@@ -7550,10 +7468,6 @@
         
           
         
-          
-        
-          
-        
       
       
         <label class="md-nav__link" for="__nav_4_3_26">
@@ -7601,39 +7515,11 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../proba/Rolling/" class="md-nav__link">
-        Rolling
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../proba/TimeRolling/" class="md-nav__link">
-        TimeRolling
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_26_5" type="checkbox" id="__nav_4_3_26_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_26_3" type="checkbox" id="__nav_4_3_26_3" >
       
       
       
@@ -7644,13 +7530,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_26_5">
+        <label class="md-nav__link" for="__nav_4_3_26_3">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_26_5">
+        <label class="md-nav__title" for="__nav_4_3_26_3">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -7914,14 +7800,6 @@
       
       
       
-        
-          
-        
-          
-        
-          
-        
-          
         
           
         
@@ -8349,20 +8227,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../stats/RollingMean/" class="md-nav__link">
-        RollingMean
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../stats/RollingMin/" class="md-nav__link">
         RollingMin
       </a>
@@ -8421,48 +8285,6 @@
     <li class="md-nav__item">
       <a href="../../stats/RollingQuantile/" class="md-nav__link">
         RollingQuantile
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../stats/RollingSEM/" class="md-nav__link">
-        RollingSEM
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../stats/RollingSum/" class="md-nav__link">
-        RollingSum
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../stats/RollingVar/" class="md-nav__link">
-        RollingVar
       </a>
     </li>
   
@@ -8548,7 +8370,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_29_39" type="checkbox" id="__nav_4_3_29_39" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_29_35" type="checkbox" id="__nav_4_3_29_35" >
       
       
       
@@ -8559,13 +8381,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_29_39">
+        <label class="md-nav__link" for="__nav_4_3_29_35">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_29_39">
+        <label class="md-nav__title" for="__nav_4_3_29_35">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -8836,354 +8658,15 @@
         
           
         
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
       
       
         <label class="md-nav__link" for="__nav_4_3_31">
-          synth
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="synth" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_3_31">
-          <span class="md-nav__icon md-icon"></span>
-          synth
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Agrawal/" class="md-nav__link">
-        Agrawal
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/AnomalySine/" class="md-nav__link">
-        AnomalySine
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/ConceptDriftStream/" class="md-nav__link">
-        ConceptDriftStream
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Friedman/" class="md-nav__link">
-        Friedman
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/FriedmanDrift/" class="md-nav__link">
-        FriedmanDrift
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Hyperplane/" class="md-nav__link">
-        Hyperplane
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/LED/" class="md-nav__link">
-        LED
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/LEDDrift/" class="md-nav__link">
-        LEDDrift
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Logical/" class="md-nav__link">
-        Logical
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Mixed/" class="md-nav__link">
-        Mixed
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Mv/" class="md-nav__link">
-        Mv
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Planes2D/" class="md-nav__link">
-        Planes2D
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/RandomRBF/" class="md-nav__link">
-        RandomRBF
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/RandomRBFDrift/" class="md-nav__link">
-        RandomRBFDrift
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/RandomTree/" class="md-nav__link">
-        RandomTree
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/SEA/" class="md-nav__link">
-        SEA
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/STAGGER/" class="md-nav__link">
-        STAGGER
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Sine/" class="md-nav__link">
-        Sine
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../synth/Waveform/" class="md-nav__link">
-        Waveform
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_32" type="checkbox" id="__nav_4_3_32" >
-      
-      
-      
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-      
-      
-        <label class="md-nav__link" for="__nav_4_3_32">
           time_series
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="time_series" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_3_32">
+        <label class="md-nav__title" for="__nav_4_3_31">
           <span class="md-nav__icon md-icon"></span>
           time_series
         </label>
@@ -9282,7 +8765,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_32_7" type="checkbox" id="__nav_4_3_32_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_31_7" type="checkbox" id="__nav_4_3_31_7" >
       
       
       
@@ -9291,13 +8774,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_32_7">
+        <label class="md-nav__link" for="__nav_4_3_31_7">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_32_7">
+        <label class="md-nav__title" for="__nav_4_3_31_7">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -9340,7 +8823,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_33" type="checkbox" id="__nav_4_3_33" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_32" type="checkbox" id="__nav_4_3_32" >
       
       
       
@@ -9369,13 +8852,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_33">
+        <label class="md-nav__link" for="__nav_4_3_32">
           tree
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="tree" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_3_33">
+        <label class="md-nav__title" for="__nav_4_3_32">
           <span class="md-nav__icon md-icon"></span>
           tree
         </label>
@@ -9516,7 +8999,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_33_10" type="checkbox" id="__nav_4_3_33_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_32_10" type="checkbox" id="__nav_4_3_32_10" >
       
       
       
@@ -9527,13 +9010,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_33_10">
+        <label class="md-nav__link" for="__nav_4_3_32_10">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_33_10">
+        <label class="md-nav__title" for="__nav_4_3_32_10">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -9583,7 +9066,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_33_11" type="checkbox" id="__nav_4_3_33_11" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_32_11" type="checkbox" id="__nav_4_3_32_11" >
       
       
       
@@ -9610,13 +9093,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_33_11">
+        <label class="md-nav__link" for="__nav_4_3_32_11">
           splitter
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="splitter" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_33_11">
+        <label class="md-nav__title" for="__nav_4_3_32_11">
           <span class="md-nav__icon md-icon"></span>
           splitter
         </label>
@@ -9780,12 +9263,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_34" type="checkbox" id="__nav_4_3_34" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_33" type="checkbox" id="__nav_4_3_33" checked>
       
       
       
@@ -9808,15 +9293,19 @@
         
           
         
+          
+        
+          
+        
       
       
-        <label class="md-nav__link" for="__nav_4_3_34">
+        <label class="md-nav__link" for="__nav_4_3_33">
           utils
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="utils" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_3_34">
+        <label class="md-nav__title" for="__nav_4_3_33">
           <span class="md-nav__icon md-icon"></span>
           utils
         </label>
@@ -9828,8 +9317,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/SortedWindow/" class="md-nav__link">
-        SortedWindow
+      <a href="../Rolling/" class="md-nav__link">
+        Rolling
       </a>
     </li>
   
@@ -9842,7 +9331,90 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/VectorDict/" class="md-nav__link">
+      <a href="../SortedWindow/" class="md-nav__link">
+        SortedWindow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          TimeRolling
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        TimeRolling
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VectorDict/" class="md-nav__link">
         VectorDict
       </a>
     </li>
@@ -9856,7 +9428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/dict2numpy/" class="md-nav__link">
+      <a href="../dict2numpy/" class="md-nav__link">
         dict2numpy
       </a>
     </li>
@@ -9870,7 +9442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/expand-param-grid/" class="md-nav__link">
+      <a href="../expand-param-grid/" class="md-nav__link">
         expand_param_grid
       </a>
     </li>
@@ -9884,7 +9456,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/log-method-calls/" class="md-nav__link">
+      <a href="../log-method-calls/" class="md-nav__link">
         log_method_calls
       </a>
     </li>
@@ -9898,7 +9470,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/numpy2dict/" class="md-nav__link">
+      <a href="../numpy2dict/" class="md-nav__link">
         numpy2dict
       </a>
     </li>
@@ -9915,7 +9487,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_34_7" type="checkbox" id="__nav_4_3_34_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_33_9" type="checkbox" id="__nav_4_3_33_9" >
       
       
       
@@ -9950,13 +9522,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_34_7">
+        <label class="md-nav__link" for="__nav_4_3_33_9">
           math
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="math" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_34_7">
+        <label class="md-nav__title" for="__nav_4_3_33_9">
           <span class="md-nav__icon md-icon"></span>
           math
         </label>
@@ -9968,7 +9540,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/argmax/" class="md-nav__link">
+      <a href="../math/argmax/" class="md-nav__link">
         argmax
       </a>
     </li>
@@ -9982,7 +9554,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/chain-dot/" class="md-nav__link">
+      <a href="../math/chain-dot/" class="md-nav__link">
         chain_dot
       </a>
     </li>
@@ -9996,7 +9568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/clamp/" class="md-nav__link">
+      <a href="../math/clamp/" class="md-nav__link">
         clamp
       </a>
     </li>
@@ -10010,7 +9582,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/dot/" class="md-nav__link">
+      <a href="../math/dot/" class="md-nav__link">
         dot
       </a>
     </li>
@@ -10024,7 +9596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/dotvecmat/" class="md-nav__link">
+      <a href="../math/dotvecmat/" class="md-nav__link">
         dotvecmat
       </a>
     </li>
@@ -10038,7 +9610,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/matmul2d/" class="md-nav__link">
+      <a href="../math/matmul2d/" class="md-nav__link">
         matmul2d
       </a>
     </li>
@@ -10052,7 +9624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/minkowski-distance/" class="md-nav__link">
+      <a href="../math/minkowski-distance/" class="md-nav__link">
         minkowski_distance
       </a>
     </li>
@@ -10066,7 +9638,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/norm/" class="md-nav__link">
+      <a href="../math/norm/" class="md-nav__link">
         norm
       </a>
     </li>
@@ -10080,7 +9652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/outer/" class="md-nav__link">
+      <a href="../math/outer/" class="md-nav__link">
         outer
       </a>
     </li>
@@ -10094,7 +9666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/prod/" class="md-nav__link">
+      <a href="../math/prod/" class="md-nav__link">
         prod
       </a>
     </li>
@@ -10108,7 +9680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/sherman-morrison/" class="md-nav__link">
+      <a href="../math/sherman-morrison/" class="md-nav__link">
         sherman_morrison
       </a>
     </li>
@@ -10122,7 +9694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/sigmoid/" class="md-nav__link">
+      <a href="../math/sigmoid/" class="md-nav__link">
         sigmoid
       </a>
     </li>
@@ -10136,7 +9708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/sign/" class="md-nav__link">
+      <a href="../math/sign/" class="md-nav__link">
         sign
       </a>
     </li>
@@ -10150,7 +9722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/math/softmax/" class="md-nav__link">
+      <a href="../math/softmax/" class="md-nav__link">
         softmax
       </a>
     </li>
@@ -10174,7 +9746,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_34_8" type="checkbox" id="__nav_4_3_34_8" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_33_10" type="checkbox" id="__nav_4_3_33_10" >
       
       
       
@@ -10185,13 +9757,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_34_8">
+        <label class="md-nav__link" for="__nav_4_3_33_10">
           pretty
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="pretty" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_34_8">
+        <label class="md-nav__title" for="__nav_4_3_33_10">
           <span class="md-nav__icon md-icon"></span>
           pretty
         </label>
@@ -10203,7 +9775,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/pretty/humanize-bytes/" class="md-nav__link">
+      <a href="../pretty/humanize-bytes/" class="md-nav__link">
         humanize_bytes
       </a>
     </li>
@@ -10217,7 +9789,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/pretty/print-table/" class="md-nav__link">
+      <a href="../pretty/print-table/" class="md-nav__link">
         print_table
       </a>
     </li>
@@ -10241,7 +9813,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_34_9" type="checkbox" id="__nav_4_3_34_9" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_33_11" type="checkbox" id="__nav_4_3_33_11" >
       
       
       
@@ -10250,13 +9822,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_34_9">
+        <label class="md-nav__link" for="__nav_4_3_33_11">
           random
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="random" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_34_9">
+        <label class="md-nav__title" for="__nav_4_3_33_11">
           <span class="md-nav__icon md-icon"></span>
           random
         </label>
@@ -10268,7 +9840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/random/poisson/" class="md-nav__link">
+      <a href="../random/poisson/" class="md-nav__link">
         poisson
       </a>
     </li>
@@ -13410,10 +12982,6 @@
         
           
         
-          
-        
-          
-        
       
       
         <label class="md-nav__link" for="__nav_4_18">
@@ -13980,20 +13548,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/Rolling/" class="md-nav__link">
-        Rolling
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../../metrics/SMAPE/" class="md-nav__link">
         SMAPE
       </a>
@@ -14010,20 +13564,6 @@
     <li class="md-nav__item">
       <a href="../../../metrics/Silhouette/" class="md-nav__link">
         Silhouette
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../metrics/TimeRolling/" class="md-nav__link">
-        TimeRolling
       </a>
     </li>
   
@@ -14123,7 +13663,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18_50" type="checkbox" id="__nav_4_18_50" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18_48" type="checkbox" id="__nav_4_18_48" >
       
       
       
@@ -14144,13 +13684,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_18_50">
+        <label class="md-nav__link" for="__nav_4_18_48">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_18_50">
+        <label class="md-nav__title" for="__nav_4_18_48">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -14270,7 +13810,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18_51" type="checkbox" id="__nav_4_18_51" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18_49" type="checkbox" id="__nav_4_18_49" >
       
       
       
@@ -14289,13 +13829,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_18_51">
+        <label class="md-nav__link" for="__nav_4_18_49">
           multioutput
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="multioutput" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_18_51">
+        <label class="md-nav__title" for="__nav_4_18_49">
           <span class="md-nav__icon md-icon"></span>
           multioutput
         </label>
@@ -14380,7 +13920,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18_51_6" type="checkbox" id="__nav_4_18_51_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_18_49_6" type="checkbox" id="__nav_4_18_49_6" >
       
       
       
@@ -14391,13 +13931,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_18_51_6">
+        <label class="md-nav__link" for="__nav_4_18_49_6">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_18_51_6">
+        <label class="md-nav__title" for="__nav_4_18_49_6">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -16289,10 +15829,6 @@
         
           
         
-          
-        
-          
-        
       
       
         <label class="md-nav__link" for="__nav_4_28">
@@ -16340,39 +15876,11 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../../proba/Rolling/" class="md-nav__link">
-        Rolling
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../proba/TimeRolling/" class="md-nav__link">
-        TimeRolling
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28_5" type="checkbox" id="__nav_4_28_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_28_3" type="checkbox" id="__nav_4_28_3" >
       
       
       
@@ -16383,13 +15891,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_28_5">
+        <label class="md-nav__link" for="__nav_4_28_3">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_28_5">
+        <label class="md-nav__title" for="__nav_4_28_3">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -16653,14 +16161,6 @@
       
       
       
-        
-          
-        
-          
-        
-          
-        
-          
         
           
         
@@ -17088,20 +16588,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../stats/RollingMean/" class="md-nav__link">
-        RollingMean
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../../stats/RollingMin/" class="md-nav__link">
         RollingMin
       </a>
@@ -17160,48 +16646,6 @@
     <li class="md-nav__item">
       <a href="../../../stats/RollingQuantile/" class="md-nav__link">
         RollingQuantile
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../stats/RollingSEM/" class="md-nav__link">
-        RollingSEM
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../stats/RollingSum/" class="md-nav__link">
-        RollingSum
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../stats/RollingVar/" class="md-nav__link">
-        RollingVar
       </a>
     </li>
   
@@ -17287,7 +16731,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_31_39" type="checkbox" id="__nav_4_31_39" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_31_35" type="checkbox" id="__nav_4_31_35" >
       
       
       
@@ -17298,13 +16742,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_31_39">
+        <label class="md-nav__link" for="__nav_4_31_35">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_31_39">
+        <label class="md-nav__title" for="__nav_4_31_35">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -18208,6 +17652,10 @@
         
           
         
+          
+        
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_35">
@@ -18228,8 +17676,36 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../utils/Rolling/" class="md-nav__link">
+        Rolling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../utils/SortedWindow/" class="md-nav__link">
         SortedWindow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../utils/TimeRolling/" class="md-nav__link">
+        TimeRolling
       </a>
     </li>
   
@@ -18315,7 +17791,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_7" type="checkbox" id="__nav_4_35_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_9" type="checkbox" id="__nav_4_35_9" >
       
       
       
@@ -18350,13 +17826,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_35_7">
+        <label class="md-nav__link" for="__nav_4_35_9">
           math
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="math" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_35_7">
+        <label class="md-nav__title" for="__nav_4_35_9">
           <span class="md-nav__icon md-icon"></span>
           math
         </label>
@@ -18574,7 +18050,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_8" type="checkbox" id="__nav_4_35_8" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_10" type="checkbox" id="__nav_4_35_10" >
       
       
       
@@ -18585,13 +18061,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_35_8">
+        <label class="md-nav__link" for="__nav_4_35_10">
           pretty
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="pretty" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_35_8">
+        <label class="md-nav__title" for="__nav_4_35_10">
           <span class="md-nav__icon md-icon"></span>
           pretty
         </label>
@@ -18641,7 +18117,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_9" type="checkbox" id="__nav_4_35_9" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_35_11" type="checkbox" id="__nav_4_35_11" >
       
       
       
@@ -18650,13 +18126,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_35_9">
+        <label class="md-nav__link" for="__nav_4_35_11">
           random
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="random" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_35_9">
+        <label class="md-nav__title" for="__nav_4_35_11">
           <span class="md-nav__icon md-icon"></span>
           random
         </label>
@@ -19206,13 +18682,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    Attributes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     Examples
   </a>
@@ -19241,88 +18710,41 @@
 
 
 <h1 id="timerolling">TimeRolling<a class="headerlink" href="#timerolling" title="Permanent link">&para;</a></h1>
-<p>Wrapper for computing metrics over a period of time.</p>
+<p>A generic wrapper for performing time rolling computations.</p>
+<p>This can be wrapped around any object which implements both an <code>update</code> and a <code>revert</code> method. Inputs to <code>update</code> are stored in a queue. Elements of the queue are popped when they are too old.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>metric</strong> (<em>river.metrics.base.Metric</em>)</p>
-<p>A metric.</p>
+<p><strong>obj</strong> (<em>river.utils.rolling.Rollable</em>)</p>
+<p>An object that implements both an <code>update</code> method and a <code>rolling</code>method.</p>
 </li>
 <li>
 <p><strong>period</strong> (<em>datetime.timedelta</em>)</p>
-<p>A period of time.</p>
-</li>
-</ul>
-<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p><strong>bigger_is_better</strong></p>
-<p>Indicate if a high value is better than a low one or not.</p>
-</li>
-<li>
-<p><strong>metric</strong></p>
-<p>Gives access to the wrapped metric.</p>
-</li>
-<li>
-<p><strong>requires_labels</strong></p>
-</li>
-<li>
-<p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>A duration of time, expressed as a <code>datetime.timedelta</code>.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<p>For instance, here is how you can compute a rolling average over a period of 3 days:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span><span class="p">,</span> <span class="n">utils</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">y_true</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">y_pred</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">days</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="p">{</span>
+<span class="o">...</span>     <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mi">5</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mi">9</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mi">13</span>
+<span class="o">...</span> <span class="p">}</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">TimeRolling</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span> <span class="n">period</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">days</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">t</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span>
-<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">0.5</span>    <span class="p">(</span><span class="n">rolling</span> <span class="mi">2</span> <span class="n">days</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">0.5</span>    <span class="p">(</span><span class="n">rolling</span> <span class="mi">2</span> <span class="n">days</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">0.25</span>   <span class="p">(</span><span class="n">rolling</span> <span class="mi">2</span> <span class="n">days</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">1.</span> <span class="p">(</span><span class="n">rolling</span> <span class="mi">2</span> <span class="n">days</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">rmean</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">TimeRolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span> <span class="n">period</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">rmean</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+<span class="mf">1.0</span>
+<span class="mf">3.0</span>
+<span class="mf">5.0</span>
+<span class="mf">9.0</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
-<summary>get</summary>
-<p>Return the current value of the metric.</p>
-</details>
-<details class="- note">
-<summary>is_better_than</summary>
-</details>
-<details class="- note">
-<summary>revert</summary>
-<p>Revert the metric.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>y_true</strong>    </li>
-<li><strong>y_pred</strong>    </li>
-</ul>
-</details>
-<details class="- note">
 <summary>update</summary>
-<p>Update the metric.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>y_true</strong>    </li>
-<li><strong>y_pred</strong>    </li>
-<li><strong>t</strong>    </li>
-</ul>
-</details>
-<details class="- note">
-<summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>model</strong>     (<em>river.base.estimator.Estimator</em>)    </li>
-</ul>
 </details>
 
               
@@ -19382,7 +18804,7 @@
     <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.f758a944.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.431f3d41.min.js"></script>
       
         <script src="../../../../javascripts/config.js"></script>
       

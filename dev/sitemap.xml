@@ -1016,22 +1016,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/api/metrics/Rolling/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/api/metrics/SMAPE/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/dev/api/api/metrics/Silhouette/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/metrics/TimeRolling/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -1546,16 +1536,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/api/proba/Rolling/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/proba/TimeRolling/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/api/proba/base/ContinuousDistribution/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
@@ -1716,11 +1696,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/api/stats/RollingMean/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/api/stats/RollingMin/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
@@ -1742,21 +1717,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/dev/api/api/stats/RollingQuantile/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/stats/RollingSEM/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/stats/RollingSum/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/stats/RollingVar/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -1842,101 +1802,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/dev/api/api/stream/simulate-qa/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Agrawal/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/AnomalySine/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/ConceptDriftStream/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Friedman/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/FriedmanDrift/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Hyperplane/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/LED/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/LEDDrift/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Logical/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Mixed/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Mv/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Planes2D/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/RandomRBF/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/RandomRBFDrift/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/RandomTree/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/SEA/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/STAGGER/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Sine/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/api/synth/Waveform/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -2081,7 +1946,17 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/api/utils/Rolling/</loc>
+         <lastmod>2022-06-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/api/utils/SortedWindow/</loc>
+         <lastmod>2022-06-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/api/utils/TimeRolling/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -3141,22 +3016,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/metrics/Rolling/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/metrics/SMAPE/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/dev/api/metrics/Silhouette/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/metrics/TimeRolling/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -3671,16 +3536,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/proba/Rolling/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/proba/TimeRolling/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/proba/base/ContinuousDistribution/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
@@ -3841,11 +3696,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/stats/RollingMean/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/stats/RollingMin/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
@@ -3867,21 +3717,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/dev/api/stats/RollingQuantile/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/stats/RollingSEM/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/stats/RollingSum/</loc>
-         <lastmod>2022-06-14</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/stats/RollingVar/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -4111,7 +3946,17 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/utils/Rolling/</loc>
+         <lastmod>2022-06-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/utils/SortedWindow/</loc>
+         <lastmod>2022-06-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/utils/TimeRolling/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -4362,6 +4207,11 @@
     </url>
     <url>
          <loc>https://riverml.xyz/dev/recipes/reading-data/</loc>
+         <lastmod>2022-06-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/recipes/rolling-computations/</loc>
          <lastmod>2022-06-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
