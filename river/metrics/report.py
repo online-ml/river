@@ -8,9 +8,9 @@ class ClassificationReport(metrics.base.MultiClassMetric):
     You can print this class at any time during a model's lifetime to get a tabular visualization
     of various metrics.
 
-    You can wrap a `metrics.ClassificationReport` with `metrics.Rolling` in order to obtain a
+    You can wrap a `metrics.ClassificationReport` with `utils.Rolling` in order to obtain a
     classification report over a window of observations. You can also wrap it with
-    `metrics.TimeRolling` to obtain a report over a period of time.
+    `utils.TimeRolling` to obtain a report over a period of time.
 
     Parameters
     ----------

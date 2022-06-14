@@ -22,7 +22,8 @@ def iter_array(
     Parameters
     ----------
     X
-        A 2D array of features.
+        A 2D array of features. This can also be a 1D array of strings, which can be the case if
+        you're working with text.
     y
         An optional array of targets.
     feature_names
@@ -54,8 +55,34 @@ def iter_array(
     {'x1': 1, 'x2': 2, 'x3': 3} True
     {'x1': 11, 'x2': 12, 'x3': 13} False
 
+    This also works with a array of texts:
+
+    >>> X = ["foo", "bar"]
+    >>> dataset = stream.iter_array(
+    ...     X, Y,
+    ...     feature_names=['x1', 'x2', 'x3']
+    ... )
+    >>> for x, y in dataset:
+    ...     print(x, y)
+    foo True
+    bar False
+
     """
-    feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
+
+    # If the first row of X is actually a string, then we assume all the rows are strings and will
+    # pass them through
+    if isinstance(X[0], str):
+
+        def handle_features(x):
+            return x
+
+    # If not we assume each row if a set of features, and will convert them to a dictionary
+    else:
+        feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
+
+        def handle_features(x):
+            return dict(zip(feature_names, xi))
+
     multioutput = y is not None and not np.isscalar(y[0])
     if multioutput and target_names is None:
         target_names = list(range(len(y[0])))  # type: ignore
@@ -70,9 +97,9 @@ def iter_array(
     if multioutput:
 
         for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
-            yield dict(zip(feature_names, xi)), dict(zip(target_names, yi))  # type: ignore
+            yield handle_features(xi), dict(zip(target_names, yi))  # type: ignore
 
     else:
 
         for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
-            yield dict(zip(feature_names, xi)), yi
+            yield handle_features(xi), yi

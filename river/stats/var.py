@@ -27,11 +27,11 @@ class Var(stats.base.Univariate):
     Examples
     --------
 
-    >>> import river.stats
+    >>> from river import stats
 
     >>> X = [3, 5, 4, 7, 10, 12]
 
-    >>> var = river.stats.Var()
+    >>> var = stats.Var()
     >>> for x in X:
     ...     print(var.update(x).get())
     0.0
@@ -40,6 +40,21 @@ class Var(stats.base.Univariate):
     2.916666
     7.7
     12.56666
+
+    You can measure a rolling variance by using a `utils.Rolling` wrapper:
+
+    >>> from river import utils
+
+    >>> X = [1, 4, 2, -4, -8, 0]
+    >>> rvar = utils.Rolling(stats.Var(ddof=1), window_size=3)
+    >>> for x in X:
+    ...     print(rvar.update(x).get())
+    0.0
+    4.5
+    2.333333
+    17.333333
+    25.333333
+    16.0
 
     References
     ----------
@@ -128,75 +143,3 @@ class Var(stats.base.Univariate):
         result = copy.deepcopy(self)
         result -= other
         return result
-
-
-class RollingVar(stats.base.RollingUnivariate):
-    """Running variance over a window.
-
-    Parameters
-    ----------
-    window_size
-        Size of the rolling window.
-    ddof
-        Delta Degrees of Freedom. The divisor used in calculations is `n - ddof`, where `n`
-        represents the number of seen elements.
-
-    Examples
-    --------
-
-    >>> import river
-
-    >>> X = [1, 4, 2, -4, -8, 0]
-
-    >>> rvar = river.stats.RollingVar(ddof=1, window_size=2)
-    >>> for x in X:
-    ...     print(rvar.update(x).get())
-    0.0
-    4.5
-    2.0
-    18.0
-    8.0
-    32.0
-
-    >>> rvar = river.stats.RollingVar(ddof=1, window_size=3)
-    >>> for x in X:
-    ...     print(rvar.update(x).get())
-    0.0
-    4.5
-    2.333333
-    17.333333
-    25.333333
-    16.0
-
-    """
-
-    def __init__(self, window_size, ddof=1):
-        self.ddof = ddof
-        self._sos = 0
-        self._rolling_mean = stats.RollingMean(window_size=window_size)
-
-    @property
-    def window_size(self):
-        return self._rolling_mean.window_size
-
-    def update(self, x):
-        if len(self._rolling_mean.window) >= self._rolling_mean.window_size:
-            self._sos -= self._rolling_mean.window[0] ** 2
-
-        self._sos += x * x
-        self._rolling_mean.update(x)
-        return self
-
-    @property
-    def correction_factor(self):
-        n = len(self._rolling_mean.window)
-        if n > self.ddof:
-            return n / (n - self.ddof)
-        return 1
-
-    def get(self):
-        try:
-            var = (self._sos / len(self._rolling_mean.window)) - self._rolling_mean.get() ** 2
-            return self.correction_factor * var
-        except ZeroDivisionError:
-            return 0.0

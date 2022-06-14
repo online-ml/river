@@ -12,14 +12,14 @@ class Kurtosis(moments.CentralMoments):
     Examples
     --------
 
-    >>> import river.stats
+    >>> from river import stats
     >>> import scipy.stats
     >>> import numpy as np
 
     >>> np.random.seed(42)
     >>> X = np.random.normal(loc=0, scale=1, size=10)
 
-    >>> kurtosis = river.stats.Kurtosis(bias=False)
+    >>> kurtosis = stats.Kurtosis(bias=False)
     >>> for x in X:
     ...     print(kurtosis.update(x).get())
     -3
@@ -46,7 +46,7 @@ class Kurtosis(moments.CentralMoments):
     -1.2310268787102738
     -0.9490372374384459
 
-    >>> kurtosis = river.stats.Kurtosis(bias=True)
+    >>> kurtosis = stats.Kurtosis(bias=True)
     >>> for x in X:
     ...     print(kurtosis.update(x).get())
     -3
