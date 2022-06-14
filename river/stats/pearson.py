@@ -1,4 +1,4 @@
-from river import stats
+from river import stats, utils
 
 
 class PearsonCorr(stats.base.Bivariate):
@@ -98,15 +98,15 @@ class RollingPearsonCorr(stats.base.Bivariate):
     0
     0
     0.7745966692414834
-    0.894427190999916
-    0.7745966692414834
-    0
+    0.8944271909999159
+    0.7745966692414833
+    0.0
 
     """
 
     def __init__(self, window_size, ddof=1):
-        self.var_x = stats.RollingVar(window_size=window_size, ddof=ddof)
-        self.var_y = stats.RollingVar(window_size=window_size, ddof=ddof)
+        self.var_x = utils.Rolling(stats.Var(ddof=ddof), window_size=window_size)
+        self.var_y = utils.Rolling(stats.Var(ddof=ddof), window_size=window_size)
         self.cov_xy = stats.RollingCov(window_size=window_size, ddof=ddof)
 
     @property

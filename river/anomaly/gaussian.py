@@ -1,4 +1,4 @@
-from river import anomaly, proba
+from river import anomaly, proba, utils
 
 
 class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
@@ -49,21 +49,17 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
     def __init__(self, window_size=None, grace_period=100):
         self.window_size = window_size
         self.gaussian = (
-            proba.Rolling(proba.Gaussian(), window_size=self.window_size)
+            utils.Rolling(proba.Gaussian(), window_size=self.window_size)
             if window_size
             else proba.Gaussian()
         )
         self.grace_period = grace_period
-
-    @property
-    def _dist(self):
-        return self.gaussian if isinstance(self.gaussian, proba.Gaussian) else self.gaussian.dist
 
     def learn_one(self, _, y):
         self.gaussian.update(y)
         return self
 
     def score_one(self, _, y):
-        if self._dist.n_samples < self.grace_period:
+        if self.gaussian.n_samples < self.grace_period:
             return 0
-        return 2 * abs(self._dist.cdf(y) - 0.5)
+        return 2 * abs(self.gaussian.cdf(y) - 0.5)

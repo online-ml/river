@@ -36,8 +36,6 @@ from river.compat.sklearn_to_river import SKL2RiverBase
 
 def iter_estimators():
     for submodule in importlib.import_module("river.api").__all__:
-        if submodule == "synth":
-            submodule = "datasets.synth"
 
         def is_estimator(obj):
             return inspect.isclass(obj) and issubclass(obj, base.Estimator)
