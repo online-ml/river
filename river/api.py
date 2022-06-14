@@ -35,7 +35,6 @@ from . import (
     tree,
     utils,
 )
-from .datasets import synth
 
 __all__ = [
     "anomaly",
@@ -68,7 +67,6 @@ __all__ = [
     "rules",
     "stats",
     "stream",
-    "synth",
     "time_series",
     "tree",
     "utils",
