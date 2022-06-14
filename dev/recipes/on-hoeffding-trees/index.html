@@ -19422,8 +19422,8 @@ Features  9
 
 <span class="n">model</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>CPU times: user 87.7 ms, sys: 1.28 ms, total: 89 ms
-Wall time: 88.3 ms
+<div class="highlight"><pre><span></span><code>CPU times: user 55.8 ms, sys: 951 µs, total: 56.8 ms
+Wall time: 56.4 ms
 
 
 
@@ -19462,7 +19462,7 @@ HoeffdingTreeClassifier (
  &#39;total_observed_weight&#39;: 1250.0}
 </code></pre></div>
 <p>This property show us the internal structure of the tree, including data concerning the memory-management routines that we are going to check later in this guide. We can also get a representation of the tree model as a <code>pandas.DataFrame</code> object:</p>
-<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:</span><span class="mi">5</span><span class="p">]</span>
 </code></pre></div>
 <div>
 <style scoped>
@@ -19487,23 +19487,9 @@ HoeffdingTreeClassifier (
       <th>depth</th>
       <th>stats</th>
       <th>feature</th>
-      <th>threshold</th>
-      <th>splitter</th>
-      <th>splitters</th>
-      <th>_disabled_attrs</th>
-      <th>_last_split_attempt_at</th>
-      <th>_mc_correct_weight</th>
-      <th>_nb_correct_weight</th>
     </tr>
     <tr>
       <th>node</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
       <th></th>
       <th></th>
       <th></th>
@@ -19519,13 +19505,6 @@ HoeffdingTreeClassifier (
       <td>0</td>
       <td>{True: 260.0, False: 390.0}</td>
       <td>empty_server_form_handler</td>
-      <td>0.545455</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
     </tr>
     <tr>
       <th>1</th>
@@ -19534,13 +19513,6 @@ HoeffdingTreeClassifier (
       <td>1</td>
       <td>{True: 443.4163997711022, False: 59.8769131081...</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>GaussianSplitter</td>
-      <td>{'empty_server_form_handler': GaussianSplitter...</td>
-      <td>{}</td>
-      <td>474.293313</td>
-      <td>249.0</td>
-      <td>248.0</td>
     </tr>
     <tr>
       <th>2</th>
@@ -19549,13 +19521,6 @@ HoeffdingTreeClassifier (
       <td>1</td>
       <td>{True: 71.58360022889781, False: 404.123086891...</td>
       <td>popup_window</td>
-      <td>0.090909</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
     </tr>
     <tr>
       <th>3</th>
@@ -19564,13 +19529,6 @@ HoeffdingTreeClassifier (
       <td>2</td>
       <td>{False: 31.426538522574834, True: 33.0}</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>GaussianSplitter</td>
-      <td>{'empty_server_form_handler': GaussianSplitter...</td>
-      <td>{}</td>
-      <td>59.426539</td>
-      <td>23.0</td>
-      <td>36.0</td>
     </tr>
     <tr>
       <th>4</th>
@@ -19579,13 +19537,6 @@ HoeffdingTreeClassifier (
       <td>2</td>
       <td>{False: 250.57346147742516, True: 6.0}</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>GaussianSplitter</td>
-      <td>{'empty_server_form_handler': GaussianSplitter...</td>
-      <td>{}</td>
-      <td>241.573461</td>
-      <td>210.0</td>
-      <td>196.0</td>
     </tr>
   </tbody>
 </table>
@@ -19633,6 +19584,8 @@ Class True:
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">plot_performance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
     <span class="n">metric_name</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
 
+    <span class="c1"># To make the generated data reusable</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">step</span> <span class="o">=</span> <span class="p">[]</span>
@@ -19666,7 +19619,7 @@ Class True:
     <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
-        <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">),</span>
+        <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">),</span>
         <span class="n">ncol</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fancybox</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
@@ -19842,7 +19795,7 @@ Class True:
         <span class="p">),</span>
         <span class="s2">&quot;HTR + TE-BST&quot;</span><span class="p">:</span> <span class="p">(</span>
             <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">tree</span><span class="o">.</span><span class="n">HoeffdingTreeRegressor</span><span class="p">(</span>
-                <span class="n">splitter</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">TEBSTSplitter</span><span class="p">(</span><span class="n">digits</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">splitter</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">splitter</span><span class="o">.</span><span class="n">TEBSTSplitter</span><span class="p">(</span><span class="n">digits</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">),</span>
         <span class="s2">&quot;HTR + QO&quot;</span><span class="p">:</span> <span class="p">(</span>
