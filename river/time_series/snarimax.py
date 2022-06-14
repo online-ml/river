@@ -210,6 +210,7 @@ class SNARIMAX(time_series.base.Forecaster):
     >>> from river import optim
     >>> from river import preprocessing
     >>> from river import time_series
+    >>> from river import utils
 
     >>> def get_month_distances(x):
     ...     return {
@@ -245,7 +246,7 @@ class SNARIMAX(time_series.base.Forecaster):
     ...     )
     ... )
 
-    >>> metric = metrics.Rolling(metrics.MAE(), 12)
+    >>> metric = utils.Rolling(metrics.MAE(), 12)
 
     >>> for x, y in datasets.AirlinePassengers():
     ...     y_pred = model.forecast(horizon=1, xs=[x])
@@ -253,7 +254,7 @@ class SNARIMAX(time_series.base.Forecaster):
     ...     metric = metric.update(y, y_pred[0])
 
     >>> metric
-    MAE: 11.636563  (rolling 12)
+    MAE: 11.636563
 
     >>> horizon = 12
     >>> future = [

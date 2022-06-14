@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 from scipy import stats as sp_stats
 
-from river import stats
+from river import stats, utils
 
 
 def load_stats():
@@ -83,10 +83,11 @@ def test_univariate(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        (stats.RollingMean(3), statistics.mean),
-        (stats.RollingMean(10), statistics.mean),
-        (stats.RollingVar(3, ddof=0), np.var),
-        (stats.RollingVar(10, ddof=0), np.var),
+        # TODO: we shouldn't ignore these types
+        (utils.Rolling(stats.Mean(), 3), statistics.mean),  # type: ignore
+        (utils.Rolling(stats.Mean(), 10), statistics.mean),  # type: ignore
+        (utils.Rolling(stats.Var(ddof=0), 3), np.var),  # type: ignore
+        (utils.Rolling(stats.Var(ddof=0), 10), np.var),  # type: ignore
         (
             stats.RollingQuantile(0.0, 10),
             functools.partial(np.quantile, q=0.0, interpolation="linear"),

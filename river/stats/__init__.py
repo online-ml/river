@@ -11,18 +11,18 @@ from .kurtosis import Kurtosis
 from .link import Link
 from .mad import MAD
 from .maximum import AbsMax, Max, RollingAbsMax, RollingMax
-from .mean import BayesianMean, Mean, RollingMean
+from .mean import BayesianMean, Mean
 from .minimum import Min, RollingMin
 from .mode import Mode, RollingMode
 from .n_unique import NUnique
 from .pearson import PearsonCorr, RollingPearsonCorr
 from .ptp import PeakToPeak, RollingPeakToPeak
 from .quantile import Quantile, RollingQuantile
-from .sem import SEM, RollingSEM
+from .sem import SEM
 from .shift import Shift
 from .skew import Skew
-from .summing import RollingSum, Sum
-from .var import RollingVar, Var
+from .summing import Sum
+from .var import Var
 
 __all__ = [
     "base",
@@ -50,15 +50,11 @@ __all__ = [
     "RollingCov",
     "RollingIQR",
     "RollingMax",
-    "RollingMean",
     "RollingMin",
     "RollingMode",
     "RollingPeakToPeak",
     "RollingPearsonCorr",
     "RollingQuantile",
-    "RollingSEM",
-    "RollingSum",
-    "RollingVar",
     "SEM",
     "Shift",
     "Skew",

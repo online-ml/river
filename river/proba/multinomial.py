@@ -31,6 +31,67 @@ class Multinomial(base.DiscreteDistribution):
     >>> p.revert('red').revert('red').pmf('red')
     0.25
 
+    You can wrap this with a `utils.Rolling` to measure a distribution over a window:
+
+    >>> from river import utils
+
+    >>> X = ['red', 'green', 'green', 'blue', 'blue']
+
+    >>> dist = utils.Rolling(
+    ...     proba.Multinomial(),
+    ...     window_size=3
+    ... )
+
+    >>> for x in X:
+    ...     dist = dist.update(x)
+    ...     print(dist)
+    ...     print()
+    P(red) = 1.000
+    <BLANKLINE>
+    P(red) = 0.500
+    P(green) = 0.500
+    <BLANKLINE>
+    P(green) = 0.667
+    P(red) = 0.333
+    <BLANKLINE>
+    P(green) = 0.667
+    P(blue) = 0.333
+    P(red) = 0.000
+    <BLANKLINE>
+    P(blue) = 0.667
+    P(green) = 0.333
+    P(red) = 0.000
+    <BLANKLINE>
+
+    You can wrap this with a `utils.Rolling` to measure a distribution over a window of time:
+
+    >>> import datetime as dt
+
+    >>> X = ['red', 'green', 'green', 'blue']
+    >>> days = [1, 2, 3, 4]
+
+    >>> dist = utils.TimeRolling(
+    ...     proba.Multinomial(),
+    ...     period=dt.timedelta(days=2)
+    ... )
+
+    >>> for x, day in zip(X, days):
+    ...     dist = dist.update(x, t=dt.datetime(2019, 1, day))
+    ...     print(dist)
+    ...     print()
+    P(red) = 1.000
+    <BLANKLINE>
+    P(red) = 0.500
+    P(green) = 0.500
+    <BLANKLINE>
+    P(green) = 1.000
+    P(red) = 0.000
+    <BLANKLINE>
+    P(green) = 0.500
+    P(blue) = 0.500
+    P(red) = 0.000
+    <BLANKLINE>
+
     """
 
     def __init__(self, events: typing.Union[dict, list] = None):
