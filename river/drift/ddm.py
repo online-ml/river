@@ -47,11 +47,11 @@ class DDM(DriftDetector):
 
     - 0: Correct, $y=y'$
 
-    - 1: Error, $y \neq y'$
+    - 1: Error, $y \\neq y'$
 
     Parameters
     ----------
-    min_instances
+    warm_start
         The minimum required number of analyzed samples so change can be detected. Warm start parameter
         for the drift detector.
     warning_threshold
@@ -75,17 +75,19 @@ class DDM(DriftDetector):
     >>> # Increase the probability of 1's appearing in the next 1000 instances
     >>> data_stream = data_stream + rng.choices([0, 1], k=1000, weights=[0.3, 0.7])
 
-    >>> first_warning = True
+    >>> print_warning = True
     >>> # Update drift detector and verify if change is detected
     >>> for i, x in enumerate(data_stream):
     ...     _ = ddm.update(x)
-    ...     if ddm.warning_detected and first_warning:
+    ...     if ddm.warning_detected and print_warning:
     ...         print(f"Warning detected at index {i}")
-    ...         first_warning = False
+    ...         print_warning = False
     ...     if ddm.drift_detected:
     ...         print(f"Change detected at index {i}")
+    ...         print_warning = True
     Warning detected at index 1084
     Change detected at index 1334
+    Warning detected at index 1492
 
     References
     ----------
@@ -94,10 +96,10 @@ class DDM(DriftDetector):
     """
 
     def __init__(
-        self, min_instances: int = 30, warning_threshold: float = 2.0, drift_threshold: float = 3.0
+        self, warm_start: int = 30, warning_threshold: float = 2.0, drift_threshold: float = 3.0
     ):
         super().__init__()
-        self.min_instances = min_instances
+        self.warm_start = warm_start
         self.warning_threshold = warning_threshold
         self.drift_threshold = drift_threshold
 
@@ -133,7 +135,7 @@ class DDM(DriftDetector):
         # Standard deviation of the error/failure: calculated using Bernoulli's properties
         s_i = math.sqrt(p_i * (1 - p_i) / n)
 
-        if n > self.min_instances:
+        if n > self.warm_start:
             if p_i + s_i <= self._ps_min:
                 self._p_min = p_i
                 self._s_min = s_i
