@@ -68,10 +68,19 @@ class Base:
 
         return params
 
-    def _set_params(self, new_params: dict = None):
-        """Return a new instance with the current parameters as well as new ones.
+    def clone(self, new_params: dict = None):
+        """Return a fresh estimator with the same parameters.
 
-        Calling this without any parameters will essentially clone the estimator.
+        The clone has the same parameters but has not been updated with any data.
+
+        This works by looking at the parameters from the class signature. Each parameter is either
+
+        - recursively cloned if its a class.
+        - deep-copied via `copy.deepcopy` if not.
+
+        If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been
+        seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to
+        return a new instance with the same input parameters.
 
         Parameters
         ----------
@@ -88,10 +97,10 @@ class Base:
         ... )
 
         >>> new_params = {
-        ...     'optimizer': (optim.SGD, {'lr': .001})
+        ...     'optimizer': optim.SGD(.001)
         ... }
 
-        >>> model._set_params(new_params)
+        >>> model.clone(new_params)
         LinearRegression (
           optimizer=SGD (
             lr=Constant (
@@ -109,7 +118,7 @@ class Base:
           initializer=Zeros ()
         )
 
-        The algorithm will be recursively called down `Pipeline`s and `TransformerUnion`s.
+        The algorithm is recursively called down `Pipeline`s and `TransformerUnion`s.
 
         >>> from river import compose
         >>> from river import preprocessing
@@ -117,17 +126,17 @@ class Base:
         >>> model = compose.Pipeline(
         ...     preprocessing.StandardScaler(),
         ...     linear_model.LinearRegression(
-        ...         optimizer=optim.SGD(lr=0.042),
+        ...         optimizer=optim.SGD(0.042),
         ...     )
         ... )
 
         >>> new_params = {
         ...     'LinearRegression': {
-        ...         'optimizer': (optim.SGD, {'lr': .03})
+        ...         'optimizer': optim.SGD(0.03)
         ...     }
         ... }
 
-        >>> model._set_params(new_params)
+        >>> model.clone(new_params)
         Pipeline (
           StandardScaler (
             with_std=True
@@ -153,6 +162,7 @@ class Base:
         """
 
         def is_class_param(param):
+            # See expand_param_grid to understand why this is necessary
             return (
                 isinstance(param, tuple)
                 and inspect.isclass(param[0])
@@ -174,27 +184,126 @@ class Base:
                 }
             )
 
-        if new_params is None:
-            new_params = {}
+        return instantiate(
+            klass=self.__class__, params=self._get_params(), new_params=new_params or {}
+        )
 
-        return instantiate(self.__class__, self._get_params(), new_params)
+    @property
+    def _mutable_attributes(self) -> set:
+        return set()
 
-    def clone(self):
-        """Return a fresh estimator with the same parameters.
+    def mutate(self, new_attrs: dict):
+        """Modify attributes.
 
-        The clone has the same parameters but has not been updated with any data.
+        This changes parameters inplace. Although you can change attributes yourself, this is the
+        recommended way to proceed. By default, all attributes are immutable, meaning they
+        shouldn't be mutated. Calling `mutate` on an immutable attribute raises a `ValueError`.
+        Mutable attributes are specified via the `_mutable_attributes` property, and are thus
+        specified on a per-estimator basis.
 
-        This works by looking at the parameters from the class signature. Each parameter is either
+        Parameters
+        ----------
+        new_attrs
 
-        - recursively cloned if it's a River classes.
-        - deep-copied via `copy.deepcopy` if not.
+        Examples
+        --------
 
-        If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been
-        seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to
-        return a new instance with the same input parameters.
+        >>> from river import linear_model
+        >>> from river import optim
+
+        >>> model = linear_model.LinearRegression(
+        ...     optimizer=optim.SGD(0.042),
+        ... )
+
+        >>> new_params = {
+        ...     'optimizer': {'lr': optim.schedulers.Constant(0.001)}
+        ... }
+
+        >>> model.mutate(new_params)
+        >>> model
+        LinearRegression (
+          optimizer=SGD (
+            lr=Constant (
+              learning_rate=0.001
+            )
+          )
+          loss=Squared ()
+          l2=0.
+          l1=0.
+          intercept_init=0.
+          intercept_lr=Constant (
+            learning_rate=0.01
+          )
+          clip_gradient=1e+12
+          initializer=Zeros ()
+        )
+
+        The algorithm is recursively called down `Pipeline`s and `TransformerUnion`s.
+
+        >>> from river import compose
+        >>> from river import preprocessing
+
+        >>> model = compose.Pipeline(
+        ...     preprocessing.StandardScaler(),
+        ...     linear_model.LinearRegression(
+        ...         optimizer=optim.SGD(lr=0.042),
+        ...     )
+        ... )
+
+        >>> new_params = {
+        ...     'LinearRegression': {
+        ...         'l2': 5,
+        ...         'optimizer': {'lr': optim.schedulers.Constant(0.03)}
+        ...     }
+        ... }
+
+        >>> model.mutate(new_params)
+        >>> model
+        Pipeline (
+          StandardScaler (
+            with_std=True
+          ),
+          LinearRegression (
+            optimizer=SGD (
+              lr=Constant (
+                learning_rate=0.03
+              )
+            )
+            loss=Squared ()
+            l2=5
+            l1=0.
+            intercept_init=0.
+            intercept_lr=Constant (
+              learning_rate=0.01
+            )
+            clip_gradient=1e+12
+            initializer=Zeros ()
+          )
+        )
 
         """
-        return self._set_params()
+
+        def _mutate(obj, new_attrs):
+            def is_class_attr(name, attr):
+                return hasattr(getattr(obj, name), "mutate") and isinstance(attr, dict)
+
+            for name, attr in new_attrs.items():
+
+                if not hasattr(obj, name):
+                    raise ValueError(f"'{name}' is not an attribute of {obj.__class__.__name__}")
+
+                # Check the attribute is mutable
+                if name not in obj._mutable_attributes:
+                    raise ValueError(
+                        f"'{name}' is not a mutable attribute of {obj.__class__.__name__}"
+                    )
+
+                if is_class_attr(name, attr):
+                    _mutate(obj=getattr(obj, name), new_attrs=attr)
+                else:
+                    setattr(obj, name, attr)
+
+        _mutate(obj=self, new_attrs=new_attrs)
 
     @property
     def _is_stochastic(self):

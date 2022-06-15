@@ -112,6 +112,10 @@ class RollingIQR(stats.base.RollingUnivariate):
         self.quantile_sup = stats.RollingQuantile(q=self.q_sup, window_size=window_size)
 
     @property
+    def window_size(self):
+        return self.quantile_inf.window_size
+
+    @property
     def name(self):
         return f"rolling_{self.__class__.__name__}_{self.q_inf}_{self.q_sup}"
 

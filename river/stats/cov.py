@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from river import stats
+from river import stats, utils
 
 
 class Cov(stats.base.Bivariate):
@@ -195,9 +195,9 @@ class RollingCov(stats.base.Bivariate):
 
     def __init__(self, window_size, ddof=1):
         self.ddof = ddof
-        self.sx = stats.RollingSum(window_size)
-        self.sy = stats.RollingSum(window_size)
-        self.sxy = stats.RollingSum(window_size)
+        self.sx = utils.Rolling(stats.Sum(), window_size=window_size)
+        self.sy = utils.Rolling(stats.Sum(), window_size=window_size)
+        self.sxy = utils.Rolling(stats.Sum(), window_size=window_size)
 
     @property
     def window_size(self):

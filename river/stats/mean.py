@@ -4,8 +4,6 @@ import numpy as np
 
 from river import stats
 
-from .summing import RollingSum
-
 
 class Mean(stats.base.Univariate):
     """Running mean.
@@ -31,6 +29,22 @@ class Mean(stats.base.Univariate):
     -2.0
     -1.0
     0.0
+
+    You can calculate a rolling average by wrapping a `utils.Rolling` around:
+
+    >>> from river import utils
+
+    >>> X = [1, 2, 3, 4, 5, 6]
+    >>> rmean = utils.Rolling(stats.Mean(), window_size=2)
+
+    >>> for x in X:
+    ...     print(rmean.update(x).get())
+    1.0
+    1.5
+    2.5
+    3.5
+    4.5
+    5.5
 
     References
     ----------
@@ -103,47 +117,6 @@ class Mean(stats.base.Univariate):
         result = copy.deepcopy(self)
         result -= other
         return result
-
-
-class RollingMean(RollingSum):
-    """Running average over a window.
-
-    Parameters
-    ----------
-    window_size
-        Size of the rolling window.
-
-    Examples
-    --------
-
-    >>> from river import stats
-
-    >>> X = [1, 2, 3, 4, 5, 6]
-
-    >>> rmean = stats.RollingMean(window_size=2)
-    >>> for x in X:
-    ...     print(rmean.update(x).get())
-    1.0
-    1.5
-    2.5
-    3.5
-    4.5
-    5.5
-
-    >>> rmean = stats.RollingMean(window_size=3)
-    >>> for x in X:
-    ...     print(rmean.update(x).get())
-    1.0
-    1.5
-    2.0
-    3.0
-    4.0
-    5.0
-
-    """
-
-    def get(self):
-        return super().get() / len(self.window) if len(self.window) > 0 else 0
 
 
 class BayesianMean(stats.base.Univariate):

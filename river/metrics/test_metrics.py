@@ -10,7 +10,7 @@ import numpy as np
 import pytest
 from sklearn import metrics as sk_metrics
 
-from river import metrics
+from river import metrics, utils
 
 
 def load_metrics():
@@ -22,10 +22,6 @@ def load_metrics():
             continue
 
         if inspect.isabstract(obj):
-            continue
-
-        if issubclass(obj, metrics.Rolling):
-            yield obj(metric=metrics.MSE(), window_size=42)
             continue
 
         elif name == "RegressionMultiOutput":
@@ -246,7 +242,7 @@ def test_rolling_metric(metric, sk_metric):
     for n in (1, 2, 5, 10):
         for y_true, y_pred, _ in generate_test_cases(metric=metric, n=30):
 
-            m = metrics.Rolling(metric=copy.deepcopy(metric), window_size=n)
+            m = utils.Rolling(copy.deepcopy(metric), window_size=n)
 
             # Check str works
             str(m)

@@ -1,5 +1,4 @@
-"""
-river is a library for incremental learning. Incremental learning is a machine learning regime
+"""River is a library for incremental learning. Incremental learning is a machine learning regime
 where the observations are made available one by one. It is also known as online learning,
 iterative learning, or sequential learning. This is in contrast to batch learning where all the
 data is processed at once. Incremental learning is desirable when the data is too big to fit in
