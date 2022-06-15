@@ -4186,6 +4186,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/recipes/cloning-and-mutating/</loc>
+         <lastmod>2022-06-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/recipes/feature-extraction/</loc>
          <lastmod>2022-06-15</lastmod>
          <changefreq>daily</changefreq>
