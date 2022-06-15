@@ -36,10 +36,14 @@
 - Removed `proba.Rolling`, due to the addition of `utils.Rolling`.
 - Removed `proba.TimeRolling`, due to the addition of `utils.Rolling`.
 
+## rule
+- The default `splitter` was changed to `tree.splitter.TEBST` for memory and running time efficiency.
+
 ## stats
 
 - Removed `stats.RollingMean`, due to the addition of `utils.Rolling`.
 - Removed `stats.RollingVar`, due to the addition of `utils.Rolling`.
+
 ## stream
 
 - `stream.iter_array` now handles text data.
@@ -54,6 +58,7 @@
 - Refactor `HoeffdingAdaptiveTree{Classifier,Regressor}` to allow the usage of any drift detector. Also, expose the significance level of the test used to switch between subtrees as a user-defined parameter.
 - Correct test used to switch between foreground and background subtrees in `HoeffdingAdaptiveTreeRegressor`. Due to the continuous and unbounded nature of the monitored errors, a z-test is now performed to decide which subtree to keep.
 - The default `leaf_prediction` value was changed to `"adaptive"`, as this often results in the smallest errors in practice.
+- The default `splitter` was changed to `tree.splitter.TEBST` for memory and running time efficiency.
 
 ## utils
 

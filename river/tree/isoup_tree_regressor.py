@@ -54,7 +54,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         Different splitters are available for classification and regression tasks. Classification
         and regression splitters can be distinguished by their property `is_target_class`.
         This is an advanced option. Special care must be taken when choosing different splitters.
-        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
+        By default, `tree.splitter.TEBSTSplitter` is used if `splitter` is `None`.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.

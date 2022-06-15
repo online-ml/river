@@ -678,7 +678,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
     >>> metric = metrics.R2()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    R2: 0.571669
+    R2: 0.571117
 
     Notes
     -----
