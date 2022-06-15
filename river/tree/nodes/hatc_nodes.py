@@ -1,7 +1,7 @@
 import math
 import typing
 
-from river.stats import Mean
+from river import stats as st
 from river.utils.random import poisson
 from river.utils.skmultiflow_utils import normalize_values_in_dict
 
@@ -41,7 +41,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
         super().__init__(stats, depth, splitter, **kwargs)
         self.drift_detector = drift_detector
         self.rng = rng
-        self._mean_error = Mean()
+        self._mean_error = st.Mean()
 
     def kill_tree_children(self, hat):
         pass
@@ -66,6 +66,8 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
 
         # Error is decreasing
         if error_change and old_error > self._mean_error.get():
+            # Reset the error estimator
+            self._mean_error = self._mean_error.clone()
             error_change = False
 
         # Update statistics
@@ -135,7 +137,7 @@ class AdaBranchClassifier(DTBranch):
         super().__init__(stats, *children, **attributes)
         self.drift_detector = drift_detector
         self._alternate_tree = None
-        self._mean_error = Mean()
+        self._mean_error: st.Mean = st.Mean()
 
     def traverse(self, x, until_leaf=True) -> typing.List[HTLeaf]:  # type: ignore
         """Return the leaves corresponding to the given input.
@@ -196,20 +198,24 @@ class AdaBranchClassifier(DTBranch):
 
         # Classification error is decreasing: skip drift adaptation
         if error_change and old_error > self._mean_error.get():
+            # Reset the error estimator
+            self._mean_error = self._mean_error.clone()
             error_change = False
 
         # Condition to build a new alternate tree
         if error_change:
+            # Reset the error estimator
+            self._mean_error = self._mean_error.clone()
             self._alternate_tree = tree._new_leaf(parent=self)
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
         # Condition to replace alternate tree
         elif self._alternate_tree:
             alt_n_obs = self._alternate_tree._mean_error.n
-            if alt_n_obs > tree.drift_window_threshold:
+            n_obs = self._mean_error.n
+            if alt_n_obs > tree.drift_window_threshold and n_obs > tree.drift_window_threshold:
                 old_error_rate = self._mean_error.get()
                 alt_error_rate = self._alternate_tree._mean_error.get()
-                n_obs = self._mean_error.n
 
                 f_delta = 0.05  # TODO make this a parameter
                 f_n = 1.0 / alt_n_obs + 1.0 / n_obs  # TODO Number observations Hoeffding bound
