@@ -1,6 +1,10 @@
 # Unreleased
 
-- Moved all the public modules imports from `river/__init__.py` to `river/api.py` and removed unnecessary dependencies between modules enabling faster cherry-pick imports times (≈ 3X).
+- Moved all the public modules imports from `river/__init__.py` to `river/api.py` and removed unnecessary dependencies between modules enabling faster cherry-picked import times (≈3x).
+
+## base
+
+- Introduced an `mutate` method to the `base.Base` class. This allows setting attributes in a controlled manner, which paves the way for online AutoML. See [/recipes/cloning-and-mutating] for more information.
 
 ## compat
 
@@ -9,6 +13,7 @@
 ## compose
 
 - Moved `utils.pure_inference_mode` to `compose.pure_inference_mode` and `utils.warm_up_mode` to `compose.warm_up_mode`.
+- Pipeline parts can now be accessed by integer positions as well as by name.
 
 ## datasets
 

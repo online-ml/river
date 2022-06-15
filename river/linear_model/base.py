@@ -82,6 +82,10 @@ class GLM:
             self.cum_l1 = utils.VectorDict(None, optim.initializers.Zeros())
 
     @property
+    def _mutable_attributes(self):
+        return {"optimizer", "l2", "l1", "loss", "intercept_lr", "clip_gradient", "initializer"}
+
+    @property
     def weights(self):
         return self._weights.to_dict()
 

@@ -75,7 +75,7 @@ class SGTLeaf(Leaf):
                     self._split_stats[idx].update(x_val, gh, w)  # type: ignore
                 except KeyError:
                     # Create a new quantizer
-                    self._split_stats[idx] = sgt.feature_quantizer._set_params(  # type: ignore
+                    self._split_stats[idx] = sgt.feature_quantizer.clone(  # type: ignore
                         self.split_params[idx]
                     )
                     self._split_stats[idx].update(x_val, gh, w)  # type: ignore
