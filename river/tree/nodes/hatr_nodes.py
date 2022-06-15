@@ -197,7 +197,7 @@ class AdaBranchRegressor(DTBranch):
                 p_value = 2.0 * tree._norm_dist.cdf(-abs(z))
 
                 # The mean errors are significantly different accordingly to the z-test
-                if p_value <= tree.switch_delta:
+                if p_value <= tree.switch_signif:
                     # The alternate tree is the best option
                     if alt_mean_er < cur_mean_er:
                         tree._n_active_leaves -= self.n_leaves

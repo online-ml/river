@@ -60,7 +60,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         potential replacement to the current one.
     drift_detector
         The drift detector used to build the tree. If `None` then `drift.ADWIN` is used.
-    switch_delta
+    switch_signif
         The significance level to assess whether alternate subtrees are significantly better
         than their main subtree counterparts.
     binary_split
@@ -135,7 +135,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
         drift_detector: typing.Optional[base.DriftDetector] = None,
-        switch_delta: float = 0.05,
+        switch_signif: float = 0.05,
         binary_split: bool = False,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
@@ -166,7 +166,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         self.bootstrap_sampling = bootstrap_sampling
         self.drift_window_threshold = drift_window_threshold
         self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
-        self.switch_delta = switch_delta
+        self.switch_signif = switch_signif
         self.seed = seed
 
         self._n_alternate_trees = 0
