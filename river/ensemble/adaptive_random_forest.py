@@ -244,7 +244,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         max_depth: int = None,
         split_confidence: float = 1e-7,
         tie_threshold: float = 0.05,
-        leaf_prediction: str = "model",
+        leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
@@ -696,7 +696,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.134919
+    MAE: 0.795946
 
     """
 
@@ -720,7 +720,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         max_depth: int = None,
         split_confidence: float = 0.01,
         tie_threshold: float = 0.05,
-        leaf_prediction: str = "model",
+        leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
