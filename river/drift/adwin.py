@@ -6,22 +6,19 @@ from .adwin_c import AdaptiveWindowing
 class ADWIN(DriftDetector):
     r"""Adaptive Windowing method for concept drift detection.
 
-    ADWIN (ADaptive WINdowing) is a popular drift detection method with
-    mathematical guarantees. ADWIN efficiently keeps a variable-length window
-    of recent items; such that it holds that there has no been change in the
-    data distribution. This window is further divided into two sub-windows
-    $(W_0, W_1)$ used to determine if a change has happened. ADWIN compares
-    the average of $W_0$ and $W_1$ to confirm that they correspond to the
-    same distribution. Concept drift is detected if the distribution equality
-    no longer holds. Upon detecting a drift, $W_0$ is replaced by $W_1$ and a
-    new $W_1$ is initialized. ADWIN uses a confidence value
-    $\delta=\in(0,1)$ to determine if the two sub-windows correspond to the
-    same distribution.
+    ADWIN (ADaptive WINdowing) is a popular drift detection method with mathematical guarantees.
+    ADWIN efficiently keeps a variable-length window of recent items; such that it holds that
+    there has no been change in the data distribution. This window is further divided into two
+    sub-windows $(W_0, W_1)$ used to determine if a change has happened. ADWIN compares the average of
+    $W_0$ and $W_1$ to confirm that they correspond to the same distribution. Concept drift is detected
+    if the distribution equality no longer holds. Upon detecting a drift, $W_0$ is replaced by $W_1$ and a
+    new $W_1$ is initialized. ADWIN uses a significance value $\delta=\in(0,1)$ to determine
+    if the two sub-windows correspond to the same distribution.
 
     Parameters
     ----------
     delta
-        Confidence value.
+        Significance value.
 
     Examples
     --------
@@ -77,8 +74,8 @@ class ADWIN(DriftDetector):
         return self._helper.get_total()
 
     @property
-    def estimation(self):
-        """Error estimation"""
+    def estimation(self) -> float:
+        """Estimate of mean value in the window."""
         if self.width == 0:
             return 0.0
         return self.total / self.width
@@ -105,4 +102,5 @@ class ADWIN(DriftDetector):
             self._reset()
 
         self._drift_detected = self._helper.update(x)
+
         return self
