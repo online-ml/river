@@ -8656,6 +8656,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_3_31">
@@ -8692,6 +8694,20 @@
     <li class="md-nav__item">
       <a href="../../api/time-series/HoltWinters/" class="md-nav__link">
         HoltWinters
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/time-series/HorizonAggMetric/" class="md-nav__link">
+        HorizonAggMetric
       </a>
     </li>
   
@@ -8763,7 +8779,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_31_7" type="checkbox" id="__nav_4_3_31_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3_31_8" type="checkbox" id="__nav_4_3_31_8" >
       
       
       
@@ -8772,13 +8788,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_31_7">
+        <label class="md-nav__link" for="__nav_4_3_31_8">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="4">
-        <label class="md-nav__title" for="__nav_4_3_31_7">
+        <label class="md-nav__title" for="__nav_4_3_31_8">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -16962,6 +16978,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_33">
@@ -16998,6 +17016,20 @@
     <li class="md-nav__item">
       <a href="../HoltWinters/" class="md-nav__link">
         HoltWinters
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HorizonAggMetric/" class="md-nav__link">
+        HorizonAggMetric
       </a>
     </li>
   
@@ -17046,6 +17078,13 @@
         <li class="md-nav__item">
   <a href="#parameters" class="md-nav__link">
     Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
   
 </li>
@@ -17117,7 +17156,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33_7" type="checkbox" id="__nav_4_33_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_33_8" type="checkbox" id="__nav_4_33_8" >
       
       
       
@@ -17126,13 +17165,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_33_7">
+        <label class="md-nav__link" for="__nav_4_33_8">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_33_7">
+        <label class="md-nav__title" for="__nav_4_33_8">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -18673,6 +18712,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#methods" class="md-nav__link">
     Methods
   </a>
@@ -18703,20 +18749,39 @@
 <p>A regression metric.</p>
 </li>
 </ul>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<p>This is used internally by the <code>time_series.evaluate</code> function.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">time_series</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">AirlinePassengers</span><span class="p">(),</span>
+<span class="o">...</span>     <span class="n">model</span><span class="o">=</span><span class="n">time_series</span><span class="o">.</span><span class="n">HoltWinters</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+<span class="o">...</span>     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span>
+<span class="o">...</span>     <span class="n">horizon</span><span class="o">=</span><span class="mi">4</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span>
+<span class="o">+</span><span class="mi">1</span> <span class="n">MAE</span><span class="p">:</span> <span class="mf">40.931286</span>
+<span class="o">+</span><span class="mi">2</span> <span class="n">MAE</span><span class="p">:</span> <span class="mf">42.667998</span>
+<span class="o">+</span><span class="mi">3</span> <span class="n">MAE</span><span class="p">:</span> <span class="mf">44.158092</span>
+<span class="o">+</span><span class="mi">4</span> <span class="n">MAE</span><span class="p">:</span> <span class="mf">43.849617</span>
+</code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
 <summary>get</summary>
 <p>Return the current performance along the horizon.</p>
 <p><strong>Returns</strong></p>
-<p><em>List[float]</em>:     The current performance.</p>
+<p><em>typing.List[float]</em>:     The current performance.</p>
 </details>
 <details class="- note">
 <summary>update</summary>
 <p>Update the metric at each step along the horizon.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_true</strong>     (<em>'List[Number]'</em>)    </li>
-<li><strong>y_pred</strong>     (<em>'List[Number]'</em>)    </li>
+<li><strong>y_true</strong>     (<em>'typing.List[Number]'</em>)    </li>
+<li><strong>y_pred</strong>     (<em>'typing.List[Number]'</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>'ForecastingMetric'</em>:     self</p>
