@@ -68,7 +68,6 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
         if error_change and old_error > self._mean_error.get():
             # Reset the error estimator
             self._mean_error = self._mean_error.clone()
-            error_change = False
 
         # Update statistics
         super().learn_one(x, y, sample_weight=sample_weight, tree=tree)

@@ -1,4 +1,5 @@
 import random
+import statistics
 import typing
 from copy import deepcopy
 
@@ -150,6 +151,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
         drift_detector: typing.Optional[base.DriftDetector] = None,
+        switch_significance: float = 0.05,
         binary_split: bool = False,
         max_size: float = 500.0,
         memory_estimate_period: int = 1000000,
@@ -178,14 +180,16 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             merit_preprune=merit_preprune,
         )
 
-        self._n_alternate_trees = 0
-        self._n_pruned_alternate_trees = 0
-        self._n_switch_alternate_trees = 0
-
         self.bootstrap_sampling = bootstrap_sampling
         self.drift_window_threshold = drift_window_threshold
         self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
+        self.switch_significance = switch_significance
         self.seed = seed
+
+        self._n_alternate_trees = 0
+        self._n_pruned_alternate_trees = 0
+        self._n_switch_alternate_trees = 0
+        self._norm_dist = statistics.NormalDist()
 
         self._rng = random.Random(self.seed)
 
