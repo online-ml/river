@@ -25,7 +25,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     delta
         Significance level to calculate the Hoeffding bound. The significance level is given by
         `1 - delta`. Values closer to zero imply longer split decision delays.
-    tie_threshold
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -120,7 +120,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         max_depth: int = None,
         split_criterion: str = "info_gain",
         delta: float = 1e-7,
-        tie_threshold: float = 0.05,
+        tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
@@ -145,7 +145,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         self.grace_period = grace_period
         self.split_criterion = split_criterion
         self.delta = delta
-        self.tie_threshold = tie_threshold
+        self.tau = tau
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
@@ -254,7 +254,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                 second_best_suggestion = best_split_suggestions[-2]
                 if (
                     best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
-                    or hoeffding_bound < self.tie_threshold
+                    or hoeffding_bound < self.tau
                 ):
                     should_split = True
                 if self.remove_poor_attrs:

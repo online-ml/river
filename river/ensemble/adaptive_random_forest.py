@@ -152,7 +152,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         max_depth: int = None,
         split_criterion: str = "info_gain",
         delta: float = 1e-7,
-        tie_threshold: float = 0.05,
+        tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
@@ -170,7 +170,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
             max_depth=max_depth,
             split_criterion=split_criterion,
             delta=delta,
-            tie_threshold=tie_threshold,
+            tau=tau,
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
@@ -243,7 +243,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         grace_period: int = 200,
         max_depth: int = None,
         delta: float = 1e-7,
-        tie_threshold: float = 0.05,
+        tau: float = 0.05,
         leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
@@ -262,7 +262,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
             grace_period=grace_period,
             max_depth=max_depth,
             delta=delta,
-            tie_threshold=tie_threshold,
+            tau=tau,
             leaf_prediction=leaf_prediction,
             leaf_model=leaf_model,
             model_selector_decay=model_selector_decay,
@@ -393,7 +393,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     delta
         [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
-    tie_threshold
+    tau
         [*Tree parameter*] Threshold below which a split will be forced to break
         ties.
     leaf_prediction
@@ -470,7 +470,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         max_depth: int = None,
         split_criterion: str = "info_gain",
         delta: float = 0.01,
-        tie_threshold: float = 0.05,
+        tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
@@ -502,7 +502,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.max_depth = max_depth
         self.split_criterion = split_criterion
         self.delta = delta
-        self.tie_threshold = tie_threshold
+        self.tau = tau
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
@@ -543,7 +543,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             grace_period=self.grace_period,
             split_criterion=self.split_criterion,
             delta=self.delta,
-            tie_threshold=self.tie_threshold,
+            tau=self.tau,
             leaf_prediction=self.leaf_prediction,
             nb_threshold=self.nb_threshold,
             nominal_attributes=self.nominal_attributes,
@@ -619,7 +619,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     delta
         [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
-    tie_threshold
+    tau
         [*Tree parameter*] Threshold below which a split will be forced to break
         ties.
     leaf_prediction
@@ -719,7 +719,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         grace_period: int = 50,
         max_depth: int = None,
         delta: float = 0.01,
-        tie_threshold: float = 0.05,
+        tau: float = 0.05,
         leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
@@ -752,7 +752,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         self.grace_period = grace_period
         self.max_depth = max_depth
         self.delta = delta
-        self.tie_threshold = tie_threshold
+        self.tau = tau
         self.leaf_prediction = leaf_prediction
         self.leaf_model = leaf_model
         self.model_selector_decay = model_selector_decay
@@ -813,7 +813,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             grace_period=self.grace_period,
             max_depth=self.max_depth,
             delta=self.delta,
-            tie_threshold=self.tie_threshold,
+            tau=self.tau,
             leaf_prediction=self.leaf_prediction,
             leaf_model=self.leaf_model,
             model_selector_decay=self.model_selector_decay,

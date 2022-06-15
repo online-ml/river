@@ -24,7 +24,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
     delta
         Allowed error in split decision, a value closer to 0 takes longer to
         decide.
-    tie_threshold
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -115,7 +115,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         grace_period: int = 200,
         max_depth: int = None,
         delta: float = 1e-7,
-        tie_threshold: float = 0.05,
+        tau: float = 0.05,
         leaf_prediction: str = "adaptive",
         leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
         model_selector_decay: float = 0.95,
@@ -133,7 +133,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
             grace_period=grace_period,
             max_depth=max_depth,
             delta=delta,
-            tie_threshold=tie_threshold,
+            tau=tau,
             leaf_prediction=leaf_prediction,
             leaf_model=leaf_model,  # type: ignore
             model_selector_decay=model_selector_decay,

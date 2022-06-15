@@ -398,7 +398,7 @@ class HoeffdingTree(ABC):
         ...    delta=1e-5,
         ...    split_criterion='gini',
         ...    max_depth=10,
-        ...    tie_threshold=0.05,
+        ...    tau=0.05,
         ... )
         >>> for x, y in datasets.Phishing():
         ...    model = model.learn_one(x, y)

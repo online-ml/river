@@ -22,7 +22,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     delta
         Significance level to calculate the Hoeffding bound. The significance level is given by
         `1 - delta`. Values closer to zero imply longer split decision delays.
-    tie_threshold
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -110,7 +110,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         grace_period: int = 200,
         max_depth: int = None,
         delta: float = 1e-7,
-        tie_threshold: float = 0.05,
+        tau: float = 0.05,
         leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
@@ -137,7 +137,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         self._split_criterion: str = "vr"
         self.grace_period = grace_period
         self.delta = delta
-        self.tie_threshold = tie_threshold
+        self.tau = tau
         self.leaf_prediction = leaf_prediction
         self.leaf_model = leaf_model if leaf_model else linear_model.LinearRegression()
         self.model_selector_decay = model_selector_decay
@@ -355,7 +355,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             second_best_suggestion = best_split_suggestions[-2]
             if best_suggestion.merit > 0.0 and (
                 second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
-                or hoeffding_bound < self.tie_threshold
+                or hoeffding_bound < self.tau
             ):
                 should_split = True
             if self.remove_poor_attrs:
