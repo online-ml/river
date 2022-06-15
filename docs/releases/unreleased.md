@@ -33,6 +33,10 @@
 
 - `stream.iter_array` now handles text data.
 
+## time_series
+
+- Added `time_series.HorizonAggMetric`.
+
 ## utils
 
 - Removed dependencies to `anomaly` and `compose`.
