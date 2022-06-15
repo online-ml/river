@@ -7,4 +7,5 @@ nav:
     - hyperparameter-tuning.md
     - mini-batching.md
     - on-hoeffding-trees.md
+    - cloning-and-mutating.md
     - rolling-computations.md

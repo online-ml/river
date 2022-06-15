@@ -69,6 +69,10 @@ class Optimizer(base.Base):
         self.n_iterations = 0
 
     @property
+    def _mutable_attributes(self):
+        return {"lr"}
+
+    @property
     def learning_rate(self) -> float:
         return self.lr.get(self.n_iterations)
 
