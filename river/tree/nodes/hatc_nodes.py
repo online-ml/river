@@ -222,7 +222,7 @@ class AdaBranchClassifier(DTBranch):
                     2.0
                     * old_error_rate
                     * (1.0 - old_error_rate)
-                    * math.log(2.0 / tree.switch_signif)
+                    * math.log(2.0 / tree.switch_significance)
                     * n
                 )
 
