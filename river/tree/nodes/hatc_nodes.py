@@ -222,7 +222,7 @@ class AdaBranchClassifier(DTBranch):
 
                 bound = math.sqrt(
                     2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / f_delta) * f_n
-                )  # TODO Is this is a form of the Hoeffding Bound?
+                )
 
                 if bound < (old_error_rate - alt_error_rate):
                     tree._n_active_leaves -= self.n_leaves

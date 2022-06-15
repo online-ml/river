@@ -1,7 +1,8 @@
 import math
 import typing
 
-from river.stats import Mean, Var
+from river import base
+from river import stats as st
 from river.utils.random import poisson
 
 from .branch import (
@@ -13,6 +14,41 @@ from .branch import (
 )
 from .htr_nodes import LeafAdaptive, LeafMean, LeafModel
 from .leaf import HTLeaf
+
+
+class NormError(base.Base):
+    def __init__(self):
+        # Normalized the input error
+        self._norm = st.Var()
+        # Monitor the normalized mean error values
+        self._mean = st.Mean()
+
+    def push(self, drift_input: float) -> float:
+        # Update the variance estimator to get the updated estimated range
+        self._norm.update(drift_input)
+
+        if self.length == 1:
+            # The expected error is the normalized (MinMax) mean error
+            norm_input = 0.5
+        else:
+            sd = math.sqrt(self._norm.get())
+
+            # We assume the error follows a normal distribution -> (empirical rule) 99.73% of the values
+            # lie  between [mean - 3*sd, mean + 3*sd]. We assume this range for the normalized data.
+            # Hence, we can apply the min-max norm to cope with ADWIN's requirements
+            norm_input = (drift_input + 3 * sd) / (6 * sd) if sd > 0 else 0.5
+
+        self._mean.update(norm_input)
+
+        return norm_input
+
+    @property
+    def mean_error(self) -> float:
+        return self._mean.get()
+
+    @property
+    def length(self) -> int:
+        return self._norm.mean.n
 
 
 class AdaLeafRegressor(HTLeaf):
@@ -40,17 +76,15 @@ class AdaLeafRegressor(HTLeaf):
 
         self.drift_detector = drift_detector
         self.rng = rng
-        self._mean_error = Mean()
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
-        self._error_normalizer = Var(ddof=1)
+        self._normalizer = NormError()
 
     def kill_tree_children(self, hatr):
         pass
 
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         y_pred = self.prediction(x, tree=tree)
-        normalized_error = normalize_error(y, y_pred, self)
 
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
@@ -58,15 +92,16 @@ class AdaLeafRegressor(HTLeaf):
             if k > 0:
                 sample_weight *= k
 
-        old_error = self._mean_error.get()
-
+        old_error = self._normalizer.mean_error
+        normalized_error = self._normalizer.push(abs(y - y_pred))
         # Update the drift detector
         self.drift_detector.update(normalized_error)
-        self._mean_error.update(normalized_error)
         error_change = self.drift_detector.drift_detected
 
         # Error is decreasing
-        if error_change and old_error > self._mean_error.get():
+        if error_change and self._normalizer.mean_error < old_error:
+            # Reset the error estimator
+            self._normalizer = self._normalizer.clone()
             error_change = False
 
         # Update learning model
@@ -106,14 +141,13 @@ class AdaBranchRegressor(DTBranch):
     """
 
     def __init__(self, stats, *children, drift_detector, **attributes):
-        stats = stats if stats else Var()
+        stats = stats if stats else st.Var()
         super().__init__(stats, *children, **attributes)
         self.drift_detector = drift_detector
-        self._mean_error = Mean()
         self._alternate_tree = None
 
         # Normalization of info monitored by drift detectors (using Welford's algorithm)
-        self._error_normalizer = Var(ddof=1)
+        self._normalizer = NormError()
 
     def traverse(self, x, until_leaf=True) -> typing.List[HTLeaf]:  # type: ignore
         """Return the leaves corresponding to the given input.
@@ -155,37 +189,44 @@ class AdaBranchRegressor(DTBranch):
     def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
         y_pred = leaf.prediction(x, tree=tree)
-        normalized_error = normalize_error(y, y_pred, self)
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
         self.stats.update(y, sample_weight)
 
-        old_error = self._mean_error.get()
+        old_error = self._normalizer.mean_error
+        normalized_error = self._normalizer.push(abs(y - y_pred))
 
         self.drift_detector.update(normalized_error)
-        self._mean_error.update(normalized_error)
         error_change = self.drift_detector.drift_detected
 
-        if error_change and old_error > self._mean_error.get():
+        # Error is decreasing, better to keep things as they are
+        if error_change and self._normalizer.mean_error < old_error:
+            # Reset the error estimator
+            self._normalizer = self._normalizer.clone()
             error_change = False
 
         # Condition to build a new alternate tree
         if error_change:
+            # Reset the error estimator
+            self._normalizer = self._normalizer.clone()
             self._alternate_tree = tree._new_leaf(parent=self)
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
 
         # Condition to replace alternate tree
         elif self._alternate_tree:
-            alt_n_obs = self._alternate_tree._mean_error.n
-            if alt_n_obs > tree.drift_window_threshold:
-                old_error_rate = self._mean_error.get()
-                alt_error_rate = self._alternate_tree._mean_error.get()
-                n_obs = self._mean_error.n
+            alt_length = self._alternate_tree._normalizer.length
+            curr_length = self._normalizer.length
+            if (
+                alt_length > tree.drift_window_threshold
+                and curr_length > tree.drift_window_threshold
+            ):
+                old_error_rate = self._normalizer.mean_error
+                alt_error_rate = self._alternate_tree._normalizer.mean_error
 
                 f_delta = 0.05
-                f_n = 1.0 / alt_n_obs + 1.0 / n_obs
+                f_n = 1.0 / alt_length + 1.0 / curr_length
 
                 try:
                     bound = math.sqrt(
@@ -319,18 +360,3 @@ class AdaLeafRegModel(AdaLeafRegressor, LeafModel):
 class AdaLeafRegAdaptive(AdaLeafRegressor, LeafAdaptive):
     def __init__(self, stats, depth, splitter, drift_detector, rng, **kwargs):
         super().__init__(stats, depth, splitter, drift_detector, rng, **kwargs)
-
-
-def normalize_error(y_true, y_pred, node):
-    drift_input = abs(y_true - y_pred)
-    node._error_normalizer.update(drift_input)
-
-    if node._error_normalizer.mean.n == 1:
-        return 0.5  # The expected error is the normalized mean error
-
-    sd = math.sqrt(node._error_normalizer.get())
-
-    # We assume the error follows a normal distribution -> (empirical rule) 99.73% of the values
-    # lie  between [mean - 3*sd, mean + 3*sd]. We assume this range for the normalized data.
-    # Hence, we can apply the  min-max norm to cope with  ADWIN's requirements
-    return (drift_input + 3 * sd) / (6 * sd) if sd > 0 else 0.5

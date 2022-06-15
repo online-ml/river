@@ -160,11 +160,11 @@ def test_drift_adaptation_hatc():
 
 
 def test_drift_adaptation_hatr():
-    dataset = synth.Friedman(seed=7).take(500)
+    dataset = synth.Friedman(seed=7).take(1000)
 
     model = tree.HoeffdingAdaptiveTreeRegressor(
-        leaf_prediction="model",
-        grace_period=50,
+        leaf_prediction="mean",
+        grace_period=10,
         split_confidence=0.1,
         drift_detector=drift.ADWIN(0.1),
         drift_window_threshold=10,
@@ -174,9 +174,9 @@ def test_drift_adaptation_hatr():
 
     for i, (x, y) in enumerate(dataset):
         y_ = y
-        if i > 250:
+        if i > 500:
             # Emulate an abrupt drift
-            y_ = 3 * y
+            y_ = 1.5 * y
         model.learn_one(x, y_)
 
     assert model._n_alternate_trees > 0
