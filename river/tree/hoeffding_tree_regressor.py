@@ -88,7 +88,6 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     ...     preprocessing.StandardScaler() |
     ...     tree.HoeffdingTreeRegressor(
     ...         grace_period=100,
-    ...         leaf_prediction='adaptive',
     ...         model_selector_decay=0.9
     ...     )
     ... )
@@ -111,7 +110,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         max_depth: int = None,
         split_confidence: float = 1e-7,
         tie_threshold: float = 0.05,
-        leaf_prediction: str = "model",
+        leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,

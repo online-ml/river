@@ -116,7 +116,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         max_depth: int = None,
         split_confidence: float = 1e-7,
         tie_threshold: float = 0.05,
-        leaf_prediction: str = "model",
+        leaf_prediction: str = "adaptive",
         leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
