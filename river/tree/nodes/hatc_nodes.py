@@ -216,11 +216,14 @@ class AdaBranchClassifier(DTBranch):
                 old_error_rate = self._mean_error.get()
                 alt_error_rate = self._alternate_tree._mean_error.get()
 
-                f_delta = 0.05  # TODO make this a parameter
-                f_n = 1.0 / alt_n_obs + 1.0 / n_obs
+                n = 1.0 / alt_n_obs + 1.0 / n_obs
 
                 bound = math.sqrt(
-                    2.0 * old_error_rate * (1.0 - old_error_rate) * math.log(2.0 / f_delta) * f_n
+                    2.0
+                    * old_error_rate
+                    * (1.0 - old_error_rate)
+                    * math.log(2.0 / tree.switch_delta)
+                    * n
                 )
 
                 if bound < (old_error_rate - alt_error_rate):
