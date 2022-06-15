@@ -109,3 +109,15 @@ def test_list_of_funcs():
     expected = {"f": 2, "g": 4}
     assert compose.Pipeline([f, g], times_2).transform_one(None) == expected
     assert ([f, g] | compose.FuncTransformer(times_2)).transform_one(None) == expected
+
+
+def test_get():
+
+    model = preprocessing.StandardScaler() | linear_model.LinearRegression()
+
+    assert isinstance(model["StandardScaler"], preprocessing.StandardScaler)
+    assert isinstance(model["LinearRegression"], linear_model.LinearRegression)
+    assert isinstance(model[0], preprocessing.StandardScaler)
+    assert isinstance(model[1], linear_model.LinearRegression)
+    assert isinstance(model[-1], linear_model.LinearRegression)
+    assert isinstance(model[-2], preprocessing.StandardScaler)

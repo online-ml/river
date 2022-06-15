@@ -102,7 +102,7 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
 
     """
 
-    return [model._set_params(params) for params in _expand_param_grid(grid)]
+    return [model.clone(params) for params in _expand_param_grid(grid)]
 
 
 def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
