@@ -35,8 +35,9 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         - 'gini' - Gini</br>
         - 'info_gain' - Information Gain</br>
         - 'hellinger' - Helinger Distance</br>
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
@@ -97,7 +98,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
     >>> model = tree.ExtremelyFastDecisionTreeClassifier(
     ...     grace_period=100,
-    ...     split_confidence=1e-5,
+    ...     delta=1e-5,
     ...     nominal_attributes=['elevel', 'car', 'zipcode'],
     ...     min_samples_reevaluate=100
     ... )
@@ -114,7 +115,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         max_depth: int = None,
         min_samples_reevaluate: int = 20,
         split_criterion: str = "info_gain",
-        split_confidence: float = 1e-7,
+        delta: float = 1e-7,
         tie_threshold: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
@@ -132,7 +133,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             grace_period=grace_period,
             max_depth=max_depth,
             split_criterion=split_criterion,
-            split_confidence=split_confidence,
+            delta=delta,
             tie_threshold=tie_threshold,
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
@@ -395,7 +396,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 # Compute Hoeffding bound
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(node.stats),
-                    self.split_confidence,
+                    self.delta,
                     node.total_weight,
                 )
 
@@ -522,7 +523,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(node.stats),
-                    self.split_confidence,
+                    self.delta,
                     node.total_weight,
                 )
 

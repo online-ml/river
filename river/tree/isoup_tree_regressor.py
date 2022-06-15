@@ -21,7 +21,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         Number of instances a leaf should observe between split attempts.
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
-    split_confidence
+    delta
         Allowed error in split decision, a value closer to 0 takes longer to
         decide.
     tie_threshold
@@ -114,7 +114,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         self,
         grace_period: int = 200,
         max_depth: int = None,
-        split_confidence: float = 1e-7,
+        delta: float = 1e-7,
         tie_threshold: float = 0.05,
         leaf_prediction: str = "adaptive",
         leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
@@ -132,7 +132,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,
-            split_confidence=split_confidence,
+            delta=delta,
             tie_threshold=tie_threshold,
             leaf_prediction=leaf_prediction,
             leaf_model=leaf_model,  # type: ignore

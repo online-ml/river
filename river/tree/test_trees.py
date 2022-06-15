@@ -120,7 +120,7 @@ def test_efdt_split_reevaluation():
         grace_period=50,
         min_samples_reevaluate=10,
         split_criterion="hellinger",
-        split_confidence=0.1,
+        delta=0.1,
     )
 
     max_depth = -1
@@ -141,7 +141,7 @@ def test_drift_adaptation_hatc():
         leaf_prediction="mc",
         grace_period=10,
         drift_detector=drift.ADWIN(0.1),
-        split_confidence=0.1,
+        delta=0.1,
         drift_window_threshold=2,
         seed=42,
         max_depth=3,
@@ -165,7 +165,7 @@ def test_drift_adaptation_hatr():
     model = tree.HoeffdingAdaptiveTreeRegressor(
         leaf_prediction="mean",
         grace_period=10,
-        split_confidence=0.1,
+        delta=0.1,
         drift_detector=drift.ADWIN(0.1),
         drift_window_threshold=10,
         seed=7,

@@ -52,7 +52,7 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
     ...     model=(
     ...         tree.HoeffdingTreeClassifier(
     ...             split_criterion='gini',
-    ...             split_confidence=1e-5,
+    ...             delta=1e-5,
     ...             grace_period=2000
     ...         )
     ...     ),

@@ -395,7 +395,7 @@ class HoeffdingTree(ABC):
         >>> from river import tree
         >>> model = tree.HoeffdingTreeClassifier(
         ...    grace_period=5,
-        ...    split_confidence=1e-5,
+        ...    delta=1e-5,
         ...    split_criterion='gini',
         ...    max_depth=10,
         ...    tie_threshold=0.05,

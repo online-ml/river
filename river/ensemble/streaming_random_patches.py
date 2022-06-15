@@ -402,7 +402,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     ... ).take(1000)
 
     >>> base_model = tree.HoeffdingTreeClassifier(
-    ...     grace_period=50, split_confidence=0.01,
+    ...     grace_period=50, delta=0.01,
     ...     nominal_attributes=['age', 'car', 'zipcode']
     ... )
     >>> model = ensemble.SRPClassifier(
@@ -443,7 +443,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
         metric: typing.Optional[ClassificationMetric] = None,
     ):
         if model is None:
-            model = HoeffdingTreeClassifier(grace_period=50, split_confidence=0.01)
+            model = HoeffdingTreeClassifier(grace_period=50, delta=0.01)
 
         if drift_detector is None:
             drift_detector = ADWIN(delta=1e-5)
@@ -723,7 +723,7 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
         # Check arguments for parent class
         if model is None:
-            model = HoeffdingTreeRegressor(grace_period=50, split_confidence=0.01)
+            model = HoeffdingTreeRegressor(grace_period=50, delta=0.01)
 
         if drift_detector is None:
             drift_detector = ADWIN(delta=1e-5)

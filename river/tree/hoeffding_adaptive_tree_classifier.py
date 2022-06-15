@@ -31,8 +31,9 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         - 'gini' - Gini</br>
         - 'info_gain' - Information Gain</br>
         - 'hellinger' - Helinger Distance</br>
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
@@ -107,7 +108,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     >>> model = tree.HoeffdingAdaptiveTreeClassifier(
     ...     grace_period=100,
-    ...     split_confidence=1e-5,
+    ...     delta=1e-5,
     ...     leaf_prediction='nb',
     ...     nb_threshold=10,
     ...     seed=0
@@ -125,7 +126,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         grace_period: int = 200,
         max_depth: int = None,
         split_criterion: str = "info_gain",
-        split_confidence: float = 1e-7,
+        delta: float = 1e-7,
         tie_threshold: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
@@ -148,7 +149,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             grace_period=grace_period,
             max_depth=max_depth,
             split_criterion=split_criterion,
-            split_confidence=split_confidence,
+            delta=delta,
             tie_threshold=tie_threshold,
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,

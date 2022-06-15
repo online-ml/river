@@ -151,7 +151,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         grace_period: int = 200,
         max_depth: int = None,
         split_criterion: str = "info_gain",
-        split_confidence: float = 1e-7,
+        delta: float = 1e-7,
         tie_threshold: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
@@ -169,7 +169,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
             grace_period=grace_period,
             max_depth=max_depth,
             split_criterion=split_criterion,
-            split_confidence=split_confidence,
+            delta=delta,
             tie_threshold=tie_threshold,
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
@@ -242,7 +242,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         max_features: int = 2,
         grace_period: int = 200,
         max_depth: int = None,
-        split_confidence: float = 1e-7,
+        delta: float = 1e-7,
         tie_threshold: float = 0.05,
         leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
@@ -261,7 +261,7 @@ class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
         super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,
-            split_confidence=split_confidence,
+            delta=delta,
             tie_threshold=tie_threshold,
             leaf_prediction=leaf_prediction,
             leaf_model=leaf_model,
@@ -390,7 +390,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         - 'gini' - Gini<br/>
         - 'info_gain' - Information Gain<br/>
         - 'hellinger' - Hellinger Distance
-    split_confidence
+    delta
         [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
     tie_threshold
@@ -469,7 +469,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         grace_period: int = 50,
         max_depth: int = None,
         split_criterion: str = "info_gain",
-        split_confidence: float = 0.01,
+        delta: float = 0.01,
         tie_threshold: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
@@ -501,7 +501,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.grace_period = grace_period
         self.max_depth = max_depth
         self.split_criterion = split_criterion
-        self.split_confidence = split_confidence
+        self.delta = delta
         self.tie_threshold = tie_threshold
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
@@ -542,7 +542,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             max_features=self.max_features,
             grace_period=self.grace_period,
             split_criterion=self.split_criterion,
-            split_confidence=self.split_confidence,
+            delta=self.delta,
             tie_threshold=self.tie_threshold,
             leaf_prediction=self.leaf_prediction,
             nb_threshold=self.nb_threshold,
@@ -616,7 +616,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
         tree will grow indefinitely.
-    split_confidence
+    delta
         [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
     tie_threshold
@@ -718,7 +718,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         # Tree parameters
         grace_period: int = 50,
         max_depth: int = None,
-        split_confidence: float = 0.01,
+        delta: float = 0.01,
         tie_threshold: float = 0.05,
         leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
@@ -751,7 +751,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         # Tree parameters
         self.grace_period = grace_period
         self.max_depth = max_depth
-        self.split_confidence = split_confidence
+        self.delta = delta
         self.tie_threshold = tie_threshold
         self.leaf_prediction = leaf_prediction
         self.leaf_model = leaf_model
@@ -812,7 +812,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             max_features=self.max_features,
             grace_period=self.grace_period,
             max_depth=self.max_depth,
-            split_confidence=self.split_confidence,
+            delta=self.delta,
             tie_threshold=self.tie_threshold,
             leaf_prediction=self.leaf_prediction,
             leaf_model=self.leaf_model,

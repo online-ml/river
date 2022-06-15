@@ -36,8 +36,9 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         Number of instances a leaf should observe between split attempts.
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
     tie_threshold
         Threshold below which a split will be forced to break ties.
     leaf_prediction
@@ -144,7 +145,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self,
         grace_period: int = 200,
         max_depth: int = None,
-        split_confidence: float = 1e-7,
+        delta: float = 1e-7,
         tie_threshold: float = 0.05,
         leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
@@ -168,7 +169,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,
-            split_confidence=split_confidence,
+            delta=delta,
             tie_threshold=tie_threshold,
             leaf_prediction=leaf_prediction,
             leaf_model=leaf_model,
