@@ -65,7 +65,7 @@ class PageHinkley(DriftDetector):
         if self._drift_detected:
             self._reset()
 
-        self.x_mean += (x - self.x_mean) / float(self.sample_count)
+        self.x_mean += (x - self.x_mean) / self.sample_count
         self.sum = max(0.0, self.alpha * self.sum + (x - self.x_mean - self.delta))
 
         self.sample_count += 1

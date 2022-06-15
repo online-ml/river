@@ -37,6 +37,7 @@
 - Removed `proba.TimeRolling`, due to the addition of `utils.Rolling`.
 
 ## rule
+
 - The default `splitter` was changed to `tree.splitter.TEBST` for memory and running time efficiency.
 
 ## stats

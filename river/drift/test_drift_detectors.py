@@ -39,8 +39,8 @@ def test_ddm():
 
 
 def test_eddm():
-    expected_indices = [681, 848, 983, 1042, 1089]
-    detected_indices = perform_test(EDDM(), data_stream_2)
+    expected_indices = [1059]
+    detected_indices = perform_test(EDDM(alpha=0.9, beta=0.8), data_stream_2)
     assert detected_indices == expected_indices
 
 

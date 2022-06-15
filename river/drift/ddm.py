@@ -69,7 +69,7 @@ class DDM(DriftDetector):
     >>> rng = random.Random(42)
     >>> ddm = drift.DDM()
 
-    >>> # Simulate a data stream where the first 500 instances come from a uniform distribution
+    >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
     >>> # of 1's and 0's
     >>> data_stream = rng.choices([0, 1], k=1000)
     >>> # Increase the probability of 1's appearing in the next 1000 instances
