@@ -29,7 +29,7 @@ class HDDM_W(DriftDetector):
         Confidence to the drift
     warning_confidence
         Confidence to the warning
-    lambda_option
+    lambda_val
         The weight given to recent data. Smaller values mean less weight given to recent data.
     two_sided_test
         If True, will monitor error increments and decrements (two-sided). By default will only
