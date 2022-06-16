@@ -6,55 +6,61 @@ from river.base import DriftDetector
 
 
 class HDDM_W(DriftDetector):
-    r"""Drift Detection Method based on Hoeffding's bounds with moving weighted average-test.
+    """Drift Detection Method based on Hoeffding's bounds with moving weighted average-test.
 
-     HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses the
-     Exponentially Weighted Moving Average (EWMA) statistic as estimator.
+    HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses the
+    Exponentially Weighted Moving Average (EWMA) statistic as estimator.
 
     **Input:** `x` is an entry in a stream of bits, where 1 indicates error/failure and 0
-     represents correct/normal values.
+    represents correct/normal values.
 
-     For example, if a classifier's prediction $y'$ is right or wrong w.r.t. the
-     true target label $y$:
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t. the
+    true target label $y$:
 
-     - 0: Correct, $y=y'$
+    - 0: Correct, $y=y'$
 
      - 1: Error, $y \\neq y'$
 
-     *Implementation based on MOA.*
+    *Implementation based on MOA.*
 
-     Parameters
-     ----------
-     drift_confidence
-         Confidence to the drift
-     warning_confidence
-         Confidence to the warning
-     lambda_option
-         The weight given to recent data. Smaller values mean less weight given to recent data.
-     two_sided_test
-         If True, will monitor error increments and decrements (two-sided). By default will only
-         monitor increments (one-sided).
+    Parameters
+    ----------
+    drift_confidence
+        Confidence to the drift
+    warning_confidence
+        Confidence to the warning
+    lambda_option
+        The weight given to recent data. Smaller values mean less weight given to recent data.
+    two_sided_test
+        If True, will monitor error increments and decrements (two-sided). By default will only
+        monitor increments (one-sided).
 
-     Examples
-     --------
-     >>> import random
-     >>> from river import drift
+    Examples
+    --------
+    >>> import random
+    >>> from river import drift
 
-     >>> rng = random.Random(42)
-     >>> hddm_w = drift.HDDM_W()
+    >>> rng = random.Random(42)
+    >>> hddm_w = drift.HDDM_W()
 
-     >>> # Simulate a data stream as a uniform distribution of 1's and 0's
-     >>> data_stream = rng.choices([0, 1], k=2000)
-     >>> # Change the data distribution from index 999 to 1500, simulating an
-     >>> # increase in error rate (1 indicates error)
-     >>> data_stream[999:1500] = [1] * 500
+    >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
+    >>> # of 1's and 0's
+    >>> data_stream = rng.choices([0, 1], k=1000)
+    >>> # Increase the probability of 1's appearing in the next 1000 instances
+    >>> data_stream = data_stream + rng.choices([0, 1], k=1000, weights=[0.3, 0.7])
 
-     >>> # Update drift detector and verify if change is detected
-     >>> for i, val in enumerate(data_stream):
-     ...     _ = hddm_w.update(val)
-     ...     if hddm_w.drift_detected:
-     ...         print(f"Change detected at index {i}, input value: {val}")
-     Change detected at index 1014, input value: 1
+    >>> print_warning = True
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, x in enumerate(data_stream):
+    ...     _ = hddm_w.update(x)
+    ...     if hddm_w.warning_detected and print_warning:
+    ...         print(f"Warning detected at index {i}")
+    ...         print_warning = False
+    ...     if hddm_w.drift_detected:
+    ...         print(f"Change detected at index {i}")
+    ...         print_warning = True
+    Warning detected at index 451
+    Change detected at index 1077
 
      References
      ----------

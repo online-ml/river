@@ -5,7 +5,7 @@ from river.base import DriftDetector
 
 
 class HDDM_A(DriftDetector):
-    r"""Drift Detection Method based on Hoeffding's bounds with moving average-test.
+    """Drift Detection Method based on Hoeffding's bounds with moving average-test.
 
     HDDM_A is a drift detection method based on the Hoeffding's inequality which uses
     the input average as estimator.
