@@ -24,6 +24,9 @@
 - Refactor the concept drift detectors to match the remaining of River's API. Warnings are only issued by detectors that support this feature.
 - Drifts can be assessed via the property `drift_detected`. Warning signals can be acessed by the property `warning_detected`. The update method now returns `self`.
 - Ensure all detectors reset their inner states automatically after a concept drift detection.
+- Streamline `DDM`, `EDDM`, `HDDM_A`, and `HDDM_W`. Also make the configurable parameters names match their respective papers.
+- Fix bug in `EDDM` and `HDDM_W`.
+- Enable two-sided tests in `PageHinkley`.
 
 ## metrics
 
