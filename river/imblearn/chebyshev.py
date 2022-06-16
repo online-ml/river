@@ -45,7 +45,7 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
     ...     preprocessing.StandardScaler() |
     ...     imblearn.ChebyshevUnderSampler(
     ...         regressor=rules.AMRules(
-    ...             n_min=50, delta=0.01
+    ...             n_min=50, delta=0.01,
     ...         ),
     ...         seed=42
     ...     )
@@ -57,9 +57,9 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
     ...     metrics.MAE(),
     ...     print_every=500
     ... )
-    [500] MAE: 1.633571
-    [1,000] MAE: 1.460907
-    MAE: 1.4604
+    [500] MAE: 1.787162
+    [1,000] MAE: 1.515711
+    MAE: 1.515236
 
     References
     ----------
@@ -163,9 +163,9 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
     ...     metrics.MAE(),
     ...     print_every=500
     ... )
-    [500] MAE: 1.152726
-    [1,000] MAE: 0.954873
-    MAE: 0.954049
+    [500] MAE: 1.682627
+    [1,000] MAE: 1.761306
+    MAE: 1.759576
 
     References
     ----------
