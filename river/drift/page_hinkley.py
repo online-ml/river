@@ -23,7 +23,7 @@ class PageHinkley(DriftDetector):
     alpha
         The forgetting factor, used to weight the observed value and the mean.
     mode
-        Either to consider increases ("up"), decreases ("down") or both ("both") when monitoring the fading mean.
+        Whether to consider increases ("up"), decreases ("down") or both ("both") when monitoring the fading mean.
 
     Examples
     --------
