@@ -20,6 +20,8 @@ class HDDM_A(DriftDetector):
 
     - 1: Error, $y \\neq y'$
 
+    *Implementation based on MOA.*
+
     Parameters
     ----------
     drift_confidence
