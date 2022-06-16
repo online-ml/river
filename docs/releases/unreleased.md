@@ -1,10 +1,10 @@
 # Unreleased
 
-- Moved all the public modules imports from `river/__init__.py` to `river/api.py` and removed unnecessary dependencies between modules enabling faster cherry-picked import times (≈3x).
+- Moved all the public modules imports from `river/__init__.py` to `river/api.py` and removed unnecessary dependencies between modules enabling faster cherry-picked import times (~3x).
 
 ## base
 
-- Introduced an `mutate` method to the `base.Base` class. This allows setting attributes in a controlled manner, which paves the way for online AutoML. See [/recipes/cloning-and-mutating] for more information.
+- Introduced an `mutate` method to the `base.Base` class. This allows setting attributes in a controlled manner, which paves the way for online AutoML. See [the recipe](/recipes/cloning-and-mutating) for more information.
 
 ## compat
 
