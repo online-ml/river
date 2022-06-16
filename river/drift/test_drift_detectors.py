@@ -99,8 +99,18 @@ def test_kswin_coverage():
 
 
 def test_page_hinkley():
-    expected_indices = [1020, 1991]
-    detected_indices = perform_test(PageHinkley(), data_stream_1)
+    expected_indices = [588, 1681]
+    detected_indices = perform_test(PageHinkley(mode="up"), data_stream_3)
+
+    assert detected_indices == expected_indices
+
+    expected_indices = [1172]
+    detected_indices = perform_test(PageHinkley(mode="down"), data_stream_3)
+
+    assert detected_indices == expected_indices
+
+    expected_indices = [588, 1097, 1585]
+    detected_indices = perform_test(PageHinkley(mode="both"), data_stream_3)
 
     assert detected_indices == expected_indices
 
