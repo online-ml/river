@@ -1,12 +1,13 @@
-from math import log, sqrt
+import math
 
+from river import stats
 from river.base import DriftDetector
 
 
 class HDDM_A(DriftDetector):
-    r"""Drift Detection Method based on Hoeffding’s bounds with moving average-test.
+    r"""Drift Detection Method based on Hoeffding's bounds with moving average-test.
 
-    HDDM_A is a drift detection method based on the Hoeffding’s inequality.
+    HDDM_A is a drift detection method based on the Hoeffding's inequality.
     HDDM_A uses the average as estimator. It receives as input a stream of real
     values and returns the estimated status of the stream: STABLE, WARNING or
     DRIFT.
@@ -34,28 +35,36 @@ class HDDM_A(DriftDetector):
     Examples
     --------
     >>> import random
-    >>> from river.drift import HDDM_A
+    >>> from river import drift
 
     >>> rng = random.Random(42)
-    >>> hddm_a = HDDM_A()
+    >>> hddm_a = drift.HDDM_A()
 
-    >>> # Simulate a data stream as a uniform distribution of 1's and 0's
-    >>> data_stream = rng.choices([0, 1], k=2000)
-    >>> # Change the data distribution from index 999 to 1500, simulating an
-    >>> # increase in error rate (1 indicates error)
-    >>> data_stream[999:1500] = [1] * 500
+    >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
+    >>> # of 1's and 0's
+    >>> data_stream = rng.choices([0, 1], k=1000)
+    >>> # Increase the probability of 1's appearing in the next 1000 instances
+    >>> data_stream = data_stream + rng.choices([0, 1], k=1000, weights=[0.3, 0.7])
 
+    >>> print_warning = True
     >>> # Update drift detector and verify if change is detected
-    >>> for i, val in enumerate(data_stream):
-    ...     _ = hddm_a.update(val)
+    >>> for i, x in enumerate(data_stream):
+    ...     _ = hddm_a.update(x)
+    ...     if hddm_a.warning_detected and print_warning:
+    ...         print(f"Warning detected at index {i}")
+    ...         print_warning = False
     ...     if hddm_a.drift_detected:
-    ...         print(f"Change detected at index {i}, input value: {val}")
-    Change detected at index 1046, input value: 1
+    ...         print(f"Change detected at index {i}")
+    ...         print_warning = True
+    Warning detected at index 451
+    Change detected at index 1206
 
     References
     ----------
-    [^1]: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection methods based on Hoeffding’s bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
-    [^2]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer. MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+    [^1]: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection
+    methods based on Hoeffding's bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
+    [^2]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer. MOA: Massive Online Analysis; Journal
+    of Machine Learning Research 11: 1601-1604, 2010.
 
     """
 
@@ -69,20 +78,20 @@ class HDDM_A(DriftDetector):
     def _reset(self):
         super()._reset()
         self._warning_detected = False
-        self.n_min = 0
-        self.c_min = 0
-        self.total_n = 0
-        self.total_c = 0
-        self.n_max = 0
-        self.c_max = 0
-        self.n_estimation = 0
-        self.c_estimation = 0
-        self.estimation = None
-        self.delay = None
+
+        # To check if the global mean increased
+        self._x_mn = stats.Mean()
+        # To check if the global mean decreased
+        self._x_mx = stats.Mean()
+        # Global mean
+        self._z = stats.Mean()
 
     @property
     def warning_detected(self) -> bool:
         return self._warning_detected
+
+    def _hoeffding_bound(self, n):
+        return math.sqrt(1.0 / (2 * n) * math.log(1.0 / self.drift_confidence))
 
     def update(self, x):
         """Update the change detector with a single data point.
@@ -98,93 +107,57 @@ class HDDM_A(DriftDetector):
         self
 
         """
-        self.total_n += 1
-        self.total_c += x
-        if self.n_min == 0:
-            self.n_min = self.total_n
-            self.c_min = self.total_c
-        if self.n_max == 0:
-            self.n_max = self.total_n
-            self.c_max = self.total_c
 
-        cota = sqrt(1.0 / (2 * self.n_min) * log(1.0 / self.drift_confidence))
-        cota1 = sqrt(1.0 / (2 * self.total_n) * log(1.0 / self.drift_confidence))
+        if self._drift_detected:
+            self._reset()
 
-        if self.c_min / self.n_min + cota >= self.total_c / self.total_n + cota1:
-            self.c_min = self.total_c
-            self.n_min = self.total_n
+        self._z.update(x)
+        if self._x_mn.n == 0:
+            self._x_mn += self._z
+        if self._x_mx.n == 0:
+            self._x_mx += self._z
 
-        cota = sqrt(1.0 / (2 * self.n_max) * log(1.0 / self.drift_confidence))
-        if self.c_max / self.n_max - cota <= self.total_c / self.total_n - cota1:
-            self.c_max = self.total_c
-            self.n_max = self.total_n
+        # Bound the data
+        eps_z = self._hoeffding_bound(self._z.n)
+        eps_x = self._hoeffding_bound(self._x_mn.n)
+        # Update the cut point for tracking mean increase
+        if self._x_mn.get() + eps_x >= self._z.get() + eps_z:
+            self._x_mn = stats.Mean._from_state(n=self._z.n, mean=self._z.get())
 
-        if self._mean_incr(
-            self.c_min, self.n_min, self.total_c, self.total_n, self.drift_confidence
-        ):
-            self.n_estimation = self.total_n - self.n_min
-            self.c_estimation = self.total_c - self.c_min
-            self.n_min = self.n_max = self.total_n = 0
-            self.c_min = self.c_max = self.total_c = 0
+        eps_x = self._hoeffding_bound(self._x_mx.n)
+        # Update the cut point for tracking mean decrease
+        if self._x_mx.get() - eps_x <= self._z.get() - eps_z:
+            self._x_mx = stats.Mean._from_state(n=self._z.n, mean=self._z.get())
+
+        if self._mean_incr(self.drift_confidence):
             self._drift_detected = True
-            self._warning_detected = False
-        elif self._mean_incr(
-            self.c_min, self.n_min, self.total_c, self.total_n, self.warning_confidence
-        ):
-            self._drift_detected = False
+        elif self._mean_incr(self.warning_confidence):
             self._warning_detected = True
         else:
-            self._drift_detected = False
             self._warning_detected = False
 
         if self.two_sided_test:
-            if self._mean_decr(
-                self.c_max,
-                self.n_max,
-                self.total_c,
-                self.total_n,
-                self.drift_confidence,
-            ):
-                self.n_estimation = self.total_n - self.n_max
-                self.c_estimation = self.total_c - self.c_max
-                self.n_min = self.n_max = self.total_n = 0
-                self.c_min = self.c_max = self.total_c = 0
+            if self._mean_decr(self.drift_confidence):
                 self._drift_detected = True
-            elif self._mean_decr(
-                self.c_max,
-                self.n_max,
-                self.total_c,
-                self.total_n,
-                self.warning_confidence,
-            ):
+            elif self._mean_decr(self.warning_confidence):
                 self._warning_detected = True
-
-        self._update_estimations()
 
         return self
 
-    @staticmethod
-    def _mean_incr(c_min, n_min, total_c, total_n, confidence):
-        if n_min == total_n:
+    # Check if the global mean increased
+    def _mean_incr(self, confidence: float):
+        if self._x_mn.n == self._z.n:
             return False
 
-        m = (total_n - n_min) / n_min * (1.0 / total_n)
-        cota = sqrt(m / 2 * log(2.0 / confidence))
-        return total_c / total_n - c_min / n_min >= cota
+        m = (self._z.n - self._x_mn.n) / self._x_mn.n * (1.0 / self._z.n)
+        eps = math.sqrt(m / 2 * math.log(2.0 / confidence))
+        return self._z.get() - self._x_mn.get() >= eps
 
-    def _mean_decr(self, c_max, n_max, total_c, total_n, confidence):
-        if n_max == total_n:
+    # Check if the global mean decreased
+    def _mean_decr(self, confidence: float):
+        if self._x_mx.n == self._z.n:
             return False
 
-        m = (total_n - n_max) / n_max * (1.0 / total_n)
-        cota = sqrt(m / 2 * log(2.0 / confidence))
-        return c_max / n_max - total_c / total_n >= cota
-
-    def _update_estimations(self):
-        if self.total_n >= self.n_estimation:
-            self.c_estimation = self.n_estimation = 0
-            self.estimation = self.total_c / self.total_n
-            self.delay = self.total_n
-        else:
-            self.estimation = self.c_estimation / self.n_estimation
-            self.delay = self.n_estimation
+        m = (self._z.n - self._x_mx.n) / self._x_mx.n * (1.0 / self._z.n)
+        eps = math.sqrt(m / 2 * math.log(2.0 / confidence))
+        return self._x_mx.get() - self._z.get() >= eps
