@@ -26,7 +26,7 @@ data_stream_3 = np.concatenate(
 
 
 def test_adwin():
-    expected_indices = [1055, 1087, 1215]
+    expected_indices = [1055]
     detected_indices = perform_test(ADWIN(), data_stream_1)
 
     assert detected_indices == expected_indices
@@ -39,8 +39,8 @@ def test_ddm():
 
 
 def test_eddm():
-    expected_indices = [681, 848, 983, 1042, 1089]
-    detected_indices = perform_test(EDDM(), data_stream_2)
+    expected_indices = [1059]
+    detected_indices = perform_test(EDDM(alpha=0.9, beta=0.8), data_stream_2)
     assert detected_indices == expected_indices
 
 
@@ -65,14 +65,14 @@ def test_hddm_w():
 
     # Second test, more abrupt drifts
     hddm_w = HDDM_W(two_sided_test=True)
-    expected_indices = [507, 1508]
+    expected_indices = [507, 1032, 1508]
     detected_indices = perform_test(hddm_w, data_stream_3)
     assert detected_indices == expected_indices
 
 
 def test_kswin():
     kswin = KSWIN(alpha=0.0001, window_size=200, stat_size=100, seed=42)
-    expected_indices = [1042, 1142]
+    expected_indices = [1042]
     detected_indices = perform_test(kswin, data_stream_1)
     assert detected_indices == expected_indices
 
@@ -99,8 +99,18 @@ def test_kswin_coverage():
 
 
 def test_page_hinkley():
-    expected_indices = [1020, 1991]
-    detected_indices = perform_test(PageHinkley(), data_stream_1)
+    expected_indices = [588, 1681]
+    detected_indices = perform_test(PageHinkley(mode="up"), data_stream_3)
+
+    assert detected_indices == expected_indices
+
+    expected_indices = [1172]
+    detected_indices = perform_test(PageHinkley(mode="down"), data_stream_3)
+
+    assert detected_indices == expected_indices
+
+    expected_indices = [588, 1097, 1585]
+    detected_indices = perform_test(PageHinkley(mode="both"), data_stream_3)
 
     assert detected_indices == expected_indices
 
@@ -108,7 +118,7 @@ def test_page_hinkley():
 def perform_test(drift_detector, data_stream):
     detected_indices = []
     for i, val in enumerate(data_stream):
-        in_drift, in_warning = drift_detector.update(val)
-        if in_drift:
+        drift_detector.update(val)
+        if drift_detector.drift_detected:
             detected_indices.append(i)
     return detected_indices

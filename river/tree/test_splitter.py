@@ -18,7 +18,7 @@ def get_regression_data():
 )
 def test_class_splitter(dataset, splitter):
     model = tree.HoeffdingTreeClassifier(
-        splitter=splitter, grace_period=10, leaf_prediction="mc", split_confidence=0.1
+        splitter=splitter, grace_period=10, leaf_prediction="mc", delta=0.1
     )
 
     for x, y in dataset:
@@ -38,7 +38,7 @@ def test_class_splitter(dataset, splitter):
 )
 def test_reg_splitter(dataset, splitter):
     model = tree.HoeffdingTreeRegressor(
-        splitter=splitter, grace_period=20, split_confidence=0.1, leaf_prediction="mean"
+        splitter=splitter, grace_period=20, delta=0.1, leaf_prediction="mean"
     )
 
     for x, y in dataset:

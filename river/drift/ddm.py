@@ -1,11 +1,11 @@
 import math
-import numbers
 
+from river import stats
 from river.base import DriftDetector
 
 
 class DDM(DriftDetector):
-    r"""Drift Detection Method.
+    """Drift Detection Method.
 
     DDM (Drift Detection Method) is a concept change detection method
     based on the PAC learning model premise, that the learner's error rate
@@ -31,30 +31,35 @@ class DDM(DriftDetector):
     * $s_i$: The standard deviation at instant $i$.
 
     The conditions for entering the warning zone and detecting change are
-    as follows [see implementation note bellow]:
+    as follows [see implementation note below]:
 
-    * if $p_i + s_i \geq p_{min} + 2 * s_{min}$ -> Warning zone
+    * if $p_i + s_i \\geq p_{min} + w_l * s_{min}$ -> Warning zone
 
-    * if $p_i + s_i \geq p_{min} + 3 * s_{min}$ -> Change detected
+    * if $p_i + s_i \\geq p_{min} + d_l * s_{min}$ -> Change detected
 
-    **Input:** `value` must be a binary signal, where 1 indicates error.
-    For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
+    In the above expressions, $w_l$ and $d_l$ represent, respectively, the warning and drift thresholds.
+
+    **Input:** `x` is an entry in a stream of bits, where 1 indicates error/failure and 0
+    represents correct/normal values.
+
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t. the
     true target label $y$:
 
     - 0: Correct, $y=y'$
 
-    - 1: Error, $y \neq y'$
+    - 1: Error, $y \\neq y'$
 
     Parameters
     ----------
-    min_num_instances
-        The minimum required number of analyzed samples so change can be detected. This is used to
-        avoid false detections during the early moments of the detector, when the weight of one
-        sample is important.
-    warning_level
-        Warning level.
-    out_control_level
-        Out-control level.
+    warm_start
+        The minimum required number of analyzed samples so change can be detected. Warm start parameter
+        for the drift detector.
+    warning_threshold
+        Threshold to decide if the detector is in a warning zone. The default value gives 95\\% of
+        confidence level to the warning assessment.
+    drift_threshold
+        Threshold to decide if a drift was detected. The default value gives a 99\\% of confidence
+        level to the drift assessment.
 
     Examples
     --------
@@ -64,26 +69,25 @@ class DDM(DriftDetector):
     >>> rng = random.Random(42)
     >>> ddm = drift.DDM()
 
-    >>> # Simulate a data stream as a uniform distribution of 1's and 0's
-    >>> data_stream = rng.choices([0, 1], k=2000)
-    >>> # Change the data distribution from index 999 to 1500, simulating an
-    >>> # increase in error rate (1 indicates error)
-    >>> data_stream[999:1500] = [1] * 500
+    >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
+    >>> # of 1's and 0's
+    >>> data_stream = rng.choices([0, 1], k=1000)
+    >>> # Increase the probability of 1's appearing in the next 1000 instances
+    >>> data_stream = data_stream + rng.choices([0, 1], k=1000, weights=[0.3, 0.7])
 
+    >>> print_warning = True
     >>> # Update drift detector and verify if change is detected
-    >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = ddm.update(val)
-    ...     if in_drift:
-    ...         print(f"Change detected at index {i}, input value: {val}")
-    Change detected at index 1101, input value: 1
-
-    Notes
-    -----
-    In this implementation, the conditions to signal drift and warning are
-    $p_i + s_i > thershold$ instead of $p_i + s_i \geq thershold$. This is to
-    avoid a corner case when a classifier is consistently wrong (`value=1`)
-    that results in DDM indicating a drift every `min_num_instances`. This
-    modification is consistent with the implementation in MOA.
+    >>> for i, x in enumerate(data_stream):
+    ...     _ = ddm.update(x)
+    ...     if ddm.warning_detected and print_warning:
+    ...         print(f"Warning detected at index {i}")
+    ...         print_warning = False
+    ...     if ddm.drift_detected:
+    ...         print(f"Change detected at index {i}")
+    ...         print_warning = True
+    Warning detected at index 1084
+    Change detected at index 1334
+    Warning detected at index 1492
 
     References
     ----------
@@ -91,72 +95,59 @@ class DDM(DriftDetector):
 
     """
 
-    def __init__(self, min_num_instances=30, warning_level=2.0, out_control_level=3.0):
+    def __init__(
+        self, warm_start: int = 30, warning_threshold: float = 2.0, drift_threshold: float = 3.0
+    ):
         super().__init__()
-        self.sample_count = None
-        self.miss_prob = None
-        self.miss_std = None
-        self.miss_prob_sd_min = None
-        self.miss_prob_min = None
-        self.miss_sd_min = None
-        self.min_num_instances = min_num_instances
-        self.warning_level = warning_level
-        self.out_control_level = out_control_level
-        self.estimation = None
-        self.reset()
+        self.warm_start = warm_start
+        self.warning_threshold = warning_threshold
+        self.drift_threshold = drift_threshold
 
-    def reset(self):
-        """Reset the change detector."""
-        super().reset()
-        self.sample_count = 1
-        self.miss_prob = 1.0
-        self.miss_std = 0.0
-        self.miss_prob_sd_min = float("inf")
-        self.miss_prob_min = float("inf")
-        self.miss_sd_min = float("inf")
+        self._reset()
 
-    def update(self, value: numbers.Number):
-        """Update the change detector with a single data point.
+    def _reset(self):
+        super()._reset()
+        self._warning_detected = False
 
-        Parameters
-        ----------
-        value
-            This parameter indicates whether the last sample analyzed was correctly classified or
-            not. 1 indicates an error (miss-classification).
+        # Probability of error/failure
+        self._p = stats.Mean()
 
-        """
-        if self._in_concept_change:
-            self.reset()
+        # Minimum values observed
+        self._p_min = None
+        self._s_min = None
 
-        self.miss_prob = self.miss_prob + (value - self.miss_prob) / float(self.sample_count)
-        self.miss_std = math.sqrt(self.miss_prob * (1 - self.miss_prob) / float(self.sample_count))
-        self.sample_count += 1
+        # The sum of p_min and s_min, to avoid calculating it every time
+        self._ps_min = float("inf")
 
-        self.estimation = self.miss_prob
-        self._in_concept_change = False
-        self._in_warning_zone = False
+    @property
+    def warning_detected(self) -> bool:
+        return self._warning_detected
 
-        if self.sample_count <= self.min_num_instances:
-            return self._in_concept_change, self._in_warning_zone
+    def update(self, x):
+        if self._drift_detected:
+            self._reset()
 
-        if self.miss_prob + self.miss_std <= self.miss_prob_sd_min:
-            self.miss_prob_min = self.miss_prob
-            self.miss_sd_min = self.miss_std
-            self.miss_prob_sd_min = self.miss_prob + self.miss_std
+        # Probability of error/failure
+        self._p.update(x)
 
-        if (
-            self.miss_prob + self.miss_std
-            > self.miss_prob_min + self.out_control_level * self.miss_sd_min
-        ):
-            self._in_concept_change = True
+        p_i = self._p.get()
+        n = self._p.n
+        # Standard deviation of the error/failure: calculated using Bernoulli's properties
+        s_i = math.sqrt(p_i * (1 - p_i) / n)
 
-        elif (
-            self.miss_prob + self.miss_std
-            > self.miss_prob_min + self.warning_level * self.miss_sd_min
-        ):
-            self._in_warning_zone = True
+        if n > self.warm_start:
+            if p_i + s_i <= self._ps_min:
+                self._p_min = p_i
+                self._s_min = s_i
+                self._ps_min = self._p_min + self._s_min
 
-        else:
-            self._in_warning_zone = False
+            if p_i + s_i >= self._p_min + self.warning_threshold * self._s_min:
+                self._warning_detected = True
+            else:
+                self._warning_detected = False
 
-        return self._in_concept_change, self._in_warning_zone
+            if p_i + s_i >= self._p_min + self.drift_threshold * self._s_min:
+                self._drift_detected = True
+                self._warning_detected = False
+
+        return self

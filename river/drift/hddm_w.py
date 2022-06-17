@@ -1,23 +1,25 @@
-from math import log, sqrt
+import copy
+import math
 
+from river import stats
 from river.base import DriftDetector
 
 
 class HDDM_W(DriftDetector):
-    r"""Drift Detection Method based on Hoeffding’s bounds with moving weighted average-test.
+    """Drift Detection Method based on Hoeffding's bounds with moving weighted average-test.
 
-    HDDM_W is an online drift detection method based on McDiarmid's bounds.
-    HDDM_W uses the Exponentially Weighted Moving Average (EWMA) statistic as
-    estimator. It receives as input a stream of real predictions and returns
-    the estimated status of the stream: STABLE, WARNING or DRIFT.
+    HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses the
+    Exponentially Weighted Moving Average (EWMA) statistic as estimator.
 
-    **Input:** `value` must be a binary signal, where 1 indicates error.
-    For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
+    **Input:** `x` is an entry in a stream of bits, where 1 indicates error/failure and 0
+    represents correct/normal values.
+
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t. the
     true target label $y$:
 
     - 0: Correct, $y=y'$
 
-    - 1: Error, $y \neq y'$
+     - 1: Error, $y \\neq y'$
 
     *Implementation based on MOA.*
 
@@ -27,7 +29,7 @@ class HDDM_W(DriftDetector):
         Confidence to the drift
     warning_confidence
         Confidence to the warning
-    lambda_option
+    lambda_val
         The weight given to recent data. Smaller values mean less weight given to recent data.
     two_sided_test
         If True, will monitor error increments and decrements (two-sided). By default will only
@@ -41,194 +43,156 @@ class HDDM_W(DriftDetector):
     >>> rng = random.Random(42)
     >>> hddm_w = drift.HDDM_W()
 
-    >>> # Simulate a data stream as a uniform distribution of 1's and 0's
-    >>> data_stream = rng.choices([0, 1], k=2000)
-    >>> # Change the data distribution from index 999 to 1500, simulating an
-    >>> # increase in error rate (1 indicates error)
-    >>> data_stream[999:1500] = [1] * 500
+    >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
+    >>> # of 1's and 0's
+    >>> data_stream = rng.choices([0, 1], k=1000)
+    >>> # Increase the probability of 1's appearing in the next 1000 instances
+    >>> data_stream = data_stream + rng.choices([0, 1], k=1000, weights=[0.3, 0.7])
 
+    >>> print_warning = True
     >>> # Update drift detector and verify if change is detected
-    >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = hddm_w.update(val)
-    ...     if in_drift:
-    ...         print(f"Change detected at index {i}, input value: {val}")
-    Change detected at index 1014, input value: 1
+    >>> for i, x in enumerate(data_stream):
+    ...     _ = hddm_w.update(x)
+    ...     if hddm_w.warning_detected and print_warning:
+    ...         print(f"Warning detected at index {i}")
+    ...         print_warning = False
+    ...     if hddm_w.drift_detected:
+    ...         print(f"Change detected at index {i}")
+    ...         print_warning = True
+    Warning detected at index 451
+    Change detected at index 1077
 
-    References
-    ----------
-    [^1]: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection methods based on Hoeffding’s bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
-    [^2]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer. MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+     References
+     ----------
+     [^1]: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift
+     detection methods based on Hoeffding’s bounds. IEEE Transactions on Knowledge and Data
+     Engineering, 2014, 27(3): 810-823.
+     [^2]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer. MOA: Massive Online Analysis;
+     Journal of Machine Learning Research 11: 1601-1604, 2010.
 
     """
-
-    class SampleInfo:
-        def __init__(self):
-            self.EWMA_estimator = -1.0
-            self.independent_bounded_condition_sum = 0.0
 
     def __init__(
         self,
         drift_confidence=0.001,
         warning_confidence=0.005,
-        lambda_option=0.050,
+        lambda_val=0.05,
         two_sided_test=False,
     ):
         super().__init__()
-        super().reset()
-        self.total = self.SampleInfo()
-        self.sample1_decr_monitor = self.SampleInfo()
-        self.sample1_incr_monitor = self.SampleInfo()
-        self.sample2_decr_monitor = self.SampleInfo()
-        self.sample2_incr_monitor = self.SampleInfo()
-        self.incr_cutpoint = float("inf")
-        self.decr_cutpoint = float("inf")
-        self.width = 0
-        self.delay = 0
         self.drift_confidence = drift_confidence
         self.warning_confidence = warning_confidence
-        self.lambda_option = lambda_option
+        self.lambda_val = lambda_val
         self.two_sided_test = two_sided_test
-        self.estimation = None
 
-    def update(self, value):
+        self._reset()
+
+    def _reset(self):
+        super()._reset()
+        self._warning_detected = False
+        self._total = SampleInfo(self.lambda_val)
+        self._s1_decr = SampleInfo(self.lambda_val)
+        self._s1_incr = SampleInfo(self.lambda_val)
+        self._s2_decr = SampleInfo(self.lambda_val)
+        self._s2_incr = SampleInfo(self.lambda_val)
+        self._incr_cutpoint = float("inf")
+        self._decr_cutpoint = -float("inf")
+
+    @property
+    def warning_detected(self) -> bool:
+        return self._warning_detected
+
+    def _mcdiarmid_bound(self, ibc: float, confidence: float):
+        return math.sqrt(ibc * math.log(1 / confidence) / 2)
+
+    def update(self, x):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value: Input value (0 or 1)
+        x
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 1 indicates an error (miss-classification).
 
         Returns
         -------
-        tuple
-            A tuple (drift, warning) where its elements indicate if a drift or a warning is
-            detected.
+        self
 
         """
-        aux_decay_rate = 1.0 - self.lambda_option
-        self.width += 1
-        if self.total.EWMA_estimator < 0:
-            self.total.EWMA_estimator = value
-            self.total.independent_bounded_condition_sum = 1
-        else:
-            self.total.EWMA_estimator = (
-                self.lambda_option * value + aux_decay_rate * self.total.EWMA_estimator
-            )
-            self.total.independent_bounded_condition_sum = (
-                self.lambda_option * self.lambda_option
-                + aux_decay_rate * aux_decay_rate * self.total.independent_bounded_condition_sum
-            )
 
-        self._update_incr_statistics(value, self.drift_confidence)
-        if self._monitor_mean_incr(self.drift_confidence):
-            self.reset()
-            self._in_concept_change = True
-            self._in_warning_zone = False
-        elif self._monitor_mean_incr(self.warning_confidence):
-            self._in_concept_change = False
-            self._in_warning_zone = True
-        else:
-            self._in_concept_change = False
-            self._in_warning_zone = False
+        if self._drift_detected:
+            self._reset()
 
-        self._update_decr_statistics(value, self.drift_confidence)
+        self._total.update(x)
+
+        self._update_incr_stats(x, self.drift_confidence)
+        if self._detect_mean_incr(self.drift_confidence):
+            self._drift_detected = True
+        elif self._detect_mean_incr(self.warning_confidence):
+            self._warning_detected = True
+        else:
+            self._warning_detected = False
+
+        self._update_decr_stats(x, self.drift_confidence)
         if self.two_sided_test:
-            if self._monitor_mean_decr(self.drift_confidence):
-                self.reset()
-                self._in_concept_change = True
-            elif self._monitor_mean_decr(self.warning_confidence):
-                self._in_warning_zone = True
+            if self._detect_mean_decr(self.drift_confidence):
+                self._drift_detected = True
+            elif self._detect_mean_decr(self.warning_confidence):
+                self._warning_detected = True
 
-        self.estimation = self.total.EWMA_estimator
+        return self
 
-        return self._in_concept_change, self._in_warning_zone
+    def _has_mean_changed(
+        self, sample1: "SampleInfo", sample2: "SampleInfo", confidence: float
+    ) -> bool:
+        ibc_sum = sample1.ibc + sample2.ibc
+        bound = self._mcdiarmid_bound(ibc_sum, confidence)
 
-    @staticmethod
-    def _detect_mean_increment(sample1, sample2, confidence):
-        if sample1.EWMA_estimator < 0 or sample2.EWMA_estimator < 0:
-            return False
-        ibc_sum = (
-            sample1.independent_bounded_condition_sum + sample2.independent_bounded_condition_sum
-        )
-        bound = sqrt(ibc_sum * log(1 / confidence) / 2)
-        return sample2.EWMA_estimator - sample1.EWMA_estimator > bound
+        return sample2.ewma - sample1.ewma > bound
 
-    def _monitor_mean_incr(self, confidence):
-        return self._detect_mean_increment(
-            self.sample1_incr_monitor, self.sample2_incr_monitor, confidence
-        )
+    def _detect_mean_incr(self, confidence: float) -> bool:
+        return self._has_mean_changed(self._s1_incr, self._s2_incr, confidence)
 
-    def _monitor_mean_decr(self, confidence):
-        return self._detect_mean_increment(
-            self.sample2_decr_monitor, self.sample1_decr_monitor, confidence
-        )
+    def _detect_mean_decr(self, confidence: float) -> bool:
+        return self._has_mean_changed(self._s2_decr, self._s1_decr, confidence)
 
-    def _update_incr_statistics(self, value, confidence):
-        aux_decay = 1.0 - self.lambda_option
-        bound = sqrt(self.total.independent_bounded_condition_sum * log(1.0 / confidence) / 2)
+    def _update_incr_stats(self, x, confidence):
+        eps = self._mcdiarmid_bound(self._total.ibc, confidence)
 
-        if self.total.EWMA_estimator + bound < self.incr_cutpoint:
-            self.incr_cutpoint = self.total.EWMA_estimator + bound
-            self.sample1_incr_monitor.EWMA_estimator = self.total.EWMA_estimator
-            self.sample1_incr_monitor.independent_bounded_condition_sum = (
-                self.total.independent_bounded_condition_sum
-            )
-            self.sample2_incr_monitor = self.SampleInfo()
-            self.delay = 0
+        if self._total.ewma + eps < self._incr_cutpoint:
+            self._incr_cutpoint = self._total.ewma + eps
+            self._s1_incr = copy.deepcopy(self._total)
+            self._s2_incr = SampleInfo(self.lambda_val)
         else:
-            self.delay += 1
-            if self.sample2_incr_monitor.EWMA_estimator < 0:
-                self.sample2_incr_monitor.EWMA_estimator = value
-                self.sample2_incr_monitor.independent_bounded_condition_sum = 1
-            else:
-                self.sample2_incr_monitor.EWMA_estimator = (
-                    self.lambda_option * value
-                    + aux_decay * self.sample2_incr_monitor.EWMA_estimator
-                )
-                self.sample2_incr_monitor.independent_bounded_condition_sum = (
-                    self.lambda_option * self.lambda_option
-                    + aux_decay
-                    * aux_decay
-                    * self.sample2_incr_monitor.independent_bounded_condition_sum
-                )
+            self._s2_incr.update(x)
 
-    def _update_decr_statistics(self, value, confidence):
-        aux_decay = 1.0 - self.lambda_option
-        epsilon = sqrt(self.total.independent_bounded_condition_sum * log(1.0 / confidence) / 2)
+    def _update_decr_stats(self, x, confidence):
+        eps = self._mcdiarmid_bound(self._total.ibc, confidence)
 
-        if self.total.EWMA_estimator - epsilon > self.decr_cutpoint:
-            self.decr_cutpoint = self.total.EWMA_estimator - epsilon
-            self.sample1_decr_monitor.EWMA_estimator = self.total.EWMA_estimator
-            self.sample1_decr_monitor.independent_bounded_condition_sum = (
-                self.total.independent_bounded_condition_sum
-            )
-            self.sample2_decr_monitor = self.SampleInfo()
+        if self._total.ewma - eps > self._decr_cutpoint:
+            self._decr_cutpoint = self._total.ewma - eps
+            self._s1_decr = copy.deepcopy(self._total)
+            self._s2_decr = SampleInfo(self.lambda_val)
         else:
-            if self.sample2_decr_monitor.EWMA_estimator < 0:
-                self.sample2_decr_monitor.EWMA_estimator = value
-                self.sample2_decr_monitor.independent_bounded_condition_sum = 1
-            else:
-                self.sample2_decr_monitor.EWMA_estimator = (
-                    self.lambda_option * value
-                    + aux_decay * self.sample2_decr_monitor.EWMA_estimator
-                )
-                self.sample2_decr_monitor.independent_bounded_condition_sum = (
-                    self.lambda_option * self.lambda_option
-                    + aux_decay
-                    * aux_decay
-                    * self.sample2_decr_monitor.independent_bounded_condition_sum
-                )
+            self._s2_decr.update(x)
 
-    def reset(self):
-        """Reset the change detector."""
-        super().reset()
-        self.total = self.SampleInfo()
-        self.sample1_decr_monitor = self.SampleInfo()
-        self.sample1_incr_monitor = self.SampleInfo()
-        self.sample2_decr_monitor = self.SampleInfo()
-        self.sample2_incr_monitor = self.SampleInfo()
-        self.incr_cutpoint = float("inf")
-        self.decr_cutpoint = float("inf")
-        self.width = 0
-        self.delay = 0
+
+class SampleInfo:
+    def __init__(self, lambd: float):
+        self._ewma = stats.EWMean(lambd)
+        # Independent bound condition
+        self._ibc = 1.0
+        self._lambd_sq = lambd * lambd
+        self._c_lambd_sq = (1 - lambd) ** 2
+
+    def update(self, x):
+        self._ewma.update(x)
+        self._ibc = self._lambd_sq + self._c_lambd_sq * self._ibc
+
+    @property
+    def ewma(self):
+        return self._ewma.get()
+
+    @property
+    def ibc(self):
+        return self._ibc
