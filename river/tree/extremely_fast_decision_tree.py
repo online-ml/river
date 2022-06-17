@@ -35,9 +35,10 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         - 'gini' - Gini</br>
         - 'info_gain' - Information Gain</br>
         - 'hellinger' - Helinger Distance</br>
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
-    tie_threshold
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -97,7 +98,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
     >>> model = tree.ExtremelyFastDecisionTreeClassifier(
     ...     grace_period=100,
-    ...     split_confidence=1e-5,
+    ...     delta=1e-5,
     ...     nominal_attributes=['elevel', 'car', 'zipcode'],
     ...     min_samples_reevaluate=100
     ... )
@@ -114,8 +115,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         max_depth: int = None,
         min_samples_reevaluate: int = 20,
         split_criterion: str = "info_gain",
-        split_confidence: float = 1e-7,
-        tie_threshold: float = 0.05,
+        delta: float = 1e-7,
+        tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
@@ -132,8 +133,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             grace_period=grace_period,
             max_depth=max_depth,
             split_criterion=split_criterion,
-            split_confidence=split_confidence,
-            tie_threshold=tie_threshold,
+            delta=delta,
+            tau=tau,
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
@@ -395,7 +396,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 # Compute Hoeffding bound
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(node.stats),
-                    self.split_confidence,
+                    self.delta,
                     node.total_weight,
                 )
 
@@ -426,8 +427,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     self._enforce_size_limit()
 
                 elif (
-                    x_best.merit - x_current.merit > hoeffding_bound
-                    or hoeffding_bound < self.tie_threshold
+                    x_best.merit - x_current.merit > hoeffding_bound or hoeffding_bound < self.tau
                 ) and (id_current != id_best):
                     # Create a new branch
                     branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
@@ -463,8 +463,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     self._enforce_size_limit()
 
                 elif (
-                    x_best.merit - x_current.merit > hoeffding_bound
-                    or hoeffding_bound < self.tie_threshold
+                    x_best.merit - x_current.merit > hoeffding_bound or hoeffding_bound < self.tau
                 ) and (id_current == id_best):
                     branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
                     # Change the branch but keep the existing children nodes
@@ -522,14 +521,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(node.stats),
-                    self.split_confidence,
+                    self.delta,
                     node.total_weight,
                 )
 
-                if (
-                    x_best.merit - x_null.merit > hoeffding_bound
-                    or hoeffding_bound < self.tie_threshold
-                ):
+                if x_best.merit - x_null.merit > hoeffding_bound or hoeffding_bound < self.tau:
                     # Create a new branch
                     branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
                     leaves = tuple(

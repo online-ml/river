@@ -1,56 +1,53 @@
-import math
-import typing
-
+from river import stats
 from river.base import DriftDetector
 
 
 class EDDM(DriftDetector):
     r"""Early Drift Detection Method.
 
-    EDDM (Early Drift Detection Method) aims to improve the
-    detection rate of gradual concept drift in DDM, while keeping
-    a good performance against abrupt concept drift.
+    EDDM (Early Drift Detection Method) aims to improve the detection rate of gradual
+    concept drift in DDM, while keeping a good performance against abrupt concept drift.
 
-    This method works by keeping track of the average distance
-    between two errors instead of only the error rate. For this,
-    it is necessary to keep track of the running average distance
-    and the running standard deviation, as well as the maximum
-    distance and the maximum standard deviation.
+    This method works by keeping track of the average distance between two errors instead
+    of only the error rate. For this, it is necessary to keep track of the running average
+    distance and the running standard deviation, as well as the maximum distance and the maximum
+    standard deviation.
 
-    The algorithm works similarly to the DDM algorithm, by keeping
-    track of statistics only. It works with the running average
-    distance ($p_i'$) and the running standard deviation ($s_i'$), as
-    well as $p'_{max}$ and $s'_{max}$, which are the values of $p_i'$
-    and $s_i'$ when $(p_i' + 2 * s_i')$ reaches its maximum.
+    The algorithm works similarly to the DDM algorithm, by keeping track of statistics only. It works
+    with the running average distance ($p_i'$) and the running standard deviation ($s_i'$), as
+    well as $p'_{max}$ and $s'_{max}$, which are the values of $p_i'$ and $s_i'$ when
+    $(p_i' + 2 * s_i')$ reaches its maximum.
 
-    Like DDM, there are two threshold values that define the
-    borderline between no change, warning zone, and drift detected.
-    These are as follows:
+    Like DDM, there are two threshold values that define the borderline between no change, warning zone,
+    and drift detected. These are as follows:
 
-    * if $(p_i' + 2 * s_i')/(p'_{max} + 2 * s'_{max}) < \alpha$ -> Warning zone
+    * if $(p_i' + 2 * s_i') / (p'_{max} + 2 * s'_{max}) < \alpha$ -> Warning zone
 
-    * if $(p_i' + 2 * s_i')/(p'_{max} + 2 * s'_{max}) < \beta$ -> Change detected
+    * if $(p_i' + 2 * s_i') / (p'_{max} + 2 * s'_{max}) < \beta$ -> Change detected
 
     $\alpha$ and $\beta$ are set to 0.95 and 0.9, respectively.
 
-    **Input:** `value` must be a binary signal, where 1 indicates error.
-    For example, if a classifier's prediction $y'$ is right or wrong w.r.t the
+    **Input:** `x` is an entry in a stream of bits, where 1 indicates error/failure and 0
+    represents correct/normal values.
+
+    For example, if a classifier's prediction $y'$ is right or wrong w.r.t. the
     true target label $y$:
 
     - 0: Correct, $y=y'$
 
-    - 1: Error, $y \neq y'$
+    - 1: Error, $y \\neq y'$
 
     Parameters
     ----------
-    min_num_instances
-        The minimum required number of analyzed samples so change can be detected. This is used to
-        avoid false detections during the early moments of the detector, when the weight of one
-        sample is important.
-    warning_level
-        Warning level.
-    out_control_level
-        Out-control level.
+    warm_start
+         The minimum required number of monitored errors/failures so change can be detected.
+        Warm start parameter for the drift detector.
+    alpha
+        Threshold for triggering a warning. Must be between 0 and 1. The smaller the value, the
+        more conservative the detector becomes.
+    beta
+        Threshold for triggering a drift. Must be between 0 and 1. The smaller the value, the
+        more conservative the detector becomes.
 
     Examples
     --------
@@ -58,27 +55,28 @@ class EDDM(DriftDetector):
     >>> from river import drift
 
     >>> rng = random.Random(42)
-    >>> eddm = drift.EDDM()
+    >>> # Change the default hyperparameters to avoid too many false positives
+    >>> # in this example
+    >>> eddm = drift.EDDM(alpha=0.8, beta=0.75)
 
-    >>> # Simulate a data stream as a uniform distribution of 1's and 0's
-    >>> data_stream = rng.choices([0, 1], k=2000)
-    >>> # Change the data distribution from index 999 to 1500, simulating an
-    >>> # increase in error rate (1 indicates error)
-    >>> data_stream[999:1500] = [1] * 500
+    >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
+    >>> # of 1's and 0's
+    >>> data_stream = rng.choices([0, 1], k=1000)
+    >>> # Increase the probability of 1's appearing in the next 1000 instances
+    >>> data_stream = data_stream + rng.choices([0, 1], k=1000, weights=[0.3, 0.7])
 
+    >>> print_warning = True
     >>> # Update drift detector and verify if change is detected
-    >>> for i, val in enumerate(data_stream):
-    ...     in_drift, in_warning = eddm.update(val)
-    ...     if in_drift:
-    ...         print(f"Change detected at index {i}, input value: {val}")
-    Change detected at index 105, input value: 1
-    Change detected at index 245, input value: 1
-    Change detected at index 332, input value: 1
-    Change detected at index 451, input value: 1
-    Change detected at index 537, input value: 1
-    Change detected at index 843, input value: 1
-    Change detected at index 914, input value: 1
-    Change detected at index 1015, input value: 1
+    >>> for i, x in enumerate(data_stream):
+    ...     _ = eddm.update(x)
+    ...     if eddm.warning_detected and print_warning:
+    ...         print(f"Warning detected at index {i}")
+    ...         print_warning = False
+    ...     if eddm.drift_detected:
+    ...         print(f"Change detected at index {i}")
+    ...         print_warning = True
+    Warning detected at index 1059
+    Change detected at index 1278
 
     References
     ----------
@@ -86,95 +84,87 @@ class EDDM(DriftDetector):
 
     """
 
-    # FDDM_OUTCONTROL = 0.9
-    # FDDM_WARNING = 0.95
-    # FDDM_MIN_NUM_INSTANCES = 30
-
     def __init__(
         self,
-        min_num_instances=30,
-        warning_level=0.95,
-        out_control_level=0.9,
+        warm_start: int = 30,
+        alpha: float = 0.95,
+        beta: float = 0.9,
     ):
         super().__init__()
-        self.min_num_instances = min_num_instances
-        self.warning = warning_level
-        self.outcontrol = out_control_level
-        self.m_num_errors = None
-        self.m_min_num_errors = 30
-        self.m_n = None
-        self.m_d = None
-        self.m_lastd = None
-        self.m_mean = None
-        self.m_std_temp = None
-        self.m_m2s_max = None
-        self.m_last_level = None
-        self.estimation = None
-        self.delay = None
-        self.reset()
+        self.warm_start = warm_start
 
-    def reset(self):
-        """Reset the change detector."""
-        super().reset()
-        self.m_n = 1
-        self.m_num_errors = 0
-        self.m_d = 0
-        self.m_lastd = 0
-        self.m_mean = 0.0
-        self.m_std_temp = 0.0
-        self.m_m2s_max = 0.0
-        self.estimation = 0.0
+        if alpha < beta:
+            raise ValueError("'alpha' must be greater or equal to 'beta'.")
 
-    def update(self, value) -> typing.Tuple[bool, bool]:
+        self.alpha = alpha
+        self.beta = beta
+
+        self._reset()
+
+    def _reset(self):
+        super()._reset()
+        self._warning_detected = False
+
+        # Variance of the distance between two error/failure reports
+        self._error_distances = stats.Var()
+        # Number of observations
+        self._n = 0
+        # Index of the last observed error
+        self._last_error = 0
+        # Number of observed errors/failures
+        self._n_errors = 0
+
+        self._p2s_prime_max = -1
+
+    @property
+    def warning_detected(self):
+        return self._warning_detected
+
+    def update(self, x):
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value
+        x
             This parameter indicates whether the last sample analyzed was correctly classified or
             not. 1 indicates an error (miss-classification).
 
         Returns
         -------
-        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
+        self
 
         """
 
-        if self._in_concept_change:
-            self.reset()
+        if self._drift_detected:
+            self._reset()
 
-        self._in_concept_change = False
+        # Update the sample counter
+        self._n += 1
 
-        self.m_n += 1
+        # Error/failure
+        if x == 1:
+            self._n_errors += 1
+            # Monitor the interval between errors/failures
+            self._error_distances.update(self._n - self._last_error)
 
-        if value == 1.0:
-            self._in_warning_zone = False
-            self.delay = 0
-            self.m_num_errors += 1
-            self.m_lastd = self.m_d
-            self.m_d = self.m_n - 1
-            distance = self.m_d - self.m_lastd
-            old_mean = self.m_mean
-            self.m_mean = self.m_mean + (float(distance) - self.m_mean) / self.m_num_errors
-            self.estimation = self.m_mean
-            self.m_std_temp += (distance - self.m_mean) * (distance - old_mean)
-            std = math.sqrt(self.m_std_temp / self.m_num_errors)
-            m2s = self.m_mean + 2 * std
+            if self._n > self.warm_start:
+                # Mean and variance of the intervals between errors
+                pi_prime = self._error_distances.mean.get()
+                si_prime = self._error_distances.get() ** 0.5
 
-            if self.m_n < self.min_num_instances:
-                return self._in_concept_change, self._in_warning_zone
+                p2s_prime = pi_prime + 2 * si_prime
+                if p2s_prime > self._p2s_prime_max:
+                    self._p2s_prime_max = p2s_prime
+                elif self._n_errors > self.warm_start:
+                    level = p2s_prime / self._p2s_prime_max
+                    if level < self.beta:
+                        self._drift_detected = True
+                    elif level < self.alpha:
+                        self._warning_detected = True
+                    else:
+                        self._warning_detected = False
 
-            if m2s > self.m_m2s_max:
-                self.m_m2s_max = m2s
-            else:
-                p = m2s / self.m_m2s_max
-                if (self.m_num_errors > self.m_min_num_errors) and (p < self.outcontrol):
-                    self._in_concept_change = True
+            # Update the index of the last error/failure detected
+            self._last_error = self._n
 
-                elif (self.m_num_errors > self.m_min_num_errors) and (p < self.warning):
-                    self._in_warning_zone = True
-
-                else:
-                    self._in_warning_zone = False
-
-        return self._in_concept_change, self._in_warning_zone
+        return self

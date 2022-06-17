@@ -4,11 +4,10 @@ import io
 import math
 import typing
 
-from river import anomaly, base, drift, linear_model, stats, tree
+from river import anomaly, base, drift, linear_model, stats
+from river.tree import split_criterion
+from river.tree import splitter as spl
 
-from ..tree.split_criterion import VarianceRatioSplitCriterion
-from ..tree.splitter.base import Splitter
-from ..tree.splitter.nominal_splitter_reg import NominalSplitterReg
 from .base import HoeffdingRule
 
 
@@ -78,7 +77,7 @@ class RegRule(HoeffdingRule, base.Regressor, anomaly.base.AnomalyDetector):
         self._feat_stats = collections.defaultdict(functools.partial(stats.Var))
 
     def new_nominal_splitter(self):
-        return NominalSplitterReg()
+        return spl.NominalSplitterReg()
 
     @property
     def statistics(self):
@@ -97,9 +96,9 @@ class RegRule(HoeffdingRule, base.Regressor, anomaly.base.AnomalyDetector):
 
     def drift_test(self, y, y_pred):
         abs_error = abs(y - y_pred)
-        in_drift, _ = self.drift_detector.update(abs_error)
+        self.drift_detector.update(abs_error)
 
-        return in_drift
+        return self.drift_detector.drift_detected
 
     def score_one(self, x) -> float:
         """Rule anomaly score.
@@ -195,11 +194,11 @@ class AMRules(base.Regressor):
         Different splitters are available for classification and regression tasks. Classification
         and regression splitters can be distinguished by their property `is_target_class`.
         This is an advanced option. Special care must be taken when choosing different splitters.
-        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
+        By default, `tree.splitter.TEBSTSplitter` is used if `splitter` is `None`.
     drift_detector
         The drift detection model that is used by each rule. Care must be taken to avoid the
         triggering of too many false alarms or delaying too much the concept drift detection.
-        By default, `drift.PageHinckley` is used if `drift_detector` is `None`.
+        By default, `drift.ADWIN` is used if `drift_detector` is `None`.
     alpha
         The exponential decaying factor applied to the learning models' absolute errors, that
         are monitored if `pred_type='adaptive'`. Must be between `0` and `1`. The closer
@@ -258,7 +257,7 @@ class AMRules(base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.930966
+    MAE: 1.117705
 
     References
     ----------
@@ -279,7 +278,7 @@ class AMRules(base.Regressor):
         tau: float = 0.05,
         pred_type: str = "adaptive",
         pred_model: base.Regressor = None,
-        splitter: Splitter = None,
+        splitter: spl.Splitter = None,
         drift_detector: base.DriftDetector = None,
         alpha: float = 0.99,
         anomaly_threshold: float = -0.75,
@@ -297,11 +296,11 @@ class AMRules(base.Regressor):
         self.pred_model = pred_model if pred_model else linear_model.LinearRegression()
 
         if splitter is None:
-            self.splitter = tree.splitter.EBSTSplitter()
+            self.splitter = spl.TEBSTSplitter()
         else:
             self.splitter = splitter  # type: ignore
 
-        self.drift_detector = drift_detector if drift_detector is not None else drift.PageHinkley()
+        self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
 
         self.alpha = alpha
         self.anomaly_threshold = anomaly_threshold
@@ -338,7 +337,7 @@ class AMRules(base.Regressor):
 
         return RegRule(
             template_splitter=self.splitter,
-            split_criterion=VarianceRatioSplitCriterion(self.min_samples_split),
+            split_criterion=split_criterion.VarianceRatioSplitCriterion(self.min_samples_split),
             pred_model=predictor,
             drift_detector=self.drift_detector.clone(),
         )

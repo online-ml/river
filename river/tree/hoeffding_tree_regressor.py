@@ -7,7 +7,7 @@ from .nodes.branch import DTBranch
 from .nodes.htr_nodes import LeafAdaptive, LeafMean, LeafModel
 from .nodes.leaf import HTLeaf
 from .split_criterion import VarianceReductionSplitCriterion
-from .splitter import EBSTSplitter, Splitter
+from .splitter import Splitter, TEBSTSplitter
 
 
 class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
@@ -19,9 +19,10 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         Number of instances a leaf should observe between split attempts.
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
-    tie_threshold
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -47,7 +48,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         Different splitters are available for classification and regression tasks. Classification
         and regression splitters can be distinguished by their property `is_target_class`.
         This is an advanced option. Special care must be taken when choosing different splitters.
-        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
+        By default, `tree.splitter.TEBSTSplitter` is used if `splitter` is `None`.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
@@ -88,7 +89,6 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     ...     preprocessing.StandardScaler() |
     ...     tree.HoeffdingTreeRegressor(
     ...         grace_period=100,
-    ...         leaf_prediction='adaptive',
     ...         model_selector_decay=0.9
     ...     )
     ... )
@@ -96,7 +96,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.782258
+    MAE: 0.781781
     """
 
     _TARGET_MEAN = "mean"
@@ -109,9 +109,9 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         self,
         grace_period: int = 200,
         max_depth: int = None,
-        split_confidence: float = 1e-7,
-        tie_threshold: float = 0.05,
-        leaf_prediction: str = "model",
+        delta: float = 1e-7,
+        tau: float = 0.05,
+        leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
@@ -136,8 +136,8 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
 
         self._split_criterion: str = "vr"
         self.grace_period = grace_period
-        self.split_confidence = split_confidence
-        self.tie_threshold = tie_threshold
+        self.delta = delta
+        self.tau = tau
         self.leaf_prediction = leaf_prediction
         self.leaf_model = leaf_model if leaf_model else linear_model.LinearRegression()
         self.model_selector_decay = model_selector_decay
@@ -145,7 +145,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         self.min_samples_split = min_samples_split
 
         if splitter is None:
-            self.splitter = EBSTSplitter()
+            self.splitter = TEBSTSplitter()
         else:
             if splitter.is_target_class:
                 raise ValueError("The chosen splitter cannot be used in regression tasks.")
@@ -348,14 +348,14 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         else:
             hoeffding_bound = self._hoeffding_bound(
                 split_criterion.range_of_merit(leaf.stats),
-                self.split_confidence,
+                self.delta,
                 leaf.total_weight,
             )
             best_suggestion = best_split_suggestions[-1]
             second_best_suggestion = best_split_suggestions[-2]
             if best_suggestion.merit > 0.0 and (
                 second_best_suggestion.merit / best_suggestion.merit < 1 - hoeffding_bound
-                or hoeffding_bound < self.tie_threshold
+                or hoeffding_bound < self.tau
             ):
                 should_split = True
             if self.remove_poor_attrs:

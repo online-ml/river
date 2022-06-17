@@ -62,10 +62,9 @@ class KSWIN(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     in_drift, _ = kswin.update(val)
-    ...     if in_drift:
+    ...     _ = kswin.update(val)
+    ...     if kswin.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
-    ...         kswin.reset()  # Good practice
     Change detected at index 1016, input value: 6
 
     References
@@ -84,30 +83,33 @@ class KSWIN(DriftDetector):
         window: typing.Iterable = None,
     ):
         super().__init__()
+        if alpha < 0 or alpha > 1:
+            raise ValueError("Alpha must be between 0 and 1.")
+
+        if window_size < 0:
+            raise ValueError("window_size must be greater than 0.")
+
+        if window_size < stat_size:
+            raise ValueError("stat_size must be smaller than window_size.")
+
         self.alpha = alpha
         self.window_size = window_size
         self.stat_size = stat_size
         self.seed = seed
 
-        self.p_value = 0
-        self.n = 0
-        if self.alpha < 0 or self.alpha > 1:
-            raise ValueError("Alpha must be between 0 and 1.")
+        self._reset()
 
-        if self.window_size < 0:
-            raise ValueError("window_size must be greater than 0.")
-
-        if self.window_size < self.stat_size:
-            raise ValueError("stat_size must be smaller than window_size.")
-
-        if window is None:
-            self.window: typing.Deque = collections.deque(maxlen=self.window_size)
-        else:
+        if window:
             self.window = collections.deque(window, maxlen=self.window_size)
 
+    def _reset(self):
+        super()._reset()
+        self.p_value = 0
+        self.n = 0
+        self.window: typing.Deque = collections.deque(maxlen=self.window_size)
         self._rng = random.Random(self.seed)
 
-    def update(self, value):
+    def update(self, x):
         """Update the change detector with a single data point.
 
         Adds an element on top of the sliding window and removes the oldest one from the window.
@@ -115,17 +117,21 @@ class KSWIN(DriftDetector):
 
         Parameters
         ----------
-        value
+        x
             New data sample the sliding window should add.
 
         Returns
         -------
-        A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.
+        self
 
         """
+
+        if self._drift_detected:
+            self._reset()
+
         self.n += 1
 
-        self.window.append(value)
+        self.window.append(x)
         if len(self.window) >= self.window_size:
             rnd_window = [
                 self.window[r]
@@ -138,14 +144,14 @@ class KSWIN(DriftDetector):
             st, self.p_value = stats.ks_2samp(rnd_window, most_recent)
 
             if self.p_value <= self.alpha and st > 0.1:
-                self._in_concept_change = True
+                self._drift_detected = True
                 self.window = collections.deque(most_recent, maxlen=self.window_size)
             else:
-                self._in_concept_change = False
+                self._drift_detected = False
         else:  # Not enough samples in the sliding window for a valid test
-            self._in_concept_change = False
+            self._drift_detected = False
 
-        return self._in_concept_change, False
+        return self
 
     @classmethod
     def _unit_test_params(cls):

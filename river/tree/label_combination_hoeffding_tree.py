@@ -29,9 +29,10 @@ class LabelCombinationHoeffdingTreeClassifier(tree.HoeffdingTreeClassifier, base
         - 'gini' - Gini</br>
         - 'info_gain' - Information Gain</br>
         - 'hellinger' - Helinger Distance</br>
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
-    tie_threshold
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -72,7 +73,7 @@ class LabelCombinationHoeffdingTreeClassifier(tree.HoeffdingTreeClassifier, base
 
     >>> dataset = iter(datasets.Music().take(200))
     >>> model = tree.LabelCombinationHoeffdingTreeClassifier(
-    ...     split_confidence=1e-5,
+    ...     delta=1e-5,
     ...     grace_period=50
     ... )
 
@@ -88,8 +89,8 @@ class LabelCombinationHoeffdingTreeClassifier(tree.HoeffdingTreeClassifier, base
         grace_period: int = 200,
         max_depth: int = None,
         split_criterion: str = "info_gain",
-        split_confidence: float = 1e-7,
-        tie_threshold: float = 0.05,
+        delta: float = 1e-7,
+        tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
@@ -106,8 +107,8 @@ class LabelCombinationHoeffdingTreeClassifier(tree.HoeffdingTreeClassifier, base
             grace_period=grace_period,
             max_depth=max_depth,
             split_criterion=split_criterion,
-            split_confidence=split_confidence,
-            tie_threshold=tie_threshold,
+            delta=delta,
+            tau=tau,
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
