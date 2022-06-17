@@ -1,7 +1,9 @@
+import random
+import statistics
 import typing
 from copy import deepcopy
 
-from river import base
+from river import base, drift
 
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .nodes.branch import DTBranch
@@ -34,9 +36,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         Number of instances a leaf should observe between split attempts.
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
-    tie_threshold
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -62,7 +65,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         Different splitters are available for classification and regression tasks. Classification
         and regression splitters can be distinguished by their property `is_target_class`.
         This is an advanced option. Special care must be taken when choosing different splitters.
-        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
+        By default, `tree.splitter.TEBSTSplitter` is used if `splitter` is `None`.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
@@ -71,8 +74,12 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     drift_window_threshold
         Minimum number of examples an alternate tree must observe before being considered as a
         potential replacement to the current one.
-    adwin_confidence
-        The delta parameter used in the nodes' ADWIN drift detectors.
+    drift_detector
+        The drift detector used to build the tree. If `None` then `drift.ADWIN` is used.
+        Only detectors that support arbitrarily valued continuous data can be used for regression.
+    switch_significance
+        The significance level to assess whether alternate subtrees are significantly better
+        than their main subtree counterparts.
     binary_split
         If True, only allow binary splits.
     max_size
@@ -90,9 +97,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     Notes
     -----
-    The Hoeffding Adaptive Tree [^1] uses ADWIN [^2] to monitor performance of branches on the tree
-    and to replace them with new branches when their accuracy decreases if the new branches are
-    more accurate.
+    The Hoeffding Adaptive Tree [^1] uses drift detectors to monitor performance of branches
+    in the tree and to replace them with new branches when their accuracy decreases.
 
     The bootstrap sampling strategy is an improvement over the original Hoeffding Adaptive Tree
     algorithm. It is enabled by default since, in general, it results in better performance.
@@ -109,9 +115,6 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     [^1]: Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
     In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
     Heidelberg, 2009.
-    [^2]: Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
-    windowing." In Proceedings of the 2007 SIAM international conference on data mining,
-    pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     Examples
     --------
@@ -127,7 +130,6 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     ...     preprocessing.StandardScaler() |
     ...     tree.HoeffdingAdaptiveTreeRegressor(
     ...         grace_period=50,
-    ...         leaf_prediction='adaptive',
     ...         model_selector_decay=0.3,
     ...         seed=0
     ...     )
@@ -136,16 +138,16 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.795811
+    MAE: 0.809874
     """
 
     def __init__(
         self,
         grace_period: int = 200,
         max_depth: int = None,
-        split_confidence: float = 1e-7,
-        tie_threshold: float = 0.05,
-        leaf_prediction: str = "model",
+        delta: float = 1e-7,
+        tau: float = 0.05,
+        leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
@@ -153,7 +155,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         min_samples_split: int = 5,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
-        adwin_confidence: float = 0.002,
+        drift_detector: typing.Optional[base.DriftDetector] = None,
+        switch_significance: float = 0.05,
         binary_split: bool = False,
         max_size: float = 500.0,
         memory_estimate_period: int = 1000000,
@@ -166,8 +169,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,
-            split_confidence=split_confidence,
-            tie_threshold=tie_threshold,
+            delta=delta,
+            tau=tau,
             leaf_prediction=leaf_prediction,
             leaf_model=leaf_model,
             model_selector_decay=model_selector_decay,
@@ -182,14 +185,18 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
             merit_preprune=merit_preprune,
         )
 
+        self.bootstrap_sampling = bootstrap_sampling
+        self.drift_window_threshold = drift_window_threshold
+        self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
+        self.switch_significance = switch_significance
+        self.seed = seed
+
         self._n_alternate_trees = 0
         self._n_pruned_alternate_trees = 0
         self._n_switch_alternate_trees = 0
+        self._norm_dist = statistics.NormalDist()
 
-        self.bootstrap_sampling = bootstrap_sampling
-        self.drift_window_threshold = drift_window_threshold
-        self.adwin_confidence = adwin_confidence
-        self.seed = seed
+        self._rng = random.Random(self.seed)
 
     @property
     def n_alternate_trees(self):
@@ -266,16 +273,16 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 initial_stats,
                 depth,
                 self.splitter,
-                adwin_delta=self.adwin_confidence,
-                seed=self.seed,
+                drift_detector=self.drift_detector.clone(),
+                rng=self._rng,
             )
         elif self.leaf_prediction == self._MODEL:
             return AdaLeafRegModel(
                 initial_stats,
                 depth,
                 self.splitter,
-                adwin_delta=self.adwin_confidence,
-                seed=self.seed,
+                drift_detector=self.drift_detector.clone(),
+                rng=self._rng,
                 leaf_model=leaf_model,
             )
         else:  # adaptive learning node
@@ -283,8 +290,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
                 initial_stats,
                 depth,
                 self.splitter,
-                adwin_delta=self.adwin_confidence,
-                seed=self.seed,
+                drift_detector=self.drift_detector.clone(),
+                rng=self._rng,
                 leaf_model=leaf_model,
             )
             if parent is not None and isinstance(parent, AdaLeafRegressor):

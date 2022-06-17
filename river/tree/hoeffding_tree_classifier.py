@@ -22,9 +22,10 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         - 'gini' - Gini</br>
         - 'info_gain' - Information Gain</br>
         - 'hellinger' - Helinger Distance</br>
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
-    tie_threshold
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -93,7 +94,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
     >>> model = tree.HoeffdingTreeClassifier(
     ...     grace_period=100,
-    ...     split_confidence=1e-5,
+    ...     delta=1e-5,
     ...     nominal_attributes=['elevel', 'car', 'zipcode']
     ... )
 
@@ -118,8 +119,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         grace_period: int = 200,
         max_depth: int = None,
         split_criterion: str = "info_gain",
-        split_confidence: float = 1e-7,
-        tie_threshold: float = 0.05,
+        delta: float = 1e-7,
+        tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
@@ -143,8 +144,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         )
         self.grace_period = grace_period
         self.split_criterion = split_criterion
-        self.split_confidence = split_confidence
-        self.tie_threshold = tie_threshold
+        self.delta = delta
+        self.tau = tau
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
@@ -246,14 +247,14 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             else:
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(leaf.stats),
-                    self.split_confidence,
+                    self.delta,
                     leaf.total_weight,
                 )
                 best_suggestion = best_split_suggestions[-1]
                 second_best_suggestion = best_split_suggestions[-2]
                 if (
                     best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
-                    or hoeffding_bound < self.tie_threshold
+                    or hoeffding_bound < self.tau
                 ):
                     should_split = True
                 if self.remove_poor_attrs:

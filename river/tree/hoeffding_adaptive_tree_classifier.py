@@ -1,5 +1,7 @@
+import random
 import typing
 
+from river import base, drift
 from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
 
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
@@ -29,9 +31,10 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         - 'gini' - Gini</br>
         - 'info_gain' - Information Gain</br>
         - 'hellinger' - Helinger Distance</br>
-    split_confidence
-        Allowed error in split decision, a value closer to 0 takes longer to decide.
-    tie_threshold
+    delta
+        Significance level to calculate the Hoeffding bound. The significance level is given by
+        `1 - delta`. Values closer to zero imply longer split decision delays.
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -55,8 +58,11 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     drift_window_threshold
         Minimum number of examples an alternate tree must observe before being considered as a
         potential replacement to the current one.
-    adwin_confidence
-        The delta parameter used in the nodes' ADWIN drift detectors.
+    drift_detector
+        The drift detector used to build the tree. If `None` then `drift.ADWIN` is used.
+    switch_significance
+        The significance level to assess whether alternate subtrees are significantly better
+        than their main subtree counterparts.
     binary_split
         If True, only allow binary splits.
     max_size
@@ -75,9 +81,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     Notes
     -----
-    The Hoeffding Adaptive Tree [^1] uses ADWIN [^2] to monitor performance of branches on the tree
-    and to replace them with new branches when their accuracy decreases if the new branches are
-    more accurate.
+    The Hoeffding Adaptive Tree [^1] uses a drift detector to monitor performance of branches in
+    the tree and to replace them with new branches when their accuracy decreases.
 
     The bootstrap sampling strategy is an improvement over the original Hoeffding Adaptive Tree
     algorithm. It is enabled by default since, in general, it results in better performance.
@@ -87,9 +92,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     [^1]: Bifet, Albert, and Ricard Gavaldà. "Adaptive learning from evolving data streams."
        In International Symposium on Intelligent Data Analysis, pp. 249-260. Springer, Berlin,
        Heidelberg, 2009.
-    [^2]: Bifet, Albert, and Ricard Gavaldà. "Learning from time-changing data with adaptive
-       windowing." In Proceedings of the 2007 SIAM international conference on data mining,
-       pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 
     Examples
     --------
@@ -106,7 +108,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     >>> model = tree.HoeffdingAdaptiveTreeClassifier(
     ...     grace_period=100,
-    ...     split_confidence=1e-5,
+    ...     delta=1e-5,
     ...     leaf_prediction='nb',
     ...     nb_threshold=10,
     ...     seed=0
@@ -119,24 +121,21 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     """
 
-    # =============================================
-    # == Hoeffding Adaptive Tree implementation ===
-    # =============================================
-
     def __init__(
         self,
         grace_period: int = 200,
         max_depth: int = None,
         split_criterion: str = "info_gain",
-        split_confidence: float = 1e-7,
-        tie_threshold: float = 0.05,
+        delta: float = 1e-7,
+        tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
         nominal_attributes: list = None,
         splitter: Splitter = None,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
-        adwin_confidence: float = 0.002,
+        drift_detector: typing.Optional[base.DriftDetector] = None,
+        switch_significance: float = 0.05,
         binary_split: bool = False,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
@@ -150,8 +149,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             grace_period=grace_period,
             max_depth=max_depth,
             split_criterion=split_criterion,
-            split_confidence=split_confidence,
-            tie_threshold=tie_threshold,
+            delta=delta,
+            tau=tau,
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
             nominal_attributes=nominal_attributes,
@@ -164,14 +163,17 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             merit_preprune=merit_preprune,
         )
 
+        self.bootstrap_sampling = bootstrap_sampling
+        self.drift_window_threshold = drift_window_threshold
+        self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
+        self.switch_significance = switch_significance
+        self.seed = seed
+
         self._n_alternate_trees = 0
         self._n_pruned_alternate_trees = 0
         self._n_switch_alternate_trees = 0
 
-        self.bootstrap_sampling = bootstrap_sampling
-        self.drift_window_threshold = drift_window_threshold
-        self.adwin_confidence = adwin_confidence
-        self.seed = seed
+        self._rng = random.Random(self.seed)
 
     @property
     def n_alternate_trees(self):
@@ -243,8 +245,8 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
             stats=initial_stats,
             depth=depth,
             splitter=self.splitter,
-            adwin_delta=self.adwin_confidence,
-            seed=self.seed,
+            drift_detector=self.drift_detector.clone(),
+            rng=self._rng,
         )
 
     def _branch_selector(

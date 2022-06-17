@@ -16,7 +16,7 @@ class TEBSTSplitter(EBSTSplitter):
 
     """
 
-    def __init__(self, digits: int = 3):
+    def __init__(self, digits: int = 1):
         super().__init__()
         self.digits = digits
 

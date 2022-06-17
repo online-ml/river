@@ -235,7 +235,7 @@ class ADWINBaggingClassifier(BaggingClassifier):
                 y_pred = model.predict_one(x)
                 error_estimation = self._drift_detectors[i].estimation
                 self._drift_detectors[i].update(int(y_pred == y))
-                if self._drift_detectors[i].change_detected:
+                if self._drift_detectors[i].drift_detected:
                     if self._drift_detectors[i].estimation > error_estimation:
                         change_detected = True
             except ValueError:
@@ -401,7 +401,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
                 incorrectly_classifies = int(y_pred != y)
                 error = self._drift_detectors[i].estimation
                 self._drift_detectors[i].update(incorrectly_classifies)
-                if self._drift_detectors[i].change_detected:
+                if self._drift_detectors[i].drift_detected:
                     if self._drift_detectors[i].estimation > error:
                         change_detected = True
 

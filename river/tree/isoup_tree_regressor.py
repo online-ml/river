@@ -21,10 +21,10 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         Number of instances a leaf should observe between split attempts.
     max_depth
         The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
-    split_confidence
+    delta
         Allowed error in split decision, a value closer to 0 takes longer to
         decide.
-    tie_threshold
+    tau
         Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
@@ -54,7 +54,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         Different splitters are available for classification and regression tasks. Classification
         and regression splitters can be distinguished by their property `is_target_class`.
         This is an advanced option. Special care must be taken when choosing different splitters.
-        By default, `tree.splitter.EBSTSplitter` is used if `splitter` is `None`.
+        By default, `tree.splitter.TEBSTSplitter` is used if `splitter` is `None`.
     min_samples_split
         The minimum number of samples every branch resulting from a split candidate must have
         to be considered valid.
@@ -114,9 +114,9 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         self,
         grace_period: int = 200,
         max_depth: int = None,
-        split_confidence: float = 1e-7,
-        tie_threshold: float = 0.05,
-        leaf_prediction: str = "model",
+        delta: float = 1e-7,
+        tau: float = 0.05,
+        leaf_prediction: str = "adaptive",
         leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
@@ -132,8 +132,8 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,
-            split_confidence=split_confidence,
-            tie_threshold=tie_threshold,
+            delta=delta,
+            tau=tau,
             leaf_prediction=leaf_prediction,
             leaf_model=leaf_model,  # type: ignore
             model_selector_decay=model_selector_decay,
