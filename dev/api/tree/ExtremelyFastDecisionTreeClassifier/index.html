@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/tree/ExtremelyFastDecisionTreeClassifier/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.5">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
     
     
       
@@ -434,6 +434,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_1_3">
@@ -456,6 +458,20 @@
     <li class="md-nav__item">
       <a href="../../../introduction/getting-started/binary-classification/" class="md-nav__link">
         Binary classification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../introduction/getting-started/concept-drift-detection/" class="md-nav__link">
+        Concept drift
       </a>
     </li>
   
@@ -745,8 +761,6 @@
         
           
         
-          
-        
       
       
         <label class="md-nav__link" for="__nav_3">
@@ -797,20 +811,6 @@
     <li class="md-nav__item">
       <a href="../../../examples/building-a-simple-nowcasting-model/" class="md-nav__link">
         Building a simple nowcasting model
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/concept-drift-detection/" class="md-nav__link">
-        Concept Drift
       </a>
     </li>
   
@@ -896,7 +896,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
       
       
       
@@ -909,13 +909,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_10">
+        <label class="md-nav__link" for="__nav_3_9">
           Matrix factorization for recommender systems
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Matrix factorization for recommender systems" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_10">
+        <label class="md-nav__title" for="__nav_3_9">
           <span class="md-nav__icon md-icon"></span>
           Matrix factorization for recommender systems
         </label>
@@ -10235,11 +10235,11 @@
 <p>Split criterion to use.</br> - 'gini' - Gini</br> - 'info_gain' - Information Gain</br> - 'hellinger' - Helinger Distance</br></p>
 </li>
 <li>
-<p><strong>split_confidence</strong> (<em>float</em>) – defaults to <code>1e-07</code></p>
-<p>Allowed error in split decision, a value closer to 0 takes longer to decide.</p>
+<p><strong>delta</strong> (<em>float</em>) – defaults to <code>1e-07</code></p>
+<p>Significance level to calculate the Hoeffding bound. The significance level is given by <code>1 - delta</code>. Values closer to zero imply longer split decision delays.</p>
 </li>
 <li>
-<p><strong>tie_threshold</strong> (<em>float</em>) – defaults to <code>0.05</code></p>
+<p><strong>tau</strong> (<em>float</em>) – defaults to <code>0.05</code></p>
 <p>Threshold below which a split will be forced to break ties.</p>
 </li>
 <li>
@@ -10332,7 +10332,7 @@
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">ExtremelyFastDecisionTreeClassifier</span><span class="p">(</span>
 <span class="o">...</span>     <span class="n">grace_period</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">split_confidence</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">delta</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">nominal_attributes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;elevel&#39;</span><span class="p">,</span> <span class="s1">&#39;car&#39;</span><span class="p">,</span> <span class="s1">&#39;zipcode&#39;</span><span class="p">],</span>
 <span class="o">...</span>     <span class="n">min_samples_reevaluate</span><span class="o">=</span><span class="mi">100</span>
 <span class="o">...</span> <span class="p">)</span>
@@ -10478,7 +10478,7 @@ DOI: https://doi.org/10.1145/3219819.3220005&#160;<a class="footnote-backref" hr
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.431f3d41.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a877e258.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
