@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/drift/PageHinkley/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.5">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
     
     
       
@@ -434,6 +434,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_1_3">
@@ -456,6 +458,20 @@
     <li class="md-nav__item">
       <a href="../../../introduction/getting-started/binary-classification/" class="md-nav__link">
         Binary classification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../introduction/getting-started/concept-drift-detection/" class="md-nav__link">
+        Concept drift
       </a>
     </li>
   
@@ -745,8 +761,6 @@
         
           
         
-          
-        
       
       
         <label class="md-nav__link" for="__nav_3">
@@ -797,20 +811,6 @@
     <li class="md-nav__item">
       <a href="../../../examples/building-a-simple-nowcasting-model/" class="md-nav__link">
         Building a simple nowcasting model
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/concept-drift-detection/" class="md-nav__link">
-        Concept Drift
       </a>
     </li>
   
@@ -896,7 +896,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
       
       
       
@@ -909,13 +909,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_10">
+        <label class="md-nav__link" for="__nav_3_9">
           Matrix factorization for recommender systems
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Matrix factorization for recommender systems" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_10">
+        <label class="md-nav__title" for="__nav_3_9">
           <span class="md-nav__icon md-icon"></span>
           Matrix factorization for recommender systems
         </label>
@@ -10201,35 +10201,36 @@
 
 <h1 id="pagehinkley">PageHinkley<a class="headerlink" href="#pagehinkley" title="Permanent link">&para;</a></h1>
 <p>Page-Hinkley method for concept drift detection.</p>
-<p>This change detection method works by computing the observed values and their mean up to the current moment. Page-Hinkley does not signal warning zones, only change detections. The method works by means of the Page-Hinkley test. In general lines it will detect a concept drift if the observed mean at some instant is greater then a threshold value lambda.</p>
+<p>This change detection method works by computing the observed values and their mean up to the current moment. Page-Hinkley does not signal warning zones, only change detections. </p>
+<p>This detector implements the CUSUM control chart for detecting changes. This implementation also supports the two-sided Page-Hinkley test to detect increasing and decreasing changes in the mean of the input values.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>min_instances</strong> – defaults to <code>30</code></p>
+<p><strong>min_instances</strong> (<em>int</em>) – defaults to <code>30</code></p>
 <p>The minimum number of instances before detecting change.</p>
 </li>
 <li>
-<p><strong>delta</strong> – defaults to <code>0.005</code></p>
-<p>The delta factor for the Page Hinkley test.</p>
+<p><strong>delta</strong> (<em>float</em>) – defaults to <code>0.005</code></p>
+<p>The delta factor for the Page-Hinkley test.</p>
 </li>
 <li>
-<p><strong>threshold</strong> – defaults to <code>50</code></p>
+<p><strong>threshold</strong> (<em>float</em>) – defaults to <code>50.0</code></p>
 <p>The change detection threshold (lambda).</p>
 </li>
 <li>
-<p><strong>alpha</strong> – defaults to <code>0.9999</code></p>
+<p><strong>alpha</strong> (<em>float</em>) – defaults to <code>0.9999</code></p>
 <p>The forgetting factor, used to weight the observed value and the mean.</p>
+</li>
+<li>
+<p><strong>mode</strong> (<em>str</em>) – defaults to <code>both</code></p>
+<p>Whether to consider increases ("up"), decreases ("down") or both ("both") when monitoring the fading mean.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>change_detected</strong></p>
+<p><strong>drift_detected</strong></p>
 <p>Concept drift alarm.  True if concept drift is detected.</p>
-</li>
-<li>
-<p><strong>warning_detected</strong></p>
-<p>Warning zone alarm.  Indicates if the drift detector is in the warning zone. Applicability depends on each drift detector implementation. True if the change detector is in the warning zone.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -10244,32 +10245,33 @@
 
 <span class="o">&gt;&gt;&gt;</span> <span class="c1"># Update drift detector and verify if change is detected</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_stream</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">in_drift</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-<span class="o">...</span>     <span class="k">if</span> <span class="n">in_drift</span><span class="p">:</span>
+<span class="o">...</span>     <span class="n">_</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+<span class="o">...</span>     <span class="k">if</span> <span class="n">ph</span><span class="o">.</span><span class="n">drift_detected</span><span class="p">:</span>
 <span class="o">...</span>         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Change detected at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, input value: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">Change</span> <span class="n">detected</span> <span class="n">at</span> <span class="n">index</span> <span class="mi">1006</span><span class="p">,</span> <span class="nb">input</span> <span class="n">value</span><span class="p">:</span> <span class="mi">5</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
-<summary>reset</summary>
-<p>Reset the change detector.</p>
-</details>
-<details class="- note">
 <summary>update</summary>
 <p>Update the change detector with a single data point.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>value</strong>     (<em>numbers.Number</em>)    </li>
+<li><strong>x</strong>     (<em>numbers.Number</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Tuple[bool, bool]</em>:     A tuple (drift, warning) where its elements indicate if a drift or a warning is detected.</p>
+<p><em>DriftDetector</em>:     self</p>
 </details>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
-<p>E. S. Page. 1954. Continuous Inspection Schemes. Biometrika 41, 1/2 (1954), 100–115.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>E. S. Page. 1954. Continuous Inspection Schemes. Biometrika 41, 1/2 (1954), 100-115.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Sebastião, R., &amp; Fernandes, J. M. (2017, June). Supporting the Page-Hinkley test with
+empirical mode decomposition for change detection. In International Symposium on Methodologies
+for Intelligent Systems (pp. 492-498). Springer, Cham.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
@@ -10331,7 +10333,7 @@
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.431f3d41.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a877e258.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       

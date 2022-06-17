@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.5">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
     
     
       
@@ -434,6 +434,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_1_3">
@@ -456,6 +458,20 @@
     <li class="md-nav__item">
       <a href="../../../introduction/getting-started/binary-classification/" class="md-nav__link">
         Binary classification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../introduction/getting-started/concept-drift-detection/" class="md-nav__link">
+        Concept drift
       </a>
     </li>
   
@@ -745,8 +761,6 @@
         
           
         
-          
-        
       
       
         <label class="md-nav__link" for="__nav_3">
@@ -797,20 +811,6 @@
     <li class="md-nav__item">
       <a href="../../../examples/building-a-simple-nowcasting-model/" class="md-nav__link">
         Building a simple nowcasting model
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/concept-drift-detection/" class="md-nav__link">
-        Concept Drift
       </a>
     </li>
   
@@ -896,7 +896,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
       
       
       
@@ -909,13 +909,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_10">
+        <label class="md-nav__link" for="__nav_3_9">
           Matrix factorization for recommender systems
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Matrix factorization for recommender systems" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_10">
+        <label class="md-nav__title" for="__nav_3_9">
           <span class="md-nav__icon md-icon"></span>
           Matrix factorization for recommender systems
         </label>
@@ -10213,15 +10213,15 @@
 <p>The maximum depth a tree can reach. If <code>None</code>, the tree will grow indefinitely.</p>
 </li>
 <li>
-<p><strong>split_confidence</strong> (<em>float</em>) – defaults to <code>1e-07</code></p>
+<p><strong>delta</strong> (<em>float</em>) – defaults to <code>1e-07</code></p>
 <p>Allowed error in split decision, a value closer to 0 takes longer to decide.</p>
 </li>
 <li>
-<p><strong>tie_threshold</strong> (<em>float</em>) – defaults to <code>0.05</code></p>
+<p><strong>tau</strong> (<em>float</em>) – defaults to <code>0.05</code></p>
 <p>Threshold below which a split will be forced to break ties.</p>
 </li>
 <li>
-<p><strong>leaf_prediction</strong> (<em>str</em>) – defaults to <code>model</code></p>
+<p><strong>leaf_prediction</strong> (<em>str</em>) – defaults to <code>adaptive</code></p>
 <p>Prediction mechanism used at leafs.</br> - 'mean' - Target mean</br> - 'model' - Uses the model defined in <code>leaf_model</code></br> - 'adaptive' - Chooses between 'mean' and 'model' dynamically</br></p>
 </li>
 <li>
@@ -10238,7 +10238,7 @@
 </li>
 <li>
 <p><strong>splitter</strong> (<em>river.tree.splitter.base.Splitter</em>) – defaults to <code>None</code></p>
-<p>The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <code>tree.splitter</code> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <code>tree.splitter.EBSTSplitter</code> is used if <code>splitter</code> is <code>None</code>.</p>
+<p>The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <code>tree.splitter</code> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <code>tree.splitter.TEBSTSplitter</code> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>min_samples_split</strong> (<em>int</em>) – defaults to <code>5</code></p>
@@ -10454,7 +10454,7 @@ multi-target regression." Journal of Intelligent Information Systems 50.2 (2018)
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.431f3d41.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a877e258.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       

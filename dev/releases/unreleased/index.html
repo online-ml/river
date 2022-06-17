@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/releases/unreleased/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.5">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.6">
     
     
       
@@ -434,6 +434,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_1_3">
@@ -456,6 +458,20 @@
     <li class="md-nav__item">
       <a href="../../introduction/getting-started/binary-classification/" class="md-nav__link">
         Binary classification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/getting-started/concept-drift-detection/" class="md-nav__link">
+        Concept drift
       </a>
     </li>
   
@@ -745,8 +761,6 @@
         
           
         
-          
-        
       
       
         <label class="md-nav__link" for="__nav_3">
@@ -797,20 +811,6 @@
     <li class="md-nav__item">
       <a href="../../examples/building-a-simple-nowcasting-model/" class="md-nav__link">
         Building a simple nowcasting model
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/concept-drift-detection/" class="md-nav__link">
-        Concept Drift
       </a>
     </li>
   
@@ -896,7 +896,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
       
       
       
@@ -909,13 +909,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_10">
+        <label class="md-nav__link" for="__nav_3_9">
           Matrix factorization for recommender systems
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Matrix factorization for recommender systems" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_10">
+        <label class="md-nav__title" for="__nav_3_9">
           <span class="md-nav__icon md-icon"></span>
           Matrix factorization for recommender systems
         </label>
@@ -9763,6 +9763,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#drift" class="md-nav__link">
+    drift
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metrics" class="md-nav__link">
     metrics
   </a>
@@ -9772,6 +9779,13 @@
         <li class="md-nav__item">
   <a href="#proba" class="md-nav__link">
     proba
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rule" class="md-nav__link">
+    rule
   </a>
   
 </li>
@@ -9793,6 +9807,13 @@
         <li class="md-nav__item">
   <a href="#time_series" class="md-nav__link">
     time_series
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    tree
   </a>
   
 </li>
@@ -10212,6 +10233,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#drift" class="md-nav__link">
+    drift
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metrics" class="md-nav__link">
     metrics
   </a>
@@ -10221,6 +10249,13 @@
         <li class="md-nav__item">
   <a href="#proba" class="md-nav__link">
     proba
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rule" class="md-nav__link">
+    rule
   </a>
   
 </li>
@@ -10242,6 +10277,13 @@
         <li class="md-nav__item">
   <a href="#time_series" class="md-nav__link">
     time_series
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    tree
   </a>
   
 </li>
@@ -10288,6 +10330,16 @@
 <ul>
 <li>Imports <code>synth</code>, enabling <code>from river import datasets; datasets.synth</code>.</li>
 </ul>
+<h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Refactor the concept drift detectors to match the remaining of River's API. Warnings are only issued by detectors that support this feature.</li>
+<li>Drifts can be assessed via the property <code>drift_detected</code>. Warning signals can be acessed by the property <code>warning_detected</code>. The <code>update</code> now returns <code>self</code>.</li>
+<li>Ensure all detectors automatically reset their inner states after a concept drift detection.</li>
+<li>Streamline <code>DDM</code>, <code>EDDM</code>, <code>HDDM_A</code>, and <code>HDDM_W</code>. Make the configurable parameters names match their respective papers.</li>
+<li>Fix bugs in <code>EDDM</code> and <code>HDDM_W</code>.</li>
+<li>Enable two-sided tests in <code>PageHinkley</code>.</li>
+<li>Improve documentation and update tests.</li>
+</ul>
 <h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Removed dependency to <code>optim</code>.</li>
@@ -10298,6 +10350,10 @@
 <ul>
 <li>Removed <code>proba.Rolling</code>, due to the addition of <code>utils.Rolling</code>.</li>
 <li>Removed <code>proba.TimeRolling</code>, due to the addition of <code>utils.Rolling</code>.</li>
+</ul>
+<h2 id="rule">rule<a class="headerlink" href="#rule" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The default <code>splitter</code> was changed to <code>tree.splitter.TEBST</code> for memory and running time efficiency.</li>
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
@@ -10311,6 +10367,14 @@
 <h2 id="time_series">time_series<a class="headerlink" href="#time_series" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <code>time_series.HorizonAggMetric</code>.</li>
+</ul>
+<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Rename <code>split_confidence</code> and <code>tie_threshold</code> to <code>delta</code> and <code>tau</code>, respectively. This way, the parameters are not misleading and match what the research papers have used for decades.</li>
+<li>Refactor <code>HoeffdingAdaptiveTree{Classifier,Regressor}</code> to allow the usage of any drift detector. Expose the significance level of the test used to switch between subtrees as a user-defined parameter.</li>
+<li>Correct test used to switch between foreground and background subtrees in <code>HoeffdingAdaptiveTreeRegressor</code>. Due to the continuous and unbounded nature of the monitored errors, a z-test is now performed to decide which subtree to keep.</li>
+<li>The default <code>leaf_prediction</code> value was changed to <code>"adaptive"</code>, as this often results in the smallest errors in practice.</li>
+<li>The default <code>splitter</code> was changed to <code>tree.splitter.TEBST</code> for memory and running time efficiency.</li>
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>
@@ -10376,7 +10440,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.85cb4492.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.431f3d41.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a877e258.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
