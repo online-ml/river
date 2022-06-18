@@ -38,7 +38,10 @@ def run_track(models, track, benchmarks):
                 print(f"\t\t[skipped] {data_name}")
                 continue
             # Get cached data from the shelf
-            results = benchmarks[track.name]
+            if track.name in benchmarks:
+                results = benchmarks[track.name]
+            else:
+                results = []
             res = next(track.run(model, dataset, n_checkpoints=1))
             res["Dataset"] = data_name
             res["Model"] = model_name
@@ -192,7 +195,10 @@ models = {
         | neighbors.KNNClassifier(window_size=100),
         "ADWIN Bagging": ensemble.ADWINBaggingClassifier(tree.HoeffdingTreeClassifier(), seed=42),
         "AdaBoost": ensemble.AdaBoostClassifier(tree.HoeffdingTreeClassifier(), seed=42),
-        "Bagging": ensemble.BaggingClassifier(tree.HoeffdingTreeClassifier(), seed=42),
+        "Bagging": ensemble.BaggingClassifier(
+            tree.HoeffdingAdaptiveTreeClassifier(bootstrap_sampling=False),
+            seed=42
+        ),
         "Leveraging Bagging": ensemble.LeveragingBaggingClassifier(
             tree.HoeffdingTreeClassifier(), seed=42
         ),
@@ -228,15 +234,19 @@ models = {
         | linear_model.PARegressor(mode=2),
         "k-Nearest Neighbors": preprocessing.StandardScaler()
         | neighbors.KNNRegressor(window_size=100),
-        "Hoeffding Tree": preprocessing.StandardScaler() | tree.HoeffdingAdaptiveTreeRegressor(),
+        "Hoeffding Tree": preprocessing.StandardScaler() | tree.HoeffdingTreeRegressor(),
         "Hoeffding Adaptive Tree": preprocessing.StandardScaler()
         | tree.HoeffdingAdaptiveTreeRegressor(seed=42),
         "Stochastic Gradient Tree": tree.SGTRegressor(),
         "Adaptive Random Forest": preprocessing.StandardScaler()
         | ensemble.AdaptiveRandomForestRegressor(seed=42),
         "Adaptive Model Rules": preprocessing.StandardScaler()
-        | rules.AMRules(drift_detector=drift.ADWIN()),
+        | rules.AMRules(),
         "Streaming Random Patches": preprocessing.StandardScaler() | ensemble.SRPRegressor(seed=42),
+        "Bagging": preprocessing.StandardScaler() | ensemble.BaggingRegressor(
+            model=tree.HoeffdingAdaptiveTreeRegressor(bootstrap_sampling=False),
+            seed=42
+        ),
         "Exponentially Weighted Average": preprocessing.StandardScaler()
         | ensemble.EWARegressor(
             models=[
