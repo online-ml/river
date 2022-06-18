@@ -63,7 +63,7 @@ class AdaLeafRegressor(HTLeaf):
         error_change = self.drift_detector.drift_detected
 
         # Error is decreasing
-        if error_change and self._error_tracker.mean < old_error:
+        if error_change and self._error_tracker.mean.get() < old_error:
             # Reset the error estimator
             self._error_tracker = self._error_tracker.clone()
 
