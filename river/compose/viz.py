@@ -31,7 +31,7 @@ def estimator_to_html(estimator) -> ET.Element:
     else:
         # Use __repr__, but remove leading class name
         text = repr(estimator)
-        text = text.replace(f'{estimator.__class__.__name__} ', '')
+        text = text.replace(f"{estimator.__class__.__name__} ", "")
         code.text = f"{text}\n\n"
     details.append(code)
 
@@ -75,7 +75,7 @@ def wrapper_to_html(wrapper) -> ET.Element:
     code = ET.Element("code", attrib={"class": "river-estimator-params"})
     # Use __repr__, but remove leading class name
     text = repr(wrapper)
-    text = text.replace(f'{estimator.__class__.__name__} ', '')
+    text = text.replace(f"{wrapper.__class__.__name__} ", "")
     code.text = f"{text}\n\n"
     details.append(code)
 
