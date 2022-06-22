@@ -1,5 +1,4 @@
 import inspect
-import pprint
 from xml.etree import ElementTree as ET
 
 from river import base, compose
@@ -30,7 +29,10 @@ def estimator_to_html(estimator) -> ET.Element:
     if isinstance(estimator, compose.FuncTransformer):
         code.text = f"\n{inspect.getsource(estimator.func)}\n"
     else:
-        code.text = f"\n{pprint.pformat(estimator.__dict__)}\n\n"
+        # Use __repr__, but remove leading class name
+        text = repr(estimator)
+        text = text.replace(f'{estimator.__class__.__name__} ', '')
+        code.text = f"{text}\n\n"
     details.append(code)
 
     return details
@@ -71,7 +73,10 @@ def wrapper_to_html(wrapper) -> ET.Element:
     summary.append(pre)
 
     code = ET.Element("code", attrib={"class": "river-estimator-params"})
-    code.text = f"\n{pprint.pformat(wrapper.__dict__)}\n\n"
+    # Use __repr__, but remove leading class name
+    text = repr(wrapper)
+    text = text.replace(f'{estimator.__class__.__name__} ', '')
+    code.text = f"{text}\n\n"
     details.append(code)
 
     div.append(to_html(wrapper._wrapped_model))
@@ -100,7 +105,7 @@ CSS = """
     justify-content: center;
     padding: 1em;
     border-style: solid;
-    background: white
+    background: white;
 }
 
 .river-wrapper {
