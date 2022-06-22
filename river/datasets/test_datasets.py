@@ -83,7 +83,7 @@ def _iter_synth_datasets():
 )
 def test_synth_idempotent(dataset):
     """Checks that a synthetic dataset produces identical results when seeded."""
-    assert list(dataset.take(5)) == list(dataset.take(5))
+    assert list(dataset.take(20)) == list(dataset.take(20))
 
 
 @pytest.mark.parametrize(
@@ -92,7 +92,7 @@ def test_synth_idempotent(dataset):
 )
 def test_synth_non_idempotent(dataset):
     """Checks that a synthetic dataset produces different results when not seeded."""
-    assert list(dataset.take(5)) != list(dataset.take(5))
+    assert list(dataset.take(20)) != list(dataset.take(20))
 
 
 @pytest.mark.parametrize(
