@@ -25,7 +25,11 @@ jobs:
           pip install wheel
           pip install -e ".[compat,docs]"
           pip install git+https://github.com/MaxHalford/yamp
+          pip install rich
           python -m spacy download en_core_web_sm
+
+      - name: Use Rich in notebooks
+        run: echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_imports.ipy
 
       - name: Execute notebooks
         run: make execute-notebooks
