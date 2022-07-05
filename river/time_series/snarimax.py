@@ -327,7 +327,7 @@ class SNARIMAX(time_series.base.Forecaster):
                 break
 
         # Seasonal AR
-        for t in range(self.m - 1, (self.m - 1) * self.sp, self.m):
+        for t in range(self.m - 1, self.m * self.sp, self.m):
             try:
                 x[f"sy-{t+1}"] = y_trues[t]
             except IndexError:
@@ -341,7 +341,7 @@ class SNARIMAX(time_series.base.Forecaster):
                 break
 
         # Seasonal MA
-        for t in range(self.m - 1, (self.m - 1) * self.sq, self.m):
+        for t in range(self.m - 1, self.m * self.sq, self.m):
             try:
                 x[f"se-{t+1}"] = errors[t]
             except IndexError:
