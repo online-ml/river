@@ -543,9 +543,13 @@ class AdaptiveStandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(xi - self.vars[i].mean.get(), self.vars[i].get() ** 0.5)
-            for i, xi in x.items()
+            i: safe_div(x[i] - m, s2**0.5 if s2 > 0 else 0)
+            for i, m, s2 in ((i, self.vars[i].mean.get(), self.vars[i].get()) for i in x)
         }
+
+    @property
+    def _mutable_attributes(self):
+        return {"alpha"}
 
 
 class TargetStandardScaler(compose.TargetTransformRegressor):
