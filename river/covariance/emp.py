@@ -85,11 +85,7 @@ class EmpiricalCovariance:
 
         # dict -> numpy
         x_vec = np.array(list(x.values()))
-        loc = np.array([self._loc.get(feature, 0.) for feature in x])
-        cov = np.array([
-            [self._cov.get((i, j), 0.) for j in x]
-            for i in x
-        ])
+        loc, cov = self._get_loc_and_cov(variables=x.keys())
 
         # update formulas
         self._w += 1
@@ -98,11 +94,7 @@ class EmpiricalCovariance:
         cov += (np.outer(d, x_vec - loc) - cov) / max(self._w - self.ddof, 1)
 
         # numpy -> dict
-        for i, fi in enumerate(x):
-            self._loc[fi] = loc[i]
-            row = cov[i]
-            for j, fj in enumerate(x):
-                self._cov[fi, fj] = row[j]
+        self._set_loc_and_cov(x.keys(), loc, cov)
 
         return self
 
@@ -115,8 +107,38 @@ class EmpiricalCovariance:
             Samples.
 
         """
-        raise NotImplementedError
 
+        # dict -> numpy
+        X_vec = X.values
+        loc, cov = self._get_loc_and_cov(variables=X.columns)
+
+        # update formulas
+        n = self._w
+        m = len(X)
+        self._w += m
+        d = X_vec - loc
+        loc = n * loc + m * np.mean(X_vec, axis=0)
+        cov += (d.T @ (X_vec - loc) - cov) / max(self._w - self.ddof, 1)
+
+        # numpy -> dict
+        self._set_loc_and_cov(X.columns, loc, cov)
+
+        return self
+
+    def _get_loc_and_cov(self, variables):
+        loc = np.array([self._loc.get(feature, 0.) for feature in variables])
+        cov = np.array([
+            [self._cov.get((i, j), 0.) for j in variables]
+            for i in variables
+        ])
+        return loc, cov
+
+    def _set_loc_and_cov(self, variables, loc, cov):
+        for i, fi in enumerate(variables):
+            self._loc[fi] = loc[i]
+            row = cov[i]
+            for j, fj in enumerate(variables):
+                self._cov[fi, fj] = row[j]
 
     def __getitem__(self, key):
         """
