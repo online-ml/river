@@ -1,12 +1,51 @@
+import abc
 import itertools
 
 import numpy as np
 import pandas as pd
+import scipy as sp
 
 from river import stats, utils
 
 
-class EmpiricalCovariance:
+class SymmetricMatrix(abc.ABC):
+
+    @property
+    @abc.abstractmethod
+    def matrix(self):
+        ...
+
+    def __getitem__(self, key):
+        """
+
+        A covariance matrix is symmetric. For ease of use we make the __getitem__ method symmetric.
+
+        """
+        x, y = key
+        try:
+            return self.matrix[x, y]
+        except KeyError:
+            return self.matrix[y, x]
+
+    def __repr__(self):
+
+        names = sorted(set(i for i, _ in self.matrix))
+
+        headers = [""] + list(map(str, names))
+        columns = [headers[1:]]
+        for col in names:
+            column = []
+            for row in names:
+                try:
+                    column.append(f"{self[row, col]:.3f}")
+                except KeyError:
+                    column.append("")
+            columns.append(column)
+
+        return utils.pretty.print_table(headers, columns)
+
+
+class EmpiricalCovariance(SymmetricMatrix):
     """Empirical covariance matrix.
 
     Parameters
@@ -73,6 +112,10 @@ class EmpiricalCovariance:
         self._loc = {}
         self._cov = {}
 
+    @property
+    def matrix(self):
+        return self._cov
+
     def update(self, x: dict):
         """Update with a single sample.
 
@@ -89,9 +132,9 @@ class EmpiricalCovariance:
 
         # update formulas
         self._w += 1
-        d = x_vec - loc
-        loc += d / self._w
-        cov += (np.outer(d, x_vec - loc) - cov) / max(self._w - self.ddof, 1)
+        diff = x_vec - loc
+        loc += diff / self._w
+        cov += (np.outer(diff, x_vec - loc) - cov) / max(self._w - self.ddof, 1)
 
         # numpy -> dict
         self._set_loc_and_cov(x.keys(), loc, cov)
@@ -116,9 +159,9 @@ class EmpiricalCovariance:
         self._w -= 1
         if self._w < 0:
             raise ValueError("Cannot go below 0")
-        d = x_vec - loc
-        loc -= d / self._w
-        cov -= (np.outer(d, x_vec - loc) - cov) / max(self._w - self.ddof, 1)
+        diff = x_vec - loc
+        loc -= diff / self._w
+        cov -= (np.outer(diff, x_vec - loc) - cov) / max(self._w - self.ddof, 1)
 
         # numpy -> dict
         self._set_loc_and_cov(x.keys(), loc, cov)
@@ -126,12 +169,12 @@ class EmpiricalCovariance:
         return self
 
     def update_many(self, X: pd.DataFrame):
-        """Update with many samples.
+        """Update with a dataframe of samples.
 
         Parameters
         ----------
         X
-            Samples.
+            A dataframe of samples.
 
         """
 
@@ -143,11 +186,9 @@ class EmpiricalCovariance:
         n = self._w
         m = len(X_vec)
         self._w += m
-        d = X_vec - loc
+        diff = X_vec - loc
         loc = n * loc + m * np.mean(X_vec, axis=0)
-
-        cov += ((d.T @ (X_vec - loc)) - cov) / max(self._w - self.ddof, 1)
-        #print(cov)
+        cov += ((diff.T @ (X_vec - loc)) - cov) / max(self._w - self.ddof, 1)
 
         # numpy -> dict
         self._set_loc_and_cov(X.columns, loc, cov)
@@ -179,47 +220,71 @@ class EmpiricalCovariance:
             for j, fj in enumerate(variables):
                 self._cov[fi, fj] = row[j]
 
-    def __getitem__(self, key):
-        """
-
-        A covariance matrix is symmetric. For ease of use we make the __getitem__ method symmetric.
-
-        """
-        x, y = key
-        try:
-            return self._cov[x, y]
-        except KeyError:
-            return self._cov[y, x]
-
-    def __repr__(self):
-
-        names = sorted(set(i for i, _ in self._cov))
-
-        headers = [""] + list(map(str, names))
-        columns = [headers[1:]]
-        for col in names:
-            column = []
-            for row in names:
-                try:
-                    column.append(f"{self[row, col]:.3f}")
-                except KeyError:
-                    column.append("")
-            columns.append(column)
-
-        return utils.pretty.print_table(headers, columns)
 
 
+def _inplace_sherman_morrison(B, u, v):
+    """
+
+    From https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/
+
+    """
+    Bu = B @ u
+    alpha = -1 / (1 + v.T @ Bu)
+    sp.linalg.blas.dger(alpha, Bu, v.T @ B, a=B, overwrite_a=1)
 
 
-class EmpiricalPrecision:
+class EmpiricalPrecision(SymmetricMatrix):
     """Empirical precision matrix.
 
     The precision matrix is the inverse of the covariance matrix.
 
     References
-
     ----------
     [^1]: [Online Estimation of the Inverse Covariance Matrix - Markus Thill](https://markusthill.github.io/math/stats/ml/online-estimation-of-the-inverse-covariance-matrix/)
     [^2]: [Fast rank-one updates to matrix inverse? - Tim Vieira](https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/)
 
     """
+
+    def __init__(self, ddof=1):
+        self.ddof = ddof
+        self._w = 0
+        self._loc = {}
+        self._inv_cov = {}
+
+    @property
+    def matrix(self):
+        return self._inv_cov
+
+    def update(self, x):
+        """Update with a single sample.
+
+        Parameters
+        ----------
+        x
+            A sample.
+
+        """
+
+        # dict -> numpy
+        x_vec = np.array(list(x.values()))
+        loc = np.array([self._loc.get(feature, 0.) for feature in x])
+        # Fortran order is necessary for scipy's linalg.blas.dger
+        inv_cov = np.array([
+            [self._inv_cov.get((i, j), 1. if i == j else 0.) for j in x]
+            for i in x
+        ], order='F')
+
+        # update formulas
+        self._w += 1
+        diff = x_vec - loc
+        loc += diff / self._w
+        _inplace_sherman_morrison(inv_cov / max(self._w, 1), diff, x_vec - loc)
+
+        # numpy -> dict
+        for i, fi in enumerate(x):
+            self._loc[fi] = loc[i]
+            row = self._w * inv_cov[i]
+            for j, fj in enumerate(x):
+                self._inv_cov[fi, fj] = row[j]
+
+        return self

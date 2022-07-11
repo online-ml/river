@@ -6,6 +6,24 @@ import pandas as pd
 from river import misc
 
 
+def test_covariance_revert():
+
+    X1 = X[:len(X) // 2]
+    X2 = X[len(X) // 2:]
+
+    C1 = covariance.EmpiricalCovariance()
+    for x, _ in stream.iter_array(X1):
+        C1.update(x)
+
+    C2 = covariance.EmpiricalCovariance()
+    for x, _ in stream.iter_array(X):
+        C2.update(x)
+    for x, _ in stream.iter_array(X2):
+        C2.revert(x)
+
+    np.testing.assert_array_almost_equal(C1, C2)
+
+
 def test_cov_matrix():
 
     # NOTE: this test only works with ddof=1 because pandas ignores it if there are missing values
