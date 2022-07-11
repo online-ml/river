@@ -53,14 +53,14 @@ class Cov(stats.base.Bivariate):
         dx = x - self.mean_x.get()
         self.mean_x.update(x, w)
         self.mean_y.update(y, w)
-        self.cov += (w * dx * (y - self.mean_y.get()) - self.cov) / max(1, self.mean_x.n - self.ddof)
+        self.cov += (w * dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
         return self
 
     def update_many(self, X: np.ndarray, Y: np.ndarray):
         dx = X - self.mean_x.get()
         self.mean_x.update_many(X)
         self.mean_y.update_many(Y)
-        self.cov += (dx * (Y - self.mean_y.get()) - self.cov).sum() / max(1, self.mean_x.n - self.ddof)
+        self.cov += (dx * (Y - self.mean_y.get()) - self.cov).sum() / max(self.mean_x.n - self.ddof, 1)
         return self
 
     def get(self):

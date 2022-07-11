@@ -98,6 +98,33 @@ class EmpiricalCovariance:
 
         return self
 
+    def revert(self, x: dict):
+        """Downdate with a single sample.
+
+        Parameters
+        ----------
+        x
+            A sample.
+
+        """
+
+        # dict -> numpy
+        x_vec = np.array(list(x.values()))
+        loc, cov = self._get_loc_and_cov(variables=x.keys())
+
+        # update formulas
+        self._w -= 1
+        if self._w < 0:
+            raise ValueError("Cannot go below 0")
+        d = x_vec - loc
+        loc -= d / self._w
+        cov -= (np.outer(d, x_vec - loc) - cov) / max(self._w - self.ddof, 1)
+
+        # numpy -> dict
+        self._set_loc_and_cov(x.keys(), loc, cov)
+
+        return self
+
     def update_many(self, X: pd.DataFrame):
         """Update with many samples.
 
@@ -114,11 +141,13 @@ class EmpiricalCovariance:
 
         # update formulas
         n = self._w
-        m = len(X)
+        m = len(X_vec)
         self._w += m
         d = X_vec - loc
         loc = n * loc + m * np.mean(X_vec, axis=0)
-        cov += (d.T @ (X_vec - loc) - cov) / max(self._w - self.ddof, 1)
+
+        cov += ((d.T @ (X_vec - loc)) - cov) / max(self._w - self.ddof, 1)
+        #print(cov)
 
         # numpy -> dict
         self._set_loc_and_cov(X.columns, loc, cov)
@@ -126,6 +155,11 @@ class EmpiricalCovariance:
         return self
 
     def _get_loc_and_cov(self, variables):
+        """
+
+        Loads means and covariances stored as dictionaries into numpy arrays.
+
+        """
         loc = np.array([self._loc.get(feature, 0.) for feature in variables])
         cov = np.array([
             [self._cov.get((i, j), 0.) for j in variables]
@@ -134,6 +168,11 @@ class EmpiricalCovariance:
         return loc, cov
 
     def _set_loc_and_cov(self, variables, loc, cov):
+        """
+
+        Takes numpy arrays and stores them as dictionaries with features as keys.
+
+        """
         for i, fi in enumerate(variables):
             self._loc[fi] = loc[i]
             row = cov[i]
