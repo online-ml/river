@@ -10128,6 +10128,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#what-are-the-differences-between-scikit-learns-online-learning-algorithm-which-have-a-partial_fit-method-and-their-equivalents-in-river" class="md-nav__link">
+    What are the differences between scikit-learn's online learning algorithm which have a partial_fit method and their equivalents in river?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-do-i-save-and-load-models" class="md-nav__link">
     How do I save and load models?
   </a>
@@ -10177,7 +10184,7 @@
 <p>Python encourages a coding style called <a href="https://docs.python.org/2/glossary.html?highlight=EAFP#term-eafp">EAFP</a>, which stands for "Easier to Ask for Forgiveness than Permission". The idea is to assume that runtime errors don't occur, and instead use try/expects to catch errors. The great benefit is that we don't have to drown our code with <code>if</code> statements, which is symptomatic of the <a href="https://docs.python.org/2/glossary.html?highlight=EAFP#term-lbyl">LBYL style</a>, which stands for "look before you leap". This makes our implementations much more readable than, say, scikit-learn, which does a lot of input validation. The catch is that users have to be careful to use sane inputs. As always, <a href="https://www.wikiwand.com/en/No_free_lunch_theorem">there is no free lunch</a>!</p>
 <h2 id="what-about-reinforcement-learning">What about reinforcement learning?<a class="headerlink" href="#what-about-reinforcement-learning" title="Permanent link">&para;</a></h2>
 <p>Reinforcement learning works in an online manner because of the nature of the task. Reinforcement learning can be therefore be seen as a subcase of online machine learning. However, we prefer not to support it because there are already many existing opensource libraries dedicated to it.</p>
-<p>**What are the differences between scikit-learn's online learning algorithm which have a partial_fit method ## d their equivalents in river?</p>
+<h2 id="what-are-the-differences-between-scikit-learns-online-learning-algorithm-which-have-a-partial_fit-method-and-their-equivalents-in-river">What are the differences between scikit-learn's online learning algorithm which have a partial_fit method and their equivalents in river?<a class="headerlink" href="#what-are-the-differences-between-scikit-learns-online-learning-algorithm-which-have-a-partial_fit-method-and-their-equivalents-in-river" title="Permanent link">&para;</a></h2>
 <p>The algorithms from <code>sklearn</code> that support incremental learning are mostly meant for mini-batch learning. In a pure streaming context where the observations arrive one by one, then <code>river</code> is much faster than <code>sklearn</code>. This is mostly because <code>sklearn</code> incurs a lot of overhead by performing data checks. Also, sklearn assumes that you're always using the same number of features. This is not the case with <code>river</code> because it use dictionaries which allows you to drop and add features as you wish.</p>
 <h2 id="how-do-i-save-and-load-models">How do I save and load models?<a class="headerlink" href="#how-do-i-save-and-load-models" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">ensemble</span>
