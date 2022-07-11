@@ -29,7 +29,7 @@ Python encourages a coding style called [EAFP](https://docs.python.org/2/glossar
 
 Reinforcement learning works in an online manner because of the nature of the task. Reinforcement learning can be therefore be seen as a subcase of online machine learning. However, we prefer not to support it because there are already many existing opensource libraries dedicated to it.
 
-**What are the differences between scikit-learn's online learning algorithm which have a partial_fit method ## d their equivalents in river?
+## What are the differences between scikit-learn's online learning algorithm which have a partial_fit method and their equivalents in river?
 
 The algorithms from `sklearn` that support incremental learning are mostly meant for mini-batch learning. In a pure streaming context where the observations arrive one by one, then `river` is much faster than `sklearn`. This is mostly because `sklearn` incurs a lot of overhead by performing data checks. Also, sklearn assumes that you're always using the same number of features. This is not the case with `river` because it use dictionaries which allows you to drop and add features as you wish.
 
