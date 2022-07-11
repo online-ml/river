@@ -1,12 +1,13 @@
 import itertools
 
+import numpy as np
 import pandas as pd
 
 from river import stats, utils
 
 
-class CovMatrix:
-    """Sample covariance matrix.
+class EmpiricalCovariance:
+    """Empirical covariance matrix.
 
     Parameters
     ----------
@@ -67,8 +68,10 @@ class CovMatrix:
     _fmt = ",.3f"
 
     def __init__(self, ddof=1):
-        self._covs = {}
         self.ddof = ddof
+        self._w = 0
+        self._loc = {}
+        self._cov = {}
 
     def update(self, x: dict):
         """Update with a single sample.
@@ -80,21 +83,26 @@ class CovMatrix:
 
         """
 
-        for i, j in itertools.combinations(sorted(x), r=2):
-            try:
-                cov = self[i, j]
-            except KeyError:
-                self._covs[i, j] = stats.Cov(self.ddof)
-                cov = self[i, j]
-            cov.update(x[i], x[j])
+        # dict -> numpy
+        x_vec = np.array(list(x.values()))
+        loc = np.array([self._loc.get(feature, 0.) for feature in x])
+        cov = np.array([
+            [self._cov.get((i, j), 0.) for j in x]
+            for i in x
+        ])
 
-        for i, xi in x.items():
-            try:
-                var = self[i, i]
-            except KeyError:
-                self._covs[i, i] = stats.Var(self.ddof)
-                var = self[i, i]
-            var.update(xi)
+        # update formulas
+        self._w += 1
+        d = x_vec - loc
+        loc += d / self._w
+        cov += (np.outer(d, x_vec - loc) - cov) / max(self._w - self.ddof, 1)
+
+        # numpy -> dict
+        for i, fi in enumerate(x):
+            self._loc[fi] = loc[i]
+            row = cov[i]
+            for j, fj in enumerate(x):
+                self._cov[fi, fj] = row[j]
 
         return self
 
@@ -107,24 +115,8 @@ class CovMatrix:
             Samples.
 
         """
+        raise NotImplementedError
 
-        for i, j in itertools.combinations(sorted(X.columns), r=2):
-            try:
-                cov = self[i, j]
-            except KeyError:
-                self._covs[i, j] = stats.Cov(self.ddof)
-                cov = self[i, j]
-            cov.update_many(X[i].values, X[j].values)
-
-        for i in X.columns:
-            try:
-                var = self[i, i]
-            except KeyError:
-                self._covs[i, i] = stats.Var(self.ddof)
-                var = self[i, i]
-            var.update_many(X[i].values)
-
-        return self
 
     def __getitem__(self, key):
         """
@@ -134,13 +126,13 @@ class CovMatrix:
         """
         x, y = key
         try:
-            return self._covs[x, y]
+            return self._cov[x, y]
         except KeyError:
-            return self._covs[y, x]
+            return self._cov[y, x]
 
     def __repr__(self):
 
-        names = sorted(set(i for i, _ in self._covs))
+        names = sorted(set(i for i, _ in self._cov))
 
         headers = [""] + list(map(str, names))
         columns = [headers[1:]]
@@ -148,9 +140,25 @@ class CovMatrix:
             column = []
             for row in names:
                 try:
-                    column.append(f"{self[row, col].get():{self._fmt}}")
+                    column.append(f"{self[row, col]:.3f}")
                 except KeyError:
                     column.append("")
             columns.append(column)
 
         return utils.pretty.print_table(headers, columns)
+
+
+
+
+class EmpiricalPrecision:
+    """Empirical precision matrix.
+
+    The precision matrix is the inverse of the covariance matrix.
+
+    References
+
+    ----------
+    [^1]: [Online Estimation of the Inverse Covariance Matrix - Markus Thill](https://markusthill.github.io/math/stats/ml/online-estimation-of-the-inverse-covariance-matrix/)
+    [^2]: [Fast rank-one updates to matrix inverse? - Tim Vieira](https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/)
+
+    """
