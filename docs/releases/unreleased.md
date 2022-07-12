@@ -48,6 +48,7 @@
 
 - Removed `stats.RollingMean`, due to the addition of `utils.Rolling`.
 - Removed `stats.RollingVar`, due to the addition of `utils.Rolling`.
+- Removed `stats.RollingCov`, due to the addition of `utils.Rolling`.
 
 ## stream
 

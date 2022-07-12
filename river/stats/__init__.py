@@ -2,7 +2,7 @@
 from . import base
 from .auto_corr import AutoCorr
 from .count import Count
-from .cov import Cov, RollingCov
+from .cov import Cov
 from .entropy import Entropy
 from .ewmean import EWMean
 from .ewvar import EWVar
@@ -47,7 +47,6 @@ __all__ = [
     "PearsonCorr",
     "Quantile",
     "RollingAbsMax",
-    "RollingCov",
     "RollingIQR",
     "RollingMax",
     "RollingMin",
