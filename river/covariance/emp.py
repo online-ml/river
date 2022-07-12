@@ -21,11 +21,18 @@ class SymmetricMatrix(abc.ABC):
         A covariance matrix is symmetric. For ease of use we make the __getitem__ method symmetric.
 
         """
-        x, y = key
+        i, j = key
         try:
-            return self.matrix[x, y]
+            return self.matrix[i, j]
         except KeyError:
-            return self.matrix[y, x]
+            return self.matrix[j, i]
+
+    def __setitem__(self, key, value):
+        i, j = key
+        if i < j:
+            self.matrix[i, j] = value
+        else:
+            self.matrix[j, i] = value
 
     def __repr__(self):
 
@@ -199,7 +206,7 @@ class EmpiricalCovariance(SymmetricMatrix):
         occ = np.array([self._occ.get(feature, 0.) for feature in variables])
         loc = np.array([self._loc.get(feature, 0.) for feature in variables])
         cov = np.array([
-            [self._cov.get((i, j), 0.) for j in variables]
+            [self._cov.get((i, j) if i < j else (j, i), 0.) for j in variables]
             for i in variables
         ])
         return occ, loc, cov
@@ -215,7 +222,7 @@ class EmpiricalCovariance(SymmetricMatrix):
             self._loc[fi] = loc[i]
             row = cov[i]
             for j, fj in enumerate(variables):
-                self._cov[fi, fj] = row[j]
+                self[fi, fj] = row[j]
 
 
 
@@ -263,13 +270,6 @@ class EmpiricalPrecision(SymmetricMatrix):
     >>> prec = covariance.EmpiricalPrecision()
     >>> for x in X.to_dict(orient="records"):
     ...     prec = prec.update(x)
-    >>> prec
-            blue     green    red
-     blue    5.262   -0.387   0.147
-    green   -0.387    4.732   1.119
-      red    0.147    1.119   5.428
-
-    There is also an `update_many` method to process mini-batches. The results are identical.
 
     References
     ----------
@@ -303,7 +303,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         loc = np.array([self._loc.get(feature, 0.) for feature in x])
         # Fortran order is necessary for scipy's linalg.blas.dger
         inv_cov = np.array([
-            [self._inv_cov.get((i, j), 1. if i == j else 0.) for j in x]
+            [self._inv_cov.get((i, j) if i < j else (j, i), 1. if i == j else 0.) for j in x]
             for i in x
         ], order='F') / max(self._w, 1)
 
@@ -318,6 +318,6 @@ class EmpiricalPrecision(SymmetricMatrix):
             self._loc[fi] = loc[i]
             row = self._w * inv_cov[i]
             for j, fj in enumerate(x):
-                self._inv_cov[fi, fj] = row[j]
+                self[fi, fj] = row[j]
 
         return self
