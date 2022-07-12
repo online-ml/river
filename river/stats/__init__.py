@@ -15,7 +15,7 @@ from .mean import BayesianMean, Mean
 from .minimum import Min, RollingMin
 from .mode import Mode, RollingMode
 from .n_unique import NUnique
-from .pearson import PearsonCorr, RollingPearsonCorr
+from .pearson import PearsonCorr
 from .ptp import PeakToPeak, RollingPeakToPeak
 from .quantile import Quantile, RollingQuantile
 from .sem import SEM
@@ -52,7 +52,6 @@ __all__ = [
     "RollingMin",
     "RollingMode",
     "RollingPeakToPeak",
-    "RollingPearsonCorr",
     "RollingQuantile",
     "SEM",
     "Shift",
