@@ -47,7 +47,6 @@ class Cov(stats.base.Bivariate):
         self.ddof = ddof
         self.mean_x = stats.Mean()
         self.mean_y = stats.Mean()
-        self.n = 0
         self._C = 0
         self.cov = 0
 
