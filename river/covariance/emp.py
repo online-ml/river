@@ -10,6 +10,8 @@ from river import stats, utils
 
 class SymmetricMatrix(abc.ABC):
 
+    _fmt = ",.3f"
+
     @property
     @abc.abstractmethod
     def matrix(self):
@@ -27,13 +29,6 @@ class SymmetricMatrix(abc.ABC):
         except KeyError:
             return self.matrix[j, i]
 
-    def __setitem__(self, key, value):
-        i, j = key
-        if i < j:
-            self.matrix[i, j] = value
-        else:
-            self.matrix[j, i] = value
-
     def __repr__(self):
 
         names = sorted(set(i for i, _ in self.matrix))
@@ -44,7 +39,8 @@ class SymmetricMatrix(abc.ABC):
             column = []
             for row in names:
                 try:
-                    column.append(f"{self[row, col]:.3f}")
+                    val = self[row, col].get() if isinstance(self[row, col], stats.base.Statistic) else self[row, col]
+                    column.append(f"{val:{self._fmt}}")
                 except KeyError:
                     column.append("")
             columns.append(column)
@@ -102,20 +98,18 @@ class EmpiricalCovariance(SymmetricMatrix):
     The covariances are stored in a dictionary, meaning any one of them can be accessed as such:
 
     >>> cov["blue", "green"]
-    0.020291...
+    Cov: 0.020292
 
     Diagonal entries are variances:
 
     >>> cov["blue", "blue"]
-    0.076119...
+    Var: 0.076119
 
     """
 
     def __init__(self, ddof=1):
-        self.ddof = ddof
-        self._occ = {}
-        self._loc = {}
         self._cov = {}
+        self.ddof = ddof
 
     @property
     def matrix(self):
@@ -123,26 +117,27 @@ class EmpiricalCovariance(SymmetricMatrix):
 
     def update(self, x: dict):
         """Update with a single sample.
-
         Parameters
         ----------
         x
             A sample.
-
         """
 
-        # dict -> numpy
-        x_vec = np.array(list(x.values()))
-        occ, loc, cov = self._get_stats(variables=x.keys())
+        for i, j in itertools.combinations(sorted(x), r=2):
+            try:
+                cov = self[i, j]
+            except KeyError:
+                self._cov[i, j] = stats.Cov(self.ddof)
+                cov = self[i, j]
+            cov.update(x[i], x[j])
 
-        # update formulas
-        diff = x_vec - loc
-        occ += 1
-        loc += diff / occ
-        cov += (np.outer(diff, x_vec - loc) - cov) / np.maximum(occ - self.ddof, 1)
-
-        # numpy -> dict
-        self._set_stats(x.keys(), occ, loc, cov)
+        for i, xi in x.items():
+            try:
+                var = self[i, i]
+            except KeyError:
+                self._cov[i, i] = stats.Var(self.ddof)
+                var = self[i, i]
+            var.update(xi)
 
         return self
 
@@ -156,18 +151,11 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         """
 
-        # dict -> numpy
-        x_vec = np.array(list(x.values()))
-        occ, loc, cov = self._get_stats(variables=x.keys())
+        for i, j in itertools.combinations(sorted(x), r=2):
+            self[i, j].revert(x[i], x[j])
 
-        # update formulas
-        diff = x_vec - loc
-        occ -= 1
-        loc -= diff / occ
-        cov -= (np.outer(diff, x_vec - loc) - cov) / np.maximum(occ - self.ddof, 1)
-
-        # numpy -> dict
-        self._set_stats(x.keys(), occ, loc, cov)
+        for i, xi in x.items():
+            self[i, i].revert(x[i])
 
         return self
 
@@ -182,47 +170,41 @@ class EmpiricalCovariance(SymmetricMatrix):
         """
 
         # dict -> numpy
-        X_vec = X.values
-        occ, loc, cov = self._get_stats(variables=X.columns)
+        X_array = X.values
+        mean = X_array.mean(axis=0)
+        cov = np.cov(X_array.T, ddof=self.ddof)
 
-        # update formulas
-        diff = X_vec - loc
-        m = len(X_vec)
-        occ += m
-        loc = (occ - m) / occ * loc + m / occ * X_vec.mean(axis=0)
-        cov += (diff.T @ (X_vec - loc) - m * cov) / np.maximum(occ - self.ddof, 1)
+        mean = dict(zip(X.columns, mean))
+        cov = {
+            (fi, fj): cov[i, j]
+            for (i, fi), (j, fj) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
+        }
 
-        # numpy -> dict
-        self._set_stats(X.columns, occ, loc, cov)
+        for i, j in itertools.combinations(X.columns, r=2):
+            try:
+                self[i, j]
+            except KeyError:
+                self._cov[i, j] = stats.Cov(self.ddof)
+            self[i, j]._iadd(
+                other_mean_x=mean[i],
+                other_mean_y=mean[j],
+                other_n=len(X),
+                other_cov=cov.get((i, j), cov.get(j, i)),
+                other_ddof=self.ddof
+            )
+
+        for i in X.columns:
+            try:
+                self[i, i]
+            except KeyError:
+                self._cov[i, i] = stats.Var(self.ddof)
+            self[i, i]._iadd(
+                other_n=len(X),
+                other_mean=mean[i],
+                other_S=cov[i, i] * (len(X) - self.ddof)
+            )
 
         return self
-
-    def _get_stats(self, variables):
-        """
-
-        Loads means and covariances stored as dictionaries into numpy arrays.
-
-        """
-        occ = np.array([self._occ.get(feature, 0.) for feature in variables])
-        loc = np.array([self._loc.get(feature, 0.) for feature in variables])
-        cov = np.array([
-            [self._cov.get((i, j) if i < j else (j, i), 0.) for j in variables]
-            for i in variables
-        ])
-        return occ, loc, cov
-
-    def _set_stats(self, variables, occ, loc, cov):
-        """
-
-        Takes numpy arrays and stores them as dictionaries with features as keys.
-
-        """
-        for i, fi in enumerate(variables):
-            self._occ[fi] = occ[i]
-            self._loc[fi] = loc[i]
-            row = cov[i]
-            for j, fj in enumerate(variables):
-                self[fi, fj] = row[j]
 
 
 
@@ -305,7 +287,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         inv_cov = np.array([
             [self._inv_cov.get((i, j) if i < j else (j, i), 1. if i == j else 0.) for j in x]
             for i in x
-        ], order='F') / max(self._w, 1)
+        ], order='F') / max(self._w , 1)
 
         # update formulas
         self._w += 1
@@ -316,8 +298,8 @@ class EmpiricalPrecision(SymmetricMatrix):
         # numpy -> dict
         for i, fi in enumerate(x):
             self._loc[fi] = loc[i]
-            row = self._w * inv_cov[i]
+            row = (self._w + self.ddof) * inv_cov[i]
             for j, fj in enumerate(x):
-                self[fi, fj] = row[j]
+                self._inv_cov[(fi, fj) if fi < fj else (fj, fi)] = row[j]
 
         return self

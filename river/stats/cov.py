@@ -92,33 +92,37 @@ class Cov(stats.base.Bivariate):
     def get(self):
         return self.cov
 
-    def __iadd__(self, other):
+    def _iadd(self, other_mean_x, other_mean_y, other_n, other_cov, other_ddof):
         old_mean_x = self.mean_x.get()
         old_mean_y = self.mean_y.get()
         old_n = self.mean_x.n
 
         # Update mean estimates
-        self.mean_x += other.mean_x
-        self.mean_y += other.mean_y
+        self.mean_x._iadd(other_n, other_mean_x)
+        self.mean_y._iadd(other_n, other_mean_y)
 
         if self.mean_x.n <= self.ddof:
             return self
 
         # Scale factors
         scale_a = old_n - self.ddof
-        scale_b = other.mean_x.n - other.ddof
+        scale_b = other_n - other_ddof
 
         # Scale the covariances
-        self.cov = scale_a * self.cov + scale_b * other.cov
+        self.cov = scale_a * self.cov + scale_b * other_cov
         # Apply correction factor
         self.cov += (
-            (old_mean_x - other.mean_x.get())
-            * (old_mean_y - other.mean_y.get())
-            * ((old_n * other.mean_x.n) / self.mean_x.n)
+            (old_mean_x - other_mean_x)
+            * (old_mean_y - other_mean_y)
+            * (((old_n - self.ddof) * (other_n - other_ddof)) / (self.mean_x.n - self.ddof))
         )
         # Reapply scale
-        self.cov /= self.mean_x.n - self.ddof
+        self.cov /= self.mean_x.n - self.ddof - other_ddof
 
+        return self
+
+    def __iadd__(self, other):
+        self._iadd(other.mean_x.get(), other.mean_y.get(), other.mean_x.n, other.cov, other.ddof)
         return self
 
     def __add__(self, other):
