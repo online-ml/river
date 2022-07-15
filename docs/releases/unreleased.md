@@ -57,6 +57,7 @@
 
 - Added `time_series.HorizonAggMetric`.
 - Fixed a bug in `time_series.SNARIMAX` where the number of seasonal components was not correct when `sp` or `sq` were specified.
+- Fixed the differencing logic in `time_series.SNARIMAX` when `d` or `sd` were specified.
 
 ## tree
 
