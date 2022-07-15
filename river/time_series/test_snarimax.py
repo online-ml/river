@@ -1,12 +1,14 @@
 import calendar
 import math
+
 import pytest
-
-from river import compose,datasets,metrics,time_series
-
 import sympy
+
+from river import compose, datasets, metrics, time_series
+
+
 class Yt(sympy.IndexedBase):
-    t = sympy.symbols('t', cls=sympy.Idx)
+    t = sympy.symbols("t", cls=sympy.Idx)
 
     def __getitem__(self, idx):
         return super().__getitem__(self.t - idx)
@@ -142,29 +144,19 @@ def test_add_lag_features(snarimax, y_trues, errors, expected):
     ],
 )
 def test_no_overflow(snarimax):
-
     def get_month_distances(x):
         return {
-            calendar.month_name[month]: math.exp(-(x['month'].month - month) ** 2)
+            calendar.month_name[month]: math.exp(-((x["month"].month - month) ** 2))
             for month in range(1, 13)
         }
 
     def get_ordinal_date(x):
-        return {'ordinal_date': x['month'].toordinal()}
+        return {"ordinal_date": x["month"].toordinal()}
 
-    extract_features = compose.TransformerUnion(
-        get_ordinal_date,
-        get_month_distances
-    )
+    extract_features = compose.TransformerUnion(get_ordinal_date, get_month_distances)
 
-    model = (
-        extract_features |
-        snarimax
-    )
+    model = extract_features | snarimax
 
     time_series.evaluate(
-        dataset=datasets.AirlinePassengers(),
-        model=model,
-        metric=metrics.MAE(),
-        horizon=12
+        dataset=datasets.AirlinePassengers(), model=model, metric=metrics.MAE(), horizon=12
     )

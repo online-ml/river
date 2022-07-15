@@ -31,7 +31,7 @@ class Differencer:
             return f(n) // f(k) // f(n - k)
 
         self.coeffs = {0: 1}
-        for k in range(1, d+1):
+        for k in range(1, d + 1):
             t = k * m
             coeff = int(math.copysign(1, (k + 1) % 2 - 1)) * n_choose_k(n=d, k=k)
             self.coeffs[t] = coeff
