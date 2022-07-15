@@ -1,6 +1,55 @@
+import calendar
+import math
 import pytest
 
-from river import time_series
+from river import compose,datasets,metrics,time_series
+
+import sympy
+class Yt(sympy.IndexedBase):
+    t = sympy.symbols('t', cls=sympy.Idx)
+
+    def __getitem__(self, idx):
+        return super().__getitem__(self.t - idx)
+
+
+def test_differencing():
+    """
+
+    >>> import sympy
+    >>> from river.time_series.snarimax import Differencer
+
+    >>> import sympy
+
+    >>> Y = Yt('y')
+    >>> m = sympy.symbols('m', cls=sympy.Idx)
+
+    >>> D = Differencer
+
+    1
+    >>> D(0).diff(Y)
+    y[t]
+
+    (1 - B)
+    >>> D(1).diff(Y)
+    -y[t - 1] + y[t]
+
+    (1 - B)^2
+    >>> D(2).diff(Y)
+    -2*y[t - 1] + y[t - 2] + y[t]
+
+    (1 - B^m)
+    >>> D(1, m).diff(Y)
+    -y[-m + t] + y[t]
+
+    (1 - B)(1 - B^m)
+    >>> (D(1) * D(1, m)).diff(Y)
+    y[-m + t - 1] - y[-m + t] - y[t - 1] + y[t]
+
+    (1 - B)(1 - B^12)
+    >>> (D(1) * D(1, 12)).diff(Y)
+    -y[t - 12] + y[t - 13] - y[t - 1] + y[t]
+
+    """
 
 
 @pytest.mark.parametrize(
@@ -81,3 +130,41 @@ from river import time_series
 def test_add_lag_features(snarimax, y_trues, errors, expected):
     features = snarimax._add_lag_features(x=None, y_trues=y_trues, errors=errors)
     assert features == expected
+
+
+@pytest.mark.parametrize(
+    "snarimax",
+    [
+        time_series.SNARIMAX(p=1, d=1, q=0, m=12, sp=0, sd=1, sq=0),
+        time_series.SNARIMAX(p=0, d=1, q=0, m=12, sp=1, sd=1, sq=0),
+        time_series.SNARIMAX(p=1, d=2, q=0, m=12, sp=0, sd=0, sq=0),
+        time_series.SNARIMAX(p=1, d=0, q=0, m=12, sp=0, sd=2, sq=0),
+    ],
+)
+def test_no_overflow(snarimax):
+
+    def get_month_distances(x):
+        return {
+            calendar.month_name[month]: math.exp(-(x['month'].month - month) ** 2)
+            for month in range(1, 13)
+        }
+
+    def get_ordinal_date(x):
+        return {'ordinal_date': x['month'].toordinal()}
+
+    extract_features = compose.TransformerUnion(
+        get_ordinal_date,
+        get_month_distances
+    )
+
+    model = (
+        extract_features |
+        snarimax
+    )
+
+    time_series.evaluate(
+        dataset=datasets.AirlinePassengers(),
+        model=model,
+        metric=metrics.MAE(),
+        horizon=12
+    )

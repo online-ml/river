@@ -69,6 +69,7 @@ setuptools.setup(
                 "pytest>=4.5.0",
                 "scikit-learn>=1.0.1",
                 "sqlalchemy>=1.4",
+                "sympy>=1.10.1"
             ]
         ),
         "benckmarks": base_packages + ["scikit-learn", "torch", "vowpalwabbit"],
