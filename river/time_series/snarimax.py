@@ -8,130 +8,71 @@ from river import base, linear_model, preprocessing, time_series
 __all__ = ["SNARIMAX"]
 
 
-def make_coeffs(d, m):
-    """Precomputes the coefficients of the backshift operator.
-
-    Examples
-    --------
-
-    >>> make_coeffs(1, 1)
-    {0: -1}
-
-    >>> make_coeffs(2, 1)
-    {0: -2, 1: 1}
-
-    >>> make_coeffs(3, 1)
-    {0: -3, 1: 3, 2: -1}
-
-    >>> make_coeffs(2, 7)
-    {6: -2, 13: 1}
-
-    """
-
-    def n_choose_k(n, k):
-        f = math.factorial
-        return f(n) // f(k) // f(n - k)
-
-    return dict(
-        (k * m - 1, int(math.copysign(1, (k + 1) % 2 - 1)) * n_choose_k(n=d, k=k))
-        for k in range(1, d + 1)
-    )
-
-
 class Differencer:
     """A time series differencer.
-
-    Examples
-    --------
-
-    >>> differencer = Differencer(2); differencer.coeffs
-    {0: -2, 1: 1}
-
-    >>> differencer.diff(7, [3, 1])
-    2
-
-    >>> differencer.undiff(2, [3, 1])
-    7
 
     References
     ----------
     [^1]: [Stationarity and differencing](https://otexts.com/fpp2/stationarity.html)
+    [^2]: [Backshift notation](https://otexts.com/fpp2/backshift.html)
 
     """
 
     def __init__(self, d, m=1):
 
-        if d < 0:
-            raise ValueError("d must be greater than or equal to 0")
+        # if d < 0:
+        #     raise ValueError("d must be greater than or equal to 0")
 
-        if m < 1:
-            raise ValueError("m must be greater than or equal to 1")
+        # if m < 1:
+        #     raise ValueError("m must be greater than or equal to 1")
 
-        self.coeffs = make_coeffs(d=d, m=m)
+        def n_choose_k(n, k):
+            f = math.factorial
+            return f(n) // f(k) // f(n - k)
 
-    def __add__(self, other):
-        """Composes two differencers together.
+        self.coeffs = {0: 1}
+        for k in range(1, d+1):
+            t = k * m
+            coeff = int(math.copysign(1, (k + 1) % 2 - 1)) * n_choose_k(n=d, k=k)
+            self.coeffs[t] = coeff
 
-        Examples
-        --------
+    @classmethod
+    def from_coeffs(cls, coeffs):
+        obj = cls(0, 0)
+        obj.coeffs = coeffs
+        return obj
 
-        >>> differencer = Differencer(d=3, m=2) + Differencer(d=3, m=1)
-        >>> for t, c in sorted(differencer.coeffs.items()):
-        ...     print(t, c)
-        0 -3
-        2 8
-        3 -6
-        4 -6
-        5 8
-        7 -3
-        8 1
-
-        References
-        ----------
-        [^1]: [Backshift notation](https://otexts.com/fpp2/backshift.html)
-
-        """
-        coeffs = collections.Counter()
-        coeffs.update(self.coeffs)
-        coeffs.update(other.coeffs)
+    def __mul__(self, other):
+        """Compose two differencers together."""
+        coeffs = collections.defaultdict(int)
 
         for (t1, c1), (t2, c2) in itertools.product(self.coeffs.items(), other.coeffs.items()):
-            coeffs[t1 + t2 + 1] += c1 * c2
+            coeffs[t1 + t2] += c1 * c2
 
         # Remove 0 coefficients
-        for t in list(coeffs.keys()):
-            if coeffs[t] == 0:
+        for t, c in list(coeffs.items()):
+            if c == 0:
                 del coeffs[t]
 
-        differencer = Differencer(0, 1)
-        differencer.coeffs = dict(coeffs)
-        return differencer
+        return Differencer.from_coeffs(dict(coeffs))
 
-    def diff(self, y: float, y_previous: list):
-        """Differentiates a value.
+    def diff(self, Y: list):
+        """Differentiate by applying each coefficient c at each index t.
 
         Parameters
         ----------
-        y
-            The value to differentiate.
-        y_previous
+        Y
             The window of previous values. The first element is assumed to be the most recent
             value.
 
         """
-        return y + sum(c * y_previous[t] for t, c in self.coeffs.items() if t < len(y_previous))
-
-    def undiff(self, y: float, y_previous: typing.List[float]):
-        """Undifferentiates a value.
-
-        y
-            The value to differentiate.
-        y_previous
-            The window of previous values. The first element is assumed to be the most recent
-            value.
-
-        """
-        return y - sum(c * y_previous[t] for t, c in self.coeffs.items() if t < len(y_previous))
+        total = 0
+        for t, c in self.coeffs.items():
+            try:
+                total += c * Y[t]
+            except IndexError:
+                break
+        return total
 
 
 class SNARIMAX(time_series.base.Forecaster):
@@ -229,7 +170,7 @@ class SNARIMAX(time_series.base.Forecaster):
     >>> model = (
     ...     extract_features |
     ...     time_series.SNARIMAX(
-    ...         p=0,
+    ...         p=1,
     ...         d=0,
     ...         q=0,
     ...         m=12,
@@ -254,7 +195,7 @@ class SNARIMAX(time_series.base.Forecaster):
     ...     metric = metric.update(y, y_pred[0])
 
     >>> metric
-    MAE: 15.153011
+    MAE: 14.191093
 
     >>> horizon = 12
     >>> future = [
@@ -264,18 +205,18 @@ class SNARIMAX(time_series.base.Forecaster):
     >>> forecast = model.forecast(horizon=horizon, xs=future)
     >>> for x, y_pred in zip(future, forecast):
     ...     print(x['month'], f'{y_pred:.3f}')
-    1961-01-01 447.479
-    1961-02-01 421.822
-    1961-03-01 451.425
-    1961-04-01 479.934
-    1961-05-01 486.749
-    1961-06-01 557.048
-    1961-07-01 653.705
-    1961-08-01 652.132
-    1961-09-01 531.764
-    1961-10-01 456.480
-    1961-11-01 405.253
-    1961-12-01 444.090
+    1961-01-01 449.840
+    1961-02-01 422.594
+    1961-03-01 450.249
+    1961-04-01 477.956
+    1961-05-01 487.754
+    1961-06-01 563.726
+    1961-07-01 660.231
+    1961-08-01 649.265
+    1961-09-01 526.936
+    1961-10-01 449.649
+    1961-11-01 404.077
+    1961-12-01 444.256
 
     References
     ----------
@@ -297,7 +238,6 @@ class SNARIMAX(time_series.base.Forecaster):
         sq: int = 0,
         regressor: base.Regressor = None,
     ):
-
         self.p = p
         self.d = d
         self.q = q
@@ -310,7 +250,7 @@ class SNARIMAX(time_series.base.Forecaster):
             if regressor is not None
             else preprocessing.StandardScaler() | linear_model.LinearRegression()
         )
-        self.differencer = Differencer(d=d, m=1) + Differencer(d=sd, m=1)
+        self.differencer = Differencer(d=d, m=1) * Differencer(d=sd, m=m)
         self.y_trues: typing.Deque[float] = collections.deque(maxlen=max(p, m * sp))
         self.errors: typing.Deque[float] = collections.deque(maxlen=max(p, m * sq))
 
@@ -350,12 +290,14 @@ class SNARIMAX(time_series.base.Forecaster):
         return x
 
     def learn_one(self, y, x=None):
-        y = self.differencer.diff(y=y, y_previous=self.y_trues)
         x = self._add_lag_features(x=x, y_trues=self.y_trues, errors=self.errors)
         y_pred = self.regressor.predict_one(x)
-        self.regressor.learn_one(x, y)
+
         self.y_trues.appendleft(y)
-        self.errors.appendleft(y - y_pred)
+        y_diff = self.differencer.diff(self.y_trues)
+
+        self.regressor.learn_one(x, y_diff)
+        self.errors.appendleft(y_diff - y_pred)
         return self
 
     def forecast(self, horizon, xs=None):
@@ -366,16 +308,16 @@ class SNARIMAX(time_series.base.Forecaster):
         if len(xs) != horizon:
             raise ValueError("the length of xs should be equal to the specified horizon")
 
-        y_trues = collections.deque(self.y_trues)
+        Y = collections.deque(self.y_trues)
         errors = collections.deque(self.errors)
         forecasts = [None] * horizon
 
         for t, x in enumerate(xs):
-            x = self._add_lag_features(x=x, y_trues=y_trues, errors=errors)
+            x = self._add_lag_features(x=x, y_trues=Y, errors=errors)
             y_pred = self.regressor.predict_one(x)
-            forecasts[t] = self.differencer.undiff(y=y_pred, y_previous=y_trues)
+            Y.appendleft(y_pred)
+            forecasts[t] = 2 * y_pred - self.differencer.diff(Y)
 
-            y_trues.appendleft(y_pred)
             errors.appendleft(0)
 
         return forecasts
