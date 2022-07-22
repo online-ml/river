@@ -74,6 +74,25 @@ class Differencer:
                 break
         return total
 
+    def undiff(self, p, Y: list):
+        """Differentiate by applying each coefficient c at each index t.
+
+        Parameters
+        ----------
+        Y
+            The window of previous values. The first element is assumed to be the most recent
+            value.
+
+        """
+        total = p
+        for t, c in self.coeffs.items():
+            try:
+                if t:
+                    total -= c * Y[t - 1]
+            except IndexError:
+                break
+        return total
+
 
 class SNARIMAX(time_series.base.Forecaster):
     """SNARIMAX model.

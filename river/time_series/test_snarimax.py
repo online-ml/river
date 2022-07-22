@@ -1,10 +1,12 @@
 import calendar
 import math
+import random
 
 import pytest
 import sympy
 
 from river import compose, datasets, metrics, time_series
+from river.time_series.snarimax import Differencer
 
 
 class Yt(sympy.IndexedBase):
@@ -14,7 +16,7 @@ class Yt(sympy.IndexedBase):
         return super().__getitem__(self.t - idx + 1)
 
 
-def test_differencing():
+def test_diff_formula():
     """
 
     >>> import sympy
@@ -58,7 +60,7 @@ def test_differencing():
     """
 
 
-def test_differencing_example():
+def test_diff_example():
     """https://people.duke.edu/~rnau/411sdif.htm
 
     >>> import pandas as pd
@@ -132,6 +134,36 @@ def test_differencing_example():
     18  Jul-71      6.93  0.319         21.72   -2.04       1.75             -0.53
 
     """
+
+
+@pytest.mark.parametrize(
+    "differencer",
+    [
+        Differencer(1),
+        Differencer(2),
+        Differencer(1, 2),
+        Differencer(2, 2),
+        Differencer(1, 10),
+        Differencer(2, 10),
+        Differencer(1) * Differencer(1),
+        Differencer(2) * Differencer(1),
+        Differencer(1) * Differencer(2),
+        Differencer(1) * Differencer(1, 2),
+        Differencer(2) * Differencer(1, 2),
+        Differencer(1, 2) * Differencer(1, 10),
+        Differencer(1, 2) * Differencer(2, 10),
+        Differencer(2, 2) * Differencer(1, 10),
+        Differencer(2, 2) * Differencer(2, 10),
+    ]
+)
+def test_undiff(differencer):
+
+    Y = [random.random() for _ in range(max(differencer.coeffs))]
+    p = random.random()
+
+    diffed = differencer.diff(p, Y)
+    undiffed = differencer.undiff(diffed, Y)
+    assert math.isclose(undiffed, p)
 
 
 @pytest.mark.parametrize(
