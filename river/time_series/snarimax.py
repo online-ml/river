@@ -33,7 +33,7 @@ class Differencer:
         self.coeffs = {0: 1}
         for k in range(1, d + 1):
             t = k * m
-            coeff = int(math.copysign(1, (k + 1) % 2 - 1)) * n_choose_k(n=d, k=k)
+            coeff = (-1 if k % 2 else 1) * n_choose_k(n=d, k=k)
             self.coeffs[t] = coeff
 
     @classmethod
@@ -56,7 +56,7 @@ class Differencer:
 
         return Differencer.from_coeffs(dict(coeffs))
 
-    def diff(self, Y: list):
+    def diff(self, p, Y: list):
         """Differentiate by applying each coefficient c at each index t.
 
         Parameters
@@ -69,7 +69,7 @@ class Differencer:
         total = 0
         for t, c in self.coeffs.items():
             try:
-                total += c * Y[t]
+                total += (c * Y[t - 1]) if t else p
             except IndexError:
                 break
         return total
