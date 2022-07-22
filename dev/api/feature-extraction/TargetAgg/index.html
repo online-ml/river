@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/feature-extraction/TargetAgg/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
     
     
       
@@ -10316,15 +10316,14 @@ group the data:</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
 <summary>learn_one</summary>
-<p>Update with a set of features <code>x</code>.</p>
-<p>A lot of transformers don't actually have to do anything during the <code>learn_one</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_one</code> can override this method.</p>
+<p>Update with a set of features <code>x</code> and a target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
-<li><strong>y</strong>    </li>
+<li><strong>y</strong>     (<em>Union[bool, str, int, numbers.Number]</em>)    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>Transformer</em>:     self</p>
+<p><em>SupervisedTransformer</em>:     self</p>
 </details>
 <details class="- note">
 <summary>transform_one</summary>
