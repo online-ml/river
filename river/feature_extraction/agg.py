@@ -204,7 +204,7 @@ class Agg(base.Transformer):
         return self._feature_name
 
 
-class TargetAgg(Agg, base.SupervisedTransformer):
+class TargetAgg(base.SupervisedTransformer, Agg):
     """Computes a streaming aggregate of the target values.
 
     This transformer is identical to `feature_extraction.Agg`, the only difference is that it
