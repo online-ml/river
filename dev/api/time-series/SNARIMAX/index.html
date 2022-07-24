@@ -10274,17 +10274,55 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">calendar</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">math</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">time_series</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">period</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">time_series</span><span class="o">.</span><span class="n">SNARIMAX</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">p</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">q</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">m</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">sd</span><span class="o">=</span><span class="mi">1</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span> <span class="n">period</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">AirlinePassengers</span><span class="p">()):</span>
+<span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">horizon</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">future</span> <span class="o">=</span> <span class="p">[</span>
+<span class="o">...</span>     <span class="p">{</span><span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">1961</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">)}</span>
+<span class="o">...</span>     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">...</span> <span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">forecast</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">future</span><span class="p">,</span> <span class="n">forecast</span><span class="p">):</span>
+<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">y_pred</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mf">484.834</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">01</span> <span class="mf">424.786</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">01</span> <span class="mf">467.923</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">01</span> <span class="mf">506.543</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">01</span> <span class="mf">507.724</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">01</span> <span class="mf">586.575</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mf">679.066</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">01</span> <span class="mf">654.922</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">01</span> <span class="mf">566.924</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">01</span> <span class="mf">513.844</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">01</span> <span class="mf">451.653</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">01</span> <span class="mf">505.868</span>
+</code></pre></div>
+<p>Classic ARIMA models learn solely on the time series values. You can also include features
+built at each step.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">calendar</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">math</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">get_month_distances</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="o">...</span>     <span class="k">return</span> <span class="p">{</span>
@@ -10320,36 +10358,26 @@
 <span class="o">...</span>     <span class="p">)</span>
 <span class="o">...</span> <span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span> <span class="mi">12</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span> <span class="n">period</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">AirlinePassengers</span><span class="p">():</span>
-<span class="o">...</span>     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">horizon</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xs</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
 <span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="o">...</span>     <span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">14.191093</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">horizon</span> <span class="o">=</span> <span class="mi">12</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">future</span> <span class="o">=</span> <span class="p">[</span>
-<span class="o">...</span>     <span class="p">{</span><span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">1961</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">)}</span>
-<span class="o">...</span>     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">horizon</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-<span class="o">...</span> <span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">forecast</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">,</span> <span class="n">xs</span><span class="o">=</span><span class="n">future</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">forecast</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_pred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">future</span><span class="p">,</span> <span class="n">forecast</span><span class="p">):</span>
 <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">y_pred</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mf">449.840</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">01</span> <span class="mf">422.594</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">01</span> <span class="mf">450.249</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">01</span> <span class="mf">477.956</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">01</span> <span class="mf">487.754</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">01</span> <span class="mf">563.726</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mf">660.231</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">01</span> <span class="mf">649.265</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">01</span> <span class="mf">526.936</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">01</span> <span class="mf">449.649</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">01</span> <span class="mf">404.077</span>
-<span class="mi">1961</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">01</span> <span class="mf">444.256</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mf">446.874</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">01</span> <span class="mf">423.998</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">01</span> <span class="mf">439.957</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">01</span> <span class="mf">457.958</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">01</span> <span class="mf">457.303</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">01</span> <span class="mf">496.554</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mf">553.798</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">01</span> <span class="mf">551.388</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">01</span> <span class="mf">479.620</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">01</span> <span class="mf">440.613</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">01</span> <span class="mf">409.914</span>
+<span class="mi">1961</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">01</span> <span class="mf">433.774</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
