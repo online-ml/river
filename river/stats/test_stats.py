@@ -83,6 +83,26 @@ def test_univariate(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
+        (stats.Mean(), lambda x, w: np.average(x, weights=w)),
+    ],
+)
+def test_univariate_weighted(stat, func):
+
+    # Shut up
+    np.warnings.filterwarnings("ignore")
+
+    X = [random.random() for _ in range(30)]
+    W = [random.random() for _ in range(30)]
+
+    for i, (x, w) in enumerate(zip(X, W)):
+        stat.update(x, w)
+        if i >= 1:
+            assert math.isclose(stat.get(), func(X[: i + 1], W[: i + 1]), abs_tol=1e-10)
+
+
+@pytest.mark.parametrize(
+    "stat, func",
+    [
         # TODO: we shouldn't ignore these types
         (utils.Rolling(stats.Mean(), 3), statistics.mean),  # type: ignore
         (utils.Rolling(stats.Mean(), 10), statistics.mean),  # type: ignore
@@ -125,6 +145,32 @@ def test_rolling_univariate(stat, func):
         stat.update(x)
         if i >= 1:
             assert math.isclose(stat.get(), func(tail(X[: i + 1], n)), abs_tol=1e-10)
+
+
+@pytest.mark.parametrize(
+    "stat, func",
+    [
+        # TODO: we shouldn't ignore these types
+        (utils.Rolling(stats.Mean(), 3), lambda x, w: np.average(x, weights=w)),  # type: ignore
+        (utils.Rolling(stats.Mean(), 10), lambda x, w: np.average(x, weights=w)),  # type: ignore
+    ],
+)
+def test_rolling_univariate_weighted(stat, func):
+
+    # We know what we're doing
+    np.warnings.filterwarnings("ignore")
+
+    def tail(iterable, n):
+        return collections.deque(iterable, maxlen=n)
+
+    n = stat.window_size
+    X = [random.random() for _ in range(30)]
+    W = [random.random() for _ in range(30)]
+
+    for i, (x, w) in enumerate(zip(X, W)):
+        stat.update(x, w)
+        if i >= 1:
+            assert math.isclose(stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10)
 
 
 @pytest.mark.parametrize(
