@@ -154,7 +154,7 @@ def test_diff_example():
         Differencer(1, 2) * Differencer(2, 10),
         Differencer(2, 2) * Differencer(1, 10),
         Differencer(2, 2) * Differencer(2, 10),
-    ]
+    ],
 )
 def test_undiff(differencer):
 
