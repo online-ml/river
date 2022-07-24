@@ -13,7 +13,7 @@ class Yt(sympy.IndexedBase):
     t = sympy.symbols("t", cls=sympy.Idx)
 
     def __getitem__(self, idx):
-        return super().__getitem__(self.t - idx + 1)
+        return super().__getitem__(self.t - idx)
 
 
 def test_diff_formula():

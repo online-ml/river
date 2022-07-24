@@ -19,12 +19,8 @@ class Differencer:
     """
 
     def __init__(self, d, m=1):
-
-        # if d < 0:
-        #     raise ValueError("d must be greater than or equal to 0")
-
-        # if m < 1:
-        #     raise ValueError("m must be greater than or equal to 1")
+        self.d = d
+        self.m = m
 
         def n_choose_k(n, k):
             f = math.factorial
@@ -35,6 +31,10 @@ class Differencer:
             t = k * m
             coeff = (-1 if k % 2 else 1) * n_choose_k(n=d, k=k)
             self.coeffs[t] = coeff
+
+    @property
+    def n_required_past_values(self):
+        return max(self.coeffs)
 
     @classmethod
     def from_coeffs(cls, coeffs):
@@ -160,17 +160,56 @@ class SNARIMAX(time_series.base.Forecaster):
     Examples
     --------
 
-    >>> import calendar
     >>> import datetime as dt
-    >>> import math
-    >>> from river import compose
     >>> from river import datasets
-    >>> from river import linear_model
     >>> from river import metrics
-    >>> from river import optim
-    >>> from river import preprocessing
     >>> from river import time_series
     >>> from river import utils
+
+    >>> period = 12
+    >>> model = time_series.SNARIMAX(
+    ...     p=period,
+    ...     d=1,
+    ...     q=period,
+    ...     m=period,
+    ...     sd=1
+    ... )
+
+    >>> metric = utils.Rolling(metrics.MAE(), period)
+
+    >>> for t, (x, y) in enumerate(datasets.AirlinePassengers()):
+    ...     model = model.learn_one(y)
+
+    >>> horizon = 12
+    >>> future = [
+    ...     {'month': dt.date(year=1961, month=m, day=1)}
+    ...     for m in range(1, horizon + 1)
+    ... ]
+    >>> forecast = model.forecast(horizon=horizon)
+    >>> for x, y_pred in zip(future, forecast):
+    ...     print(x['month'], f'{y_pred:.3f}')
+    1961-01-01 484.834
+    1961-02-01 424.786
+    1961-03-01 467.923
+    1961-04-01 506.543
+    1961-05-01 507.724
+    1961-06-01 586.575
+    1961-07-01 679.066
+    1961-08-01 654.922
+    1961-09-01 566.924
+    1961-10-01 513.844
+    1961-11-01 451.653
+    1961-12-01 505.868
+
+    Classic ARIMA models learn solely on the time series values. You can also include features
+    built at each step.
+
+    >>> import calendar
+    >>> import math
+    >>> from river import compose
+    >>> from river import linear_model
+    >>> from river import optim
+    >>> from river import preprocessing
 
     >>> def get_month_distances(x):
     ...     return {
@@ -206,36 +245,26 @@ class SNARIMAX(time_series.base.Forecaster):
     ...     )
     ... )
 
-    >>> metric = utils.Rolling(metrics.MAE(), 12)
+    >>> metric = utils.Rolling(metrics.MAE(), period)
 
     >>> for x, y in datasets.AirlinePassengers():
-    ...     y_pred = model.forecast(horizon=1, xs=[x])
     ...     model = model.learn_one(x, y)
-    ...     metric = metric.update(y, y_pred[0])
 
-    >>> metric
-    MAE: 14.191093
-
-    >>> horizon = 12
-    >>> future = [
-    ...     {'month': dt.date(year=1961, month=m, day=1)}
-    ...     for m in range(1, horizon + 1)
-    ... ]
-    >>> forecast = model.forecast(horizon=horizon, xs=future)
+    >>> forecast = model.forecast(horizon=horizon)
     >>> for x, y_pred in zip(future, forecast):
     ...     print(x['month'], f'{y_pred:.3f}')
-    1961-01-01 449.840
-    1961-02-01 422.594
-    1961-03-01 450.249
-    1961-04-01 477.956
-    1961-05-01 487.754
-    1961-06-01 563.726
-    1961-07-01 660.231
-    1961-08-01 649.265
-    1961-09-01 526.936
-    1961-10-01 449.649
-    1961-11-01 404.077
-    1961-12-01 444.256
+    1961-01-01 446.874
+    1961-02-01 423.998
+    1961-03-01 439.957
+    1961-04-01 457.958
+    1961-05-01 457.303
+    1961-06-01 496.554
+    1961-07-01 553.798
+    1961-08-01 551.388
+    1961-09-01 479.620
+    1961-10-01 440.613
+    1961-11-01 409.914
+    1961-12-01 433.774
 
     References
     ----------
@@ -270,7 +299,7 @@ class SNARIMAX(time_series.base.Forecaster):
             else preprocessing.StandardScaler() | linear_model.LinearRegression()
         )
         self.differencer = Differencer(d=d, m=1) * Differencer(d=sd, m=m)
-        self.y_trues: typing.Deque[float] = collections.deque(maxlen=max(p, m * sp))
+        self.y_trues: typing.Deque[float] = collections.deque(maxlen=max(p, m * sp, d + m * sd))
         self.errors: typing.Deque[float] = collections.deque(maxlen=max(p, m * sq))
 
     def _add_lag_features(self, x, y_trues, errors):
@@ -309,14 +338,22 @@ class SNARIMAX(time_series.base.Forecaster):
         return x
 
     def learn_one(self, y, x=None):
-        x = self._add_lag_features(x=x, y_trues=self.y_trues, errors=self.errors)
-        y_pred = self.regressor.predict_one(x)
+
+        # It isn't possible to difference the time series if enough values have not been seen
+        if len(self.y_trues) >= self.differencer.n_required_past_values:
+
+            x = self._add_lag_features(x=x, y_trues=self.y_trues, errors=self.errors)
+
+            # The regressor learns on the differenced version of the time series
+            # If d=0 and/or sd=0, then self.differencer.diff is a no-op
+            y_diff = self.differencer.diff(y, self.y_trues)
+
+            y_pred = self.regressor.predict_one(x)
+            self.errors.appendleft(y_diff - y_pred)
+            self.regressor.learn_one(x, y_diff)
 
         self.y_trues.appendleft(y)
-        y_diff = self.differencer.diff(self.y_trues)
 
-        self.regressor.learn_one(x, y_diff)
-        self.errors.appendleft(y_diff - y_pred)
         return self
 
     def forecast(self, horizon, xs=None):
@@ -333,10 +370,11 @@ class SNARIMAX(time_series.base.Forecaster):
 
         for t, x in enumerate(xs):
             x = self._add_lag_features(x=x, y_trues=Y, errors=errors)
-            y_pred = self.regressor.predict_one(x)
-            Y.appendleft(y_pred)
-            forecasts[t] = 2 * y_pred - self.differencer.diff(Y)
 
+            y_pred = self.regressor.predict_one(x)
+            forecasts[t] = self.differencer.undiff(y_pred, Y)
+
+            Y.appendleft(forecasts[t])
             errors.appendleft(0)
 
         return forecasts
