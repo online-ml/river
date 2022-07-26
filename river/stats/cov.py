@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from river import stats, utils
+from river import stats
 
 
 class Cov(stats.base.Bivariate):
@@ -72,21 +72,27 @@ class Cov(stats.base.Bivariate):
         dx = x - self.mean_x.get()
         self.mean_x.update(x, w)
         self.mean_y.update(y, w)
-        self.cov += w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
+        self.cov += (
+            w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
+        )
         return self
 
     def revert(self, x, y, w=1.0):
         dx = x - self.mean_x.get()
         self.mean_x.revert(x, w)
         self.mean_y.revert(y, w)
-        self.cov -= w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
+        self.cov -= (
+            w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
+        )
         return self
 
     def update_many(self, X: np.ndarray, Y: np.ndarray):
         dx = X - self.mean_x.get()
         self.mean_x.update_many(X)
         self.mean_y.update_many(Y)
-        self.cov += (dx * (Y - self.mean_y.get()) - self.cov).sum() / max(self.mean_x.n - self.ddof, 1)
+        self.cov += (dx * (Y - self.mean_y.get()) - self.cov).sum() / max(
+            self.mean_x.n - self.ddof, 1
+        )
         return self
 
     def get(self):

@@ -3,10 +3,9 @@ import random
 
 import numpy as np
 import pandas as pd
-
 import pytest
+
 from river import covariance, stream
-from sklearn import datasets
 
 
 @pytest.mark.parametrize(
@@ -22,8 +21,8 @@ from sklearn import datasets
 def test_covariance_revert(ddof):
 
     X = np.random.random((100, 5))
-    X1 = X[:len(X) // 2]
-    X2 = X[len(X) // 2:]
+    X1 = X[: len(X) // 2]
+    X2 = X[len(X) // 2 :]
 
     C1 = covariance.EmpiricalCovariance(ddof=ddof)
     for x, _ in stream.iter_array(X1):

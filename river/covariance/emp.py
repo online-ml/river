@@ -39,7 +39,11 @@ class SymmetricMatrix(abc.ABC):
             column = []
             for row in names:
                 try:
-                    val = self[row, col].get() if isinstance(self[row, col], stats.base.Statistic) else self[row, col]
+                    val = (
+                        self[row, col].get()
+                        if isinstance(self[row, col], stats.base.Statistic)
+                        else self[row, col]
+                    )
                     column.append(f"{val:{self._fmt}}")
                 except KeyError:
                     column.append("")
@@ -170,13 +174,13 @@ class EmpiricalCovariance(SymmetricMatrix):
         """
 
         # dict -> numpy
-        X_array = X.values
-        mean = X_array.mean(axis=0)
-        cov = np.cov(X_array.T, ddof=self.ddof)
+        X_arr = X.values
+        mean_arr = X_arr.mean(axis=0)
+        cov_arr = np.cov(X_arr.T, ddof=self.ddof)
 
-        mean = dict(zip(X.columns, mean))
+        mean = dict(zip(X.columns, mean_arr))
         cov = {
-            (i, j): cov[r, c]
+            (i, j): cov_arr[r, c]
             for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
         }
 
@@ -190,7 +194,7 @@ class EmpiricalCovariance(SymmetricMatrix):
                 other_mean_y=mean[j],
                 other_n=len(X),
                 other_cov=cov.get((i, j), cov.get((j, i))),
-                other_ddof=self.ddof
+                other_ddof=self.ddof,
             )
 
         for i in X.columns:
@@ -199,13 +203,10 @@ class EmpiricalCovariance(SymmetricMatrix):
             except KeyError:
                 self._cov[i, i] = stats.Var(self.ddof)
             self[i, i]._iadd(
-                other_n=len(X),
-                other_mean=mean[i],
-                other_S=cov[i, i] * (len(X) - self.ddof)
+                other_n=len(X), other_mean=mean[i], other_S=cov[i, i] * (len(X) - self.ddof)
             )
 
         return self
-
 
 
 def _sherman_morrison_inplace(A, u, v):
@@ -282,12 +283,15 @@ class EmpiricalPrecision(SymmetricMatrix):
 
         # dict -> numpy
         x_vec = np.array(list(x.values()))
-        loc = np.array([self._loc.get(feature, 0.) for feature in x])
+        loc = np.array([self._loc.get(feature, 0.0) for feature in x])
         # Fortran order is necessary for scipy's linalg.blas.dger
-        inv_cov = np.array([
-            [self._inv_cov.get((i, j) if i < j else (j, i), 1. if i == j else 0.) for j in x]
-            for i in x
-        ], order='F') / max(self._w , 1)
+        inv_cov = np.array(
+            [
+                [self._inv_cov.get((i, j) if i < j else (j, i), 1.0 if i == j else 0.0) for j in x]
+                for i in x
+            ],
+            order="F",
+        ) / max(self._w, 1)
 
         # update formulas
         self._w += 1

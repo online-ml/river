@@ -1,4 +1,4 @@
-from river import stats, utils
+from river import stats
 
 
 class PearsonCorr(stats.base.Bivariate):

@@ -193,7 +193,9 @@ def test_rolling_univariate_sample_weights(stat, func):
     for i, (x, w) in enumerate(zip(X, W)):
         stat.update(x, w)
         if i >= 1:
-            assert math.isclose(stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10)
+            assert math.isclose(
+                stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10
+            )
 
 
 @pytest.mark.parametrize(
@@ -218,7 +220,9 @@ def test_rolling_univariate_reliability_weights(stat, func):
     for i, (x, w) in enumerate(zip(X, W)):
         stat.update(x, w)
         if i >= 1:
-            assert math.isclose(stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10)
+            assert math.isclose(
+                stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10
+            )
 
 
 @pytest.mark.parametrize(

@@ -1,5 +1,4 @@
 import copy
-import functools
 import math
 import random
 
@@ -32,24 +31,16 @@ def test_add_mean():
         assert math.isclose(C.get(), E.get())
 
         assert math.isclose(
-            C.get(),
-            np.average(X[: i + 1] + Y[: i + 1], weights=W[:i+1] + W[:i+1])
+            C.get(), np.average(X[: i + 1] + Y[: i + 1], weights=W[: i + 1] + W[: i + 1])
         )
-
 
 
 def _weighted_var(X, W, ddof):
     average = np.average(X, weights=W)
-    return np.average((X - average)**2, weights=W) * len(X) / (len(X) - ddof)
+    return np.average((X - average) ** 2, weights=W) * len(X) / (len(X) - ddof)
 
 
-@pytest.mark.parametrize(
-    "ddof",
-    [
-        pytest.param(ddof, id=f"{ddof=}")
-        for ddof in [0, 1, 2]
-    ]
-)
+@pytest.mark.parametrize("ddof", [pytest.param(ddof, id=f"{ddof=}") for ddof in [0, 1, 2]])
 def test_add_var(ddof):
     A = stats.Var(ddof)
     B = stats.Var(ddof)
@@ -74,10 +65,7 @@ def test_add_var(ddof):
 
         if i >= ddof:
             assert math.isclose(
-                C.get(),
-                _weighted_var(
-                    X[: i + 1] + Y[: i + 1], W[:i+1] + W[:i+1], ddof=ddof
-                )
+                C.get(), _weighted_var(X[: i + 1] + Y[: i + 1], W[: i + 1] + W[: i + 1], ddof=ddof)
             )
 
 
@@ -132,10 +120,7 @@ def test_sub_back_to_zero(stat):
 
 @pytest.mark.parametrize(
     "ddof",
-    [
-        pytest.param(ddof, id=f"{ddof=}")
-        for ddof in [0, 1]
-    ],
+    [pytest.param(ddof, id=f"{ddof=}") for ddof in [0, 1]],
 )
 def test_add_cov(ddof):
 
@@ -174,10 +159,7 @@ def test_add_cov(ddof):
 
 @pytest.mark.parametrize(
     "ddof",
-    [
-        pytest.param(ddof, id=f"{ddof=}")
-        for ddof in [0, 1]
-    ],
+    [pytest.param(ddof, id=f"{ddof=}") for ddof in [0, 1]],
 )
 def test_sub_cov(ddof):
 
