@@ -162,7 +162,6 @@ class SNARIMAX(time_series.base.Forecaster):
 
     >>> import datetime as dt
     >>> from river import datasets
-    >>> from river import metrics
     >>> from river import time_series
     >>> from river import utils
 
@@ -175,8 +174,6 @@ class SNARIMAX(time_series.base.Forecaster):
     ...     sd=1
     ... )
 
-    >>> metric = utils.Rolling(metrics.MAE(), period)
-
     >>> for t, (x, y) in enumerate(datasets.AirlinePassengers()):
     ...     model = model.learn_one(y)
 
@@ -188,18 +185,18 @@ class SNARIMAX(time_series.base.Forecaster):
     >>> forecast = model.forecast(horizon=horizon)
     >>> for x, y_pred in zip(future, forecast):
     ...     print(x['month'], f'{y_pred:.3f}')
-    1961-01-01 484.834
-    1961-02-01 424.786
-    1961-03-01 467.923
-    1961-04-01 506.543
-    1961-05-01 507.724
-    1961-06-01 586.575
-    1961-07-01 679.066
-    1961-08-01 654.922
-    1961-09-01 566.924
-    1961-10-01 513.844
-    1961-11-01 451.653
-    1961-12-01 505.868
+    1961-01-01 491.988
+    1961-02-01 447.593
+    1961-03-01 481.405
+    1961-04-01 566.278
+    1961-05-01 551.561
+    1961-06-01 605.414
+    1961-07-01 711.140
+    1961-08-01 668.204
+    1961-09-01 570.517
+    1961-10-01 549.589
+    1961-11-01 466.344
+    1961-12-01 506.945
 
     Classic ARIMA models learn solely on the time series values. You can also include features
     built at each step.
@@ -244,8 +241,6 @@ class SNARIMAX(time_series.base.Forecaster):
     ...         )
     ...     )
     ... )
-
-    >>> metric = utils.Rolling(metrics.MAE(), period)
 
     >>> for x, y in datasets.AirlinePassengers():
     ...     model = model.learn_one(x, y)
@@ -299,10 +294,11 @@ class SNARIMAX(time_series.base.Forecaster):
             else preprocessing.StandardScaler() | linear_model.LinearRegression()
         )
         self.differencer = Differencer(d=d, m=1) * Differencer(d=sd, m=m)
-        self.y_trues: typing.Deque[float] = collections.deque(maxlen=max(p, m * sp, d + m * sd))
+        self.y_hist: typing.Deque[float] = collections.deque(maxlen=d + m * sd)
+        self.y_diff: typing.Deque[float] = collections.deque(maxlen=max(p, m * sp))
         self.errors: typing.Deque[float] = collections.deque(maxlen=max(q, m * sq))
 
-    def _add_lag_features(self, x, y_trues, errors):
+    def _add_lag_features(self, x, Y, errors):
 
         if x is None:
             x = {}
@@ -310,14 +306,14 @@ class SNARIMAX(time_series.base.Forecaster):
         # AR
         for t in range(self.p):
             try:
-                x[f"y-{t+1}"] = y_trues[t]
+                x[f"y-{t+1}"] = Y[t]
             except IndexError:
                 break
 
         # Seasonal AR
         for t in range(self.m - 1, self.m * self.sp, self.m):
             try:
-                x[f"sy-{t+1}"] = y_trues[t]
+                x[f"sy-{t+1}"] = Y[t]
             except IndexError:
                 break
 
@@ -340,19 +336,20 @@ class SNARIMAX(time_series.base.Forecaster):
     def learn_one(self, y, x=None):
 
         # It isn't possible to difference the time series if enough values have not been seen
-        if len(self.y_trues) >= self.differencer.n_required_past_values:
+        if len(self.y_hist) >= self.differencer.n_required_past_values:
 
-            x = self._add_lag_features(x=x, y_trues=self.y_trues, errors=self.errors)
+            x = self._add_lag_features(x=x, Y=self.y_diff, errors=self.errors)
 
             # The regressor learns on the differenced version of the time series
             # If d=0 and/or sd=0, then self.differencer.diff is a no-op
-            y_diff = self.differencer.diff(y, self.y_trues)
+            y_diff = self.differencer.diff(y, self.y_hist)
+            self.y_diff.appendleft(y_diff)
 
             y_pred = self.regressor.predict_one(x)
             self.errors.appendleft(y_diff - y_pred)
             self.regressor.learn_one(x, y_diff)
 
-        self.y_trues.appendleft(y)
+        self.y_hist.appendleft(y)
 
         return self
 
@@ -364,17 +361,20 @@ class SNARIMAX(time_series.base.Forecaster):
         if len(xs) != horizon:
             raise ValueError("the length of xs should be equal to the specified horizon")
 
-        Y = collections.deque(self.y_trues)
+        y_hist = collections.deque(self.y_hist)
+        y_diff = collections.deque(self.y_diff)
         errors = collections.deque(self.errors)
         forecasts = [None] * horizon
 
         for t, x in enumerate(xs):
-            x = self._add_lag_features(x=x, y_trues=Y, errors=errors)
+            x = self._add_lag_features(x=x, Y=y_diff, errors=errors)
 
             y_pred = self.regressor.predict_one(x)
-            forecasts[t] = self.differencer.undiff(y_pred, Y)
+            y_diff.appendleft(y_pred)
 
-            Y.appendleft(forecasts[t])
+            forecasts[t] = self.differencer.undiff(y_pred, y_hist)
+            y_hist.appendleft(forecasts[t])
+
             errors.appendleft(0)
 
         return forecasts

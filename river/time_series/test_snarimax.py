@@ -167,7 +167,7 @@ def test_undiff(differencer):
 
 
 @pytest.mark.parametrize(
-    "snarimax, y_trues, errors, expected",
+    "snarimax, Y, errors, expected",
     [
         # Non-seasonal parts (p and q)
         (
@@ -241,8 +241,8 @@ def test_undiff(differencer):
         ),
     ],
 )
-def test_add_lag_features(snarimax, y_trues, errors, expected):
-    features = snarimax._add_lag_features(x=None, y_trues=y_trues, errors=errors)
+def test_add_lag_features(snarimax, Y, errors, expected):
+    features = snarimax._add_lag_features(x=None, Y=Y, errors=errors)
     assert features == expected
 
 
