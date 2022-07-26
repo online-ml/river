@@ -72,14 +72,14 @@ class Cov(stats.base.Bivariate):
         dx = x - self.mean_x.get()
         self.mean_x.update(x, w)
         self.mean_y.update(y, w)
-        self.cov += (w * dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
+        self.cov += w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
         return self
 
     def revert(self, x, y, w=1.0):
         dx = x - self.mean_x.get()
         self.mean_x.revert(x, w)
         self.mean_y.revert(y, w)
-        self.cov -= (w * dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
+        self.cov -= w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
         return self
 
     def update_many(self, X: np.ndarray, Y: np.ndarray):
@@ -114,10 +114,10 @@ class Cov(stats.base.Bivariate):
         self.cov += (
             (old_mean_x - other_mean_x)
             * (old_mean_y - other_mean_y)
-            * (((old_n - self.ddof) * (other_n - other_ddof)) / (self.mean_x.n - self.ddof))
+            * ((old_n * other_n) / self.mean_x.n)
         )
         # Reapply scale
-        self.cov /= self.mean_x.n - self.ddof - other_ddof
+        self.cov /= self.mean_x.n - self.ddof
 
         return self
 

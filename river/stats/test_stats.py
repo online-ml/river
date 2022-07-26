@@ -69,7 +69,6 @@ def test_repr_with_no_updates(stat):
 )
 def test_univariate(stat, func):
 
-    # Shut up
     np.warnings.filterwarnings("ignore")
 
     X = [random.random() for _ in range(30)]
@@ -80,15 +79,41 @@ def test_univariate(stat, func):
             assert math.isclose(stat.get(), func(X[: i + 1]), abs_tol=1e-10)
 
 
+# TODO
+# def _weighted_variance(X, W):
+#     mean = np.average(X, weights=W)
+#     return np.average((W - mean) ** 2, weights=W)
+
+
 @pytest.mark.parametrize(
     "stat, func",
     [
         (stats.Mean(), lambda x, w: np.average(x, weights=w)),
     ],
 )
-def test_univariate_weighted(stat, func):
+def test_univariate_frequency_weights(stat, func):
+    """https://www.wikiwand.com/en/Weighted_arithmetic_mean"""
 
-    # Shut up
+    np.warnings.filterwarnings("ignore")
+
+    X = [random.random() for _ in range(30)]
+    W = [random.randint(1, 5) for _ in range(30)]
+
+    for i, (x, w) in enumerate(zip(X, W)):
+        stat.update(x, w)
+        if i >= 1:
+            assert math.isclose(stat.get(), func(X[: i + 1], W[: i + 1]), abs_tol=1e-10)
+
+
+@pytest.mark.parametrize(
+    "stat, func",
+    [
+        (stats.Mean(), lambda x, w: np.average(x, weights=w)),
+    ],
+)
+def test_univariate_reliability_weights(stat, func):
+    """https://www.wikiwand.com/en/Weighted_arithmetic_mean"""
+
     np.warnings.filterwarnings("ignore")
 
     X = [random.random() for _ in range(30)]
@@ -132,7 +157,6 @@ def test_univariate_weighted(stat, func):
 )
 def test_rolling_univariate(stat, func):
 
-    # We know what we're doing
     np.warnings.filterwarnings("ignore")
 
     def tail(iterable, n):
@@ -155,9 +179,33 @@ def test_rolling_univariate(stat, func):
         (utils.Rolling(stats.Mean(), 10), lambda x, w: np.average(x, weights=w)),  # type: ignore
     ],
 )
-def test_rolling_univariate_weighted(stat, func):
+def test_rolling_univariate_sample_weights(stat, func):
 
-    # We know what we're doing
+    np.warnings.filterwarnings("ignore")
+
+    def tail(iterable, n):
+        return collections.deque(iterable, maxlen=n)
+
+    n = stat.window_size
+    X = [random.random() for _ in range(30)]
+    W = [random.randint(1, 5) for _ in range(30)]
+
+    for i, (x, w) in enumerate(zip(X, W)):
+        stat.update(x, w)
+        if i >= 1:
+            assert math.isclose(stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10)
+
+
+@pytest.mark.parametrize(
+    "stat, func",
+    [
+        # TODO: we shouldn't ignore these types
+        (utils.Rolling(stats.Mean(), 3), lambda x, w: np.average(x, weights=w)),  # type: ignore
+        (utils.Rolling(stats.Mean(), 10), lambda x, w: np.average(x, weights=w)),  # type: ignore
+    ],
+)
+def test_rolling_univariate_reliability_weights(stat, func):
+
     np.warnings.filterwarnings("ignore")
 
     def tail(iterable, n):
@@ -182,7 +230,6 @@ def test_rolling_univariate_weighted(stat, func):
 )
 def test_bivariate(stat, func):
 
-    # Shhh
     np.warnings.filterwarnings("ignore")
 
     X = [random.random() for _ in range(30)]

@@ -176,7 +176,7 @@ def test_add_cov(ddof):
     "ddof",
     [
         pytest.param(ddof, id=f"{ddof=}")
-        for ddof in [0, 1, 2]
+        for ddof in [0, 1]
     ],
 )
 def test_sub_cov(ddof):

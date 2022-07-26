@@ -176,11 +176,11 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         mean = dict(zip(X.columns, mean))
         cov = {
-            (fi, fj): cov[i, j]
-            for (i, fi), (j, fj) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
+            (i, j): cov[r, c]
+            for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
         }
 
-        for i, j in itertools.combinations(X.columns, r=2):
+        for i, j in itertools.combinations(sorted(X.columns), r=2):
             try:
                 self[i, j]
             except KeyError:
@@ -189,7 +189,7 @@ class EmpiricalCovariance(SymmetricMatrix):
                 other_mean_x=mean[i],
                 other_mean_y=mean[j],
                 other_n=len(X),
-                other_cov=cov.get((i, j), cov.get(j, i)),
+                other_cov=cov.get((i, j), cov.get((j, i))),
                 other_ddof=self.ddof
             )
 
