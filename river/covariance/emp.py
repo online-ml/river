@@ -3,7 +3,6 @@ import itertools
 
 import numpy as np
 import pandas as pd
-import scipy as sp
 
 from river import stats, utils
 
@@ -205,105 +204,5 @@ class EmpiricalCovariance(SymmetricMatrix):
             self[i, i]._iadd(
                 other_n=len(X), other_mean=mean[i], other_S=cov[i, i] * (len(X) - self.ddof)
             )
-
-        return self
-
-
-def _sherman_morrison_inplace(A, u, v):
-    """
-
-    From https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/
-
-    """
-    Au = A @ u
-    alpha = -1 / (1 + v.T @ Au)
-    sp.linalg.blas.dger(alpha, Au, v.T @ A, a=A, overwrite_a=1)
-
-
-class EmpiricalPrecision(SymmetricMatrix):
-    """Empirical precision matrix.
-
-    The precision matrix is the inverse of the covariance matrix.
-
-    Parameters
-    ----------
-    ddof
-        Delta Degrees of Freedom.
-
-    Examples
-    --------
-
-    >>> import numpy as np
-    >>> import pandas as pd
-    >>> from river import covariance
-
-    >>> np.random.seed(42)
-    >>> X = pd.DataFrame(np.random.random((8, 3)), columns=["red", "green", "blue"])
-    >>> X
-            red     green      blue
-    0  0.374540  0.950714  0.731994
-    1  0.598658  0.156019  0.155995
-    2  0.058084  0.866176  0.601115
-    3  0.708073  0.020584  0.969910
-    4  0.832443  0.212339  0.181825
-    5  0.183405  0.304242  0.524756
-    6  0.431945  0.291229  0.611853
-    7  0.139494  0.292145  0.366362
-
-    >>> prec = covariance.EmpiricalPrecision()
-    >>> for x in X.to_dict(orient="records"):
-    ...     prec = prec.update(x)
-
-    References
-    ----------
-    [^1]: [Online Estimation of the Inverse Covariance Matrix - Markus Thill](https://markusthill.github.io/math/stats/ml/online-estimation-of-the-inverse-covariance-matrix/)
-    [^2]: [Fast rank-one updates to matrix inverse? - Tim Vieira](https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/)
-
-    """
-
-    def __init__(self, ddof=1):
-        self.ddof = ddof
-        self._w = 0
-        self._loc = {}
-        self._inv_cov = {}
-
-    @property
-    def matrix(self):
-        return self._inv_cov
-
-    def update(self, x):
-        """Update with a single sample.
-
-        Parameters
-        ----------
-        x
-            A sample.
-
-        """
-
-        # dict -> numpy
-        x_vec = np.array(list(x.values()))
-        loc = np.array([self._loc.get(feature, 0.0) for feature in x])
-        # Fortran order is necessary for scipy's linalg.blas.dger
-        inv_cov = np.array(
-            [
-                [self._inv_cov.get((i, j) if i < j else (j, i), 1.0 if i == j else 0.0) for j in x]
-                for i in x
-            ],
-            order="F",
-        ) / max(self._w, 1)
-
-        # update formulas
-        self._w += 1
-        diff = x_vec - loc
-        loc += diff / self._w
-        _sherman_morrison_inplace(A=inv_cov, u=diff, v=x_vec - loc)
-
-        # numpy -> dict
-        for i, fi in enumerate(x):
-            self._loc[fi] = loc[i]
-            row = (self._w + self.ddof) * inv_cov[i]
-            for j, fj in enumerate(x):
-                self._inv_cov[(fi, fj) if fi < fj else (fj, fi)] = row[j]
 
         return self
