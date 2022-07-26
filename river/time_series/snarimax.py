@@ -300,7 +300,7 @@ class SNARIMAX(time_series.base.Forecaster):
         )
         self.differencer = Differencer(d=d, m=1) * Differencer(d=sd, m=m)
         self.y_trues: typing.Deque[float] = collections.deque(maxlen=max(p, m * sp, d + m * sd))
-        self.errors: typing.Deque[float] = collections.deque(maxlen=max(p, m * sq))
+        self.errors: typing.Deque[float] = collections.deque(maxlen=max(q, m * sq))
 
     def _add_lag_features(self, x, y_trues, errors):
 
