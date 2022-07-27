@@ -99,7 +99,7 @@ def test_covariance_update_many(ddof):
     p = 5
     X_all = pd.DataFrame(columns=range(p))
 
-    for _ in range(5):
+    for _ in range(p):
         n = np.random.randint(1, 31)
         X = pd.DataFrame(np.random.random((n, p)))
 
