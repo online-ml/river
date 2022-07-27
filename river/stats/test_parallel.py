@@ -58,8 +58,7 @@ def test_add_var(ddof):
         D = A + B
         assert math.isclose(C.get(), D.get())
 
-        # TODO: clone should work instead of deepcopy
-        E = copy.deepcopy(A)
+        E = A.clone(include_attributes=True)
         E += B
         assert math.isclose(C.get(), E.get())
 
