@@ -128,7 +128,7 @@ def test_covariance_update_many_shuffled(ddof):
     p = 5
     X_all = pd.DataFrame(columns=range(p))
 
-    for _ in range(5):
+    for _ in range(p):
         n = np.random.randint(5, 31)
         X = pd.DataFrame(np.random.random((n, p))).sample(p, axis="columns")
 
