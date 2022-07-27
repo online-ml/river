@@ -123,7 +123,7 @@ class Cov(stats.base.Bivariate):
             * ((old_n * other_n) / self.mean_x.n)
         )
         # Reapply scale
-        self.cov /= self.mean_x.n - self.ddof
+        self.cov /= max(self.mean_x.n - self.ddof, 1)
 
         return self
 
