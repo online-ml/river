@@ -68,12 +68,16 @@ class Cov(stats.base.Bivariate):
         self.mean_y = stats.Mean()
         self.cov = 0
 
+    @property
+    def n(self):
+        return self.mean_x.n
+
     def update(self, x, y, w=1.0):
         dx = x - self.mean_x.get()
         self.mean_x.update(x, w)
         self.mean_y.update(y, w)
         self.cov += (
-            w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
+            w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.n - self.ddof, 1)
         )
         return self
 
@@ -82,7 +86,7 @@ class Cov(stats.base.Bivariate):
         self.mean_x.revert(x, w)
         self.mean_y.revert(y, w)
         self.cov -= (
-            w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.mean_x.n - self.ddof, 1)
+            w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.n - self.ddof, 1)
         )
         return self
 
@@ -91,7 +95,7 @@ class Cov(stats.base.Bivariate):
         self.mean_x.update_many(X)
         self.mean_y.update_many(Y)
         self.cov += (dx * (Y - self.mean_y.get()) - self.cov).sum() / max(
-            self.mean_x.n - self.ddof, 1
+            self.n - self.ddof, 1
         )
         return self
 
@@ -101,13 +105,13 @@ class Cov(stats.base.Bivariate):
     def _iadd(self, other_mean_x, other_mean_y, other_n, other_cov, other_ddof):
         old_mean_x = self.mean_x.get()
         old_mean_y = self.mean_y.get()
-        old_n = self.mean_x.n
+        old_n = self.n
 
         # Update mean estimates
         self.mean_x._iadd(other_n, other_mean_x)
         self.mean_y._iadd(other_n, other_mean_y)
 
-        if self.mean_x.n <= self.ddof:
+        if self.n <= self.ddof:
             return self
 
         # Scale factors
@@ -120,10 +124,10 @@ class Cov(stats.base.Bivariate):
         self.cov += (
             (old_mean_x - other_mean_x)
             * (old_mean_y - other_mean_y)
-            * ((old_n * other_n) / self.mean_x.n)
+            * ((old_n * other_n) / self.n)
         )
         # Reapply scale
-        self.cov /= max(self.mean_x.n - self.ddof, 1)
+        self.cov /= max(self.n - self.ddof, 1)
 
         return self
 
@@ -137,16 +141,16 @@ class Cov(stats.base.Bivariate):
         return result
 
     def __isub__(self, other):
-        if self.mean_x.n <= self.ddof:
+        if self.n <= self.ddof:
             return self
 
-        old_n = self.mean_x.n
+        old_n = self.n
 
         # Update mean estimates
         self.mean_x -= other.mean_x
         self.mean_y -= other.mean_y
 
-        if self.mean_x.n <= self.ddof:
+        if self.n <= self.ddof:
             self.cov = 0
             return self
 
@@ -160,10 +164,10 @@ class Cov(stats.base.Bivariate):
         self.cov -= (
             (self.mean_x.get() - other.mean_x.get())
             * (self.mean_y.get() - other.mean_y.get())
-            * ((self.mean_x.n * other.mean_x.n) / old_n)
+            * ((self.n * other.mean_x.n) / old_n)
         )
         # Re-apply scale factor
-        self.cov /= self.mean_x.n - self.ddof
+        self.cov /= self.n - self.ddof
 
         return self
 

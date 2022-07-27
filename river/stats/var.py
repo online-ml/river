@@ -71,6 +71,10 @@ class Var(stats.base.Univariate):
         self.mean = stats.Mean()
         self._S = 0
 
+    @property
+    def n(self):
+        return self.mean.n
+
     def update(self, x, w=1.0):
         mean_old = self.mean.get()
         self.mean.update(x, w)
@@ -93,8 +97,8 @@ class Var(stats.base.Univariate):
         return self
 
     def get(self):
-        if self.mean.n > self.ddof:
-            return self._S / (self.mean.n - self.ddof)
+        if self.n > self.ddof:
+            return self._S / (self.n - self.ddof)
         return 0.0
 
     @classmethod
@@ -110,7 +114,7 @@ class Var(stats.base.Univariate):
         S = (
             self._S
             + other_S
-            + (self.mean.get() - other_mean) ** 2 * self.mean.n * other_n / (self.mean.n + other_n)
+            + (self.mean.get() - other_mean) ** 2 * self.n * other_n / (self.n + other_n)
         )
         self.mean._iadd(other_n, other_mean)
         self._S = S
@@ -133,9 +137,9 @@ class Var(stats.base.Univariate):
             self._S
             - other._S
             - (self.mean.get() - other.mean.get()) ** 2
-            * self.mean.n
+            * self.n
             * other.mean.n
-            / (self.mean.n + other.mean.n)
+            / (self.n + other.mean.n)
         )
         self._S = S
 
