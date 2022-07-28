@@ -363,7 +363,7 @@ class Base:
                 buffer.extend([v for v in contents.values()])
             elif isinstance(obj, np.ndarray):
                 size += obj.nbytes
-            elif isinstance(obj, itertools.count):
+            elif isinstance(obj, (itertools.count, itertools.cycle, itertools.repeat)):
                 ...
             elif hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes, bytearray)):
                 buffer.extend([i for i in obj])  # type: ignore
