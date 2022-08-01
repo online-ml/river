@@ -248,10 +248,10 @@ def test_bivariate(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        (utils.Rolling(stats.PearsonCorr(), 3), lambda x, y: sp_stats.pearsonr(x, y)[0]),
-        (utils.Rolling(stats.PearsonCorr(), 10), lambda x, y: sp_stats.pearsonr(x, y)[0]),
-        (utils.Rolling(stats.Cov(), 3), lambda x, y: np.cov(x, y)[0, 1]),
-        (utils.Rolling(stats.Cov(), 10), lambda x, y: np.cov(x, y)[0, 1]),
+        (utils.Rolling(stats.PearsonCorr(), 3), lambda x, y: sp_stats.pearsonr(x, y)[0]),  # type: ignore
+        (utils.Rolling(stats.PearsonCorr(), 10), lambda x, y: sp_stats.pearsonr(x, y)[0]),  # type: ignore
+        (utils.Rolling(stats.Cov(), 3), lambda x, y: np.cov(x, y)[0, 1]),  # type: ignore
+        (utils.Rolling(stats.Cov(), 10), lambda x, y: np.cov(x, y)[0, 1]),  # type: ignore
     ],
 )
 def test_rolling_bivariate(stat, func):
