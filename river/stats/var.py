@@ -110,18 +110,14 @@ class Var(stats.base.Univariate):
 
         return new
 
-    def _iadd(self, other_n, other_mean, other_S):
+    def __iadd__(self, other):
         S = (
             self._S
-            + other_S
-            + (self.mean.get() - other_mean) ** 2 * self.n * other_n / (self.n + other_n)
+            + other._S
+            + (self.mean.get() - other.mean.get()) ** 2 * self.n * other.n / (self.n + other.n)
         )
-        self.mean._iadd(other_n, other_mean)
+        self.mean._iadd(other.n, other.mean.get())
         self._S = S
-        return self
-
-    def __iadd__(self, other):
-        self._iadd(other.mean.n, other.mean.get(), other._S)
         return self
 
     def __add__(self, other):

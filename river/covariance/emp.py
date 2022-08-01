@@ -188,12 +188,12 @@ class EmpiricalCovariance(SymmetricMatrix):
                 self[i, j]
             except KeyError:
                 self._cov[i, j] = stats.Cov(self.ddof)
-            self[i, j]._iadd(
-                other_mean_x=mean[i],
-                other_mean_y=mean[j],
-                other_n=len(X),
-                other_cov=cov.get((i, j), cov.get((j, i))),
-                other_ddof=self.ddof,
+            self._cov[i, j] += stats.Cov._from_state(
+                n=len(X),
+                mean_x=mean[i],
+                mean_y=mean[j],
+                cov=cov.get((i, j), cov.get((j, i))),
+                ddof=self.ddof
             )
 
         for i in X.columns:
@@ -201,8 +201,6 @@ class EmpiricalCovariance(SymmetricMatrix):
                 self[i, i]
             except KeyError:
                 self._cov[i, i] = stats.Var(self.ddof)
-            self[i, i]._iadd(
-                other_n=len(X), other_mean=mean[i], other_S=cov[i, i] * (len(X) - self.ddof)
-            )
+            self._cov[i, i] += stats.Var._from_state(n=len(X), m=mean[i], sig=cov[i, i], ddof=self.ddof)
 
         return self
