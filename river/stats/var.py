@@ -116,7 +116,7 @@ class Var(stats.base.Univariate):
             + other._S
             + (self.mean.get() - other.mean.get()) ** 2 * self.n * other.n / (self.n + other.n)
         )
-        self.mean._iadd(other.n, other.mean.get())
+        self.mean += other.mean
         self._S = S
         return self
 

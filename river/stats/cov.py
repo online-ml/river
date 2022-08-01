@@ -110,8 +110,8 @@ class Cov(stats.base.Bivariate):
         old_n = self.n
 
         # Update mean estimates
-        self.mean_x._iadd(other.n, other.mean_x.get())
-        self.mean_y._iadd(other.n, other.mean_y.get())
+        self.mean_x += other.mean_x
+        self.mean_y += other.mean_y
 
         if self.n <= self.ddof:
             return self
