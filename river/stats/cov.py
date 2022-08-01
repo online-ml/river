@@ -124,7 +124,9 @@ class Cov(stats.base.Bivariate):
         self.cov = scale_a * self.cov + scale_b * other.cov
         # Apply correction factor
         self.cov += (
-            (old_mean_x - other.mean_x.get()) * (old_mean_y - other.mean_y.get()) * ((old_n * other.n) / self.n)
+            (old_mean_x - other.mean_x.get())
+            * (old_mean_y - other.mean_y.get())
+            * ((old_n * other.n) / self.n)
         )
         # Reapply scale
         self.cov /= max(self.n - self.ddof, 1)
