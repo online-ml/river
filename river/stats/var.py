@@ -60,6 +60,9 @@ class Var(stats.base.Univariate):
     ----------
     [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
     [^2]: [Chan, T.F., Golub, G.H. and LeVeque, R.J., 1983. Algorithms for computing the sample variance: Analysis and recommendations. The American Statistician, 37(3), pp.242-247.](https://amstat.tandfonline.com/doi/abs/10.1080/00031305.1983.10483115)
+    [^3]: Schubert, E. and Gertz, M., 2018, July. Numerically stable parallel computation of
+    (co-)variance. In Proceedings of the 30th International Conference on Scientific and
+    Statistical Database Management (pp. 1-12).
 
     """
 
@@ -67,6 +70,10 @@ class Var(stats.base.Univariate):
         self.ddof = ddof
         self.mean = stats.Mean()
         self._S = 0
+
+    @property
+    def n(self):
+        return self.mean.n
 
     def update(self, x, w=1.0):
         mean_old = self.mean.get()
@@ -90,8 +97,8 @@ class Var(stats.base.Univariate):
         return self
 
     def get(self):
-        if self.mean.n > self.ddof:
-            return self._S / (self.mean.n - self.ddof)
+        if self.n > self.ddof:
+            return self._S / (self.n - self.ddof)
         return 0.0
 
     @classmethod
@@ -104,18 +111,13 @@ class Var(stats.base.Univariate):
         return new
 
     def __iadd__(self, other):
-
         S = (
             self._S
             + other._S
-            + (self.mean.get() - other.mean.get()) ** 2
-            * self.mean.n
-            * other.mean.n
-            / (self.mean.n + other.mean.n)
+            + (self.mean.get() - other.mean.get()) ** 2 * self.n * other.n / (self.n + other.n)
         )
         self.mean += other.mean
         self._S = S
-
         return self
 
     def __add__(self, other):
@@ -131,9 +133,9 @@ class Var(stats.base.Univariate):
             self._S
             - other._S
             - (self.mean.get() - other.mean.get()) ** 2
-            * self.mean.n
+            * self.n
             * other.mean.n
-            / (self.mean.n + other.mean.n)
+            / (self.n + other.mean.n)
         )
         self._S = S
 

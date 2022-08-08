@@ -68,7 +68,7 @@ class Base:
 
         return params
 
-    def clone(self, new_params: dict = None):
+    def clone(self, new_params: dict = None, include_attributes=False):
         """Return a fresh estimator with the same parameters.
 
         The clone has the same parameters but has not been updated with any data.
@@ -85,6 +85,9 @@ class Base:
         Parameters
         ----------
         new_params
+        include_attributes
+            Whether attributes that are not present in the class' signature should also be cloned
+            or not.
 
         Examples
         --------
@@ -184,9 +187,18 @@ class Base:
                 }
             )
 
-        return instantiate(
+        clone = instantiate(
             klass=self.__class__, params=self._get_params(), new_params=new_params or {}
         )
+
+        if not include_attributes:
+            return clone
+
+        params = clone._get_params()
+        for attr, value in self.__dict__.items():
+            if attr not in params:
+                setattr(clone, attr, copy.deepcopy(value))
+        return clone
 
     @property
     def _mutable_attributes(self) -> set:
