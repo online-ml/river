@@ -53,7 +53,7 @@ def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
     >>> u = {0: 1, 1: 2, 2: 3}
     >>> v = {0: 4}
 
-    >>> inv = sherman_morrison(A_inv, u, v)
+    >>> inv = utils.math.sherman_morrison(A_inv, u, v)
     >>> pprint.pprint(inv)
     {(0, 0): 0.111111,
         (1, 0): -0.888888,
@@ -95,7 +95,7 @@ def dotvecmat(x, A):
     ...     (1, 0): 2, (1, 1): 3
     ... }
 
-    >>> C = dotvecmat(x, A)
+    >>> C = utils.math.dotvecmat(x, A)
     >>> print(C)
     {0: 10.0, 1: 19.0}
 
@@ -138,7 +138,7 @@ def matmul2d(A, B):
     ...     (2, 0): 4, (2, 1): 0, (2, 2): 0, (2, 3): 0
     ... }
 
-    >>> C = matmul2d(A, B)
+    >>> C = utils.math.matmul2d(A, B)
     >>> pprint.pprint(C)
     {(0, 0): 18.0,
         (0, 1): 2.0,

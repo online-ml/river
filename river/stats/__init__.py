@@ -2,7 +2,7 @@
 from . import base
 from .auto_corr import AutoCorr
 from .count import Count
-from .cov import Cov, RollingCov
+from .cov import Cov
 from .entropy import Entropy
 from .ewmean import EWMean
 from .ewvar import EWVar
@@ -15,7 +15,7 @@ from .mean import BayesianMean, Mean
 from .minimum import Min, RollingMin
 from .mode import Mode, RollingMode
 from .n_unique import NUnique
-from .pearson import PearsonCorr, RollingPearsonCorr
+from .pearson import PearsonCorr
 from .ptp import PeakToPeak, RollingPeakToPeak
 from .quantile import Quantile, RollingQuantile
 from .sem import SEM
@@ -47,13 +47,11 @@ __all__ = [
     "PearsonCorr",
     "Quantile",
     "RollingAbsMax",
-    "RollingCov",
     "RollingIQR",
     "RollingMax",
     "RollingMin",
     "RollingMode",
     "RollingPeakToPeak",
-    "RollingPearsonCorr",
     "RollingQuantile",
     "SEM",
     "Shift",
