@@ -94,7 +94,7 @@ class Mean(stats.base.Univariate):
     def __iadd__(self, other):
         old_n = self.n
         self.n += other.n
-        self._mean = (old_n * self._mean + other.n * other._mean) / self.n
+        self._mean = (old_n * self._mean + other.n * other.get()) / self.n
         return self
 
     def __add__(self, other):

@@ -1,4 +1,4 @@
-from river import datasets, linear_model, optim, preprocessing
+from river import datasets, linear_model, optim, preprocessing, stats
 
 
 def test_clone_estimator():
@@ -11,6 +11,18 @@ def test_clone_estimator():
     assert obj.l2 == 42
     assert new.weights == {}
     assert new.weights != obj.weights
+
+
+def test_clone_include_attributes():
+
+    var = stats.Var()
+    var.update(1)
+    var.update(2)
+    var.update(3)
+
+    assert var._S == 2
+    assert var.clone()._S == 0
+    assert var.clone(include_attributes=True)._S == 2
 
 
 def test_clone_pipeline():

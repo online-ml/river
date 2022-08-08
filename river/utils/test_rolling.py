@@ -30,9 +30,9 @@ def test_with_counter():
 
 def test_rolling_with_not_rollable():
     with pytest.raises(ValueError):
-        utils.Rolling(stats.Cov(), window_size=10)
+        utils.Rolling(stats.Quantile(), window_size=10)
 
 
 def test_time_rolling_with_not_rollable():
     with pytest.raises(ValueError):
-        utils.TimeRolling(stats.Cov(), period=dt.timedelta(seconds=10))
+        utils.TimeRolling(stats.Quantile(), period=dt.timedelta(seconds=10))
