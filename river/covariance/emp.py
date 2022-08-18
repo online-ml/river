@@ -251,29 +251,30 @@ class EmpiricalPrecision(SymmetricMatrix):
     >>> from river import covariance
 
     >>> np.random.seed(42)
-    >>> X = pd.DataFrame(np.random.random((8, 3)), columns=["red", "green", "blue"])
-    >>> X
-            red     green      blue
+    >>> X = pd.DataFrame(np.random.random((1000, 3)))
+    >>> X.head()
+              0         1         2
     0  0.374540  0.950714  0.731994
     1  0.598658  0.156019  0.155995
     2  0.058084  0.866176  0.601115
     3  0.708073  0.020584  0.969910
     4  0.832443  0.212339  0.181825
-    5  0.183405  0.304242  0.524756
-    6  0.431945  0.291229  0.611853
-    7  0.139494  0.292145  0.366362
 
     >>> prec = covariance.EmpiricalPrecision()
     >>> for x in X.to_dict(orient="records"):
     ...     prec = prec.update(x)
 
     >>> prec
-              blue     green    red
-     blue    5.262   -0.387   0.147
-    green   -0.387    4.732   1.119
-      red    0.147    1.119   5.428
+        0        1        2
+    0   12.026   -0.122   -0.214
+    1   -0.122   11.276   -0.026
+    2   -0.214   -0.026   11.632
 
     >>> pd.DataFrame(np.linalg.inv(np.cov(X.T, ddof=1)))
+               0          1          2
+    0  12.159791  -0.124966  -0.218671
+    1  -0.124966  11.393394  -0.026662
+    2  -0.218671  -0.026662  11.756907
 
     References
     ----------
