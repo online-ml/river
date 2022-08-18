@@ -229,9 +229,9 @@ def _woodbury_matrix_inplace(A, U, V):
     TODO: find the matching BLAS/LAPACK operator.
 
     """
-    I = np.eye(len(V))
+    eye = np.eye(len(V))
     Au = A @ U
-    A -= Au @ np.linalg.inv(I + V @ Au) @ V @ A
+    A -= Au @ np.linalg.inv(eye + V @ Au) @ V @ A
 
 
 class EmpiricalPrecision(SymmetricMatrix):
@@ -344,14 +344,10 @@ class EmpiricalPrecision(SymmetricMatrix):
 
         # numpy -> dict
         X_arr = X.values
-        mean_arr = X_arr.mean(axis=0)
         loc = np.array([self._loc.get(feature, 0.0) for feature in X])
         w = np.array([self._w.get(feature, 0.0) for feature in X])
         inv_cov = np.array(
-            [
-                [self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in X]
-                for i in X
-            ]
+            [[self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in X] for i in X]
         ) / np.maximum(w, 1)
 
         # update formulas
