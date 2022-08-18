@@ -3,6 +3,7 @@ import itertools
 
 import numpy as np
 import pandas as pd
+import scipy as sp
 
 from river import stats, utils
 
@@ -172,7 +173,6 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         """
 
-        # dict -> numpy
         X_arr = X.values
         mean_arr = X_arr.mean(axis=0)
         cov_arr = np.cov(X_arr.T, ddof=self.ddof)
@@ -211,6 +211,8 @@ class EmpiricalCovariance(SymmetricMatrix):
 def _sherman_morrison_inplace(A, u, v):
     """
 
+    Rank 1 update.
+
     From https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/
 
     """
@@ -219,15 +221,27 @@ def _sherman_morrison_inplace(A, u, v):
     sp.linalg.blas.dger(alpha, Au, v.T @ A, a=A, overwrite_a=1)
 
 
+def _woodbury_matrix_inplace(A, U, V):
+    """
+
+    Rank k update.
+
+    TODO: find the matching BLAS/LAPACK operator.
+
+    """
+    I = np.eye(len(V))
+    Au = A @ U
+    A -= Au @ np.linalg.inv(I + V @ Au) @ V @ A
+
+
 class EmpiricalPrecision(SymmetricMatrix):
     """Empirical precision matrix.
 
     The precision matrix is the inverse of the covariance matrix.
 
-    Parameters
-    ----------
-    ddof
-        Delta Degrees of Freedom.
+    This implementation leverages the Sherman-Morrison formula. The resulting inverse covariance
+    matrix is not guaranteed to be identical to a batch computation. However, the difference
+    shrinks with the number of observations.
 
     Examples
     --------
@@ -253,16 +267,24 @@ class EmpiricalPrecision(SymmetricMatrix):
     >>> for x in X.to_dict(orient="records"):
     ...     prec = prec.update(x)
 
+    >>> prec
+              blue     green    red
+     blue    5.262   -0.387   0.147
+    green   -0.387    4.732   1.119
+      red    0.147    1.119   5.428
+
+    >>> pd.DataFrame(np.linalg.inv(np.cov(X.T, ddof=1)))
+
     References
     ----------
     [^1]: [Online Estimation of the Inverse Covariance Matrix - Markus Thill](https://markusthill.github.io/math/stats/ml/online-estimation-of-the-inverse-covariance-matrix/)
     [^2]: [Fast rank-one updates to matrix inverse? - Tim Vieira](https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/)
+    [^3]: [Woodbury matrix identity](https://www.wikiwand.com/en/Woodbury_matrix_identity)
 
     """
 
-    def __init__(self, ddof=1):
-        self.ddof = ddof
-        self._w = 0
+    def __init__(self):
+        self._w = {}
         self._loc = {}
         self._inv_cov = {}
 
@@ -283,26 +305,66 @@ class EmpiricalPrecision(SymmetricMatrix):
         # dict -> numpy
         x_vec = np.array(list(x.values()))
         loc = np.array([self._loc.get(feature, 0.0) for feature in x])
+        w = np.array([self._w.get(feature, 0.0) for feature in x])
         # Fortran order is necessary for scipy's linalg.blas.dger
         inv_cov = np.array(
             [
-                [self._inv_cov.get((i, j) if i < j else (j, i), 1.0 if i == j else 0.0) for j in x]
+                [self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in x]
                 for i in x
             ],
             order="F",
-        ) / max(self._w, 1)
+        ) / np.maximum(w, 1)
 
         # update formulas
-        self._w += 1
+        w += 1
         diff = x_vec - loc
-        loc += diff / self._w
+        loc += diff / w
         _sherman_morrison_inplace(A=inv_cov, u=diff, v=x_vec - loc)
 
         # numpy -> dict
         for i, fi in enumerate(x):
             self._loc[fi] = loc[i]
-            row = (self._w + self.ddof) * inv_cov[i]
+            self._w[fi] = w[i]
+            row = self._w[fi] * inv_cov[i]
             for j, fj in enumerate(x):
-                self._inv_cov[(fi, fj) if fi < fj else (fj, fi)] = row[j]
+                self._inv_cov[min((fi, fj), (fj, fi))] = row[j]
+
+        return self
+
+    def update_many(self, X: pd.DataFrame):
+        """Update with a dataframe of samples.
+
+        Parameters
+        ----------
+        X
+            A dataframe of samples.
+
+        """
+
+        # numpy -> dict
+        X_arr = X.values
+        mean_arr = X_arr.mean(axis=0)
+        loc = np.array([self._loc.get(feature, 0.0) for feature in X])
+        w = np.array([self._w.get(feature, 0.0) for feature in X])
+        inv_cov = np.array(
+            [
+                [self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in X]
+                for i in X
+            ]
+        ) / np.maximum(w, 1)
+
+        # update formulas
+        diff = X_arr - loc
+        loc = (w * loc + len(X) * X_arr.mean(axis=0)) / (w + len(X))
+        w += len(X)
+        _woodbury_matrix_inplace(A=inv_cov, U=diff.T, V=X_arr - loc)
+
+        # numpy -> dict
+        for i, fi in enumerate(X):
+            self._loc[fi] = loc[i]
+            self._w[fi] = w[i]
+            row = self._w[fi] * inv_cov[i]
+            for j, fj in enumerate(X):
+                self._inv_cov[min((fi, fj), (fj, fi))] = row[j]
 
         return self
