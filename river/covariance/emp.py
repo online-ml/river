@@ -226,7 +226,7 @@ def _woodbury_matrix_inplace(A, U, V):
 
     Rank k update.
 
-    TODO: find the matching BLAS/LAPACK operator.
+    TODO: use scipy.linalg.blas.ssyr2k for speed
 
     """
     eye = np.eye(len(V))
