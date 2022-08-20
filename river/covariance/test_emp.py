@@ -160,3 +160,48 @@ def test_covariance_update_many_sampled():
 
         for i, j in cov._cov:
             assert math.isclose(cov[i, j].get(), pd_cov.loc[i, j])
+
+
+def test_precision_update_shuffled():
+
+    C1 = covariance.EmpiricalPrecision()
+    C2 = covariance.EmpiricalPrecision()
+
+    X = np.random.random((100, 5))
+
+    for x, _ in stream.iter_array(X):
+        C1.update(x)
+        C2.update({i: x[i] for i in random.sample(list(x.keys()), k=len(x))})
+
+    for i, j in C1._inv_cov:
+        assert math.isclose(C1[i, j], C2[i, j])
+
+
+def test_precision_update_many_mini_batches():
+
+    C1 = covariance.EmpiricalPrecision()
+    C2 = covariance.EmpiricalPrecision()
+
+    X = pd.DataFrame(np.random.random((100, 5)))
+
+    C1.update_many(X)
+    for Xb in np.split(X, 5):
+        C2.update_many(Xb)
+
+    for i, j in C1._inv_cov:
+        assert math.isclose(C1[i, j], C2[i, j])
+
+
+def test_precision_one_many_same():
+
+    one = covariance.EmpiricalPrecision()
+    many = covariance.EmpiricalPrecision()
+
+    X = np.random.random((100, 5))
+
+    for x, _ in stream.iter_array(X):
+        one.update(x)
+    many.update_many(pd.DataFrame(X))
+
+    for i, j in one._inv_cov:
+        assert math.isclose(one[i, j], many[i, j])
