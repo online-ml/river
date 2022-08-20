@@ -33,9 +33,8 @@ class Kurtosis(moments.CentralMoments):
     -1.2310268787102745
     -0.9490372374384453
 
-    >>> for i in range(1, len(X)+1):
+    >>> for i in range(2, len(X)+1):
     ...     print(scipy.stats.kurtosis(X[:i], bias=False))
-    -3.0
     -2.0
     -1.4999999999999998
     1.4130027920707082
@@ -60,9 +59,8 @@ class Kurtosis(moments.CentralMoments):
     -1.246289111322894
     -1.082283689864171
 
-    >>> for i in range(1, len(X)+1):
+    >>> for i in range(2, len(X)+1):
     ...     print(scipy.stats.kurtosis(X[:i], bias=True))
-    -3.0
     -2.0
     -1.4999999999999998
     -1.0115996277239057

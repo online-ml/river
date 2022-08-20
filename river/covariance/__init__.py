@@ -1,5 +1,5 @@
 """Online estimation of covariance and precision matrices."""
 
-from .emp import EmpiricalCovariance
+from .emp import EmpiricalCovariance, EmpiricalPrecision
 
-__all__ = ["EmpiricalCovariance"]
+__all__ = ["EmpiricalCovariance", "EmpiricalPrecision"]

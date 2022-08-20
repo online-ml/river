@@ -33,9 +33,8 @@ class Skew(moments.CentralMoments):
     0.4536710660918704
     0.4123070197493227
 
-    >>> for i in range(1, len(X)+1):
+    >>> for i in range(2, len(X)+1):
     ...     print(scipy.stats.skew(X[:i], bias=False))
-    0.0
     0.0
     -1.4802398132849874
     0.5127437186677893
@@ -60,9 +59,8 @@ class Skew(moments.CentralMoments):
     0.37425953513864063
     0.3476878073823696
 
-    >>> for i in range(1, len(X)+1):
+    >>> for i in range(2, len(X)+1):
     ...     print(scipy.stats.skew(X[:i], bias=True))
-    0.0
     0.0
     -0.604305373250144
     0.29603272399813796
