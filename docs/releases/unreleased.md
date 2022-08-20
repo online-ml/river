@@ -12,6 +12,12 @@
 
 - Moved the PyTorch wrappers to river-extra.
 
+## covariance
+
+- Created a new `covariance` module to hold everything related to covariance and inversion covariance matrix estimation.
+- Moved `misc.CovarianceMatrix` to `covariance.EmpiricalCovariance`.
+- Added `covariance.EmpiricalPrecision` to estimate the inverse covariance matrix.
+
 ## compose
 
 - Moved `utils.pure_inference_mode` to `compose.pure_inference_mode` and `utils.warm_up_mode` to `compose.warm_up_mode`.
