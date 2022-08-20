@@ -2118,6 +2118,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_7">
@@ -2140,6 +2142,20 @@
     <li class="md-nav__item">
       <a href="../../api/covariance/EmpiricalCovariance/" class="md-nav__link">
         EmpiricalCovariance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/covariance/EmpiricalPrecision/" class="md-nav__link">
+        EmpiricalPrecision
       </a>
     </li>
   
@@ -9770,6 +9786,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#covariance" class="md-nav__link">
+    covariance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     compose
   </a>
@@ -10240,6 +10263,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#covariance" class="md-nav__link">
+    covariance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     compose
   </a>
@@ -10343,6 +10373,12 @@
 <h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Moved the PyTorch wrappers to river-extra.</li>
+</ul>
+<h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Created a new <code>covariance</code> module to hold everything related to covariance and inversion covariance matrix estimation.</li>
+<li>Moved <code>misc.CovarianceMatrix</code> to <code>covariance.EmpiricalCovariance</code>.</li>
+<li>Added <code>covariance.EmpiricalPrecision</code> to estimate the inverse covariance matrix.</li>
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
