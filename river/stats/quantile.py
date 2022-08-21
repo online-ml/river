@@ -1,7 +1,7 @@
 import math
 
 from river import stats, utils
-from faststat import faststat
+from river_rust_stats import river_rust_stats  # type: ignore
 
 
 class Quantile(stats.base.Univariate):
@@ -278,15 +278,107 @@ class FastQuantile(stats.base.Univariate):
     [^3]: [P² quantile estimator: estimating the median without storing values](https://aakinshin.net/posts/p2-quantile-estimator/)
     """
 
+    # Note for devs, if you want look the pure python implementation here:
+    # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/quantile.py
     def __init__(self, q: float = 0.5):
         super().__init__()
         if not 0 < q < 1:
             raise ValueError("q is not comprised between 0 and 1")
-        self._quantile = faststat.PyQuantile(q)
+        self._quantile = river_rust_stats.PyQuantile(q)
+        self.is_updated = False
 
     def update(self, x):
         self._quantile.update(x)
+        if not self.is_updated:
+            self.is_updated = True
         return self
 
     def get(self):
         return self._quantile.get()
+
+    def __repr__(self):
+        # We surcharge this method to avoid this error on rust side:
+        # pyo3_runtime.PanicException: index out of bounds: the len is 0 but the index is 0
+        # This error is caused by the `get()` use before the update in the super method.
+        value = None
+        if self.is_updated:
+            value = self.get()
+        fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
+        return f"{self.__class__.__name__}: {fmt_value}"
+
+
+class FastRollingQuantile(stats.base.RollingUnivariate):
+    """Running quantile over a window.
+
+    Parameters
+    ----------
+    q
+        Determines which quantile to compute, must be comprised between 0 and 1.
+    window_size
+        Size of the window.
+
+    Examples
+    --------
+
+    >>> from river import stats
+
+    >>> rolling_quantile = stats.FastRollingQuantile(
+    ...     q=.5,
+    ...     window_size=101,
+    ... )
+
+    >>> for i in range(1001):
+    ...     rolling_quantile = rolling_quantile.update(i)
+    ...     if i % 100 == 0:
+    ...         print(rolling_quantile.get())
+    0.0
+    50.0
+    150.0
+    250.0
+    350.0
+    450.0
+    550.0
+    650.0
+    750.0
+    850.0
+    950.0
+
+    References
+    ----------
+    [^1]: [Left sorted](https://stackoverflow.com/questions/8024571/insert-an-item-into-sorted-list-in-python)
+
+    """
+
+    # Note for devs, if you want look the pure python implementation here:
+    # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/quantile.py
+    def __init__(self, q: float, window_size: int):
+
+        super().__init__()
+        if not 0 < q < 1:
+            raise ValueError("q is not comprised between 0 and 1")
+        self._rolling_quantile = river_rust_stats.PyRollingQuantile(q, window_size)
+        self.window_size_value = window_size
+        self.is_updated = False
+
+    def update(self, x):
+        self._rolling_quantile.update(x)
+        if not self.is_updated:
+            self.is_updated = True
+        return self
+
+    def get(self):
+        return self._rolling_quantile.get()
+
+    @property
+    def window_size(self):
+        return self.window_size_value
+
+    def __repr__(self):
+        # We surcharge this method to avoid this error on rust side:
+        # pyo3_runtime.PanicException: attempt to subtract with overflow
+        # This error is caused by the `get()` use before the update in the super method.
+        value = None
+        if self.is_updated:
+            value = self.get()
+        fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
+        return f"{self.__class__.__name__}: {fmt_value}"

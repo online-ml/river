@@ -178,7 +178,7 @@ impl PyRollingQuantile {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn faststat(_py: Python, m: &PyModule) -> PyResult<()> {
+fn river_rust_stats(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<PyQuantile>()?;
     m.add_class::<PyEWMean>()?;
     m.add_class::<PyEWVar>()?;

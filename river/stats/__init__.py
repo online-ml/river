@@ -4,9 +4,9 @@ from .auto_corr import AutoCorr
 from .count import Count
 from .cov import Cov
 from .entropy import Entropy
-from .ewmean import EWMean
-from .ewvar import EWVar
-from .iqr import IQR, RollingIQR
+from .ewmean import EWMean, FastEWMean
+from .ewvar import EWVar, FastEWVar
+from .iqr import IQR, RollingIQR, FastIQR
 from .kurtosis import Kurtosis
 from .link import Link
 from .lossy import LossyCount
@@ -18,7 +18,7 @@ from .mode import Mode, RollingMode
 from .n_unique import NUnique
 from .pearson import PearsonCorr
 from .ptp import PeakToPeak, RollingPeakToPeak
-from .quantile import Quantile, RollingQuantile, FastQuantile
+from .quantile import Quantile, RollingQuantile, FastQuantile, FastRollingQuantile
 from .sem import SEM
 from .shift import Shift
 from .skew import Skew
@@ -61,4 +61,8 @@ __all__ = [
     "Sum",
     "Var",
     "FastQuantile",
+    "FastRollingQuantile",
+    "FastEWMean",
+    "FastEWVar",
+    "FastIQR",
 ]
