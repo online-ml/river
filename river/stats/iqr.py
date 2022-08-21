@@ -193,7 +193,7 @@ class FastIQR(stats.base.Univariate):
         return self
 
     def get(self):
-        return self._iqr.get(x)
+        return self._iqr.get()
 
     def __repr__(self):
         # We surcharge this method to avoid this error on rust side:
