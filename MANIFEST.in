@@ -4,3 +4,5 @@ include river/datasets/*.csv
 include river/datasets/*.gz
 include river/datasets/*.zip
 include river/stream/*.zip
+include Cargo.toml
+recursive-include src *

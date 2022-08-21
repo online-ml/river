@@ -18,7 +18,7 @@ from .mode import Mode, RollingMode
 from .n_unique import NUnique
 from .pearson import PearsonCorr
 from .ptp import PeakToPeak, RollingPeakToPeak
-from .quantile import Quantile, RollingQuantile
+from .quantile import Quantile, RollingQuantile, FastQuantile
 from .sem import SEM
 from .shift import Shift
 from .skew import Skew
@@ -60,4 +60,5 @@ __all__ = [
     "Skew",
     "Sum",
     "Var",
+    "FastQuantile",
 ]

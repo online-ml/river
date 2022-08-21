@@ -7,6 +7,7 @@ import subprocess
 import sys
 
 import setuptools
+from setuptools_rust import Binding, RustExtension
 
 
 try:
@@ -119,4 +120,5 @@ setuptools.setup(
             "embedsignature": True,
         },
     ),
+    rust_extensions=[RustExtension("river_rust_stats.river_rust_stats", binding=Binding.PyO3)],
 )

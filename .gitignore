@@ -17,6 +17,10 @@ __pycache__/
 *.so
 *.c
 
+# Rust compilation folder
+/target
+
+
 # Distribution / packaging
 .Python
 build/
