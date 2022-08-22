@@ -12,4 +12,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.16.5", features = ["extension-module"] }
-online-statistics = "0.1.0"
+online-statistics = "0.2.1"
