@@ -156,7 +156,7 @@ class FastIQR(stats.base.Univariate):
     ...     iqr = iqr.update(i)
     ...     if i % 100 == 0:
     ...         print(iqr.get())
-    0
+    0.0
     50.0
     100.0
     150.0
