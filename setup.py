@@ -95,6 +95,7 @@ setuptools.setup(
             "watermark",
         ],
         "extra": ["river_extra"],
+        "torch": ["river_torch"],
         ":python_version == '3.6'": ["dataclasses"],
     },
     include_package_data=True,
