@@ -194,7 +194,7 @@ TEST_CASES = [
 ]
 
 # HACK: not sure why this is needed, see this CI run https://github.com/online-ml/river/runs/7992357532?check_suite_focus=true
-if platform.system() != 'Linux':
+if platform.system() != "Linux":
     TEST_CASES.append(
         metrics.AdjustedMutualInfo(average_method="min"),
         partial(sk_metrics.adjusted_mutual_info_score, average_method="min"),
