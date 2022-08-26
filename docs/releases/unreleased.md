@@ -62,6 +62,7 @@
 ## stream
 
 - `stream.iter_array` now handles text data.
+- Added `stream.TwitterLiveStream`, to listen to a filtered live stream of Tweets.
 
 ## time_series
 
