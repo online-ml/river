@@ -1,10 +1,13 @@
+use bincode::{deserialize, serialize};
 use online_statistics::{
     ewmean::EWMean, ewvariance::EWVariance, iqr::IQR, kurtosis::Kurtosis, ptp::PeakToPeak,
     quantile::Quantile, quantile::RollingQuantile, skew::Skew, stats::Univariate,
 };
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
+use serde::{Deserialize, Serialize};
 
-#[pyclass]
+#[pyclass(module = "river_rust_stats.river_rust_stats")]
 pub struct PyQuantile {
     pub quantile: Quantile<f64>,
 }
@@ -32,7 +35,7 @@ impl PyQuantile {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "river_rust_stats.river_rust_stats")]
 pub struct PyEWMean {
     ewmean: EWMean<f64>,
 }
@@ -52,9 +55,11 @@ impl PyEWMean {
     }
 }
 
-#[pyclass]
+#[derive(Serialize, Deserialize)]
+#[pyclass(module = "river_rust_stats.river_rust_stats")]
 pub struct PyEWVar {
     ewvar: EWVariance<f64>,
+    alpha: f64,
 }
 #[pymethods]
 impl PyEWVar {
@@ -62,6 +67,7 @@ impl PyEWVar {
     pub fn new(alpha: f64) -> PyEWVar {
         PyEWVar {
             ewvar: EWVariance::new(alpha),
+            alpha,
         }
     }
     pub fn update(&mut self, x: f64) {
@@ -70,9 +76,20 @@ impl PyEWVar {
     pub fn get(&self) -> f64 {
         self.ewvar.get()
     }
+
+    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+        *self = deserialize(state.as_bytes()).unwrap();
+        Ok(())
+    }
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+        Ok(PyBytes::new(py, &serialize(&self).unwrap()))
+    }
+    pub fn __getnewargs__(&self) -> PyResult<(f64,)> {
+        Ok((self.alpha,))
+    }
 }
 
-#[pyclass]
+#[pyclass(module = "river_rust_stats.river_rust_stats")]
 pub struct PyIQR {
     pub iqr: IQR<f64>,
 }
@@ -93,7 +110,7 @@ impl PyIQR {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "river_rust_stats.river_rust_stats")]
 pub struct PyKurtosis {
     kurtosis: Kurtosis<f64>,
 }
@@ -113,7 +130,7 @@ impl PyKurtosis {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "river_rust_stats.river_rust_stats")]
 pub struct PyPeakToPeak {
     ptp: PeakToPeak<f64>,
 }
@@ -135,7 +152,7 @@ impl PyPeakToPeak {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "river_rust_stats.river_rust_stats")]
 pub struct PySkew {
     skew: Skew<f64>,
 }
@@ -155,7 +172,7 @@ impl PySkew {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "river_rust_stats.river_rust_stats")]
 pub struct PyRollingQuantile {
     stat: RollingQuantile<f64>,
 }
