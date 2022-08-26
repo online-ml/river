@@ -109,8 +109,7 @@ class TwitterLiveStream:
     def _get_rules(self):
         return self._request("GET", "tweets/search/stream/rules").json()
 
-    def _delete_all_rules(self, rules=None):
-        rules = rules or self._get_rules()
+    def _delete_rules(self, rules):
         if rule_ids := [rule["id"] for rule in rules.get("data", [])]:
             payload = {"delete": {"ids": rule_ids}}
             return self._request("POST", "tweets/search/stream/rules", json=payload).json()
@@ -120,7 +119,8 @@ class TwitterLiveStream:
         return self._request("POST", "tweets/search/stream/rules", json=payload).json()
 
     def __iter__(self):
-        self._delete_all_rules()
+        existing_rules = self._get_rules()
+        self._delete_rules(existing_rules)
         self._set_rules([{"value": rule, "tag": rule} for rule in rules])
         params = {
             "tweet.fields": "created_at",
