@@ -37,7 +37,7 @@ class TwitterLiveStream:
         ...     bearer_token="<insert_bearer_token>"
         ... )
 
-        The stream can then be looper over, possibly in an infinite manner. This will listen to the
+        The stream can then be iterated over, possibly in an infinite loop. This will listen to the
         live feed of Tweets and produce a Tweet right after it's been published.
 
         ```py
