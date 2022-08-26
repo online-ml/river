@@ -89,8 +89,6 @@ class TwitterLiveStream:
     def __init__(self, rules, bearer_token):
         self.rules = rules
         self.bearer_token = bearer_token
-        self._delete_all_rules()
-        self._set_rules([{"value": rule, "tag": rule} for rule in rules])
 
     def _request(self, method, endpoint, **kwargs):
         import requests
@@ -122,6 +120,8 @@ class TwitterLiveStream:
         return self._request("POST", "tweets/search/stream/rules", json=payload).json()
 
     def __iter__(self):
+        self._delete_all_rules()
+        self._set_rules([{"value": rule, "tag": rule} for rule in rules])
         params = {
             "tweet.fields": "created_at",
             "expansions": "author_id",
