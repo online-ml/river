@@ -41,13 +41,15 @@ class TwitterLiveStream:
     live feed of Tweets and produce a Tweet right after it's been published.
 
     ```py
+    import logging
+
     while True:
-    try:
-        for tweet in tweets:
-            print(tweet)
-    except requests.exceptions.RequestException as e:
-        logging.warning(str(e))
-        time.sleep(10)
+        try:
+            for tweet in tweets:
+                print(tweet)
+        except requests.exceptions.RequestException as e:
+            logging.warning(str(e))
+            time.sleep(10)
     ```
 
     Here's a Tweet example:
