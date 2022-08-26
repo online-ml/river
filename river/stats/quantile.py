@@ -354,7 +354,7 @@ class FastRollingQuantile(stats.base.RollingUnivariate):
     def __init__(self, q: float, window_size: int):
 
         super().__init__()
-        if not 0 < q < 1:
+        if not 0 <= q <= 1:
             raise ValueError("q is not comprised between 0 and 1")
         self._rolling_quantile = river_rust_stats.PyRollingQuantile(q, window_size)
         self.window_size_value = window_size
