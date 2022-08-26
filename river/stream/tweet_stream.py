@@ -121,7 +121,7 @@ class TwitterLiveStream:
     def __iter__(self):
         existing_rules = self._get_rules()
         self._delete_rules(existing_rules)
-        self._set_rules([{"value": rule, "tag": rule} for rule in rules])
+        self._set_rules([{"value": rule, "tag": rule} for rule in self.rules])
         params = {
             "tweet.fields": "created_at",
             "expansions": "author_id",
