@@ -6,7 +6,7 @@ from .cov import Cov
 from .entropy import Entropy
 from .ewmean import EWMean, FastEWMean
 from .ewvar import EWVar, FastEWVar
-from .iqr import IQR, RollingIQR, FastIQR
+from .iqr import IQR, RollingIQR, FastIQR, FastRollingIQR
 from .kurtosis import Kurtosis, FastKurtosis
 from .link import Link
 from .lossy import LossyCount
@@ -67,4 +67,5 @@ __all__ = [
     "FastIQR",
     "FastKurtosis",
     "FastSkew",
+    "FastRollingIQR",
 ]
