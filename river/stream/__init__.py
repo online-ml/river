@@ -10,6 +10,7 @@ from .iter_csv import iter_csv
 from .iter_libsvm import iter_libsvm
 from .qa import simulate_qa
 from .shuffling import shuffle
+from .tweet_stream import TwitterLiveStream
 
 __all__ = [
     "Cache",
@@ -19,6 +20,7 @@ __all__ = [
     "iter_libsvm",
     "simulate_qa",
     "shuffle",
+    "TwitterLiveStream",
 ]
 
 try:
