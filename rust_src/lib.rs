@@ -42,9 +42,6 @@ impl PyQuantile {
     pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
-    // pub fn __getnewargs__(&self) -> PyResult<(f64,)> {
-    //     Ok((self.alpha,))
-    // }
 }
 
 #[derive(Serialize, Deserialize)]
