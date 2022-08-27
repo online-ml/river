@@ -21,8 +21,6 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "Cython"])
     from Cython.Build import cythonize
 
-
-# Package meta-data.
 NAME = "river"
 DESCRIPTION = "Online machine learning in Python"
 LONG_DESCRIPTION_CONTENT_TYPE = "text/markdown"
@@ -32,31 +30,12 @@ AUTHOR = "Max Halford"
 REQUIRES_PYTHON = ">=3.8.0"
 
 here = os.path.abspath(os.path.dirname(__file__))
-
-# Import the README and use it as the long-description.
 with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = "\n" + f.read()
 
-# Load the package's __version__.py module as a dictionary.
 about: dict = {}
 with open(os.path.join(here, NAME, "__version__.py")) as f:
     exec(f.read(), about)
-
-# Where the magic happens:
-
-DEV_PACKAGES = [
-    "black>=22.1.0",
-    "flake8>=4.0.1",
-    "graphviz>=0.10.1",
-    "isort>=5.9.3",
-    "matplotlib>=3.0.2",
-    "mypy>=0.961",
-    "pre-commit>=2.9.2",
-    "pytest>=4.5.0",
-    "scikit-learn>=1.0.1",
-    "sqlalchemy>=1.4",
-    "sympy>=1.10.1"
-]
 
 setuptools.setup(
     name=NAME,
@@ -91,7 +70,7 @@ setuptools.setup(
             "sqlalchemy>=1.4",
             "vaex",
         ],
-        "docs": base_packages +
+        "docs": base_packages
         + [
             "dominate",
             "flask",
