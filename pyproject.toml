@@ -51,6 +51,7 @@ module = [
     "graphviz.*",
     "vaex.*",
     "torch.*",
-    "sqlalchemy.*"
+    "sqlalchemy.*",
+    "requests.*"
 ]
 ignore_missing_imports = true
