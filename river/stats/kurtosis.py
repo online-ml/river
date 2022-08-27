@@ -2,7 +2,7 @@ from . import moments
 
 from river import stats
 
-from river_rust_stats import river_rust_stats  # type: ignore
+from river import _rust_stats
 
 
 class Kurtosis(moments.CentralMoments):
@@ -182,7 +182,7 @@ class FastKurtosis(stats.base.Univariate):
     def __init__(self, bias=False):
         super().__init__()
         self.bias = bias
-        self._kurtosis = river_rust_stats.PyKurtosis(bias)
+        self._kurtosis = _rust_stats.PyKurtosis(bias)
 
     def update(self, x):
         self._kurtosis.update(x)

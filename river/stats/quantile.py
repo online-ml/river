@@ -1,7 +1,7 @@
 import math
 
 from river import stats, utils
-from river_rust_stats import river_rust_stats  # type: ignore
+from river import _rust_stats
 
 
 class Quantile(stats.base.Univariate):
@@ -284,7 +284,7 @@ class FastQuantile(stats.base.Univariate):
         super().__init__()
         if not 0 < q < 1:
             raise ValueError("q is not comprised between 0 and 1")
-        self._quantile = river_rust_stats.PyQuantile(q)
+        self._quantile = _rust_stats.PyQuantile(q)
         self.is_updated = False
 
     def update(self, x):
@@ -356,7 +356,7 @@ class FastRollingQuantile(stats.base.RollingUnivariate):
         super().__init__()
         if not 0 <= q <= 1:
             raise ValueError("q is not comprised between 0 and 1")
-        self._rolling_quantile = river_rust_stats.PyRollingQuantile(q, window_size)
+        self._rolling_quantile = _rust_stats.PyRollingQuantile(q, window_size)
         self.window_size_value = window_size
         self.is_updated = False
 

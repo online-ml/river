@@ -8,7 +8,7 @@ use pyo3::types::PyBytes;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PyQuantile {
     pub quantile: Quantile<f64>,
 }
@@ -45,7 +45,7 @@ impl PyQuantile {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PyEWMean {
     ewmean: EWMean<f64>,
     alpha: f64,
@@ -79,7 +79,7 @@ impl PyEWMean {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PyEWVar {
     ewvar: EWVariance<f64>,
     alpha: f64,
@@ -113,7 +113,7 @@ impl PyEWVar {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PyIQR {
     iqr: IQR<f64>,
     q_inf: f64,
@@ -150,7 +150,7 @@ impl PyIQR {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PyKurtosis {
     kurtosis: Kurtosis<f64>,
     bias: bool,
@@ -183,7 +183,7 @@ impl PyKurtosis {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PyPeakToPeak {
     ptp: PeakToPeak<f64>,
 }
@@ -214,7 +214,7 @@ impl PyPeakToPeak {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PySkew {
     skew: Skew<f64>,
     bias: bool,
@@ -247,7 +247,7 @@ impl PySkew {
     }
 }
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PyRollingQuantile {
     stat: RollingQuantile<f64>,
     q: f64,
@@ -283,7 +283,7 @@ impl PyRollingQuantile {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river_rust_stats.river_rust_stats")]
+#[pyclass(module = "river._rust_stats")]
 pub struct PyRollingIQR {
     stat: RollingIQR<f64>,
     q_inf: f64,
@@ -322,7 +322,7 @@ impl PyRollingIQR {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn river_rust_stats(_py: Python, m: &PyModule) -> PyResult<()> {
+fn _rust_stats(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<PyQuantile>()?;
     m.add_class::<PyEWMean>()?;
     m.add_class::<PyEWVar>()?;

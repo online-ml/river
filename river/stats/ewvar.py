@@ -1,5 +1,5 @@
 from river import stats
-from river_rust_stats import river_rust_stats  # type: ignore
+from river import _rust_stats
 
 
 class EWVar(stats.base.Univariate):
@@ -111,7 +111,7 @@ class FastEWVar(stats.base.Univariate):
             raise ValueError("q is not comprised between 0 and 1")
 
         self.alpha = alpha
-        self._ewvar = river_rust_stats.PyEWVar(alpha)
+        self._ewvar = _rust_stats.PyEWVar(alpha)
 
     @property
     def name(self):

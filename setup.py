@@ -120,5 +120,5 @@ setuptools.setup(
             "embedsignature": True,
         },
     ),
-    rust_extensions=[RustExtension("river_rust_stats.river_rust_stats", binding=Binding.PyO3)],
+    rust_extensions=[RustExtension("river._rust_stats", binding=Binding.PyO3)],
 )

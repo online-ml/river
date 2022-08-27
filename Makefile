@@ -24,3 +24,10 @@ livedoc: doc
 
 rebase:
 	git fetch && git rebase origin/main
+
+reset_rust:
+	rm river/_rust_stats.cpython*
+	rm -rf target
+	rm -rf river.egg-info
+	rm Cargo.lock
+	python ./setup.py develop 
