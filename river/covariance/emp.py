@@ -51,6 +51,11 @@ class SymmetricMatrix(abc.ABC):
 
         return utils.pretty.print_table(headers, columns)
 
+    def _as_array(self, *features):
+        return np.array([
+            [v.get() if isinstance((v := self[i, j]), stats.base.Statistic) else v for j in features] for i in features
+        ])
+
 
 class EmpiricalCovariance(SymmetricMatrix):
     """Empirical covariance matrix.
