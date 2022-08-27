@@ -121,4 +121,6 @@ setuptools.setup(
         },
     ),
     rust_extensions=[RustExtension("river._rust_stats", binding=Binding.PyO3)],
+    # rust extensions are not zip safe, just like C-extensions.
+    zip_safe=False,
 )
