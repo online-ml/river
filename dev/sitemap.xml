@@ -146,46 +146,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/compat/River2SKLClassifier/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/compat/River2SKLClusterer/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/compat/River2SKLRegressor/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/compat/River2SKLTransformer/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/compat/SKL2RiverClassifier/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/compat/SKL2RiverRegressor/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/compat/convert-river-to-sklearn/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/compat/convert-sklearn-to-river/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/compose/Discard/</loc>
          <lastmod>2022-08-27</lastmod>
          <changefreq>daily</changefreq>
@@ -1752,16 +1712,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/dev/api/stream/iter-pandas/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/stream/iter-sklearn-dataset/</loc>
-         <lastmod>2022-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/stream/iter-sql/</loc>
          <lastmod>2022-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
