@@ -110,8 +110,7 @@ class TwitterLiveStream:
         return self._request("GET", "tweets/search/stream/rules").json()
 
     def _delete_rules(self, rules):
-        rule_ids = [rule["id"] for rule in rules.get("data", [])]
-        if rule_ids:
+        if rule_ids := [rule["id"] for rule in rules.get("data", [])]:
             payload = {"delete": {"ids": rule_ids}}
             return self._request("POST", "tweets/search/stream/rules", json=payload).json()
 
