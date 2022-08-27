@@ -71,7 +71,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=("tests",)),
     install_requires=(base_packages := ["numpy>=1.22", "scipy>=1.5", "pandas>=1.3"]),
     extras_require={
-        "dev": base_packages + (dev_packages := [
+        "dev": base_packages + [
             "black>=22.1.0",
             "flake8>=4.0.1",
             "graphviz>=0.10.1",
@@ -83,7 +83,7 @@ setuptools.setup(
             "scikit-learn>=1.0.1",
             "sqlalchemy>=1.4",
             "sympy>=1.10.1"
-        ]),
+        ],
         "benckmarks": base_packages + ["scikit-learn", "torch", "vowpalwabbit"],
         "compat": base_packages
         + [
@@ -91,7 +91,7 @@ setuptools.setup(
             "sqlalchemy>=1.4",
             "vaex",
         ],
-        "docs": base_packages + dev_packages +
+        "docs": base_packages +
         + [
             "dominate",
             "flask",
