@@ -2,8 +2,10 @@ name: pypi
 
 on:
   push:
-    tags:
-      - "rust_stats"
+    push:
+      branches: ["master" ,"rust_stats"]
+    # tags:
+    #   - "*"
 # TODO: Set branch name
 jobs:
   build_wheels:
