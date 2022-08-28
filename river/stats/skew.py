@@ -2,7 +2,7 @@ from . import moments
 
 
 from river import stats
-from river import _rust_stats
+from river.stats import _rust_stats
 
 
 class Skew(moments.CentralMoments):
@@ -185,7 +185,7 @@ class FastSkew(stats.base.Univariate):
     def __init__(self, bias=False):
         super().__init__()
         self.bias = bias
-        self._skew = _rust_stats.PySkew(bias)
+        self._skew = _rust_stats.RsSkew(bias)
 
     @property
     def name(self):

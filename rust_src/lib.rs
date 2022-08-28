@@ -8,22 +8,22 @@ use pyo3::types::PyBytes;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PyQuantile {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsQuantile {
     pub quantile: Quantile<f64>,
 }
 
 #[pymethods]
-impl PyQuantile {
+impl RsQuantile {
     #[new]
-    pub fn new(q: Option<f64>) -> PyQuantile {
+    pub fn new(q: Option<f64>) -> RsQuantile {
         match q {
             Some(q) => {
-                return PyQuantile {
+                return RsQuantile {
                     quantile: Quantile::new(q).expect("q should between 0 and 1"),
                 }
             }
-            None => PyQuantile {
+            None => RsQuantile {
                 quantile: Quantile::default(),
             },
         }
@@ -45,16 +45,16 @@ impl PyQuantile {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PyEWMean {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsEWMean {
     ewmean: EWMean<f64>,
     alpha: f64,
 }
 #[pymethods]
-impl PyEWMean {
+impl RsEWMean {
     #[new]
-    pub fn new(alpha: f64) -> PyEWMean {
-        PyEWMean {
+    pub fn new(alpha: f64) -> RsEWMean {
+        RsEWMean {
             ewmean: EWMean::new(alpha),
             alpha,
         }
@@ -79,16 +79,16 @@ impl PyEWMean {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PyEWVar {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsEWVar {
     ewvar: EWVariance<f64>,
     alpha: f64,
 }
 #[pymethods]
-impl PyEWVar {
+impl RsEWVar {
     #[new]
-    pub fn new(alpha: f64) -> PyEWVar {
-        PyEWVar {
+    pub fn new(alpha: f64) -> RsEWVar {
+        RsEWVar {
             ewvar: EWVariance::new(alpha),
             alpha,
         }
@@ -113,18 +113,18 @@ impl PyEWVar {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PyIQR {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsIQR {
     iqr: IQR<f64>,
     q_inf: f64,
     q_sup: f64,
 }
 
 #[pymethods]
-impl PyIQR {
+impl RsIQR {
     #[new]
-    pub fn new(q_inf: f64, q_sup: f64) -> PyIQR {
-        PyIQR {
+    pub fn new(q_inf: f64, q_sup: f64) -> RsIQR {
+        RsIQR {
             iqr: IQR::new(q_inf, q_sup).expect("TODO"),
             q_inf,
             q_sup,
@@ -150,16 +150,16 @@ impl PyIQR {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PyKurtosis {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsKurtosis {
     kurtosis: Kurtosis<f64>,
     bias: bool,
 }
 #[pymethods]
-impl PyKurtosis {
+impl RsKurtosis {
     #[new]
-    pub fn new(bias: bool) -> PyKurtosis {
-        PyKurtosis {
+    pub fn new(bias: bool) -> RsKurtosis {
+        RsKurtosis {
             kurtosis: Kurtosis::new(bias),
             bias,
         }
@@ -183,16 +183,16 @@ impl PyKurtosis {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PyPeakToPeak {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsPeakToPeak {
     ptp: PeakToPeak<f64>,
 }
 
 #[pymethods]
-impl PyPeakToPeak {
+impl RsPeakToPeak {
     #[new]
-    pub fn new() -> PyPeakToPeak {
-        PyPeakToPeak {
+    pub fn new() -> RsPeakToPeak {
+        RsPeakToPeak {
             ptp: PeakToPeak::new(),
         }
     }
@@ -214,16 +214,16 @@ impl PyPeakToPeak {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PySkew {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsSkew {
     skew: Skew<f64>,
     bias: bool,
 }
 #[pymethods]
-impl PySkew {
+impl RsSkew {
     #[new]
-    pub fn new(bias: bool) -> PySkew {
-        PySkew {
+    pub fn new(bias: bool) -> RsSkew {
+        RsSkew {
             skew: Skew::new(bias),
             bias,
         }
@@ -247,18 +247,18 @@ impl PySkew {
     }
 }
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PyRollingQuantile {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsRollingQuantile {
     stat: RollingQuantile<f64>,
     q: f64,
     window_size: usize,
 }
 
 #[pymethods]
-impl PyRollingQuantile {
+impl RsRollingQuantile {
     #[new]
-    pub fn new(q: f64, window_size: usize) -> PyRollingQuantile {
-        PyRollingQuantile {
+    pub fn new(q: f64, window_size: usize) -> RsRollingQuantile {
+        RsRollingQuantile {
             stat: RollingQuantile::new(q, window_size).unwrap(),
             q,
             window_size,
@@ -283,8 +283,8 @@ impl PyRollingQuantile {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river._rust_stats")]
-pub struct PyRollingIQR {
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsRollingIQR {
     stat: RollingIQR<f64>,
     q_inf: f64,
     q_sup: f64,
@@ -292,10 +292,10 @@ pub struct PyRollingIQR {
 }
 
 #[pymethods]
-impl PyRollingIQR {
+impl RsRollingIQR {
     #[new]
-    pub fn new(q_inf: f64, q_sup: f64, window_size: usize) -> PyRollingIQR {
-        PyRollingIQR {
+    pub fn new(q_inf: f64, q_sup: f64, window_size: usize) -> RsRollingIQR {
+        RsRollingIQR {
             stat: RollingIQR::new(q_inf, q_sup, window_size).unwrap(),
             q_inf,
             q_sup,
@@ -323,14 +323,14 @@ impl PyRollingIQR {
 /// A Python module implemented in Rust.
 #[pymodule]
 fn _rust_stats(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_class::<PyQuantile>()?;
-    m.add_class::<PyEWMean>()?;
-    m.add_class::<PyEWVar>()?;
-    m.add_class::<PyIQR>()?;
-    m.add_class::<PyKurtosis>()?;
-    m.add_class::<PyPeakToPeak>()?;
-    m.add_class::<PySkew>()?;
-    m.add_class::<PyRollingQuantile>()?;
-    m.add_class::<PyRollingIQR>()?;
+    m.add_class::<RsQuantile>()?;
+    m.add_class::<RsEWMean>()?;
+    m.add_class::<RsEWVar>()?;
+    m.add_class::<RsIQR>()?;
+    m.add_class::<RsKurtosis>()?;
+    m.add_class::<RsPeakToPeak>()?;
+    m.add_class::<RsSkew>()?;
+    m.add_class::<RsRollingQuantile>()?;
+    m.add_class::<RsRollingIQR>()?;
     Ok(())
 }

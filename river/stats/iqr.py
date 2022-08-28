@@ -1,5 +1,5 @@
 from river import stats
-from river import _rust_stats
+from river.stats import _rust_stats
 
 
 class IQR(stats.base.Univariate):
@@ -179,7 +179,7 @@ class FastIQR(stats.base.Univariate):
             raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self._iqr = _rust_stats.PyIQR(self.q_inf, self.q_sup)
+        self._iqr = _rust_stats.RsIQR(self.q_inf, self.q_sup)
         self.is_updated = False
 
     @property
@@ -253,7 +253,7 @@ class FastRollingIQR(stats.base.RollingUnivariate):
             raise ValueError("q_inf must be strictly less than q_sup")
         self.q_inf = q_inf
         self.q_sup = q_sup
-        self._rolling_iqr = _rust_stats.PyRollingIQR(q_inf, q_sup, window_size)
+        self._rolling_iqr = _rust_stats.RsRollingIQR(q_inf, q_sup, window_size)
         self.window_size_value = window_size
         self.is_updated = False
 

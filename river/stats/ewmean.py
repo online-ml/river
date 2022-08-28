@@ -1,5 +1,5 @@
 from river import stats
-from river import _rust_stats
+from river.stats import _rust_stats
 
 
 class EWMean(stats.base.Univariate):
@@ -102,7 +102,7 @@ class FastEWMean(stats.base.Univariate):
         if not 0 <= alpha <= 1:
             raise ValueError("q is not comprised between 0 and 1")
         self.alpha = alpha
-        self._ewmean = _rust_stats.PyEWMean(alpha)
+        self._ewmean = _rust_stats.RsEWMean(alpha)
         self.mean = 0
 
     @property
