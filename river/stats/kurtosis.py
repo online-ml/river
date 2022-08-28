@@ -1,8 +1,7 @@
-from . import moments
-
 from river import stats
-
 from river.stats import _rust_stats
+
+from . import moments
 
 
 class Kurtosis(moments.CentralMoments):
