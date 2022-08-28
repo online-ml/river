@@ -24,11 +24,18 @@ jobs:
         env:
           # CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-* cp311-*"
           CIBW_BUILD: "cp38-*"
-          CIBW_BEFORE_BUILD: "pip install cython numpy setuptools wheel setuptools-rust &&  curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show"
-          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
+          CIBW_BEFORE_BUILD: >
+            pip install cython numpy setuptools wheel setuptools-rust &&
+            rustup default nightly &&
+            rustup show
+          CIBW_MANYLINUX_X86_64_IMAGE: 'manylinux2014'
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
+          CIBW_BEFORE_BUILD_LINUX: >
+          pip install cython numpy setuptools wheel setuptools-rust &&
+          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
+          rustup show
 
       - uses: actions/upload-artifact@v2
         with:
