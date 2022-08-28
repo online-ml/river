@@ -33,9 +33,9 @@ jobs:
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
           CIBW_BEFORE_BUILD_LINUX: >
-          pip install cython numpy setuptools wheel setuptools-rust &&
-          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
-          rustup show
+            pip install cython numpy setuptools wheel setuptools-rust &&
+            curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
+            rustup show
 
       - uses: actions/upload-artifact@v2
         with:
