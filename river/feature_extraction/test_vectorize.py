@@ -33,7 +33,11 @@ from river import feature_extraction
                     [("one", "two"), ("two", "three"), ("one", "two", "three")],
                 ),
                 ({"stop_words": {"two", "three"}}, "one two three four", ["one", "four"]),
-                ({"stop_words": {"two", "three"}}, "one two three four", ["one", "four"]),
+                (
+                    {"stop_words": {"two", "three"}, "ngram_range": (1, 2)},
+                    "one two three four",
+                    ["one", "four", ("one", "four")],
+                ),
             ]
         )
     ],
