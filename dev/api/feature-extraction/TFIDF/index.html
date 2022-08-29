@@ -10052,7 +10052,7 @@
 <p>Whether or not the TF-IDF values by their L2 norm.</p>
 </li>
 <li>
-<p><strong>on</strong> (<em>str</em>) – defaults to <code>None</code></p>
+<p><strong>on</strong> (<em>'str'</em>) – defaults to <code>None</code></p>
 <p>The name of the feature that contains the text to vectorize. If <code>None</code>, then the input is treated as a document instead of a set of features.</p>
 </li>
 <li>
@@ -10064,11 +10064,11 @@
 <p>Whether or not to convert all characters to lowercase.</p>
 </li>
 <li>
-<p><strong>preprocessor</strong> (<em>Callable</em>) – defaults to <code>None</code></p>
-<p>Override the preprocessing step while preserving the tokenizing and n-grams generation steps.</p>
+<p><strong>preprocessor</strong> (<em>'typing.Callable'</em>) – defaults to <code>None</code></p>
+<p>An optional preprocessing function which overrides the <code>strip_accents</code> and <code>lowercase</code> steps, while preserving the tokenizing and n-grams generation steps.</p>
 </li>
 <li>
-<p><strong>tokenizer</strong> (<em>Callable</em>) – defaults to <code>None</code></p>
+<p><strong>tokenizer</strong> (<em>'typing.Callable'</em>) – defaults to <code>None</code></p>
 <p>A function used to convert preprocessed text into a <code>dict</code> of tokens. By default, a regex formula that works well in most cases is used.</p>
 </li>
 <li>
@@ -10143,7 +10143,7 @@ field to access if the string is stored in a dictionary:</p>
 <p>Transform pandas series of string into term-frequency pandas sparse dataframe.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     (<em>pandas.core.series.Series</em>)    </li>
+<li><strong>X</strong>     (<em>'pd.Series'</em>)    </li>
 </ul>
 </details>
 <details class="- note">
