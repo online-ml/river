@@ -117,8 +117,8 @@ class EmpiricalCovariance(SymmetricMatrix):
     """
 
     def __init__(self, ddof=1):
-        self._cov = {}
         self.ddof = ddof
+        self._cov = {}
 
     @property
     def matrix(self):
@@ -126,10 +126,12 @@ class EmpiricalCovariance(SymmetricMatrix):
 
     def update(self, x: dict):
         """Update with a single sample.
+
         Parameters
         ----------
         x
             A sample.
+
         """
 
         for i, j in itertools.combinations(sorted(x), r=2):
