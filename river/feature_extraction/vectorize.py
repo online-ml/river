@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import collections
 import functools
 import itertools
@@ -38,10 +39,10 @@ def tokenize_using_regex_pattern(text: str, pattern: re.Pattern | str) -> typing
 
     >>> text = 'iterative n-gram generation'
 
-    >>> list(tokenize_using_regex_pattern(text, pattern=re.compile(r'[a-z\-]+')))
+    >>> list(tokenize_using_regex_pattern(text, pattern=re.compile(r'[a-z\\-]+')))
     ['iterative', 'n-gram', 'generation']
 
-    >>> list(tokenize_using_regex_pattern(text, pattern=r'[a-z\-]+'))
+    >>> list(tokenize_using_regex_pattern(text, pattern=r'[a-z\\-]+'))
     ['iterative', 'n-gram', 'generation']
 
     """
@@ -111,8 +112,11 @@ def find_all_ngrams(tokens: typing.List[str], ngram_range: range) -> typing.Iter
     ['a', 'b', 'c', ('a', 'b'), ('b', 'c'), ('a', 'b', 'c')]
 
     """
-    return (ngram for n, t in zip(ngram_range, itertools.tee(tokens, len(ngram_range))) for ngram in find_ngrams(t, n))
-
+    return (
+        ngram
+        for n, t in zip(ngram_range, itertools.tee(tokens, len(ngram_range)))
+        for ngram in find_ngrams(t, n)
+    )
 
 
 class VectorizerMixin:
@@ -159,7 +163,7 @@ class VectorizerMixin:
         lowercase=True,
         preprocessor: typing.Callable = None,
         stop_words: set[str] = None,
-        tokenizer_pattern = r"(?u)\b\w[\w\-]+\b",
+        tokenizer_pattern=r"(?u)\b\w[\w\-]+\b",
         tokenizer: typing.Callable = None,
         ngram_range=(1, 1),
     ):
@@ -167,7 +171,7 @@ class VectorizerMixin:
         self.strip_accents = strip_accents
         self.lowercase = lowercase
         self.preprocessor = preprocessor
-        self.stop_words = set(stop_words) if isinstance(stop_words, list) else stop_words
+        self.stop_words = set(stop_words) if stop_words else stop_words
         self.tokenizer_pattern = tokenizer_pattern
         self.tokenizer = tokenizer
         self.ngram_range = ngram_range
@@ -191,12 +195,16 @@ class VectorizerMixin:
         if self.tokenizer:
             self.processing_steps.append(self.tokenizer)
         else:
-            tokenizer = functools.partial(tokenize_using_regex_pattern, pattern=self.tokenizer_pattern)
+            tokenizer = functools.partial(
+                tokenize_using_regex_pattern, pattern=self.tokenizer_pattern
+            )
             self.processing_steps.append(tokenizer)
 
         # Stop word removal
         if self.stop_words:
-            self.processing_steps.append(functools.partial(remove_stop_words, stop_words=stop_words))
+            self.processing_steps.append(
+                functools.partial(remove_stop_words, stop_words=stop_words)
+            )
 
         # n-grams
         if ngram_range[1] > 1:
