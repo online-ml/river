@@ -10057,9 +10057,9 @@
 
 <h1 id="streamkmeans">STREAMKMeans<a class="headerlink" href="#streamkmeans" title="Permanent link">&para;</a></h1>
 <p>STREAMKMeans</p>
-<p>STREAMKMeans is an alternative version of the original algorithm STREAMLSEARCH proposed by O'Callaghan et al. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> by replacing the <code>k-Medians</code> using <code>LSEARCH</code> by the classical <code>KMeans</code> algorithm. </p>
-<p>However, instead of using the traditional <code>KMeans</code> that requires a total reclustering after each time the temporary chunk of data points is full, the implementation of this algorithm in <code>River</code> uses the increamental <code>KMeans</code>. This allows the algorithm to update <code>KMeans</code> without the need of re-initialization, saving a substantial amount of computing resources. </p>
-<p>The algorithm is constructed as follows. To begin, the algorithm will be initialized with an incremental <code>KMeans</code> algorithm with the same number of centers as required. For a new point <code>p</code>: </p>
+<p>STREAMKMeans is an alternative version of the original algorithm STREAMLSEARCH proposed by O'Callaghan et al. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, by replacing the k-medians using <code>LSEARCH</code> by the k-means algorithm. </p>
+<p>However, instead of using the traditional k-means, which requires a total reclustering each time the temporary chunk of data points is full, the implementation of this algorithm uses an increamental k-means. </p>
+<p>At first, the cluster centers are initialized with a <code>KMeans</code> instance. For a new point <code>p</code>: </p>
 <ul>
 <li>
 <p>If the size of chunk is less than the maximum size allowed, add the new point to the temporary chunk. </p>
@@ -10068,10 +10068,10 @@
 <p>When the size of chunk reaches the maximum value size allowed </p>
 <ul>
 <li>
-<p>A new incremental <code>KMeans</code> algorithm will be initiated. This algorithm will run     through all points in the temporary chunk. The centers of this new algorithm will     be passed through the originally initialized <code>KMeans</code> to update the centers of the     algorithm </p>
+<p>A new incremental <code>KMeans</code> instance is created. The latter will process all points in the     temporary chunk. The centers of this new instance then become the new centers. </p>
 </li>
 <li>
-<p>All points will be deleted from the temporary chunk to continue adding new points later. </p>
+<p>All points are deleted from the temporary chunk so that new points can be added. </p>
 </li>
 </ul>
 </li>
