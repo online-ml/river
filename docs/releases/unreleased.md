@@ -1,7 +1,6 @@
 # Unreleased
 
 - Moved all the public modules imports from `river/__init__.py` to `river/api.py` and removed unnecessary dependencies between modules enabling faster cherry-picked import times (~3x).
-- Re-adding wheels for Python 3.7 so that River can be installed in Google Colab.
 - Adding wheels for Python 3.11.
 
 ## base
