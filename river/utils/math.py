@@ -26,7 +26,7 @@ __all__ = [
     "sign",
     "sherman_morrison",
     "softmax",
-    "woodbury_matrix"
+    "woodbury_matrix",
 ]
 
 

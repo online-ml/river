@@ -3,7 +3,6 @@ import itertools
 
 import numpy as np
 import pandas as pd
-import scipy as sp
 
 from river import stats, utils
 

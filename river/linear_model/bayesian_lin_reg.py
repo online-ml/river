@@ -1,6 +1,6 @@
 import numpy as np
 
-from river import base, utils, proba
+from river import base, proba, utils
 
 
 class BayesianLinearRegression(base.Regressor):
@@ -57,14 +57,25 @@ class BayesianLinearRegression(base.Regressor):
 
     def _get_arrays(self, features, m=True, ss=True, ss_inv=True):
         m_arr = np.array([self._m.get(i, 0.0) for i in features]) if m else None
-        ss_arr = np.array([
-            [self._ss.get(min((i, j), (j, i)), 0.0) for j in features]
-            for i in features
-        ]) if ss else None
-        ss_inv_arr = np.array([
-            [self._ss_inv.get(min((i, j), (j, i)), 1.0 / self.alpha if i == j else 0.0) for j in features]
-            for i in features
-        ], order='F') if ss_inv else None
+        ss_arr = (
+            np.array([[self._ss.get(min((i, j), (j, i)), 0.0) for j in features] for i in features])
+            if ss
+            else None
+        )
+        ss_inv_arr = (
+            np.array(
+                [
+                    [
+                        self._ss_inv.get(min((i, j), (j, i)), 1.0 / self.alpha if i == j else 0.0)
+                        for j in features
+                    ]
+                    for i in features
+                ],
+                order="F",
+            )
+            if ss_inv
+            else None
+        )
         return m_arr, ss_arr, ss_inv_arr
 
     def _set_arrays(self, features, m_arr, ss_arr, ss_inv_arr):
@@ -117,4 +128,4 @@ class BayesianLinearRegression(base.Regressor):
         # Bishop equation 3.59
         y_pred_var = 1 / self.beta + x_arr @ ss_inv_arr @ x_arr.T
 
-        return proba.Gaussian._from_state(n=1, m=y_pred_mean, sig=y_pred_var ** .5, ddof=0)
+        return proba.Gaussian._from_state(n=1, m=y_pred_mean, sig=y_pred_var**0.5, ddof=0)
