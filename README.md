@@ -95,7 +95,7 @@ Of course, this is just a contrived example. We welcome you to check the [introd
 
 ## 🛠 Installation
 
-River is intended to work with **Python 3.8 or above**. Installation can be done with `pip`:
+River is intended to work with **Python 3.8 and above**. Installation can be done with `pip`:
 
 ```sh
 pip install river
@@ -152,6 +152,7 @@ Some specificities of River are that:
 - [Package releases](https://pypi.org/project/river/#history)
 - [awesome-online-machine-learning](https://github.com/online-ml/awesome-online-machine-learning)
 - [2022 presentation at GAIA](https://www.youtube.com/watch?v=nzFTmJnIakk&list=PLIU25-FciwNaz5PqWPiHmPCMOFYoEsJ8c&index=5)
+- [Online Clustering: Algorithms, Evaluation, Metrics, Applications and Benchmarking](https://dl.acm.org/doi/10.1145/3534678.3542600) from [KDD'22](https://kdd.org/kdd2022/).
 
 ## 👐 Contributing
 

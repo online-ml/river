@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import functools
 import itertools
@@ -30,7 +32,31 @@ def strip_accents_unicode(s: str) -> str:
         return "".join([c for c in normalized if not unicodedata.combining(c)])
 
 
-def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
+def tokenize_using_regex_pattern(text: str, pattern: re.Pattern | str) -> typing.Iterator[str]:
+    """
+
+    >>> import re
+
+    >>> text = 'iterative n-gram generation'
+
+    >>> list(tokenize_using_regex_pattern(text, pattern=re.compile(r'[a-z\\-]+')))
+    ['iterative', 'n-gram', 'generation']
+
+    >>> list(tokenize_using_regex_pattern(text, pattern=r'[a-z\\-]+'))
+    ['iterative', 'n-gram', 'generation']
+
+    """
+    for match in re.finditer(pattern, text):
+        # The pattern find have one or more matching groups. In such a case, only the first one is
+        # kept. The whole match is used if no matching groups are specified at all.
+        yield match[1] if match.lastindex else match.group()
+
+
+def remove_stop_words(tokens: typing.Iterator[str], stop_words: set[str]) -> typing.Iterator[str]:
+    return (token for token in tokens if token not in stop_words)
+
+
+def find_ngrams(tokens: typing.Iterator[str], n: int) -> typing.Iterator[N_GRAM]:
     """Generates n-grams from a list of tokens.
 
     From http://www.locallyoptimal.com/blog/2013/01/20/elegant-n-gram-generation-in-python/.
@@ -57,8 +83,15 @@ def find_ngrams(tokens: typing.List[str], n: int) -> typing.Iterator[N_GRAM]:
 
     """
     if n == 1:
-        return iter(tokens)
-    return zip(*[tokens[i:] for i in range(n)])
+        return tokens
+
+    # This seems to be slightly faster than the sliding_window
+    # from https://docs.python.org/3/library/itertools.html#itertools-recipes.
+    neighbors = itertools.tee(tokens, n)
+    for i in range(1, n):
+        for j in range(i, n):
+            next(neighbors[j], None)
+    return zip(*neighbors)
 
 
 def find_all_ngrams(tokens: typing.List[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
@@ -72,15 +105,24 @@ def find_all_ngrams(tokens: typing.List[str], ngram_range: range) -> typing.Iter
     >>> list(find_all_ngrams(tokens, range(2)))
     ['a', 'b', 'c']
 
-    >>> list(find_all_ngrams(tokens, range(1, 4)))
+    >>> list(find_all_ngrams(iter(tokens), range(2)))
+    ['a', 'b', 'c']
+
+    >>> list(find_all_ngrams(iter(tokens), range(1, 4)))
     ['a', 'b', 'c', ('a', 'b'), ('b', 'c'), ('a', 'b', 'c')]
 
     """
-    return itertools.chain(*(find_ngrams(tokens, n) for n in ngram_range))
+    return (
+        ngram
+        for n, t in zip(ngram_range, itertools.tee(tokens, len(ngram_range)))
+        for ngram in find_ngrams(t, n)
+    )
 
 
 class VectorizerMixin:
     """Contains common processing steps used by each vectorizer.
+
+    These are the preprocessing steps that in applied in order:
 
     Parameters
     ----------
@@ -92,11 +134,16 @@ class VectorizerMixin:
     lowercase
         Whether or not to convert all characters to lowercase.
     preprocessor
-        Override the preprocessing step while preserving the tokenizing and n-grams generation
-        steps.
+        An optional preprocessing function which overrides the `strip_accents` and `lowercase`
+        steps, while preserving the tokenizing and n-grams generation steps.
+    tokenizer_pattern
+        The tokenization pattern which is used when no `tokenizer` function is passed. A single
+        capture group may optionally be specified.
     tokenizer
         A function used to convert preprocessed text into a `dict` of tokens. A default tokenizer
         is used if `None` is passed. Set to `False` to disable tokenization.
+    stop_words
+        An optional set of tokens to remove.
     ngram_range
         The lower and upper boundary of the range n-grams to be extracted. All values of n such
         that `min_n <= n <= max_n` will be used. For example an `ngram_range` of `(1, 1)` means
@@ -115,6 +162,8 @@ class VectorizerMixin:
         strip_accents=True,
         lowercase=True,
         preprocessor: typing.Callable = None,
+        stop_words: set[str] = None,
+        tokenizer_pattern=r"(?u)\b\w[\w\-]+\b",
         tokenizer: typing.Callable = None,
         ngram_range=(1, 1),
     ):
@@ -122,7 +171,9 @@ class VectorizerMixin:
         self.strip_accents = strip_accents
         self.lowercase = lowercase
         self.preprocessor = preprocessor
-        self.tokenizer = re.compile(r"(?u)\b\w\w+\b").findall if tokenizer is None else tokenizer
+        self.stop_words = set(stop_words) if stop_words else stop_words
+        self.tokenizer_pattern = tokenizer_pattern
+        self.tokenizer = tokenizer
         self.ngram_range = ngram_range
 
         self.processing_steps: typing.List[typing.Any] = []
@@ -132,7 +183,7 @@ class VectorizerMixin:
             self.processing_steps.append(operator.itemgetter(on))
 
         # Preprocessing
-        if preprocessor is not None:
+        if preprocessor:
             self.processing_steps.append(preprocessor)
         else:
             if self.strip_accents:
@@ -143,6 +194,17 @@ class VectorizerMixin:
         # Tokenization
         if self.tokenizer:
             self.processing_steps.append(self.tokenizer)
+        else:
+            tokenizer = functools.partial(
+                tokenize_using_regex_pattern, pattern=self.tokenizer_pattern
+            )
+            self.processing_steps.append(tokenizer)
+
+        # Stop word removal
+        if self.stop_words:
+            self.processing_steps.append(
+                functools.partial(remove_stop_words, stop_words=stop_words)
+            )
 
         # n-grams
         if ngram_range[1] > 1:
@@ -184,11 +246,16 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     lowercase
         Whether or not to convert all characters to lowercase.
     preprocessor
-        Override the preprocessing step while preserving the tokenizing and n-grams generation
-        steps.
+        An optional preprocessing function which overrides the `strip_accents` and `lowercase`
+        steps, while preserving the tokenizing and n-grams generation steps.
+    tokenizer_pattern
+        The tokenization pattern which is used when no `tokenizer` function is passed. A single
+        capture group may optionally be specified.
     tokenizer
         A function used to convert preprocessed text into a `dict` of tokens. By default, a regex
         formula that works well in most cases is used.
+    stop_words
+        An optional set of tokens to remove.
     ngram_range
         The lower and upper boundary of the range n-grams to be extracted. All values of n such
         that `min_n <= n <= max_n` will be used. For example an `ngram_range` of `(1, 1)` means
@@ -316,11 +383,16 @@ class TFIDF(BagOfWords):
     lowercase
         Whether or not to convert all characters to lowercase.
     preprocessor
-        Override the preprocessing step while preserving the tokenizing and n-grams generation
-        steps.
+        An optional preprocessing function which overrides the `strip_accents` and `lowercase`
+        steps, while preserving the tokenizing and n-grams generation steps.
+    tokenizer_pattern
+        The tokenization pattern which is used when no `tokenizer` function is passed. A single
+        capture group may optionally be specified.
     tokenizer
         A function used to convert preprocessed text into a `dict` of tokens. By default, a regex
         formula that works well in most cases is used.
+    stop_words
+        An optional set of tokens to remove.
     ngram_range
         The lower and upper boundary of the range n-grams to be extracted. All values of n such
         that `min_n <= n <= max_n` will be used. For example an `ngram_range` of `(1, 1)` means

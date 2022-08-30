@@ -1,7 +1,6 @@
 # Unreleased
 
 - Moved all the public modules imports from `river/__init__.py` to `river/api.py` and removed unnecessary dependencies between modules enabling faster cherry-picked import times (~3x).
-- Re-adding wheels for Python 3.7 so that River can be installed in Google Colab.
 - Adding wheels for Python 3.11.
 
 ## base
@@ -37,6 +36,11 @@
 - Enable two-sided tests in `PageHinkley`.
 - Improve documentation and update tests.
 
+## feature_extraction
+
+- Added a `tokenizer_pattern` parameter to `feature_extraction.BagOfWords` and `feature_extraction.TFIDF` to override the default pattern used for tokenizing text.
+- Added a `stop_words` parameter to `feature_extraction.BagOfWords` and `feature_extraction.TFIDF` for removing stop words once the text has been tokenized.
+
 ## linear_model
 
 - After long ado, we've finally implemented `linear_model.BayesianLinearRegression`.
@@ -66,6 +70,7 @@
 ## stream
 
 - `stream.iter_array` now handles text data.
+- Added `stream.TwitterLiveStream`, to listen to a filtered live stream of Tweets.
 
 ## time_series
 
