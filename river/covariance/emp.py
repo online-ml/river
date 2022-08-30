@@ -51,11 +51,6 @@ class SymmetricMatrix(abc.ABC):
 
         return utils.pretty.print_table(headers, columns)
 
-    def _as_array(self, *features):
-        return np.array([
-            [v.get() if isinstance((v := self[i, j]), stats.base.Statistic) else v for j in features] for i in features
-        ])
-
 
 class EmpiricalCovariance(SymmetricMatrix):
     """Empirical covariance matrix.
@@ -215,32 +210,6 @@ class EmpiricalCovariance(SymmetricMatrix):
         return self
 
 
-def _sherman_morrison_inplace(A, u, v):
-    """
-
-    Rank 1 update.
-
-    From https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/
-
-    """
-    Au = A @ u
-    alpha = -1 / (1 + v.T @ Au)
-    sp.linalg.blas.dger(alpha, Au, v.T @ A, a=A, overwrite_a=1)
-
-
-def _woodbury_matrix_inplace(A, U, V):
-    """
-
-    Rank k update.
-
-    TODO: use scipy.linalg.blas.ssyr2k for speed
-
-    """
-    eye = np.eye(len(V))
-    Au = A @ U
-    A -= Au @ np.linalg.inv(eye + V @ Au) @ V @ A
-
-
 class EmpiricalPrecision(SymmetricMatrix):
     """Empirical precision matrix.
 
@@ -327,7 +296,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         w += 1
         diff = x_vec - loc
         loc += diff / w
-        _sherman_morrison_inplace(A=inv_cov, u=diff, v=x_vec - loc)
+        utils.math.sherman_morrison(A=inv_cov, u=diff, v=x_vec - loc)
 
         # numpy -> dict
         for i, fi in enumerate(x):
@@ -361,7 +330,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         diff = X_arr - loc
         loc = (w * loc + len(X) * X_arr.mean(axis=0)) / (w + len(X))
         w += len(X)
-        _woodbury_matrix_inplace(A=inv_cov, U=diff.T, V=X_arr - loc)
+        utils.math.woodbury_matrix(A=inv_cov, U=diff.T, V=X_arr - loc)
 
         # numpy -> dict
         for i, fi in enumerate(X):

@@ -37,6 +37,10 @@
 - Enable two-sided tests in `PageHinkley`.
 - Improve documentation and update tests.
 
+## linear_model
+
+- After long ado, we've finally implemented `linear_model.BayesianLinearRegression`.
+
 ## metrics
 
 - Removed dependency to `optim`.

@@ -29,7 +29,13 @@ class Gaussian(base.ContinuousDistribution):
     """
 
     def __init__(self):
-        self._var = stats.Var()
+        self._var = stats.Var(ddof=1)
+
+    @classmethod
+    def _from_state(cls, n, m, sig, ddof):
+        new = cls()
+        new._var = stats.Var._from_state(n, m, sig, ddof=ddof)
+        return new
 
     @property
     def n_samples(self):

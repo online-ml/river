@@ -9,6 +9,7 @@ import math
 import operator
 
 import numpy as np
+import scipy as sp
 
 __all__ = [
     "argmax",
@@ -25,54 +26,8 @@ __all__ = [
     "sign",
     "sherman_morrison",
     "softmax",
+    "woodbury_matrix"
 ]
-
-
-def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
-    """Sherman–Morrison formula.
-
-    This modifies `A_inv` inplace.
-
-    Parameters
-    ----------
-    A_inv
-    u
-    v
-
-    Examples
-    --------
-
-    >>> import pprint
-    >>> from river import utils
-
-    >>> A_inv = {
-    ...     (0, 0): 0.2,
-    ...     (1, 1): 1,
-    ...     (2, 2): 1
-    ... }
-    >>> u = {0: 1, 1: 2, 2: 3}
-    >>> v = {0: 4}
-
-    >>> inv = utils.math.sherman_morrison(A_inv, u, v)
-    >>> pprint.pprint(inv)
-    {(0, 0): 0.111111,
-        (1, 0): -0.888888,
-        (1, 1): 1,
-        (2, 0): -1.333333,
-        (2, 2): 1}
-
-    References
-    ----------
-    [^1]: [Wikipedia article on the Sherman-Morrison formula](https://www.wikiwand.com/en/Sherman%E2%80%93Morrison_formula)s
-
-    """
-
-    den = 1 + dot(dotvecmat(u, A_inv), v)
-
-    for k, v in matmul2d(matmul2d(A_inv, outer(u, v)), A_inv).items():
-        A_inv[k] = A_inv.get(k, 0) - v / den
-
-    return A_inv
 
 
 def dotvecmat(x, A):
@@ -356,3 +311,33 @@ def argmax(lst: list):
 
     """
     return max(range(len(lst)), key=lst.__getitem__)
+
+
+def sherman_morrison(A: np.ndarray, u: np.ndarray, v: np.ndarray):
+    """Sherman-Morrison formula.
+
+    This is an inplace function.
+
+    References
+    ----------
+    [^1]: [Fast rank-one updates to matrix inverse? — Tim Vieira](https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/)
+
+    """
+    Au = A @ u
+    alpha = -1 / (1 + v.T @ Au)
+    sp.linalg.blas.dger(alpha, Au, v.T @ A, a=A, overwrite_a=1)
+
+
+def woodbury_matrix(A: np.ndarray, U: np.ndarray, V: np.ndarray):
+    """Woodbury matrix identity.
+
+    This is an inplace function.
+
+    References
+    ----------
+    [^1]: [Matrix inverse mini-batch updates — Max Halford](https://maxhalford.github.io/blog/matrix-inverse-mini-batch/)
+
+    """
+    eye = np.eye(len(V))
+    Au = A @ U
+    A -= Au @ np.linalg.inv(eye + V @ Au) @ V @ A
