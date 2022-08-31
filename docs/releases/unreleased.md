@@ -41,6 +41,10 @@
 - Added a `tokenizer_pattern` parameter to `feature_extraction.BagOfWords` and `feature_extraction.TFIDF` to override the default pattern used for tokenizing text.
 - Added a `stop_words` parameter to `feature_extraction.BagOfWords` and `feature_extraction.TFIDF` for removing stop words once the text has been tokenized.
 
+## linear_model
+
+- After long ado, we've finally implemented `linear_model.BayesianLinearRegression`.
+
 ## metrics
 
 - Removed dependency to `optim`.
