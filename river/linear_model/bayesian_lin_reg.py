@@ -29,8 +29,8 @@ class BayesianLinearRegression(base.Regressor):
     >>> model = linear_model.BayesianLinearRegression()
     >>> metric = metrics.MAE()
 
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.581809
+    >>> evaluate.progressive_val_score(dataset, model, metric).get()
+    0.5818
 
     >>> x, _ = next(iter(dataset))
     >>> model.predict_one(x)

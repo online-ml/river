@@ -18,7 +18,6 @@ def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
     --------
 
     >>> import pprint
-    >>> from river import utils
 
     >>> A_inv = {
     ...     (0, 0): 0.2,
@@ -28,7 +27,7 @@ def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
     >>> u = {0: 1, 1: 2, 2: 3}
     >>> v = {0: 4}
 
-    >>> inv = utils.math.sherman_morrison(A_inv, u, v)
+    >>> inv = sherman_morrison(A_inv, u, v)
     >>> pprint.pprint(inv)
     {(0, 0): 0.111111,
         (1, 0): -0.888888,
