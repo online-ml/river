@@ -139,8 +139,8 @@ class textclust(base.Clusterer):
         self.dist_mean = 0
 
         # create a new distance instance for micro and macro distances.
-        self.micro_distance: function = self.distances(micro_distance)
-        self.macro_distance: function = self.distances(macro_distance)
+        self.micro_distance: textclust.distances = self.distances(micro_distance)
+        self.macro_distance: textclust.distances = self.distances(macro_distance)
 
     def learn_one(self, x, time=None, sample_weight=None, **kwargs):
 
