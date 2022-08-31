@@ -4009,6 +4009,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_16">
@@ -4031,6 +4033,20 @@
     <li class="md-nav__item">
       <a href="../../../linear-model/ALMAClassifier/" class="md-nav__link">
         ALMAClassifier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../linear-model/BayesianLinearRegression/" class="md-nav__link">
+        BayesianLinearRegression
       </a>
     </li>
   
@@ -4130,7 +4146,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_16_8" type="checkbox" id="__nav_4_16_8" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_16_9" type="checkbox" id="__nav_4_16_9" >
       
       
       
@@ -4139,13 +4155,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_16_8">
+        <label class="md-nav__link" for="__nav_4_16_9">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_16_8">
+        <label class="md-nav__title" for="__nav_4_16_9">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -9089,6 +9105,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_34_9">
@@ -9290,13 +9308,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     References
   </a>
@@ -9348,6 +9359,20 @@
     <li class="md-nav__item">
       <a href="../softmax/" class="md-nav__link">
         softmax
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../woodbury-matrix/" class="md-nav__link">
+        woodbury_matrix
       </a>
     </li>
   
@@ -10002,13 +10027,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     References
   </a>
@@ -10030,46 +10048,26 @@
 
 
 <h1 id="sherman_morrison">sherman_morrison<a class="headerlink" href="#sherman_morrison" title="Permanent link">&para;</a></h1>
-<p>Sherman–Morrison formula.</p>
-<p>This modifies <code>A_inv</code> inplace.</p>
+<p>Sherman-Morrison formula.</p>
+<p>This is an inplace function.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>A_inv</strong> (<em>dict</em>)</p>
+<p><strong>A</strong> (<em>numpy.ndarray</em>)</p>
 </li>
 <li>
-<p><strong>u</strong> (<em>dict</em>)</p>
+<p><strong>u</strong> (<em>numpy.ndarray</em>)</p>
 </li>
 <li>
-<p><strong>v</strong> (<em>dict</em>)</p>
+<p><strong>v</strong> (<em>numpy.ndarray</em>)</p>
 </li>
 </ul>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pprint</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">A_inv</span> <span class="o">=</span> <span class="p">{</span>
-<span class="o">...</span>     <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
-<span class="o">...</span>     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span>
-<span class="o">...</span>     <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mi">1</span>
-<span class="o">...</span> <span class="p">}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">u</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">inv</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sherman_morrison</span><span class="p">(</span><span class="n">A_inv</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">inv</span><span class="p">)</span>
-<span class="p">{(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="mf">0.111111</span><span class="p">,</span>
-    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="o">-</span><span class="mf">0.888888</span><span class="p">,</span>
-    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="o">-</span><span class="mf">1.333333</span><span class="p">,</span>
-    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mi">1</span><span class="p">}</span>
-</code></pre></div>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
-<p><a href="https://www.wikiwand.com/en/Sherman%E2%80%93Morrison_formula">Wikipedia article on the Sherman-Morrison formula</a>s&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p><a href="https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/">Fast rank-one updates to matrix inverse? — Tim Vieira</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
