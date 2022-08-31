@@ -3,6 +3,54 @@ from river import optim, utils
 __all__ = ["Newton"]
 
 
+def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
+    """Sherman–Morrison formula.
+
+    This modifies `A_inv` inplace.
+
+    Parameters
+    ----------
+    A_inv
+    u
+    v
+
+    Examples
+    --------
+
+    >>> import pprint
+
+    >>> A_inv = {
+    ...     (0, 0): 0.2,
+    ...     (1, 1): 1,
+    ...     (2, 2): 1
+    ... }
+    >>> u = {0: 1, 1: 2, 2: 3}
+    >>> v = {0: 4}
+
+    >>> inv = sherman_morrison(A_inv, u, v)
+    >>> pprint.pprint(inv)
+    {(0, 0): 0.111111,
+        (1, 0): -0.888888,
+        (1, 1): 1,
+        (2, 0): -1.333333,
+        (2, 2): 1}
+
+    References
+    ----------
+    [^1]: [Wikipedia article on the Sherman-Morrison formula](https://www.wikiwand.com/en/Sherman%E2%80%93Morrison_formula)s
+
+    """
+
+    den = 1 + utils.math.dot(utils.math.dotvecmat(u, A_inv), v)
+
+    for k, v in utils.math.matmul2d(
+        utils.math.matmul2d(A_inv, utils.math.outer(u, v)), A_inv
+    ).items():
+        A_inv[k] = A_inv.get(k, 0) - v / den
+
+    return A_inv
+
+
 class Newton(optim.base.Optimizer):
     """Online Newton Step (ONS) optimizer.
 
@@ -32,7 +80,7 @@ class Newton(optim.base.Optimizer):
                 self.H_inv[i, i] = self.eps
 
         # Update the Hessian
-        self.H = utils.math.sherman_morrison(A_inv=self.H_inv, u=g, v=g)
+        self.H = sherman_morrison(A_inv=self.H_inv, u=g, v=g)
 
         # Calculate the update step
         step = utils.math.dotvecmat(x=g, A=self.H_inv)
