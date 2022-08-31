@@ -318,6 +318,12 @@ def sherman_morrison(A: np.ndarray, u: np.ndarray, v: np.ndarray):
 
     This is an inplace function.
 
+    Parameters
+    ----------
+    A
+    u
+    v
+
     References
     ----------
     [^1]: [Fast rank-one updates to matrix inverse? — Tim Vieira](https://timvieira.github.io/blog/post/2021/03/25/fast-rank-one-updates-to-matrix-inverse/)
@@ -332,6 +338,12 @@ def woodbury_matrix(A: np.ndarray, U: np.ndarray, V: np.ndarray):
     """Woodbury matrix identity.
 
     This is an inplace function.
+
+    Parameters
+    ----------
+    A
+    U
+    V
 
     References
     ----------
