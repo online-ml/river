@@ -116,8 +116,6 @@ class textclust(base.Clusterer):
         self._lambda = _lambda
         self.tgap = tgap
         self.termfading = termfading
-        self.micro_distance = micro_distance
-        self.macro_distance = macro_distance
         self.num_macro = num_macro
         self.realtimefading = realtimefading
         self.min_weight = min_weight
@@ -141,8 +139,8 @@ class textclust(base.Clusterer):
         self.dist_mean = 0
 
         # create a new distance instance for micro and macro distances.
-        self.micro_distance: function = self.distances(self.micro_distance)
-        self.macro_distance: function = self.distances(self.macro_distance)
+        self.micro_distance: function = self.distances(micro_distance)
+        self.macro_distance: function = self.distances(macro_distance)
 
     def learn_one(self, x, time=None, sample_weight=None, **kwargs):
 
