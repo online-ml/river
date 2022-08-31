@@ -8,7 +8,9 @@ class BayesianLinearRegression(base.Regressor):
 
     An advantage of Bayesian linear regression over standard linear regression is that features do
     not have to scaled beforehand. Another attractive property is that this flavor of linear
-    regression is somewhat insensitive to its hyperparameters.
+    regression is somewhat insensitive to its hyperparameters. The downside is that the learning
+    step runs in `O(n^2)` time, whereas the learning step of standard linear regression
+    takes `O(n)` time.
 
     Parameters
     ----------
