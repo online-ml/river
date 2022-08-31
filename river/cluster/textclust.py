@@ -87,12 +87,11 @@ class textclust(base.Clusterer):
     >>> for x in corpus:
     ...     y_pred = model.predict_one(x["text"])
     ...     y = x["cluster"]
-    ...     metric.update(y,y_pred)
-    ...     model.learn_one(x["text"], id = x["idd"])
-
-    >>> model["textclust"].showclusters(5, 5, type="micro")
+    ...     metric = metric.update(y,y_pred)
+    ...     model = model.learn_one(x["text"], id = x["idd"])
 
     >>> print(metric)
+    AdjustedRand: -0.08695652173913043
 
     """
 
@@ -133,8 +132,8 @@ class textclust(base.Clusterer):
         self.n = 1
         self.omega = 2 ** (-1 * self._lambda * self.tgap)
 
-        self.assignment = {}
-        self.microclusters = {}
+        self.assignment: dict[int, int] = {}
+        self.microclusters: dict[int, "microcluster"] = {}
         self.clusterId = 0
         self.microToMacro = None
         self.upToDate = False
@@ -142,8 +141,8 @@ class textclust(base.Clusterer):
         self.dist_mean = 0
 
         # create a new distance instance for micro and macro distances.
-        self.micro_distance = self.distances(self.micro_distance)
-        self.macro_distance = self.distances(self.macro_distance)
+        self.micro_distance: function = self.distances(self.micro_distance)
+        self.macro_distance: function = self.distances(self.macro_distance)
 
     def learn_one(self, x, time=None, sample_weight=None, **kwargs):
 
