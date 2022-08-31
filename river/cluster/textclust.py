@@ -133,8 +133,8 @@ class textclust(base.Clusterer):
         self.n = 1
         self.omega = 2 ** (-1 * self._lambda * self.tgap)
 
-        self.assignment = dict()
-        self.microclusters = dict()
+        self.assignment = {}
+        self.microclusters = {}
         self.clusterId = 0
         self.microToMacro = None
         self.upToDate = False
