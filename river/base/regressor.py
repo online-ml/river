@@ -31,7 +31,7 @@ class Regressor(estimator.Estimator):
 
     @abc.abstractmethod
     def predict_one(self, x: dict) -> base.typing.RegTarget:
-        """Predicts the target value of a set of features `x`.
+        """Predict the output of features `x`.
 
         Parameters
         ----------
