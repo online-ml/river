@@ -34,7 +34,7 @@ class BayesianLinearRegression(base.Regressor):
 
     >>> x, _ = next(iter(dataset))
     >>> model.predict_one(x)
-    43.615759
+    43.61
 
     >>> model.predict_one(x, as_dist=True)
     𝒩(μ=43.616, σ=1.003)
