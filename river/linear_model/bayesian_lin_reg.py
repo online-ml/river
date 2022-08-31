@@ -10,7 +10,7 @@ class BayesianLinearRegression(base.Regressor):
     do not have to scaled beforehand. Another attractive property is that this flavor of linear
     regression is somewhat insensitive to its hyperparameters. Finally, this model can output
     instead a predictive distribution rather than just a point estimate.
-    
+
     The downside is that the learning step runs in `O(n^2)` time, whereas the learning step of
     standard linear regression takes `O(n)` time.
 
