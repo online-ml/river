@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import pandas as pd
+import typing
 from sklearn.cluster import AgglomerativeClustering
 
 from river import base
@@ -130,8 +131,8 @@ class textclust(base.Clusterer):
         self.n = 1
         self.omega = 2 ** (-1 * self._lambda * self.tgap)
 
-        self.assignment: dict[int, int] = {}
-        self.microclusters: dict[int, "textclust.microcluster"] = {}
+        self.assignment: typing.Dict[int, int] = {}
+        self.microclusters: typing.Dict[int, "textclust.microcluster"] = {}
         self.clusterId = 0
         self.microToMacro = None
         self.upToDate = False
