@@ -10075,7 +10075,7 @@
 
 <h1 id="bayesianlinearregression">BayesianLinearRegression<a class="headerlink" href="#bayesianlinearregression" title="Permanent link">&para;</a></h1>
 <p>Bayesian linear regression.</p>
-<p>An advantage of Bayesian linear regression over standard linear regression is that features do not have to scaled beforehand. Another attractive property is that this flavor of linear regression is somewhat insensitive to its hyperparameters.</p>
+<p>An advantage of Bayesian linear regression over standard linear regression is that features do not have to scaled beforehand. Another attractive property is that this flavor of linear regression is somewhat insensitive to its hyperparameters. The downside is that the learning step runs in <code>O(n^2)</code> time, whereas the learning step of standard linear regression takes <code>O(n)</code> time.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
