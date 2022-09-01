@@ -28,7 +28,12 @@ jobs:
             pip install setuptools-rust cython &&
             rustup default nightly &&
             rustup show
+          # rust doesn't seem to be available for musl linux on i686
+          CIBW_SKIP: '*-musllinux_i686'
           CIBW_MANYLINUX_X86_64_IMAGE: 'manylinux2014'
+          CIBW_MUSLLINUX_X86_64_IMAGE: 'musllinux_1_1' 
+          CIBW_MANYLINUX_AARCH64_IMAGE: 'manylinux2014' 
+          CIBW_MUSLLINUX_AARCH64_IMAGE: 'musllinux_1_1'
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
