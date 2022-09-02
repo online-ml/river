@@ -1,5 +1,10 @@
 name: release-docs
 
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   ubuntu:
     runs-on: ubuntu-latest
