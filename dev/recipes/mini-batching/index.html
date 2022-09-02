@@ -10021,23 +10021,88 @@
     <span class="n">dataset</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
 <span class="n">dataset</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Higgs dataset.
-
-The data has been produced using Monte Carlo simulations. The first 21 features (columns 2-22)
-are kinematic properties measured by the particle detectors in the accelerator. The last seven
-features are functions of the first 21 features; these are high-level features derived by
-physicists to help discriminate between the two classes.
-
-      Name  Higgs                                                                       
-      Task  Binary classification                                                       
-   Samples  11,000,000                                                                  
-  Features  28                                                                          
-    Sparse  False                                                                       
-      Path  /Users/max.halford/river_data/Higgs/HIGGS.csv.gz                            
-       URL  https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz
-      Size  2.62 GB                                                                     
-Downloaded  True
+<div class="highlight"><pre><span></span><code>Downloading https://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz (2.62 GB)
 </code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #800000; text-decoration-color: #800000">╭──────────────────────────── </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">Traceback </span><span style="color: #bf7f7f; text-decoration-color: #bf7f7f; font-weight: bold">(most recent call last)</span><span style="color: #800000; text-decoration-color: #800000"> ────────────────────────────╮</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #bfbf7f; text-decoration-color: #bfbf7f">/var/folders/9z/dgt2y49d2qx_hkgt7qj8mc240000gn/T/ipykernel_45843/</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">93925917.py</span>:<span style="color: #0000ff; text-decoration-color: #0000ff">5</span> in         <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #00ff00; text-decoration-color: #00ff00">&lt;module&gt;</span>                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000; font-style: italic">[Errno 2] No such file or directory: </span>                                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000; font-style: italic">'/var/folders/9z/dgt2y49d2qx_hkgt7qj8mc240000gn/T/ipykernel_45843/93925917.py'</span>            <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #bfbf7f; text-decoration-color: #bfbf7f">/Users/max.halford/projects/river/river/datasets/</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">base.py</span>:<span style="color: #0000ff; text-decoration-color: #0000ff">286</span> in <span style="color: #00ff00; text-decoration-color: #00ff00">download</span>                  <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">283 │   │   │   </span>                                                                        <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">284 │   │   │   # Now dump the contents of the requests</span>                                 <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">285 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">with</span> <span style="color: #00ffff; text-decoration-color: #00ffff">open</span>(archive_path, <span style="color: #808000; text-decoration-color: #808000">"wb"</span>) <span style="color: #0000ff; text-decoration-color: #0000ff">as</span> f:                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span>286 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   │   </span>shutil.copyfileobj(r, f)                                            <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">287 │   │   </span>                                                                            <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">288 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #ff00ff; text-decoration-color: #ff00ff">not</span> <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>.unpack:                                                         <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">289 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span>                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #bfbf7f; text-decoration-color: #bfbf7f">/Users/max.halford/anaconda3/envs/river/lib/python3.9/</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">shutil.py</span>:<span style="color: #0000ff; text-decoration-color: #0000ff">205</span> in <span style="color: #00ff00; text-decoration-color: #00ff00">copyfileobj</span>        <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 202 │   </span>fsrc_read = fsrc.read                                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 203 │   </span>fdst_write = fdst.write                                                        <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 204 │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">while</span> <span style="color: #0000ff; text-decoration-color: #0000ff">True</span>:                                                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 205 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>buf = fsrc_read(length)                                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 206 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #ff00ff; text-decoration-color: #ff00ff">not</span> buf:                                                                <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 207 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">break</span>                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 208 │   │   </span>fdst_write(buf)                                                            <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #bfbf7f; text-decoration-color: #bfbf7f">/Users/max.halford/anaconda3/envs/river/lib/python3.9/http/</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">client.py</span>:<span style="color: #0000ff; text-decoration-color: #0000ff">463</span> in <span style="color: #00ff00; text-decoration-color: #00ff00">read</span>          <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 460 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> amt <span style="color: #ff00ff; text-decoration-color: #ff00ff">is</span> <span style="color: #ff00ff; text-decoration-color: #ff00ff">not</span> <span style="color: #0000ff; text-decoration-color: #0000ff">None</span>:                                                        <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 461 │   │   │   # Amount is given, implement using readinto</span>                            <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 462 │   │   │   </span>b = <span style="color: #00ffff; text-decoration-color: #00ffff">bytearray</span>(amt)                                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 463 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span>n = <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>.readinto(b)                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 464 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff">memoryview</span>(b)[:n].tobytes()                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 465 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">else</span>:                                                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 466 │   │   │   # Amount is not given (unbounded read) so we must check self.length</span>    <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #bfbf7f; text-decoration-color: #bfbf7f">/Users/max.halford/anaconda3/envs/river/lib/python3.9/http/</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">client.py</span>:<span style="color: #0000ff; text-decoration-color: #0000ff">507</span> in <span style="color: #00ff00; text-decoration-color: #00ff00">readinto</span>      <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 504 │   │   # we do not use _safe_read() here because this may be a .will_close</span>        <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 505 │   │   # connection, and the user is reading more bytes than will be provided</span>     <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 506 │   │   # (for example, reading in 1k chunks)</span>                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 507 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>n = <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>.fp.readinto(b)                                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 508 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #ff00ff; text-decoration-color: #ff00ff">not</span> n <span style="color: #ff00ff; text-decoration-color: #ff00ff">and</span> b:                                                            <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 509 │   │   │   # Ideally, we would raise IncompleteRead if the content-length</span>         <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 510 │   │   │   # wasn't satisfied, but it might break compatibility.</span>                  <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #bfbf7f; text-decoration-color: #bfbf7f">/Users/max.halford/anaconda3/envs/river/lib/python3.9/</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">socket.py</span>:<span style="color: #0000ff; text-decoration-color: #0000ff">704</span> in <span style="color: #00ff00; text-decoration-color: #00ff00">readinto</span>           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">701 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">raise</span> <span style="color: #00ffff; text-decoration-color: #00ffff">OSError</span>(<span style="color: #808000; text-decoration-color: #808000">"cannot read from timed out object"</span>)                      <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">702 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">while</span> <span style="color: #0000ff; text-decoration-color: #0000ff">True</span>:                                                                 <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">703 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">try</span>:                                                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span>704 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>._sock.recv_into(b)                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">705 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">except</span> timeout:                                                         <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">706 │   │   │   │   </span><span style="color: #00ffff; text-decoration-color: #00ffff">self</span>._timeout_occurred = <span style="color: #0000ff; text-decoration-color: #0000ff">True</span>                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">707 │   │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">raise</span>                                                               <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #bfbf7f; text-decoration-color: #bfbf7f">/Users/max.halford/anaconda3/envs/river/lib/python3.9/</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">ssl.py</span>:<span style="color: #0000ff; text-decoration-color: #0000ff">1241</span> in <span style="color: #00ff00; text-decoration-color: #00ff00">recv_into</span>            <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1238 │   │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">raise</span> <span style="color: #00ffff; text-decoration-color: #00ffff">ValueError</span>(                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1239 │   │   │   │     </span><span style="color: #808000; text-decoration-color: #808000">"non-zero flags not allowed in calls to recv_into() on %s"</span> %     <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1240 │   │   │   │     </span><span style="color: #00ffff; text-decoration-color: #00ffff">self</span>.<span style="color: #ff0000; text-decoration-color: #ff0000">__class__</span>)                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span>1241 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>.read(nbytes, buffer)                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1242 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">else</span>:                                                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1243 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff">super</span>().recv_into(buffer, nbytes, flags)                        <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1244 </span>                                                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #bfbf7f; text-decoration-color: #bfbf7f">/Users/max.halford/anaconda3/envs/river/lib/python3.9/</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">ssl.py</span>:<span style="color: #0000ff; text-decoration-color: #0000ff">1099</span> in <span style="color: #00ff00; text-decoration-color: #00ff00">read</span>                 <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1096 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">raise</span> <span style="color: #00ffff; text-decoration-color: #00ffff">ValueError</span>(<span style="color: #808000; text-decoration-color: #808000">"Read on closed or unwrapped SSL socket."</span>)            <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1097 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">try</span>:                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1098 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> buffer <span style="color: #ff00ff; text-decoration-color: #ff00ff">is</span> <span style="color: #ff00ff; text-decoration-color: #ff00ff">not</span> <span style="color: #0000ff; text-decoration-color: #0000ff">None</span>:                                                 <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span>1099 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>._sslobj.read(<span style="color: #00ffff; text-decoration-color: #00ffff">len</span>, buffer)                              <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1100 │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">else</span>:                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1101 │   │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>._sslobj.read(<span style="color: #00ffff; text-decoration-color: #00ffff">len</span>)                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1102 │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">except</span> SSLError <span style="color: #0000ff; text-decoration-color: #0000ff">as</span> x:                                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
+<span style="color: #800000; text-decoration-color: #800000">╰───────────────────────────────────────────────────────────────────────────────────────────╯</span>
+<span style="color: #ff0000; text-decoration-color: #ff0000; font-weight: bold">KeyboardInterrupt</span>
+</pre>
+
 <p>The easiest way to read the data in a mini-batch fashion is to use the <code>read_csv</code> from <code>pandas</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
@@ -10069,30 +10134,81 @@ Downloaded  True
 <span class="k">def</span> <span class="nf">can_mini_batch</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;learn_many&#39;</span><span class="p">)</span>
 
-<span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;river&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">__all__</span><span class="p">:</span>
+<span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;river.api&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">__all__</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">module</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="s1">&#39;synth&#39;</span><span class="p">]:</span>
         <span class="k">continue</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;river.</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">can_mini_batch</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>OneClassSVM
-MiniBatchClassifier
-MiniBatchRegressor
-SKL2RiverClassifier
-SKL2RiverRegressor
-Pipeline
-BagOfWords
-TFIDF
-LinearRegression
-LogisticRegression
-Perceptron
-OneVsRestClassifier
-BernoulliNB
-ComplementNB
-MultinomialNB
-MLPRegressor
-StandardScaler
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">OneClassSVM
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MiniBatchClassifier
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MiniBatchRegressor
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MiniBatchSupervisedTransformer
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MiniBatchTransformer
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">SKL2RiverClassifier
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">SKL2RiverRegressor
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Pipeline
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Select
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">TransformerProduct
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">TransformerUnion
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">BagOfWords
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">TFIDF
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">LinearRegression
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">LogisticRegression
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Perceptron
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">OneVsRestClassifier
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">BernoulliNB
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ComplementNB
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MultinomialNB
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MLPRegressor
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">OneHotEncoder
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">StandardScaler
+</pre>
+
 <p>Because mini-batch learning isn't treated as a first-class citizen, some of the river's functionalities require some work in order to play nicely with mini-batches. For instance, the objects from the <code>metrics</code> module have an <code>update</code> method that take as input a single pair <code>(y_true, y_pred)</code>. This might change in the future, depending on the demand.</p>
 <p>We plan to promote more models to the mini-batch regime. However, we will only be doing so for the methods that benefit the most from it, as well as those that are most popular. Indeed, <code>river</code>'s core philosophy will remain to cater to single instance learning.</p>
 
