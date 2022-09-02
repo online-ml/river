@@ -9579,6 +9579,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6">
@@ -9795,6 +9797,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/0.12.1/" class="md-nav__link">
+        0.12.1 - 2022-09-02
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/0.12.0/" class="md-nav__link">
         0.12.0 - 2022-09-02
       </a>
@@ -9984,9 +10000,6 @@
 
 
 <h1 id="bike-sharing-forecasting">Bike-sharing forecasting<a class="headerlink" href="#bike-sharing-forecasting" title="Permanent link">&para;</a></h1>
-<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load_ext</span> <span class="n">autoreload</span>
-<span class="o">%</span><span class="n">autoreload</span> <span class="mi">2</span>
-</code></pre></div>
 <p>In this tutorial we're going to forecast the number of bikes in 5 bike stations from the city of Toulouse. We'll do so by building a simple model step by step. The dataset contains 182,470 observations. Let's first take a peak at the data.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
@@ -10006,8 +10019,10 @@
  &#39;station&#39;: &#39;metro-canal-du-midi&#39;,
  &#39;temperature&#39;: 6.54,
  &#39;wind&#39;: 9.3}
-Number of available bikes: 1
 </code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Number of available bikes: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>
+</pre>
+
 <p>Let's start by using a simple linear regression on the numeric features. We can select the numeric features and discard the rest of the features using a <code>Select</code>. Linear regression is very likely to go haywire if we don't scale the data, so we'll use a <code>StandardScaler</code> to do just that. We'll evaluate the model by measuring the mean absolute error. Finally we'll print the score every 20,000 observations. </p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
@@ -10033,13 +10048,10 @@ Number of available bikes: 1
 [140,000] MAE: 5.613023
 [160,000] MAE: 5.622428
 [180,000] MAE: 5.567824
-
-
-
-
-
-MAE: 5.563893
 </code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.563893</span>
+</pre>
+
 <p>The model doesn't seem to be doing that well, but then again we didn't provide a lot of features. Generally, a good idea for this kind of problem is to look at an average of the previous values. For example, for each station we can look at the average number of bikes per hour. To do so we first have to extract the hour from the  <code>moment</code> field. We can then use a <code>TargetAgg</code> to aggregate the values of the target.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
@@ -10069,212 +10081,79 @@ MAE: 5.563893
 [140,000] MAE: 3.980953
 [160,000] MAE: 3.950034
 [180,000] MAE: 3.934545
-
-
-
-
-
-MAE: 3.933498
 </code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3.933498</span>
+</pre>
+
 <p>By adding a single feature, we've managed to significantly reduce the mean absolute error. At this point you might think that the model is getting slightly complex, and is difficult to understand and test. Pipelines have the advantage of being terse, but they aren't always to debug. Thankfully <code>river</code> has some ways to relieve the pain.</p>
 <p>The first thing we can do it to visualize the pipeline, to get an idea of how the data flows through it.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<div><div class="component pipeline"><div class="component union"><details class="component estimator"><summary><pre class="estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="estimator-params">
-{'keys': {'wind', 'humidity', 'temperature', 'clouds', 'pressure'}}
+<div><div class="river-component river-pipeline"><div class="river-component river-union"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="river-estimator-params">(
+  clouds
+  humidity
+  pressure
+  temperature
+  wind
+)
 
-</code></details><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">get_hour</pre></summary><code class="estimator-params">
+</code></details><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">get_hour</pre></summary><code class="river-estimator-params">
 def get_hour(x):
     x['hour'] = x['moment'].hour
     return x
 
-</code></details><details class="component estimator"><summary><pre class="estimator-name">y_mean_by_station_and_hour</pre></summary><code class="estimator-params">
-{'_feature_name': 'y_mean_by_station_and_hour',
- '_groups': defaultdict(functools.partial(&lt;function deepcopy at 0x7fd9871cb4c0&gt;, Mean: 0.),
-                        {('metro-canal-du-midi', 0): Mean: 7.93981,
-                         ('metro-canal-du-midi', 1): Mean: 8.179704,
-                         ('metro-canal-du-midi', 2): Mean: 8.35824,
-                         ('metro-canal-du-midi', 3): Mean: 8.656051,
-                         ('metro-canal-du-midi', 4): Mean: 8.868445,
-                         ('metro-canal-du-midi', 5): Mean: 8.99656,
-                         ('metro-canal-du-midi', 6): Mean: 9.09966,
-                         ('metro-canal-du-midi', 7): Mean: 8.852642,
-                         ('metro-canal-du-midi', 8): Mean: 12.66712,
-                         ('metro-canal-du-midi', 9): Mean: 13.412186,
-                         ('metro-canal-du-midi', 10): Mean: 12.486815,
-                         ('metro-canal-du-midi', 11): Mean: 11.675479,
-                         ('metro-canal-du-midi', 12): Mean: 10.197409,
-                         ('metro-canal-du-midi', 13): Mean: 10.650855,
-                         ('metro-canal-du-midi', 14): Mean: 11.109123,
-                         ('metro-canal-du-midi', 15): Mean: 11.068934,
-                         ('metro-canal-du-midi', 16): Mean: 11.274958,
-                         ('metro-canal-du-midi', 17): Mean: 8.459136,
-                         ('metro-canal-du-midi', 18): Mean: 7.587469,
-                         ('metro-canal-du-midi', 19): Mean: 7.734677,
-                         ('metro-canal-du-midi', 20): Mean: 7.582465,
-                         ('metro-canal-du-midi', 21): Mean: 7.190665,
-                         ('metro-canal-du-midi', 22): Mean: 7.486895,
-                         ('metro-canal-du-midi', 23): Mean: 7.840791,
-                         ('place-des-carmes', 0): Mean: 4.720696,
-                         ('place-des-carmes', 1): Mean: 3.390295,
-                         ('place-des-carmes', 2): Mean: 2.232181,
-                         ('place-des-carmes', 3): Mean: 1.371981,
-                         ('place-des-carmes', 4): Mean: 1.051665,
-                         ('place-des-carmes', 5): Mean: 0.984993,
-                         ('place-des-carmes', 6): Mean: 2.039947,
-                         ('place-des-carmes', 7): Mean: 3.850369,
-                         ('place-des-carmes', 8): Mean: 3.792624,
-                         ('place-des-carmes', 9): Mean: 5.957182,
-                         ('place-des-carmes', 10): Mean: 8.575303,
-                         ('place-des-carmes', 11): Mean: 9.321546,
-                         ('place-des-carmes', 12): Mean: 10.511931,
-                         ('place-des-carmes', 13): Mean: 11.392745,
-                         ('place-des-carmes', 14): Mean: 10.735003,
-                         ('place-des-carmes', 15): Mean: 10.198787,
-                         ('place-des-carmes', 16): Mean: 9.941479,
-                         ('place-des-carmes', 17): Mean: 9.125579,
-                         ('place-des-carmes', 18): Mean: 7.660775,
-                         ('place-des-carmes', 19): Mean: 6.847649,
-                         ('place-des-carmes', 20): Mean: 9.626876,
-                         ('place-des-carmes', 21): Mean: 11.602929,
-                         ('place-des-carmes', 22): Mean: 10.405537,
-                         ('place-des-carmes', 23): Mean: 7.700904,
-                         ('place-esquirol', 0): Mean: 7.415789,
-                         ('place-esquirol', 1): Mean: 5.244396,
-                         ('place-esquirol', 2): Mean: 2.858635,
-                         ('place-esquirol', 3): Mean: 1.155929,
-                         ('place-esquirol', 4): Mean: 0.73306,
-                         ('place-esquirol', 5): Mean: 0.668546,
-                         ('place-esquirol', 6): Mean: 1.21265,
-                         ('place-esquirol', 7): Mean: 3.107535,
-                         ('place-esquirol', 8): Mean: 8.518696,
-                         ('place-esquirol', 9): Mean: 15.470588,
-                         ('place-esquirol', 10): Mean: 19.465005,
-                         ('place-esquirol', 11): Mean: 22.976512,
-                         ('place-esquirol', 12): Mean: 25.324159,
-                         ('place-esquirol', 13): Mean: 25.428847,
-                         ('place-esquirol', 14): Mean: 24.57762,
-                         ('place-esquirol', 15): Mean: 24.416851,
-                         ('place-esquirol', 16): Mean: 23.555125,
-                         ('place-esquirol', 17): Mean: 22.062564,
-                         ('place-esquirol', 18): Mean: 18.10623,
-                         ('place-esquirol', 19): Mean: 11.916638,
-                         ('place-esquirol', 20): Mean: 13.346362,
-                         ('place-esquirol', 21): Mean: 16.743318,
-                         ('place-esquirol', 22): Mean: 15.562088,
-                         ('place-esquirol', 23): Mean: 10.911134,
-                         ('place-jeanne-darc', 0): Mean: 6.541667,
-                         ('place-jeanne-darc', 1): Mean: 5.99892,
-                         ('place-jeanne-darc', 2): Mean: 5.598169,
-                         ('place-jeanne-darc', 3): Mean: 5.180556,
-                         ('place-jeanne-darc', 4): Mean: 4.779626,
-                         ('place-jeanne-darc', 5): Mean: 4.67063,
-                         ('place-jeanne-darc', 6): Mean: 4.611995,
-                         ('place-jeanne-darc', 7): Mean: 4.960718,
-                         ('place-jeanne-darc', 8): Mean: 5.552273,
-                         ('place-jeanne-darc', 9): Mean: 6.249573,
-                         ('place-jeanne-darc', 10): Mean: 5.735553,
-                         ('place-jeanne-darc', 11): Mean: 5.616142,
-                         ('place-jeanne-darc', 12): Mean: 5.787478,
-                         ('place-jeanne-darc', 13): Mean: 5.817699,
-                         ('place-jeanne-darc', 14): Mean: 5.657546,
-                         ('place-jeanne-darc', 15): Mean: 6.224604,
-                         ('place-jeanne-darc', 16): Mean: 5.796141,
-                         ('place-jeanne-darc', 17): Mean: 5.743089,
-                         ('place-jeanne-darc', 18): Mean: 5.674784,
-                         ('place-jeanne-darc', 19): Mean: 5.833068,
-                         ('place-jeanne-darc', 20): Mean: 6.015755,
-                         ('place-jeanne-darc', 21): Mean: 6.242541,
-                         ('place-jeanne-darc', 22): Mean: 6.141509,
-                         ('place-jeanne-darc', 23): Mean: 6.493028,
-                         ('pomme', 0): Mean: 3.301532,
-                         ('pomme', 1): Mean: 2.312914,
-                         ('pomme', 2): Mean: 2.144453,
-                         ('pomme', 3): Mean: 1.563622,
-                         ('pomme', 4): Mean: 0.947328,
-                         ('pomme', 5): Mean: 0.924175,
-                         ('pomme', 6): Mean: 1.287805,
-                         ('pomme', 7): Mean: 1.299456,
-                         ('pomme', 8): Mean: 2.94988,
-                         ('pomme', 9): Mean: 7.89396,
-                         ('pomme', 10): Mean: 11.791436,
-                         ('pomme', 11): Mean: 12.976854,
-                         ('pomme', 12): Mean: 13.962654,
-                         ('pomme', 13): Mean: 11.692257,
-                         ('pomme', 14): Mean: 11.180851,
-                         ('pomme', 15): Mean: 11.939586,
-                         ('pomme', 16): Mean: 12.267051,
-                         ('pomme', 17): Mean: 12.132993,
-                         ('pomme', 18): Mean: 11.399108,
-                         ('pomme', 19): Mean: 6.37021,
-                         ('pomme', 20): Mean: 5.279234,
-                         ('pomme', 21): Mean: 6.254257,
-                         ('pomme', 22): Mean: 6.568678,
-                         ('pomme', 23): Mean: 5.235756}),
- 'by': ['station', 'hour'],
- 'how': Mean: 0.,
- 'on': 'y'}
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_station_and_hour</pre></summary><code class="river-estimator-params">(
+  by=['station', 'hour']
+  how=Mean ()
+  target_name="y"
+)
 
-</code></details></div></div><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
-{'counts': Counter({'y_mean_by_station_and_hour': 182470,
-                    'wind': 182470,
-                    'humidity': 182470,
-                    'temperature': 182470,
-                    'clouds': 182470,
-                    'pressure': 182470}),
- 'means': defaultdict(&lt;class 'float'&gt;,
-                      {'clouds': 30.315131254453505,
-                       'humidity': 62.24244533347998,
-                       'pressure': 1017.0563060996391,
-                       'temperature': 20.50980692716619,
-                       'wind': 3.4184331122924543,
-                       'y_mean_by_station_and_hour': 9.468200635816528}),
- 'vars': defaultdict(&lt;class 'float'&gt;,
-                     {'clouds': 1389.0025610928221,
-                      'humidity': 349.59967918503554,
-                      'pressure': 33.298307526514115,
-                      'temperature': 34.70701720774977,
-                      'wind': 4.473627075744674,
-                      'y_mean_by_station_and_hour': 33.720872727055365}),
- 'with_std': True}
+</code></details></div></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+  with_std=True
+)
 
-</code></details><details class="component estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
-{'_weights': {'y_mean_by_station_and_hour': 3.8719218238428725, 'wind': -0.2612193604527138, 'humidity': 3.8817929874945234, 'temperature': -2.795077764828726, 'clouds': -0.6106470619450345, 'pressure': 2.148194846809032},
- '_y_name': None,
- 'clip_gradient': 1000000000000.0,
- 'initializer': Zeros (),
- 'intercept': 6.096564954881431,
- 'intercept_init': 0.0,
- 'intercept_lr': Constant({'learning_rate': 0.01}),
- 'l2': 0.0,
- 'loss': Squared({}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.001}), 'n_iterations': 182470})}
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">(
+  optimizer=SGD (
+    lr=Constant (
+      learning_rate=0.001
+    )
+  )
+  loss=Squared ()
+  l2=0.
+  l1=0.
+  intercept_init=0.
+  intercept_lr=Constant (
+    learning_rate=0.01
+  )
+  clip_gradient=1e+12
+  initializer=Zeros ()
+)
 
 </code></details></div><style scoped>
-.estimator {
+.river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
 }
 
-.pipeline {
+.river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
 }
 
-.union {
+.river-union {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: 1em;
     border-style: solid;
-    background: white
+    background: white;
 }
 
-.wrapper {
+.river-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10284,45 +10163,45 @@ def get_hour(x):
     background: white;
 }
 
-.wrapper > .estimator {
+.river-wrapper > .river-estimator {
     margin-top: 1em;
 }
 
 /* Vertical spacing between steps */
 
-.component + .component {
+.river-component + .river-component {
     margin-top: 2em;
 }
 
-.union > .estimator {
+.river-union > .river-estimator {
     margin-top: 0;
 }
 
-.union > .pipeline {
+.river-union > .pipeline {
     margin-top: 0;
 }
 
 /* Spacing within a union of estimators */
 
-.union > .component + .component {
+.river-union > .river-component + .river-component {
     margin-left: 1em;
 }
 
 /* Typography */
 
-.estimator-params {
+.river-estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
 }
 
-.estimator > code,
-.wrapper > details > code {
+.river-estimator > .river-estimator-params,
+.river-wrapper > .river-details > river-estimator-params {
     background-color: white !important;
 }
 
-.estimator-name {
+.river-estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
@@ -10330,13 +10209,13 @@ def get_hour(x):
 
 /* Toggle */
 
-summary {
+.river-summary {
     display: flex;
     align-items:center;
     cursor: pointer;
 }
 
-summary > div {
+.river-summary > div {
     width: 100%;
 }
 </style></div>
@@ -10359,60 +10238,61 @@ summary > div {
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">debug_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>0. Input
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>. Input
 --------
-clouds: 75 (int)
-description: light rain (str)
-humidity: 81 (int)
-moment: 2016-04-01 00:00:07 (datetime)
-pressure: 1,017.00000 (float)
-station: metro-canal-du-midi (str)
-temperature: 6.54000 (float)
-wind: 9.30000 (float)
+clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">75</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
+description: light rain <span style="font-weight: bold">(</span>str<span style="font-weight: bold">)</span>
+humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">81</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
+moment: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2016</span>-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">04</span>-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">01</span> <span style="color: #00ff00; text-decoration-color: #00ff00; font-weight: bold">00:00:07</span> <span style="font-weight: bold">(</span>datetime<span style="font-weight: bold">)</span>
+pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">017.00000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+station: metro-canal-du-midi <span style="font-weight: bold">(</span>str<span style="font-weight: bold">)</span>
+temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.54000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.30000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
 
-1. Transformer union
+<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>. Transformer union
 --------------------
-    1.0 Select
+    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.0</span> Select
     ----------
-    clouds: 75 (int)
-    humidity: 81 (int)
-    pressure: 1,017.00000 (float)
-    temperature: 6.54000 (float)
-    wind: 9.30000 (float)
+    clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">75</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
+    humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">81</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
+    pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">017.00000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+    temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.54000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+    wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.30000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
 
-    1.1 get_hour | y_mean_by_station_and_hour
+    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.1</span> get_hour | y_mean_by_station_and_hour
     -----------------------------------------
-    y_mean_by_station_and_hour: 4.43243 (float)
+    y_mean_by_station_and_hour: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4.43243</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
 
-clouds: 75 (int)
-humidity: 81 (int)
-pressure: 1,017.00000 (float)
-temperature: 6.54000 (float)
-wind: 9.30000 (float)
-y_mean_by_station_and_hour: 4.43243 (float)
+clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">75</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
+humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">81</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
+pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">017.00000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.54000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.30000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+y_mean_by_station_and_hour: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4.43243</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
 
-2. StandardScaler
+<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2</span>. StandardScaler
 -----------------
-clouds: 0.47566 (float)
-humidity: 0.42247 (float)
-pressure: 1.05314 (float)
-temperature: -1.22098 (float)
-wind: 2.21104 (float)
-y_mean_by_station_and_hour: -0.59098 (float)
+clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.47566</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.42247</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.05314</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-1.22098</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.21104</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+y_mean_by_station_and_hour: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.59098</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
 
-3. LinearRegression
+<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span>. LinearRegression
 -------------------
 Name                         Value      Weight     Contribution  
-                 Intercept    1.00000    6.58252        6.58252  
-                  pressure    1.05314    3.78529        3.98646  
-                  humidity    0.42247    1.44921        0.61225  
-y_mean_by_station_and_hour   -0.59098    0.54167       -0.32011  
-                    clouds    0.47566   -1.92255       -0.91448  
-                      wind    2.21104   -0.77720       -1.71843  
-               temperature   -1.22098    2.47030       -3.01619
+                 Intercept    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.00000</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.58252</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.58252</span>  
+                  pressure    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.05314</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3.78529</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3.98646</span>  
+                  humidity    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.42247</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.44921</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.61225</span>  
+y_mean_by_station_and_hour   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.59098</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.54167</span>       <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.32011</span>  
+                    clouds    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.47566</span>   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-1.92255</span>       <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.91448</span>  
+                      wind    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.21104</span>   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.77720</span>       <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-1.71843</span>  
+               temperature   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-1.22098</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.47030</span>       <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-3.01619</span>  
 
-Prediction: 5.21201
-</code></pre></div>
+Prediction: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.21201</span>
+</pre>
+
 <p>The <code>debug_one</code> method shows what happens to an input set of features, step by step.</p>
 <p>And now comes the catch. Up until now we've been using the <code>progressive_val_score</code> method from the <code>evaluate</code> module. What this does it that it sequentially predicts the output of an observation and updates the model immediately afterwards. This way of proceeding is often used for evaluating online learning models. But in some cases it is the wrong approach.</p>
 <p>When evaluating a machine learning model, the goal is to simulate production conditions in order to get a trust-worthy assessment of the performance of the model. In our case, we typically want to forecast the number of bikes available in a station, say, 30 minutes ahead. Then, once the 30 minutes have passed, the true number of available bikes will be available and we will be able to update the model using the features available 30 minutes ago.</p>
@@ -10428,22 +10308,19 @@ Prediction: 5.21201
     <span class="n">print_every</span><span class="o">=</span><span class="mi">20_000</span>
 <span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>[20,000] MAE: 4.378419
-[40,000] MAE: 4.328999
-[60,000] MAE: 4.277895
-[80,000] MAE: 4.287503
-[100,000] MAE: 4.236114
-[120,000] MAE: 4.238951
-[140,000] MAE: 4.278382
-[160,000] MAE: 4.24341
-[180,000] MAE: 4.230743
-
-
-
-
-
-MAE: 4.231731
+<div class="highlight"><pre><span></span><code>[20,000] MAE: 4.203433
+[40,000] MAE: 4.195404
+[60,000] MAE: 4.130316
+[80,000] MAE: 4.122796
+[100,000] MAE: 4.069826
+[120,000] MAE: 4.066034
+[140,000] MAE: 4.088604
+[160,000] MAE: 4.059282
+[180,000] MAE: 4.026821
 </code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4.024939</span>
+</pre>
+
 <p>The performance is a bit worse, which is to be expected. Indeed, the task is more difficult: the model is only shown the ground truth 30 minutes after making a prediction.</p>
 <p>The takeaway of this notebook is that the <code>progressive_val_score</code> method can be used to simulate a production scenario, and is thus extremely valuable.</p>
 
