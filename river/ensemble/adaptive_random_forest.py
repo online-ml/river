@@ -517,7 +517,6 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     @property
     def _mutable_attributes(self):
         return {
-            "n_models",
             "max_features",
             "aggregation_method",
             "lambda_value",
@@ -789,7 +788,6 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     @property
     def _mutable_attributes(self):
         return {
-            "n_models",
             "max_features",
             "aggregation_method",
             "lambda_value",
