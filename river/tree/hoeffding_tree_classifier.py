@@ -160,6 +160,10 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         # To keep track of the observed classes
         self.classes: set = set()
 
+    @property
+    def _mutable_attributes(self):
+        return {"grace_period", "delta", "tau"}
+
     @HoeffdingTree.split_criterion.setter  # type: ignore
     def split_criterion(self, split_criterion):
         if split_criterion not in self._VALID_SPLIT_CRITERIA:

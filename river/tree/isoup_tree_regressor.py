@@ -151,6 +151,10 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         self.split_criterion: str = "icvr"  # intra cluster variance reduction
         self.targets: set = set()
 
+    @property
+    def _mutable_attributes(self):
+        return {"grace_period", "delta", "tau"}
+
     @tree.HoeffdingTreeRegressor.split_criterion.setter
     def split_criterion(self, split_criterion):
         if split_criterion == "vr":

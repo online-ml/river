@@ -149,6 +149,10 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
         self.min_samples_reevaluate = min_samples_reevaluate
 
+    @property
+    def _mutable_attributes(self):
+        return {"grace_period", "delta", "tau", "min_samples_reevaluate"}
+
     def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}
