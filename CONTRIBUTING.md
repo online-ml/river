@@ -141,12 +141,13 @@ $ make execute-notebooks
 ## Making a new release
 
 1. Checkout `main`
-2. Bump the version in `river/__version__.py`
-3. Tag and date the `docs/releases/unreleased.md` file
-4. Run the [benchmarks](benchmarks)
-5. Commit and push
-6. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/unit-tests.yml)
-7. Push the tag:
+2. Run `make execute-notebooks` just to be safe
+3. Run the [benchmarks](benchmarks)
+4. Bump the version in `river/__version__.py`
+5. Tag and date the `docs/releases/unreleased.md` file
+6. Commit and push
+7. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/unit-tests.yml)
+8. Push the tag:
 
 ```sh
 RIVER_VERSION=$(python -c "import river; print(river.__version__)")
@@ -155,8 +156,8 @@ git tag $RIVER_VERSION
 git push origin $RIVER_VERSION
 ```
 
-7. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml) and [publish the new docs](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
-8. Create a [release](https://github.com/online-ml/river/releases):
+9. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml) and [publish the new docs](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
+10. Create a [release](https://github.com/online-ml/river/releases):
 
 ```sh
 RELEASE_NOTES=$(cat <<-END
