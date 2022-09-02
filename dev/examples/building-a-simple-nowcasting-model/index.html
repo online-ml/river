@@ -10010,8 +10010,10 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="k">break</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;month&#39;: datetime.datetime(1949, 1, 1, 0, 0)} 112
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">{</span><span style="color: #008000; text-decoration-color: #008000">'month'</span>: <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">datetime.datetime</span><span style="font-weight: bold">(</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1949</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span><span style="font-weight: bold">)}</span>
+<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">112</span>
+</pre>
+
 <p>The data is as simple as can be: it consists of a sequence of months and values representing the total number of international airline passengers per month. Our goal is going to be to predict the number of passengers for the next month at each step. Notice that because the dataset is small  -- which is usually the case for time series -- we could just fit a model from scratch each month. However for the sake of example we're going to train a single model online. Although the overall performance might be potentially weaker, training a time series model online has the benefit of being scalable if, say, you have have <a href="http://www.unofficialgoogledatascience.com/2017/04/our-quest-for-robust-time-series.html">thousands of time series to manage</a>.</p>
 <p>We'll start with a very simple model where the only feature will be the <a href="https://www.wikiwand.com/en/Ordinal_date">ordinal date</a> of each month. This should be able to capture some of the underlying trend. </p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
@@ -10031,12 +10033,13 @@
 </code></pre></div>
 <p>We'll write down a function to evaluate the model. This will go through each observation in the dataset and update the model as it goes on. The prior predictions will be stored along with the true values and will be plotted together. </p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 
 <span class="k">def</span> <span class="nf">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">):</span> 
 
-    <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span> <span class="mi">12</span><span class="p">)</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span> <span class="mi">12</span><span class="p">)</span>
 
     <span class="n">dates</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">y_trues</span> <span class="o">=</span> <span class="p">[]</span>
@@ -10067,9 +10070,9 @@
 <p>Let's evaluate our first model.</p>
 <div class="highlight"><pre><span></span><code><span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>/Users/max.halford/anaconda3/lib/python3.9/site-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 9 ( ) missing from current font.
-  fig.canvas.print_figure(bytes_io, **kw)
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 72</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x432</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
 <p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_9_1.png" /></p>
 <p>The model has captured a trend but not the right one. Indeed it thinks the trend is linear whereas we can visually see that the growth of the data increases with time. In other words the second derivative of the series is positive. This is a well know problem in time series forecasting and there are thus many ways to handle it; for example by using a <a href="https://www.wikiwand.com/en/Power_transform">Box-Cox transform</a>. However we are going to do something a bit different, and instead linearly detrend the series using a <code>TargetStandardScaler</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
@@ -10085,7 +10088,10 @@
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_11_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 72</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x432</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_11_1.png" /></p>
 <p>Now let's try and capture the monthly trend by one-hot encoding the month name.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">calendar</span>
 
@@ -10110,24 +10116,31 @@
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_13_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 72</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x432</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_13_1.png" /></p>
 <p>This seems pretty decent. We can take a look at the weights of the linear regression to get an idea of the importance of each feature.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">regressor</span><span class="p">[</span><span class="s1">&#39;lin_reg&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">weights</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;January&#39;: -0.13808091575141299,
- &#39;February&#39;: -0.18716063793638954,
- &#39;March&#39;: -0.026469206216021102,
- &#39;April&#39;: -0.03500685108350436,
- &#39;May&#39;: -0.013638742192777328,
- &#39;June&#39;: 0.16194267303548826,
- &#39;July&#39;: 0.31995865445067634,
- &#39;August&#39;: 0.2810396556938982,
- &#39;September&#39;: 0.03834350518076595,
- &#39;October&#39;: -0.11655850082390988,
- &#39;November&#39;: -0.2663497734491209,
- &#39;December&#39;: -0.15396048501165746,
- &#39;ordinal_date&#39;: 1.0234863735122575}
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'January'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.13808091575141299</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'February'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.18716063793638954</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'March'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.026469206216021102</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'April'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.03500685108350436</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'May'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.013638742192777328</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'June'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.16194267303548826</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'July'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.31995865445067634</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'August'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.2810396556938982</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'September'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.03834350518076595</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'October'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.11655850082390988</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'November'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.2663497734491209</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'December'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.15396048501165746</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.0234863735122575</span>
+<span style="font-weight: bold">}</span>
+</pre>
+
 <p>As could be expected the months of July and August have the highest weights because these are the months where people typically go on holiday abroad. The month of December has a low weight because this is a month of festivities in most of the Western world where people usually stay at home.</p>
 <p>Our model seems to understand which months are important, but it fails to see that the importance of each month grows multiplicatively as the years go on. In other words our model is too shy. We can fix this by increasing the learning rate of the <code>LinearRegression</code>'s optimizer.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
@@ -10148,7 +10161,10 @@
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_17_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 72</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x432</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_17_1.png" /></p>
 <p>This is starting to look good! Naturally in production we would tune the learning rate, ideally in real-time.</p>
 <p>Before finishing, we're going to introduce a cool feature extraction trick based on <a href="https://www.wikiwand.com/en/Radial_basis_function_kernel">radial basis function kernels</a>. The one-hot encoding we did on the month is a good idea but if you think about it is a bit rigid. Indeed the value of each feature is going to be 0 or 1, depending on the month of each observation. We're basically saying that the month of September is as distant to the month of August as it is to the month of March. Of course this isn't true, and it would be nice if our features would reflect this. To do so we can simply calculate the distance between the month of each observation and all the months in the calendar. Instead of simply computing the distance linearly, we're going to use a so-called <em>Gaussian radial basic function kernel</em>. This is a bit of a mouthful but for us it boils down to a simple formula, which is:</p>
 <div class="arithmatex">\[d(i, j) = exp(-\frac{(i - j)^2}{2\sigma^2})\]</div>
@@ -10178,7 +10194,10 @@
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_19_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 72</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x432</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_19_1.png" /></p>
 <p>We've managed to get a good looking prediction curve with a reasonably simple model. What's more our model has the advantage of being interpretable and easy to debug. There surely are more rocks to squeeze (e.g. tune the hyperparameters, use an ensemble model, etc.) but we'll leave that as an exercice to the reader.</p>
 <p>As a finishing touch we'll rewrite our pipeline using the <code>|</code> operator, which is called a "pipe".</p>
 <div class="highlight"><pre><span></span><code><span class="n">extract_features</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">TransformerUnion</span><span class="p">(</span><span class="n">get_ordinal_date</span><span class="p">,</span> <span class="n">get_month_distances</span><span class="p">)</span>
@@ -10195,7 +10214,10 @@
 
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_21_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 72</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x432</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_21_1.png" /></p>
 <div class="highlight"><pre><span></span><code>
 </code></pre></div>
 
