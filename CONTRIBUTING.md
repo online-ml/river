@@ -165,5 +165,6 @@ RELEASE_NOTES=$(cat <<-END
 - https://pypi.org/project/river/${RIVER_VERSION}/
 END
 )
+brew update &&brew install gh
 gh release create $RIVER_VERSION --notes $RELEASE_NOTES
 ```
