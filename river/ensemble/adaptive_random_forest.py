@@ -514,6 +514,18 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         self.remove_poor_attrs = remove_poor_attrs
         self.merit_preprune = merit_preprune
 
+    @property
+    def _mutable_attributes(self):
+        return {
+            "n_models",
+            "max_features",
+            "aggregation_method",
+            "lambda_value",
+            "grace_period",
+            "delta",
+            "tau",
+        }
+
     def _multiclass(self):
         return True
 
@@ -773,6 +785,19 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
                 f"Invalid aggregation_method: {aggregation_method}.\n"
                 f"Valid values are: {self._VALID_AGGREGATION_METHOD}"
             )
+
+    @property
+    def _mutable_attributes(self):
+        return {
+            "n_models",
+            "max_features",
+            "aggregation_method",
+            "lambda_value",
+            "grace_period",
+            "delta",
+            "tau",
+            "model_selector_decay",
+        }
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
 
