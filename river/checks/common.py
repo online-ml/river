@@ -171,3 +171,9 @@ def check_seeding_is_idempotent(model, dataset):
         assert A.predict_one(x) == B.predict_one(x)
         A.learn_one(x, y)
         B.learn_one(x, y)
+
+
+def check_mutable_attributes(model):
+    for attr in model._mutable_attributes:
+        if not hasattr(model, attr):
+            raise ValueError(f"Attribute '{attr}' doesn't exist")

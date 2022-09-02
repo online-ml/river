@@ -128,6 +128,8 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     yield common.check_doc
     yield common.check_clone_changes_memory_addresses
     yield common.check_mutate_can_be_idempotent
+    if model._mutable_attributes:
+        yield common.check_mutable_attributes
 
     if utils.inspect.isclassifier(model):
         yield clf.check_multiclass_is_bool
