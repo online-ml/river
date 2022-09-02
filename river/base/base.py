@@ -187,7 +187,7 @@ class Base:
                     )
                     for name, param in params.items()
                     if name != "_POSITIONAL_ARGS"
-                }
+                },
             )
 
         clone = instantiate(
