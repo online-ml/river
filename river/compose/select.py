@@ -56,11 +56,6 @@ class Discard(base.Transformer):
             return "Discard (\n  " + "\n  ".join(map(str, sorted(self.keys))) + "\n)"
         return "Discard ()"
 
-    def clone(self, keys=None):
-        if not keys:
-            keys = self.keys
-        return Discard(*keys)
-
 
 class Select(base.MiniBatchTransformer):
     """Selects features.
@@ -150,14 +145,6 @@ class Select(base.MiniBatchTransformer):
             return "Select (\n  " + "\n  ".join(map(str, sorted(self.keys))) + "\n)"
         return "Select ()"
 
-    def _get_params(self):
-        return self.keys
-
-    def clone(self, keys=None):
-        if not keys:
-            keys = self.keys
-        return Select(*keys)
-
 
 class SelectType(base.Transformer):
     """Selects features based on their type.
@@ -199,11 +186,3 @@ class SelectType(base.Transformer):
         if self.types:
             return "Select (\n  " + "\n  ".join(map(str, sorted(self.types))) + "\n)"
         return "Select ()"
-
-    def _get_params(self):
-        return self.types
-
-    def clone(self, types=None):
-        if not types:
-            types = self.types
-        return SelectType(*types)
