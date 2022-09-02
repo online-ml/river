@@ -10116,7 +10116,10 @@
 <span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">RandomNormal</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../content-personalization_files/content-personalization_7_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 432x288 with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../content-personalization_files/content-personalization_7_1.png" /></p>
 <p>We can see that the click-through rate (CTR) oscillates around 28.74%. In fact, this model is expected to be correct <code>100 * (2 / 7)% = 28.57%</code> of the time. Indeed, each user likes two items, and there are seven items in total.</p>
 <p>Let's now use the <code>Baseline</code> recommended. This one models each preference as the following sum:</p>
 <div class="arithmatex">\[preference = \bar{y} + b_{u} + b_{i}\]</div>
@@ -10130,19 +10133,25 @@
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">Baseline</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../content-personalization_files/content-personalization_9_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 432x288 with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../content-personalization_files/content-personalization_9_1.png" /></p>
 <p>This baseline model seems perfect, which is surprising. The reason why it works so well is because both users have in common that they both like politics. The model therefore learns that the <code>'politics'</code> is a good item to recommend.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">i_biases</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>defaultdict(Zeros (),
-            {&#39;music&#39;: -0.013333333333333336,
-             &#39;camping&#39;: -0.01,
-             &#39;food&#39;: -0.0078000000000000005,
-             &#39;health&#39;: -0.0063106666666666675,
-             &#39;finance&#39;: -0.0052320723809523816,
-             &#39;politics&#39;: 0.014896375560251602,
-             &#39;sports&#39;: 0.0})
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">defaultdict</span><span style="font-weight: bold">(</span>Zeros <span style="font-weight: bold">()</span>, <span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'health'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'food'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'finance'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'camping'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'sports'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'politics'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'music'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>
+<span style="font-weight: bold">})</span>
+</pre>
+
 <p>The model is not as performant if we use a reward function where both users have different preferences.</p>
 <div class="highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span>
     <span class="mi">5_000</span><span class="p">,</span>
@@ -10154,12 +10163,18 @@
     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../content-personalization_files/content-personalization_13_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 432x288 with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../content-personalization_files/content-personalization_13_1.png" /></p>
 <p>A good recommender model should at the very least understand what kind of items each user prefers. One of the simplest and yet performant way to do this is Simon Funk's SGD method he developped for the Netflix challenge and wrote about <a href="https://sifter.org/simon/journal/20061211.html">here</a>. It models each user and each item as latent vectors. The dot product of these two vectors is the expected preference of the user for the item.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">FunkMF</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../content-personalization_files/content-personalization_15_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 432x288 with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../content-personalization_files/content-personalization_15_1.png" /></p>
 <p>We can see that this model learns what items each user enjoys very well. Of course, there are some caveats. In our simulation, we ask the model to recommend the item most likely to be preferred for each user. Indeed, we rank all the items and pick the item at the top of the list. We do this many times for only two users.</p>
 <p>This is of course not realistic. Users will get fed up with recommendations if they're always shown the same item. It's important to include diversity into recommendations, and to let the model explore other options instead of always focusing on the item with the highest score. This is where evaluating recommender systems gets tricky: the reward function itself is difficult to model.</p>
 <p>We will keep ignoring these caveats in this notebook. Instead we will focus on a different concern: making recommendations when context is involved.</p>
@@ -10207,12 +10222,16 @@
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">FunkMF</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">is_contextual</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>False
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>
+</pre>
+
 <p>Let's see well it performs.</p>
 <div class="highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../content-personalization_files/content-personalization_25_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 432x288 with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../content-personalization_files/content-personalization_25_1.png" /></p>
 <p>The performance has roughly been divided by half. This is most likely because there are now two times of day, and if the model has learnt preferences for one time of the day, then it's expected to be wrong half of the time.</p>
 <p>Before delving into recsys models that can handle context, a simple hack is to notice that we can append the time of day to the user. This effectively results in new users which our model can distinguish between. We could apply this trick during the simulation, but we can also override the behavior of the <code>learn_one</code> and <code>rank</code> methods of our model.</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FunkMFWithHack</span><span class="p">(</span><span class="n">reco</span><span class="o">.</span><span class="n">FunkMF</span><span class="p">):</span>
@@ -10228,7 +10247,10 @@
 <span class="n">model</span> <span class="o">=</span> <span class="n">FunkMFWithHack</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">29</span><span class="p">)</span>
 <span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../content-personalization_files/content-personalization_27_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 432x288 with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../content-personalization_files/content-personalization_27_1.png" /></p>
 <p>We can verify that the model has learnt the correct preferences by looking at the expected preference for each <code>(user, item)</code> pair.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
@@ -10247,25 +10269,25 @@
 <span class="p">)</span>
 </code></pre></div>
 <style type="text/css">
-#T_36cea_row0_col5, #T_36cea_row1_col6, #T_36cea_row2_col4, #T_36cea_row3_col5 {
+#T_6acdf_row0_col5, #T_6acdf_row1_col2, #T_6acdf_row2_col4, #T_6acdf_row3_col5 {
   background-color: lightgreen;
 }
 </style>
-<table id="T_36cea">
+<table id="T_6acdf">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_36cea_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
+      <th id="T_6acdf_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
     </tr>
     <tr>
       <th class="index_name level1" >item</th>
-      <th id="T_36cea_level1_col0" class="col_heading level1 col0" >camping</th>
-      <th id="T_36cea_level1_col1" class="col_heading level1 col1" >finance</th>
-      <th id="T_36cea_level1_col2" class="col_heading level1 col2" >food</th>
-      <th id="T_36cea_level1_col3" class="col_heading level1 col3" >health</th>
-      <th id="T_36cea_level1_col4" class="col_heading level1 col4" >music</th>
-      <th id="T_36cea_level1_col5" class="col_heading level1 col5" >politics</th>
-      <th id="T_36cea_level1_col6" class="col_heading level1 col6" >sports</th>
+      <th id="T_6acdf_level1_col0" class="col_heading level1 col0" >camping</th>
+      <th id="T_6acdf_level1_col1" class="col_heading level1 col1" >finance</th>
+      <th id="T_6acdf_level1_col2" class="col_heading level1 col2" >food</th>
+      <th id="T_6acdf_level1_col3" class="col_heading level1 col3" >health</th>
+      <th id="T_6acdf_level1_col4" class="col_heading level1 col4" >music</th>
+      <th id="T_6acdf_level1_col5" class="col_heading level1 col5" >politics</th>
+      <th id="T_6acdf_level1_col6" class="col_heading level1 col6" >sports</th>
     </tr>
     <tr>
       <th class="index_name level0" >user</th>
@@ -10280,44 +10302,44 @@
   </thead>
   <tbody>
     <tr>
-      <th id="T_36cea_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
-      <td id="T_36cea_row0_col0" class="data row0 col0" >0.044712</td>
-      <td id="T_36cea_row0_col1" class="data row0 col1" >-0.063282</td>
-      <td id="T_36cea_row0_col2" class="data row0 col2" >-0.060270</td>
-      <td id="T_36cea_row0_col3" class="data row0 col3" >-0.041465</td>
-      <td id="T_36cea_row0_col4" class="data row0 col4" >-0.059729</td>
-      <td id="T_36cea_row0_col5" class="data row0 col5" >1.000000</td>
-      <td id="T_36cea_row0_col6" class="data row0 col6" >0.062710</td>
+      <th id="T_6acdf_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
+      <td id="T_6acdf_row0_col0" class="data row0 col0" >-0.040774</td>
+      <td id="T_6acdf_row0_col1" class="data row0 col1" >-0.051506</td>
+      <td id="T_6acdf_row0_col2" class="data row0 col2" >0.049407</td>
+      <td id="T_6acdf_row0_col3" class="data row0 col3" >0.041181</td>
+      <td id="T_6acdf_row0_col4" class="data row0 col4" >-0.132596</td>
+      <td id="T_6acdf_row0_col5" class="data row0 col5" >1.000000</td>
+      <td id="T_6acdf_row0_col6" class="data row0 col6" >-0.063250</td>
     </tr>
     <tr>
-      <th id="T_36cea_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
-      <td id="T_36cea_row1_col0" class="data row1 col0" >0.101267</td>
-      <td id="T_36cea_row1_col1" class="data row1 col1" >0.076300</td>
-      <td id="T_36cea_row1_col2" class="data row1 col2" >-0.117756</td>
-      <td id="T_36cea_row1_col3" class="data row1 col3" >-0.135705</td>
-      <td id="T_36cea_row1_col4" class="data row1 col4" >0.260879</td>
-      <td id="T_36cea_row1_col5" class="data row1 col5" >0.063001</td>
-      <td id="T_36cea_row1_col6" class="data row1 col6" >1.000000</td>
+      <th id="T_6acdf_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
+      <td id="T_6acdf_row1_col0" class="data row1 col0" >-0.041401</td>
+      <td id="T_6acdf_row1_col1" class="data row1 col1" >-0.047545</td>
+      <td id="T_6acdf_row1_col2" class="data row1 col2" >0.000000</td>
+      <td id="T_6acdf_row1_col3" class="data row1 col3" >0.000000</td>
+      <td id="T_6acdf_row1_col4" class="data row1 col4" >-0.054427</td>
+      <td id="T_6acdf_row1_col5" class="data row1 col5" >0.000000</td>
+      <td id="T_6acdf_row1_col6" class="data row1 col6" >-0.008087</td>
     </tr>
     <tr>
-      <th id="T_36cea_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
-      <td id="T_36cea_row2_col0" class="data row2 col0" >0.116019</td>
-      <td id="T_36cea_row2_col1" class="data row2 col1" >0.136308</td>
-      <td id="T_36cea_row2_col2" class="data row2 col2" >0.088899</td>
-      <td id="T_36cea_row2_col3" class="data row2 col3" >-0.182063</td>
-      <td id="T_36cea_row2_col4" class="data row2 col4" >1.000000</td>
-      <td id="T_36cea_row2_col5" class="data row2 col5" >-0.228918</td>
-      <td id="T_36cea_row2_col6" class="data row2 col6" >0.268113</td>
+      <th id="T_6acdf_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
+      <td id="T_6acdf_row2_col0" class="data row2 col0" >-0.097425</td>
+      <td id="T_6acdf_row2_col1" class="data row2 col1" >0.018748</td>
+      <td id="T_6acdf_row2_col2" class="data row2 col2" >0.062043</td>
+      <td id="T_6acdf_row2_col3" class="data row2 col3" >0.183071</td>
+      <td id="T_6acdf_row2_col4" class="data row2 col4" >1.000000</td>
+      <td id="T_6acdf_row2_col5" class="data row2 col5" >-0.306870</td>
+      <td id="T_6acdf_row2_col6" class="data row2 col6" >0.072653</td>
     </tr>
     <tr>
-      <th id="T_36cea_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
-      <td id="T_36cea_row3_col0" class="data row3 col0" >0.042014</td>
-      <td id="T_36cea_row3_col1" class="data row3 col1" >-0.070943</td>
-      <td id="T_36cea_row3_col2" class="data row3 col2" >-0.072108</td>
-      <td id="T_36cea_row3_col3" class="data row3 col3" >-0.036848</td>
-      <td id="T_36cea_row3_col4" class="data row3 col4" >-0.213144</td>
-      <td id="T_36cea_row3_col5" class="data row3 col5" >1.000000</td>
-      <td id="T_36cea_row3_col6" class="data row3 col6" >-0.006144</td>
+      <th id="T_6acdf_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
+      <td id="T_6acdf_row3_col0" class="data row3 col0" >-0.035938</td>
+      <td id="T_6acdf_row3_col1" class="data row3 col1" >-0.057287</td>
+      <td id="T_6acdf_row3_col2" class="data row3 col2" >0.054126</td>
+      <td id="T_6acdf_row3_col3" class="data row3 col3" >0.017308</td>
+      <td id="T_6acdf_row3_col4" class="data row3 col4" >-0.279492</td>
+      <td id="T_6acdf_row3_col5" class="data row3 col5" >1.000000</td>
+      <td id="T_6acdf_row3_col6" class="data row3 col6" >-0.070864</td>
     </tr>
   </tbody>
 </table>

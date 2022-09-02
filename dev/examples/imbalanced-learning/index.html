@@ -10142,11 +10142,12 @@
 <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">count</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">:</span><span class="s1">.5%</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Downloading https://maxhalford.github.io/files/datasets/creditcardfraud.zip (65.95 MB)
-Uncompressing into /Users/max.halford/river_data/CreditCard
-0: 284315 (99.82725%)
-1: 492 (0.17275%)
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">284315</span> <span style="font-weight: bold">(</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">99.82725</span>%<span style="font-weight: bold">)</span>
+</pre>
+
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">492</span> <span style="font-weight: bold">(</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.17275</span>%<span style="font-weight: bold">)</span>
+</pre>
+
 <h2 id="baseline">Baseline<a class="headerlink" href="#baseline" title="Permanent link">&para;</a></h2>
 <p>The dataset is quite unbalanced. For each 1 there are about 578 0s. Let's now train a logistic regression with default parameters and see how well it does. We'll measure the ROC AUC score.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
@@ -10166,8 +10167,9 @@ Uncompressing into /Users/max.halford/river_data/CreditCard
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 89.11%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">89.11</span>%
+</pre>
+
 <h2 id="importance-weighting">Importance weighting<a class="headerlink" href="#importance-weighting" title="Permanent link">&para;</a></h2>
 <p>The performance is already quite acceptable, but as we will now see we can do even better. The first thing we can do is to add weight to the 1s by using the <code>weight_pos</code> argument of the <code>Log</code> loss function.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
@@ -10183,8 +10185,9 @@ Uncompressing into /Users/max.halford/river_data/CreditCard
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 91.43%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">91.43</span>%
+</pre>
+
 <h2 id="focal-loss">Focal loss<a class="headerlink" href="#focal-loss" title="Permanent link">&para;</a></h2>
 <p>The deep learning for object detection community has produced a special loss function for imbalanced learning called <a href="https://arxiv.org/pdf/1708.02002.pdf">focal loss</a>. We are doing binary classification, so we can plug the binary version of focal loss into our logistic regression and see how well it fairs.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
@@ -10196,8 +10199,9 @@ Uncompressing into /Users/max.halford/river_data/CreditCard
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 91.31%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">91.31</span>%
+</pre>
+
 <h2 id="under-sampling-the-majority-class">Under-sampling the majority class<a class="headerlink" href="#under-sampling-the-majority-class" title="Permanent link">&para;</a></h2>
 <p>Adding importance weights only works with gradient-based models (which includes neural networks). A more generic, and potentially more effective approach, is to use undersamplig and oversampling. As an example, we'll under-sample the stream so that our logistic regression encounter 20% of 1s and 80% of 0s. Under-sampling has the additional benefit of requiring less training steps, and thus reduces the total training time.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">imblearn</span>
@@ -10215,111 +10219,41 @@ Uncompressing into /Users/max.halford/river_data/CreditCard
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 94.75%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">94.75</span>%
+</pre>
+
 <p>The <code>RandomUnderSampler</code> class is a wrapper for classifiers. This is represented by a rectangle around the logistic regression bubble when we visualize the model.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<div><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
-{'counts': Counter({'Time': 284807,
-                    'V1': 284807,
-                    'V2': 284807,
-                    'V3': 284807,
-                    'V4': 284807,
-                    'V5': 284807,
-                    'V6': 284807,
-                    'V7': 284807,
-                    'V8': 284807,
-                    'V9': 284807,
-                    'V10': 284807,
-                    'V11': 284807,
-                    'V12': 284807,
-                    'V13': 284807,
-                    'V14': 284807,
-                    'V15': 284807,
-                    'V16': 284807,
-                    'V17': 284807,
-                    'V18': 284807,
-                    'V19': 284807,
-                    'V20': 284807,
-                    'V21': 284807,
-                    'V22': 284807,
-                    'V23': 284807,
-                    'V24': 284807,
-                    'V25': 284807,
-                    'V26': 284807,
-                    'V27': 284807,
-                    'V28': 284807,
-                    'Amount': 284807}),
- 'means': defaultdict(&lt;class 'float'&gt;,
-                      {'Amount': 88.34961925093155,
-                       'Time': 94813.8595750808,
-                       'V1': 2.9277520180090704e-15,
-                       'V10': 2.419775348112352e-15,
-                       'V11': 2.6777824308789593e-15,
-                       'V12': -2.2140916080800113e-15,
-                       'V13': 8.342900777166882e-16,
-                       'V14': 1.903846574088133e-15,
-                       'V15': 8.581815631423259e-15,
-                       'V16': 1.4766213137618707e-15,
-                       'V17': -1.6801787893383664e-16,
-                       'V18': 5.854597499006342e-16,
-                       'V19': 1.0841438330912623e-15,
-                       'V2': 5.886023480140661e-16,
-                       'V20': 7.744049542249276e-16,
-                       'V21': 2.332071227413037e-16,
-                       'V22': 4.956273530422241e-16,
-                       'V23': -2.4249219202998693e-16,
-                       'V24': 4.437131669261511e-15,
-                       'V25': -6.981503896318856e-16,
-                       'V26': 1.6805599541646309e-15,
-                       'V27': -3.266881107112892e-16,
-                       'V28': -1.173670292237036e-16,
-                       'V3': -1.2140654523102711e-15,
-                       'V4': 3.4083746059071583e-15,
-                       'V5': 3.0974740213536643e-15,
-                       'V6': 1.6259034591771526e-15,
-                       'V7': -1.293283785185756e-16,
-                       'V8': 3.1643541546820877e-16,
-                       'V9': -1.6996522885539796e-15}),
- 'vars': defaultdict(&lt;class 'float'&gt;,
-                     {'Amount': 62559.84938856013,
-                      'Time': 2255116088.124347,
-                      'V1': 3.8364757815609964,
-                      'V10': 1.1855896488198305,
-                      'V11': 1.041851426830977,
-                      'V12': 0.9983999112951535,
-                      'V13': 0.9905673151089326,
-                      'V14': 0.9189023195064231,
-                      'V15': 0.837800459457307,
-                      'V16': 0.7678164267285925,
-                      'V17': 0.721370914880897,
-                      'V18': 0.7025368914993138,
-                      'V19': 0.6626596101863256,
-                      'V2': 2.726810450381156,
-                      'V20': 0.594323307231822,
-                      'V21': 0.5395236333332668,
-                      'V22': 0.5266409057048476,
-                      'V23': 0.3899492915994535,
-                      'V24': 0.3668070828485584,
-                      'V25': 0.27172987273928645,
-                      'V26': 0.23254207582578096,
-                      'V27': 0.16291861895803472,
-                      'V28': 0.10895457872151114,
-                      'V3': 2.2990211684909436,
-                      'V4': 2.004676782760293,
-                      'V5': 1.905074357779823,
-                      'V6': 1.7749400245019011,
-                      'V7': 1.5303951971990823,
-                      'V8': 1.426473847533605,
-                      'V9': 1.2069882295421888}),
- 'with_std': True}
+<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+  with_std=True
+)
 
-</code></details><div class="component wrapper"><details><summary><pre class="estimator-name">RandomUnderSampler</pre></summary><code class="estimator-params">
-{'_actual_dist': Counter({0: 284315, 1: 492}),
- '_pivot': 1,
- '_rng': &lt;random.Random object at 0x7fb73901e810&gt;,
- 'classifier': LogisticRegression (
+</code></details><div class="river-component river-wrapper"><details class="river-details"><summary class="river-summary"><pre class="river-estimator-name">RandomUnderSampler</pre></summary><code class="river-estimator-params">(
+  classifier=LogisticRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=Log (
+      weight_pos=1.
+      weight_neg=1.
+    )
+    l2=0.
+    l1=0.
+    intercept_init=0.
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  )
+  desired_dist={0: 0.8, 1: 0.2}
+  seed=42
+)
+
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LogisticRegression</pre></summary><code class="river-estimator-params">(
   optimizer=SGD (
     lr=Constant (
       learning_rate=0.01
@@ -10330,53 +10264,40 @@ Uncompressing into /Users/max.halford/river_data/CreditCard
     weight_neg=1.
   )
   l2=0.
+  l1=0.
   intercept_init=0.
   intercept_lr=Constant (
     learning_rate=0.01
   )
   clip_gradient=1e+12
   initializer=Zeros ()
-),
- 'desired_dist': {0: 0.8, 1: 0.2},
- 'seed': 42}
-
-</code></details><details class="component estimator"><summary><pre class="estimator-name">LogisticRegression</pre></summary><code class="estimator-params">
-{'_weights': {'Time': -1.6435308107994573, 'V1': -0.0711798457459422, 'V2': 0.08689788816561662, 'V3': -0.22624828183952506, 'V4': 0.6827332420162909, 'V5': 0.18833620045466432, 'V6': -0.11695093658674378, 'V7': -0.13413474923347, 'V8': -0.2575447733912745, 'V9': -0.02888439300081377, 'V10': -0.2491688000120769, 'V11': 0.32422036210718175, 'V12': -0.6194078910255973, 'V13': -0.0302453737827456, 'V14': -0.5855987715566451, 'V15': -0.09972202536223844, 'V16': -0.2402670346526167, 'V17': -0.055365057905480845, 'V18': 0.032474863276146626, 'V19': -0.08494838975759278, 'V20': -0.12459547198256606, 'V21': 0.04276103699144131, 'V22': 0.10363988666872352, 'V23': -0.08712048453858105, 'V24': 0.043970621647021875, 'V25': -0.050376004211653315, 'V26': -0.02767069610819979, 'V27': 0.12223298288462736, 'V28': -0.019825032606385427, 'Amount': 0.027224523831184406},
- '_y_name': None,
- 'clip_gradient': 1000000000000.0,
- 'initializer': Zeros (),
- 'intercept': -1.0699242219644576,
- 'intercept_init': 0.0,
- 'intercept_lr': Constant({'learning_rate': 0.01}),
- 'l2': 0.0,
- 'loss': Log({'weight_pos': 1.0, 'weight_neg': 1.0}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 3633})}
+)
 
 </code></details></div></div><style scoped>
-.estimator {
+.river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
 }
 
-.pipeline {
+.river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
 }
 
-.union {
+.river-union {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: 1em;
     border-style: solid;
-    background: white
+    background: white;
 }
 
-.wrapper {
+.river-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10386,45 +10307,45 @@ Uncompressing into /Users/max.halford/river_data/CreditCard
     background: white;
 }
 
-.wrapper > .estimator {
+.river-wrapper > .river-estimator {
     margin-top: 1em;
 }
 
 /* Vertical spacing between steps */
 
-.component + .component {
+.river-component + .river-component {
     margin-top: 2em;
 }
 
-.union > .estimator {
+.river-union > .river-estimator {
     margin-top: 0;
 }
 
-.union > .pipeline {
+.river-union > .pipeline {
     margin-top: 0;
 }
 
 /* Spacing within a union of estimators */
 
-.union > .component + .component {
+.river-union > .river-component + .river-component {
     margin-left: 1em;
 }
 
 /* Typography */
 
-.estimator-params {
+.river-estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
 }
 
-.estimator > code,
-.wrapper > details > code {
+.river-estimator > .river-estimator-params,
+.river-wrapper > .river-details > river-estimator-params {
     background-color: white !important;
 }
 
-.estimator-name {
+.river-estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
@@ -10432,13 +10353,13 @@ Uncompressing into /Users/max.halford/river_data/CreditCard
 
 /* Toggle */
 
-summary {
+.river-summary {
     display: flex;
     align-items:center;
     cursor: pointer;
 }
 
-summary > div {
+.river-summary > div {
     width: 100%;
 }
 </style></div>
@@ -10458,8 +10379,9 @@ summary > div {
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 91.71%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">91.71</span>%
+</pre>
+
 <h2 id="sampling-with-a-desired-sample-size">Sampling with a desired sample size<a class="headerlink" href="#sampling-with-a-desired-sample-size" title="Permanent link">&para;</a></h2>
 <p>The downside of both <code>RandomUnderSampler</code> and <code>RandomOverSampler</code> is that you don't have any control on the amount of data the classifier trains on. The number of samples is adjusted so that the target distribution can be attained, either by under-sampling or over-sampling. However, you can do both at the same time and choose how much data the classifier will see. To do so, we can use the <code>RandomSampler</code> class. In addition to the desired class distribution, we can specify how much data to train on. The samples will both be under-sampled and over-sampled in order to fit your constraints. This is powerful because it allows you to control both the class distribution and the size of the training data (and thus the training time). In the following example we'll set it so that the model will train with 1 percent of the data.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
@@ -10476,8 +10398,9 @@ summary > div {
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 94.71%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">94.71</span>%
+</pre>
+
 <h2 id="hybrid-approach">Hybrid approach<a class="headerlink" href="#hybrid-approach" title="Permanent link">&para;</a></h2>
 <p>As you might have guessed by now, nothing is stopping you from mixing imbalanced learning methods together. As an example, let's combine <code>sampling.RandomUnderSampler</code> and the <code>weight_pos</code> parameter from the <code>optim.losses.Log</code> loss function.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
@@ -10495,8 +10418,8 @@ summary > div {
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 96.52%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">96.52</span>%
+</pre>
 
 
   
