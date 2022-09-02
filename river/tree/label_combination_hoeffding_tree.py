@@ -126,6 +126,10 @@ class LabelCombinationHoeffdingTreeClassifier(tree.HoeffdingTreeClassifier, base
         self._r_label_map: typing.Dict[int, typing.Tuple] = {}
         self._labels: typing.Set[typing.Hashable] = set()
 
+    @property
+    def _mutable_attributes(self):
+        return {"grace_period", "delta", "tau"}
+
     def learn_one(self, x, y, *, sample_weight=1.0):
         """Update the Multi-label Hoeffding Tree Classifier.
 

@@ -199,6 +199,10 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         self._rng = random.Random(self.seed)
 
     @property
+    def _mutable_attributes(self):
+        return {"grace_period", "delta", "tau", "drift_window_threshold", "switch_significance"}
+
+    @property
     def n_alternate_trees(self):
         return self._n_alternate_trees
 
