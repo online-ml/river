@@ -92,7 +92,7 @@ def test_synth_idempotent(dataset):
 )
 def test_synth_non_idempotent(dataset):
     """Checks that a synthetic dataset produces different results when not seeded."""
-    assert list(dataset.take(20)) != list(dataset.take(20))
+    assert list(dataset.take(100)) != list(dataset.take(100))
 
 
 @pytest.mark.parametrize(
