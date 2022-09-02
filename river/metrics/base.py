@@ -54,6 +54,7 @@ class Metric(base.Base, abc.ABC):
         assert len(y_true) == len(y_pred)
         [self.update(y_t,y_p) for (y_t,y_p) in zip(y_true,y_pred)]
         return self
+
     def is_better_than(self, other) -> bool:
         op = operator.gt if self.bigger_is_better else operator.lt
         return op(self.get(), other.get())
