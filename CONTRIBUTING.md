@@ -149,9 +149,10 @@ $ make execute-notebooks
 7. Push the tag:
 
 ```sh
-VERSION=$(python -c "import river; print(river.__version__)"
-git tag $VERSION
-git push origin $VERSION
+RIVER_VERSION=$(python -c "import river; print(river.__version__)")
+echo $RIVER_VERSION
+git tag $RIVER_VERSION
+git push origin $RIVER_VERSION
 ```
 
 7. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml) and [publish the new docs](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
@@ -159,9 +160,9 @@ git push origin $VERSION
 
 ```sh
 RELEASE_NOTES=$(cat <<-END
-- https://riverml.xyz/${VERSION}/releases/${VERSION}/
-- https://pypi.org/project/river/${VERSION}/
+- https://riverml.xyz/${RIVER_VERSION}/releases/${RIVER_VERSION}/
+- https://pypi.org/project/river/${RIVER_VERSION}/
 END
 )
-gh release create $VERSION --notes $RELEASE_NOTES
+gh release create $RIVER_VERSION --notes $RELEASE_NOTES
 ```
