@@ -313,6 +313,10 @@ class AMRules(base.Regressor):
 
         self._n_drifts_detected: int = 0
 
+    @property
+    def _mutable_attributes(self):
+        return {"n_min", "delta", "tau", "alpha", "anomaly_threshold", "m_min", "ordered_rule_set"}
+
     def __len__(self):
         return len(self._rules) + 1
 

@@ -99,6 +99,10 @@ class KMeans(base.Clusterer):
             i: collections.defaultdict(rand_gauss) for i in range(n_clusters)
         }
 
+    @property
+    def _mutable_attributes(self):
+        return {"halflife"}
+
     def learn_predict_one(self, x):
         """Equivalent to `k_means.learn_one(x).predict_one(x)`, but faster."""
 
