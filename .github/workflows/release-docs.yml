@@ -30,7 +30,7 @@ jobs:
 
       - name: Use Rich in notebooks
         run: |
-          pip install ipython
+          mkdir -p ~/.ipython/profile_default/startup
           echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_imports.ipy
 
       - name: Execute notebooks
