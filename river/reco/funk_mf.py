@@ -121,6 +121,10 @@ class FunkMF(reco.base.Ranker):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 
+    @property
+    def _mutable_attributes(self):
+        return {"optimizer", "l2", "loss", "clip_gradient", "initializer"}
+
     def predict_one(self, user, item, x=None):
         return np.dot(self.u_latents[user], self.i_latents[item])
 
