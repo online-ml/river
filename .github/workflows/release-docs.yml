@@ -1,10 +1,5 @@
 name: release-docs
 
-on:
-  push:
-    tags:
-      - "*"
-
 jobs:
   ubuntu:
     runs-on: ubuntu-latest
@@ -29,7 +24,9 @@ jobs:
           python -m spacy download en_core_web_sm
 
       - name: Use Rich in notebooks
-        run: echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_imports.ipy
+        run: |
+          pip install ipython
+          echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_imports.ipy
 
       - name: Execute notebooks
         run: make execute-notebooks
