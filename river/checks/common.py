@@ -173,7 +173,7 @@ def check_seeding_is_idempotent(model, dataset):
         B.learn_one(x, y)
 
 
-def check_mutable_attributes(model):
+def check_mutable_attributes_exist(model):
     for attr in model._mutable_attributes:
         if not hasattr(model, attr):
             raise ValueError(f"Attribute '{attr}' doesn't exist")
