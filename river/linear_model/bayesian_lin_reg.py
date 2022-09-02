@@ -59,6 +59,9 @@ class BayesianLinearRegression(base.Regressor):
         self._m = {}
         self._n = 1
 
+    def _unit_test_skips(self):
+        return {"check_shuffle_features_no_impact", "check_emerging_features"}
+
     def _get_arrays(self, features, m=True, ss=True, ss_inv=True):
         m_arr = np.array([self._m.get(i, 0.0) for i in features]) if m else None
         ss_arr = (
