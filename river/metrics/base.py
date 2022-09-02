@@ -3,6 +3,7 @@ import collections
 import numbers
 import operator
 import typing
+
 import pandas as pd
 
 from river import base, stats, utils
@@ -52,7 +53,7 @@ class Metric(base.Base, abc.ABC):
     def update_many(self, y_true: pd.Series, y_pred: pd.Series) -> "Metric":
         """Update the metric with multiple instances"""
         assert len(y_true) == len(y_pred)
-        [self.update(y_t,y_p) for (y_t,y_p) in zip(y_true,y_pred)]
+        [self.update(y_t, y_p) for (y_t, y_p) in zip(y_true, y_pred)]
         return self
 
     def is_better_than(self, other) -> bool:
