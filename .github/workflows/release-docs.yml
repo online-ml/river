@@ -34,7 +34,9 @@ jobs:
           echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_imports.ipy
 
       - name: Execute notebooks
-        run: make execute-notebooks
+        run: |
+          pip install numpy --upgrade
+          make execute-notebooks
 
       - name: Build docs
         run: make doc
