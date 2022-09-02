@@ -151,6 +151,10 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
                 raise ValueError("The chosen splitter cannot be used in regression tasks.")
             self.splitter = splitter  # type: ignore
 
+    @property
+    def _mutable_attributes(self):
+        return {"grace_period", "delta", "tau"}
+
     @HoeffdingTree.leaf_prediction.setter  # type: ignore
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in self._VALID_LEAF_PREDICTION:
