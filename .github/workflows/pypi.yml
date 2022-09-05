@@ -17,20 +17,20 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         arch: [main, alt]
         include:
-          - os: ubuntu
+          - os: ubuntu-latest
             platform: linux
-          - os: windows
+          - os: windows-latest
             ls: dir
-          - os: ubuntu
+          - os: ubuntu-latest
             arch: alt
             alt_arch_name: aarch64
-          - os: macos
+          - os: macos-latest
             arch: alt
             alt_arch_name: arm64
         exclude:
-          - os: windows
+          - os: windows-latest
             arch: alt
-          - os: macos
+          - os: macos-latest
             arch: alt
 
     steps:
