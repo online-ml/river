@@ -14,23 +14,23 @@ jobs:
     strategy:
       matrix:
         # os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu, macos]
         arch: [main, alt]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu
             platform: linux
-          - os: windows-latest
+          - os: windows
             ls: dir
-          - os: ubuntu-latest
+          - os: ubuntu
             arch: alt
             alt_arch_name: aarch64
-          - os: macos-latest
+          - os: macos
             arch: alt
             alt_arch_name: arm64
         exclude:
-          - os: windows-latest
-            arch: alt
-          - os: macos-latest
+          # - os: windows
+          #   arch: alt
+          - os: macos
             arch: alt
 
     steps:
