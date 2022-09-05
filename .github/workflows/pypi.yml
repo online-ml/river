@@ -14,23 +14,23 @@ jobs:
     strategy:
       matrix:
         # os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [ubuntu, macos]
+        os: [ubuntu-latest, macos-latest]
         arch: [main, alt]
         include:
-          - os: ubuntu
+          - os: ubuntu-latest
             platform: linux
-          - os: windows
+          - os: windows-latest
             ls: dir
-          - os: ubuntu
+          - os: ubuntu-latest
             arch: alt
             alt_arch_name: aarch64
-          - os: macos
+          - os: macos-latest
             arch: alt
             alt_arch_name: arm64
         exclude:
-          # - os: windows
-          #   arch: alt
-          - os: macos
+          - os: windows-latest
+            arch: alt
+          - os: macos-latest
             arch: alt
 
     steps:
@@ -45,16 +45,16 @@ jobs:
           override: true
   
       - run: rustup target add aarch64-apple-darwin
-        if: matrix.os == 'macos'
+        if: matrix.os == 'macos-latest'
 
       - run: rustup toolchain install stable-i686-pc-windows-msvc
-        if: matrix.os == 'windows'
+        if: matrix.os == 'windows-latest'
 
       - run: rustup target add i686-pc-windows-msvc
-        if: matrix.os == 'windows'
+        if: matrix.os == 'windows-latest'
 
       - name: Set up QEMU
-        if: matrix.os == 'ubuntu'
+        if: matrix.os == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v1
         with:
           platforms: all
