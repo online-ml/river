@@ -19,6 +19,29 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: set up rust
+        if: matrix.os != 'ubuntu'
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+  
+      - run: rustup target add aarch64-apple-darwin
+        if: matrix.os == 'macos'
+
+      - run: rustup toolchain install stable-i686-pc-windows-msvc
+        if: matrix.os == 'windows'
+
+      - run: rustup target add i686-pc-windows-msvc
+        if: matrix.os == 'windows'
+
+      - name: Set up QEMU
+        if: matrix.os == 'ubuntu'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.0
         env:
@@ -30,6 +53,9 @@ jobs:
             rustup show
           # rust doesn't seem to be available for musl linux on i686
           CIBW_SKIP: '*-musllinux_i686'
+          # we build for "alt_arch_name" if it exists, else 'auto
+          CIBW_ARCHS: ${{ matrix.alt_arch_name || 'auto' }}
+
           CIBW_MANYLINUX_X86_64_IMAGE: 'manylinux2014'
           CIBW_MUSLLINUX_X86_64_IMAGE: 'musllinux_1_1' 
           CIBW_MANYLINUX_AARCH64_IMAGE: 'manylinux2014' 
