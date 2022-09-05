@@ -15,6 +15,23 @@ jobs:
       matrix:
         # os: [ubuntu-latest, windows-latest, macos-latest]
         os: [ubuntu-latest, macos-latest]
+        arch: [main, alt]
+        include:
+          - os: ubuntu
+            platform: linux
+          - os: windows
+            ls: dir
+          - os: ubuntu
+            arch: alt
+            alt_arch_name: aarch64
+          - os: macos
+            arch: alt
+            alt_arch_name: arm64
+        exclude:
+          - os: windows
+            arch: alt
+          - os: macos
+            arch: alt
 
     steps:
       - uses: actions/checkout@v2
