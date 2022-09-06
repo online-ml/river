@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: set up rust
-        if: matrix.os != 'ubuntu'
+        if: matrix.os != 'ubuntu-latest'
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
