@@ -1,16 +1,14 @@
 import math
 import typing
 from abc import ABCMeta
-from collections import defaultdict
 
-from river import base, cluster, utils
-
-EPSILON = 0.00005
-MIN_VARIANCE = 1e-50
+from river import base, cluster, stats, utils
 
 
 class CluStream(base.Clusterer):
-    """CluStream
+    """An improved version of CluStream, using Welford's algorithm to calculate
+    the variance incrementally. This replaces the original structure of the micro-cluster,
+    by using the `Var` object to update both the data points and time stamps.
 
     The CluStream algorithm [^1] maintains statistical information about the
     data using micro-clusters. These micro-clusters are temporal extensions of
@@ -84,23 +82,33 @@ class CluStream(base.Clusterer):
     ...     [1, 0],
     ...     [4, 2],
     ...     [4, 4],
-    ...     [4, 0]
+    ...     [4, 0],
+    ...     [4, 6],
+    ...     [4, 8],
+    ...     [0, 1],
+    ...    [0, -1],
     ... ]
 
-    >>> clustream = cluster.CluStream(time_window=1,
-    ...                               max_micro_clusters=3,
-    ...                               n_macro_clusters=2,
-    ...                               seed=0,
-    ...                               halflife=0.4)
+    >>> clustream_welford = cluster.CluStream(time_window=1,
+    ...                                       max_micro_clusters=5,
+    ...                                       n_macro_clusters=3,
+    ...                                       seed=0,
+    ...                                       halflife=0.4)
 
     >>> for i, (x, _) in enumerate(stream.iter_array(X)):
-    ...     clustream = clustream.learn_one(x)
+    ...     clustream_welford = clustream_welford.learn_one(x)
 
-    >>> clustream.predict_one({0: 1, 1: 1})
+    >>> clustream_welford.predict_one({0: 1, 1: 1})
+    2
+
+    >>> clustream_welford.predict_one({0: 4, 1: 3})
     1
 
-    >>> clustream.predict_one({0: 4, 1: 3})
+    >>> clustream_welford.predict_one({0:0, 1: -2})
     0
+
+    >>> clustream_welford.centers
+    {0: defaultdict(..., {0: 0.5650292428083986, 1: -1.23794686282069}), 1: defaultdict(..., {0: 2.9891816792150614, 1: 3.0240287705715025}), 2: defaultdict(..., {0: -0.40980933651284257, 1: 0.1567279863289572})}
 
     """
 
@@ -300,34 +308,26 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
 
         if x is not None and sample_weight is not None:
             # Initialize with sample x
-            self.n_samples = 1
-            self.linear_sum = defaultdict(float)
-            self.squared_sum = defaultdict(float)
-            for key in x.keys():
-                self.linear_sum[key] = x[key] * sample_weight
-                self.squared_sum[key] = x[key] * x[key] * sample_weight
-            self.linear_sum_timestamp = timestamp * sample_weight  # type: ignore
-            self.squared_sum_timestamp = (
-                timestamp * sample_weight * timestamp * sample_weight  # type: ignore
-            )
+            self.variance_data_points = {i: stats.Var(ddof=0).update(x[i], sample_weight) for i in x.keys()}
+            self.variance_timestamps = stats.Var(ddof=0).update(timestamp, sample_weight)
         elif micro_cluster is not None:
             # Initialize with micro-cluster
-            self.n_samples = micro_cluster.n_samples
-            self.linear_sum = micro_cluster.linear_sum.copy()
-            self.squared_sum = micro_cluster.squared_sum.copy()
-            self.linear_sum_timestamp = micro_cluster.linear_sum_timestamp
-            self.squared_sum_timestamp = micro_cluster.squared_sum_timestamp
+            self.variance_data_points = micro_cluster.variance_data_points.copy()
+            self.variance_timestamps = micro_cluster.variance_timestamps
 
     @property
     def center(self):
-        return {i: linear_sum_i / self.n_samples for i, linear_sum_i in self.linear_sum.items()}
+        return {i: variance_data_points_i.mean.get()
+                for i, variance_data_points_i in self.variance_data_points.items()}
+        # return {i: linear_sum_i / self.n_samples for i, linear_sum_i in self.linear_sum.items()}
 
     def is_empty(self):
-        return self.n_samples == 0
+        return self.variance_timestamps.n == 0.
+        # return self.n_samples == 0
 
     @property
     def radius(self):
-        if self.n_samples == 1:
+        if self.variance_timestamps.n == 1:
             return 0
         return self._deviation * self.micro_cluster_r_factor
 
@@ -341,51 +341,32 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
 
     @property
     def _variance_vector(self):
-        res = {}
-        for key in self.linear_sum.keys():
-            ls = self.linear_sum[key]
-            ss = self.squared_sum[key]
-            ls_div_n = ls / self.weight
-            ls_div_n_squared = ls_div_n * ls_div_n
-            ss_div_n = ss / self.weight
-            res[key] = ss_div_n - ls_div_n_squared
-
-            if res[key] <= 0.0:
-                if res[key] > -EPSILON:
-                    res[key] = MIN_VARIANCE
-        return res
+        return {i: variance_data_points_i.get() for i, variance_data_points_i in self.variance_data_points.items()}
 
     @property
     def weight(self):
-        return self.n_samples
+        return self.variance_timestamps.n
 
     def insert(self, x, sample_weight, timestamp):
-        self.n_samples += 1
-        self.linear_sum_timestamp += timestamp * sample_weight
-        self.squared_sum_timestamp += timestamp * sample_weight * timestamp * sample_weight
+        self.variance_timestamps += stats.Var().update(timestamp, sample_weight)
         for x_idx, x_val in x.items():
-            self.linear_sum[x_idx] += x_val * sample_weight
-            self.squared_sum[x_idx] += x_val * sample_weight * x_val * sample_weight
+            self.variance_data_points[x_idx] += stats.Var().update(x_val, sample_weight)
 
     @property
     def relevance_stamp(self):
-        if self.n_samples < 2 * self.max_micro_clusters:
+        if self.variance_timestamps.n < 2 * self.max_micro_clusters:
             return self._mu_time
         return self._mu_time + self._sigma_time * self._quantile(
-            float(self.max_micro_clusters) / (2 * self.n_samples)
+            float(self.max_micro_clusters) / (2 * self.variance_timestamps.n)
         )
 
     @property
     def _mu_time(self):
-        return self.linear_sum_timestamp / self.n_samples
+        return self.variance_timestamps.mean.get()
 
     @property
     def _sigma_time(self):
-        return math.sqrt(
-            self.squared_sum_timestamp / self.n_samples
-            - (self.linear_sum_timestamp / self.n_samples)
-            * (self.linear_sum_timestamp / self.n_samples)
-        )
+        return math.sqrt(self.variance_timestamps.get())
 
     def _quantile(self, z):
         assert 0 <= z <= 1
@@ -418,12 +399,7 @@ class CluStreamMicroCluster(metaclass=ABCMeta):
         return res
 
     def add(self, micro_cluster):
-        self.n_samples += micro_cluster.n_samples
-        self.linear_sum_timestamp += micro_cluster.linear_sum_timestamp
-        self.squared_sum_timestamp += micro_cluster.squared_sum_timestamp
+        self.variance_timestamps += micro_cluster.variance_timestamps
         utils.skmultiflow_utils.add_dict_values(
-            self.linear_sum, micro_cluster.linear_sum, inplace=True
-        )
-        utils.skmultiflow_utils.add_dict_values(
-            self.squared_sum, micro_cluster.squared_sum, inplace=True
+            self.variance_data_points, micro_cluster.variance_data_points, inplace=True
         )
