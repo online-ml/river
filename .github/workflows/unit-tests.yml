@@ -26,11 +26,8 @@ jobs:
           toolchain: nightly
           override: true
 
+      - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
-          rustup show
-
 
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
