@@ -112,7 +112,27 @@ class CluStream(base.Clusterer):
 
         self._timestamp = -1
         self._micro_clusters: typing.Dict[int, CluStreamMicroCluster] = {}
+        self._buffer: typing.Dict[int, CluStreamMicroCluster] = {}
         self._initialized = False
+
+    def _initialize(self, x, w):
+        # Create a micro-cluster with the new point:
+        if len(self._buffer) < self.max_micro_clusters:
+            self._buffer[len(self._buffer)] = CluStreamMicroCluster(
+                x=x,
+                w=w,
+                timestamp=self._timestamp,
+            )
+        else:
+            # The buffer is full. Use the micro-cluster centers to create the set of micro-clusters
+            for i in range(self.max_micro_clusters):
+                self._micro_clusters[i] = CluStreamMicroCluster(
+                    x=self._buffer[i].center,
+                    w=1.0,
+                    timestamp=self._timestamp
+                )
+            self._buffer.clear()
+            self.initialized = True
 
     def _maintain_micro_clusters(self, x, w):
         # Calculate the threshold to delete old micro-clusters
@@ -174,15 +194,7 @@ class CluStream(base.Clusterer):
         self._timestamp += 1
 
         if not self._initialized:
-            self._micro_clusters[len(self._micro_clusters)] = CluStreamMicroCluster(
-                x=x,
-                w=w,
-                timestamp=self._timestamp,
-            )
-
-            if len(self._micro_clusters) == self.max_micro_clusters:
-                self._initialized = True
-
+            self._initialize(x=x, w=w)
             return self
 
         # Determine the closest micro-cluster with respect to the new point instance
