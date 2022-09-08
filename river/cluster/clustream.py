@@ -170,10 +170,9 @@ class CluStream(base.Clusterer):
         return utils.math.minkowski_distance(point_a, point_b, 2)
 
     def learn_one(self, x, w=1.0):
-        # TODO not sure we should check that. It is up to the user to filter
-        if w == 0 or w is None:
-            return
-
+        # TODO: removed.
+        # I agree that we should let this be self-filtered by the user.
+        
         self._timestamp += 1
 
         if not self._initialized:
