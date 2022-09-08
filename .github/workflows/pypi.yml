@@ -4,8 +4,8 @@ on:
   push:
     push:
       branches: ["master" ,"rust_stats"]
-    # tags:
-    #   - "*"
+    tags:
+      - "*"
 # TODO: Set branch name
 jobs:
   build_wheels:
