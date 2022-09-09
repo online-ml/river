@@ -1,6 +1,4 @@
-import math
-
-from river import stats, utils
+from river import stats
 from river.stats import _rust_stats
 
 
