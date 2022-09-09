@@ -124,9 +124,9 @@ class CluStream(base.Clusterer):
         self.kwargs = kwargs
 
         self.centers: typing.Dict[int, typing.DefaultDict] = {}
+        self.micro_clusters: typing.Dict[int, CluStreamMicroCluster] = {}
 
         self._timestamp = -1
-        self._micro_clusters: typing.Dict[int, CluStreamMicroCluster] = {}
         self._initialized = False
 
     def _maintain_micro_clusters(self, x, w):
@@ -135,13 +135,13 @@ class CluStream(base.Clusterer):
 
         # Delete old micro-cluster if its relevance stamp is smaller than the threshold
         del_id = None
-        for i, mc in self._micro_clusters.items():
+        for i, mc in self.micro_clusters.items():
             if mc.relevance_stamp(self.max_micro_clusters) < threshold:
                 del_id = i
                 break
 
         if del_id is not None:
-            self._micro_clusters[del_id] = CluStreamMicroCluster(
+            self.micro_clusters[del_id] = CluStreamMicroCluster(
                 x=x,
                 w=w,
                 timestamp=self._timestamp,
@@ -152,8 +152,8 @@ class CluStream(base.Clusterer):
         closest_a = 0
         closest_b = 0
         min_distance = math.inf
-        for i, mc_a in self._micro_clusters.items():
-            for j, mc_b in self._micro_clusters.items():
+        for i, mc_a in self.micro_clusters.items():
+            for j, mc_b in self.micro_clusters.items():
                 if i <= j:
                     continue
                 dist = self._distance(mc_a.center, mc_b.center)
@@ -162,8 +162,8 @@ class CluStream(base.Clusterer):
                     closest_a = i
                     closest_b = j
 
-        self._micro_clusters[closest_a] += self._micro_clusters[closest_b]
-        self._micro_clusters[closest_b] = CluStreamMicroCluster(
+        self.micro_clusters[closest_a] += self.micro_clusters[closest_b]
+        self.micro_clusters[closest_b] = CluStreamMicroCluster(
             x=x,
             w=w,
             timestamp=self._timestamp,
@@ -173,7 +173,7 @@ class CluStream(base.Clusterer):
         closest_dist = math.inf
         closest_idx = -1
 
-        for mc_idx, mc in self._micro_clusters.items():
+        for mc_idx, mc in self.micro_clusters.items():
             distance = self._distance(mc.center, x)
             if distance < closest_dist:
                 closest_dist = distance
@@ -189,7 +189,7 @@ class CluStream(base.Clusterer):
         self._timestamp += 1
 
         if not self._initialized:
-            self._micro_clusters[len(self._micro_clusters)] = CluStreamMicroCluster(
+            self.micro_clusters[len(self.micro_clusters)] = CluStreamMicroCluster(
                 x=x,
                 w=w,
                 # When initialized, all micro clusters generated previously will have the timestamp reset to the current
@@ -198,20 +198,20 @@ class CluStream(base.Clusterer):
                 timestamp=self.max_micro_clusters - 1,
             )
 
-            if len(self._micro_clusters) == self.max_micro_clusters:
+            if len(self.micro_clusters) == self.max_micro_clusters:
                 self._initialized = True
 
             return self
 
         # Determine the closest micro-cluster with respect to the new point instance
         closest_id, closest_dist = self._get_closest_mc(x)
-        closest_mc = self._micro_clusters[closest_id]
+        closest_mc = self.micro_clusters[closest_id]
 
         # Check whether the new instance fits into the closest micro-cluster
         if closest_mc.weight == 1:
             radius = math.inf
             center = closest_mc.center
-            for mc_id, mc in self._micro_clusters.items():
+            for mc_id, mc in self.micro_clusters.items():
                 if mc_id == closest_id:
                     continue
                 distance = self._distance(mc.center, center)
@@ -231,7 +231,7 @@ class CluStream(base.Clusterer):
         return self
 
     def predict_one(self, x):
-        mc_centers = {i: mc.center for i, mc in self._micro_clusters.items()}
+        mc_centers = {i: mc.center for i, mc in self.micro_clusters.items()}
 
         kmeans = cluster.KMeans(n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs)
         for center in mc_centers.values():
