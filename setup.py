@@ -6,8 +6,8 @@ import platform
 import subprocess
 import sys
 
-import setuptools
-from setuptools_rust import Binding, RustExtension
+import setuptools  # type: ignore
+from setuptools_rust import Binding, RustExtension  # type: ignore
 
 
 try:
@@ -20,7 +20,7 @@ try:
     from Cython.Build import cythonize
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "Cython"])
-    from Cython.Build import cythonize
+    from Cython.Build import cythonize  # type: ignore
 
 NAME = "river"
 DESCRIPTION = "Online machine learning in Python"
