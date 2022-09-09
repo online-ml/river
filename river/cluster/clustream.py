@@ -1,5 +1,6 @@
 import math
 import typing
+from collections import defaultdict
 
 from river import base, cluster, stats, utils
 
@@ -251,7 +252,7 @@ class CluStreamMicroCluster(base.Base):
 
     def __init__(
         self,
-        x: dict = None,
+        x: dict = defaultdict(float),
         w: float = None,
         timestamp: int = None,
     ):
