@@ -78,11 +78,14 @@ class CluStream(base.Clusterer):
     ...     [1, 0],
     ...     [-4, 2],
     ...     [-4, 4],
-    ...     [-4, 0]
+    ...     [-4, 0],
+    ...     [5, 0],
+    ...     [5, 2],
+    ...     [5, 4]
     ... ]
 
     >>> clustream = cluster.CluStream(
-    ...     n_macro_clusters=2,
+    ...     n_macro_clusters=3,
     ...     max_micro_clusters=5,
     ...     seed=0,
     ...     halflife=0.4
@@ -92,10 +95,13 @@ class CluStream(base.Clusterer):
     ...     clustream = clustream.learn_one(x)
 
     >>> clustream.predict_one({0: 1, 1: 1})
-    0
+    1
 
     >>> clustream.predict_one({0: -4, 1: 3})
-    1
+    2
+
+    >>> clustream.predict_one({0: 4, 1: 3.5})
+    0
 
     """
 
