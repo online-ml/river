@@ -4,7 +4,7 @@ format:
 	pre-commit run --all-files
 
 cython:
-	python setup.py build_ext --inplace --force
+	python setup.py build_ext  --inplace --force
 
 execute-notebooks:
 	jupyter nbconvert --execute --to notebook --inplace docs/*/*.ipynb --ExecutePreprocessor.timeout=-1
@@ -25,9 +25,18 @@ livedoc: doc
 rebase:
 	git fetch && git rebase origin/main
 
-reset_rust:
-	rm river/_rust_stats.cpython*
+clean_rust_setup:
+	rm river/stats/_rust_stats.cpython*
 	rm -rf target
 	rm -rf river.egg-info
 	rm Cargo.lock
-	python ./setup.py develop 
+	rm -rf build
+
+rust_develop:
+	python ./setup.py develop
+
+rust_release:
+	python setup.py build_rust --inplace --release
+
+build_all:
+	python setup.py build_rust --inplace --release build_ext  --inplace --force
