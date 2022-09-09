@@ -177,7 +177,10 @@ class CluStream(base.Clusterer):
             self._micro_clusters[len(self._micro_clusters)] = CluStreamMicroCluster(
                 x=x,
                 w=w,
-                timestamp=self._timestamp,
+                # When initialized, all micro clusters generated previously will have the timestamp reset to the current
+                # time stamp at the time of initialization (i.e. self.max_micro_cluster - 1). Thus, the timestamp is set
+                # as follows.
+                timestamp=self.max_micro_clusters - 1,
             )
 
             if len(self._micro_clusters) == self.max_micro_clusters:
