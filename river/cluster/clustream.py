@@ -25,6 +25,12 @@ class CluStream(base.Clusterer):
           This is done in two ways, delete an old micro-cluster or merge the
           two micro-clusters closest to each other.
 
+    This implementation is an improved version from the original algorithm. Instead
+    of calculating the traditional cluster feature vector of the number of observations,
+    linear sum and sum of squares of data points and time stamps, this implementation adopts
+    the use of Welford's algorithm [^2] to calculate the incremental variance, facilitated
+    through `stats.Var()` available within `River`.
+
     Parameters
     ----------
     n_macro_clusters
@@ -52,6 +58,9 @@ class CluStream(base.Clusterer):
     ----------
     [^1]: Aggarwal, C.C., Philip, S.Y., Han, J. and Wang, J., 2003, A framework for clustering evolving data
     streams. In Proceedings 2003 VLDB conference (pp. 81-92). Morgan Kaufmann.
+    [^2]: Chan, T.F., Golub, G.H. and LeVeque, R.J., 1982. Updating formulae and a pairwise algorithm for
+    computing sample variances. In COMPSTAT 1982 5th Symposium held at Toulouse 1982 (pp. 30-41).
+    Physica, Heidelberg. https://doi.org/10.1007/978-3-642-51461-6_3.
 
     Examples
     --------
