@@ -2,9 +2,8 @@ name: unit-tests
 
 on:
   push:
-    # branches:
-      # - main
-    branches: ["master" ,"rust_stats"]
+    branches:
+      - main
 
 jobs:
   test:
