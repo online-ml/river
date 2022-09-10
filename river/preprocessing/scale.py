@@ -550,6 +550,7 @@ class AdaptiveStandardScaler(base.Transformer):
 
     @property
     def _mutable_attributes(self):
+        # FIXME: Now that EWMean and EWVAR are coded in Rust changing the alpha value on the fly is less trivial.
         return {"alpha"}
 
 
