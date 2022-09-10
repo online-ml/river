@@ -32,7 +32,10 @@ $ conda create -n river -y python=3.9
 $ conda activate river
 ```
 
+You need a `Rust` compiler you can install it by following this [link](https://www.rust-lang.org/fr/tools/install)
+
 Then, navigate to your cloned fork and install `river` and the required dependencies in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
+
 
 ```sh
 $ pip install -e ".[dev]"
@@ -102,6 +105,38 @@ All classes and function are automatically picked up and added to the documentat
 
 ```sh
 $ make cython
+```
+
+## Building Rust extensions
+
+Debug settings:
+
+```sh
+$ make rust_develop
+```
+
+Release settings:
+
+```sh
+$ make rust_release
+```
+
+After building the project by modifying the rust part of the codebase (changing the project architecture, renaming it, etc.), it happens that by importing `river,` the python process is killed. 
+If this happens, we invite you to remove the following things and start a new build: 
+```sh
+# remove all .so output from rust ie river/stats/_rust_stats.cpython*
+$ rm -rf target
+$ rm -rf river.egg-info
+$ rm Cargo.lock
+$ rm -rf build
+
+```
+
+
+## Build Cython and Rust extensions
+
+```sh
+$ make build_all
 ```
 
 ## Testing
