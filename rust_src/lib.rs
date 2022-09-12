@@ -1,11 +1,11 @@
 use bincode::{deserialize, serialize};
-use online_statistics::{
-    ewmean::EWMean, ewvariance::EWVariance, iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis,
-    ptp::PeakToPeak, quantile::Quantile, quantile::RollingQuantile, skew::Skew, stats::Univariate,
-};
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use serde::{Deserialize, Serialize};
+use watermill::{
+    ewmean::EWMean, ewvariance::EWVariance, iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis,
+    ptp::PeakToPeak, quantile::Quantile, quantile::RollingQuantile, skew::Skew, stats::Univariate,
+};
 
 #[derive(Serialize, Deserialize)]
 #[pyclass(module = "river.stats._rust_stats")]
