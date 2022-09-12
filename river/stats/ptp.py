@@ -1,4 +1,5 @@
 from river import stats
+from river.stats import _rust_stats
 
 
 class PeakToPeak(stats.base.Univariate):
@@ -6,10 +7,6 @@ class PeakToPeak(stats.base.Univariate):
 
     Attributes
     ----------
-    max : stats.Max
-        The running max.
-    min : stats.Min
-        The running min.
     p2p : float
         The running peak to peak.
 
@@ -22,30 +19,33 @@ class PeakToPeak(stats.base.Univariate):
     >>> ptp = stats.PeakToPeak()
     >>> for x in X:
     ...     print(ptp.update(x).get())
-    0
-    5
-    7
-    7
-    7
-    8
+    0.
+    5.
+    7.
+    7.
+    7.
+    8.
 
     """
 
     def __init__(self):
-        self.max = stats.Max()
-        self.min = stats.Min()
+        self._ptp = _rust_stats.RsPeakToPeak()
+        self.is_updated = False
 
     @property
     def name(self):
         return "ptp"
 
     def update(self, x):
-        self.max.update(x)
-        self.min.update(x)
+        self._ptp.update(x)
+        if not self.is_updated:
+            self.is_updated = True
         return self
 
     def get(self):
-        return self.max.get() - self.min.get()
+        if not self.is_updated:
+            return 0.0
+        return self._ptp.get()
 
 
 class RollingPeakToPeak(stats.base.RollingUnivariate):
