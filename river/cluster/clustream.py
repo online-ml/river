@@ -130,6 +130,9 @@ class CluStream(base.Clusterer):
         self._timestamp = -1
         self._initialized = False
 
+        self._kmeans_mc = None
+        self._mc_centers: typing.Dict[int, typing.DefaultDict] = {}
+
     def _maintain_micro_clusters(self, x, w):
         # Calculate the threshold to delete old micro-clusters
         threshold = self._timestamp - self.time_window
@@ -231,18 +234,22 @@ class CluStream(base.Clusterer):
 
         return self
 
-    def predict_one(self, x):
-        mc_centers = {i: mc.center for i, mc in self.micro_clusters.items()}
+    def predict_one(self, x, re_cluster=True):
 
-        kmeans = cluster.KMeans(n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs)
-        for center in mc_centers.values():
-            kmeans = kmeans.learn_one(center)
+        # Initiate a new incremental KMeans for micro-cluster centers in case required or
+        # the model is not currently available
+        if re_cluster is True or self._kmeans_mc is None:
+            self._mc_centers = {i: mc.center for i, mc in self.micro_clusters.items()}
 
-        self.centers = kmeans.centers
+            self._kmeans_mc = cluster.KMeans(n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs)
+            for center in self._mc_centers.values():
+                self._kmeans_mc = self._kmeans_mc.learn_one(center)
+
+            self.centers = self._kmeans_mc.centers
 
         index, _ = self._get_closest_mc(x)
         try:
-            return kmeans.predict_one(mc_centers[index])
+            return self._kmeans_mc.predict_one(self._mc_centers[index])
         except KeyError:
             return 0
 
