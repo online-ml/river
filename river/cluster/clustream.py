@@ -32,11 +32,6 @@ class CluStream(base.Clusterer):
     the use of Welford's algorithm [^2] to calculate the incremental variance, facilitated
     through `stats.Var()` available within `River`.
 
-    Since `River` does not support an actual "off-line" phase of the clustering algorithm (as data points
-    are assumed to arrive continuously, one at a time), we introduce a new parameter `time_gap`. After each
-    `time_gap`, an incremental K-Means clustering algorithm will be initialized and applied on currently available
-    micro-clusters to form the final solution, i.e. macro-clusters.
-
     Parameters
     ----------
     n_macro_clusters
@@ -50,9 +45,6 @@ class CluStream(base.Clusterer):
     time_window
         If the current time is `T` and the time window is `h`, we only consider
         the data that arrived within the period `(T-h,T)`.
-    time_gap
-        After each `time_gap`, the incremental K-Means will be applied on the current set of micro-clusters
-        to form the final macro-clusters (final solution).
     seed
        Random seed used for generating initial centroid positions.
     kwargs
@@ -96,7 +88,6 @@ class CluStream(base.Clusterer):
     >>> clustream = cluster.CluStream(
     ...     n_macro_clusters=3,
     ...     max_micro_clusters=5,
-    ...     time_gap=3,
     ...     seed=0,
     ...     halflife=0.4
     ... )
@@ -121,7 +112,6 @@ class CluStream(base.Clusterer):
         max_micro_clusters: int = 100,
         micro_cluster_r_factor: int = 2,
         time_window: int = 1000,
-        time_gap: int = 100,
         seed: int = None,
         **kwargs,
     ):
@@ -130,7 +120,6 @@ class CluStream(base.Clusterer):
         self.max_micro_clusters = max_micro_clusters
         self.micro_cluster_r_factor = micro_cluster_r_factor
         self.time_window = time_window
-        self.time_gap = time_gap
         self.seed = seed
 
         self.kwargs = kwargs
@@ -140,9 +129,6 @@ class CluStream(base.Clusterer):
 
         self._timestamp = -1
         self._initialized = False
-
-        self._mc_centers: typing.Dict[int, typing.DefaultDict] = {}
-        self._kmeans_mc = None
 
     def _maintain_micro_clusters(self, x, w):
         # Calculate the threshold to delete old micro-clusters
@@ -243,27 +229,20 @@ class CluStream(base.Clusterer):
         # Otherwise, closest micro-clusters are merged with each other.
         self._maintain_micro_clusters(x=x, w=w)
 
-        # Apply incremental K-Means on micro-clusters after each time_gap
-        if self._timestamp % self.time_gap == self.time_gap - 1:
-            # Micro-cluster centers will only be saved when the calculation of macro-cluster centers
-            # is required, in order not to take up memory and time unnecessarily
-            self._mc_centers = {i: mc.center for i, mc in self.micro_clusters.items()}
-
-            self._kmeans_mc = cluster.KMeans(
-                n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs
-            )
-            for center in self._mc_centers.values():
-                self._kmeans_mc = self._kmeans_mc.learn_one(center)
-
-            self.centers = self._kmeans_mc.centers
-
         return self
 
     def predict_one(self, x):
+        mc_centers = {i: mc.center for i, mc in self.micro_clusters.items()}
+
+        kmeans = cluster.KMeans(n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs)
+        for center in mc_centers.values():
+            kmeans = kmeans.learn_one(center)
+
+        self.centers = kmeans.centers
 
         index, _ = self._get_closest_mc(x)
         try:
-            return self._kmeans_mc.predict_one(self._mc_centers[index])
+            return kmeans.predict_one(mc_centers[index])
         except KeyError:
             return 0
 
