@@ -241,7 +241,9 @@ class CluStream(base.Clusterer):
         if re_cluster is True or self._kmeans_mc is None:
             self._mc_centers = {i: mc.center for i, mc in self.micro_clusters.items()}
 
-            self._kmeans_mc = cluster.KMeans(n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs)
+            self._kmeans_mc = cluster.KMeans(
+                n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs
+            )
             for center in self._mc_centers.values():
                 self._kmeans_mc = self._kmeans_mc.learn_one(center)
 
