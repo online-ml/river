@@ -10128,7 +10128,7 @@
 <p>Training with a new point <code>p</code> is performed in two main tasks: </p>
 <ul>
 <li>
-<p>Determinate closest micro-cluster to <code>p</code> </p>
+<p>Determinate the closest micro-cluster to <code>p</code>. </p>
 </li>
 <li>
 <p>Check whether <code>p</code> fits (memory) into the closest micro-cluster: </p>
@@ -10137,20 +10137,18 @@
 <p>if <code>p</code> fits, put into micro-cluster </p>
 </li>
 <li>
-<p>if <code>p</code> does not fit, free some space to insert a new micro-cluster.       This is done in two ways, delete an old micro-cluster or merge the       two micro-clusters closest to each other.</p>
+<p>if <code>p</code> does not fit, free some space to insert a new micro-cluster.       This is done in two ways, delete an old micro-cluster or merge the       two micro-clusters closest to each other. </p>
 </li>
 </ul>
 </li>
 </ul>
+<p>This implementation is an improved version from the original algorithm. Instead of calculating the traditional cluster feature vector of the number of observations, linear sum and sum of squares of data points and time stamps, this implementation adopts the use of Welford's algorithm <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> to calculate the incremental variance, facilitated through <code>stats.Var()</code> available within <code>River</code>. </p>
+<p>Since River does not support an actual "off-line" phase of the clustering algorithm (as data points are assumed to arrive continuously, one at a time), a <code>time_gap</code> parameter is introduced. After each <code>time_gap</code>, an incremental K-Means clustering algorithm will be initialized and applied on currently available micro-clusters to form the final solution, i.e. macro-clusters.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
-<p>Random seed used for generating initial centroid positions.</p>
-</li>
-<li>
-<p><strong>time_window</strong> (<em>int</em>) – defaults to <code>1000</code></p>
-<p>If the current time is <code>T</code> and the time window is <code>h</code>, we only consider the data that arrived within the period <code>(T-h,T)</code>.</p>
+<p><strong>n_macro_clusters</strong> (<em>int</em>) – defaults to <code>5</code></p>
+<p>The number of clusters (k) for the k-means algorithm.</p>
 </li>
 <li>
 <p><strong>max_micro_clusters</strong> (<em>int</em>) – defaults to <code>100</code></p>
@@ -10161,8 +10159,16 @@
 <p>Multiplier for the micro-cluster radius. When deciding to add a new data point to a micro-cluster, the maximum boundary is defined as a factor of the <code>micro_cluster_r_factor</code> of the RMS deviation of the data points in the micro-cluster from the centroid.</p>
 </li>
 <li>
-<p><strong>n_macro_clusters</strong> (<em>int</em>) – defaults to <code>5</code></p>
-<p>The number of clusters (k) for the k-means algorithm.</p>
+<p><strong>time_window</strong> (<em>int</em>) – defaults to <code>1000</code></p>
+<p>If the current time is <code>T</code> and the time window is <code>h</code>, we only consider the data that arrived within the period <code>(T-h,T)</code>.</p>
+</li>
+<li>
+<p><strong>time_gap</strong> (<em>int</em>) – defaults to <code>100</code></p>
+<p>An incremental k-means is applied on the current set of micro-clusters after each <code>time_gap</code> to form the final macro-cluster solution.</p>
+</li>
+<li>
+<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p>Random seed used for generating initial centroid positions.</p>
 </li>
 <li>
 <p><strong>kwargs</strong></p>
@@ -10177,11 +10183,9 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p>In the following example, <code>max_micro_clusters</code> and <code>time_window</code> are set
-relatively low due to the limited number of training points.
-Moreover, all points are learnt before any predictions are made.
-The <code>halflife</code> is set at 0.4, to show that you can pass <code>cluster.KMeans</code>
-parameters via keyword arguments.</p>
+<p>In the following example, <code>max_micro_clusters</code> is set relatively low due to the
+limited number of training points. Moreover, all points are learnt before any predictions are made.
+The <code>halflife</code> is set at 0.4, to show that you can pass <code>cluster.KMeans</code> parameters via keyword arguments.</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">cluster</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stream</span>
 
@@ -10189,24 +10193,32 @@ parameters via keyword arguments.</p>
 <span class="o">...</span>     <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
 <span class="o">...</span>     <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
 <span class="o">...</span>     <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-<span class="o">...</span>     <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
-<span class="o">...</span>     <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
-<span class="o">...</span>     <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="o">...</span>     <span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="o">...</span>     <span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+<span class="o">...</span>     <span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="o">...</span>     <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="o">...</span>     <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="o">...</span>     <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
 <span class="o">...</span> <span class="p">]</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">clustream</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">CluStream</span><span class="p">(</span><span class="n">time_window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-<span class="o">...</span>                               <span class="n">max_micro_clusters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="o">...</span>                               <span class="n">n_macro_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="o">...</span>                               <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-<span class="o">...</span>                               <span class="n">halflife</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">clustream</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">CluStream</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">n_macro_clusters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">max_micro_clusters</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">time_gap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">halflife</span><span class="o">=</span><span class="mf">0.4</span>
+<span class="o">...</span> <span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X</span><span class="p">)):</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
 <span class="o">...</span>     <span class="n">clustream</span> <span class="o">=</span> <span class="n">clustream</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">clustream</span><span class="o">.</span><span class="n">predict_one</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
 <span class="mi">1</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">clustream</span><span class="o">.</span><span class="n">predict_one</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">clustream</span><span class="o">.</span><span class="n">predict_one</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="mi">2</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">clustream</span><span class="o">.</span><span class="n">predict_one</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">})</span>
 <span class="mi">0</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
@@ -10216,7 +10228,7 @@ parameters via keyword arguments.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>dict</em>)    </li>
-<li><strong>sample_weight</strong>     – defaults to <code>None</code>    </li>
+<li><strong>w</strong>     – defaults to <code>1.0</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Clusterer</em>:     self</p>
@@ -10236,9 +10248,13 @@ parameters via keyword arguments.</p>
 <hr />
 <ol>
 <li id="fn:1">
-<p>Aggarwal, C.C., Philip, S.Y., Han, J. and Wang, J., 2003,
-  A framework for clustering evolving data streams.
-  In Proceedings 2003 VLDB conference (pp. 81-92). Morgan Kaufmann.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Aggarwal, C.C., Philip, S.Y., Han, J. and Wang, J., 2003, A framework for clustering evolving data
+streams. In Proceedings 2003 VLDB conference (pp. 81-92). Morgan Kaufmann.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Chan, T.F., Golub, G.H. and LeVeque, R.J., 1982. Updating formulae and a pairwise algorithm for
+computing sample variances. In COMPSTAT 1982 5th Symposium held at Toulouse 1982 (pp. 30-41).
+Physica, Heidelberg. https://doi.org/10.1007/978-3-642-51461-6_3.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
