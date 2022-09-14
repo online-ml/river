@@ -1,8 +1,8 @@
-import re
-import socket
 import dataclasses
 import datetime as dt
 import enum
+import re
+import socket
 from typing import Iterator, List, Optional
 
 SERVER = "irc.chat.twitch.tv"
