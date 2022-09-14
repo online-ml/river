@@ -1,8 +1,8 @@
+import dataclasses
+import datetime as dt
+import enum
 import re
 import socket
-from dataclasses import asdict, dataclass
-from datetime import datetime
-from enum import Enum, auto
 from typing import Iterator, List, Optional
 
 SERVER = "irc.chat.twitch.tv"
@@ -14,16 +14,16 @@ CHAT_ITEM_PATTERN = r":(.+)\!.*@.*\.tmi\.twitch\.tv PRIVMSG #([a-zA-Z0-9_]+) :(.
 PING_PATTERN = r"\bPING :tmi\.twitch\.tv\b"
 
 
-class IrcMessage(Enum):
-    PASS = auto()
-    NICK = auto()
-    JOIN = auto()
-    PONG = auto()
+class IrcMessage(enum.Enum):
+    PASS = enum.auto()
+    NICK = enum.auto()
+    JOIN = enum.auto()
+    PONG = enum.auto()
 
 
-@dataclass
+@dataclasses.dataclass
 class ChatMessageItem:
-    dt: datetime
+    dt: dt.datetime
     channel: str
     username: str
     msg: str
@@ -128,7 +128,7 @@ class TwitchChatStream:
     def _is_ping(self, resp: str) -> bool:
         return bool(self.ping_pattern.search(resp))
 
-    def _extract_chat_messages(self, resp: str, dt: datetime) -> Iterator[ChatMessageItem]:
+    def _extract_chat_messages(self, resp: str, dt: dt.datetime) -> Iterator[ChatMessageItem]:
         for m in self.chat_item_pattern.finditer(resp):
             if not m or not m.groups():
                 continue
@@ -142,22 +142,18 @@ class TwitchChatStream:
                 if not data:
                     continue
                 resp = data.decode(ENCODING)
-                dt = datetime.now()
+                now = dt.datetime.now()
             except socket.timeout as e:
-                raise TimeoutError(f"Twitch did not respond in {self.timeout} s") from e
+                raise TimeoutError(f"Twitch did not respond in {self.timeout:,d} seconds") from e
             except UnicodeDecodeError:
                 continue
 
             if self._is_ping(resp):
                 self._send(sock, IrcMessage.PONG, ":tmi.twitch.tv")
 
-            yield from self._extract_chat_messages(resp, dt)
-
-    def _postproc(self, item: ChatMessageItem) -> dict:
-        res = asdict(item)
-        return res
+            yield from self._extract_chat_messages(resp, now)
 
     def __iter__(self) -> Iterator[dict]:
         with socket.socket() as sock:
             self._setup_connection(sock)
-            yield from map(self._postproc, self._gen_items(sock))
+            yield from map(dataclasses.asdict, self._gen_items(sock))
