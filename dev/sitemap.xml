@@ -1691,6 +1691,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/stream/TwitchChatStream/</loc>
+         <lastmod>2022-09-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/stream/TwitterLiveStream/</loc>
          <lastmod>2022-09-14</lastmod>
          <changefreq>daily</changefreq>
