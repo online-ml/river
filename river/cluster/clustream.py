@@ -32,8 +32,8 @@ class CluStream(base.Clusterer):
     the use of Welford's algorithm [^2] to calculate the incremental variance, facilitated
     through `stats.Var()` available within `River`.
 
-    Since `River` does not support an actual "off-line" phase of the clustering algorithm (as data points
-    are assumed to arrive continuously, one at a time), we introduce a new parameter `time_gap`. After each
+    Since River does not support an actual "off-line" phase of the clustering algorithm (as data points
+    are assumed to arrive continuously, one at a time), a `time_gap` parameter is introduced. After each
     `time_gap`, an incremental K-Means clustering algorithm will be initialized and applied on currently available
     micro-clusters to form the final solution, i.e. macro-clusters.
 
@@ -51,8 +51,8 @@ class CluStream(base.Clusterer):
         If the current time is `T` and the time window is `h`, we only consider
         the data that arrived within the period `(T-h,T)`.
     time_gap
-        After each `time_gap`, the incremental K-Means will be applied on the current set of micro-clusters
-        to form the final macro-clusters (final solution).
+        An incremental k-means is applied on the current set of micro-clusters after each `time_gap` to form
+        the final macro-cluster solution.
     seed
        Random seed used for generating initial centroid positions.
     kwargs
