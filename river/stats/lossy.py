@@ -6,7 +6,7 @@ from river import stats
 
 
 class LossyCount(stats.base.Univariate):
-    """Lossy Counting with Forgetting factor.
+    """Lossy Counting with Forgetting factor[^1].
 
     Keep track of the frequent itemsets in a data stream and apply a forgetting factor to
     discard previous frequent items that do not often appear anymore.
@@ -67,7 +67,8 @@ class LossyCount(stats.base.Univariate):
 
     References
     ----------
-
+    [^1]: Veloso, B., Tabassum, S., Martins, C., Espanha, R., Azevedo, R., & Gama, J. (2020).
+    Interconnect bypass fraud detection: a case study. Annals of Telecommunications, 75(9), 583-596.
 
     """
 
