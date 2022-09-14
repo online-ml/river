@@ -11,6 +11,7 @@ from .iter_libsvm import iter_libsvm
 from .qa import simulate_qa
 from .shuffling import shuffle
 from .tweet_stream import TwitterLiveStream
+from .twitch_chat_stream import TwitchChatStream
 
 __all__ = [
     "Cache",
@@ -21,6 +22,7 @@ __all__ = [
     "simulate_qa",
     "shuffle",
     "TwitterLiveStream",
+    "TwitchChatStream",
 ]
 
 try:
