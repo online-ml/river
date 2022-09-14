@@ -161,6 +161,8 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     def __getitem__(self, key):
         """Just for convenience."""
+        if isinstance(key, int):
+            return self.transformers[list(self.transformers.keys())[key]]
         return self.transformers[key]
 
     def __len__(self):
