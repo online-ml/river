@@ -10160,7 +10160,7 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>q</strong> – defaults to <code>0.5</code></p>
+<p><strong>q</strong> (<em>float</em>) – defaults to <code>0.5</code></p>
 <p>Determines which quantile to compute, must be comprised between 0 and 1.</p>
 </li>
 </ul>
@@ -10179,18 +10179,18 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">median</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
 <span class="o">...</span>    <span class="n">_</span> <span class="o">=</span> <span class="n">median</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The estimated value of the 50th (median) quantile is </span><span class="si">{</span><span class="n">median</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="n">The</span> <span class="n">estimated</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="mi">50</span><span class="n">th</span> <span class="p">(</span><span class="n">median</span><span class="p">)</span> <span class="n">quantile</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.0275</span>
+
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The real value of the 50th (median) quantile is </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="n">The</span> <span class="n">real</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="mi">50</span><span class="n">th</span> <span class="p">(</span><span class="n">median</span><span class="p">)</span> <span class="n">quantile</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.0135</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">percentile_17</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.17</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
 <span class="o">...</span>    <span class="n">_</span> <span class="o">=</span> <span class="n">percentile_17</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The estimated value of the 17th quantile is </span><span class="si">{</span><span class="n">percentile_17</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="n">The</span> <span class="n">estimated</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="mi">17</span><span class="n">th</span> <span class="n">quantile</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.8652</span>
+
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The real value of the 17th quantile is </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">17</span><span class="p">)</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="n">The</span> <span class="n">real</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="mi">17</span><span class="n">th</span> <span class="n">quantile</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.9072</span>
 </code></pre></div>
