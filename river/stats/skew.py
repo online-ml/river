@@ -1,7 +1,8 @@
-from . import moments
+from river import stats
+from river.stats import _rust_stats
 
 
-class Skew(moments.CentralMoments):
+class Skew(stats.base.Univariate):
     """Running skew using Welford's algorithm.
 
     Parameters
@@ -22,7 +23,7 @@ class Skew(moments.CentralMoments):
     >>> skew = stats.Skew(bias=False)
     >>> for x in X:
     ...     print(skew.update(x).get())
-    0
+    0.0
     0.0
     -1.4802398132849872
     0.5127437186677888
@@ -48,7 +49,7 @@ class Skew(moments.CentralMoments):
     >>> skew = stats.Skew(bias=True)
     >>> for x in X:
     ...     print(skew.update(x).get())
-    0
+    0.0
     0.0
     -0.6043053732501439
     0.2960327239981376
@@ -80,23 +81,15 @@ class Skew(moments.CentralMoments):
     def __init__(self, bias=False):
         super().__init__()
         self.bias = bias
+        self._skew = _rust_stats.RsSkew(bias)
 
     @property
     def name(self):
         return "skew"
 
     def update(self, x):
-        self.count.update()
-        self._update_delta(x)
-        self._update_m1(x)
-        self._update_sum_delta()
-        self._update_m3()
-        self._update_m2()
+        self._skew.update(x)
         return self
 
     def get(self):
-        n = self.count.get()
-        skew = n**0.5 * self.M3 / self.M2**1.5 if self.M2 != 0 else 0
-        if not self.bias and n > 2:
-            return ((n - 1.0) * n) ** 0.5 / (n - 2.0) * skew
-        return skew
+        return self._skew.get()
