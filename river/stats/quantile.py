@@ -46,19 +46,19 @@ class Quantile(stats.base.Univariate):
         if not 0 < q < 1:
             raise ValueError("q is not comprised between 0 and 1")
         self._quantile = _rust_stats.RsQuantile(q)
-        self.is_updated = False
+        self._is_updated = False
         self.q = q  # Used by anomaly.QuantileFilter
 
     def update(self, x):
         self._quantile.update(x)
-        if not self.is_updated:
-            self.is_updated = True
+        if not self._is_updated:
+            self._is_updated = True
         return self
 
     def get(self):
         # HACK: Avoid this following error in `QuantileFilter`
         # panicked at 'index out of bounds: the len is 0 but the index is 0'
-        if not self.is_updated:
+        if not self._is_updated:
             return None
         return self._quantile.get()
 
@@ -67,7 +67,7 @@ class Quantile(stats.base.Univariate):
         # pyo3_runtime.PanicException: index out of bounds: the len is 0 but the index is 0
         # This error is caused by the `get()` use before the update in the super method.
         value = None
-        if self.is_updated:
+        if self._is_updated:
             value = self.get()
         fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
         return f"{self.__class__.__name__}: {fmt_value}"
@@ -124,12 +124,12 @@ class RollingQuantile(stats.base.RollingUnivariate):
             raise ValueError("q is not comprised between 0 and 1")
         self._rolling_quantile = _rust_stats.RsRollingQuantile(q, window_size)
         self.window_size_value = window_size
-        self.is_updated = False
+        self._is_updated = False
 
     def update(self, x):
         self._rolling_quantile.update(x)
-        if not self.is_updated:
-            self.is_updated = True
+        if not self._is_updated:
+            self._is_updated = True
         return self
 
     def get(self):
@@ -144,7 +144,7 @@ class RollingQuantile(stats.base.RollingUnivariate):
         # pyo3_runtime.PanicException: attempt to subtract with overflow
         # This error is caused by the `get()` use before the update in the super method.
         value = None
-        if self.is_updated:
+        if self._is_updated:
             value = self.get()
         fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
         return f"{self.__class__.__name__}: {fmt_value}"

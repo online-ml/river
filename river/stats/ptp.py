@@ -30,7 +30,7 @@ class PeakToPeak(stats.base.Univariate):
 
     def __init__(self):
         self._ptp = _rust_stats.RsPeakToPeak()
-        self.is_updated = False
+        self._is_updated = False
 
     @property
     def name(self):
@@ -38,12 +38,12 @@ class PeakToPeak(stats.base.Univariate):
 
     def update(self, x):
         self._ptp.update(x)
-        if not self.is_updated:
-            self.is_updated = True
+        if not self._is_updated:
+            self._is_updated = True
         return self
 
     def get(self):
-        if not self.is_updated:
+        if not self._is_updated:
             return 0.0
         return self._ptp.get()
 

@@ -47,7 +47,7 @@ class IQR(stats.base.Univariate):
         self.q_inf = q_inf
         self.q_sup = q_sup
         self._iqr = _rust_stats.RsIQR(self.q_inf, self.q_sup)
-        self.is_updated = False
+        self._is_updated = False
 
     @property
     def name(self):
@@ -55,8 +55,8 @@ class IQR(stats.base.Univariate):
 
     def update(self, x):
         self._iqr.update(x)
-        if not self.is_updated:
-            self.is_updated = True
+        if not self._is_updated:
+            self._is_updated = True
         return self
 
     def get(self):
@@ -67,7 +67,7 @@ class IQR(stats.base.Univariate):
         # pyo3_runtime.PanicException: index out of bounds: the len is 0 but the index is 0
         # This error is caused by the `get()` use before the update in the super method.
         value = None
-        if self.is_updated:
+        if self._is_updated:
             value = self.get()
         fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
         return f"{self.__class__.__name__}: {fmt_value}"
@@ -122,18 +122,18 @@ class RollingIQR(stats.base.RollingUnivariate):
         self.q_sup = q_sup
         self._rolling_iqr = _rust_stats.RsRollingIQR(q_inf, q_sup, window_size)
         self.window_size_value = window_size
-        self.is_updated = False
+        self._is_updated = False
 
     def update(self, x):
         self._rolling_iqr.update(x)
-        if not self.is_updated:
-            self.is_updated = True
+        if not self._is_updated:
+            self._is_updated = True
         return self
 
     def get(self):
         # HACK: Avoid crash if get is called before update
         # panicked at 'index out of bounds: the len is 0 but the index is 0'
-        if not self.is_updated:
+        if not self._is_updated:
             return None
         return self._rolling_iqr.get()
 
@@ -146,7 +146,7 @@ class RollingIQR(stats.base.RollingUnivariate):
         # pyo3_runtime.PanicException: attempt to subtract with overflow
         # This error is caused by the `get()` use before the update in the super method.
         value = None
-        if self.is_updated:
+        if self._is_updated:
             value = self.get()
         fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
         return f"{self.__class__.__name__}: {fmt_value}"
