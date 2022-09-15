@@ -17,6 +17,10 @@ __pycache__/
 *.so
 *.c
 
+# Rust compilation folder
+/target
+
+
 # Distribution / packaging
 .Python
 build/
@@ -114,3 +118,6 @@ package.json
 
 # ASV
 benchmarks/.asv
+
+# Cargo file
+Cargo.lock

@@ -1,7 +1,8 @@
-from . import moments
+from river import stats
+from river.stats import _rust_stats
 
 
-class Kurtosis(moments.CentralMoments):
+class Kurtosis(stats.base.Univariate):
     """Running kurtosis using Welford's algorithm.
 
     Parameters
@@ -22,7 +23,7 @@ class Kurtosis(moments.CentralMoments):
     >>> kurtosis = stats.Kurtosis(bias=False)
     >>> for x in X:
     ...     print(kurtosis.update(x).get())
-    -3
+    -3.0
     -2.0
     -1.5
     1.4130027920707047
@@ -48,7 +49,7 @@ class Kurtosis(moments.CentralMoments):
     >>> kurtosis = stats.Kurtosis(bias=True)
     >>> for x in X:
     ...     print(kurtosis.update(x).get())
-    -3
+    -3.0
     -2.0
     -1.5
     -1.011599627723906
@@ -80,20 +81,11 @@ class Kurtosis(moments.CentralMoments):
     def __init__(self, bias=False):
         super().__init__()
         self.bias = bias
+        self._kurtosis = _rust_stats.RsKurtosis(bias)
 
     def update(self, x):
-        self.count.update()
-        self._update_delta(x)
-        self._update_m1(x)
-        self._update_sum_delta()
-        self._update_m4()
-        self._update_m3()
-        self._update_m2()
+        self._kurtosis.update(x)
         return self
 
     def get(self):
-        n = self.count.get()
-        kurtosis = n * self.M4 / self.M2**2 if self.M2 != 0 else 0
-        if not self.bias and n > 3:
-            return 1 / (n - 2) / (n - 3) * ((n**2 - 1) * kurtosis - 3 * (n - 1) ** 2)
-        return kurtosis - 3
+        return self._kurtosis.get()

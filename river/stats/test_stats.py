@@ -50,6 +50,21 @@ def test_pickling(stat):
 
 
 @pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
+def test_pickling_value(stat):
+
+    for i in range(10):
+        if isinstance(stat, stats.base.Bivariate):
+            stat.update(i, i)
+        elif isinstance(stat, stats.NUnique):  # takes string in input
+            stat.update(str(i))
+        else:
+            stat.update(i)
+
+    assert stat.get() == pickle.loads(pickle.dumps(stat)).get()
+    assert stat.get() == copy.deepcopy(stat).get()
+
+
+@pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
 def test_repr_with_no_updates(stat):
     assert isinstance(repr(stat), str)
     assert isinstance(str(stat), str)

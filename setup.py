@@ -6,7 +6,8 @@ import platform
 import subprocess
 import sys
 
-import setuptools
+import setuptools  # type: ignore
+from setuptools_rust import Binding, RustExtension  # type: ignore
 
 
 try:
@@ -19,7 +20,7 @@ try:
     from Cython.Build import cythonize
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "Cython"])
-    from Cython.Build import cythonize
+    from Cython.Build import cythonize  # type: ignore
 
 NAME = "river"
 DESCRIPTION = "Online machine learning in Python"
@@ -119,4 +120,7 @@ setuptools.setup(
             "embedsignature": True,
         },
     ),
+    rust_extensions=[RustExtension("river.stats._rust_stats", binding=Binding.PyO3)],
+    # rust extensions are not zip safe, just like C-extensions.
+    zip_safe=False,
 )

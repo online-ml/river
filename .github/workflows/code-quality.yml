@@ -19,6 +19,9 @@ jobs:
         with:
           python-version: 3.8
 
+      - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Cache Python dependencies
         uses: actions/cache@v2
         with:
