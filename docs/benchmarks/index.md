@@ -10,19 +10,19 @@ hide:
 
 <pre>Python implementation: CPython
 Python version       : 3.9.12
-IPython version      : 8.3.0
+IPython version      : 7.30.1
 
-river       : 0.11.1
+river       : 0.12.1
 numpy       : 1.22.3
-scikit-learn: 1.1.1
+scikit-learn: 1.1.0
 pandas      : 1.4.1
-scipy       : 1.8.0
+scipy       : 1.9.0
 
-Compiler    : Clang 12.0.0 
+Compiler    : Clang 12.0.1 
 OS          : Darwin
-Release     : 21.4.0
-Machine     : arm64
-Processor   : arm
+Release     : 21.5.0
+Machine     : x86_64
+Processor   : i386
 CPU cores   : 8
 Architecture: 64bit
 </pre>
