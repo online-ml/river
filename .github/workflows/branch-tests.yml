@@ -41,7 +41,7 @@ jobs:
           key: ${{ runner.os }}
 
       - name: Download datasets
-        run: python -c "from river import datasets; datasets.CreditCard().download()"
+        run: python -c "from river import datasets; datasets.CreditCard().download(); datasets.TREC07().download()"
 
       - name: pytest
         run: pytest
