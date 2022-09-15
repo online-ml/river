@@ -10159,7 +10159,15 @@
 <p>Keep track of the most frequent item(set)s in a data stream and apply a forgetting factor to discard previous frequent items that do not often appear anymore. This is an approximation algorithm designed to work with a limited amount of memory rather than accounting for every possible solution (thus using an unbounded memory footprint). Any hashable type can be passed as input, hence tuples or frozensets can also be monitored. </p>
 <p>Considering a data stream where <code>n</code> elements were observed so far, the Lossy Count algorithm has the following properties: </p>
 <ul>
-<li>All item(set)s whose true frequency exceeds <code>support * n</code> are output. There are no false negatives; - No item(set) whose true frequency is less than <code>(support - epsilon) * n</code> is outputted; - Estimated frequencies are less than the true frequencies by at most <code>epsilon * n</code>.</li>
+<li>
+<p>All item(set)s whose true frequency exceeds <code>support * n</code> are output. There are no false negatives </p>
+</li>
+<li>
+<p>No item(set) whose true frequency is less than <code>(support - epsilon) * n</code> is outputted </p>
+</li>
+<li>
+<p>Estimated frequencies are less than the true frequencies by at most <code>epsilon * n</code></p>
+</li>
 </ul>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
