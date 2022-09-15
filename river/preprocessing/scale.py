@@ -549,6 +549,7 @@ class AdaptiveStandardScaler(base.Transformer):
             for i, m, s2 in ((i, self.means[i].get(), self.vars[i].get()) for i in x)
         }
 
+
 class TargetStandardScaler(compose.TargetTransformRegressor):
     """Applies standard scaling to the target.
 

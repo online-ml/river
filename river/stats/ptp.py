@@ -5,11 +5,6 @@ from river.stats import _rust_stats
 class PeakToPeak(stats.base.Univariate):
     """Running peak to peak (max - min).
 
-    Attributes
-    ----------
-    p2p : float
-        The running peak to peak.
-
     Examples
     --------
 
