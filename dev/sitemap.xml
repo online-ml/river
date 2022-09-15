@@ -1571,6 +1571,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/stats/LossyCount/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/stats/MAD/</loc>
          <lastmod>2022-09-15</lastmod>
          <changefreq>daily</changefreq>
