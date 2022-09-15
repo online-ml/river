@@ -3,10 +3,10 @@ name: pypi
 on:
   push:
     push:
-      branches: ["master", "rust_stats"]
+      branches: "master"
     tags:
       - "*"
-# TODO: Set branch name
+
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -101,16 +101,16 @@ jobs:
         with:
           path: dist/*.tar.gz
 
-  # upload_pypi:
-  #   needs: [build_wheels, build_sdist]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/download-artifact@v2
-  #       with:
-  #         name: artifact
-  #         path: dist
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
 
-  #     - uses: pypa/gh-action-pypi-publish@v1.4.2
-  #       with:
-  #         user: ${{ secrets.pypi_user }}
-  #         password: ${{ secrets.pypi_password }}
+      - uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: ${{ secrets.pypi_user }}
+          password: ${{ secrets.pypi_password }}
