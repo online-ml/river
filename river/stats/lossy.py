@@ -1,40 +1,41 @@
 import math
+import operator
 import typing
-from operator import itemgetter
 
 from river import stats
 
 
 class LossyCount(stats.base.Univariate):
-    """Lossy Counting with Forgetting factor[^1].
+    """Lossy Count with Forgetting factor[^1].
 
-    Keep track of the frequent itemsets in a data stream and apply a forgetting factor to
-    discard previous frequent items that do not often appear anymore.
+    Keep track of the most frequent item(set)s in a data stream and apply a forgetting factor to
+    discard previous frequent items that do not often appear anymore. This is an approximation
+    algorithm designed to work with a limited amount of memory rather than accounting for every possible
+    solution (thus using an unbounded memory footprint). Any hashable type can be passed as input, hence
+    tuples or frozensets can also be monitored.
 
-    Considering a data stream where `N` elements were observed so far, the Lossy Counting
+    Considering a data stream where `n` elements were observed so far, the Lossy Count
     algorithm has the following properties:
 
-    - All item(set)s whose true frequency exceeds `support * N` are output. There are no
+    - All item(set)s whose true frequency exceeds `support * n` are output. There are no
     false negatives;
-
-    - No item(set) whose true frequency is less than `(support - epsilon) * N` is outputted;
-
-
-    - Estimated frequencies are less than the true frequencies by at most `epsilon * N`.
+    - No item(set) whose true frequency is less than `(support - epsilon) * n` is outputted;
+    - Estimated frequencies are less than the true frequencies by at most `epsilon * n`.
 
     Parameters
     ----------
     support
         The support threshold used to determine if an item is frequent. The value of `support` must
-        be in $[0,1]$.
+        be in $[0, 1]$. Elements whose frequency is higher than `support` times the number of
+        observations seen so far are outputted.
     epsilon
         Error parameter to control the accuracy-memory tradeoff. The value of `epsilon` must be
-        in $(0,1]$ and typically `epsilon` $\\ll$ `support`. The smaller the `epsilon`, the more
+        in $(0, 1]$ and typically `epsilon` $\\ll$ `support`. The smaller the `epsilon`, the more
         accurate the estimates will be, but the count sketch will have an increased memory
         footprint.
-    forgetting
+    alpha
         Forgetting factor applied to the frequency estimates to reduce the impact of old items.
-        The value of `forgetting` must be in $(0,1]$.
+        The value of `alpha` must be in $(0, 1]$.
 
     Examples
     --------
@@ -49,8 +50,8 @@ class LossyCount(stats.base.Univariate):
     ...     lc.update(x["sender"])
 
     >>> counts = lc.get()
-    >>> for sender, freq in counts:
-    ...     print(f"{sender}\t{freq:.2f}")
+    >>> for sender in counts:
+    ...     print(f"{sender}\t{lc[sender]:.2f}")
     Groupe Desjardins / AccesD <services.de.cartes@scd.desjardins.com>    2494.79
     Groupe Desjardins / AccesD <securiteaccesd@desjardins.com>    77.82
     "AccuWeather.com Alert" <inbox@messaging.accuweather.com>    67.15
@@ -72,18 +73,21 @@ class LossyCount(stats.base.Univariate):
 
     """
 
-    def __init__(self, support: float = 0.001, epsilon: float = 0.005, forgetting: float = 0.999):
+    def __init__(self, support: float = 0.001, epsilon: float = 0.005, alpha: float = 0.999):
         if support > epsilon:
             raise ValueError("'support' must be smaller than 'epsilon'.")
 
         self.support = support
         self.epsilon = epsilon
-        self.forgetting = forgetting
+        self.alpha = alpha
 
         self._bucket_width = math.ceil(1 / self.epsilon)
         self._n: int = 0
         self._entries: typing.Dict[typing.Hashable, typing.Tuple[float, float]] = {}
         self._delta: float = self._bucket_width
+
+    def __getitem__(self, index) -> float:
+        return self._entries.get(index, (0.0, None))[0]
 
     def update(self, x: typing.Hashable):
         self._n += 1
@@ -99,7 +103,7 @@ class LossyCount(stats.base.Univariate):
             prune = []
             for key in self._entries:
                 freq, delta = self._entries[key]
-                freq *= self.forgetting
+                freq *= self.alpha
                 self._entries[key] = (freq, delta)
 
                 if freq + delta <= current_bucket:
@@ -108,12 +112,13 @@ class LossyCount(stats.base.Univariate):
             for key in prune:
                 del self._entries[key]
 
-            self._delta = self._bucket_width + self._delta * self.forgetting
+            self._delta = self._bucket_width + self._delta * self.alpha
 
-    def get(self):
+    def get(self) -> typing.Optional[typing.List[typing.Hashable]]:  # type: ignore
         res = []
         for key in self._entries:
             freq, _ = self._entries[key]
             if freq >= (self.support - self.epsilon) * self._delta:
                 res.append((key, freq))
-        return sorted(res, key=itemgetter(1), reverse=True)
+        if res:
+            return [elem[0] for elem in sorted(res, key=operator.itemgetter(1), reverse=True)]
