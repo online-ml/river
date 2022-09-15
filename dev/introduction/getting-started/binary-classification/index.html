@@ -10038,24 +10038,25 @@
 
 <h1 id="binary-classification">Binary classification<a class="headerlink" href="#binary-classification" title="Permanent link">&para;</a></h1>
 <p>Classification is about predicting an outcome from a fixed list of classes. The prediction is a probability distribution that assigns a probability to each possible outcome.</p>
-<p>A labeled classification sample is made up of a bunch of features and a class. The class is a boolean in the case of binary classification. We'll use the image segments dataset as an example.</p>
+<p>A labeled classification sample is made up of a bunch of features and a class. The class is a boolean in the case of binary classification. We'll use the phishing dataset as an example.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">ImageSegments</span><span class="p">()</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()</span>
 <span class="n">dataset</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Image segments classification.
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+Phishing websites.
 
-This dataset contains features that describe image segments into 7 classes: brickface, sky,
-foliage, cement, window, path, and grass.
+This dataset contains features from web pages that are classified as phishing or not.
 
-    Name  ImageSegments                                                   
-    Task  Multi-class classification                                      
- Samples  2,310                                                           
-Features  18                                                              
-  Sparse  False                                                           
-    Path  /Users/max.halford/projects/river/river/datasets/segment.csv.zip
-</code></pre></div>
+    Name  Phishing                                                        
+    Task  Binary classification                                           
+ Samples  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">250</span>                                                           
+Features  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9</span>                                                               
+  Sparse  <span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>                                                           
+    Path  <span style="color: #800080; text-decoration-color: #800080">/Users/max.halford/projects/river/river/datasets/</span><span style="color: #ff00ff; text-decoration-color: #ff00ff">phishing.csv.gz</span>
+</pre>
+
 <p>This dataset is a streaming dataset which can be looped over.</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
     <span class="k">pass</span>
@@ -10064,28 +10065,34 @@ Features  18
 <div class="highlight"><pre><span></span><code><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="n">x</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;empty_server_form_handler&#39;: 0.0,
- &#39;popup_window&#39;: 0.0,
- &#39;https&#39;: 0.0,
- &#39;request_from_other_domain&#39;: 0.0,
- &#39;anchor_from_other_domain&#39;: 0.0,
- &#39;is_popular&#39;: 0.5,
- &#39;long_url&#39;: 1.0,
- &#39;age_of_domain&#39;: 1,
- &#39;ip_in_url&#39;: 1}
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'empty_server_form_handler'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'popup_window'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'https'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'request_from_other_domain'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'anchor_from_other_domain'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'is_popular'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.5</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'long_url'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'age_of_domain'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ip_in_url'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>
+<span style="font-weight: bold">}</span>
+</pre>
+
 <div class="highlight"><pre><span></span><code><span class="n">y</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>True
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+</pre>
+
 <p>A binary classifier's goal is to learn to predict a binary target <code>y</code> from some given features <code>x</code>. We'll try to do this with a logistic regression.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{False: 0.5, True: 0.5}
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">{</span><span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.5</span>, <span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.5</span><span style="font-weight: bold">}</span>
+</pre>
+
 <p>The model hasn't been trained on any data, and therefore outputs a default probability of 50% for each class.</p>
 <p>The model can be trained on the sample, which will update the model's state.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -10093,13 +10100,15 @@ Features  18
 <p>If we try to make a prediction on the same sample, we can see that the probabilities are different, because the model has learned something.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{False: 0.5068745667645342, True: 0.4931254332354657}
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">{</span><span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.494687699901455</span>, <span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.505312300098545</span><span style="font-weight: bold">}</span>
+</pre>
+
 <p>Note that there is also a <code>predict_one</code> if you're only interested in the most likely class rather than the probability distribution.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>False
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+</pre>
+
 <p>Typically, an online model makes a prediction, and then learns once the ground truth reveals itself. The prediction and the ground truth can be compared to measure the model's correctness. If you have a dataset available, you can loop over it, make a prediction, update the model, and compare the model's output with the ground truth. This is called progressive validation.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
 
@@ -10114,8 +10123,9 @@ Features  18
 
 <span class="n">metric</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 89.36%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">89.36</span>%
+</pre>
+
 <p>This is a common way to evaluate an online model. In fact, there is a dedicated <code>evaluate.progressive_val_score</code> function that does this for you.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
 
@@ -10124,8 +10134,9 @@ Features  18
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 89.36%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">89.36</span>%
+</pre>
+
 <p>A common way to improve the performance of a logistic regression is to scale the data. This can be done by using a <code>preprocessing.StandardScaler</code>. In particular, we can define a pipeline to organise our model into a sequence of steps:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
@@ -10137,25 +10148,127 @@ Features  18
 
 <span class="n">model</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>---------------------------------------------------------------------------
+<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+  with_std=True
+)
 
-NameError                                 Traceback (most recent call last)
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LogisticRegression</pre></summary><code class="river-estimator-params">(
+  optimizer=SGD (
+    lr=Constant (
+      learning_rate=0.01
+    )
+  )
+  loss=Log (
+    weight_pos=1.
+    weight_neg=1.
+  )
+  l2=0.
+  l1=0.
+  intercept_init=0.
+  intercept_lr=Constant (
+    learning_rate=0.01
+  )
+  clip_gradient=1e+12
+  initializer=Zeros ()
+)
 
-/var/folders/9z/dgt2y49d2qx_hkgt7qj8mc240000gn/T/ipykernel_41345/3672127869.py in &lt;module&gt;
-      4 model = compose.Pipeline(
-      5     preprocessing.StandardScaler(),
-----&gt; 6     linear_model.LogisticRegression()
-      7 )
-      8
+</code></details></div><style scoped>
+.river-estimator {
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
 
+.river-pipeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+}
 
-NameError: name &#39;linear_model&#39; is not defined
-</code></pre></div>
+.river-union {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.river-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.river-wrapper > .river-estimator {
+    margin-top: 1em;
+}
+
+/* Vertical spacing between steps */
+
+.river-component + .river-component {
+    margin-top: 2em;
+}
+
+.river-union > .river-estimator {
+    margin-top: 0;
+}
+
+.river-union > .pipeline {
+    margin-top: 0;
+}
+
+/* Spacing within a union of estimators */
+
+.river-union > .river-component + .river-component {
+    margin-left: 1em;
+}
+
+/* Typography */
+
+.river-estimator-params {
+    display: block;
+    white-space: pre-wrap;
+    font-size: 120%;
+    margin-bottom: -1em;
+}
+
+.river-estimator > .river-estimator-params,
+.river-wrapper > .river-details > river-estimator-params {
+    background-color: white !important;
+}
+
+.river-estimator-name {
+    display: inline;
+    margin: 0;
+    font-size: 130%;
+}
+
+/* Toggle */
+
+.river-summary {
+    display: flex;
+    align-items:center;
+    cursor: pointer;
+}
+
+.river-summary > div {
+    width: 100%;
+}
+</style></div>
+
 <div class="highlight"><pre><span></span><code><span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">()</span>
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>ROCAUC: 95.04%
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">95.04</span>%
+</pre>
+
 <p>That concludes the getting started introduction to binary classification! You can now move on to the <a href="/introduction/next-steps">next steps</a>.</p>
 
 
