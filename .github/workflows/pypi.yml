@@ -3,7 +3,7 @@ name: pypi
 on:
   push:
     push:
-      branches: ["master" ,"rust_stats"]
+      branches: ["master", "rust_stats"]
     tags:
       - "*"
 # TODO: Set branch name
@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        # os: [ubuntu-latest, macos-latest]
         arch: [main, alt]
         include:
           - os: ubuntu-latest
@@ -43,7 +42,7 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
-  
+
       - run: rustup target add aarch64-apple-darwin
         if: matrix.os == 'macos-latest'
 
@@ -69,14 +68,14 @@ jobs:
             rustup default nightly &&
             rustup show
           # rust doesn't seem to be available for musl linux on i686
-          CIBW_SKIP: '*-musllinux_i686'
+          CIBW_SKIP: "*-musllinux_i686"
           # we build for "alt_arch_name" if it exists, else 'auto
           CIBW_ARCHS: ${{ matrix.alt_arch_name || 'auto' }}
 
-          CIBW_MANYLINUX_X86_64_IMAGE: 'manylinux2014'
-          CIBW_MUSLLINUX_X86_64_IMAGE: 'musllinux_1_1' 
-          CIBW_MANYLINUX_AARCH64_IMAGE: 'manylinux2014' 
-          CIBW_MUSLLINUX_AARCH64_IMAGE: 'musllinux_1_1'
+          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
+          CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
+          CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
+          CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
