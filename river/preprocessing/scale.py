@@ -398,11 +398,12 @@ class RobustScaler(base.Transformer):
 
     >>> for x in X:
     ...     print(scaler.learn_one(x).transform_one(x))
-        {'x': 0.0}
-        {'x': -0.0}
-        {'x': -0.6861149618420798}
-        {'x': -0.2614459368525924}
-        {'x': 2.3281631460423204}
+    {'x': 0.0}
+    {'x': -0.0}
+    {'x': -0.6861149618420798}
+    {'x': -0.2614459368525924}
+    {'x': 2.3281631460423204}
+
     """
 
     def __init__(self, with_centering=True, with_scaling=True, q_inf=0.25, q_sup=0.75):
@@ -547,12 +548,6 @@ class AdaptiveStandardScaler(base.Transformer):
             i: safe_div(x[i] - m, s2**0.5 if s2 > 0 else 0)
             for i, m, s2 in ((i, self.means[i].get(), self.vars[i].get()) for i in x)
         }
-
-    @property
-    def _mutable_attributes(self):
-        # FIXME: Now that EWMean and EWVAR are coded in Rust changing the alpha value on the fly is less trivial.
-        return {"alpha"}
-
 
 class TargetStandardScaler(compose.TargetTransformRegressor):
     """Applies standard scaling to the target.
