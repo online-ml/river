@@ -1,3 +1,4 @@
+// The purpose of this is to make the binding between watermill.rs and Python.
 use bincode::{deserialize, serialize};
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;

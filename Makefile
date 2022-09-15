@@ -3,9 +3,6 @@ COMMIT_HASH := $(shell eval git rev-parse HEAD)
 format:
 	pre-commit run --all-files
 
-cython:
-	python setup.py build_ext  --inplace --force
-
 execute-notebooks:
 	jupyter nbconvert --execute --to notebook --inplace docs/*/*.ipynb --ExecutePreprocessor.timeout=-1
 
@@ -25,18 +22,14 @@ livedoc: doc
 rebase:
 	git fetch && git rebase origin/main
 
-clean_rust_setup:
-	rm river/stats/_rust_stats.cpython*
-	rm -rf target
-	rm -rf river.egg-info
-	rm Cargo.lock
-	rm -rf build
-
-rust_develop:
+develop:
 	python ./setup.py develop
 
-rust_release:
+build-cython:
+	python setup.py build_ext --inplace --force
+
+build-rust:
 	python setup.py build_rust --inplace --release
 
-build_all:
+build:
 	python setup.py build_rust --inplace --release build_ext  --inplace --force
