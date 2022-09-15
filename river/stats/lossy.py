@@ -18,9 +18,11 @@ class LossyCount(stats.base.Univariate):
     algorithm has the following properties:
 
     - All item(set)s whose true frequency exceeds `support * n` are output. There are no
-    false negatives;
-    - No item(set) whose true frequency is less than `(support - epsilon) * n` is outputted;
-    - Estimated frequencies are less than the true frequencies by at most `epsilon * n`.
+    false negatives
+
+    - No item(set) whose true frequency is less than `(support - epsilon) * n` is outputted
+
+    - Estimated frequencies are less than the true frequencies by at most `epsilon * n`
 
     Parameters
     ----------
