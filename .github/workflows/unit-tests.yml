@@ -17,6 +17,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: set up rust
+        if: matrix.os != 'ubuntu-latest'
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+
+      - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:

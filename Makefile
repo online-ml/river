@@ -3,9 +3,6 @@ COMMIT_HASH := $(shell eval git rev-parse HEAD)
 format:
 	pre-commit run --all-files
 
-cython:
-	python setup.py build_ext --inplace --force
-
 execute-notebooks:
 	jupyter nbconvert --execute --to notebook --inplace docs/*/*.ipynb --ExecutePreprocessor.timeout=-1
 
@@ -24,3 +21,15 @@ livedoc: doc
 
 rebase:
 	git fetch && git rebase origin/main
+
+develop:
+	python ./setup.py develop
+
+build-cython:
+	python setup.py build_ext --inplace --force
+
+build-rust:
+	python setup.py build_rust --inplace --release
+
+build:
+	python setup.py build_rust --inplace --release build_ext  --inplace --force
