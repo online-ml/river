@@ -1,6 +1,7 @@
 """Running statistics"""
 from . import base
 from .auto_corr import AutoCorr
+from .cms import CMS
 from .count import Count
 from .cov import Cov
 from .entropy import Entropy
@@ -30,6 +31,7 @@ __all__ = [
     "AbsMax",
     "AutoCorr",
     "BayesianMean",
+    "CMS",
     "Count",
     "Cov",
     "Entropy",
