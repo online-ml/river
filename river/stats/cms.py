@@ -29,7 +29,7 @@ class CMS(stats.base.Univariate):
     i.e., count values and updates can be negative.
 
     The count values obtained by CMS are always overestimates. Suppose $c_i$ and $\\hat{c}_i$ are the ground truth and
-    estimated count values, respectively, for a given element $i$. CMS guarantees that $c_i \\le \\hat{c}_i$ and, 
+    estimated count values, respectively, for a given element $i$. CMS guarantees that $c_i \\le \\hat{c}_i$ and,
     with probability $1 - \\delta$, $\\hat{c}_i \\le c_i + \\epsilon||\\mathbf{c}||_1$. In the expression,
     $||\\mathbf{c}||_1 = \\sum_i |c_i|$.
 
@@ -128,6 +128,7 @@ class CMS(stats.base.Univariate):
     [^3]: [Hash functions family generator in Python](https://stackoverflow.com/questions/2255604/hash-functions-family-generator-in-python)
 
     """
+
     def __init__(self, epsilon: float = 0.1, delta: float = 0.05, seed: int = None):
         self.epsilon = epsilon
         self.delta = delta
@@ -139,30 +140,26 @@ class CMS(stats.base.Univariate):
         self._rng = random.Random(self.seed)
         self._masks = [self._rng.getrandbits(64) for _ in range(self._d)]
         self._cms = np.zeros((self._d, self._w), dtype=np.int32)
-    
+
     def _hash(self, x):
-        return tuple(
-            zip(*
-                ((i, (hash(x) ^ self._masks[i]) % self._w) for i in range(self._d))
-            )
-        )
+        return tuple(zip(*((i, (hash(x) ^ self._masks[i]) % self._w) for i in range(self._d))))
 
     def update(self, x: typing.Hashable, w: int = 1):
         self._cms[self._hash(x)] += w
 
         return self
-    
+
     def get(self):
         """Return the total sum of monitored counts."""
         return sum(self._cms[0])
-    
+
     def __getitem__(self, x) -> int:
         # Point query
         return min(self._cms[self._hash(x)])
 
     def __matmul__(self, other) -> int:
         # Dot product
-        return min(np.einsum('ij,ij->i', self._cms, other._cms))
+        return min(np.einsum("ij,ij->i", self._cms, other._cms))
 
     def __len__(self):
         return self.w * self.d
@@ -171,7 +168,7 @@ class CMS(stats.base.Univariate):
     def w(self) -> int:
         """The number of slots in each hash table."""
         return self._w
-    
+
     @property
     def d(self) -> int:
         """The number of stored hash tables."""
