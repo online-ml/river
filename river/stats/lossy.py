@@ -49,7 +49,7 @@ class LossyCount(stats.base.Univariate):
     >>> lc = stats.LossyCount()
 
     >>> for x, _ in dataset.take(10_000):
-    ...     lc.update(x["sender"])
+    ...     lc = lc.update(x["sender"])
 
     >>> counts = lc.get()
     >>> for sender in counts:
@@ -126,3 +126,15 @@ class LossyCount(stats.base.Univariate):
                 res.append((key, freq))
         if res:
             return [elem[0] for elem in sorted(res, key=operator.itemgetter(1), reverse=True)]
+
+    def __repr__(self):
+        try:
+            value = self.get()
+        except NotImplementedError:
+            value = None
+
+        fmt_value = None
+        if value is not None:
+            fmt_value = " ".join([str(v) for v in value])
+
+        return f"{self.__class__.__name__}: {fmt_value}"
