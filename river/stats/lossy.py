@@ -116,6 +116,8 @@ class LossyCount(stats.base.Univariate):
 
             self._delta = self._bucket_width + self._delta * self.alpha
 
+        return self
+
     def get(self) -> typing.Optional[typing.List[typing.Hashable]]:  # type: ignore
         res = []
         for key in self._entries:
