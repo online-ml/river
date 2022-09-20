@@ -10,7 +10,7 @@ from river import stats
 class CMS(stats.base.Univariate):
     """Count-Min Sketch (CMS) algorithm.
 
-    Approximate element counts using a sketch structure. Contraty to an exhaustive approach, e.g.,
+    Approximate element counting using a sketch structure. Contrary to an exhaustive approach, e.g.,
     using a `collections.Counter`, CMS uses a limited and fixed amount of memory. The CMS algorithm
     uses a sketch structure consisting of a matrix $w \\times d$.
 
@@ -21,7 +21,7 @@ class CMS(stats.base.Univariate):
     - $d = \\lceil \\ln\\left(\\frac{1}{\\delta} \\right) \\rceil$.
 
     Decreasing the values of $\\epsilon$ (`epsilon`) and $\\delta$ (`delta`) increase the accuracy of the
-    algorithm, at the cost of increased memory usage. The values of `w` and `d`, control the hash tables' capability
+    algorithm, at the cost of increased memory usage. The values of `w` and `d` control the hash tables' capability
     and the amount of hash collisions, respectively.
 
     CMS works by keeping `d` hash tables with `w` slots each. Elements are mapped to a slot in each hash table.
