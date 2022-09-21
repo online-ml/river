@@ -111,9 +111,10 @@ class Counter(base.Base):
     >>> cms_a[532]
     4
 
-    We can also obtain estimates of the dot product between two instances of `CountMin`. This could be useful, for instance,
-    to estimate the cosine distance between the data monitored in two different instances of `CountMin`. Suppose we create another
-    CMS instance (the number of slots and hash tables must match) that monitors another sample of the same data generating process:
+    We can also obtain estimates of the dot product between two instances of `river.collections.Counter`. This could be useful,
+    for instance, to estimate the cosine distance between the data monitored in two different counter sketch instances. Suppose we
+    create another CMS instance (the number of slots and hash tables must match) that monitors another sample of the same data
+    generating process:
 
     >>> cms_b = rvc.Counter(epsilon=0.001, delta=0.01, seed=7)
 
@@ -160,7 +161,7 @@ class Counter(base.Base):
         # Point query
         return min(self._cms[self._hash(x)])
 
-    def __matmul__(self, other: "CountMin") -> int:
+    def __matmul__(self, other: "Counter") -> int:
         # Dot product
         if self.n_slots != other.n_slots or self.n_tables != other.n_tables:
             unmatched_dims = (

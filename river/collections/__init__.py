@@ -5,8 +5,8 @@ constrained amounts of memory and processing time.
 
 """
 from .counter import Counter
-from .histogram import Histogram
 from .heavy_hitters import HeavyHitters
+from .histogram import Histogram
 from .sdft import SDFT
 from .skyline import Skyline
 
