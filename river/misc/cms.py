@@ -69,7 +69,7 @@ class CountMin(base.Base):
     >>> vals = []
     >>> for _ in range(10000):
     ...     v = rng.randint(-1000, 1000)
-    ...     cms.update(v)
+    ...     cms = cms.update(v)
     ...     counter[v] += 1
     ...     vals.append(v)
 
@@ -104,7 +104,7 @@ class CountMin(base.Base):
 
     >>> cms_a = misc.CountMin(epsilon=0.001, delta=0.01, seed=0)
     >>> for v in vals:
-    ...     cms_a.update(v)
+    ...     cms_a = cms_a.update(v)
 
     >>> cms_a[7]
     5
@@ -119,7 +119,7 @@ class CountMin(base.Base):
 
     >>> for _ in range(10000):
     ...     v = rng.randint(-1000, 1000)
-    ...     cms_b.update(v)
+    ...     cms_b = cms_b.update(v)
 
     Now, we can define a cosine distance function:
 
@@ -176,6 +176,8 @@ class CountMin(base.Base):
 
     def update(self, x: typing.Hashable, w: int = 1):
         self._cms[self._hash(x)] += w
+
+        return self
 
     def total(self) -> int:
         """Return the total count."""
