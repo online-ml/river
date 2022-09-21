@@ -90,7 +90,7 @@ class CMS(stats.base.Univariate):
     (1982, 1632)
 
 
-    We can decrease the error by expending more memory in the CMS sketch:
+    We can decrease the error by allocating more memory in the CMS sketch:
 
     >>> cms = stats.CMS(epsilon=0.003, delta=0.01, seed=0)
     >>> counter = collections.Counter()
