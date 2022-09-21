@@ -175,7 +175,7 @@ class CountMin:
         self._cms[self._hash(x)] += w
 
     def total(self) -> int:
-        """Computes the total sum of keys."""
+        """Return the total count."""
         return sum(self._cms[0, :])
 
     @property
