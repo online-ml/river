@@ -93,6 +93,12 @@ class CountMin:
     >>> len(counter), len(cms)
     (1982, 1632)
 
+    And also retrieve the total sum of counts:
+
+    >>> cms.total()
+    10000
+
+
 
     We can decrease the error by allocating more memory in the CMS:
 
