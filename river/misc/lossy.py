@@ -63,6 +63,10 @@ class LossyCount(base.Base):
     >>> lc['A']
     99.483575...
 
+    Unobserved elements are handled just fine:
+    >>> lc[(1, 2, 3)]
+    0.0
+
     References
     ----------
     [^1]: Veloso, B., Tabassum, S., Martins, C., Espanha, R., Azevedo, R., & Gama, J. (2020).
