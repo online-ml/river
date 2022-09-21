@@ -7,12 +7,12 @@ import numpy as np
 from river import base
 
 
-class CountMin(base.Base):
-    """Count-Min Sketch (CMS) algorithm.
+class Counter(base.Base):
+    """Counting using the Count-Min Sketch (CMS) algorithm.
 
-    Approximate element counting using a sketch structure. Contrary to an exhaustive approach, e.g.,
-    using a `collections.Counter`, CMS uses a limited and fixed amount of memory. The CMS algorithm
-    uses a sketch structure consisting of a matrix $w \\times d$.
+    Contrary to an exhaustive approach, e.g., using a `collections.Counter`, CMS uses a
+    limited and fixed amount of memory. The CMS algorithm uses a sketch structure consisting of a
+    matrix $w \\times d$.
 
     These dimensions are obtained via:
 
@@ -47,9 +47,9 @@ class CountMin(base.Base):
     Examples
     --------
     >>> import collections
-    >>> from river import misc
+    >>> import river.collections as rvc
 
-    >>> cms = misc.CountMin(epsilon=0.005, seed=0)
+    >>> cms = rvc.Counter(epsilon=0.005, seed=0)
 
     >>> # To generate random numbers
     >>> rng = random.Random(7)
@@ -102,7 +102,7 @@ class CountMin(base.Base):
 
     We can decrease the error by allocating more memory in the CMS:
 
-    >>> cms_a = misc.CountMin(epsilon=0.001, delta=0.01, seed=0)
+    >>> cms_a = rvc.Counter(epsilon=0.001, delta=0.01, seed=0)
     >>> for v in vals:
     ...     cms_a = cms_a.update(v)
 
@@ -115,7 +115,7 @@ class CountMin(base.Base):
     to estimate the cosine distance between the data monitored in two different instances of `CountMin`. Suppose we create another
     CMS instance (the number of slots and hash tables must match) that monitors another sample of the same data generating process:
 
-    >>> cms_b = misc.CountMin(epsilon=0.001, delta=0.01, seed=7)
+    >>> cms_b = rvc.Counter(epsilon=0.001, delta=0.01, seed=7)
 
     >>> for _ in range(10000):
     ...     v = rng.randint(-1000, 1000)

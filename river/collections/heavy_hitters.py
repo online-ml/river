@@ -5,8 +5,8 @@ import typing
 from river import base
 
 
-class LossyCount(base.Base):
-    """Lossy Count with Forgetting factor[^1].
+class HeavyHitters(base.Base):
+    """Find the Heavy Hitters using the Lossy Count with Forgetting factor algorithm[^1].
 
     Keep track of the most frequent item(set)s in a data stream and apply a forgetting factor to
     discard previous frequent items that do not often appear anymore. This is an approximation
@@ -44,27 +44,27 @@ class LossyCount(base.Base):
 
     >>> import random
     >>> import string
-    >>> from river import misc
+    >>> from river import collections
 
     >>> rng = random.Random(42)
-    >>> lc = misc.LossyCount()
+    >>> hh = collections.HeavyHitters()
 
     We will feed the counter with printable ASCII characters:
 
     >>> for _ in range(10_000):
-    ...     lc = lc.update(rng.choice(string.printable))
+    ...     hh = hh.update(rng.choice(string.printable))
 
     We can retrieve estimates of the `n` top elements and their frequencies. Let's try `n=3`
-    >>> lc.most_common(3)
+    >>> hh.most_common(3)
     [(',', 122.099142...), ('[', 116.049510...), ('W', 115.013402...)]
 
     We can also access estimates of individual elements:
 
-    >>> lc['A']
+    >>> hh['A']
     99.483575...
 
     Unobserved elements are handled just fine:
-    >>> lc[(1, 2, 3)]
+    >>> hh[(1, 2, 3)]
     0.0
 
     References

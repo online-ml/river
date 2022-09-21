@@ -22,7 +22,7 @@ class Skyline(collections.UserList):
     Here is an example taken from [this](https://maxhalford.github.io/blog/skyline-queries/) blog post.
 
     >>> import random
-    >>> from river import misc
+    >>> import river.collections as rvc
     >>> import matplotlib.pyplot as plt
 
     >>> city_prices = {
@@ -37,7 +37,7 @@ class Skyline(collections.UserList):
     ...     price = round(random.uniform(0.8, 1.2) * city_prices[city] * size)
     ...     return {'city': city, 'size': size, 'price': price}
 
-    >>> skyline = misc.Skyline(minimize=['price'], maximize=['size'])
+    >>> skyline = rvc.Skyline(minimize=['price'], maximize=['size'])
 
     >>> random.seed(42)
 
@@ -67,7 +67,7 @@ class Skyline(collections.UserList):
     Here is another example using the kart data from *Mario Kart: Double Dash!!*.
 
     >>> import collections
-    >>> from river import misc
+    >>> import river.collections as rvc
 
     >>> Kart = collections.namedtuple(
     ...      'Kart',
@@ -98,7 +98,7 @@ class Skyline(collections.UserList):
     ...     Kart('Parade Kart', 7, 3, 4, 7, 3)
     ... ]
 
-    >>> skyline = misc.Skyline(
+    >>> skyline = rvc.Skyline(
     ...     maximize=['speed', 'off_road', 'acceleration', 'turbo'],
     ...     minimize=['weight']
     ... )
