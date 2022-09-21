@@ -95,6 +95,8 @@ Of course, this is just a contrived example. We welcome you to check the [introd
 
 ## 🛠 Installation
 
+Since version 0.13.0, `Rust` has been used to accelerate certain computationally intensive statistics. As such, before installing River, make sure that you already have a `Rust` compiler installed. To install it, you can follow the instructions given in this [link](https://www.rust-lang.org/fr/tools/install).
+
 River is intended to work with **Python 3.8 and above**. Installation can be done with `pip`:
 
 ```sh
