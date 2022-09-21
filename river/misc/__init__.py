@@ -3,7 +3,7 @@
 This module essentially regroups some implementations that have nowhere else to go.
 
 """
-from .cms import CountMin
+from .count_min import CountMin
 from .histogram import Histogram
 from .lossy import LossyCount
 from .sdft import SDFT
