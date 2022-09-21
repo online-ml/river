@@ -7,7 +7,7 @@ import numpy as np
 from river import stats
 
 
-class CMS(stats.base.Univariate):
+class CountMinSketch(stats.base.Univariate):
     """Count-Min Sketch (CMS) algorithm.
 
     Approximate element counting using a sketch structure. Contrary to an exhaustive approach, e.g.,
