@@ -42,31 +42,26 @@ class LossyCount(base.Base):
     Examples
     --------
 
-    >>> from river import datasets
+    >>> import random
+    >>> import string
     >>> from river import misc
 
-    >>> dataset = datasets.TREC07()
+    >>> rng = random.Random(42)
     >>> lc = misc.LossyCount()
 
-    >>> for x, _ in dataset.take(10_000):
-    ...     lc = lc.update(x["sender"])
+    We will feed the counter with printable ASCII characters:
 
-    >>> counts = lc.get()
-    >>> for sender in counts:
-    ...     print(f"{sender}\t{lc[sender]:.2f}")
-    Groupe Desjardins / AccesD <services.de.cartes@scd.desjardins.com>    2494.79
-    Groupe Desjardins / AccesD <securiteaccesd@desjardins.com>    77.82
-    "AccuWeather.com Alert" <inbox@messaging.accuweather.com>    67.15
-    <alert@broadcast.shareholder.com>    56.22
-    "Bank of America Inc." <Security@bankofamerica.com>    28.37
-    metze@samba.org    22.95
-    tridge@samba.org    15.98
-    Michael Adam <ma@sernet.de>    5.99
-    abartlet@samba.org    4.00
-    "Zachary Kline" <Z_kline@hotmail.com>    3.99
-    Jonathan Worthington <jonathan@jnthn.net>    2.99
-    charles loboz <charles_loboz@yahoo.com>    2.00
-    slashdot@slashdot.org    2.00
+    >>> for _ in range(10_000):
+    ...     lc = lc.update(rng.choice(string.printable))
+
+    We can retrieve estimates of the `n` top elements and their frequencies. Let's try `n=3`
+    >>> lc.most_common(3)
+    [(',', 122.099142...), ('[', 116.049510...), ('W', 115.013402...)]
+
+    We can also access estimates of individual elements:
+
+    >>> lc['A']
+    99.483575...
 
     References
     ----------
@@ -118,23 +113,14 @@ class LossyCount(base.Base):
 
         return self
 
-    def get(self) -> typing.Optional[typing.List[typing.Hashable]]:  # type: ignore
+    def most_common(self, n: int = None) -> typing.List[typing.Tuple[typing.Hashable, float]]:
         res = []
         for key in self._entries:
             freq, _ = self._entries[key]
             if freq >= (self.support - self.epsilon) * self._delta:
                 res.append((key, freq))
-        if res:
-            return [elem[0] for elem in sorted(res, key=operator.itemgetter(1), reverse=True)]
 
-    def __repr__(self):
-        try:
-            value = self.get()
-        except NotImplementedError:
-            value = None
+        if n is None:
+            n = len(res)
 
-        fmt_value = None
-        if value is not None:
-            fmt_value = " ".join([str(v) for v in value])
-
-        return f"{self.__class__.__name__}: {fmt_value}"
+        return sorted(res, key=operator.itemgetter(1), reverse=True)[:n]

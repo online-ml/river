@@ -1,6 +1,7 @@
 # Unreleased
 
-## stats
+## misc
 
-- Added missing return `self` in `LossyCount` and fix bug in its `__repr__` method.
-- Added the Count-Min Sketch (`CMS`) algorithm for approximate element counting.
+- Move `stats.LossyCount` to `misc.LossyCount` and update its API to better match `collections.Counter`.
+- Added missing return `self` in `LossyCount`.
+- Added the Count-Min Sketch (`CountMin`) algorithm for approximate element counting.
