@@ -98,8 +98,6 @@ class CountMin:
     >>> cms.total()
     10000
 
-
-
     We can decrease the error by allocating more memory in the CMS:
 
     >>> cms_a = misc.CountMin(epsilon=0.001, delta=0.01, seed=0)
