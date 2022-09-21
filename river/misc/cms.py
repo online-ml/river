@@ -4,8 +4,10 @@ import typing
 
 import numpy as np
 
+from river import base
 
-class CountMin:
+
+class CountMin(base.Base):
     """Count-Min Sketch (CMS) algorithm.
 
     Approximate element counting using a sketch structure. Contrary to an exhaustive approach, e.g.,
@@ -169,7 +171,8 @@ class CountMin:
         return min(np.einsum("ij,ij->i", self._cms, other._cms))
 
     def __len__(self):
-        return self.n_slots * self.n_tables
+        # Return the total number of stored elements in the sketch
+        return self._w * self._d
 
     def update(self, x: typing.Hashable, w: int = 1):
         self._cms[self._hash(x)] += w
