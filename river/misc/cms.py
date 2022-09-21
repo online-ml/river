@@ -4,10 +4,8 @@ import typing
 
 import numpy as np
 
-from river import stats
 
-
-class CountMinSketch(stats.base.Univariate):
+class CountMin:
     """Count-Min Sketch (CMS) algorithm.
 
     Approximate element counting using a sketch structure. Contrary to an exhaustive approach, e.g.,
@@ -47,40 +45,40 @@ class CountMinSketch(stats.base.Univariate):
     Examples
     --------
     >>> import collections
-    >>> from river import stats
+    >>> from river import misc
 
-    >>> cms = stats.CMS(epsilon=0.005, seed=0)
+    >>> cms = misc.CountMin(epsilon=0.005, seed=0)
 
     >>> # To generate random numbers
     >>> rng = random.Random(7)
+
     >>> counter = collections.Counter()
 
     We can check the number of slots per hash table:
-    >>> cms.w
+    >>> cms.n_slots
     544
 
     And the number of hash tables:
-    >>> cms.d
+    >>> cms.n_tables
     3
 
     Let's compare the sketch against a brute force approach:
 
+    >>> vals = []
     >>> for _ in range(10000):
     ...     v = rng.randint(-1000, 1000)
-    ...     cms = cms.update(v)
-    ...     counter.update([v])
+    ...     cms.update(v)
+    ...     counter[v] += 1
+    ...     vals.append(v)
 
     Now, we can compare the estimates of CMS against the exhaustive counting strategy:
 
     >>> counter[7]
     5
-
     >>> cms[7]
     12
-
     >>> counter[532]
     4
-
     >>> cms[532]
     15
 
@@ -90,36 +88,38 @@ class CountMinSketch(stats.base.Univariate):
     (1982, 1632)
 
 
-    We can decrease the error by allocating more memory in the CMS sketch:
+    We can decrease the error by allocating more memory in the CMS:
 
-    >>> cms = stats.CMS(epsilon=0.003, delta=0.01, seed=0)
-    >>> counter = collections.Counter()
+    >>> cms_a = misc.CountMin(epsilon=0.003, delta=0.01, seed=0)
+    >>> for v in vals:
+    ...     cms_a.update(v)
 
-    >>> # Let's increase the range of possible values
-    >>> for _ in range(10000):
-    ...     v = rng.randint(-9999, 9999)
-    ...     cms = cms.update(v)
-    ...     counter.update([v])
-
-    >>> counter[6174]
-    6
-
-    >>> cms[6174]
-    13
-
-    >>> counter[-7416]
+    >>> cms_a[7]
+    8
+    >>> cms_a[532]
     5
 
-    >>> cms[-7416]
-    12
+    We can also obtain estimates of the dot product between two instances of `CountMin`. This could be useful, for instance,
+    to estimate the cosine distance between the data monitored in two different instances of `CountMin`. Suppose we create another
+    CMS instance (the number of slots and hash tables must match) that monitors another sample of the same data generating process:
 
-    >>> len(counter), len(cms)
-    (7866, 4535)
+    >>> cms_b = misc.CountMin(epsilon=0.003, delta=0.01, seed=7)
 
-    The total sum of the monitored elements can be retrieved via the `get` method:
+    >>> for _ in range(10000):
+    ...     v = rng.randint(-1000, 1000)
+    ...     cms_b.update(v)
 
-    >>> cms.get(), sum(counter.values())
-    (10000, 10000)
+    Now, we can define a cosine distance function:
+
+    >>> def cosine_dist(cms_a, cms_b):
+    ...     num = cms_a @ cms_b
+    ...     den = math.sqrt(cms_a @ cms_a) * math.sqrt(cms_b @ cms_b)
+    ...     return num / den
+
+    And use it to calculate the cosine distance between the elements monitored in `cms_a` and `cms_b`
+
+    >>> cosine_dist(cms_a, cms_b)
+    0.8785023776056446
 
     References
     ----------
@@ -144,32 +144,30 @@ class CountMinSketch(stats.base.Univariate):
     def _hash(self, x):
         return tuple(zip(*((i, (hash(x) ^ self._masks[i]) % self._w) for i in range(self._d))))
 
-    def update(self, x: typing.Hashable, w: int = 1):
-        self._cms[self._hash(x)] += w
-
-        return self
-
-    def get(self):
-        """Return the total sum of monitored counts."""
-        return sum(self._cms[0])
-
     def __getitem__(self, x) -> int:
         # Point query
         return min(self._cms[self._hash(x)])
 
-    def __matmul__(self, other) -> int:
+    def __matmul__(self, other: "CountMin") -> int:
         # Dot product
         return min(np.einsum("ij,ij->i", self._cms, other._cms))
 
     def __len__(self):
-        return self.w * self.d
+        return self.n_slots * self.n_tables
+
+    def update(self, x: typing.Hashable, w: int = 1):
+        self._cms[self._hash(x)] += w
+
+    def total(self) -> int:
+        """Computes the total sum of keys."""
+        return sum(self._cms[0, :])
 
     @property
-    def w(self) -> int:
+    def n_slots(self) -> int:
         """The number of slots in each hash table."""
         return self._w
 
     @property
-    def d(self) -> int:
+    def n_tables(self) -> int:
         """The number of stored hash tables."""
         return self._d
