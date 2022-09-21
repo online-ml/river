@@ -129,7 +129,7 @@ class Counter(base.Base):
     ...     den = math.sqrt(cms_a @ cms_a) * math.sqrt(cms_b @ cms_b)
     ...     return num / den
 
-    And use it to calculate the cosine distance between the elements monitored in `cms_a` and `cms_b`
+    And use it to calculate the cosine distance between the elements monitored in `cms_a` and `cms_b`:
 
     >>> cosine_dist(cms_a, cms_b)
     0.175363...
