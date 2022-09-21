@@ -2,10 +2,10 @@ import math
 import operator
 import typing
 
-from river import stats
+from river import base
 
 
-class LossyCount(stats.base.Univariate):
+class LossyCount(base.Base):
     """Lossy Count with Forgetting factor[^1].
 
     Keep track of the most frequent item(set)s in a data stream and apply a forgetting factor to
@@ -18,11 +18,11 @@ class LossyCount(stats.base.Univariate):
     algorithm has the following properties:
 
     - All item(set)s whose true frequency exceeds `support * n` are output. There are no
-    false negatives
+    false negatives;
 
-    - No item(set) whose true frequency is less than `(support - epsilon) * n` is outputted
+    - No item(set) whose true frequency is less than `(support - epsilon) * n` is outputted;
 
-    - Estimated frequencies are less than the true frequencies by at most `epsilon * n`
+    - Estimated frequencies are less than the true frequencies by at most `epsilon * n`.
 
     Parameters
     ----------
@@ -43,10 +43,10 @@ class LossyCount(stats.base.Univariate):
     --------
 
     >>> from river import datasets
-    >>> from river import stats
+    >>> from river import misc
 
     >>> dataset = datasets.TREC07()
-    >>> lc = stats.LossyCount()
+    >>> lc = misc.LossyCount()
 
     >>> for x, _ in dataset.take(10_000):
     ...     lc = lc.update(x["sender"])
