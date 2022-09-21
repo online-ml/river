@@ -82,6 +82,12 @@ class CountMin:
     >>> cms[532]
     15
 
+    Keep in mind that CMS is an approximate sketch algorithm. Couting estimates for unseen values
+    might not be always reliable:
+
+    >>> cms[1001]
+    9
+
     We can check the number of elements stored by each approach:
 
     >>> len(counter), len(cms)
@@ -90,20 +96,20 @@ class CountMin:
 
     We can decrease the error by allocating more memory in the CMS:
 
-    >>> cms_a = misc.CountMin(epsilon=0.003, delta=0.01, seed=0)
+    >>> cms_a = misc.CountMin(epsilon=0.001, delta=0.01, seed=0)
     >>> for v in vals:
     ...     cms_a.update(v)
 
     >>> cms_a[7]
-    8
-    >>> cms_a[532]
     5
+    >>> cms_a[532]
+    4
 
     We can also obtain estimates of the dot product between two instances of `CountMin`. This could be useful, for instance,
     to estimate the cosine distance between the data monitored in two different instances of `CountMin`. Suppose we create another
     CMS instance (the number of slots and hash tables must match) that monitors another sample of the same data generating process:
 
-    >>> cms_b = misc.CountMin(epsilon=0.003, delta=0.01, seed=7)
+    >>> cms_b = misc.CountMin(epsilon=0.001, delta=0.01, seed=7)
 
     >>> for _ in range(10000):
     ...     v = rng.randint(-1000, 1000)
@@ -119,7 +125,7 @@ class CountMin:
     And use it to calculate the cosine distance between the elements monitored in `cms_a` and `cms_b`
 
     >>> cosine_dist(cms_a, cms_b)
-    0.8785023776056446
+    0.17536377918173912
 
     References
     ----------
@@ -150,6 +156,12 @@ class CountMin:
 
     def __matmul__(self, other: "CountMin") -> int:
         # Dot product
+        if self.n_slots != other.n_slots or self.n_tables != other.n_tables:
+            unmatched_dims = (
+                f"({self.n_slots}, {self.n_tables}) vs. ({other.n_slots}, {other.n_tables})"
+            )
+            raise ValueError(f"The number of slots and hash tables do not match: {unmatched_dims}.")
+
         return min(np.einsum("ij,ij->i", self._cms, other._cms))
 
     def __len__(self):
