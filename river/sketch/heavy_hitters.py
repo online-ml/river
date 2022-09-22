@@ -2,11 +2,11 @@ import math
 import operator
 import typing
 
-from river import stats
+from river import base
 
 
-class LossyCount(stats.base.Univariate):
-    """Lossy Count with Forgetting factor[^1].
+class HeavyHitters(base.Base):
+    """Find the Heavy Hitters using the Lossy Count with Forgetting factor algorithm[^1].
 
     Keep track of the most frequent item(set)s in a data stream and apply a forgetting factor to
     discard previous frequent items that do not often appear anymore. This is an approximation
@@ -18,11 +18,11 @@ class LossyCount(stats.base.Univariate):
     algorithm has the following properties:
 
     - All item(set)s whose true frequency exceeds `support * n` are output. There are no
-    false negatives
+    false negatives;
 
-    - No item(set) whose true frequency is less than `(support - epsilon) * n` is outputted
+    - No item(set) whose true frequency is less than `(support - epsilon) * n` is outputted;
 
-    - Estimated frequencies are less than the true frequencies by at most `epsilon * n`
+    - Estimated frequencies are less than the true frequencies by at most `epsilon * n`.
 
     Parameters
     ----------
@@ -42,31 +42,30 @@ class LossyCount(stats.base.Univariate):
     Examples
     --------
 
-    >>> from river import datasets
-    >>> from river import stats
+    >>> import random
+    >>> import string
+    >>> from river import sketch
 
-    >>> dataset = datasets.TREC07()
-    >>> lc = stats.LossyCount()
+    >>> rng = random.Random(42)
+    >>> hh = sketch.HeavyHitters()
 
-    >>> for x, _ in dataset.take(10_000):
-    ...     lc.update(x["sender"])
+    We will feed the counter with printable ASCII characters:
 
-    >>> counts = lc.get()
-    >>> for sender in counts:
-    ...     print(f"{sender}\t{lc[sender]:.2f}")
-    Groupe Desjardins / AccesD <services.de.cartes@scd.desjardins.com>    2494.79
-    Groupe Desjardins / AccesD <securiteaccesd@desjardins.com>    77.82
-    "AccuWeather.com Alert" <inbox@messaging.accuweather.com>    67.15
-    <alert@broadcast.shareholder.com>    56.22
-    "Bank of America Inc." <Security@bankofamerica.com>    28.37
-    metze@samba.org    22.95
-    tridge@samba.org    15.98
-    Michael Adam <ma@sernet.de>    5.99
-    abartlet@samba.org    4.00
-    "Zachary Kline" <Z_kline@hotmail.com>    3.99
-    Jonathan Worthington <jonathan@jnthn.net>    2.99
-    charles loboz <charles_loboz@yahoo.com>    2.00
-    slashdot@slashdot.org    2.00
+    >>> for _ in range(10_000):
+    ...     hh = hh.update(rng.choice(string.printable))
+
+    We can retrieve estimates of the `n` top elements and their frequencies. Let's try `n=3`
+    >>> hh.most_common(3)
+    [(',', 122.099142...), ('[', 116.049510...), ('W', 115.013402...)]
+
+    We can also access estimates of individual elements:
+
+    >>> hh['A']
+    99.483575...
+
+    Unobserved elements are handled just fine:
+    >>> hh[(1, 2, 3)]
+    0.0
 
     References
     ----------
@@ -116,11 +115,16 @@ class LossyCount(stats.base.Univariate):
 
             self._delta = self._bucket_width + self._delta * self.alpha
 
-    def get(self) -> typing.Optional[typing.List[typing.Hashable]]:  # type: ignore
+        return self
+
+    def most_common(self, n: int = None) -> typing.List[typing.Tuple[typing.Hashable, float]]:
         res = []
         for key in self._entries:
             freq, _ = self._entries[key]
             if freq >= (self.support - self.epsilon) * self._delta:
                 res.append((key, freq))
-        if res:
-            return [elem[0] for elem in sorted(res, key=operator.itemgetter(1), reverse=True)]
+
+        if n is None:
+            n = len(res)
+
+        return sorted(res, key=operator.itemgetter(1), reverse=True)[:n]

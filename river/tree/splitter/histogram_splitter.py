@@ -3,8 +3,8 @@ import collections
 import functools
 import typing
 
-from river import misc
-from river.misc.histogram import Bin  # noqa
+from river import sketch
+from river.sketch.histogram import Bin  # noqa
 
 from ..utils import BranchFactory
 from .base import Splitter
@@ -29,7 +29,7 @@ class HistogramSplitter(Splitter):
         self.n_bins = n_bins
         self.n_splits = n_splits
         self.hists: typing.DefaultDict = collections.defaultdict(
-            functools.partial(misc.Histogram, max_bins=self.n_bins)
+            functools.partial(sketch.Histogram, max_bins=self.n_bins)
         )
 
     def update(self, att_val, target_val, sample_weight):
