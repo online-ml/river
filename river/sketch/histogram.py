@@ -3,6 +3,8 @@ import heapq
 import itertools
 import math
 
+from river import base
+
 __all__ = ["Histogram"]
 
 
@@ -68,7 +70,7 @@ def coverage_ratio(x: Bin, y: Bin) -> float:
     return max(0, min(x.right, y.right) - max(x.left, y.left)) / (y.right - y.left)
 
 
-class Histogram(collections.UserList):
+class Histogram(collections.UserList, base.Base):
     """Streaming histogram.
 
     Parameters
@@ -84,7 +86,7 @@ class Histogram(collections.UserList):
     Examples
     --------
 
-    >>> from river import misc
+    >>> from river import sketch
     >>> import matplotlib.pyplot as plt
     >>> import numpy as np
 
@@ -95,7 +97,7 @@ class Histogram(collections.UserList):
     ...     np.random.normal(3, 1, 1000),
     ... ))
 
-    >>> hist = misc.Histogram(max_bins=60)
+    >>> hist = sketch.Histogram(max_bins=60)
 
     >>> for x in values:
     ...     hist = hist.update(x)
@@ -194,9 +196,9 @@ class Histogram(collections.UserList):
         Examples
         --------
 
-        >>> from river import misc
+        >>> from river import sketch
 
-        >>> hist = misc.Histogram()
+        >>> hist = sketch.Histogram()
         >>> for x in range(4):
         ...     hist = hist.update(x)
 
@@ -242,9 +244,9 @@ class Histogram(collections.UserList):
         Examples
         --------
 
-        >>> from river import misc
+        >>> from river import sketch
 
-        >>> hist = misc.Histogram()
+        >>> hist = sketch.Histogram()
         >>> for x in range(4):
         ...     hist = hist.update(x)
 
@@ -335,3 +337,6 @@ class Histogram(collections.UserList):
 
     def __repr__(self):
         return "\n".join(str(b) for b in self)
+
+    def __str__(self):
+        return repr(self)
