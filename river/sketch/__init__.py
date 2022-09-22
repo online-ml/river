@@ -8,4 +8,4 @@ from .counter import Counter
 from .heavy_hitters import HeavyHitters
 from .histogram import Histogram
 
-__all__ = ["Counter", "Histogram", "HeavyHitters"]
+__all__ = ["Counter", "HeavyHitters", "Histogram"]
