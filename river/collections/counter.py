@@ -47,7 +47,7 @@ class Counter(base.Base):
     Examples
     --------
     >>> import collections
-    >>> import river.collections as rvc
+    >>> from river import collections as rvc
 
     >>> cms = rvc.Counter(epsilon=0.005, seed=0)
 
