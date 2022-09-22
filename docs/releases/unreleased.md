@@ -4,7 +4,7 @@
 
 ## sketch
 
-- Rename `river.misc` to `river.sketch`.
+- Move `misc.Histogram` to `sketch.Histogram`.
 - Move `stats.LossyCount` to `sketch.HeavyHitters` and update its API to better match `collections.Counter`.
 - Added missing return `self` in `HeavyHitters`.
 - Added the Count-Min Sketch (`sketch.Counter`) algorithm for approximate element counting.
