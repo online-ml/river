@@ -1,10 +1,10 @@
 # Unreleased
 
-- Introducing the `collections` module with summarization tools and data sketches working in a streaming fashion!
+- Introducing the `sketch` module with summarization tools and data sketches working in a streaming fashion!
 
-## collections
+## sketch
 
-- Rename `river.misc` to `river.collections`.
-- Move `stats.LossyCount` to `river.collections.HeavyHitters` and update its API to better match `collections.Counter` from the standard Python library.
+- Rename `river.misc` to `river.sketch`.
+- Move `stats.LossyCount` to `sketch.HeavyHitters` and update its API to better match `collections.Counter`.
 - Added missing return `self` in `HeavyHitters`.
-- Added the Count-Min Sketch (`river.collections.Counter`) algorithm for approximate element counting.
+- Added the Count-Min Sketch (`sketch.Counter`) algorithm for approximate element counting.
