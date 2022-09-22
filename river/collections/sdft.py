@@ -2,8 +2,10 @@ import collections
 
 import numpy as np
 
+from river import base
 
-class SDFT:
+
+class SDFT(base.Base):
     """Sliding Discrete Fourier Transform (SDFT).
 
     Initially, the coefficients are all equal to 0, up until enough values have been seen. A call

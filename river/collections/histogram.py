@@ -3,6 +3,8 @@ import heapq
 import itertools
 import math
 
+from river import base
+
 __all__ = ["Histogram"]
 
 
@@ -68,7 +70,7 @@ def coverage_ratio(x: Bin, y: Bin) -> float:
     return max(0, min(x.right, y.right) - max(x.left, y.left)) / (y.right - y.left)
 
 
-class Histogram(collections.UserList):
+class Histogram(collections.UserList, base.Base):
     """Streaming histogram.
 
     Parameters
@@ -335,3 +337,6 @@ class Histogram(collections.UserList):
 
     def __repr__(self):
         return "\n".join(str(b) for b in self)
+
+    def __str__(self):
+        return repr(self)
