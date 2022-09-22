@@ -69,7 +69,7 @@ class Skyline(collections.UserList, base.Base):
     Here is another example using the kart data from *Mario Kart: Double Dash!!*.
 
     >>> import collections
-    >>> from river import sketch
+    >>> from river import misc
 
     >>> Kart = collections.namedtuple(
     ...      'Kart',
