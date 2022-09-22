@@ -44,10 +44,10 @@ class HeavyHitters(base.Base):
 
     >>> import random
     >>> import string
-    >>> from river import collections
+    >>> from river import sketch
 
     >>> rng = random.Random(42)
-    >>> hh = collections.HeavyHitters()
+    >>> hh = sketch.HeavyHitters()
 
     We will feed the counter with printable ASCII characters:
 

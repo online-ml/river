@@ -22,12 +22,12 @@ class SDFT(base.Base):
     --------
 
     >>> import numpy as np
-    >>> from river import collections
+    >>> from river import sketch
 
     >>> X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     >>> window_size = 5
-    >>> sdft = collections.SDFT(window_size)
+    >>> sdft = sketch.SDFT(window_size)
 
     >>> for i, x in enumerate(X):
     ...     sdft = sdft.update(x)

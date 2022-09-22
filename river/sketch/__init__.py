@@ -1,7 +1,7 @@
-"""Data collections for sequential data.
+"""Data containers and collections for sequential data.
 
-This module has summary and sketch structures that operate with
-constrained amounts of memory and processing time.
+This module has summary and sketch structures that operate with constrained amounts
+of memory and processing time.
 
 """
 from .counter import Counter

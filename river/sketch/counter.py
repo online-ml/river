@@ -47,9 +47,9 @@ class Counter(base.Base):
     Examples
     --------
     >>> import collections
-    >>> from river import collections as rvc
+    >>> from river import sketch
 
-    >>> cms = rvc.Counter(epsilon=0.005, seed=0)
+    >>> cms = sketch.Counter(epsilon=0.005, seed=0)
 
     >>> # To generate random numbers
     >>> rng = random.Random(7)
@@ -102,7 +102,7 @@ class Counter(base.Base):
 
     We can decrease the error by allocating more memory in the CMS:
 
-    >>> cms_a = rvc.Counter(epsilon=0.001, delta=0.01, seed=0)
+    >>> cms_a = sketch.Counter(epsilon=0.001, delta=0.01, seed=0)
     >>> for v in vals:
     ...     cms_a = cms_a.update(v)
 
@@ -116,7 +116,7 @@ class Counter(base.Base):
     create another CMS instance (the number of slots and hash tables must match) that monitors another sample of the same data
     generating process:
 
-    >>> cms_b = rvc.Counter(epsilon=0.001, delta=0.01, seed=7)
+    >>> cms_b = sketch.Counter(epsilon=0.001, delta=0.01, seed=7)
 
     >>> for _ in range(10000):
     ...     v = rng.randint(-1000, 1000)
