@@ -9,7 +9,6 @@ from .ewvar import EWVar
 from .iqr import IQR, RollingIQR
 from .kurtosis import Kurtosis
 from .link import Link
-from .lossy import LossyCount
 from .mad import MAD
 from .maximum import AbsMax, Max, RollingAbsMax, RollingMax
 from .mean import BayesianMean, Mean
@@ -38,7 +37,6 @@ __all__ = [
     "IQR",
     "Kurtosis",
     "Link",
-    "LossyCount",
     "MAD",
     "Max",
     "Mean",
