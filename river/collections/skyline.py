@@ -3,7 +3,7 @@ import collections
 from river import base
 
 
-class Skyline(base.Base, collections.UserList):
+class Skyline(collections.UserList, base.Base):
     """A skyline is set of points which is not dominated by any other point.
 
     This implementation uses a block nested loop. Identical observations are all part of the
