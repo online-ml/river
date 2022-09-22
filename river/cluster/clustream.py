@@ -264,7 +264,7 @@ class CluStream(base.Clusterer):
         index, _ = self._get_closest_mc(x)
         try:
             return self._kmeans_mc.predict_one(self._mc_centers[index])
-        except KeyError:
+        except (KeyError, AttributeError):
             return 0
 
 
