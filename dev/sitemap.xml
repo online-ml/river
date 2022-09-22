@@ -1071,11 +1071,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/misc/Histogram/</loc>
-         <lastmod>2022-09-22</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/misc/SDFT/</loc>
          <lastmod>2022-09-22</lastmod>
          <changefreq>daily</changefreq>
@@ -1516,6 +1511,21 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/sketch/Counter/</loc>
+         <lastmod>2022-09-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/sketch/HeavyHitters/</loc>
+         <lastmod>2022-09-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/sketch/Histogram/</loc>
+         <lastmod>2022-09-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/stats/AbsMax/</loc>
          <lastmod>2022-09-22</lastmod>
          <changefreq>daily</changefreq>
@@ -1567,11 +1577,6 @@
     </url>
     <url>
          <loc>https://riverml.xyz/dev/api/stats/Link/</loc>
-         <lastmod>2022-09-22</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/stats/LossyCount/</loc>
          <lastmod>2022-09-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -2287,6 +2292,11 @@
     </url>
     <url>
          <loc>https://riverml.xyz/dev/releases/0.9.0/</loc>
+         <lastmod>2022-09-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/releases/unreleased/</loc>
          <lastmod>2022-09-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
