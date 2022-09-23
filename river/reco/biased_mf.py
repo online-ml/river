@@ -172,6 +172,19 @@ class BiasedMF(Ranker):
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 
+    @property
+    def _mutable_attributes(self):
+        return {
+            "bias_optimizer",
+            "latent_optimizer",
+            "loss",
+            "l2_bias",
+            "l2_latent",
+            "weight_initializer",
+            "weight_initializer",
+            "clip_gradient",
+        }
+
     def predict_one(self, user, item, x=None):
 
         # Initialize the prediction to the mean

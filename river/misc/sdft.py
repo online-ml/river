@@ -2,8 +2,10 @@ import collections
 
 import numpy as np
 
+from river import base
 
-class SDFT:
+
+class SDFT(base.Base):
     """Sliding Discrete Fourier Transform (SDFT).
 
     Initially, the coefficients are all equal to 0, up until enough values have been seen. A call
@@ -35,8 +37,8 @@ class SDFT:
 
     References
     ----------
-    [^1]: `Jacobsen, E. and Lyons, R., 2003. The sliding DFT. IEEE Signal Processing Magazine, 20(2), pp.74-80. <https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf>`_
-    [^2]: `Understanding and Implementing the Sliding DFT <https://www.dsprelated.com/showarticle/776.php>`_
+    [^1]: [Jacobsen, E. and Lyons, R., 2003. The sliding DFT. IEEE Signal Processing Magazine, 20(2), pp.74-80.](https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf)
+    [^2]: [Understanding and Implementing the Sliding DFT](https://www.dsprelated.com/showarticle/776.php)
 
     """
 

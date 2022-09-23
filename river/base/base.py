@@ -48,6 +48,8 @@ class Base:
 
             # *args
             if param.kind == param.VAR_POSITIONAL:
+                if positional_args := getattr(self, name, []):
+                    params["_POSITIONAL_ARGS"] = positional_args
                 continue
 
             # **kwargs
@@ -175,8 +177,8 @@ class Base:
         def instantiate(klass, params, new_params):
 
             params = {name: new_params.get(name, param) for name, param in params.items()}
-
             return klass(
+                *(params.get("_POSITIONAL_ARGS", [])),
                 **{
                     name: (
                         instantiate(klass=param[0], params=param[1], new_params={})
@@ -184,7 +186,8 @@ class Base:
                         else copy.deepcopy(param)
                     )
                     for name, param in params.items()
-                }
+                    if name != "_POSITIONAL_ARGS"
+                },
             )
 
         clone = instantiate(

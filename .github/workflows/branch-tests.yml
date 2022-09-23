@@ -20,6 +20,9 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Cache Python dependencies
         uses: actions/cache@v2
         with:
@@ -41,7 +44,7 @@ jobs:
           key: ${{ runner.os }}
 
       - name: Download datasets
-        run: python -c "from river import datasets; datasets.CreditCard().download()"
+        run: python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download()"
 
       - name: pytest
         run: pytest

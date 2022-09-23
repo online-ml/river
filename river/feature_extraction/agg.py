@@ -115,6 +115,22 @@ class Agg(base.Transformer):
     {'revenue_max_by_place_and_country': 24, 'revenue_mean_by_place': 17.5}
     {'revenue_max_by_place_and_country': 80, 'revenue_mean_by_place': 57.5}
 
+    The `state` property returns a `pandas.Series`, which can be useful for visualizing the
+    current state.
+
+    >>> agg[0].state
+    Taco Bell      57.5
+    Burger King    17.5
+    Name: revenue_mean_by_place, dtype: float64
+
+    >>> agg[1].state
+    place        country
+    Taco Bell    France     50
+    Burger King  Sweden     20
+                 France     24
+    Taco Bell    Sweden     80
+    Name: revenue_max_by_place_and_country, dtype: int64
+
     References
     ----------
     [^1]: [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/pandas-streaming-groupby/)
@@ -151,45 +167,7 @@ class Agg(base.Transformer):
 
     @property
     def state(self) -> pd.Series:
-        """Return the current values for each group.
-
-        Examples
-        --------
-
-        >>> X = [
-        ...     {"country": "France", "place": "Taco Bell", "revenue": 42},
-        ...     {"country": "Sweden", "place": "Burger King", "revenue": 16},
-        ...     {"country": "France", "place": "Burger King", "revenue": 24},
-        ...     {"country": "Sweden", "place": "Taco Bell", "revenue": 58},
-        ...     {"country": "Sweden", "place": "Burger King", "revenue": 20},
-        ...     {"country": "France", "place": "Taco Bell", "revenue": 50},
-        ...     {"country": "France", "place": "Burger King", "revenue": 10},
-        ...     {"country": "Sweden", "place": "Taco Bell", "revenue": 80},
-        ... ]
-
-        >>> from river import feature_extraction as fx
-        >>> from river import stats
-
-        >>> agg = fx.Agg(on="revenue", by="place", how=stats.Mean())
-        >>> for x in X:
-        ...     agg = agg.learn_one(x)
-        >>> agg.state
-        Taco Bell      57.5
-        Burger King    17.5
-        Name: revenue_mean_by_place, dtype: float64
-
-        >>> agg = fx.Agg(on="revenue", by=["country", "place"], how=stats.Mean())
-        >>> for x in X:
-        ...     agg = agg.learn_one(x)
-        >>> agg.state
-        country  place
-        France   Taco Bell      46.0
-        Sweden   Burger King    18.0
-        France   Burger King    17.0
-        Sweden   Taco Bell      69.0
-        Name: revenue_mean_by_country_and_place, dtype: float64
-
-        """
+        """Return the current values for each group as a series."""
         return pd.Series(
             (stat.get() for stat in self._groups.values()),
             index=(

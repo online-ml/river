@@ -166,16 +166,8 @@ Please check out the [contribution guidelines](https://github.com/online-ml/rive
 
 ## 🤝 Affiliations
 
-**Sponsors**
-
 <p align="center">
-  <img width="55%" src="https://docs.google.com/drawings/d/e/2PACX-1vSagEhWAjDsb0c24En_fhWAf9DJZbyh5YjU7lK0sNowD2m9uv9TuFm-U77k6ObqTyN2mP05Avf6TCJc/pub?w=2073&h=1127" alt="sponsors">
-</p>
-
-**Collaborating institutions and groups**
-
-<p align="center">
-  <img width="55%" src="https://docs.google.com/drawings/d/e/2PACX-1vQB0C8YgnkCt_3C3cp-Csaw8NLZUwishdbJFB3iSbBPUD0AxEVS9AlF-Rs5PJq8UVRzRtFwZIOucuXj/pub?w=1442&h=489" alt="collaborations">
+  <img width="70%" src="https://docs.google.com/drawings/d/e/2PACX-1vSagEhWAjDsb0c24En_fhWAf9DJZbyh5YjU7lK0sNowD2m9uv9TuFm-U77k6ObqTyN2mP05Avf6TCJc/pub?w=2073&h=1127" alt="affiliations">
 </p>
 
 ## 💬 Citation

@@ -21,33 +21,36 @@ The typical workflow for contributing to `river` is:
 We encourage you to use a virtual environment. You'll want to activate it every time you want to work on `river`.
 
 ```sh
-$ python -m venv .venv
-$ source .venv/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 ```
 
 You can also create a virtual environment via `conda`:
 
 ```sh
-$ conda create -n river -y python=3.9
-$ conda activate river
+conda create -n river -y python=3.9
+conda activate river
 ```
+
+You need a `Rust` compiler you can install it by following this [link](https://www.rust-lang.org/fr/tools/install)
 
 Then, navigate to your cloned fork and install `river` and the required dependencies in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
 
+
 ```sh
-$ pip install -e ".[dev]"
+pip install -e ".[dev]"
 ```
 
 Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will run some code quality checks every time you push to GitHub.
 
 ```sh
-$ pre-commit install --hook-type pre-push
+pre-commit install --hook-type pre-push
 ```
 
 You can optionally run `pre-commit` at any time as so:
 
 ```sh
-$ pre-commit run --all-files
+pre-commit run --all-files
 ```
 
 ## Making changes
@@ -88,8 +91,8 @@ If you're adding a class or a function, then you'll need to add a docstring. We 
 To build the documentation, you need to install some extra dependencies:
 
 ```sh
-$ pip install -e ".[docs]"
-$ pip install git+https://github.com/MaxHalford/yamp
+pip install -e ".[docs]"
+pip install git+https://github.com/MaxHalford/yamp
 ```
 
 From the root of the repository, you can then run the `make livedoc` command to take a look at the documentation in your browser. This will run a custom script which parses all the docstrings and generate MarkDown files that [MkDocs](https://www.mkdocs.org/) can render.
@@ -101,7 +104,37 @@ All classes and function are automatically picked up and added to the documentat
 ## Building Cython extensions
 
 ```sh
-$ make cython
+make build-cython
+```
+
+## Building Rust extensions
+
+Debug settings:
+
+```sh
+make develop
+```
+
+Release settings:
+
+```sh
+make build-rust
+```
+
+After building the project by modifying the rust part of the codebase (changing the project architecture, renaming it, etc.), it happens that by importing `river,` the python process is killed. If this happens, we invite you to remove the following things and start a new build:
+
+```sh
+# remove all .so output from rust ie river/stats/_rust_stats.cpython*
+rm -rf target
+rm -rf river.egg-info
+rm Cargo.lock
+rm -rf build
+```
+
+## Build Cython and Rust extensions
+
+```sh
+make build_all
 ```
 
 ## Testing
@@ -111,7 +144,7 @@ $ make cython
 These tests absolutely have to pass.
 
 ```sh
-$ pytest
+pytest
 ```
 
 **Static typing**
@@ -119,7 +152,7 @@ $ pytest
 These tests absolutely have to pass.
 
 ```sh
-$ mypy river
+mypy river
 ```
 
 **Web dependent tests**
@@ -127,7 +160,7 @@ $ mypy river
 This involves tests that need an internet connection, such as those in the `datasets` module which requires downloading some files. In most cases you probably don't need to run these.
 
 ```sh
-$ pytest -m web
+pytest -m web
 ```
 
 **Notebook tests**
@@ -135,33 +168,36 @@ $ pytest -m web
 You don't have to worry too much about these, as we only check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way around.
 
 ```sh
-$ make execute-notebooks
+make execute-notebooks
 ```
 
 ## Making a new release
 
 1. Checkout `main`
-2. Bump the version in `river/__version__.py`
-3. Tag and date the `docs/releases/unreleased.md` file
-4. Run the [benchmarks](benchmarks)
-5. Commit and push
-6. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/unit-tests.yml)
-7. Push the tag:
+2. Run `make execute-notebooks` just to be safe
+3. Run the [benchmarks](benchmarks)
+4. Bump the version in `river/__version__.py`
+5. Tag and date the `docs/releases/unreleased.md` file
+6. Commit and push
+7. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/unit-tests.yml)
+8. Push the tag:
 
 ```sh
-VERSION=$(python -c "import river; print(river.__version__)"
-git tag $VERSION
-git push origin $VERSION
+RIVER_VERSION=$(python -c "import river; print(river.__version__)")
+echo $RIVER_VERSION
+git tag $RIVER_VERSION
+git push origin $RIVER_VERSION
 ```
 
-7. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml) and [publish the new docs](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
-8. Create a [release](https://github.com/online-ml/river/releases):
+9. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml) and [publish the new docs](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
+10. Create a [release](https://github.com/online-ml/river/releases):
 
 ```sh
 RELEASE_NOTES=$(cat <<-END
-- https://riverml.xyz/${VERSION}/releases/${VERSION}/
-- https://pypi.org/project/river/${VERSION}/
+- https://riverml.xyz/${RIVER_VERSION}/releases/${RIVER_VERSION}/
+- https://pypi.org/project/river/${RIVER_VERSION}/
 END
 )
-gh release create $VERSION --notes $RELEASE_NOTES
+brew update &&brew install gh
+gh release create $RIVER_VERSION --notes $RELEASE_NOTES
 ```

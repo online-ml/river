@@ -21,12 +21,12 @@ class MAD(quantile.Quantile):
     >>> mad = stats.MAD()
     >>> for x in X:
     ...     print(mad.update(x).get())
-    0
-    2
-    1
-    1
-    1
-    1
+    0.0
+    0.0
+    0.0
+    3.0
+    3.0
+    2.0
 
     Attributes
     ----------
@@ -39,6 +39,7 @@ class MAD(quantile.Quantile):
 
     """
 
+    #
     def __init__(self):
         super().__init__(q=0.5)
         self.median = quantile.Quantile(q=0.5)

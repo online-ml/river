@@ -19,6 +19,9 @@ jobs:
         with:
           python-version: 3.9
 
+      - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
@@ -29,10 +32,14 @@ jobs:
           python -m spacy download en_core_web_sm
 
       - name: Use Rich in notebooks
-        run: echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_imports.ipy
+        run: |
+          ipython profile create
+          echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_rich.ipy
 
       - name: Execute notebooks
-        run: make execute-notebooks
+        run: |
+          pip install numpy --upgrade
+          make execute-notebooks
 
       - name: Build docs
         run: make doc

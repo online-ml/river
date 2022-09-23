@@ -1,4 +1,5 @@
 from river import stats
+from river.stats import _rust_stats
 
 
 class EWMean(stats.base.Univariate):
@@ -23,7 +24,7 @@ class EWMean(stats.base.Univariate):
     >>> ewm = stats.EWMean(alpha=0.5)
     >>> for x in X:
     ...     print(ewm.update(x).get())
-    1
+    1.0
     2.0
     3.5
     3.75
@@ -40,8 +41,13 @@ class EWMean(stats.base.Univariate):
 
     """
 
+    # Note for devs, if you want look the pure python implementation here:
+    # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/ewmean.py
     def __init__(self, alpha=0.5):
+        if not 0 <= alpha <= 1:
+            raise ValueError("q is not comprised between 0 and 1")
         self.alpha = alpha
+        self._ewmean = _rust_stats.RsEWMean(alpha)
         self.mean = 0
 
     @property
@@ -49,8 +55,8 @@ class EWMean(stats.base.Univariate):
         return f"ewm_{self.alpha}"
 
     def update(self, x):
-        self.mean = self.alpha * x + (1.0 - self.alpha) * self.mean if self.mean else x
+        self._ewmean.update(x)
         return self
 
     def get(self):
-        return self.mean
+        return self._ewmean.get()

@@ -1,4 +1,4 @@
-from river import datasets, linear_model, optim, preprocessing, stats
+from river import compose, datasets, linear_model, optim, preprocessing, stats
 
 
 def test_clone_estimator():
@@ -115,3 +115,9 @@ def test_mutate():
     'l3' is not an attribute of LinearRegression
 
     """
+
+
+def test_clone_positional_args():
+    assert compose.Select(1, 2, 3).clone().keys == {1, 2, 3}
+    assert compose.Discard("a", "b", "c").clone().keys == {"a", "b", "c"}
+    assert compose.SelectType(float, int).clone().types == (float, int)

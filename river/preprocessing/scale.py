@@ -399,10 +399,10 @@ class RobustScaler(base.Transformer):
     >>> for x in X:
     ...     print(scaler.learn_one(x).transform_one(x))
     {'x': 0.0}
-    {'x': -1.0}
-    {'x': 0.0}
-    {'x': -0.124499}
-    {'x': 1.108659}
+    {'x': -0.0}
+    {'x': -0.6861149618420798}
+    {'x': -0.2614459368525924}
+    {'x': 2.3281631460423204}
 
     """
 
@@ -535,21 +535,19 @@ class AdaptiveStandardScaler(base.Transformer):
     def __init__(self, alpha=0.3):
         self.alpha = alpha
         self.vars = collections.defaultdict(functools.partial(stats.EWVar, self.alpha))
+        self.means = collections.defaultdict(functools.partial(stats.EWMean, self.alpha))
 
     def learn_one(self, x):
         for i, xi in x.items():
             self.vars[i].update(xi)
+            self.means[i].update(xi)
         return self
 
     def transform_one(self, x):
         return {
             i: safe_div(x[i] - m, s2**0.5 if s2 > 0 else 0)
-            for i, m, s2 in ((i, self.vars[i].mean.get(), self.vars[i].get()) for i in x)
+            for i, m, s2 in ((i, self.means[i].get(), self.vars[i].get()) for i in x)
         }
-
-    @property
-    def _mutable_attributes(self):
-        return {"alpha"}
 
 
 class TargetStandardScaler(compose.TargetTransformRegressor):
