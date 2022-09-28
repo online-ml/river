@@ -97,7 +97,7 @@ class TextClust(base.Clusterer):
     ...     y_pred = model.predict_one(x["text"])
     ...     y = x["cluster"]
     ...     metric = metric.update(y,y_pred)
-    ...     model = model.learn_one(x["text"], id=x["idd"])
+    ...     model = model.learn_one(x["text"])
 
     >>> print(metric)
     AdjustedRand: -0.17647058823529413
@@ -352,9 +352,11 @@ class TextClust(base.Clusterer):
                         self.term_fading,
                         self.realtime,
                     )
-                    
+
                     ## if two microclusters are merged we keep track of the ids
-                    self.micro_clusters[micro_keys[i]].merged_ids.append(self.micro_clusters[micro_keys[j]].id)
+                    self.micro_clusters[micro_keys[i]].merged_ids.append(
+                        self.micro_clusters[micro_keys[j]].id
+                    )
                     del self.micro_clusters[micro_keys[j]]
                     del micro_keys[j]
                 else:
@@ -456,9 +458,7 @@ class TextClust(base.Clusterer):
         numClusters = min([self.num_macro, len(self.micro_clusters)])
 
         # create empty clusters
-        macros = {
-            x: self.microcluster({}, self.t, 0, self.realtime, x) for x in range(numClusters)
-        }
+        macros = {x: self.microcluster({}, self.t, 0, self.realtime, x) for x in range(numClusters)}
 
         # merge micro clusters to macro clusters
         for key, value in self.microToMacro.items():
@@ -552,7 +552,7 @@ class TextClust(base.Clusterer):
                 self.updateMacroClusters()
                 return self.microToMacro[assignment] if assignment else None
 
-    ## tf container 
+    ## tf container
     class tfcontainer:
         def __init__(self, tfvalue, ids):
             self.tfvalue = tfvalue
@@ -600,13 +600,10 @@ class TextClust(base.Clusterer):
             # here we merge an existing mc wth the current mc. The tf values as well as the ids have to be transferred
             for k in list(microcluster.tf.keys()):
                 if k in self.tf:
-                    self.tf[k]["tf"] += microcluster.tf[k]["tf"]                    
+                    self.tf[k]["tf"] += microcluster.tf[k]["tf"]
                 else:
                     self.tf[k] = {}
                     self.tf[k]["tf"] = microcluster.tf[k]["tf"]
-         
-           
-
 
     ## distance class to implement different micro/macro distance metrics
     class distances:
