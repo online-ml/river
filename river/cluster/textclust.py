@@ -9,13 +9,14 @@ __all__ = ["TextClust"]
 
 
 class TextClust(base.Clusterer):
-    r"""
+    r"""textClust, a clustering algorithm for text data.
 
-    textClust [^1][^2]
 
-    textClust is a stream clustering algorithm for textual data that can identify and track topics
+
+    textClust [^1][^2] is a stream clustering algorithm for textual data that can identify and track topics
     over time in a stream of texts. The algorithm uses a widely popular two-phase clustering
     approach where the stream is first summarised in real-time.
+
     The result is many small preliminary clusters in the stream called `micro-clusters`.
     Micro-clusters maintain enough information to update and efficiently calculate the
     cosine similarity between them over time, based on the TF-IDF vector of their texts.
@@ -140,7 +141,6 @@ class TextClust(base.Clusterer):
         self.last_cleanup = 0
         self.n = 1
         self.omega = 2 ** (-1 * self.fading_factor * self.tgap)
-        self.assignment = dict()
         self.micro_clusters = dict()
         self.microToMacro = None
         self.realtime = None
@@ -154,20 +154,13 @@ class TextClust(base.Clusterer):
         self.micro_distance = self.distances(self.micro_distance)
         self.macro_distance = self.distances(self.macro_distance)
 
-    def learn_one(self, x, t=None, sample_weight=None, **kwargs):
-
-        ## if id is specified
-        if kwargs["id"]:
-            id = kwargs["id"]
-        else:
-            id = None
+    def learn_one(self, x, t=None, sample_weight=None):
 
         localdict = {}
         for key in x.keys():
             new_key = key
             localdict[new_key] = {}
             localdict[new_key]["tf"] = x[key]
-            localdict[new_key]["ids"] = [id]
         ngrams = localdict
         ngrams = dict(ngrams)
 
@@ -188,7 +181,7 @@ class TextClust(base.Clusterer):
         if len(ngrams) > 0:
 
             # create artificial micro cluster with one observation
-            mc = self.microcluster(ngrams, self.t, 1, self.realtime, id, self._clusterId)
+            mc = self.microcluster(ngrams, self.t, 1, self.realtime, self._clusterId)
 
             # calculate idf
             idf = self._calculateIDF(self.micro_clusters.values())
@@ -205,14 +198,12 @@ class TextClust(base.Clusterer):
                 self.micro_clusters[clusterId].merge(
                     mc, self.t, self.omega, self.fading_factor, self.term_fading, self.realtime
                 )
-                self.assignment[self.n] = clusterId
                 self._dist_mean += min_dist
 
             # if no close cluster is found we  create a new one
             else:
                 self._dist_mean += min_dist
                 clusterId = self._clusterId
-                self.assignment[self.n] = clusterId
                 self.micro_clusters[clusterId] = mc
                 self._clusterId += 1
 
@@ -234,7 +225,6 @@ class TextClust(base.Clusterer):
             new_key = key
             localdict[new_key] = {}
             localdict[new_key]["tf"] = x[key]
-            localdict[new_key]["ids"] = [None]
 
         ngrams = localdict
         ngrams = dict(ngrams)
@@ -243,6 +233,7 @@ class TextClust(base.Clusterer):
 
     # finds the closest micro cluster
     def _get_closest_mc(self, mc, idf, distance):
+        """Return the closest micro cluster."""
 
         ## initial variable values
         clusterId = None
@@ -361,6 +352,9 @@ class TextClust(base.Clusterer):
                         self.term_fading,
                         self.realtime,
                     )
+                    
+                    ## if two microclusters are merged we keep track of the ids
+                    self.micro_clusters[micro_keys[i]].merged_ids.append(self.micro_clusters[micro_keys[j]].id)
                     del self.micro_clusters[micro_keys[j]]
                     del micro_keys[j]
                 else:
@@ -399,18 +393,21 @@ class TextClust(base.Clusterer):
 
         indices = distm.index
 
-        ## init
+        ## init empty clusters
         for i in range(0, len(micros)):
             clusters.append([indices[i]])
 
+        ## repeat until the number of clusters k are formed
         while len(clusters) != k:
 
             min_dist = math.inf
             min_pair = ()
 
+            ## iterate over all current sets
             for i in range(0, len(clusters) - 1):
                 for j in range(i + 1, len(clusters)):
-                    #
+
+                    ## iterate over all clusters in sets
                     for c_i in clusters[i]:
                         for c_j in clusters[j]:
                             if distm[c_i][c_j] < min_dist:
@@ -460,7 +457,7 @@ class TextClust(base.Clusterer):
 
         # create empty clusters
         macros = {
-            x: self.microcluster({}, self.t, 0, self.realtime, None, x) for x in range(numClusters)
+            x: self.microcluster({}, self.t, 0, self.realtime, x) for x in range(numClusters)
         }
 
         # merge micro clusters to macro clusters
@@ -473,6 +470,7 @@ class TextClust(base.Clusterer):
                 self.term_fading,
                 self.realtime,
             )
+            macros[value].merged_ids.append(self.micro_clusters[key].id)
 
         return macros
 
@@ -494,6 +492,8 @@ class TextClust(base.Clusterer):
             print("----")
             print(type + " cluster id " + str(micro.id))
             print(type + " cluster weight " + str(micro.weight))
+            if type != "micro":
+                print("merged micro clusters: " + str(micro.merged_ids))
 
             # get indices of top terms
             indices = sorted(
@@ -527,7 +527,7 @@ class TextClust(base.Clusterer):
         # proceed, if the processed text is not empty
         if len(x) > 0:
             # create temporary micro cluster
-            mc = self.microcluster(x, 1, 1, self.realtime, None, None)
+            mc = self.microcluster(x, 1, 1, self.realtime, None)
 
             # initialize distances to infinity
             dist = float("inf")
@@ -552,7 +552,7 @@ class TextClust(base.Clusterer):
                 self.updateMacroClusters()
                 return self.microToMacro[assignment] if assignment else None
 
-    ## tf container has tf value and the original textids
+    ## tf container 
     class tfcontainer:
         def __init__(self, tfvalue, ids):
             self.tfvalue = tfvalue
@@ -562,7 +562,7 @@ class TextClust(base.Clusterer):
     class microcluster:
 
         ## Initializer / Instance Attributes
-        def __init__(self, tf, time, weight, realtime, textid, clusterid):
+        def __init__(self, tf, time, weight, realtime, clusterid):
             self.id = clusterid
             self.weight = weight
             self.time = time
@@ -570,8 +570,8 @@ class TextClust(base.Clusterer):
             self.oldweight = 0
             self.deltaweight = 0
             self.realtime = realtime
-            self.textids = [textid]
             self.n = 1
+            self.merged_ids = []
 
         ## fading micro cluster weights and also term weights, if activated
         def fade(self, tnow, omega, fading_factor, term_fading, realtime):
@@ -589,9 +589,6 @@ class TextClust(base.Clusterer):
         ## merging two microclusters into one
         def merge(self, microcluster, t, omega, fading_factor, term_fading, realtime):
 
-            ## add textids
-            self.textids = self.textids + microcluster.textids
-
             self.realtime = realtime
 
             self.weight = self.weight + microcluster.weight
@@ -603,12 +600,13 @@ class TextClust(base.Clusterer):
             # here we merge an existing mc wth the current mc. The tf values as well as the ids have to be transferred
             for k in list(microcluster.tf.keys()):
                 if k in self.tf:
-                    self.tf[k]["tf"] += microcluster.tf[k]["tf"]
-                    self.tf[k]["ids"] = self.tf[k]["ids"] + list(microcluster.tf[k]["ids"])
+                    self.tf[k]["tf"] += microcluster.tf[k]["tf"]                    
                 else:
                     self.tf[k] = {}
                     self.tf[k]["tf"] = microcluster.tf[k]["tf"]
-                    self.tf[k]["ids"] = list(microcluster.tf[k]["ids"])
+         
+           
+
 
     ## distance class to implement different micro/macro distance metrics
     class distances:
