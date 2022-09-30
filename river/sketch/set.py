@@ -19,7 +19,7 @@ class Set(base.Base):
     `True`. If that is not the case, the item was not observed yet. A nice property of Bloom filters is
     that they do not yield false negatives: unobserved items might be signalized as observed, but observed
     items are never signalized as unobserved.
-    
+
     If more than one item has the same binary code, i.e., hash collisions happen, the accuracy of the Bloom
     filter decreases, and false positives are produced. For instance, a previously unobserved item is signalized
     as observed. Increasing the size of the binary array and the value of `k` increase the filter's accuracy as
@@ -115,13 +115,16 @@ class Set(base.Base):
     [^1]: [Florian Hartmann's blog article on Bloom Filters](https://florian.github.io/bloom-filters/).
     [^2]: [Wikipedia entry on Bloom filters](https://en.wikipedia.org/wiki/Bloom_filter).
     """
+
     def __init__(self, capacity: int = 2048, fp_rate: float = 0.01, seed: int = None):
         self.capacity = capacity
         self.fp_rate = fp_rate
         self.seed = seed
 
         # Size of the binary array
-        self._asize = int(math.ceil(-((self.capacity * math.log(self.fp_rate)) / (math.log(2) ** 2))))
+        self._asize = int(
+            math.ceil(-((self.capacity * math.log(self.fp_rate)) / (math.log(2) ** 2)))
+        )
         # Number of hash functions
         self._n_hash = int(math.ceil((self._asize / self.capacity) * math.log(2)))
 
@@ -134,12 +137,12 @@ class Set(base.Base):
         # The most significant bit is always 1 and it is used to ensure the bit_length
         # does not change during the execution.
         self._bloom = 2 ** (self._asize)
-    
+
     @property
     def n_hash(self) -> int:
         """Return the number of used hash functions."""
         return self._n_hash
-    
+
     @property
     def n_bits(self) -> int:
         """Return the size of the binary array used by the Bloom filter."""
@@ -154,7 +157,7 @@ class Set(base.Base):
         # Set the corresponding bits to 1
         # https://stackoverflow.com/a/12174125
         for p in pos:
-            self._bloom |= (1 << p)
+            self._bloom |= 1 << p
 
     def update(self, values: typing.Iterable):
         for x in values:
@@ -165,14 +168,12 @@ class Set(base.Base):
     def __contains__(self, x: typing.Hashable):
         proj = []
         pos = self._hash(x)
-    
+
         # Check if the corresponding bits are 1
         # https://stackoverflow.com/a/45221136
         for p in pos:
-            proj.append(
-                (self._bloom >> p) & 1 == 1
-            )
-        
+            proj.append((self._bloom >> p) & 1 == 1)
+
         return all(proj)
 
     def _is_mergeable(self, other: "Set") -> bool:
@@ -201,13 +202,13 @@ class Set(base.Base):
         new = self.clone(include_attributes=True)
         new &= other
         return new
-    
+
     def __ior__(self, other: "Set"):
         self._check_mergeable(other)
 
         self._bloom |= other._bloom
         return self
-    
+
     def __or__(self, other: "Set"):
         new = self.clone(include_attributes=True)
         new |= other
@@ -233,12 +234,12 @@ class Set(base.Base):
             In case the hyperparameter values of the two involved `sketch.Set` instances do not match.
         """
         return self & other
-    
+
     def union(self, other: "Set"):
         """Set union.
 
         Return a new instance that results from the set union between the current `Set` object and `other`.
-        Dunder operators can be used to replace the method call, i.e., `a |= b` and `a | b` for inplace 
+        Dunder operators can be used to replace the method call, i.e., `a |= b` and `a | b` for inplace
         nd non-inplace unions, respectively.
 
         Parameters
@@ -253,4 +254,3 @@ class Set(base.Base):
             In case the hyperparameter values of the two involved `sketch.Set` instances do not match.
         """
         return self | other
-    
