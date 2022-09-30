@@ -8,3 +8,4 @@
 - Move `stats.LossyCount` to `sketch.HeavyHitters` and update its API to better match `collections.Counter`.
 - Added missing return `self` in `HeavyHitters`.
 - Added the Count-Min Sketch (`sketch.Counter`) algorithm for approximate element counting.
+- Added an implementation of Bloom filter (`sketch.Set`) to provide approximate set-like operations.
