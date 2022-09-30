@@ -240,7 +240,7 @@ class Set(base.Base):
 
         Return a new instance that results from the set union between the current `Set` object and `other`.
         Dunder operators can be used to replace the method call, i.e., `a |= b` and `a | b` for inplace
-        nd non-inplace unions, respectively.
+        and non-inplace unions, respectively.
 
         Parameters
         ----------
