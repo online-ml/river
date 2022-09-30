@@ -47,6 +47,7 @@ class Set(base.Base):
     >>> rng = random.Random(42)
     >>> s_set = sketch.Set(capacity=100, seed=0)
 
+
     We can retrieve the number of selected hash functions:
     >>> s_set.n_hash
     7
