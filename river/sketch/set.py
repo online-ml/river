@@ -114,6 +114,7 @@ class Set(base.Base):
     ----------
     [^1]: [Florian Hartmann's blog article on Bloom Filters](https://florian.github.io/bloom-filters/).
     [^2]: [Wikipedia entry on Bloom filters](https://en.wikipedia.org/wiki/Bloom_filter).
+    
     """
 
     def __init__(self, capacity: int = 2048, fp_rate: float = 0.01, seed: int = None):
