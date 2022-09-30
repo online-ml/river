@@ -46,6 +46,7 @@ class Counter(base.Base):
 
     Examples
     --------
+
     >>> import collections
     >>> from river import sketch
 

@@ -49,6 +49,7 @@ class Set(base.Base):
 
 
     We can retrieve the number of selected hash functions:
+
     >>> s_set.n_hash
     7
 
@@ -90,17 +91,20 @@ class Set(base.Base):
     False
 
     We can get the intersection between the two instances by using:
+
     >>> s_intersection = s1 & s2
     >>> 43 in s_intersection
     False
 
     We can also obtain the set union:
+
     >>> s_union = s1 | s2
 
     >>> 43 in s_union
     True
 
     The same effect of the non-inplace dunder methods can be achieved via explicit method calls:
+
     >>> 43 in s1.intersection(s2)
     False
 
@@ -116,7 +120,7 @@ class Set(base.Base):
     ----------
     [^1]: [Florian Hartmann's blog article on Bloom Filters](https://florian.github.io/bloom-filters/).
     [^2]: [Wikipedia entry on Bloom filters](https://en.wikipedia.org/wiki/Bloom_filter).
-    
+
     """
 
     def __init__(self, capacity: int = 2048, fp_rate: float = 0.01, seed: int = None):
