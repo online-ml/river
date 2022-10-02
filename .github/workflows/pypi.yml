@@ -2,10 +2,9 @@ name: pypi
 
 on:
   push:
-    push:
-      branches: "master"
     tags:
       - "*"
+
 
 jobs:
   build_wheels:
