@@ -13,7 +13,7 @@ class Triplet(collections.namedtuple("Triplet", "x y loss")):
 class HardSampling(base.Wrapper):
     """Hard sampler."""
 
-    def __init__(self, model, loss, size, p, seed=None):
+    def __init__(self, model, loss, size, p, seed: int = None):
         self.model = model
         self.loss = loss
         self.p = p

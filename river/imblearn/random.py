@@ -6,7 +6,7 @@ from river import base, utils
 
 
 class ClassificationSampler(base.Wrapper, base.Classifier):
-    def __init__(self, classifier, seed=None):
+    def __init__(self, classifier, seed: int = None):
         self.classifier = classifier
         self.seed = seed
         self._rng = random.Random(seed)
