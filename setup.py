@@ -12,9 +12,11 @@ from setuptools_rust import Binding, RustExtension  # type: ignore
 
 try:
     from numpy import get_include
+    from numpy import __version__ as numpy_version
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
     from numpy import get_include
+    from numpy import __version__ as numpy_version
 
 try:
     from Cython.Build import cythonize
@@ -49,7 +51,7 @@ setuptools.setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=setuptools.find_packages(exclude=("tests",)),
-    install_requires=(base_packages := ["numpy>=1.22", "scipy>=1.5", "pandas>=1.3"]),
+    install_requires=(base_packages := [f"numpy>={numpy_version}", "scipy>=1.5", "pandas>=1.3"]),
     extras_require={
         "dev": base_packages + [
             "black>=22.1.0",
