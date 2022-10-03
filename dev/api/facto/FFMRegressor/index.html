@@ -10259,7 +10259,7 @@
 <p>Field-aware Factorization Machine for regression.</p>
 <p>The model equation is defined by: </p>
 <div class="arithmatex">\[\hat{y}(x) = w_{0} + \sum_{j=1}^{p} w_{j} x_{j}  + \sum_{j=1}^{p} \sum_{j'=j+1}^{p} \langle \mathbf{v}_{j, f_{j'}}, \mathbf{v}_{j', f_j} \rangle x_{j} x_{j'}\]</div>
-<p>Where \mathbf{v}<em>{j, f</em>{j'}} is the latent vector corresponding to <span class="arithmatex">\(j\)</span> feature for <span class="arithmatex">\(f_{j'}\)</span> field, and \mathbf{v}_{j', f_j} is the latent vector corresponding to <span class="arithmatex">\(j'\)</span> feature for <span class="arithmatex">\(f_j\)</span> field. </p>
+<p>Where <span class="arithmatex">\(\mathbf{v}_{j, f_{j'}}\)</span> is the latent vector corresponding to <span class="arithmatex">\(j\)</span> feature for <span class="arithmatex">\(f_{j'}\)</span> field, and <span class="arithmatex">\(\mathbf{v}_{j', f_j}\)</span> is the latent vector corresponding to <span class="arithmatex">\(j'\)</span> feature for <span class="arithmatex">\(f_j\)</span> field. </p>
 <p>For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables. Field names are inferred from feature names by taking everything before the first underscore: <code>feature_name.split('_')[0]</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
