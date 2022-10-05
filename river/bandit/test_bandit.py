@@ -29,3 +29,12 @@ def test_ranking():
     bandit.arms[1].metric.value = 2
     bandit.arms[2].metric.value = 1
     assert bandit.ranking == [0, 2, 1]
+
+
+class RandomPolicy(BanditPolicy):
+
+    def pull(self, arms: list[Arm]) -> Iterator[Arm]:
+        while True:
+            yield self.rng.choice(arms)
+
+# TODO: test every policy is better than random policy

@@ -57,6 +57,7 @@ setuptools.setup(
             "black>=22.1.0",
             "flake8>=4.0.1",
             "graphviz>=0.10.1",
+            "gym>=0.26.1",
             "isort>=5.9.3",
             "matplotlib>=3.0.2",
             "mypy>=0.961",

@@ -14,16 +14,14 @@ The `utils.expand_param_grid` function can be used for this purpose.
 """
 
 from . import base
-from .epsilon_greedy import EpsilonGreedyRegressor
+from .bandit import BanditRegressor
 from .greedy import GreedyRegressor
 from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
-from .ucb import UCBRegressor
 
 __all__ = [
     "base",
-    "EpsilonGreedyRegressor",
+    "BanditRegressor",
     "GreedyRegressor",
     "SuccessiveHalvingClassifier",
     "SuccessiveHalvingRegressor",
-    "UCBRegressor",
 ]
