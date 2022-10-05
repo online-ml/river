@@ -1,72 +1,62 @@
 import abc
-import numbers
 import typing
 
-__all__ = ["DiscreteDistribution", "ContinuousDistribution"]
+from river import base
+
+__all__ = ["BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution"]
 
 
-class Distribution(typing.Protocol):
-    def update(self, x):
-        """Updates the parameters of the distribution given a new observation."""
-        ...
+class Distribution(base.Base):
 
-    def revert(self, x):
-        """Reverts the parameters of the distribution for a given observation."""
-        ...
+    @abc.abstractmethod
+    def __call__(self):
+        """Probability mass/density function."""
 
+    @abc.abstractmethod
+    def sample(self):
+        """Sample a random value from the distribution."""
 
-class DiscreteDistribution:
+    @property
+    @abc.abstractmethod
+    def n_samples(self):
+        """The number of observed samples."""
+
+class DiscreteDistribution(Distribution):
     """A probability distribution for discrete values."""
 
     @abc.abstractmethod
-    def update(self, x: typing.Any):
+    def update(self, x: typing.Hashable):
         """Updates the parameters of the distribution given a new observation."""
 
     @abc.abstractmethod
-    def revert(self, x: typing.Any):
+    def revert(self, x: typing.Hashable):
         """Reverts the parameters of the distribution for a given observation."""
 
+
+class BinaryDistribution(Distribution):
+    """A probability distribution for discrete values."""
+
     @abc.abstractmethod
-    def pmf(self, x):
-        """Probability mass function."""
+    def update(self, x: bool):
+        """Updates the parameters of the distribution given a new observation."""
 
-    @property
     @abc.abstractmethod
-    def n_samples(self):
-        """The number of observed samples."""
-
-    def __repr__(self):
-        return str(self)
+    def revert(self, x: bool):
+        """Reverts the parameters of the distribution for a given observation."""
 
 
-class ContinuousDistribution:
+
+class ContinuousDistribution(Distribution):
     """A probability distribution for continuous values."""
 
     @abc.abstractmethod
-    def update(self, x: numbers.Number):
+    def update(self, x: float):
         """Updates the parameters of the distribution given a new observation."""
 
     @abc.abstractmethod
-    def revert(self, x: numbers.Number):
+    def revert(self, x: float):
         """Reverts the parameters of the distribution for a given observation."""
 
-    @property
     @abc.abstractmethod
-    def mode(self):
-        """Most likely value."""
-
-    @abc.abstractmethod
-    def pdf(self, x):
-        """Probability density function, i.e. P(x <= X < x+dx) / dx."""
-
-    @abc.abstractmethod
-    def cdf(self, x):
+    def cdf(self, x: float):
         """Cumulative density function, i.e. P(X <= x)."""
-
-    @property
-    @abc.abstractmethod
-    def n_samples(self):
-        """The number of observed samples."""
-
-    def __repr__(self):
-        return str(self)

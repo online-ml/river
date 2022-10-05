@@ -1,7 +1,7 @@
 import collections
 import typing
 
-from . import base
+from river.proba import base
 
 __all__ = ["Multinomial"]
 
@@ -22,13 +22,15 @@ class Multinomial(base.DiscreteDistribution):
     >>> p = proba.Multinomial(['green'] * 3)
     >>> p = p.update('red')
 
-    >>> p.pmf('red')
+    >>> p('red')
     0.25
 
-    >>> p.update('red').update('red').pmf('green')
+    >>> p = p.update('red').update('red')
+    >>> p('green')
     0.5
 
-    >>> p.revert('red').revert('red').pmf('red')
+    >>> p = p.revert('red').revert('red')
+    >>> p('red')
     0.25
 
     You can wrap this with a `utils.Rolling` to measure a distribution over a window:
@@ -95,6 +97,7 @@ class Multinomial(base.DiscreteDistribution):
     """
 
     def __init__(self, events: typing.Union[dict, list] = None):
+        self.events = events
         self.counts: typing.Counter[typing.Any] = collections.Counter(events)
         self._n = sum(self.counts.values())
 
@@ -122,11 +125,11 @@ class Multinomial(base.DiscreteDistribution):
         self._n -= 1
         return self
 
-    def pmf(self, x):
+    def __call__(self, x):
         try:
             return self.counts[x] / self._n
         except ZeroDivisionError:
             return 0.0
 
-    def __str__(self):
-        return "\n".join(f"P({c}) = {self.pmf(c):.3f}" for c, _ in self.counts.most_common())
+    def __repr__(self):
+        return "\n".join(f"P({c}) = {self(c):.3f}" for c, _ in self.counts.most_common())
