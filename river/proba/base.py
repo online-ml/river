@@ -8,11 +8,19 @@ __all__ = ["BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution
 
 
 class Distribution(base.Base):
+    """
+
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
+    """
     def __init__(self, seed: int = None):
         self._rng = random.Random(seed)
 
     @abc.abstractmethod
-    def __call__(self):
+    def __call__(self, x: typing.Any) -> float:
         """Probability mass/density function."""
 
     @abc.abstractmethod
