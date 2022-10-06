@@ -9,6 +9,11 @@ __all__ = ["Gaussian"]
 class Gaussian(base.ContinuousDistribution):
     """Normal distribution with parameters mu and sigma.
 
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
     Examples
     --------
 

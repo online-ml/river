@@ -1,7 +1,5 @@
 import math
 
-import numpy as np
-
 from river.proba import base
 
 __all__ = ["Beta"]
@@ -35,6 +33,8 @@ class Beta(base.ContinuousDistribution):
         Initial alpha parameter.
     beta
         Initial beta parameter.
+    seed
+        Random number generator seed for reproducibility.
 
     Examples
     --------
@@ -62,13 +62,14 @@ class Beta(base.ContinuousDistribution):
 
     """
 
+    _USES_NUMPY_RANDOM = True
+
     def __init__(self, alpha: int = 1, beta: int = 1, seed: int = None):
-        super()
+        super().__init__(seed)
         self.alpha = alpha
         self.beta = beta
         self._alpha = alpha
         self._beta = beta
-        self._rng = np.random.default_rng(seed)
 
     @property
     def n_samples(self):

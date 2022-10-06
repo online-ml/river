@@ -13,6 +13,8 @@ class Multinomial(base.DiscreteDistribution):
     ----------
     events
         An optional list of events that already occurred.
+    seed
+        Random number generator seed for reproducibility.
 
     Examples
     --------

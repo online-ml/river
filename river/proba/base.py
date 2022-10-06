@@ -2,22 +2,21 @@ import abc
 import random
 import typing
 
+import numpy as np
+
 from river import base
 
 __all__ = ["BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution"]
 
 
 class Distribution(base.Base):
-    """
+    _USES_NUMPY_RANDOM = False
 
-    Parameters
-    ----------
-    seed
-        Random number generator seed for reproducibility.
-
-    """
     def __init__(self, seed: int = None):
-        self._rng = random.Random(seed)
+        if self._USES_NUMPY_RANDOM:
+            self._rng = np.random.default_rng(seed)
+        else:
+            self._rng = random.Random(seed)
 
     @abc.abstractmethod
     def __call__(self, x: typing.Any) -> float:
