@@ -39,7 +39,14 @@ class Distribution(base.Base):
 
 
 class DiscreteDistribution(Distribution):
-    """A probability distribution for discrete values."""
+    """A probability distribution for discrete values.
+
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
+    """
 
     @abc.abstractmethod
     def update(self, x: typing.Hashable):
@@ -51,7 +58,14 @@ class DiscreteDistribution(Distribution):
 
 
 class BinaryDistribution(Distribution):
-    """A probability distribution for discrete values."""
+    """A probability distribution for discrete values.
+
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
+    """
 
     @abc.abstractmethod
     def update(self, x: bool):
@@ -63,7 +77,14 @@ class BinaryDistribution(Distribution):
 
 
 class ContinuousDistribution(Distribution):
-    """A probability distribution for continuous values."""
+    """A probability distribution for continuous values.
+
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
+    """
 
     @abc.abstractmethod
     def update(self, x: float):
