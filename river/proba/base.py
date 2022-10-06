@@ -1,4 +1,5 @@
 import abc
+import random
 import typing
 
 from river import base
@@ -7,6 +8,9 @@ __all__ = ["BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution
 
 
 class Distribution(base.Base):
+
+    def __init__(self, seed: int = None):
+        self._rng = random.Random(seed)
 
     @abc.abstractmethod
     def __call__(self):

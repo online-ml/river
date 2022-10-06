@@ -96,7 +96,8 @@ class Multinomial(base.DiscreteDistribution):
 
     """
 
-    def __init__(self, events: typing.Union[dict, list] = None):
+    def __init__(self, events: typing.Union[dict, list] = None, seed=None):
+        super().__init__(seed)
         self.events = events
         self.counts: typing.Counter[typing.Any] = collections.Counter(events)
         self._n = sum(self.counts.values())
@@ -124,6 +125,9 @@ class Multinomial(base.DiscreteDistribution):
         self.counts.subtract([x])
         self._n -= 1
         return self
+
+    def sample(self):
+        return self._rng.choices(list(self.counts.keys()), weights=list(self.counts.values()))[0]
 
     def __call__(self, x):
         try:

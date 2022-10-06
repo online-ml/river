@@ -27,7 +27,8 @@ class Gaussian(base.ContinuousDistribution):
 
     """
 
-    def __init__(self):
+    def __init__(self, seed=None):
+        super().__init__(seed)
         self._var = stats.Var(ddof=1)
 
     @classmethod
@@ -75,3 +76,6 @@ class Gaussian(base.ContinuousDistribution):
             return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
         except ZeroDivisionError:
             return 0.0
+
+    def sample(self):
+        return self._rng.gauss(self.mu, self.sigma)

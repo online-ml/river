@@ -2,10 +2,24 @@ import collections
 import math
 import typing
 
+import numpy as np
+
 from river.proba import base
 
 __all__ = ["Beta"]
 
+
+def _beta_func(a, b):
+    """
+
+    A naive implementation with (math.gamma(a) + math.gamma(b)) / math.gamma(a + b) would
+    overflow for large values of a and b.
+
+    See https://malishoaib.wordpress.com/2014/04/15/the-beautiful-beta-functions-in-raw-python/
+    for more details.
+
+    """
+    return math.exp(math.lgamma(a) + math.lgamma(b) - math.lgamma(a+b))
 
 class Beta(base.ContinuousDistribution):
     """Beta distribution for binary data.
@@ -49,11 +63,13 @@ class Beta(base.ContinuousDistribution):
 
     """
 
-    def __init__(self, alpha: int = 1, beta: int = 1):
+    def __init__(self, alpha: int = 1, beta: int = 1, seed: int = None):
+        super()
         self.alpha = alpha
         self.beta = beta
         self._alpha = alpha
         self._beta = beta
+        self._rng = np.random.default_rng(seed)
 
     @property
     def n_samples(self):
@@ -74,12 +90,7 @@ class Beta(base.ContinuousDistribution):
         return self
 
     def __call__(self, p: float):
-        return math.gamma(self.alpha + self.beta)
-        return (
-            math.gamma(self.alpha + self.beta) * p ** (self.alpha - 1) * (1 - p) ** (self.beta - 1) /
-            (math.gamma(self.alpha) * math.gamma(self.beta))
-        )
+        return  p ** (self.alpha - 1) * (1 - p) ** (self.beta - 1) / _beta_func(self.alpha, self.beta)
 
     def sample(self):
-        from scipy import stats
-        return stats.beta.rvs(self.alpha, self.beta)
+        return self._rng.beta(self.alpha, self.beta)
