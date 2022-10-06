@@ -6,6 +6,7 @@
 
 - Added `proba.Beta`.
 - Added a `sample` method to each distribution.
+- Replaced the `pmf` and `pdf` methods with a `__call__` method.
 
 ## sketch
 
