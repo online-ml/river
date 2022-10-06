@@ -2,6 +2,12 @@
 
 - Introducing the `sketch` module with summarization tools and data sketches working in a streaming fashion!
 
+## proba
+
+- Added `proba.Beta`.
+- Added a `sample` method to each distribution.
+- Replaced the `pmf` and `pdf` methods with a `__call__` method.
+
 ## sketch
 
 - Move `misc.Histogram` to `sketch.Histogram`.

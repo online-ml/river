@@ -1,72 +1,99 @@
 import abc
-import numbers
+import random
 import typing
 
-__all__ = ["DiscreteDistribution", "ContinuousDistribution"]
+import numpy as np
+
+from river import base
+
+__all__ = ["BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution"]
 
 
-class Distribution(typing.Protocol):
-    def update(self, x):
-        """Updates the parameters of the distribution given a new observation."""
-        ...
+class Distribution(base.Base):
+    """General distribution.
 
-    def revert(self, x):
-        """Reverts the parameters of the distribution for a given observation."""
-        ...
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
 
+    """
 
-class DiscreteDistribution:
-    """A probability distribution for discrete values."""
+    _USES_NUMPY_RANDOM = False
 
-    @abc.abstractmethod
-    def update(self, x: typing.Any):
-        """Updates the parameters of the distribution given a new observation."""
-
-    @abc.abstractmethod
-    def revert(self, x: typing.Any):
-        """Reverts the parameters of the distribution for a given observation."""
+    def __init__(self, seed: int = None):
+        self._rng = np.random.default_rng(seed) if self._USES_NUMPY_RANDOM else random.Random(seed)
 
     @abc.abstractmethod
-    def pmf(self, x):
-        """Probability mass function."""
+    def __call__(self, x: typing.Any) -> float:
+        """Probability mass/density function."""
+
+    @abc.abstractmethod
+    def sample(self):
+        """Sample a random value from the distribution."""
 
     @property
     @abc.abstractmethod
     def n_samples(self):
         """The number of observed samples."""
 
-    def __repr__(self):
-        return str(self)
 
+class DiscreteDistribution(Distribution):
+    """A probability distribution for discrete values.
 
-class ContinuousDistribution:
-    """A probability distribution for continuous values."""
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
+    """
 
     @abc.abstractmethod
-    def update(self, x: numbers.Number):
+    def update(self, x: typing.Hashable):
         """Updates the parameters of the distribution given a new observation."""
 
     @abc.abstractmethod
-    def revert(self, x: numbers.Number):
+    def revert(self, x: typing.Hashable):
         """Reverts the parameters of the distribution for a given observation."""
 
-    @property
-    @abc.abstractmethod
-    def mode(self):
-        """Most likely value."""
+
+class BinaryDistribution(Distribution):
+    """A probability distribution for discrete values.
+
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
+    """
 
     @abc.abstractmethod
-    def pdf(self, x):
-        """Probability density function, i.e. P(x <= X < x+dx) / dx."""
+    def update(self, x: bool):
+        """Updates the parameters of the distribution given a new observation."""
 
     @abc.abstractmethod
-    def cdf(self, x):
+    def revert(self, x: bool):
+        """Reverts the parameters of the distribution for a given observation."""
+
+
+class ContinuousDistribution(Distribution):
+    """A probability distribution for continuous values.
+
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
+    """
+
+    @abc.abstractmethod
+    def update(self, x: float):
+        """Updates the parameters of the distribution given a new observation."""
+
+    @abc.abstractmethod
+    def revert(self, x: float):
+        """Reverts the parameters of the distribution for a given observation."""
+
+    @abc.abstractmethod
+    def cdf(self, x: float):
         """Cumulative density function, i.e. P(X <= x)."""
-
-    @property
-    @abc.abstractmethod
-    def n_samples(self):
-        """The number of observed samples."""
-
-    def __repr__(self):
-        return str(self)

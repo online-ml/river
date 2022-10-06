@@ -1,14 +1,18 @@
 import math
 
 from river import stats
-
-from . import base
+from river.proba import base
 
 __all__ = ["Gaussian"]
 
 
 class Gaussian(base.ContinuousDistribution):
     """Normal distribution with parameters mu and sigma.
+
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
 
     Examples
     --------
@@ -20,7 +24,7 @@ class Gaussian(base.ContinuousDistribution):
     >>> p
     𝒩(μ=6.500, σ=0.707)
 
-    >>> p.pdf(6.5)
+    >>> p(6.5)
     0.564189
 
     >>> p.revert(7)
@@ -28,7 +32,8 @@ class Gaussian(base.ContinuousDistribution):
 
     """
 
-    def __init__(self):
+    def __init__(self, seed=None):
+        super().__init__(seed)
         self._var = stats.Var(ddof=1)
 
     @classmethod
@@ -49,11 +54,7 @@ class Gaussian(base.ContinuousDistribution):
     def sigma(self):
         return self._var.get() ** 0.5
 
-    @property
-    def mode(self):
-        return self.mu
-
-    def __str__(self):
+    def __repr__(self):
         return f"𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})"
 
     def update(self, x, w=1.0):
@@ -64,7 +65,7 @@ class Gaussian(base.ContinuousDistribution):
         self._var.revert(x, w)
         return self
 
-    def pdf(self, x):
+    def __call__(self, x):
         var = self._var.get()
         if var:
             try:
@@ -80,3 +81,6 @@ class Gaussian(base.ContinuousDistribution):
             return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
         except ZeroDivisionError:
             return 0.0
+
+    def sample(self):
+        return self._rng.gauss(self.mu, self.sigma)
