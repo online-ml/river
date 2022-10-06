@@ -37,6 +37,10 @@ def test_ddm():
     detected_indices = perform_test(DDM(), data_stream_2)
     assert detected_indices == expected_indices
 
+    expected_indices = []
+    detected_indices = perform_test(DDM(), np.ones(1000))
+    assert detected_indices == expected_indices
+
 
 def test_eddm():
     expected_indices = [1059]
