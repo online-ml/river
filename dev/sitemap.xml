@@ -1466,12 +1466,22 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/proba/Beta/</loc>
+         <lastmod>2022-10-06</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/proba/Gaussian/</loc>
          <lastmod>2022-10-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://riverml.xyz/dev/api/proba/Multinomial/</loc>
+         <lastmod>2022-10-06</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/proba/base/BinaryDistribution/</loc>
          <lastmod>2022-10-06</lastmod>
          <changefreq>daily</changefreq>
     </url>

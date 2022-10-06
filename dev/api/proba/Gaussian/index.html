@@ -7144,6 +7144,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_27">
@@ -7157,6 +7159,20 @@
           proba
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Beta/" class="md-nav__link">
+        Beta
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -7196,6 +7212,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#attributes" class="md-nav__link">
@@ -7250,7 +7273,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27_3" type="checkbox" id="__nav_4_27_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_27_4" type="checkbox" id="__nav_4_27_4" >
       
       
       
@@ -7259,19 +7282,35 @@
         
           
         
+          
+        
       
       
-        <label class="md-nav__link" for="__nav_4_27_3">
+        <label class="md-nav__link" for="__nav_4_27_4">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="base" data-md-level="3">
-        <label class="md-nav__title" for="__nav_4_27_3">
+        <label class="md-nav__title" for="__nav_4_27_4">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../base/BinaryDistribution/" class="md-nav__link">
+        BinaryDistribution
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -10192,6 +10231,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#attributes" class="md-nav__link">
     Attributes
   </a>
@@ -10229,12 +10275,15 @@
 
 <h1 id="gaussian">Gaussian<a class="headerlink" href="#gaussian" title="Permanent link">&para;</a></h1>
 <p>Normal distribution with parameters mu and sigma.</p>
-<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
+<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>mode</strong></p>
-<p>Most likely value.</p>
+<p><strong>seed</strong> – defaults to <code>None</code></p>
+<p>Random number generator seed for reproducibility.</p>
 </li>
+</ul>
+<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
+<ul>
 <li>
 <p><strong>mu</strong></p>
 </li>
@@ -10254,7 +10303,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">p</span>
 <span class="n">𝒩</span><span class="p">(</span><span class="n">μ</span><span class="o">=</span><span class="mf">6.500</span><span class="p">,</span> <span class="n">σ</span><span class="o">=</span><span class="mf">0.707</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="mf">6.5</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="p">(</span><span class="mf">6.5</span><span class="p">)</span>
 <span class="mf">0.564189</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">revert</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
@@ -10262,19 +10311,19 @@
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
+<summary><strong>call</strong></summary>
+<p>Probability mass/density function.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>x</strong>     (<em>Any</em>)    </li>
+</ul>
+</details>
+<details class="- note">
 <summary>cdf</summary>
 <p>Cumulative density function, i.e. P(X &lt;= x).</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
-</ul>
-</details>
-<details class="- note">
-<summary>pdf</summary>
-<p>Probability density function, i.e. P(x &lt;= X &lt; x+dx) / dx.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>x</strong>    </li>
+<li><strong>x</strong>     (<em>float</em>)    </li>
 </ul>
 </details>
 <details class="- note">
@@ -10282,16 +10331,20 @@
 <p>Reverts the parameters of the distribution for a given observation.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>numbers.Number</em>)    </li>
+<li><strong>x</strong>     (<em>float</em>)    </li>
 <li><strong>w</strong>     – defaults to <code>1.0</code>    </li>
 </ul>
+</details>
+<details class="- note">
+<summary>sample</summary>
+<p>Sample a random value from the distribution.</p>
 </details>
 <details class="- note">
 <summary>update</summary>
 <p>Updates the parameters of the distribution given a new observation.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>numbers.Number</em>)    </li>
+<li><strong>x</strong>     (<em>float</em>)    </li>
 <li><strong>w</strong>     – defaults to <code>1.0</code>    </li>
 </ul>
 </details>
