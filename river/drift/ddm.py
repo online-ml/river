@@ -141,12 +141,12 @@ class DDM(DriftDetector):
                 self._s_min = s_i
                 self._ps_min = self._p_min + self._s_min
 
-            if p_i + s_i >= self._p_min + self.warning_threshold * self._s_min:
+            if p_i + s_i > self._p_min + self.warning_threshold * self._s_min:
                 self._warning_detected = True
             else:
                 self._warning_detected = False
 
-            if p_i + s_i >= self._p_min + self.drift_threshold * self._s_min:
+            if p_i + s_i > self._p_min + self.drift_threshold * self._s_min:
                 self._drift_detected = True
                 self._warning_detected = False
 
