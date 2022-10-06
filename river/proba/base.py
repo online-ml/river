@@ -8,7 +8,6 @@ __all__ = ["BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution
 
 
 class Distribution(base.Base):
-
     def __init__(self, seed: int = None):
         self._rng = random.Random(seed)
 
@@ -24,6 +23,7 @@ class Distribution(base.Base):
     @abc.abstractmethod
     def n_samples(self):
         """The number of observed samples."""
+
 
 class DiscreteDistribution(Distribution):
     """A probability distribution for discrete values."""
@@ -47,7 +47,6 @@ class BinaryDistribution(Distribution):
     @abc.abstractmethod
     def revert(self, x: bool):
         """Reverts the parameters of the distribution for a given observation."""
-
 
 
 class ContinuousDistribution(Distribution):

@@ -19,7 +19,8 @@ def _beta_func(a, b):
     for more details.
 
     """
-    return math.exp(math.lgamma(a) + math.lgamma(b) - math.lgamma(a+b))
+    return math.exp(math.lgamma(a) + math.lgamma(b) - math.lgamma(a + b))
+
 
 class Beta(base.ContinuousDistribution):
     """Beta distribution for binary data.
@@ -90,7 +91,9 @@ class Beta(base.ContinuousDistribution):
         return self
 
     def __call__(self, p: float):
-        return  p ** (self.alpha - 1) * (1 - p) ** (self.beta - 1) / _beta_func(self.alpha, self.beta)
+        return (
+            p ** (self.alpha - 1) * (1 - p) ** (self.beta - 1) / _beta_func(self.alpha, self.beta)
+        )
 
     def sample(self):
         return self._rng.beta(self.alpha, self.beta)
