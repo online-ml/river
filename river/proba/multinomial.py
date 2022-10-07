@@ -139,3 +139,7 @@ class Multinomial(base.DiscreteDistribution):
 
     def __repr__(self):
         return "\n".join(f"P({c}) = {self(c):.3f}" for c, _ in self.counts.most_common())
+
+    @property
+    def mode(self):
+        return self.counts.most_common(1)[0][0]
