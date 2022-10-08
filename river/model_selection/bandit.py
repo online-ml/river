@@ -110,6 +110,6 @@ class BanditRegressor(model_selection.base.ModelSelectionRegressor):
     def _unit_test_skips(self):
         return (
             {"check_model_selection_order_does_not_matter"}
-            if hasattr(self.policy, seed)
+            if hasattr(self.policy, "seed")
             else {}
         )
