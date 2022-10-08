@@ -1,6 +1,4 @@
-from typing import List
-
-from river import bandit, base, metrics, model_selection
+from river import bandit, metrics, model_selection
 
 
 class BanditRegressor(model_selection.base.ModelSelectionRegressor):

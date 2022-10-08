@@ -74,7 +74,8 @@ def _iter_policies():
             policy, env, id=f"{policy.__class__.__name__}-{env.unwrapped.__class__.__name__}"
         )
         # TODO: add simpler environments to test with
-        for policy in _iter_policies() if policy.__class__ not in {bandit.EpsilonGreedy, bandit.UCB}
+        for policy in _iter_policies()
+        if policy.__class__ not in {bandit.EpsilonGreedy, bandit.UCB}
         for env in _iter_envs()
     ],
 )
