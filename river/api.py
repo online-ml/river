@@ -2,8 +2,8 @@
 
 from . import (
     anomaly,
-    base,
     bandit,
+    base,
     cluster,
     compat,
     compose,

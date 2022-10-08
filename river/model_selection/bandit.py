@@ -1,8 +1,6 @@
 from typing import List
-from river import model_selection
-from river import bandit
-from river import base
-from river import metrics
+
+from river import bandit, base, metrics, model_selection
 
 
 class BanditRegressor(model_selection.base.ModelSelectionRegressor):
@@ -73,8 +71,7 @@ class BanditRegressor(model_selection.base.ModelSelectionRegressor):
     ...             metric=metrics.MAE(),
     ...             policy=bandit.UCB(
     ...                 delta=1,
-    ...                 burn_in=100,
-    ...                 seed=42
+    ...                 burn_in=100
     ...             )
     ...         )
     ...     )
@@ -85,14 +82,15 @@ class BanditRegressor(model_selection.base.ModelSelectionRegressor):
     MAE: 0.873708
 
     """
+
     def __init__(
         self,
-        models: List[base.Regressor],
+        models,
         metric: metrics.base.RegressionMetric,
-        policy: bandit.base.BanditPolicy,
+        policy: bandit.base.Policy,
     ):
         super().__init__(models, metric)
-        self.policy = policy.clone({'reward_obj': self.metric})
+        self.policy = policy.clone({"reward_obj": self.metric})
 
     @property
     def best_model(self):

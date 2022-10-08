@@ -1,4 +1,6 @@
 import math
+import random
+
 from river import bandit
 
 
@@ -26,16 +28,45 @@ class EpsilonGreedy(bandit.base.Policy):
     seed
         Random number generator seed for reproducibility.
 
+    Examples
+    --------
+
+    >>> import gym
+    >>> from river import bandit
+    >>> from river import stats
+
+    >>> env = gym.make(
+    ...     'river_bandits/CandyCaneContest-v0'
+    ... )
+    >>> _ = env.reset(seed=42)
+    >>> _ = env.action_space.seed(123)
+
+    >>> policy = bandit.EpsilonGreedy(epsilon=0.9, seed=101)
+
+    >>> metric = stats.Sum()
+    >>> while True:
+    ...     action = next(policy.pull(range(env.action_space.n)))
+    ...     observation, reward, terminated, truncated, info = env.step(action)
+    ...     policy = policy.update(action, reward)
+    ...     metric = metric.update(reward)
+    ...     if terminated or truncated:
+    ...         break
+
+    >>> metric
+    Sum: 712.
+
     References
     ----------
     [^1]: [ε-Greedy Algorithm - The Multi-Armed Bandit Problem and Its Solutions - Lilian Weng](https://lilianweng.github.io/lil-log/2018/01/23/the-multi-armed-bandit-problem-and-its-solutions.html#%CE%B5-greedy-algorithm)
 
     """
 
-    def __init__(self, epsilon: float, decay: float, reward_obj=None, burn_in=0, seed = None):
-        super().__init__(reward_obj, burn_in, seed)
+    def __init__(self, epsilon: float, decay=0.0, reward_obj=None, burn_in=0, seed: int = None):
+        super().__init__(reward_obj, burn_in)
         self.epsilon = epsilon
         self.decay = decay
+        self.seed = seed
+        self._rng = random.Random(seed)
 
     @property
     def current_epsilon(self):
@@ -46,11 +77,11 @@ class EpsilonGreedy(bandit.base.Policy):
 
     def _pull(self, arms):
         return (
-            self.rng.choice(arms)  # explore
-            if self.best_arm is None or self.rng.random() < self.current_epsilon
+            self._rng.choice(arms)  # explore
+            if self.best_arm is None or self._rng.random() < self.current_epsilon
             else self.best_arm  # exploit
         )
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"epsilon": 0.2, "decay": 0.0}
+        yield {"epsilon": 0.2}

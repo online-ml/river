@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Iterator, List
-from river import base, metrics
+from typing import Iterator
 
+from river import base, metrics
 
 __all__ = ["ModelSelectionRegressor", "ModelSelectionClassifier"]
 
@@ -50,14 +50,15 @@ class ModelSelectionRegressor(ModelSelector, base.Regressor):
     @classmethod
     def _unit_test_params(cls):
         from river import compose, linear_model, optim, preprocessing
+
         yield {
             "models": [
                 compose.Pipeline(
-                        preprocessing.StandardScaler(),
+                    preprocessing.StandardScaler(),
                     linear_model.LinearRegression(optimizer=optim.SGD(lr=1e-2)),
                 ),
                 compose.Pipeline(
-                        preprocessing.StandardScaler(),
+                    preprocessing.StandardScaler(),
                     linear_model.LinearRegression(optimizer=optim.SGD(lr=1e-1)),
                 ),
             ],
@@ -66,7 +67,7 @@ class ModelSelectionRegressor(ModelSelector, base.Regressor):
         yield {
             "models": [
                 compose.Pipeline(
-                        preprocessing.StandardScaler(),
+                    preprocessing.StandardScaler(),
                     linear_model.LinearRegression(optimizer=optim.SGD(lr=lr)),
                 )
                 for lr in [1e-4, 1e-3, 1e-2, 1e-1]

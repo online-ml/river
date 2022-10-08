@@ -1,17 +1,14 @@
 import abc
 import collections
-import random
-from typing import Hashable, Iterator, List, Union
-from river import base
-from river import metrics
-from river import proba
-from river import stats
-from river import utils
+from typing import Counter, DefaultDict, Hashable, Iterator, List, Optional, Union
+
+from river import base, metrics, proba, stats, utils
 
 __all__ = ["Arm", "Policy", "RewardObj"]
 
-Arm = Hashable
+Arm = Union[int, str]
 RewardObj = Union[stats.base.Statistic, metrics.base.Metric, proba.base.Distribution]
+
 
 class Policy(base.Base, abc.ABC):
     """Bandit policy base class.
@@ -29,20 +26,13 @@ class Policy(base.Base, abc.ABC):
 
     """
 
-    def __init__(self, reward_obj: RewardObj = None, burn_in=0, seed: int = None):
+    def __init__(self, reward_obj: RewardObj = None, burn_in=0):
         self.reward_obj = reward_obj or stats.Sum()
         self.burn_in = burn_in
-        self.seed = seed
-        self.rng = random.Random(seed)
-        self._rewards: typing.DefaultDict[Arm, RewardObj] = collections.defaultdict(self.reward_obj.clone)
+        self.best_arm: Optional[Arm] = None
+        self._rewards: DefaultDict[Arm, RewardObj] = collections.defaultdict(self.reward_obj.clone)
         self._n = 0
-        self._best_arm: Arm = None
-        self._counts = collections.Counter()
-
-    @property
-    def best_arm(self):
-        """The best arm currently."""
-        return self._best_arm
+        self._counts: Counter = collections.Counter()
 
     @abc.abstractmethod
     def _pull(self, arms: List[Arm]) -> Arm:
@@ -85,8 +75,9 @@ class Policy(base.Base, abc.ABC):
         self._n += 1
         for arm, reward in self._rewards.items():
             # The > operator assumes the reward object is a metric, a statistic, or a distribution
-            if self._best_arm is None or reward > self._rewards[self._best_arm]:
-                self._best_arm = arm
+            if self.best_arm is None or reward > self._rewards[self.best_arm]:
+                self.best_arm = arm
+        return self
 
     @property
     def ranking(self) -> List[Arm]:

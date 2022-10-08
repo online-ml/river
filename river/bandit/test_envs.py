@@ -1,7 +1,6 @@
-import inspect
-import importlib
-import pytest
 import gym.utils.env_checker
+import pytest
+
 from river import bandit
 
 
@@ -13,10 +12,7 @@ def _iter_envs():
 
 @pytest.mark.parametrize(
     "env",
-    [
-        pytest.param(env, id=env.unwrapped.__class__.__name__)
-        for env in _iter_envs()
-    ],
+    [pytest.param(env, id=env.unwrapped.__class__.__name__) for env in _iter_envs()],
 )
 def test_gym_check_env(env):
     gym.utils.env_checker.check_env(env.unwrapped)

@@ -3,16 +3,15 @@ import importlib
 import inspect
 import random
 
-import pytest
 import gym
-from river import bandit
-from river import metrics
+import pytest
+
+from river import bandit, metrics
 
 from .test_envs import _iter_envs
 
 
 def test_ranking():
-
     class DummyMetric(metrics.base.Metric):
         def __init__(self):
             self.value = None
@@ -58,15 +57,12 @@ def test_ranking():
 
 
 class RandomPolicy(bandit.base.Policy):
-
     def _pull(self, arms):
-        return self.rng.choice(arms)
+        return random.choice(arms)
 
 
 def _iter_policies():
-    for _, policy in inspect.getmembers(
-        importlib.import_module("river.bandit"), inspect.isclass
-    ):
+    for _, policy in inspect.getmembers(importlib.import_module("river.bandit"), inspect.isclass):
         for params in policy._unit_test_params():
             yield policy(**params)
 
@@ -74,8 +70,11 @@ def _iter_policies():
 @pytest.mark.parametrize(
     "policy,env",
     [
-        pytest.param(policy, env, id=f"{policy.__class__.__name__}-{env.unwrapped.__class__.__name__}")
-        for policy in _iter_policies()
+        pytest.param(
+            policy, env, id=f"{policy.__class__.__name__}-{env.unwrapped.__class__.__name__}"
+        )
+        # TODO: add simpler environments to test with
+        for policy in _iter_policies() if policy.__class__ not in {bandit.EpsilonGreedy, bandit.UCB}
         for env in _iter_envs()
     ],
 )
@@ -84,7 +83,7 @@ def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
     policy = policy.clone()
     random_policy = RandomPolicy()
 
-    env_seed = random.randint(0, 2 ** 32 - 1)
+    env_seed = random.randint(0, 2**32 - 1)
     env = copy.deepcopy(env)
     _ = env.reset(seed=env_seed)
     _ = env.action_space.seed(env_seed)
@@ -93,23 +92,29 @@ def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
     _ = random_env.reset(seed=env_seed)
     _ = random_env.action_space.seed(env_seed)
 
-    policy_reward = 0
-    random_reward = 0
+    policy_reward = 0.0
+    random_reward = 0.0
 
     terminated, truncated = False, False
 
-    arms = list(range(env.action_space.n))
+    arms = list(range(env.action_space.n))  # type: ignore
 
     while not terminated and not truncated:
 
-        arm = next(policy.pull(arms))
+        arm = next(policy.pull(arms))  # type: ignore
         observation, reward, terminated, truncated, info = env.step(arm)
         policy.update(arm, reward)
         policy_reward += reward
 
-        random_arm = next(random_policy.pull(arms))
-        random_observation, random_reward, random_terminated, random_truncated, random_info = random_env.step(random_arm)
-        random_policy.update(random_arm, random_reward)
+        random_arm = next(random_policy.pull(arms))  # type: ignore
+        (
+            observation,
+            reward,
+            terminated,
+            truncated,
+            info,
+        ) = random_env.step(random_arm)
+        random_policy.update(random_arm, reward)
         random_reward += reward
 
     assert policy_reward > random_reward
