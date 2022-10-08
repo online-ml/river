@@ -106,3 +106,10 @@ class BanditRegressor(model_selection.base.ModelSelectionRegressor):
     def _unit_test_params(cls):
         for params in super()._unit_test_params():
             yield {**params, "policy": bandit.EpsilonGreedy(0.2)}
+
+    def _unit_test_skips(self):
+        return (
+            {"check_model_selection_order_does_not_matter"}
+            if hasattr(self.policy, seed)
+            else {}
+        )
