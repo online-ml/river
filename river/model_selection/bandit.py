@@ -101,3 +101,8 @@ class BanditRegressor(model_selection.base.ModelSelectionRegressor):
             self.policy.update(arm, y_true=y, y_pred=y_pred)
             model.learn_one(x, y)
         return self
+
+    @classmethod
+    def _unit_test_params(cls):
+        for params in super()._unit_test_params():
+            yield {**params, "policy": bandit.EpsilonGreedy(0.2)}
