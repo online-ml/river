@@ -86,4 +86,6 @@ class ModelSelectionClassifier(ModelSelector, base.Classifier):
     """
 
     def predict_proba_one(self, x):
+        if self.best_model is None:
+            return self.models[0].predict_proba_one(x)
         return self.best_model.predict_proba_one(x)

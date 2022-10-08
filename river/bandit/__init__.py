@@ -10,6 +10,7 @@ variety of contexts. Within River, they are used for model selection
 from . import base
 from . import envs
 from .epsilon_greedy import EpsilonGreedy
+from .thompson import ThompsonSampling
 from .ucb import UCB
 
-__all__ = ["base", "envs", "EpsilonGreedy", "UCB"]
+__all__ = ["base", "envs", "EpsilonGreedy", "ThompsonSampling", "UCB"]

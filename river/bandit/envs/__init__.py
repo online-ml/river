@@ -3,7 +3,9 @@ from .candy_cane import CandyCaneContest
 
 __all__ = ["CandyCaneContest"]
 
-if (env_id := 'river_bandits/CandyCaneContest-v0') not in gym.envs.registry:
+RIVER_NAMESPACE = 'river_bandits'
+
+if (env_id := f'{RIVER_NAMESPACE}/CandyCaneContest-v0') not in gym.envs.registry:
     gym.envs.registration.register(
         id=env_id,
         entry_point='river.bandit.envs:CandyCaneContest',

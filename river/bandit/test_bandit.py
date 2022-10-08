@@ -1,9 +1,19 @@
-from river import base
-from river._bandit import Bandit
+import copy
+import importlib
+import inspect
+import random
+
+import pytest
+import gym
+from river import bandit
+from river import metrics
+
+from .test_envs import _iter_envs
 
 
 def test_ranking():
-    class DummyMetric(base.Base):
+
+    class DummyMetric(metrics.base.Metric):
         def __init__(self):
             self.value = None
 
@@ -14,27 +24,92 @@ def test_ranking():
         def bigger_is_better(self):
             return False
 
-    bandit = Bandit(3, DummyMetric())
-    bandit.arms[0].metric.value = 0
-    bandit.arms[1].metric.value = 1
-    bandit.arms[2].metric.value = 2
-    assert bandit.ranking == [0, 1, 2]
+        def revert(self):
+            ...
 
-    bandit.arms[0].metric.value = 2
-    bandit.arms[1].metric.value = 1
-    bandit.arms[2].metric.value = 0
-    assert bandit.ranking == [2, 1, 0]
+        def update(self):
+            ...
 
-    bandit.arms[0].metric.value = 0
-    bandit.arms[1].metric.value = 2
-    bandit.arms[2].metric.value = 1
-    assert bandit.ranking == [0, 2, 1]
+        def works_with(self):
+            ...
+
+    class DummyPolicy(bandit.base.Policy):
+        def __init__(self):
+            super().__init__(reward_obj=DummyMetric())
+
+        def _pull(self, arms):
+            ...
+
+    policy = DummyPolicy()
+    policy._rewards[0].value = 0
+    policy._rewards[1].value = 1
+    policy._rewards[2].value = 2
+    assert policy.ranking == [0, 1, 2]
+
+    policy._rewards[0].value = 2
+    policy._rewards[1].value = 1
+    policy._rewards[2].value = 0
+    assert policy.ranking == [2, 1, 0]
+
+    policy._rewards[0].value = 0
+    policy._rewards[1].value = 2
+    policy._rewards[2].value = 1
+    assert policy.ranking == [0, 2, 1]
 
 
-class RandomPolicy(BanditPolicy):
+class RandomPolicy(bandit.base.Policy):
 
-    def pull(self, arms: list[Arm]) -> Iterator[Arm]:
-        while True:
-            yield self.rng.choice(arms)
+    def _pull(self, arms):
+        return self.rng.choice(arms)
 
-# TODO: test every policy is better than random policy
+
+def _iter_policies():
+    for _, policy in inspect.getmembers(
+        importlib.import_module("river.bandit"), inspect.isclass
+    ):
+        for params in policy._unit_test_params():
+            yield policy(**params)
+
+
+@pytest.mark.parametrize(
+    "policy,env",
+    [
+        pytest.param(policy, env, id=f"{policy.__class__.__name__}-{env.unwrapped.__class__.__name__}")
+        for policy in _iter_policies()
+        for env in _iter_envs()
+    ],
+)
+def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
+    """Test that the policy is better than random."""
+    policy = policy.clone()
+    random_policy = RandomPolicy()
+
+    env_seed = random.randint(0, 2 ** 32 - 1)
+    env = copy.deepcopy(env)
+    _ = env.reset(seed=env_seed)
+    _ = env.action_space.seed(env_seed)
+
+    random_env = copy.deepcopy(env)
+    _ = random_env.reset(seed=env_seed)
+    _ = random_env.action_space.seed(env_seed)
+
+    policy_reward = 0
+    random_reward = 0
+
+    terminated, truncated = False, False
+
+    arms = list(range(env.action_space.n))
+
+    while not terminated and not truncated:
+
+        arm = next(policy.pull(arms))
+        observation, reward, terminated, truncated, info = env.step(arm)
+        policy.update(arm, reward)
+        policy_reward += reward
+
+        random_arm = next(random_policy.pull(arms))
+        random_observation, random_reward, random_terminated, random_truncated, random_info = random_env.step(random_arm)
+        random_policy.update(random_arm, random_reward)
+        random_reward += reward
+
+    assert policy_reward > random_reward

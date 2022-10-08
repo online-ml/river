@@ -99,4 +99,7 @@ class Beta(base.ContinuousDistribution):
 
     @property
     def mode(self):
-        return (self.alpha - 1) / (self.alpha + self.beta - 2)
+        try:
+            return (self.alpha - 1) / (self.alpha + self.beta - 2)
+        except ZeroDivisionError:
+            return 0.5

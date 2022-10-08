@@ -2,10 +2,27 @@ import math
 import operator
 
 from river import bandit
+from river import proba
 
 
-class UCB(bandit.base.BanditPolicy):
-    """
+class UCB(bandit.base.Policy):
+    """Upper Confidence Bound (UCB) bandit policy.
+
+    Due to the nature of this algorithm, it's recommended to scale the target so that it exhibits
+    sub-gaussian properties. This can be done by using a `preprocessing.TargetStandardScaler`.
+
+    Parameters
+    ----------
+    delta
+        The confidence level.
+    reward_obj
+        The reward object used to measure the performance of each arm. This can be a metric, a
+        statistic, or a distribution.
+    burn_in
+        The number of steps to use for the burn-in phase. Each arm is given the chance to be pulled
+        during the burn-in phase. This is useful to mitigate selection bias.
+    seed
+        Random number generator seed for reproducibility.
 
     References
     ----------
@@ -14,17 +31,20 @@ class UCB(bandit.base.BanditPolicy):
     [^3]: [The Upper Confidence Bound Algorithm - Bandit Algorithms](https://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/)
 
     """
-    def __init__(self, delta, reward_obj=None, seed=None):
-        super().__init__(reward_obj, seed)
+    def __init__(self, delta: float, reward_obj=None, burn_in=0, seed=None):
+        super().__init__(reward_obj, burn_in, seed)
         self.delta = delta
 
-    # def pull(self, arms):
-    #     sign = operator.pos if bandit.metric.bigger_is_better else operator.neg
-    #     upper_bounds = [
-    #         sign(arm.metric.get())
-    #         + self.delta * math.sqrt(2 * math.log(bandit.n_pulls) / arm.n_pulls)
-    #         if arm.n_pulls
-    #         else math.inf
-    #         for arm in bandit.arms
-    #     ]
-    #     yield max(bandit.arms, key=lambda arm: upper_bounds[arm.index])
+    def _pull(self, arms):
+        upper_bounds = {
+            arm: (reward.mode if isinstance(reward, proba.base.Distribution) else reward.get()
+            + self.delta * math.sqrt(2 * math.log(self._n) / self._counts[arm]))
+            if (reward := self._rewards.get(arm)) is not None
+            else math.inf
+            for arm in arms
+        }
+        return max(arms, key=lambda arm: upper_bounds[arm])
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"delta": 1}

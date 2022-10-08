@@ -5,15 +5,17 @@
 
 ## bandit
 
-- Added `bandit.EpsilonGreedy`
-- Added `bandit.UCB`
-- Added `bandit.envs.CandyCaneContest`, which implements the Gym interface
+- Added `bandit.EpsilonGreedy`.
+- Added `bandit.UCB`.
+- Added `bandit.ThomsonSampling`.
+- Added a `bandit.base` module.
+- Added `bandit.envs.CandyCaneContest`, which implements the Gym interface.
 
 ## model_selection
 
-- Added `model_selection.BanditRegressor`, which is a generic model selection method that works with any bandit policy
-- Removed `model_selection.EpsilonGreedyRegressor` due to the addition of `model_selection.BanditRegressor`
-- Removed `model_selection.UCBRegressor` due to the addition of `model_selection.BanditRegressor`
+- Added `model_selection.BanditRegressor`, which is a generic model selection method that works with any bandit policy.
+- Removed `model_selection.EpsilonGreedyRegressor` due to the addition of `model_selection.BanditRegressor`.
+- Removed `model_selection.UCBRegressor` due to the addition of `model_selection.BanditRegressor`.
 
 ## proba
 
