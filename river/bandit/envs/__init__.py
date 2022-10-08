@@ -1,5 +1,6 @@
 try:
     import gym
+
     GYM_INSTALLED = True
 except ImportError:
     GYM_INSTALLED = False
