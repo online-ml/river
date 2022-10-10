@@ -21,8 +21,6 @@ class Policy(base.Base, abc.ABC):
     burn_in
         The number of steps to use for the burn-in phase. Each arm is given the chance to be pulled
         during the burn-in phase. This is useful to mitigate selection bias.
-    seed
-        Random number generator seed for reproducibility.
 
     """
 
