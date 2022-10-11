@@ -15,11 +15,15 @@ class ThompsonSampling(bandit.base.Policy):
     distribution, but should rather be defined in the policy parametrization. In other words, you
     should do this:
 
-    >>> policy = ThompsonSampling(dist=proba.Beta(1, 1), seed=42)
+    ```
+    policy = ThompsonSampling(dist=proba.Beta(1, 1), seed=42)
+    ```
 
     and not this:
 
-    >>> policy = ThompsonSampling(dist=proba.Beta(1, 1, seed=42))
+    ```
+    policy = ThompsonSampling(dist=proba.Beta(1, 1, seed=42))
+    ```
 
     Parameters
     ----------

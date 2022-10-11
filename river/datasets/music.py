@@ -4,7 +4,7 @@ from . import base
 
 
 class Music(base.RemoteDataset):
-    """Bike sharing station information from the city of Toulouse.
+    """Multi-label music mood prediction.
 
     The goal is to predict to which kinds of moods a song pertains to.
 
