@@ -10413,21 +10413,9 @@
 <p>Thompson sampling.</p>
 <p>Thompson sampling is often used with a Beta distribution. However, any probability distribution can be used, as long it makes sense with the reward shape. For instance, a Beta distribution is meant to be used with binary rewards, while a Gaussian distribution is meant to be used with continuous rewards. </p>
 <p>The randomness of a distribution is controlled by its seed. The seed should not set within the distribution, but should rather be defined in the policy parametrization. In other words, you should do this: </p>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>policy = ThompsonSampling(dist=proba.Beta(1, 1), seed=42) </p>
-</blockquote>
-</blockquote>
-</blockquote>
+<p><code>policy = ThompsonSampling(dist=proba.Beta(1, 1), seed=42)</code> </p>
 <p>and not this: </p>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>policy = ThompsonSampling(dist=proba.Beta(1, 1, seed=42))</p>
-</blockquote>
-</blockquote>
-</blockquote>
+<p><code>policy = ThompsonSampling(dist=proba.Beta(1, 1, seed=42))</code></p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

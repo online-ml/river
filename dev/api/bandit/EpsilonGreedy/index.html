@@ -10410,8 +10410,8 @@
 
 
 <h1 id="epsilongreedy">EpsilonGreedy<a class="headerlink" href="#epsilongreedy" title="Permanent link">&para;</a></h1>
-<p><span class="arithmatex">\(\eps\)</span>-greedy bandit policy.</p>
-<p>Performs arm selection by using an <span class="arithmatex">\(\eps\)</span>-greedy bandit strategy. An arm is selected at each step. The best arm is selected (1 - <span class="arithmatex">\(\eps\)</span>%) of the time. </p>
+<p><span class="arithmatex">\(\varepsilon\)</span>-greedy bandit policy.</p>
+<p>Performs arm selection by using an <span class="arithmatex">\(\varepsilon\)</span>-greedy bandit strategy. An arm is selected at each step. The best arm is selected (1 - <span class="arithmatex">\(\varepsilon\)</span>)% of the time. </p>
 <p>Selection bias is a common problem when using bandits. This bias can be mitigated by using burn-in phase. Each model is given the chance to learn during the first <code>burn_in</code> steps.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>

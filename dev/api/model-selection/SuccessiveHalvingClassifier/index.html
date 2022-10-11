@@ -10416,7 +10416,7 @@
 <div class="arithmatex">\[\frac{2kn}{eta}\]</div>
 <p>It is recommended that you check this beforehand. This bound can't be checked by the function because the size of the dataset is not known. In fact it is potentially infinite, in which case the algorithm will terminate once all the budget has been spent. </p>
 <p>If you have a budget of <code>B</code>, and that your dataset contains <code>n</code> observations, then the number of hyperparameter combinations that will spend all the budget and go through all the data is: </p>
-<div class="arithmatex">\[\ceil(\floor(\frac{B}{(2n)}) \times eta)\]</div>
+<div class="arithmatex">\[\left\lceil\left\lfloor\frac{B}{2n}\right\rfloor \times eta \right\rceil\]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
