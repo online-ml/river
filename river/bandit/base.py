@@ -4,7 +4,7 @@ from typing import Counter, DefaultDict, Iterator, List, Optional, Union
 
 from river import base, metrics, proba, stats, utils
 
-__all__ = ["Arm", "Policy", "RewardObj"]
+__all__ = ["ArmID", "Policy", "RewardObj"]
 
 ArmID = Union[int, str]
 RewardObj = Union[stats.base.Statistic, metrics.base.Metric, proba.base.Distribution]
@@ -28,7 +28,9 @@ class Policy(base.Base, abc.ABC):
         self.reward_obj = reward_obj or stats.Sum()
         self.burn_in = burn_in
         self.best_arm_id: Optional[ArmID] = None
-        self._rewards: DefaultDict[ArmID, RewardObj] = collections.defaultdict(self.reward_obj.clone)
+        self._rewards: DefaultDict[ArmID, RewardObj] = collections.defaultdict(
+            self.reward_obj.clone
+        )
         self._n = 0
         self._counts: Counter = collections.Counter()
 
