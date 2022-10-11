@@ -2,6 +2,7 @@
 
 from . import (
     anomaly,
+    bandit,
     base,
     cluster,
     compat,
@@ -41,6 +42,7 @@ from . import (
 __all__ = [
     "anomaly",
     "base",
+    "bandit",
     "cluster",
     "compat",
     "compose",

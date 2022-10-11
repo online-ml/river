@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Iterator, List
+from typing import Iterator
 
-from river import base, compose, linear_model, metrics, optim, preprocessing
-from river._bandit import Bandit, BanditPolicy
+from river import base, metrics
 
 __all__ = ["ModelSelectionRegressor", "ModelSelectionClassifier"]
 
@@ -44,10 +43,14 @@ class ModelSelectionRegressor(ModelSelector, base.Regressor):
     """
 
     def predict_one(self, x):
+        if self.best_model is None:
+            return self.models[0].predict_one(x)
         return self.best_model.predict_one(x)
 
     @classmethod
     def _unit_test_params(cls):
+        from river import compose, linear_model, optim, preprocessing
+
         yield {
             "models": [
                 compose.Pipeline(
@@ -84,28 +87,6 @@ class ModelSelectionClassifier(ModelSelector, base.Classifier):
     """
 
     def predict_proba_one(self, x):
+        if self.best_model is None:
+            return self.models[0].predict_proba_one(x)
         return self.best_model.predict_proba_one(x)
-
-
-class BanditRegressor(ModelSelectionRegressor):
-    def __init__(
-        self,
-        models: List[base.Regressor],
-        metric: metrics.base.RegressionMetric,
-        policy: BanditPolicy,
-    ):
-        super().__init__(models, metric)  # type: ignore
-        self.bandit = Bandit(n_arms=len(models), metric=metric)
-        self.policy = policy
-
-    @property
-    def best_model(self):
-        return self[self.bandit.best_arm.index]
-
-    def learn_one(self, x, y):
-        for arm in self.policy.pull(self.bandit):
-            model = self[arm.index]
-            y_pred = model.predict_one(x)
-            self.bandit.update(arm, y_true=y, y_pred=y_pred)
-            model.learn_one(x, y)
-        return self

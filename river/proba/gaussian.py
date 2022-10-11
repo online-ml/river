@@ -84,3 +84,7 @@ class Gaussian(base.ContinuousDistribution):
 
     def sample(self):
         return self._rng.gauss(self.mu, self.sigma)
+
+    @property
+    def mode(self):
+        return self.mu

@@ -52,6 +52,9 @@ class Metric(base.Base, abc.ABC):
         op = operator.gt if self.bigger_is_better else operator.lt
         return op(self.get(), other.get())
 
+    def __gt__(self, other):
+        return self.is_better_than(other)
+
     def __repr__(self):
         """Return the class name along with the current value of the metric."""
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")

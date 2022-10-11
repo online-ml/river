@@ -96,3 +96,10 @@ class Beta(base.ContinuousDistribution):
 
     def sample(self):
         return self._rng.beta(self.alpha, self.beta)
+
+    @property
+    def mode(self):
+        try:
+            return (self.alpha - 1) / (self.alpha + self.beta - 2)
+        except ZeroDivisionError:
+            return 0.5

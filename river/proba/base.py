@@ -22,6 +22,7 @@ class Distribution(base.Base):
     _USES_NUMPY_RANDOM = False
 
     def __init__(self, seed: int = None):
+        self.seed = seed
         self._rng = np.random.default_rng(seed) if self._USES_NUMPY_RANDOM else random.Random(seed)
 
     @abc.abstractmethod
@@ -36,6 +37,14 @@ class Distribution(base.Base):
     @abc.abstractmethod
     def n_samples(self):
         """The number of observed samples."""
+
+    @property
+    @abc.abstractmethod
+    def mode(self):
+        """The most likely value in the distribution."""
+
+    def __gt__(self, other):
+        return self.mode > other.mode
 
 
 class DiscreteDistribution(Distribution):
