@@ -75,11 +75,11 @@ class EpsilonGreedy(bandit.base.Policy):
             return self.epsilon * math.exp(-self._n * self.decay)
         return self.epsilon
 
-    def _pull(self, arms):
+    def _pull(self, arm_ids):
         return (
-            self._rng.choice(arms)  # explore
-            if self.best_arm is None or self._rng.random() < self.current_epsilon
-            else self.best_arm  # exploit
+            self._rng.choice(arm_ids)  # explore
+            if self.best_arm_id is None or self._rng.random() < self.current_epsilon
+            else self.best_arm_id  # exploit
         )
 
     @classmethod

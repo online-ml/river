@@ -6,7 +6,7 @@ from river import base, metrics, proba, stats, utils
 
 __all__ = ["Arm", "Policy", "RewardObj"]
 
-Arm = Union[int, str]
+ArmID = Union[int, str]
 RewardObj = Union[stats.base.Statistic, metrics.base.Metric, proba.base.Distribution]
 
 
@@ -27,16 +27,16 @@ class Policy(base.Base, abc.ABC):
     def __init__(self, reward_obj: RewardObj = None, burn_in=0):
         self.reward_obj = reward_obj or stats.Sum()
         self.burn_in = burn_in
-        self.best_arm: Optional[Arm] = None
-        self._rewards: DefaultDict[Arm, RewardObj] = collections.defaultdict(self.reward_obj.clone)
+        self.best_arm_id: Optional[ArmID] = None
+        self._rewards: DefaultDict[ArmID, RewardObj] = collections.defaultdict(self.reward_obj.clone)
         self._n = 0
         self._counts: Counter = collections.Counter()
 
     @abc.abstractmethod
-    def _pull(self, arms: List[Arm]) -> Arm:
+    def _pull(self, arm_ids: List[ArmID]) -> ArmID:
         ...
 
-    def pull(self, arms: List[Arm]) -> Iterator[Arm]:
+    def pull(self, arm_ids: List[ArmID]) -> Iterator[ArmID]:
         """Pull arm(s).
 
         This method is a generator that yields the arm(s) that should be pulled. During the burn-in
@@ -46,21 +46,21 @@ class Policy(base.Base, abc.ABC):
 
         Parameters
         ----------
-        arms
+        arm_ids
             The list of arms that can be pulled.
 
         """
-        for arm in arms:
-            if self._counts[arm] < self.burn_in:
-                yield arm
-        yield self._pull(arms)
+        for arm_id in arm_ids:
+            if self._counts[arm_id] < self.burn_in:
+                yield arm_id
+        yield self._pull(arm_ids)
 
-    def update(self, arm, *reward_args, **reward_kwargs):
+    def update(self, arm_id, *reward_args, **reward_kwargs):
         """Update an arm's state.
 
         Parameters
         ----------
-        arm
+        arm_id
             The arm to update.
         reward_args
             Positional arguments to pass to the reward object.
@@ -68,21 +68,21 @@ class Policy(base.Base, abc.ABC):
             Keyword arguments to pass to the reward object.
 
         """
-        self._rewards[arm].update(*reward_args, **reward_kwargs)
-        self._counts[arm] += 1
+        self._rewards[arm_id].update(*reward_args, **reward_kwargs)
+        self._counts[arm_id] += 1
         self._n += 1
-        for arm, reward in self._rewards.items():
+        for arm_id, reward in self._rewards.items():
             # The > operator assumes the reward object is a metric, a statistic, or a distribution
-            if self.best_arm is None or reward > self._rewards[self.best_arm]:
-                self.best_arm = arm
+            if self.best_arm_id is None or reward > self._rewards[self.best_arm_id]:
+                self.best_arm_id = arm_id
         return self
 
     @property
-    def ranking(self) -> List[Arm]:
+    def ranking(self) -> List[ArmID]:
         """Return the list of arms in descending order of performance."""
         return sorted(
             self._rewards,
-            key=lambda arm: self._rewards[arm],
+            key=lambda arm_id: self._rewards[arm_id],
             reverse=True,
         )
 
@@ -90,15 +90,15 @@ class Policy(base.Base, abc.ABC):
         ranking = self.ranking
         return utils.pretty.print_table(
             headers=[
-                "Arm",
+                "Arm ID",
                 "Reward",
                 "Pulls",
                 "Share",
             ],
             columns=[
                 list(map(str, ranking)),
-                [str(self._rewards[arm]) for arm in ranking],
-                [f"{self._counts[arm]:,d}" for arm in ranking],
-                [f"{self._counts[arm] / self._n:.2%}" for arm in ranking],
+                [str(self._rewards[arm_id]) for arm_id in ranking],
+                [f"{self._counts[arm_id]:,d}" for arm_id in ranking],
+                [f"{self._counts[arm_id] / self._n:.2%}" for arm_id in ranking],
             ],
         )

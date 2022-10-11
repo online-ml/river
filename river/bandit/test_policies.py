@@ -57,8 +57,8 @@ def test_ranking():
 
 
 class RandomPolicy(bandit.base.Policy):
-    def _pull(self, arms):
-        return random.choice(arms)
+    def _pull(self, arm_ids):
+        return random.choice(arm_ids)
 
 
 def _iter_policies():
@@ -98,24 +98,24 @@ def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
 
     terminated, truncated = False, False
 
-    arms = list(range(env.action_space.n))  # type: ignore
+    arm_ids = list(range(env.action_space.n))  # type: ignore
 
     while not terminated and not truncated:
 
-        arm = next(policy.pull(arms))  # type: ignore
-        observation, reward, terminated, truncated, info = env.step(arm)
-        policy.update(arm, reward)
+        arm_id = next(policy.pull(arm_ids))  # type: ignore
+        observation, reward, terminated, truncated, info = env.step(arm_id)
+        policy.update(arm_id, reward)
         policy_reward += reward
 
-        random_arm = next(random_policy.pull(arms))  # type: ignore
+        random_arm_id = next(random_policy.pull(arm_ids))  # type: ignore
         (
             observation,
             reward,
             terminated,
             truncated,
             info,
-        ) = random_env.step(random_arm)
-        random_policy.update(random_arm, reward)
+        ) = random_env.step(random_arm_id)
+        random_policy.update(random_arm_id, reward)
         random_reward += reward
 
     assert policy_reward > random_reward

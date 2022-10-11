@@ -78,8 +78,8 @@ class ThompsonSampling(bandit.base.Policy):
     def dist(self):
         return self.reward_obj
 
-    def _pull(self, arms):
-        return max(arms, key=lambda arm: self._rewards[arm].sample())
+    def _pull(self, arm_ids):
+        return max(arm_ids, key=lambda arm_id: self._rewards[arm_id].sample())
 
     @classmethod
     def _unit_test_params(cls):

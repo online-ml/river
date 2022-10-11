@@ -61,19 +61,19 @@ class UCB(bandit.base.Policy):
         super().__init__(reward_obj, burn_in)
         self.delta = delta
 
-    def _pull(self, arms):
+    def _pull(self, arm_ids):
         upper_bounds = {
-            arm: (
+            arm_id: (
                 reward.mode
                 if isinstance(reward, proba.base.Distribution)
                 else reward.get()
-                + self.delta * math.sqrt(2 * math.log(self._n) / self._counts[arm])
+                + self.delta * math.sqrt(2 * math.log(self._n) / self._counts[arm_id])
             )
-            if (reward := self._rewards.get(arm)) is not None
+            if (reward := self._rewards.get(arm_id)) is not None
             else math.inf
-            for arm in arms
+            for arm_id in arm_ids
         }
-        return max(arms, key=lambda arm: upper_bounds[arm])
+        return max(arm_ids, key=lambda arm_id: upper_bounds[arm_id])
 
     @classmethod
     def _unit_test_params(cls):
