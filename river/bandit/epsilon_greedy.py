@@ -5,10 +5,10 @@ from river import bandit
 
 
 class EpsilonGreedy(bandit.base.Policy):
-    r"""$\eps$-greedy bandit policy.
+    r"""$\varepsilon$-greedy bandit policy.
 
-    Performs arm selection by using an $\eps$-greedy bandit strategy. An arm is selected at each
-    step. The best arm is selected (1 - $\eps$%) of the time.
+    Performs arm selection by using an $\varepsilon$-greedy bandit strategy. An arm is selected at each
+    step. The best arm is selected (1 - $\varepsilon$)% of the time.
 
     Selection bias is a common problem when using bandits. This bias can be mitigated by using
     burn-in phase. Each model is given the chance to learn during the first `burn_in` steps.

@@ -118,7 +118,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, ModelSelectionRegressor):
     number of hyperparameter combinations that will spend all the budget and go through all the
     data is:
 
-    $$\ceil(\floor(\frac{B}{2n}) \times eta)$$
+    $$\left\lceil\left\lfloor\frac{B}{2n}\right\rfloor \times eta \right\rceil$$
 
     Parameters
     ----------
@@ -275,7 +275,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, ModelSelectionClassifier):
     number of hyperparameter combinations that will spend all the budget and go through all the
     data is:
 
-    $$\ceil(\floor(\frac{B}{(2n)}) \times eta)$$
+    $$\left\lceil\left\lfloor\frac{B}{2n}\right\rfloor \times eta \right\rceil$$
 
     Parameters
     ----------
