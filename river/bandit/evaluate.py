@@ -6,10 +6,17 @@ try:
     import gym
 except ImportError:
     ...
-from river import bandit
-from river import stats
+from river import bandit, stats
 
-def evaluate(policies: List[bandit.base.Policy], env: "gym.Env", pull_func: Callable[[bandit.base.Policy, "gym.Env"], bandit.base.ArmID], reward_stat: stats.base.Univariate = None, n_episodes: int = 20, seed: int = None):
+
+def evaluate(
+    policies: List[bandit.base.Policy],
+    env: "gym.Env",
+    pull_func: Callable[[bandit.base.Policy, "gym.Env"], bandit.base.ArmID],
+    reward_stat: stats.base.Univariate = None,
+    n_episodes: int = 20,
+    seed: int = None,
+):
     """Benchmark a list of policies on a given Gym environment.
 
     This is a high-level utility function for benchmarking a list of policies on a given
@@ -115,8 +122,8 @@ def evaluate(policies: List[bandit.base.Policy], env: "gym.Env", pull_func: Call
     for episode in range(n_episodes):
         episode_policies = [policy.clone() for policy in policies]
         episode_env = copy.deepcopy(env)
-        episode_env.reset(seed=rng.randint(0, 2 ** 32))
-        episode_env.action_space.seed(rng.randint(0, 2 ** 32 - 1))
+        episode_env.reset(seed=rng.randint(0, 2**32))
+        episode_env.action_space.seed(rng.randint(0, 2**32 - 1))
         episode_envs = [copy.deepcopy(episode_env) for _ in episode_policies]
         episode_reward_stats = [reward_stat.clone() for _ in policies]
 
@@ -125,7 +132,9 @@ def evaluate(policies: List[bandit.base.Policy], env: "gym.Env", pull_func: Call
 
         while not done:
             terminated, truncated = False, False
-            for i, (_policy, _env, _reward_stat) in enumerate(zip(episode_policies, episode_envs, episode_reward_stats)):
+            for i, (_policy, _env, _reward_stat) in enumerate(
+                zip(episode_policies, episode_envs, episode_reward_stats)
+            ):
 
                 action = pull_func(_policy, _env)
                 observation, reward, terminated, truncated, info = _env.step(action)
