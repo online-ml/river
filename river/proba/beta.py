@@ -62,8 +62,6 @@ class Beta(base.ContinuousDistribution):
 
     """
 
-    _USES_NUMPY_RANDOM = True
-
     def __init__(self, alpha: int = 1, beta: int = 1, seed: int = None):
         super().__init__(seed)
         self.alpha = alpha
@@ -95,7 +93,7 @@ class Beta(base.ContinuousDistribution):
         )
 
     def sample(self):
-        return self._rng.beta(self.alpha, self.beta)
+        return self._rng.betavariate(self.alpha, self.beta)
 
     @property
     def mode(self):

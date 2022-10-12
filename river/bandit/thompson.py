@@ -61,7 +61,7 @@ class ThompsonSampling(bandit.base.Policy):
     ...         break
 
     >>> metric
-    Sum: 859.
+    Sum: 820.
 
     References
     ----------
