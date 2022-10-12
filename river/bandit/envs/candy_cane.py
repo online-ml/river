@@ -26,9 +26,7 @@ class CandyCaneContest(gym.Env):
     >>> import gym
     >>> from river import stats
 
-    >>> env = gym.make(
-    ...     'river_bandits/CandyCaneContest-v0'
-    ... )
+    >>> env = gym.make('river_bandits/CandyCaneContest-v0')
     >>> _ = env.reset(seed=42)
     >>> _ = env.action_space.seed(123)
 
