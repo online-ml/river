@@ -12,7 +12,7 @@ class UCB(bandit.base.Policy):
     Parameters
     ----------
     delta
-        The confidence level.
+        The confidence level. Setting this to 1 leads to what is called the UCB1 policy.
     reward_obj
         The reward object used to measure the performance of each arm. This can be a metric, a
         statistic, or a distribution.
