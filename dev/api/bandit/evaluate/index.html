@@ -12,14 +12,14 @@
         <meta name="author" content="The river developers">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/utils/expand-param-grid/">
+        <link rel="canonical" href="https://riverml.xyz/dev/api/bandit/evaluate/">
       
       <link rel="icon" href="../../../img/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.6">
     
     
       
-        <title>expand_param_grid - River</title>
+        <title>evaluate - River</title>
       
     
     
@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#expand_param_grid" class="md-skip">
+        <a href="#evaluate" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              expand_param_grid
+              evaluate
             
           </span>
         </div>
@@ -1284,12 +1284,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" checked>
       
       
       
@@ -1324,7 +1326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bandit/EpsilonGreedy/" class="md-nav__link">
+      <a href="../EpsilonGreedy/" class="md-nav__link">
         EpsilonGreedy
       </a>
     </li>
@@ -1338,7 +1340,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bandit/ThompsonSampling/" class="md-nav__link">
+      <a href="../ThompsonSampling/" class="md-nav__link">
         ThompsonSampling
       </a>
     </li>
@@ -1352,7 +1354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bandit/UCB/" class="md-nav__link">
+      <a href="../UCB/" class="md-nav__link">
         UCB
       </a>
     </li>
@@ -1364,11 +1366,59 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../bandit/evaluate/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          evaluate
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         evaluate
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1410,7 +1460,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bandit/base/Policy/" class="md-nav__link">
+      <a href="../base/Policy/" class="md-nav__link">
         Policy
       </a>
     </li>
@@ -9190,14 +9240,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_36" type="checkbox" id="__nav_4_36" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_36" type="checkbox" id="__nav_4_36" >
       
       
       
@@ -9244,7 +9292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Rolling/" class="md-nav__link">
+      <a href="../../utils/Rolling/" class="md-nav__link">
         Rolling
       </a>
     </li>
@@ -9258,7 +9306,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../SortedWindow/" class="md-nav__link">
+      <a href="../../utils/SortedWindow/" class="md-nav__link">
         SortedWindow
       </a>
     </li>
@@ -9272,7 +9320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../TimeRolling/" class="md-nav__link">
+      <a href="../../utils/TimeRolling/" class="md-nav__link">
         TimeRolling
       </a>
     </li>
@@ -9286,7 +9334,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../VectorDict/" class="md-nav__link">
+      <a href="../../utils/VectorDict/" class="md-nav__link">
         VectorDict
       </a>
     </li>
@@ -9300,7 +9348,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../dict2numpy/" class="md-nav__link">
+      <a href="../../utils/dict2numpy/" class="md-nav__link">
         dict2numpy
       </a>
     </li>
@@ -9312,59 +9360,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          expand_param_grid
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../utils/expand-param-grid/" class="md-nav__link">
         expand_param_grid
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -9376,7 +9376,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../log-method-calls/" class="md-nav__link">
+      <a href="../../utils/log-method-calls/" class="md-nav__link">
         log_method_calls
       </a>
     </li>
@@ -9390,7 +9390,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../numpy2dict/" class="md-nav__link">
+      <a href="../../utils/numpy2dict/" class="md-nav__link">
         numpy2dict
       </a>
     </li>
@@ -9462,7 +9462,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/argmax/" class="md-nav__link">
+      <a href="../../utils/math/argmax/" class="md-nav__link">
         argmax
       </a>
     </li>
@@ -9476,7 +9476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/chain-dot/" class="md-nav__link">
+      <a href="../../utils/math/chain-dot/" class="md-nav__link">
         chain_dot
       </a>
     </li>
@@ -9490,7 +9490,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/clamp/" class="md-nav__link">
+      <a href="../../utils/math/clamp/" class="md-nav__link">
         clamp
       </a>
     </li>
@@ -9504,7 +9504,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/dot/" class="md-nav__link">
+      <a href="../../utils/math/dot/" class="md-nav__link">
         dot
       </a>
     </li>
@@ -9518,7 +9518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/dotvecmat/" class="md-nav__link">
+      <a href="../../utils/math/dotvecmat/" class="md-nav__link">
         dotvecmat
       </a>
     </li>
@@ -9532,7 +9532,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/matmul2d/" class="md-nav__link">
+      <a href="../../utils/math/matmul2d/" class="md-nav__link">
         matmul2d
       </a>
     </li>
@@ -9546,7 +9546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/minkowski-distance/" class="md-nav__link">
+      <a href="../../utils/math/minkowski-distance/" class="md-nav__link">
         minkowski_distance
       </a>
     </li>
@@ -9560,7 +9560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/norm/" class="md-nav__link">
+      <a href="../../utils/math/norm/" class="md-nav__link">
         norm
       </a>
     </li>
@@ -9574,7 +9574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/outer/" class="md-nav__link">
+      <a href="../../utils/math/outer/" class="md-nav__link">
         outer
       </a>
     </li>
@@ -9588,7 +9588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/prod/" class="md-nav__link">
+      <a href="../../utils/math/prod/" class="md-nav__link">
         prod
       </a>
     </li>
@@ -9602,7 +9602,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/sherman-morrison/" class="md-nav__link">
+      <a href="../../utils/math/sherman-morrison/" class="md-nav__link">
         sherman_morrison
       </a>
     </li>
@@ -9616,7 +9616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/sigmoid/" class="md-nav__link">
+      <a href="../../utils/math/sigmoid/" class="md-nav__link">
         sigmoid
       </a>
     </li>
@@ -9630,7 +9630,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/sign/" class="md-nav__link">
+      <a href="../../utils/math/sign/" class="md-nav__link">
         sign
       </a>
     </li>
@@ -9644,7 +9644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/softmax/" class="md-nav__link">
+      <a href="../../utils/math/softmax/" class="md-nav__link">
         softmax
       </a>
     </li>
@@ -9658,7 +9658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../math/woodbury-matrix/" class="md-nav__link">
+      <a href="../../utils/math/woodbury-matrix/" class="md-nav__link">
         woodbury_matrix
       </a>
     </li>
@@ -9711,7 +9711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../pretty/humanize-bytes/" class="md-nav__link">
+      <a href="../../utils/pretty/humanize-bytes/" class="md-nav__link">
         humanize_bytes
       </a>
     </li>
@@ -9725,7 +9725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../pretty/print-table/" class="md-nav__link">
+      <a href="../../utils/pretty/print-table/" class="md-nav__link">
         print_table
       </a>
     </li>
@@ -9776,7 +9776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../random/poisson/" class="md-nav__link">
+      <a href="../../utils/random/poisson/" class="md-nav__link">
         poisson
       </a>
     </li>
@@ -10383,86 +10383,100 @@
                   
 
 
-<h1 id="expand_param_grid">expand_param_grid<a class="headerlink" href="#expand_param_grid" title="Permanent link">&para;</a></h1>
-<p>Expands a grid of parameters.</p>
-<p>This method can be used to generate a list of model parametrizations from a dictionary where each parameter is associated with a list of possible parameters. In other words, it expands a grid of parameters. </p>
-<p>Typically, this method can be used to create copies of a given model with different parameter choices. The models can then be used as part of a model selection process, such as a <code>selection.SuccessiveHalvingClassifier</code> or a <code>selection.EWARegressor</code>. </p>
-<p>The syntax for the parameter grid is quite flexible. It allows nesting parameters and can therefore be used to generate parameters for a pipeline.</p>
+<h1 id="evaluate">evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h1>
+<p>Benchmark a list of policies on a given Gym environment.</p>
+<p>This is a high-level utility function for benchmarking a list of policies on a given Gym environment. For example, it can be used to populate a <code>pandas.DataFrame</code> with the contents of each step of each episode.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>model</strong> (<em><a href="../../base/Estimator">base.Estimator</a></em>)</p>
+<p><strong>policies</strong> (<em>List[river.bandit.base.Policy]</em>)</p>
+<p>A list of policies to evaluate. The policy will be reset before each episode.</p>
 </li>
 <li>
-<p><strong>grid</strong> (<em>dict</em>)</p>
-<p>The grid of parameters to expand. The provided dictionary can be nested. The only requirement is that the values at the leaves need to be lists.</p>
+<p><strong>env</strong> (<em>'gym.Env'</em>)</p>
+<p>The Gym environment to use. One copy will be made for each policy at the beginning of each episode.</p>
+</li>
+<li>
+<p><strong>pull_func</strong> (<em>Callable[[river.bandit.base.Policy, ForwardRef('gym.Env')], Union[int, str]]</em>)</p>
+<p>A function that takes a policy and an environment as arguments and returns the arm that was pulled. This function is called at each time step for each policy. This is required because there is no standard way to pull an arm in Gym environments.</p>
+</li>
+<li>
+<p><strong>reward_stat</strong> (<em>river.stats.base.Univariate</em>) – defaults to <code>None</code></p>
+<p>A univariate statistic to keep track of the rewards. This statistic will be reset before each episode. Note that this is not the same as the reward object used by the policies. It's just a statistic to keep track of each policy's performance. If <code>None</code>, <code>stats.Sum</code> is used.</p>
+</li>
+<li>
+<p><strong>n_episodes</strong> (<em>int</em>) – defaults to <code>20</code></p>
+<p>The number of episodes to run.</p>
+</li>
+<li>
+<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p>Random number generator seed for reproducibility. A random number generator will be used to seed differently the environment before each episode.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p>As an initial example, we can expand a grid of parameters for a single model.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">gym</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">bandit</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">pull_func</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">policy</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">)))</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">grid</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">.1</span><span class="p">),</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">.01</span><span class="p">),</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">.001</span><span class="p">)]}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">models</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">expand_param_grid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
-<span class="mi">3</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">LinearRegression</span> <span class="p">(</span>
-  <span class="n">optimizer</span><span class="o">=</span><span class="n">SGD</span> <span class="p">(</span>
-    <span class="n">lr</span><span class="o">=</span><span class="n">Constant</span> <span class="p">(</span>
-      <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span>
-    <span class="p">)</span>
-  <span class="p">)</span>
-  <span class="n">loss</span><span class="o">=</span><span class="n">Squared</span> <span class="p">()</span>
-  <span class="n">l2</span><span class="o">=</span><span class="mf">0.</span>
-  <span class="n">l1</span><span class="o">=</span><span class="mf">0.</span>
-  <span class="n">intercept_init</span><span class="o">=</span><span class="mf">0.</span>
-  <span class="n">intercept_lr</span><span class="o">=</span><span class="n">Constant</span> <span class="p">(</span>
-    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span>
-  <span class="p">)</span>
-  <span class="n">clip_gradient</span><span class="o">=</span><span class="mf">1e+12</span>
-  <span class="n">initializer</span><span class="o">=</span><span class="n">Zeros</span> <span class="p">()</span>
-<span class="p">)</span>
-</code></pre></div>
-<p>You can expand parameters for multiple choices like so:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">grid</span> <span class="o">=</span> <span class="p">{</span>
-<span class="o">...</span>     <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="p">[</span>
-<span class="o">...</span>         <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="mf">.001</span><span class="p">]}),</span>
-<span class="o">...</span>         <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="mf">.01</span><span class="p">]})</span>
-<span class="o">...</span>     <span class="p">]</span>
-<span class="o">...</span> <span class="p">}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">models</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">expand_param_grid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
-<span class="mi">6</span>
-</code></pre></div>
-<p>You may specify a grid of parameters for a pipeline via nesting:</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
-<span class="o">...</span>     <span class="n">feature_extraction</span><span class="o">.</span><span class="n">BagOfWords</span><span class="p">()</span> <span class="o">|</span>
-<span class="o">...</span>     <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">trace</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">policies</span><span class="o">=</span><span class="p">[</span>
+<span class="o">...</span>         <span class="n">bandit</span><span class="o">.</span><span class="n">UCB</span><span class="p">(</span><span class="n">delta</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="o">...</span>         <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">],</span>
+<span class="o">...</span>     <span class="n">env</span><span class="o">=</span><span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span class="o">...</span>         <span class="s1">&#39;river_bandits/CandyCaneContest-v0&#39;</span><span class="p">,</span>
+<span class="o">...</span>         <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">100</span>
+<span class="o">...</span>     <span class="p">),</span>
+<span class="o">...</span>     <span class="n">pull_func</span><span class="o">=</span><span class="n">pull_func</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">n_episodes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="o">...</span> <span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">grid</span> <span class="o">=</span> <span class="p">{</span>
-<span class="o">...</span>     <span class="s1">&#39;BagOfWords&#39;</span><span class="p">:</span> <span class="p">{</span>
-<span class="o">...</span>         <span class="s1">&#39;strip_accents&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
-<span class="o">...</span>     <span class="p">},</span>
-<span class="o">...</span>     <span class="s1">&#39;LinearRegression&#39;</span><span class="p">:</span> <span class="p">{</span>
-<span class="o">...</span>         <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="p">[</span>
-<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">]}),</span>
-<span class="o">...</span>             <span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">]})</span>
-<span class="o">...</span>         <span class="p">]</span>
-<span class="o">...</span>     <span class="p">}</span>
-<span class="o">...</span> <span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">trace</span><span class="p">:</span>
+<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+<span class="o">...</span>     <span class="k">break</span>
+<span class="p">{</span><span class="s1">&#39;episode&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;step&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;policy_idx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;reward&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;reward_stat&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+</code></pre></div>
+<p>The return type of this function is a generator. Each step of the generator is a dictionary.
+You can pass the generator to a <code>pandas.DataFrame</code> to get a nice representation of the results.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">models</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">expand_param_grid</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
-<span class="mi">8</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">trace</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">policies</span><span class="o">=</span><span class="p">[</span>
+<span class="o">...</span>         <span class="n">bandit</span><span class="o">.</span><span class="n">UCB</span><span class="p">(</span><span class="n">delta</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="o">...</span>         <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+<span class="o">...</span>     <span class="p">],</span>
+<span class="o">...</span>     <span class="n">env</span><span class="o">=</span><span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+<span class="o">...</span>         <span class="s1">&#39;river_bandits/CandyCaneContest-v0&#39;</span><span class="p">,</span>
+<span class="o">...</span>         <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">100</span>
+<span class="o">...</span>     <span class="p">),</span>
+<span class="o">...</span>     <span class="n">pull_func</span><span class="o">=</span><span class="n">pull_func</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">n_episodes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+     <span class="n">episode</span>  <span class="n">step</span>  <span class="n">policy_idx</span>  <span class="n">action</span>  <span class="n">reward</span>  <span class="n">reward_stat</span>
+<span class="mi">521</span>        <span class="mi">2</span>    <span class="mi">60</span>           <span class="mi">1</span>      <span class="mi">10</span>     <span class="mf">0.0</span>         <span class="mf">30.0</span>
+<span class="mi">737</span>        <span class="mi">3</span>    <span class="mi">68</span>           <span class="mi">1</span>      <span class="mi">90</span>     <span class="mf">1.0</span>         <span class="mf">43.0</span>
+<span class="mi">740</span>        <span class="mi">3</span>    <span class="mi">70</span>           <span class="mi">0</span>       <span class="mi">0</span>     <span class="mf">0.0</span>         <span class="mf">14.0</span>
+<span class="mi">660</span>        <span class="mi">3</span>    <span class="mi">30</span>           <span class="mi">0</span>       <span class="mi">0</span>     <span class="mf">0.0</span>         <span class="mf">10.0</span>
+<span class="mi">411</span>        <span class="mi">2</span>     <span class="mi">5</span>           <span class="mi">1</span>      <span class="mi">31</span>     <span class="mf">0.0</span>          <span class="mf">2.0</span>
+</code></pre></div>
+<p>The length of the dataframe is the number of policies times the number of episodes times the
+maximum number of steps per episode.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">trace_df</span><span class="p">)</span>
+<span class="mi">1000</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="p">(</span>
+<span class="o">...</span>     <span class="n">trace_df</span><span class="o">.</span><span class="n">policy_idx</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span> <span class="o">*</span>
+<span class="o">...</span>     <span class="n">trace_df</span><span class="o">.</span><span class="n">episode</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span> <span class="o">*</span>
+<span class="o">...</span>     <span class="n">trace_df</span><span class="o">.</span><span class="n">step</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="mi">1000</span>
 </code></pre></div>
 
 
