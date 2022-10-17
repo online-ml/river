@@ -10,6 +10,7 @@
 - Added `bandit.ThomsonSampling`.
 - Added a `bandit.base` module.
 - Added `bandit.envs.CandyCaneContest`, which implements the Gym interface.
+- Added `bandit.evaluate` for basic benchmarking of bandit policies on a Gym environment.
 
 ## model_selection
 
