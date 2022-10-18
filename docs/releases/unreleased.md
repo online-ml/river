@@ -14,7 +14,7 @@
 
 ## drift
 
-- Exposed more parameters in ADWIN
+- Exposed more parameters in ADWIN: `clock`, `max_buckets`, `min_window_length`, and `grace_period`.
 
 ## model_selection
 

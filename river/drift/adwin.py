@@ -20,8 +20,9 @@ class ADWIN(DriftDetector):
     delta
         Significance value.
     clock
-        How often ADWIN should check for change. 1 means every new data point, default is 32. Higher
-         values speed up processing, but may also lead to increased delay in change detection.
+        How often ADWIN should check for change. 1 means every new data point, default is 32.
+        Higher values speed up processing, but may also lead to increased delay in change
+        detection.
     max_buckets
         The maximum number of buckets of each size that ADWIN should keep before merging buckets
         (default is 5).
