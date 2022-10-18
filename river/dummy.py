@@ -114,6 +114,10 @@ class PriorClassifier(base.Classifier):
     >>> model.predict_proba_one(new_sentence)
     {'+': 0.75, '−': 0.25}
 
+    References
+    ----------
+    [^1]: [Krichevsky–Trofimov estimator](https://www.wikiwand.com/en/Krichevsky%E2%80%93Trofimov_estimator)
+
     """
 
     def __init__(self):
