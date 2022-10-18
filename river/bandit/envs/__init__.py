@@ -7,8 +7,9 @@ except ImportError:
 
 if GYM_INSTALLED:
     from .candy_cane import CandyCaneContest
+    from .test_bed import KArmedTestbed
 
-    __all__ = ["CandyCaneContest"]
+    __all__ = ["CandyCaneContest", "KArmedTestbed"]
 
     RIVER_NAMESPACE = "river_bandits"
 
@@ -16,5 +17,11 @@ if GYM_INSTALLED:
         gym.envs.registration.register(
             id=env_id,
             entry_point="river.bandit.envs:CandyCaneContest",
-            max_episode_steps=CandyCaneContest.n_rounds,
+            max_episode_steps=CandyCaneContest.n_steps,
+        )
+    if (env_id := f"{RIVER_NAMESPACE}/KArmedTestbed-v0") not in gym.envs.registry:
+        gym.envs.registration.register(
+            id=env_id,
+            entry_point="river.bandit.envs:KArmedTestbed",
+            max_episode_steps=KArmedTestbed.n_steps,
         )

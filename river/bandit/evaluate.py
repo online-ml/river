@@ -131,24 +131,25 @@ def evaluate(
         done = [False] * len(policies)
 
         while not all(done):
-            for i, (_policy, _env, _reward_stat) in enumerate(
+            for policy_idx, (_policy, _env, _reward_stat) in enumerate(
                 zip(episode_policies, episode_envs, episode_reward_stats)
             ):
-                if done[i]:
+                if done[policy_idx]:
                     continue
 
                 action = pull_func(_policy, _env)
                 observation, reward, terminated, truncated, info = _env.step(action)
+                _policy.update(action, reward)
                 _reward_stat.update(reward)
 
                 yield {
                     "episode": episode,
                     "step": step,
-                    "policy_idx": i,
+                    "policy_idx": policy_idx,
                     "action": action,
                     "reward": reward,
                     "reward_stat": _reward_stat.get(),
                 }
 
-                done[i] = terminated or truncated
+                done[policy_idx] = terminated or truncated
             step += 1

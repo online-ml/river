@@ -47,7 +47,7 @@ class CandyCaneContest(gym.Env):
 
     """
 
-    n_rounds = 2000
+    n_steps = 2000
 
     def __init__(self, n_machines=100, reward_decay=0.03):
         self.n_machines = n_machines
@@ -56,8 +56,8 @@ class CandyCaneContest(gym.Env):
         self.action_space = gym.spaces.Discrete(n_machines)
         self.observation_space = gym.spaces.Dict(
             {
-                "attempts": gym.spaces.Tuple([gym.spaces.Discrete(self.n_rounds)] * n_machines),
-                "successes": gym.spaces.Tuple([gym.spaces.Discrete(self.n_rounds)] * n_machines),
+                "attempts": gym.spaces.Tuple([gym.spaces.Discrete(self.n_steps)] * n_machines),
+                "successes": gym.spaces.Tuple([gym.spaces.Discrete(self.n_steps)] * n_machines),
             }
         )
         self.reward_range = (0.0, 1.0)
