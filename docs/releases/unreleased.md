@@ -12,6 +12,10 @@
 - Added `bandit.envs.CandyCaneContest`, which implements the Gym interface.
 - Added `bandit.evaluate` for basic benchmarking of bandit policies on a Gym environment.
 
+## drift
+
+- Exposed more parameters in ADWIN
+
 ## model_selection
 
 - Added `model_selection.BanditRegressor`, which is a generic model selection method that works with any bandit policy.

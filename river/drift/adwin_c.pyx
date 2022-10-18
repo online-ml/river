@@ -17,30 +17,41 @@ cdef class AdaptiveWindowing:
     ----------
     delta
         Confidence value.
+    clock
+        How often ADWIN should check for change. 1 means every new data point, default is 32. Higher
+         values speed up processing, but may also lead to increased delay in change detection.
+    max_buckets
+        The maximum number of buckets of each size that ADWIN should keep before merging buckets
+        (default is 5).
+    min_window_length
+        The minimum length of each subwindow (default is 5). Lower values may decrease delay in
+        change detection but may also lead to more false positives.
+    grace_period
+        ADWIN does not perform any change detection until at least this many data points have
+        arrived (default is 10).
 
     """
     cdef:
         dict __dict__
         double delta, total, variance, total_width, width
         int n_buckets, grace_period, min_window_length, tick, n_detections,\
-            clock, max_n_buckets, detect, detect_twice
+            clock, max_n_buckets, detect, detect_twice, max_buckets
 
-    MAX_BUCKETS = 5
-
-    def __init__(self, delta=.002):
+    def __init__(self, delta=.002, clock=32, max_buckets=5, min_window_length=5, grace_period=10):
         self.delta = delta
-        self.bucket_deque: Deque['Bucket'] = deque([Bucket()])
+        self.bucket_deque: Deque['Bucket'] = deque([Bucket(max_size=max_buckets)])
         self.total = 0.
         self.variance = 0.
         self.width = 0.
         self.n_buckets = 0
-        self.grace_period = 10
+        self.grace_period = grace_period
         self.tick = 0
         self.total_width = 0
         self.n_detections = 0
-        self.clock = 32
+        self.clock = clock
         self.max_n_buckets = 0
-        self.min_window_length = 5
+        self.min_window_length = min_window_length
+        self.max_buckets = max_buckets
 
     def get_n_detections(self):
         return self.n_detections
@@ -148,12 +159,12 @@ cdef class AdaptiveWindowing:
         idx = 0
         while bucket is not None:
             k = bucket.current_idx
-            # Merge buckets if there are more than MAX_BUCKETS
-            if k == self.MAX_BUCKETS + 1:
+            # Merge buckets if there are more than max_buckets
+            if k == self.max_buckets + 1:
                 try:
                     next_bucket = self.bucket_deque[idx + 1]
                 except IndexError:
-                    self.bucket_deque.append(Bucket())
+                    self.bucket_deque.append(Bucket(max_size=self.max_buckets))
                     next_bucket = self.bucket_deque[-1]
                 n1 = self._calculate_bucket_size(idx)   # length of bucket 1
                 n2 = self._calculate_bucket_size(idx)   # length of bucket 2
@@ -168,7 +179,7 @@ cdef class AdaptiveWindowing:
                 self.n_buckets += 1
                 bucket.compress(2)
 
-                if next_bucket.current_idx <= self.MAX_BUCKETS:
+                if next_bucket.current_idx <= self.max_buckets:
                     break
             else:
                 break
@@ -311,8 +322,8 @@ cdef class Bucket:
         int current_idx, max_size
         np.ndarray total_array, variance_array
 
-    def __init__(self):
-        self.max_size = AdaptiveWindowing.MAX_BUCKETS
+    def __init__(self, max_size):
+        self.max_size = max_size
 
         self.current_idx = 0
         self.total_array = np.zeros(self.max_size + 1, dtype=float)

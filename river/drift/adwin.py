@@ -19,6 +19,18 @@ class ADWIN(DriftDetector):
     ----------
     delta
         Significance value.
+    clock
+        How often ADWIN should check for change. 1 means every new data point, default is 32. Higher
+         values speed up processing, but may also lead to increased delay in change detection.
+    max_buckets
+        The maximum number of buckets of each size that ADWIN should keep before merging buckets
+        (default is 5).
+    min_window_length
+        The minimum length of each subwindow (default is 5). Lower values may decrease delay in
+        change detection but may also lead to more false positives.
+    grace_period
+        ADWIN does not perform any change detection until at least this many data points have
+        arrived (default is 10).
 
     Examples
     --------
@@ -47,14 +59,24 @@ class ADWIN(DriftDetector):
 
     """
 
-    def __init__(self, delta=0.002):
+    def __init__(self, delta=0.002, clock=32, max_buckets=5, min_window_length=5, grace_period=10):
         super().__init__()
         self.delta = delta
+        self.clock = clock
+        self.max_buckets = max_buckets
+        self.min_window_length = min_window_length
+        self.grace_period = grace_period
         self._reset()
 
     def _reset(self):
         super()._reset()
-        self._helper = AdaptiveWindowing(delta=self.delta)
+        self._helper = AdaptiveWindowing(
+            delta=self.delta,
+            clock=self.clock,
+            max_buckets=self.max_buckets,
+            min_window_length=self.min_window_length,
+            grace_period=self.grace_period,
+        )
 
     @property
     def width(self):
