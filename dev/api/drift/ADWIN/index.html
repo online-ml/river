@@ -10434,6 +10434,22 @@
 <p><strong>delta</strong> – defaults to <code>0.002</code></p>
 <p>Significance value.</p>
 </li>
+<li>
+<p><strong>clock</strong> – defaults to <code>32</code></p>
+<p>How often ADWIN should check for change. 1 means every new data point, default is 32. Higher  values speed up processing, but may also lead to increased delay in change detection.</p>
+</li>
+<li>
+<p><strong>max_buckets</strong> – defaults to <code>5</code></p>
+<p>The maximum number of buckets of each size that ADWIN should keep before merging buckets (default is 5).</p>
+</li>
+<li>
+<p><strong>min_window_length</strong> – defaults to <code>5</code></p>
+<p>The minimum length of each subwindow (default is 5). Lower values may decrease delay in change detection but may also lead to more false positives.</p>
+</li>
+<li>
+<p><strong>grace_period</strong> – defaults to <code>10</code></p>
+<p>ADWIN does not perform any change detection until at least this many data points have arrived (default is 10).</p>
+</li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
