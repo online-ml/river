@@ -27,25 +27,20 @@ class KArmedTestbed(gym.Env):
         self.observation_space = gym.spaces.Discrete(k)
         self.reward_range = (-math.inf, math.inf)
 
-    def _get_observation(self):
-        return max(enumerate(self.actual_rewards), key=lambda x: x[1])[0]
-
-    def _get_info(self):
-        return {}
-
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        self.actual_rewards = self.np_random.normal(loc=0, scale=1, size=self.k).tolist()
-        observation = self._get_observation()
-        info = self._get_info()
+        self._actual_rewards = self.np_random.normal(loc=0, scale=1, size=self.k).tolist()
+        self._best_action = max(enumerate(self._actual_rewards), key=lambda x: x[1])[0]
+        observation = self._best_action
+        info = {}
         return observation, info
 
     def step(self, action):
-        arm_reward = self.actual_rewards[action]
-        reward = arm_reward + self.np_random.normal(loc=0, scale=1)
+        arm_reward = self._actual_rewards[action]
+        reward = self.np_random.normal(loc=arm_reward, scale=1)
 
-        observation = self._get_observation()
-        info = self._get_info()
+        observation = self._best_action
+        info = {}
         terminated = False
         truncated = False
         return observation, reward, terminated, truncated, info
