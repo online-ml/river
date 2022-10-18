@@ -20,13 +20,17 @@ class ADWIN(DriftDetector):
     delta
         Significance value.
     clock
-        How often ADWIN should check for change. 1 means every new data point, default is 32. Higher values speed up processing, but may also lead to increased delay in change detection.
+        How often ADWIN should check for change. 1 means every new data point, default is 32. Higher
+         values speed up processing, but may also lead to increased delay in change detection.
     max_buckets
-        The maximum number of buckets of each size that ADWIN should keep before merging buckets (default is 5).
+        The maximum number of buckets of each size that ADWIN should keep before merging buckets
+        (default is 5).
     min_window_length
-        The minimum length of each subwindow (default is 5). Lower values may decrease delay in change detection but may also lead to more false positives.
+        The minimum length of each subwindow (default is 5). Lower values may decrease delay in
+        change detection but may also lead to more false positives.
     grace_period
-        ADWIN does not perform any change detection until at least this many data points have arrived (default is 10).
+        ADWIN does not perform any change detection until at least this many data points have
+        arrived (default is 10).
 
     Examples
     --------
