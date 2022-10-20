@@ -147,7 +147,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
             # The predictions are stored as features for the next label
             if clf._multiclass:
-                for label, proba in y_pred.items():
+                for label, proba in y_pred[o].items():
                     x[f"{o}_{label}"] = proba
             else:
                 x[o] = y_pred[o][True]
