@@ -95,9 +95,12 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     @classmethod
     def _unit_test_params(cls):
         from river import neighbors
+
         yield {"model": linear_model.LogisticRegression()}  # binary classifier
         yield {"model": linear_model.SoftmaxRegression()}  # multi-class classifier
-        yield {"model": neighbors.KNNClassifier(n_neighbors=3, window_size=8)}  # multi-class classifier
+        yield {
+            "model": neighbors.KNNClassifier(n_neighbors=3, window_size=8)
+        }  # multi-class classifier
 
     @property
     def _multiclass(self):
