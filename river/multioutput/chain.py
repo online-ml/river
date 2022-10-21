@@ -94,8 +94,8 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"model": linear_model.LogisticRegression()} # binary classifier
-        yield {"model": linear_model.SoftmaxRegression()} # multi-class classifier
+        yield {"model": linear_model.LogisticRegression()}  # binary classifier
+        yield {"model": linear_model.SoftmaxRegression()}  # multi-class classifier
 
     @property
     def _multiclass(self):
