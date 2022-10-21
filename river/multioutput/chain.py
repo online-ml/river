@@ -94,7 +94,8 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"model": linear_model.LogisticRegression()}
+        yield {"model": linear_model.LogisticRegression()}  # binary classifier
+        yield {"model": linear_model.SoftmaxRegression()}  # multi-class classifier
 
     @property
     def _multiclass(self):
@@ -156,7 +157,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
     def predict_one(self, x):
         y_pred = self.predict_proba_one(x)
-        return {c: max(y_pred[c], key=y_pred[c].get) for c in y_pred}
+        return {c: max(y_pred[c], key=y_pred[c].get) for c in y_pred if y_pred[c]}
 
 
 class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
@@ -304,7 +305,6 @@ class ProbabilisticClassifierChain(ClassifierChain):
 
     References
     ----------
-
     [^1]: Cheng, W., Hüllermeier, E., & Dembczynski, K. J. (2010).
           Bayes optimal multilabel classification via probabilistic classifier
           chains. In Proceedings of the 27th international conference on
@@ -346,10 +346,10 @@ class ProbabilisticClassifierChain(ClassifierChain):
 
             y_pred = clf.predict_proba_one(x)
             # Extend features
-            x[label] = y[label]
-            p[label] = y_pred[y[label]]
+            x[label] = y.get(label, 0)
+            p[label] = y_pred.get(y[label], 0) if label in y else 0
 
-        return prod(p.values())
+        return prod(p.values()) if p else 0
 
 
 class MonteCarloClassifierChain(ProbabilisticClassifierChain):
@@ -421,11 +421,12 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
             clf = self[label]
 
             y_pred = clf.predict_proba_one(x)
-            y_val = self._rng.choice(2, 1, p=[v for v in y_pred.values()])[0]
-            # Extend features
-            x[label] = y_val
-            y[label] = y_val
-            p[label] = y_pred[y_val]
+            if y_pred:
+                y_val = self._rng.choice(len(y_pred), 1, p=[v for v in y_pred.values()])[0]
+                # Extend features
+                x[label] = y_val
+                y[label] = y_val
+                p[label] = list(y_pred.keys())[y_val]
 
         return y, p
 
