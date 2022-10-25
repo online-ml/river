@@ -599,6 +599,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_2">
@@ -733,6 +735,20 @@
     <li class="md-nav__item">
       <a href="../../../recipes/rolling-computations/" class="md-nav__link">
         Rolling computations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../recipes/bandits-101/" class="md-nav__link">
+        Multi-armed bandits
       </a>
     </li>
   
@@ -10471,7 +10487,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">1.185717</span>
+<span class="n">MAE</span><span class="p">:</span> <span class="mf">2.544434</span>
 </code></pre></div>
 <p>Here's another example using the UCB policy. The latter is more sensitive to the target scale,
 and usually works better when the target is rescaled.</p>
@@ -10496,7 +10512,7 @@ and usually works better when the target is rescaled.</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">MAE</span><span class="p">:</span> <span class="mf">0.873708</span>
+<span class="n">MAE</span><span class="p">:</span> <span class="mf">0.857745</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">

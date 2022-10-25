@@ -599,6 +599,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_2">
@@ -733,6 +735,20 @@
     <li class="md-nav__item">
       <a href="../../../recipes/rolling-computations/" class="md-nav__link">
         Rolling computations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../recipes/bandits-101/" class="md-nav__link">
+        Multi-armed bandits
       </a>
     </li>
   
@@ -10460,11 +10476,11 @@ You can pass the generator to a <code>pandas.DataFrame</code> to get a nice repr
 <span class="o">&gt;&gt;&gt;</span> <span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
      <span class="n">episode</span>  <span class="n">step</span>  <span class="n">policy_idx</span>  <span class="n">action</span>  <span class="n">reward</span>  <span class="n">reward_stat</span>
-<span class="mi">521</span>        <span class="mi">2</span>    <span class="mi">60</span>           <span class="mi">1</span>      <span class="mi">10</span>     <span class="mf">0.0</span>         <span class="mf">30.0</span>
-<span class="mi">737</span>        <span class="mi">3</span>    <span class="mi">68</span>           <span class="mi">1</span>      <span class="mi">90</span>     <span class="mf">1.0</span>         <span class="mf">43.0</span>
-<span class="mi">740</span>        <span class="mi">3</span>    <span class="mi">70</span>           <span class="mi">0</span>       <span class="mi">0</span>     <span class="mf">0.0</span>         <span class="mf">14.0</span>
-<span class="mi">660</span>        <span class="mi">3</span>    <span class="mi">30</span>           <span class="mi">0</span>       <span class="mi">0</span>     <span class="mf">0.0</span>         <span class="mf">10.0</span>
-<span class="mi">411</span>        <span class="mi">2</span>     <span class="mi">5</span>           <span class="mi">1</span>      <span class="mi">31</span>     <span class="mf">0.0</span>          <span class="mf">2.0</span>
+<span class="mi">521</span>        <span class="mi">2</span>    <span class="mi">60</span>           <span class="mi">1</span>      <span class="mi">25</span>     <span class="mf">0.0</span>         <span class="mf">36.0</span>
+<span class="mi">737</span>        <span class="mi">3</span>    <span class="mi">68</span>           <span class="mi">1</span>      <span class="mi">40</span>     <span class="mf">1.0</span>         <span class="mf">20.0</span>
+<span class="mi">740</span>        <span class="mi">3</span>    <span class="mi">70</span>           <span class="mi">0</span>      <span class="mi">70</span>     <span class="mf">1.0</span>         <span class="mf">33.0</span>
+<span class="mi">660</span>        <span class="mi">3</span>    <span class="mi">30</span>           <span class="mi">0</span>      <span class="mi">30</span>     <span class="mf">1.0</span>         <span class="mf">13.0</span>
+<span class="mi">411</span>        <span class="mi">2</span>     <span class="mi">5</span>           <span class="mi">1</span>      <span class="mi">35</span>     <span class="mf">1.0</span>          <span class="mf">5.0</span>
 </code></pre></div>
 <p>The length of the dataframe is the number of policies times the number of episodes times the
 maximum number of steps per episode.</p>
