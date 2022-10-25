@@ -47,7 +47,7 @@ class UCB(bandit.base.Policy):
     ...         break
 
     >>> metric
-    Sum: 741.
+    Sum: 726.
 
     References
     ----------

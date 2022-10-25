@@ -53,7 +53,7 @@ class EpsilonGreedy(bandit.base.Policy):
     ...         break
 
     >>> metric
-    Sum: 712.
+    Sum: 775.
 
     References
     ----------
