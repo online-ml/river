@@ -7,7 +7,7 @@ except ImportError:
 
 if GYM_INSTALLED:
     from .candy_cane import CandyCaneContest
-    from .test_bed import KArmedTestbed
+    from .testbed import KArmedTestbed
 
     __all__ = ["CandyCaneContest", "KArmedTestbed"]
 

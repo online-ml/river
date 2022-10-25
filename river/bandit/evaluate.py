@@ -2,12 +2,12 @@ import copy
 import random
 from typing import Callable, List
 
-import numpy as np
 try:
     import gym
 except ImportError:
     ...
 from river import bandit, stats
+
 
 def evaluate(
     policies: List[bandit.base.Policy],

@@ -1,6 +1,6 @@
 import abc
 import collections
-from typing import Counter, DefaultDict, Iterator, List, Optional, Union
+from typing import Counter, DefaultDict, Iterator, List, Union
 
 from river import base, metrics, proba, stats, utils
 

@@ -95,7 +95,7 @@ class BanditRegressor(model_selection.base.ModelSelectionRegressor):
         if not self.rewards:
             return None
         best_arm_id = max(self._rewards, key=lambda arm: self._rewards[arm].get())
-        return self[self.policy.best_arm_id]
+        return self[best_arm_id]
 
     def learn_one(self, x, y):
         for arm_id in self.policy.pull(range(len(self.models))):
