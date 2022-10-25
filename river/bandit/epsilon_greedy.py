@@ -53,7 +53,7 @@ class EpsilonGreedy(bandit.base.Policy):
     ...         break
 
     >>> metric
-    Sum: 712.
+    Sum: 775.
 
     References
     ----------
@@ -78,8 +78,8 @@ class EpsilonGreedy(bandit.base.Policy):
     def _pull(self, arm_ids):
         return (
             self._rng.choice(arm_ids)  # explore
-            if self.best_arm_id is None or self._rng.random() < self.current_epsilon
-            else self.best_arm_id  # exploit
+            if self._rng.uniform(0, 1) < self.current_epsilon
+            else max(arm_ids, key=lambda arm: self._rewards[arm].get())  # exploit
         )
 
     @classmethod

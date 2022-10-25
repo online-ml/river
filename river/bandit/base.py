@@ -1,6 +1,6 @@
 import abc
 import collections
-from typing import Counter, DefaultDict, Iterator, List, Optional, Union
+from typing import Counter, DefaultDict, Iterator, List, Union
 
 from river import base, metrics, proba, stats, utils
 
@@ -25,9 +25,8 @@ class Policy(base.Base, abc.ABC):
     """
 
     def __init__(self, reward_obj: RewardObj = None, burn_in=0):
-        self.reward_obj = reward_obj or stats.Sum()
+        self.reward_obj = reward_obj or stats.Mean()
         self.burn_in = burn_in
-        self.best_arm_id: Optional[ArmID] = None
         self._rewards: DefaultDict[ArmID, RewardObj] = collections.defaultdict(
             self.reward_obj.clone
         )
@@ -73,10 +72,6 @@ class Policy(base.Base, abc.ABC):
         self._rewards[arm_id].update(*reward_args, **reward_kwargs)
         self._counts[arm_id] += 1
         self._n += 1
-        for arm_id, reward in self._rewards.items():
-            # The > operator assumes the reward object is a metric, a statistic, or a distribution
-            if self.best_arm_id is None or reward > self._rewards[self.best_arm_id]:
-                self.best_arm_id = arm_id
         return self
 
     @property

@@ -95,11 +95,11 @@ def evaluate(
     >>> trace_df = pd.DataFrame(trace)
     >>> trace_df.sample(5, random_state=42)
          episode  step  policy_idx  action  reward  reward_stat
-    521        2    60           1      10     0.0         30.0
-    737        3    68           1      90     1.0         43.0
-    740        3    70           0       0     0.0         14.0
-    660        3    30           0       0     0.0         10.0
-    411        2     5           1      31     0.0          2.0
+    521        2    60           1      25     0.0         36.0
+    737        3    68           1      40     1.0         20.0
+    740        3    70           0      70     1.0         33.0
+    660        3    30           0      30     1.0         13.0
+    411        2     5           1      35     1.0          5.0
 
     The length of the dataframe is the number of policies times the number of episodes times the
     maximum number of steps per episode.
@@ -131,24 +131,25 @@ def evaluate(
         done = [False] * len(policies)
 
         while not all(done):
-            for i, (_policy, _env, _reward_stat) in enumerate(
+            for policy_idx, (_policy, _env, _reward_stat) in enumerate(
                 zip(episode_policies, episode_envs, episode_reward_stats)
             ):
-                if done[i]:
+                if done[policy_idx]:
                     continue
 
                 action = pull_func(_policy, _env)
                 observation, reward, terminated, truncated, info = _env.step(action)
+                _policy.update(action, reward)
                 _reward_stat.update(reward)
 
                 yield {
                     "episode": episode,
                     "step": step,
-                    "policy_idx": i,
+                    "policy_idx": policy_idx,
                     "action": action,
                     "reward": reward,
                     "reward_stat": _reward_stat.get(),
                 }
 
-                done[i] = terminated or truncated
+                done[policy_idx] = terminated or truncated
             step += 1

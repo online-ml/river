@@ -9,3 +9,4 @@ nav:
     - on-hoeffding-trees.md
     - cloning-and-mutating.md
     - rolling-computations.md
+    - bandits-101.md
