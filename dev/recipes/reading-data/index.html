@@ -282,7 +282,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.9.0/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -9910,20 +9910,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../releases/0.9.0/" class="md-nav__link">
         0.9.0 - 2021-11-30
       </a>
@@ -10108,6 +10094,20 @@
     <li class="md-nav__item">
       <a href="../../releases/0.2.0/" class="md-nav__link">
         0.2.0 - 2019-05-27
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.14.0/" class="md-nav__link">
+        0.13.0 - 2022-10-26
       </a>
     </li>
   
@@ -10347,49 +10347,59 @@
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Bikes</span><span class="p">()</span>
 <span class="n">dataset</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Bike sharing station information from the city of Toulouse.
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+Bike sharing station information from the city of Toulouse.
 
-The goal is to predict the number of bikes in 5 different bike stations from the city of
+The goal is to predict the number of bikes in <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5</span> different bike stations from the city of
 Toulouse.
 
       Name  Bikes                                                         
       Task  Regression                                                    
-   Samples  182,470                                                       
-  Features  8                                                             
-    Sparse  False                                                         
-      Path  /Users/max.halford/river_data/Bikes/toulouse_bikes.csv        
-       URL  https://maxhalford.github.io/files/datasets/toulouse_bikes.zip
-      Size  12.52 MB                                                      
-Downloaded  True
-</code></pre></div>
+   Samples  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">182</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">470</span>                                                       
+  Features  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8</span>                                                             
+    Sparse  <span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>                                                         
+      Path  <span style="color: #800080; text-decoration-color: #800080">/Users/max.halford/river_data/Bikes/</span><span style="color: #ff00ff; text-decoration-color: #ff00ff">toulouse_bikes.csv</span>        
+       URL  <span style="color: #0000ff; text-decoration-color: #0000ff; text-decoration: underline">https://maxhalford.github.io/files/datasets/toulouse_bikes.zip</span>
+      Size  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">12.52</span> MB                                                      
+Downloaded  <span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>                                                          
+</pre>
+
 <p>Note that when we say "loaded", we don't mean that the actual data is read from the disk. On the contrary, the dataset is a streaming data that can be iterated over one sample at a time. In Python lingo, it's a <a href="https://realpython.com/introduction-to-python-generators/">generator</a>.</p>
 <p>Let's take a look at the first sample:</p>
 <div class="highlight"><pre><span></span><code><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="n">x</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;moment&#39;: datetime.datetime(2016, 4, 1, 0, 0, 7),
- &#39;station&#39;: &#39;metro-canal-du-midi&#39;,
- &#39;clouds&#39;: 75,
- &#39;description&#39;: &#39;light rain&#39;,
- &#39;humidity&#39;: 81,
- &#39;pressure&#39;: 1017.0,
- &#39;temperature&#39;: 6.54,
- &#39;wind&#39;: 9.3}
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'moment'</span>: <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">datetime.datetime</span><span style="font-weight: bold">(</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2016</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">7</span><span style="font-weight: bold">)</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'station'</span>: <span style="color: #008000; text-decoration-color: #008000">'metro-canal-du-midi'</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'clouds'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">75</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'description'</span>: <span style="color: #008000; text-decoration-color: #008000">'light rain'</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'humidity'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">81</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'pressure'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1017.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'temperature'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.54</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'wind'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.3</span>
+<span style="font-weight: bold">}</span>
+</pre>
+
 <p>Each dataset is iterable, which means we can also do:</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
     <span class="k">break</span>
 <span class="n">x</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;moment&#39;: datetime.datetime(2016, 4, 1, 0, 0, 7),
- &#39;station&#39;: &#39;metro-canal-du-midi&#39;,
- &#39;clouds&#39;: 75,
- &#39;description&#39;: &#39;light rain&#39;,
- &#39;humidity&#39;: 81,
- &#39;pressure&#39;: 1017.0,
- &#39;temperature&#39;: 6.54,
- &#39;wind&#39;: 9.3}
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'moment'</span>: <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">datetime.datetime</span><span style="font-weight: bold">(</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2016</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">7</span><span style="font-weight: bold">)</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'station'</span>: <span style="color: #008000; text-decoration-color: #008000">'metro-canal-du-midi'</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'clouds'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">75</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'description'</span>: <span style="color: #008000; text-decoration-color: #008000">'light rain'</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'humidity'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">81</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'pressure'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1017.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'temperature'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.54</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'wind'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.3</span>
+<span style="font-weight: bold">}</span>
+</pre>
+
 <p>As we can see, the values have different types.</p>
 <p>Under the hood, calling <code>for x, y in dataset</code> simply iterates over a file and parses each value appropriately. We can do this ourselves by using <code>stream.iter_csv</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stream</span>
@@ -10398,17 +10408,23 @@ Downloaded  True
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">X_y</span><span class="p">)</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>({&#39;moment&#39;: &#39;2016-04-01 00:00:07&#39;,
-  &#39;bikes&#39;: &#39;1&#39;,
-  &#39;station&#39;: &#39;metro-canal-du-midi&#39;,
-  &#39;clouds&#39;: &#39;75&#39;,
-  &#39;description&#39;: &#39;light rain&#39;,
-  &#39;humidity&#39;: &#39;81&#39;,
-  &#39;pressure&#39;: &#39;1017.0&#39;,
-  &#39;temperature&#39;: &#39;6.54&#39;,
-  &#39;wind&#39;: &#39;9.3&#39;},
- None)
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">(</span>
+    <span style="font-weight: bold">{</span>
+        <span style="color: #008000; text-decoration-color: #008000">'moment'</span>: <span style="color: #008000; text-decoration-color: #008000">'2016-04-01 00:00:07'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'bikes'</span>: <span style="color: #008000; text-decoration-color: #008000">'1'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'station'</span>: <span style="color: #008000; text-decoration-color: #008000">'metro-canal-du-midi'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'clouds'</span>: <span style="color: #008000; text-decoration-color: #008000">'75'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'description'</span>: <span style="color: #008000; text-decoration-color: #008000">'light rain'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'humidity'</span>: <span style="color: #008000; text-decoration-color: #008000">'81'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'pressure'</span>: <span style="color: #008000; text-decoration-color: #008000">'1017.0'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'temperature'</span>: <span style="color: #008000; text-decoration-color: #008000">'6.54'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'wind'</span>: <span style="color: #008000; text-decoration-color: #008000">'9.3'</span>
+    <span style="font-weight: bold">}</span>,
+    <span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>
+<span style="font-weight: bold">)</span>
+</pre>
+
 <p>There are a couple things that are wrong. First of all, the numeric features have not been casted into numbers. Indeed, by default, <code>stream.iter_csv</code> assumes that everything is a string. A related issue is that the <code>moment</code> field hasn't been parsed into a <code>datetime</code>. Finally, the target field, which is <code>bikes</code>, hasn't been separated from the rest of the features. We can remedy to these issues by setting a few parameters:</p>
 <div class="highlight"><pre><span></span><code><span class="n">X_y</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_csv</span><span class="p">(</span>
     <span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
@@ -10426,16 +10442,22 @@ Downloaded  True
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">X_y</span><span class="p">)</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>({&#39;moment&#39;: datetime.datetime(2016, 4, 1, 0, 0, 7),
-  &#39;station&#39;: &#39;metro-canal-du-midi&#39;,
-  &#39;clouds&#39;: 75,
-  &#39;description&#39;: &#39;light rain&#39;,
-  &#39;humidity&#39;: 81,
-  &#39;pressure&#39;: 1017.0,
-  &#39;temperature&#39;: 6.54,
-  &#39;wind&#39;: 9.3},
- 1)
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">(</span>
+    <span style="font-weight: bold">{</span>
+        <span style="color: #008000; text-decoration-color: #008000">'moment'</span>: <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">datetime.datetime</span><span style="font-weight: bold">(</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2016</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>, <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">7</span><span style="font-weight: bold">)</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'station'</span>: <span style="color: #008000; text-decoration-color: #008000">'metro-canal-du-midi'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'clouds'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">75</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'description'</span>: <span style="color: #008000; text-decoration-color: #008000">'light rain'</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'humidity'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">81</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'pressure'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1017.0</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'temperature'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.54</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'wind'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.3</span>
+    <span style="font-weight: bold">}</span>,
+    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>
+<span style="font-weight: bold">)</span>
+</pre>
+
 <p>That's much better. We invite you to take a look at the <code>stream</code> module to see for yourself what other methods are available. Note that <code>river</code> is first and foremost a machine learning library, and therefore isn't as much concerned about reading data as it is about statistical algorithms. We do however believe that the fact that we use dictionary gives you, the user, a lot of freedom and flexibility.</p>
 <p>The <code>stream</code> module provides helper functions to read data from different formats. For instance, you can use the <code>stream.iter_sklearn_dataset</code> function to turn any scikit-learn dataset into a stream.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
@@ -10447,18 +10469,24 @@ Downloaded  True
 
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>({&#39;age&#39;: 0.0380759064334241,
-  &#39;sex&#39;: 0.0506801187398187,
-  &#39;bmi&#39;: 0.0616962065186885,
-  &#39;bp&#39;: 0.0218723549949558,
-  &#39;s1&#39;: -0.0442234984244464,
-  &#39;s2&#39;: -0.0348207628376986,
-  &#39;s3&#39;: -0.0434008456520269,
-  &#39;s4&#39;: -0.00259226199818282,
-  &#39;s5&#39;: 0.0199084208763183,
-  &#39;s6&#39;: -0.0176461251598052},
- 151.0)
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">(</span>
+    <span style="font-weight: bold">{</span>
+        <span style="color: #008000; text-decoration-color: #008000">'age'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.038075906433423026</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'sex'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.05068011873981862</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'bmi'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.061696206518683294</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'bp'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0218723855140367</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'s1'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.04422349842444599</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'s2'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.03482076283769895</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'s3'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.04340084565202491</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'s4'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.002592261998183278</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'s5'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.019907486170462722</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'s6'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.01764612515980379</span>
+    <span style="font-weight: bold">}</span>,
+    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">151.0</span>
+<span style="font-weight: bold">)</span>
+</pre>
+
 <p>To conclude, let us shortly mention the difference between <em>proactive learning</em> and <em>reactive learning</em> in the specific context of online machine learning. When we loop over a data with a <code>for</code> loop, we have the control over the data and the order in which it arrives. We are proactive in the sense that we, the user, are asking for the data to arrive.</p>
 <p>In contract, in a reactive situation, we don't have control on the data arrival. A typical example of such a situation is a web server, where web requests arrive in an arbitrary order. This is a situation where <code>river</code> shines. For instance, in a <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> application, you could define a route to make predictions with a <code>river</code> model as so:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">flask</span>

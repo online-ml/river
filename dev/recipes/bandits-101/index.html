@@ -282,7 +282,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.9.0/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -9948,20 +9948,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../releases/0.9.0/" class="md-nav__link">
         0.9.0 - 2021-11-30
       </a>
@@ -10146,6 +10132,20 @@
     <li class="md-nav__item">
       <a href="../../releases/0.2.0/" class="md-nav__link">
         0.2.0 - 2019-05-27
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.14.0/" class="md-nav__link">
+        0.13.0 - 2022-10-26
       </a>
     </li>
   
@@ -10406,12 +10406,6 @@
     <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;river_bandits&#39;</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">river_bandits/CandyCaneContest-v0
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">river_bandits/KArmedTestbed-v0
-</pre>
-
 <p>River's bandit module offers the <code>bandit.evaluate</code> function to benchmark several policies on a given environment. It takes as input a list of bandit policies, a bandit environment (the problem to solve), and a reward object. There is a also a <code>pull_func</code> parameter that is necessary to define how a policy is supposed to pull an arm from a given environment.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gym</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">bandit</span>
@@ -10451,7 +10445,7 @@
 <span class="p">))</span>
 <span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>100%|██████████| 6000000/6000000 [02:19&lt;00:00, 42859.04it/s]
+<div class="highlight"><pre><span></span><code>100%|██████████████████████████████████████████████████████████████████████████████████████████| 6000000/6000000 [01:26&lt;00:00, 69579.00it/s]
 </code></pre></div>
 <div>
 <style scoped>
@@ -10485,45 +10479,45 @@
       <td>441</td>
       <td>632</td>
       <td>0</td>
-      <td>5</td>
-      <td>0.386548</td>
-      <td>0.196607</td>
+      <td>1</td>
+      <td>1.173982</td>
+      <td>1.410379</td>
     </tr>
     <tr>
       <th>3566176</th>
       <td>1188</td>
       <td>725</td>
       <td>1</td>
-      <td>7</td>
-      <td>1.533340</td>
-      <td>1.134153</td>
+      <td>3</td>
+      <td>-0.361536</td>
+      <td>0.904599</td>
     </tr>
     <tr>
       <th>1109043</th>
       <td>369</td>
       <td>681</td>
       <td>0</td>
-      <td>0</td>
-      <td>-1.334467</td>
-      <td>0.812724</td>
+      <td>7</td>
+      <td>1.794703</td>
+      <td>0.899742</td>
     </tr>
     <tr>
       <th>4286042</th>
       <td>1428</td>
       <td>680</td>
       <td>2</td>
-      <td>0</td>
-      <td>-0.047161</td>
-      <td>0.451101</td>
+      <td>3</td>
+      <td>1.677845</td>
+      <td>0.680013</td>
     </tr>
     <tr>
       <th>5395174</th>
       <td>1798</td>
       <td>391</td>
       <td>1</td>
-      <td>5</td>
-      <td>-0.600956</td>
-      <td>0.212006</td>
+      <td>3</td>
+      <td>1.501662</td>
+      <td>1.062698</td>
     </tr>
   </tbody>
 </table>
@@ -10605,7 +10599,7 @@
 
 <span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>100%|██████████| 6000000/6000000 [02:06&lt;00:00, 47345.49it/s]
+<div class="highlight"><pre><span></span><code>100%|██████████████████████████████████████████████████████████████████████████████████████████| 6000000/6000000 [01:25&lt;00:00, 70039.23it/s]
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span>
@@ -10668,7 +10662,7 @@
     <span class="p">)</span>
 <span class="p">))</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>100%|██████████| 180000/180000 [00:46&lt;00:00, 3907.83it/s]
+<div class="highlight"><pre><span></span><code>100%|█████████████████████████████████████████████████████████████████████████████████████████████| 180000/180000 [00:27&lt;00:00, 6442.28it/s]
 </code></pre></div>
 <p>We can compare the performance of each policy by checking the average reward at the end of each episode.</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span>

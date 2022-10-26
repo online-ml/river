@@ -282,7 +282,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.9.0/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -9989,20 +9989,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../releases/0.9.0/" class="md-nav__link">
         0.9.0 - 2021-11-30
       </a>
@@ -10187,6 +10173,20 @@
     <li class="md-nav__item">
       <a href="../../releases/0.2.0/" class="md-nav__link">
         0.2.0 - 2019-05-27
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.14.0/" class="md-nav__link">
+        0.13.0 - 2022-10-26
       </a>
     </li>
   
@@ -10590,17 +10590,19 @@
 <div class="highlight"><pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()</span>
 <span class="n">dataset</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Phishing websites.
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+Phishing websites.
 
 This dataset contains features from web pages that are classified as phishing or not.
 
-    Name  Phishing                                                       
-    Task  Binary classification                                          
- Samples  1,250                                                          
-Features  9                                                              
-  Sparse  False                                                          
-    Path  /Users/mastelini/Documents/river/river/datasets/phishing.csv.gz
-</code></pre></div>
+    Name  Phishing                                                        
+    Task  Binary classification                                           
+ Samples  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">250</span>                                                           
+Features  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9</span>                                                               
+  Sparse  <span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>                                                           
+    Path  <span style="color: #800080; text-decoration-color: #800080">/Users/max.halford/projects/river/river/datasets/</span><span style="color: #ff00ff; text-decoration-color: #ff00ff">phishing.csv.gz</span>
+</pre>
+
 <p>We are going to train an instance of <code>HoeffdingTreeClassifier</code> using this dataset. As everything else in <code>river</code>, training an iDT is a piece of cake!</p>
 <div class="highlight"><pre><span></span><code><span class="o">%%</span><span class="n">time</span>
 
@@ -10611,45 +10613,47 @@ Features  9
 
 <span class="n">model</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>CPU times: user 88.5 ms, sys: 1.56 ms, total: 90.1 ms
-Wall time: 89.4 ms
-
-
-
-
-
-HoeffdingTreeClassifier (
-  grace_period=50
-  max_depth=inf
-  split_criterion=&quot;info_gain&quot;
-  delta=1e-07
-  tau=0.05
-  leaf_prediction=&quot;nba&quot;
-  nb_threshold=0
-  nominal_attributes=None
-  splitter=GaussianSplitter (
-    n_splits=10
-  )
-  binary_split=False
-  max_size=100.
-  memory_estimate_period=1000000
-  stop_mem_management=False
-  remove_poor_attrs=False
-  merit_preprune=True
-)
+<div class="highlight"><pre><span></span><code>CPU times: user 174 ms, sys: 5.16 ms, total: 180 ms
+Wall time: 192 ms
 </code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+HoeffdingTreeClassifier <span style="font-weight: bold">(</span>
+  <span style="color: #808000; text-decoration-color: #808000">grace_period</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">50</span>
+  <span style="color: #808000; text-decoration-color: #808000">max_depth</span>=<span style="color: #800080; text-decoration-color: #800080">inf</span>
+  <span style="color: #808000; text-decoration-color: #808000">split_criterion</span>=<span style="color: #008000; text-decoration-color: #008000">"info_gain"</span>
+  <span style="color: #808000; text-decoration-color: #808000">delta</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1e-07</span>
+  <span style="color: #808000; text-decoration-color: #808000">tau</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.05</span>
+  <span style="color: #808000; text-decoration-color: #808000">leaf_prediction</span>=<span style="color: #008000; text-decoration-color: #008000">"nba"</span>
+  <span style="color: #808000; text-decoration-color: #808000">nb_threshold</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>
+  <span style="color: #808000; text-decoration-color: #808000">nominal_attributes</span>=<span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>
+  <span style="color: #808000; text-decoration-color: #808000">splitter</span>=<span style="color: #800080; text-decoration-color: #800080">GaussianSplitter</span> <span style="font-weight: bold">(</span>
+    <span style="color: #808000; text-decoration-color: #808000">n_splits</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">10</span>
+  <span style="font-weight: bold">)</span>
+  <span style="color: #808000; text-decoration-color: #808000">binary_split</span>=<span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>
+  <span style="color: #808000; text-decoration-color: #808000">max_size</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">100</span>.
+  <span style="color: #808000; text-decoration-color: #808000">memory_estimate_period</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1000000</span>
+  <span style="color: #808000; text-decoration-color: #808000">stop_mem_management</span>=<span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>
+  <span style="color: #808000; text-decoration-color: #808000">remove_poor_attrs</span>=<span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>
+  <span style="color: #808000; text-decoration-color: #808000">merit_preprune</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+<span style="font-weight: bold">)</span>
+</pre>
+
 <p>That's it! We are not going to enter into details about some of the available parameters of HTC here. The user can refer to the documentation page for more information about that. Let's talk about model inspection :D</p>
 <p>At any time, we can easily get some statistics about our trained model by using the <code>summary</code> property:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">summary</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;n_nodes&#39;: 5,
- &#39;n_branches&#39;: 2,
- &#39;n_leaves&#39;: 3,
- &#39;n_active_leaves&#39;: 3,
- &#39;n_inactive_leaves&#39;: 0,
- &#39;height&#39;: 3,
- &#39;total_observed_weight&#39;: 1250.0}
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'n_nodes'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'n_branches'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'n_leaves'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'n_active_leaves'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'n_inactive_leaves'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'height'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'total_observed_weight'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1250.0</span>
+<span style="font-weight: bold">}</span>
+</pre>
+
 <p>This property show us the internal structure of the tree, including data concerning the memory-management routines that we are going to check later in this guide. We can also get a representation of the tree model as a <code>pandas.DataFrame</code> object:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:</span><span class="mi">5</span><span class="p">]</span>
 </code></pre></div>
@@ -10740,24 +10744,32 @@ HoeffdingTreeClassifier (
 <div class="highlight"><pre><span></span><code><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>  <span class="c1"># Let&#39;s select the first example in the stream</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>({&#39;empty_server_form_handler&#39;: 0.0,
-  &#39;popup_window&#39;: 0.0,
-  &#39;https&#39;: 0.0,
-  &#39;request_from_other_domain&#39;: 0.0,
-  &#39;anchor_from_other_domain&#39;: 0.0,
-  &#39;is_popular&#39;: 0.5,
-  &#39;long_url&#39;: 1.0,
-  &#39;age_of_domain&#39;: 1,
-  &#39;ip_in_url&#39;: 1},
- True)
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">(</span>
+    <span style="font-weight: bold">{</span>
+        <span style="color: #008000; text-decoration-color: #008000">'empty_server_form_handler'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'popup_window'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'https'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'request_from_other_domain'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'anchor_from_other_domain'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'is_popular'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.5</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'long_url'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.0</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'age_of_domain'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'ip_in_url'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>
+    <span style="font-weight: bold">}</span>,
+    <span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+<span style="font-weight: bold">)</span>
+</pre>
+
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">debug_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>empty_server_form_handler ≤ 0.5454545454545454
-Class True:
-    P(False) = 0.1
-    P(True) = 0.9
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">empty_server_form_handler ≤ <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.5454545454545454</span>
+Class <span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>:
+        <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">P</span><span style="font-weight: bold">(</span><span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span><span style="font-weight: bold">)</span> = <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.1</span>
+        <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">P</span><span style="font-weight: bold">(</span><span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span><span style="font-weight: bold">)</span> = <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.9</span>
+
+</pre>
+
 <p>Our tree got this one right! The method <code>debug_one</code> is especially useful when we are dealing with a big tree model where drawing might not be the wisest of the choices (we will end up with a tree chart that has too much information to visually understand).</p>
 <p><strong>Some additional hints:</strong></p>
 <ul>
@@ -10827,7 +10839,10 @@ Class True:
     <span class="p">}</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_19_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 300</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x1500</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_19_1.png" /></p>
 <p>In our example we use the <code>EBSTSplitter</code>, which is going to discussed later. For now, is enough to know that it is a mechanism to evaluate split candidates in the trees.</p>
 <p>As we can see, our tree uses almost 10 MB to keep its structure. Let's say we wanted to limit our memory usage to 5 MB. How could we do that?</p>
 <p>Note that we are using a illustration case here. In real applications, data may be unbounded, so the trees might grow indefinitely.</p>
@@ -10852,7 +10867,10 @@ Class True:
     <span class="p">}</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_21_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 300</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x1500</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_21_1.png" /></p>
 <p>Note that as soon the memory usage reaches the limit that we determined (at the memory check intervals), HTR starts managing its resource usage to reduce the size. As a consequence, the running time also decreases. For more accurate management, the intervals between memory checks should be decreased. This action, however, has costs since the tree stops the learning process to estimate its size and alter its own structure. Too frequent memory checks might end up result in a slow learning process. Besides, by using fewer resources, the predictive performance can be negatively impacted. So, use this tool with caution!</p>
 <p><strong>But how that works at all?</strong></p>
 <p>HTs monitor the incoming feature values to perform split attempts. To do so, they rely on a class of algorithms called <em>Attribute Observers</em> (AO) or <em>Splitters</em> (spoiler alert!). Each leaf node in an HT keeps one AO per incoming feature. After pre-determined intervals (<code>grace_period</code> parameter), leaves query their AOs for split candidates. Well, there are costs to monitor input features (mainly the numerical ones). In fact, AOs correspond to one of the most time and memory-consuming portions of the HTs. To manage memory usage, an HT firstly determines its least promising leaves, w.r.t. how likely they will be split. Then, these leaves' AOs are removed, and the tree nodes are said to be "deactivated." That's it! The deactivated leaves do not perform split attempts anymore, but they continue to be updated to provide responses. They will be kept as leaves as long as there are not available resources to enable tree growth. These leaves can be activated again (meaning that new AOs will be created for them) if there is available memory, so don't worry!</p>
@@ -10871,7 +10889,10 @@ Class True:
     <span class="p">}</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_23_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 300</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x1500</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_23_1.png" /></p>
 <h2 id="4-branching-and-growth-splitters-the-heart-of-the-trees">4. Branching and growth: splitters, the heart of the trees<a class="headerlink" href="#4-branching-and-growth-splitters-the-heart-of-the-trees" title="Permanent link">&para;</a></h2>
 <p>As previously stated, one of the core operations of iDT is, well, to grow. Plants and gardening-related jokes apart, growth in HTs is guided by their AOs or splitters, as mentioned in the end of Section 3. </p>
 <p>Nominal features can be easily monitored, since the feature partitions are well-defined beforehand. Numerical features, on the other hand, do not have an explicit best cut point. Still, numerical features are typically split by using a binary test: <span class="arithmatex">\(\le\)</span> or <span class="arithmatex">\(&gt;\)</span>. Therefore, numerical splitters must somehow summarize the incoming feature values and be able to evaluate the merit of split point candidates.</p>
@@ -10947,7 +10968,10 @@ Class True:
     <span class="p">}</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_25_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 300</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x1500</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_25_1.png" /></p>
 <h3 id="42-regression-tree-splitters">4.2 Regression tree splitters<a class="headerlink" href="#42-regression-tree-splitters" title="Permanent link">&para;</a></h3>
 <p>The available regression tree splitters are summarized in the next table. The TE-BST costs are expressed in terms of <span class="arithmatex">\(n^*\)</span> because the number of stored elements can be smaller than or equal to <span class="arithmatex">\(n\)</span>.</p>
 <table>
@@ -11009,7 +11033,10 @@ Class True:
     <span class="p">}</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_27_0.png" /></p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 300</span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x1500</span><span style="color: #000000; text-decoration-color: #000000"> with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
+</pre>
+
+<p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_27_1.png" /></p>
 <h2 id="wrapping-up">Wrapping up<a class="headerlink" href="#wrapping-up" title="Permanent link">&para;</a></h2>
 <p>This guide provides a walkthrough in the HTs available in <code>river</code>. We discussed about model inspection, memory management, and feature splits. Keep in mind that each HT variant has specific details and capabilities that are out-of-the-scope of this introductory material. The user is advised to check the documentation page of the tree models for detailed information.</p>
 

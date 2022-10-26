@@ -282,7 +282,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.9.0/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -9910,20 +9910,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../releases/0.9.0/" class="md-nav__link">
         0.9.0 - 2021-11-30
       </a>
@@ -10108,6 +10094,20 @@
     <li class="md-nav__item">
       <a href="../../releases/0.2.0/" class="md-nav__link">
         0.2.0 - 2019-05-27
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.14.0/" class="md-nav__link">
+        0.13.0 - 2022-10-26
       </a>
     </li>
   
@@ -10366,55 +10366,59 @@
 <p>A pipeline has a <code>draw</code> method that can be used to visualize it:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<div><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
-{'counts': Counter(),
- 'means': defaultdict(&lt;class 'float'&gt;, {}),
- 'vars': defaultdict(&lt;class 'float'&gt;, {}),
- 'with_std': True}
+<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+  with_std=True
+)
 
-</code></details><details class="component estimator"><summary><pre class="estimator-name">PolynomialExtender</pre></summary><code class="estimator-params">
-{'bias_name': 'bias',
- 'degree': 2,
- 'include_bias': False,
- 'interaction_only': False}
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">PolynomialExtender</pre></summary><code class="river-estimator-params">(
+  degree=2
+  interaction_only=False
+  include_bias=False
+  bias_name="bias"
+)
 
-</code></details><details class="component estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
-{'_weights': {},
- '_y_name': None,
- 'clip_gradient': 1000000000000.0,
- 'initializer': Zeros (),
- 'intercept': 0.0,
- 'intercept_init': 0.0,
- 'intercept_lr': Constant({'learning_rate': 0.01}),
- 'l2': 0.0,
- 'loss': Squared({}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">(
+  optimizer=SGD (
+    lr=Constant (
+      learning_rate=0.01
+    )
+  )
+  loss=Squared ()
+  l2=0.
+  l1=0.
+  intercept_init=0.
+  intercept_lr=Constant (
+    learning_rate=0.01
+  )
+  clip_gradient=1e+12
+  initializer=Zeros ()
+)
 
 </code></details></div><style scoped>
-.estimator {
+.river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
 }
 
-.pipeline {
+.river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
 }
 
-.union {
+.river-union {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: 1em;
     border-style: solid;
-    background: white
+    background: white;
 }
 
-.wrapper {
+.river-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10424,45 +10428,45 @@
     background: white;
 }
 
-.wrapper > .estimator {
+.river-wrapper > .river-estimator {
     margin-top: 1em;
 }
 
 /* Vertical spacing between steps */
 
-.component + .component {
+.river-component + .river-component {
     margin-top: 2em;
 }
 
-.union > .estimator {
+.river-union > .river-estimator {
     margin-top: 0;
 }
 
-.union > .pipeline {
+.river-union > .pipeline {
     margin-top: 0;
 }
 
 /* Spacing within a union of estimators */
 
-.union > .component + .component {
+.river-union > .river-component + .river-component {
     margin-left: 1em;
 }
 
 /* Typography */
 
-.estimator-params {
+.river-estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
 }
 
-.estimator > code,
-.wrapper > details > code {
+.river-estimator > .river-estimator-params,
+.river-wrapper > .river-details > river-estimator-params {
     background-color: white !important;
 }
 
-.estimator-name {
+.river-estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
@@ -10470,13 +10474,13 @@
 
 /* Toggle */
 
-summary {
+.river-summary {
     display: flex;
     align-items:center;
     cursor: pointer;
 }
 
-summary > div {
+.river-summary > div {
     width: 100%;
 }
 </style></div>
@@ -10489,62 +10493,76 @@ summary > div {
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>({&#39;ordinal_date&#39;: 736389,
-  &#39;gallup&#39;: 43.843213,
-  &#39;ipsos&#39;: 46.19925042857143,
-  &#39;morning_consult&#39;: 48.318749,
-  &#39;rasmussen&#39;: 44.104692,
-  &#39;you_gov&#39;: 43.636914000000004},
- 43.75505)
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">(</span>
+    <span style="font-weight: bold">{</span>
+        <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">736389</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.843213</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">46.19925042857143</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">48.318749</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">44.104692</span>,
+        <span style="color: #008000; text-decoration-color: #008000">'you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.636914000000004</span>
+    <span style="font-weight: bold">}</span>,
+    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.75505</span>
+<span style="font-weight: bold">)</span>
+</pre>
+
 <p>Let us call <code>predict_one</code>, which will update each transformer, but won't update the linear regression.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>0.0
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>
+</pre>
+
 <p>The prediction is nil because each weight of the linear regression is equal to 0.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="p">[</span><span class="s1">&#39;StandardScaler&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">means</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>defaultdict(float,
-            {&#39;ordinal_date&#39;: 736389.0,
-             &#39;gallup&#39;: 43.843213,
-             &#39;ipsos&#39;: 46.19925042857143,
-             &#39;morning_consult&#39;: 48.318749,
-             &#39;rasmussen&#39;: 44.104692,
-             &#39;you_gov&#39;: 43.636914000000004})
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">defaultdict</span><span style="font-weight: bold">(&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">class</span><span style="color: #000000; text-decoration-color: #000000"> </span><span style="color: #008000; text-decoration-color: #008000">'float'</span><span style="font-weight: bold">&gt;</span>, <span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">736389.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.843213</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">46.19925042857143</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">48.318749</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">44.104692</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.636914000000004</span>
+<span style="font-weight: bold">})</span>
+</pre>
+
 <p>As we can see, the means of each feature have been updated, even though we called <code>predict_one</code> and not <code>learn_one</code>.</p>
 <p>Note that if you call <code>transform_one</code> with a pipeline who's last step is not a transformer, then the output from the last transformer (which is thus the penultimate step) will be returned:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>{&#39;ordinal_date&#39;: 0.0,
- &#39;gallup&#39;: 0.0,
- &#39;ipsos&#39;: 0.0,
- &#39;morning_consult&#39;: 0.0,
- &#39;rasmussen&#39;: 0.0,
- &#39;you_gov&#39;: 0.0,
- &#39;ordinal_date*ordinal_date&#39;: 0.0,
- &#39;gallup*ordinal_date&#39;: 0.0,
- &#39;ipsos*ordinal_date&#39;: 0.0,
- &#39;morning_consult*ordinal_date&#39;: 0.0,
- &#39;ordinal_date*rasmussen&#39;: 0.0,
- &#39;ordinal_date*you_gov&#39;: 0.0,
- &#39;gallup*gallup&#39;: 0.0,
- &#39;gallup*ipsos&#39;: 0.0,
- &#39;gallup*morning_consult&#39;: 0.0,
- &#39;gallup*rasmussen&#39;: 0.0,
- &#39;gallup*you_gov&#39;: 0.0,
- &#39;ipsos*ipsos&#39;: 0.0,
- &#39;ipsos*morning_consult&#39;: 0.0,
- &#39;ipsos*rasmussen&#39;: 0.0,
- &#39;ipsos*you_gov&#39;: 0.0,
- &#39;morning_consult*morning_consult&#39;: 0.0,
- &#39;morning_consult*rasmussen&#39;: 0.0,
- &#39;morning_consult*you_gov&#39;: 0.0,
- &#39;rasmussen*rasmussen&#39;: 0.0,
- &#39;rasmussen*you_gov&#39;: 0.0,
- &#39;you_gov*you_gov&#39;: 0.0}
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date*ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'gallup*ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ipsos*ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'morning_consult*ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'gallup*gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'gallup*ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'gallup*morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'gallup*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'gallup*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ipsos*ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ipsos*morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ipsos*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'ipsos*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'morning_consult*morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'morning_consult*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'morning_consult*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'rasmussen*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'rasmussen*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'you_gov*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>
+<span style="font-weight: bold">}</span>
+</pre>
+
 <p>In many cases, you might want to connect a step to multiple steps. For instance, you might to extract different kinds of features from a single input. An elegant way to do this is to use a <code>compose.TransformerUnion</code>. Essentially, the latter is a list of transformers who's results will be merged into a single <code>dict</code> when <code>transform_one</code> is called. As an example let's say that we want to apply a <code>feature_extraction.RBFSampler</code> as well as the <code>feature_extraction.PolynomialExtender</code>. This may be done as so:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
@@ -10554,166 +10572,65 @@ summary > div {
 
 <span class="n">model</span>
 </code></pre></div>
-<div><div class="component pipeline"><details class="component estimator"><summary><pre class="estimator-name">StandardScaler</pre></summary><code class="estimator-params">
-{'counts': Counter(),
- 'means': defaultdict(&lt;class 'float'&gt;, {}),
- 'vars': defaultdict(&lt;class 'float'&gt;, {}),
- 'with_std': True}
+<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+  with_std=True
+)
 
-</code></details><div class="component union"><details class="component estimator"><summary><pre class="estimator-name">PolynomialExtender</pre></summary><code class="estimator-params">
-{'bias_name': 'bias',
- 'degree': 2,
- 'include_bias': False,
- 'interaction_only': False}
+</code></details><div class="river-component river-union"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">PolynomialExtender</pre></summary><code class="river-estimator-params">(
+  degree=2
+  interaction_only=False
+  include_bias=False
+  bias_name="bias"
+)
 
-</code></details><details class="component estimator"><summary><pre class="estimator-name">RBFSampler</pre></summary><code class="estimator-params">
-{'gamma': 1.0,
- 'n_components': 100,
- 'offsets': [3.3510532411100926,
-             1.190142184105075,
-             4.758468173807059,
-             2.102487972776319,
-             1.480660275522741,
-             5.366729269710237,
-             5.070416334382951,
-             1.277733738266996,
-             2.207119719491707,
-             2.1426794957848565,
-             1.8225710193657765,
-             0.053985537083313495,
-             2.6438259461961584,
-             0.8971767883543308,
-             3.471297218403341,
-             2.6459033776328047,
-             1.9757793978738034,
-             5.087466036691654,
-             3.518448810009812,
-             5.758687368535289,
-             4.79849237290909,
-             5.743603500595328,
-             3.8577593701336594,
-             2.992220690658145,
-             4.6122186296260645,
-             2.1072783802275836,
-             3.2587620363834997,
-             4.18188290647669,
-             3.789865875963889,
-             1.3166941816528979,
-             2.1496598890995253,
-             0.5514213256928427,
-             6.133866289278633,
-             5.464360858865711,
-             4.291124096688779,
-             5.030631537283815,
-             0.9257361562479935,
-             6.114310134092216,
-             2.5412321682182526,
-             4.822019847592126,
-             0.49289853038336945,
-             5.662322515846727,
-             1.1066734350932208,
-             2.7859787189161023,
-             1.0923831484478823,
-             3.862364264034545,
-             4.57817015349273,
-             4.879251535793154,
-             3.2389588917501846,
-             0.8671594208818371,
-             0.3928381887147743,
-             0.8367553042176593,
-             5.487324628228967,
-             1.754506781747617,
-             1.4467895315220585,
-             4.95057422570524,
-             1.515646570633651,
-             0.7141957541762096,
-             2.6802165231715596,
-             3.1143643491751765,
-             3.2887707754133637,
-             4.698780590052855,
-             2.628523813897675,
-             3.051845846553334,
-             0.7137935763683448,
-             0.8668790249131346,
-             4.55066107913964,
-             5.448264849218835,
-             0.6859224016931418,
-             3.7014814797697153,
-             1.4690127755832323,
-             4.680232230781756,
-             2.1073009522234694,
-             3.8794879419289177,
-             0.9006462860416513,
-             2.682015494386968,
-             2.52991503710204,
-             2.2535812651434344,
-             5.407510051438392,
-             2.8275014865565486,
-             0.5645870178898392,
-             5.242344945410286,
-             1.609719168544174,
-             4.340295048969955,
-             2.927344299721854,
-             2.1090856426673503,
-             2.698017694795121,
-             5.749312469665515,
-             3.6999265064358733,
-             3.280883125056919,
-             5.481053451883993,
-             1.77331580361824,
-             0.0858416295646753,
-             5.316833856722039,
-             1.8426572018482168,
-             5.347342560277715,
-             5.1189679745176475,
-             1.2592524362712572,
-             3.637660524181257,
-             2.393108047753942],
- 'rng': &lt;random.Random object at 0x7ff61a344210&gt;,
- 'seed': None,
- 'weights': defaultdict(&lt;bound method RBFSampler._random_weights of RBFSampler (
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">RBFSampler</pre></summary><code class="river-estimator-params">(
   gamma=1.
   n_components=100
   seed=None
-)&gt;, {})}
+)
 
-</code></details></div><details class="component estimator"><summary><pre class="estimator-name">LinearRegression</pre></summary><code class="estimator-params">
-{'_weights': {},
- '_y_name': None,
- 'clip_gradient': 1000000000000.0,
- 'initializer': Zeros (),
- 'intercept': 0.0,
- 'intercept_init': 0.0,
- 'intercept_lr': Constant({'learning_rate': 0.01}),
- 'l2': 0.0,
- 'loss': Squared({}),
- 'optimizer': SGD({'lr': Constant({'learning_rate': 0.01}), 'n_iterations': 0})}
+</code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">(
+  optimizer=SGD (
+    lr=Constant (
+      learning_rate=0.01
+    )
+  )
+  loss=Squared ()
+  l2=0.
+  l1=0.
+  intercept_init=0.
+  intercept_lr=Constant (
+    learning_rate=0.01
+  )
+  clip_gradient=1e+12
+  initializer=Zeros ()
+)
 
 </code></details></div><style scoped>
-.estimator {
+.river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
 }
 
-.pipeline {
+.river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
 }
 
-.union {
+.river-union {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: 1em;
     border-style: solid;
-    background: white
+    background: white;
 }
 
-.wrapper {
+.river-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10723,45 +10640,45 @@ summary > div {
     background: white;
 }
 
-.wrapper > .estimator {
+.river-wrapper > .river-estimator {
     margin-top: 1em;
 }
 
 /* Vertical spacing between steps */
 
-.component + .component {
+.river-component + .river-component {
     margin-top: 2em;
 }
 
-.union > .estimator {
+.river-union > .river-estimator {
     margin-top: 0;
 }
 
-.union > .pipeline {
+.river-union > .pipeline {
     margin-top: 0;
 }
 
 /* Spacing within a union of estimators */
 
-.union > .component + .component {
+.river-union > .river-component + .river-component {
     margin-left: 1em;
 }
 
 /* Typography */
 
-.estimator-params {
+.river-estimator-params {
     display: block;
     white-space: pre-wrap;
     font-size: 120%;
     margin-bottom: -1em;
 }
 
-.estimator > code,
-.wrapper > details > code {
+.river-estimator > .river-estimator-params,
+.river-wrapper > .river-details > river-estimator-params {
     background-color: white !important;
 }
 
-.estimator-name {
+.river-estimator-name {
     display: inline;
     margin: 0;
     font-size: 130%;
@@ -10769,13 +10686,13 @@ summary > div {
 
 /* Toggle */
 
-summary {
+.river-summary {
     display: flex;
     align-items:center;
     cursor: pointer;
 }
 
-summary > div {
+.river-summary > div {
     width: 100%;
 }
 </style></div>

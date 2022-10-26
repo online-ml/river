@@ -282,7 +282,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.9.0/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -9948,20 +9948,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../releases/0.9.0/" class="md-nav__link">
         0.9.0 - 2021-11-30
       </a>
@@ -10146,6 +10132,20 @@
     <li class="md-nav__item">
       <a href="../../releases/0.2.0/" class="md-nav__link">
         0.2.0 - 2019-05-27
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.14.0/" class="md-nav__link">
+        0.13.0 - 2022-10-26
       </a>
     </li>
   
@@ -10464,28 +10464,29 @@
 
 <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>Pipeline (
-  StandardScaler (
-    with_std=True
-  ),
-  LinearRegression (
-    optimizer=SGD (
-      lr=Constant (
-        learning_rate=0.025
-      )
-    )
-    loss=Squared ()
-    l2=0.1
-    l1=0.
-    intercept_init=0.
-    intercept_lr=Constant (
-      learning_rate=0.01
-    )
-    clip_gradient=1e+12
-    initializer=Zeros ()
-  )
-)
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Pipeline <span style="font-weight: bold">(</span>
+  StandardScaler <span style="font-weight: bold">(</span>
+    <span style="color: #808000; text-decoration-color: #808000">with_std</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+  <span style="font-weight: bold">)</span>,
+  LinearRegression <span style="font-weight: bold">(</span>
+    <span style="color: #808000; text-decoration-color: #808000">optimizer</span>=<span style="color: #800080; text-decoration-color: #800080">SGD</span> <span style="font-weight: bold">(</span>
+      <span style="color: #808000; text-decoration-color: #808000">lr</span>=<span style="color: #800080; text-decoration-color: #800080">Constant</span> <span style="font-weight: bold">(</span>
+        <span style="color: #808000; text-decoration-color: #808000">learning_rate</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.025</span>
+      <span style="font-weight: bold">)</span>
+    <span style="font-weight: bold">)</span>
+    <span style="color: #808000; text-decoration-color: #808000">loss</span>=<span style="color: #800080; text-decoration-color: #800080">Squared</span> <span style="font-weight: bold">()</span>
+    <span style="color: #808000; text-decoration-color: #808000">l2</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.1</span>
+    <span style="color: #808000; text-decoration-color: #808000">l1</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>.
+    <span style="color: #808000; text-decoration-color: #808000">intercept_init</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>.
+    <span style="color: #808000; text-decoration-color: #808000">intercept_lr</span>=<span style="color: #800080; text-decoration-color: #800080">Constant</span> <span style="font-weight: bold">(</span>
+      <span style="color: #808000; text-decoration-color: #808000">learning_rate</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.01</span>
+    <span style="font-weight: bold">)</span>
+    <span style="color: #808000; text-decoration-color: #808000">clip_gradient</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1e+12</span>
+    <span style="color: #808000; text-decoration-color: #808000">initializer</span>=<span style="color: #800080; text-decoration-color: #800080">Zeros</span> <span style="font-weight: bold">()</span>
+  <span style="font-weight: bold">)</span>
+<span style="font-weight: bold">)</span>
+</pre>
+
 <p>We can see the attributes we specified have changed. However, the model's state is preserved:</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">weights</span>
 </code></pre></div>
@@ -10514,8 +10515,9 @@
 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>&#39;weights&#39; is not a mutable attribute of LinearRegression
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008000; text-decoration-color: #008000">'weights'</span> is not a mutable attribute of LinearRegression
+</pre>
+
 <p>All attributes are immutable by default. Under the hood, each model can specify a set of mutable attributes via the <code>_mutable_attributes</code> property. In theory this can be overriden. But the general idea is that we will progressively add more and more mutable attributes with time.</p>
 <p>And that concludes this recipe. Arguably, this recipe caters to advanced users, and in particular users who are developping their own models. And yet, one could also argue that modifying parameters of a model on-the-fly is a great tool to have at your disposal when you're doing online machine learning.</p>
 
