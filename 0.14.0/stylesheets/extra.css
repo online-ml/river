@@ -1,0 +1,47 @@
+:root > * {
+    --md-primary-fg-color:#286bc8;
+}
+
+.md-typeset h1,
+.md-typeset h2 {
+  font-weight: 1000;
+  letter-spacing: 0;
+}
+
+.md-typeset h2 {
+  margin: 1.5em 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 0.04rem solid var(--md-default-fg-color--lighter);
+}
+
+.md-footer {
+  margin-top: 2em;
+}
+
+.md-tabs__link {
+  font-weight: bold;
+}
+
+.md-typeset pre > code {
+  border-radius: 0.5em;
+}
+
+.md-typeset details {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  padding: 0 1em;
+  border-left-width: 0.25em;
+  border-left-color: black;
+}
+
+.md-typeset summary {
+  background-color: transparent;
+  font-weight: 0;
+  border-left: 0;
+}
+
+.md-typeset summary::before,
+.md-typeset summary::after {
+  background-color: transparent;
+}
