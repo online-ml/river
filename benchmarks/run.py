@@ -1,8 +1,15 @@
+import os
+
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
+
 import datetime
 import json
 import shelve
 import sys
 
+import numpy as np
+import onelearn
 import torch
 from sklearn.linear_model import SGDClassifier
 from vowpalwabbit import pyvw
@@ -33,9 +40,9 @@ def run_track(models, track, benchmarks):
     for model_name, model in models.items():
         print(f"\t{model_name}")
         for dataset in track:
-            data_name = dataset.__class__.__name__
-            if (data_name, model_name) in completed:
-                print(f"\t\t[skipped] {data_name}")
+            dataset_name = dataset.__class__.__name__
+            if (dataset_name, model_name) in completed:
+                print(f"\t\t[skipped] {dataset_name}")
                 continue
             # Get cached data from the shelf
             if track.name in benchmarks:
@@ -43,7 +50,7 @@ def run_track(models, track, benchmarks):
             else:
                 results = []
             res = next(track.run(model, dataset, n_checkpoints=1))
-            res["Dataset"] = data_name
+            res["Dataset"] = dataset_name
             res["Model"] = model_name
             for k, v in res.items():
                 if isinstance(v, metrics.base.Metric):
@@ -54,7 +61,7 @@ def run_track(models, track, benchmarks):
 
             # Writes updated version to the shelf
             benchmarks[track.name] = results
-            print(f"\t\t[done] {data_name}")
+            print(f"\t\t[done] {dataset_name}")
 
 
 tracks = [
@@ -143,6 +150,22 @@ class VW2RiverClassifier(VW2RiverBase, base.Classifier):
         return {True: y_pred, False: 1.0 - y_pred}
 
 
+class AMFClassifier(onelearn.AMFClassifier):
+
+    def __init__(self, classes, *args, **kwargs):
+        super().__init__(*args, **kwargs, n_classes=len(classes))
+        self.classes_ = np.array(classes)
+
+    def partial_fit(self, X, y, classes=None):
+        return super().partial_fit(np.asarray(X), np.asarray(y))
+
+    def predict(self, X):
+        if self._n_features is None:
+            return self.classes_[np.zeros(len(X), dtype=int)]
+        indices = self.predict_proba(X).argmax(axis=1)
+        return self.classes_[indices]
+
+
 LEARNING_RATE = 0.005
 
 models = {
@@ -153,11 +176,19 @@ models = {
         ),
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
         "Stochastic Gradient Tree": tree.SGTClassifier(),
+        "onelearn AMFClassifier": (
+            compat.SKL2RiverClassifier(
+                AMFClassifier(
+                    classes=[False, True],
+                ),
+                classes=[False, True],
+            )
+        ),
         "sklearn SGDClassifier": (
             preprocessing.StandardScaler()
             | compat.SKL2RiverClassifier(
                 SGDClassifier(
-                    loss="log_loss", learning_rate="constant", eta0=LEARNING_RATE, penalty="none"
+                    loss="log", learning_rate="constant", eta0=LEARNING_RATE, penalty="none"
                 ),
                 classes=[False, True],
             )
@@ -293,7 +324,8 @@ if __name__ == "__main__":
 
     log = {}
     for track in tracks:
-        log[track.name] = benchmarks[track.name]
+        if track.name in benchmarks:
+            log[track.name] = benchmarks[track.name]
 
     with open("results.json", "w") as f:
         json.dump(log, f, sort_keys=True, indent=4)

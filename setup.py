@@ -67,7 +67,6 @@ setuptools.setup(
             "sqlalchemy>=1.4",
             "sympy>=1.10.1"
         ],
-        "benckmarks": base_packages + ["scikit-learn", "torch", "vowpalwabbit"],
         "compat": base_packages
         + [
             "scikit-learn",
