@@ -73,10 +73,8 @@ jobs:
           CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
-          CIBW_ENVIRONMENT: >
-            PATH="$HOME/.cargo/bin:$PATH" &&
-            CARGO_NET_GIT_FETCH_WITH_CLI="true"
-  
+          CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
+          CIBW_ENVIRONMENT_LINUX: 'CARGO_NET_GIT_FETCH_WITH_CLI="true"'
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
           CIBW_BEFORE_BUILD_LINUX: >
