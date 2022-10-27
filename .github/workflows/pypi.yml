@@ -2,7 +2,8 @@ name: pypi
 
 on:
   push:
-    branches: ["Fix-CI-wheels"]
+    tags:
+      - "*"
 
 jobs:
   build_wheels:
@@ -74,6 +75,9 @@ jobs:
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
+          # Fix the following error: error: cargo rustc --lib --message-format=json-render-diagnostics --manifest-path Cargo.toml --release -v --features pyo3/extension-module -- --crate-type cdylibfailed with code -9
+          # You neeed to set a second environment variable CARGO_NET_GIT_FETCH_WITH_CLI="true" for linux environments
+          # Solutio found here: https://github.com/rust-lang/cargo/issues/10583
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
@@ -99,4 +103,16 @@ jobs:
         with:
           path: dist/*.tar.gz
 
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
 
+      - uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: ${{ secrets.pypi_user }}
+          password: ${{ secrets.pypi_password }}
