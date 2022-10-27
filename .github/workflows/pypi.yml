@@ -5,7 +5,6 @@ on:
     tags:
       - "*"
 
-
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -76,6 +75,10 @@ jobs:
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
+          # Fix the following error: error: cargo rustc --lib --message-format=json-render-diagnostics --manifest-path Cargo.toml --release -v --features pyo3/extension-module -- --crate-type cdylibfailed with code -9
+          # You need to set a second environment variable CARGO_NET_GIT_FETCH_WITH_CLI="true" for linux environments
+          # Solutio found here: https://github.com/rust-lang/cargo/issues/10583
+          CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
           CIBW_BEFORE_BUILD_LINUX: >
