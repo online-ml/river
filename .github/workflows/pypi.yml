@@ -2,8 +2,8 @@ name: pypi
 
 on:
   push:
-    tags:
-      - "*"
+    branches:
+      - main
 
 jobs:
   build_wheels:
