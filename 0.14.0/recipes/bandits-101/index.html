@@ -10427,7 +10427,7 @@
   
     <li class="md-nav__item">
       <a href="../../releases/0.14.0/" class="md-nav__link">
-        0.13.0 - 2022-10-26
+        0.14.0 - 2022-10-26
       </a>
     </li>
   
@@ -10727,7 +10727,7 @@
 <span class="p">))</span>
 <span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>100%|██████████| 6000000/6000000 [02:08&lt;00:00, 46548.86it/s]
+<div class="highlight"><pre><span></span><code>100%|██████████| 6000000/6000000 [01:30&lt;00:00, 66645.26it/s]
 </code></pre></div>
 <div>
 <style scoped>
@@ -10761,45 +10761,45 @@
       <td>441</td>
       <td>632</td>
       <td>0</td>
-      <td>6</td>
-      <td>1.567693</td>
-      <td>0.529046</td>
+      <td>0</td>
+      <td>1.195892</td>
+      <td>0.516017</td>
     </tr>
     <tr>
       <th>3566176</th>
       <td>1188</td>
       <td>725</td>
       <td>1</td>
-      <td>0</td>
-      <td>-0.027177</td>
-      <td>0.355326</td>
+      <td>6</td>
+      <td>0.012963</td>
+      <td>2.062093</td>
     </tr>
     <tr>
       <th>1109043</th>
       <td>369</td>
       <td>681</td>
       <td>0</td>
-      <td>8</td>
-      <td>1.923623</td>
-      <td>2.045404</td>
+      <td>1</td>
+      <td>2.621255</td>
+      <td>0.567515</td>
     </tr>
     <tr>
       <th>4286042</th>
       <td>1428</td>
       <td>680</td>
       <td>2</td>
-      <td>1</td>
-      <td>1.149242</td>
-      <td>1.607725</td>
+      <td>0</td>
+      <td>0.289308</td>
+      <td>1.368167</td>
     </tr>
     <tr>
       <th>5395174</th>
       <td>1798</td>
       <td>391</td>
       <td>1</td>
-      <td>4</td>
-      <td>3.200993</td>
-      <td>1.941622</td>
+      <td>0</td>
+      <td>-0.287122</td>
+      <td>1.163905</td>
     </tr>
   </tbody>
 </table>
@@ -10875,7 +10875,7 @@
 
 <span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>100%|██████████| 6000000/6000000 [02:11&lt;00:00, 45699.39it/s]
+<div class="highlight"><pre><span></span><code>100%|██████████| 6000000/6000000 [01:31&lt;00:00, 65686.38it/s]
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span>
@@ -10932,7 +10932,7 @@
     <span class="p">)</span>
 <span class="p">))</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>100%|██████████| 180000/180000 [00:44&lt;00:00, 4075.49it/s]
+<div class="highlight"><pre><span></span><code>100%|██████████| 180000/180000 [00:30&lt;00:00, 5959.33it/s]
 </code></pre></div>
 <p>We can compare the performance of each policy by checking the average reward at the end of each episode.</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span>
