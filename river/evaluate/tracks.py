@@ -7,7 +7,7 @@ class Track:
     """A track evaluate a model's performance.
 
     The following metrics are recorded:
-    
+
     - Time, which should be interpreted with wisdom. Indeed time can depend on the architecture
         and local resource situations. Comparison via FLOPS should be preferred.
     - The model's memory footprint.
