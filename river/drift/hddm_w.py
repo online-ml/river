@@ -145,6 +145,8 @@ class HDDM_W(DriftDetector):
     def _has_mean_changed(
         self, sample1: "SampleInfo", sample2: "SampleInfo", confidence: float
     ) -> bool:
+        if sample1.is_initialized or sample2.is_initialized:
+            return False
         ibc_sum = sample1.ibc + sample2.ibc
         bound = self._mcdiarmid_bound(ibc_sum, confidence)
 
@@ -180,6 +182,7 @@ class HDDM_W(DriftDetector):
 class SampleInfo:
     def __init__(self, lambd: float):
         self._ewma = stats.EWMean(lambd)
+        self._is_initialized = True
         # Independent bound condition
         self._ibc = 1.0
         self._lambd_sq = lambd * lambd
@@ -187,6 +190,7 @@ class SampleInfo:
 
     def update(self, x):
         self._ewma.update(x)
+        self._is_initialized = False
         self._ibc = self._lambd_sq + self._c_lambd_sq * self._ibc
 
     @property
