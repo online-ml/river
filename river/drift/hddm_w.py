@@ -200,7 +200,7 @@ class SampleInfo:
     @property
     def ibc(self):
         return self._ibc
-    
+
     @property
     def is_init(self):
         return self._is_init
