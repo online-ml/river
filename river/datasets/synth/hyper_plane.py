@@ -83,7 +83,7 @@ class Hyperplane(datasets.base.SyntheticDataset):
 
     def __init__(
         self,
-        seed: Optional[int | np.random.RandomState] = None,
+        seed: int | np.random.RandomState | None = None,
         n_features: int = 10,
         n_drift_features: int = 2,
         mag_change: float = 0.0,

@@ -30,7 +30,7 @@ class SymmetricMatrix(abc.ABC):
 
     def __repr__(self):
 
-        names = sorted(set(i for i, _ in self.matrix))
+        names = sorted({i for i, _ in self.matrix})
 
         headers = [""] + list(map(str, names))
         columns = [headers[1:]]

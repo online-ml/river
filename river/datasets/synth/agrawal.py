@@ -112,7 +112,7 @@ class Agrawal(datasets.base.SyntheticDataset):
     def __init__(
         self,
         classification_function: int = 0,
-        seed: Optional[int | np.random.RandomState] = None,
+        seed: int | np.random.RandomState | None = None,
         balance_classes: bool = False,
         perturbation: float = 0.0,
     ):

@@ -87,8 +87,7 @@ class HTLeaf(Leaf, abc.ABC):
         x
             The input instance.
         """
-        for att_id, att_val in x.items():
-            yield att_id, att_val
+        yield from x.items()
 
     def update_splitters(self, x, y, sample_weight, nominal_attributes):
         for att_id, att_val in self._iter_features(x):

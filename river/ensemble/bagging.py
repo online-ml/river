@@ -161,7 +161,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
     def predict_one(self, x):
         """Averages the predictions of each regressor."""
-        return statistics.mean((regressor.predict_one(x) for regressor in self))
+        return statistics.mean(regressor.predict_one(x) for regressor in self)
 
 
 class ADWINBaggingClassifier(BaggingClassifier):

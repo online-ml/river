@@ -13,7 +13,7 @@ class Forecaster(base.Estimator):
     def _supervised(self):
         return True
 
-    def learn_one(self, y: float, x: dict = None) -> "Forecaster":
+    def learn_one(self, y: float, x: dict = None) -> Forecaster:
         """Updates the model.
 
         Parameters
@@ -27,7 +27,7 @@ class Forecaster(base.Estimator):
         """
 
     @abc.abstractmethod
-    def forecast(self, horizon: int, xs: typing.Optional[list[dict]] = None) -> list:
+    def forecast(self, horizon: int, xs: list[dict] | None = None) -> list:
         """Makes forecast at each step of the given horizon.
 
         Parameters

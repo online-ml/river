@@ -80,7 +80,7 @@ class Waveform(datasets.base.SyntheticDataset):
 
     def __init__(
         self,
-        seed: Optional[int | np.random.RandomState] = None,
+        seed: int | np.random.RandomState | None = None,
         has_noise: bool = False,
     ):
         super().__init__(

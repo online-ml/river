@@ -94,7 +94,7 @@ def find_ngrams(tokens: typing.Iterator[str], n: int) -> typing.Iterator[N_GRAM]
     return zip(*neighbors)
 
 
-def find_all_ngrams(tokens: typing.List[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
+def find_all_ngrams(tokens: list[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
     """Generates all n-grams in a given range.
 
     Examples
@@ -176,7 +176,7 @@ class VectorizerMixin:
         self.tokenizer = tokenizer
         self.ngram_range = ngram_range
 
-        self.processing_steps: typing.List[typing.Any] = []
+        self.processing_steps: list[typing.Any] = []
 
         # Text extraction
         if on is not None:
@@ -342,7 +342,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     def transform_many(self, X: pd.Series) -> pd.DataFrame:
         """Transform pandas series of string into term-frequency pandas sparse dataframe."""
         indptr, indices, data = [0], [], []
-        index: typing.Dict[int, int] = {}
+        index: dict[int, int] = {}
 
         for d in X:
             t: int
@@ -486,7 +486,7 @@ class TFIDF(BagOfWords):
 
         for term, count in term_counts.items():
             tf = count / n_terms
-            idf = math.log(((1 + self.n) / (1 + self.dfs[term]))) + 1
+            idf = math.log((1 + self.n) / (1 + self.dfs[term])) + 1
             tfidfs[term] = tf * idf
 
         if self.normalize:

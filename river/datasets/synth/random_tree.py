@@ -70,8 +70,8 @@ class RandomTree(datasets.base.SyntheticDataset):
 
     def __init__(
         self,
-        seed_tree: Optional[int | np.random.RandomState] = None,
-        seed_sample: Optional[int | np.random.RandomState] = None,
+        seed_tree: int | np.random.RandomState | None = None,
+        seed_sample: int | np.random.RandomState | None = None,
         n_classes: int = 2,
         n_num_features: int = 5,
         n_cat_features: int = 5,
@@ -273,7 +273,7 @@ class TreeNode:
         self,
         class_label: int = None,
         split_feature_idx: int = None,
-        split_feature_val: Optional[int | float] = None,
+        split_feature_val: int | float | None = None,
     ):
         self.class_label = class_label
         self.split_feature_idx = split_feature_idx

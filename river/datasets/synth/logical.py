@@ -50,7 +50,7 @@ class Logical(datasets.base.SyntheticDataset):
         self,
         n_tiles: int = 1,
         shuffle: bool = True,
-        seed: Optional[int | np.random.RandomState] = None,
+        seed: int | np.random.RandomState | None = None,
     ):
         super().__init__(
             n_features=2,

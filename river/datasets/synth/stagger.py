@@ -77,7 +77,7 @@ class STAGGER(datasets.base.SyntheticDataset):
     def __init__(
         self,
         classification_function: int = 0,
-        seed: Optional[int | np.random.RandomState] = None,
+        seed: int | np.random.RandomState | None = None,
         balance_classes: bool = False,
     ):
         super().__init__(n_features=3, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF)
