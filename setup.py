@@ -65,7 +65,8 @@ setuptools.setup(
             "pytest>=4.5.0",
             "scikit-learn>=1.0.1",
             "sqlalchemy>=1.4",
-            "sympy>=1.10.1"
+            "sympy>=1.10.1",
+            "pyupgrade>=3.2.0"
         ],
         "compat": base_packages
         + [
