@@ -150,9 +150,7 @@ class Slot:
 
         self.y_stats: stats.Var | utils.VectorDict
 
-        self._update_estimator: typing.Callable[
-            [float | utils.VectorDict, float], None
-        ]
+        self._update_estimator: typing.Callable[[float | utils.VectorDict, float], None]
         self.is_single_target = True
 
         self._init_estimator(y)
@@ -206,7 +204,7 @@ class FeatureQuantizer:
     def __len__(self):
         return len(self.hash)
 
-    def update(self, x: float, y: typing.Union[float, utils.VectorDict], weight: float):
+    def update(self, x: float, y: float | utils.VectorDict, weight: float):
         index = math.floor(x / self.radius)
         try:
             self.hash[index].update(x, y, weight)

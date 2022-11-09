@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 import math
 import random
-from typing import Any, Tuple
+from typing import Any
 
 from river import datasets
 

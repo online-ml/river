@@ -48,8 +48,8 @@ def print_table(
         row_format.format(*headers)
         + "\n"
         + "\n".join(
-                row_format.format(*[col[i].rjust(width) for col, width in zip(columns, col_widths)])
-                for i in order
+            row_format.format(*[col[i].rjust(width) for col, width in zip(columns, col_widths)])
+            for i in order
         )
     )
 
@@ -72,4 +72,4 @@ def humanize_bytes(n_bytes: int):
         rank = min(rank, len(suffixes) - 1)
         human = n_bytes / (1024.0**rank)
     f = ("%.2f" % human).rstrip("0").rstrip(".")
-    return "{} {}".format(f, suffixes[rank])
+    return f"{f} {suffixes[rank]}"

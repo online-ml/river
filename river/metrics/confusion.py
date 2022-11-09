@@ -80,8 +80,7 @@ class ConfusionMatrix:
     @property
     def classes(self):
         return list(
-            {c for c, n in self.sum_row.items() if n}
-            | {c for c, n in self.sum_col.items() if n}
+            {c for c, n in self.sum_row.items() if n} | {c for c, n in self.sum_col.items() if n}
         )
 
     def __repr__(self):

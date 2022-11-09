@@ -9,9 +9,7 @@ from river import base, metrics
 
 class ForecastingMetric(base.Base, abc.ABC):
     @abc.abstractmethod
-    def update(
-        self, y_true: list[Number], y_pred: list[Number]
-    ) -> ForecastingMetric:
+    def update(self, y_true: list[Number], y_pred: list[Number]) -> ForecastingMetric:
         """Update the metric at each step along the horizon.
 
         Parameters

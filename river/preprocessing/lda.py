@@ -233,9 +233,7 @@ class LDA(base.Transformer):
                 self.truncation_size_prime += 1
 
     @classmethod
-    def _compute_weights(
-        cls, n_components: int, nu_1: dict, nu_2: dict
-    ) -> tuple[dict, dict]:
+    def _compute_weights(cls, n_components: int, nu_1: dict, nu_2: dict) -> tuple[dict, dict]:
         """Calculates the vocabulary weighting according to the word distribution present in the
         vocabulary.
 
