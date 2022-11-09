@@ -33,7 +33,7 @@ repos:
         name: mypy
         language: python
         types: [python]
-        entry: mypy
+        entry: mypy --no-strict-optional
 
       - id: pyupgrade
         name: pyupgrade
