@@ -13,6 +13,7 @@ class Forecaster(base.Estimator):
     def _supervised(self):
         return True
 
+    @abc.abstractmethod
     def learn_one(self, y: float, x: dict = None) -> "Forecaster":
         """Updates the model.
 
@@ -25,6 +26,7 @@ class Forecaster(base.Estimator):
             exogenous variables.
 
         """
+        raise NotImplementedError
 
     @abc.abstractmethod
     def forecast(self, horizon: int, xs: typing.Optional[list[dict]] = None) -> list:
