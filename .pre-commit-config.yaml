@@ -33,7 +33,7 @@ repos:
         name: mypy
         language: python
         types: [python]
-        entry: mypy --no-strict-optional
+        entry: mypy --no-strict-optional --check-untyped-defs
 
       - id: pyupgrade
         name: pyupgrade
