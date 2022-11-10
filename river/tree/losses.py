@@ -7,6 +7,7 @@ from .utils import GradHess
 class Loss(abc.ABC):
     """Base class to implement optimization objectives used in Stochastic Gradient Trees."""
 
+    @abc.abstractmethod
     def compute_derivatives(self, y_true: float, y_pred: float) -> GradHess:
         """Return the gradient and hessian data concerning one instance and its prediction.
 
@@ -17,7 +18,7 @@ class Loss(abc.ABC):
         y_pred
             Predicted target value.
         """
-        pass
+        raise NotImplementedError
 
     def transfer(self, y: float) -> float:
         """Optionally apply some transformation to the value predicted by the tree before
