@@ -33,4 +33,4 @@ repos:
         name: mypy
         language: python
         types: [python]
-        entry: mypy
+        entry: mypy --implicit-optional

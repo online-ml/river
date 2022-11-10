@@ -60,7 +60,7 @@ setuptools.setup(
             "gym>=0.26.1",
             "isort>=5.9.3",
             "matplotlib>=3.0.2",
-            "mypy>=0.961",
+            "mypy>=0.980",
             "pre-commit>=2.9.2",
             "pytest>=4.5.0",
             "scikit-learn>=1.0.1",
