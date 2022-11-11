@@ -123,7 +123,7 @@ class KMeans(base.Clusterer):
         def get_distance(c):
             center = self.centers[c]
             return sum(
-                (abs(center[k] - x.get(k, 0))) ** self.p for k in set([*center.keys(), *x.keys()])
+                (abs(center[k] - x.get(k, 0))) ** self.p for k in {*center.keys(), *x.keys()}
             )
 
         return min(self.centers, key=get_distance)

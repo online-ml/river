@@ -273,7 +273,7 @@ class Metrics(Metric, collections.UserList):
         return all(m.requires_labels for m in self)
 
     def __repr__(self):
-        return self.str_sep.join((str(m) for m in self))
+        return self.str_sep.join(str(m) for m in self)
 
     def __add__(self, other):
         try:

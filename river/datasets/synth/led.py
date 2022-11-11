@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from river import datasets
@@ -87,7 +85,7 @@ class LED(datasets.base.SyntheticDataset):
 
     def __init__(
         self,
-        seed: Optional[int | np.random.RandomState] = None,
+        seed: int | np.random.RandomState | None = None,
         noise_percentage: float = 0.0,
         irrelevant_features: bool = False,
     ):
@@ -179,7 +177,7 @@ class LEDDrift(LED):
 
     def __init__(
         self,
-        seed: Optional[int | np.random.RandomState] = None,
+        seed: int | np.random.RandomState | None = None,
         noise_percentage: float = 0.0,
         irrelevant_features: bool = False,
         n_drift_features: int = 0,

@@ -84,7 +84,7 @@ class SelectKBest(base.SupervisedTransformer):
 
     def transform_one(self, x):
 
-        best_features = set(pair[0] for pair in self.leaderboard.most_common(self.k))
+        best_features = {pair[0] for pair in self.leaderboard.most_common(self.k)}
 
         if self.leaderboard:
 

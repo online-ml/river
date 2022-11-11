@@ -233,9 +233,7 @@ class LDA(base.Transformer):
                 self.truncation_size_prime += 1
 
     @classmethod
-    def _compute_weights(
-        cls, n_components: int, nu_1: dict, nu_2: dict
-    ) -> typing.Tuple[dict, dict]:
+    def _compute_weights(cls, n_components: int, nu_1: dict, nu_2: dict) -> tuple[dict, dict]:
         """Calculates the vocabulary weighting according to the word distribution present in the
         vocabulary.
 
@@ -322,7 +320,7 @@ class LDA(base.Transformer):
 
         self.truncation_size = self.truncation_size_prime
 
-    def _compute_statistics_components(self, words_indexes_list: list) -> typing.Tuple[dict, dict]:
+    def _compute_statistics_components(self, words_indexes_list: list) -> tuple[dict, dict]:
         """Extract latent variables from the document and words.
 
         Parameters

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import warnings
-from typing import Optional
 
 import numpy as np
 
@@ -62,8 +61,8 @@ class RandomRBF(datasets.base.SyntheticDataset):
 
     def __init__(
         self,
-        seed_model: Optional[int | np.random.RandomState] = None,
-        seed_sample: Optional[int | np.random.RandomState] = None,
+        seed_model: int | np.random.RandomState | None = None,
+        seed_sample: int | np.random.RandomState | None = None,
         n_classes: int = 2,
         n_features: int = 10,
         n_centroids: int = 50,
@@ -182,8 +181,8 @@ class RandomRBFDrift(RandomRBF):
 
     def __init__(
         self,
-        seed_model: Optional[int | np.random.RandomState] = None,
-        seed_sample: Optional[int | np.random.RandomState] = None,
+        seed_model: int | np.random.RandomState | None = None,
+        seed_sample: int | np.random.RandomState | None = None,
         n_classes: int = 2,
         n_features: int = 10,
         n_centroids: int = 50,

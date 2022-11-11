@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from river import datasets
@@ -80,7 +78,7 @@ class Mixed(datasets.base.SyntheticDataset):
     def __init__(
         self,
         classification_function: int = 0,
-        seed: Optional[int | np.random.RandomState] = None,
+        seed: int | np.random.RandomState | None = None,
         balance_classes: bool = False,
     ):
         super().__init__(n_features=4, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF)

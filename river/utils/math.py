@@ -160,7 +160,7 @@ def minkowski_distance(a: dict, b: dict, p: int):
         Manhattan distance. When `p=2`, this is equivalent to using the Euclidean distance.
 
     """
-    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in set([*a.keys(), *b.keys()]))
+    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()})
 
 
 def softmax(y_pred: dict):

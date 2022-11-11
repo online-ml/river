@@ -132,7 +132,7 @@ def evaluate(
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
-) -> "time_series.HorizonMetric":
+) -> time_series.HorizonMetric:
     """Evaluates the performance of a forecaster on a time series dataset.
 
     To understand why this method is useful, it's important to understand the difference between

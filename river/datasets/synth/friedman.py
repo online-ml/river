@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 import math
 import random
-from typing import Any, Tuple
+from typing import Any
 
 from river import datasets
 
@@ -172,7 +172,7 @@ class FriedmanDrift(Friedman):
     def __init__(
         self,
         drift_type: str = "lea",
-        position: Tuple[int, ...] = (50_000, 100_000, 150_000),
+        position: tuple[int, ...] = (50_000, 100_000, 150_000),
         transition_window: int = 10_000,
         seed: int = None,
     ):

@@ -67,8 +67,7 @@ class HOFM(BaseFM):
 
     def _interaction_combination_keys(self, x):
         for d in range(2, self.degree + 1):
-            for combination in itertools.combinations(x.keys(), d):
-                yield combination
+            yield from itertools.combinations(x.keys(), d)
 
     def _interaction_val(self, x, combination):
         return functools.reduce(lambda x, y: x * y, (x[j] for j in combination))

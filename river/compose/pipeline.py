@@ -617,7 +617,7 @@ class Pipeline(base.Estimator):
         x, last_step = self._transform_one(x)
         return last_step.score_one(x, **params)
 
-    def forecast(self, horizon: int, xs: typing.List[dict] = None):
+    def forecast(self, horizon: int, xs: list[dict] = None):
         """Return a forecast.
 
         Only works if each estimator has a `transform_one` method and the final estimator has a

@@ -63,6 +63,7 @@ setuptools.setup(
             "mypy>=0.980",
             "pre-commit>=2.9.2",
             "pytest>=4.5.0",
+            "pyupgrade>=3.2.0",
             "scikit-learn>=1.0.1",
             "sqlalchemy>=1.4",
             "sympy>=1.10.1"

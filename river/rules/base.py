@@ -259,8 +259,7 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
         x
             The input instance.
         """
-        for att_id, att_val in x.items():
-            yield att_id, att_val
+        yield from x.items()
 
     @abc.abstractmethod
     def _update_target_stats(self, y, w):
