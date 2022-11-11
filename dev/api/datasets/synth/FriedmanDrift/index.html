@@ -10454,7 +10454,7 @@
 <p>The variant of concept drift.</br> - <code>'lea'</code>: Local Expanding Abrupt drift. The concept drift appears in two distinct regions of the instance space, while the remaining regions are left unaltered. There are three points of abrupt change in the training dataset. At every consecutive change the regions of drift are expanded.</br> - <code>'gra'</code>: Global Recurring Abrupt drift. The concept drift appears over the whole instance space. There are two points of concept drift. At the second point of drift the old concept reoccurs.</br> - <code>'gsg'</code>: Global and Slow Gradual drift. The concept drift affects all the instance space. However, the change is gradual and not abrupt. After each one of the two change points covered by this variant, and during a window of length <code>transition_window</code>, examples from both old and the new concepts are generated with equal probability. After the transition period, only the examples from the new concept are generated.</p>
 </li>
 <li>
-<p><strong>position</strong> (<em>'Tuple[int, ...]'</em>) – defaults to <code>(50000, 100000, 150000)</code></p>
+<p><strong>position</strong> (<em>'tuple[int, ...]'</em>) – defaults to <code>(50000, 100000, 150000)</code></p>
 <p>The amount of monitored instances after which each concept drift occurs. A tuple with at least two element must be passed, where each number is greater than the preceding one. If <code>drift_type='lea'</code>, then the tuple must have three elements.</p>
 </li>
 <li>

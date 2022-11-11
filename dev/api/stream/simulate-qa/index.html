@@ -10409,11 +10409,11 @@
 <p>A stream of (features, target) tuples.</p>
 </li>
 <li>
-<p><strong>moment</strong> (<em>'typing.Union[str, typing.Callable[[dict], dt.datetime], None]'</em>)</p>
+<p><strong>moment</strong> (<em>'str | typing.Callable[[dict], dt.datetime] | None'</em>)</p>
 <p>The attribute used for measuring time. If a callable is passed, then it is expected to take as input a <code>dict</code> of features. If <code>None</code>, then the observations are implicitly timestamped in the order in which they arrive. If a <code>str</code> is passed, then it will be used to obtain the time from the input features.</p>
 </li>
 <li>
-<p><strong>delay</strong> (<em>'typing.Union[str, int, dt.timedelta, typing.Callable, None]'</em>)</p>
+<p><strong>delay</strong> (<em>'str | int | dt.timedelta | typing.Callable | None'</em>)</p>
 <p>The amount of time to wait before revealing the target associated with each observation to the model. This value is expected to be able to sum with the <code>moment</code> value. For instance, if <code>moment</code> is a <code>datetime.date</code>, then <code>delay</code> is expected to be a <code>datetime.timedelta</code>. If a callable is passed, then it is expected to take as input a <code>dict</code> of features and the target. If a <code>str</code> is passed, then it will be used to access the relevant field from the features. If <code>None</code> is passed, then no delay will be used, which leads to doing standard online validation. If a scalar is passed, such an <code>int</code> or a <code>datetime.timedelta</code>, then the delay is constant.</p>
 </li>
 <li>
