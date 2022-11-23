@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/rules/AMRules/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.9">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.20d9efc8.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.472b142f.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.08040f6c.min.css">
@@ -282,7 +282,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/0.9.0/" class="md-tabs__link">
+      <a href="../../../releases/unreleased/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -9958,6 +9958,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6">
@@ -9971,6 +9973,20 @@
           Releases 🏗️
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -10491,7 +10507,7 @@
 <p>The drift detection model that is used by each rule. Care must be taken to avoid the triggering of too many false alarms or delaying too much the concept drift detection. By default, <code>drift.ADWIN</code> is used if <code>drift_detector</code> is <code>None</code>.</p>
 </li>
 <li>
-<p><strong>alpha</strong> (<em>float</em>) – defaults to <code>0.99</code></p>
+<p><strong>fading_factor</strong> (<em>float</em>) – defaults to <code>0.99</code></p>
 <p>The exponential decaying factor applied to the learning models' absolute errors, that are monitored if <code>pred_type='adaptive'</code>. Must be between <code>0</code> and <code>1</code>. The closer to <code>1</code>, the more importance is going to be given to past observations. On the other hand, if its value approaches <code>0</code>, the recent observed errors are going to have more influence on the final decision.</p>
 </li>
 <li>

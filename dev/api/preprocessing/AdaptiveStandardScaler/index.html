@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/preprocessing/AdaptiveStandardScaler/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.9">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.20d9efc8.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.472b142f.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.08040f6c.min.css">
@@ -282,7 +282,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/0.9.0/" class="md-tabs__link">
+      <a href="../../../releases/unreleased/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -9937,6 +9937,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6">
@@ -9950,6 +9952,20 @@
           Releases 🏗️
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -10419,8 +10435,8 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>alpha</strong> – defaults to <code>0.3</code></p>
-<p>This parameter is passed to <code>stats.EWVar</code>. It is expected to be in [0, 1]. More weight is assigned to recent samples the closer <code>alpha</code> is to 1.</p>
+<p><strong>fading_factor</strong> – defaults to <code>0.3</code></p>
+<p>This parameter is passed to <code>stats.EWVar</code>. It is expected to be in [0, 1]. More weight is assigned to recent samples the closer <code>fading_factor</code> is to 1.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -10447,7 +10463,7 @@
 weight to more recent data.</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">scaler</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">AdaptiveStandardScaler</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">.6</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">scaler</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">AdaptiveStandardScaler</span><span class="p">(</span><span class="n">fading_factor</span><span class="o">=</span><span class="mf">.6</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
 <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>

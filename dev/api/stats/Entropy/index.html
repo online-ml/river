@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/stats/Entropy/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.9">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.20d9efc8.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.472b142f.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.08040f6c.min.css">
@@ -282,7 +282,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/0.9.0/" class="md-tabs__link">
+      <a href="../../../releases/unreleased/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -9951,6 +9951,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6">
@@ -9964,6 +9966,20 @@
           Releases 🏗️
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -10446,7 +10462,7 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>alpha</strong> – defaults to <code>1</code></p>
+<p><strong>fading_factor</strong> – defaults to <code>1</code></p>
 <p>Fading factor.</p>
 </li>
 <li>
@@ -10483,7 +10499,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">SEED</span> <span class="o">=</span> <span class="mi">42</span> <span class="o">*</span> <span class="mi">1337</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">entro</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Entropy</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">entro</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Entropy</span><span class="p">(</span><span class="n">fading_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">list_animal</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">animal</span><span class="p">,</span> <span class="n">num_val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="s1">&#39;dog&#39;</span><span class="p">,</span> <span class="s1">&#39;bird&#39;</span><span class="p">],[</span><span class="mi">301</span><span class="p">,</span> <span class="mi">401</span><span class="p">,</span> <span class="mi">601</span><span class="p">]):</span>
