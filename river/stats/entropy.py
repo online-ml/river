@@ -9,7 +9,7 @@ class Entropy(stats.base.Univariate):
 
     Parameters
     ----------
-    alpha
+    fading_factor
         Fading factor.
     eps
         Small value that will be added to the denominator to avoid division by zero.
@@ -39,7 +39,7 @@ class Entropy(stats.base.Univariate):
     >>> SEED = 42 * 1337
     >>> random.seed(SEED)
 
-    >>> entro = stats.Entropy(alpha=1)
+    >>> entro = stats.Entropy(fading_factor=1)
 
     >>> list_animal = []
     >>> for animal, num_val in zip(['cat', 'dog', 'bird'],[301, 401, 601]):
@@ -60,12 +60,12 @@ class Entropy(stats.base.Univariate):
 
     """
 
-    def __init__(self, alpha=1, eps=1e-8):
+    def __init__(self, fading_factor=1, eps=1e-8):
 
-        if 0 < alpha <= 1:
-            self.alpha = alpha
+        if 0 < fading_factor <= 1:
+            self.fading_factor = fading_factor
         else:
-            raise ValueError("alpha must be between 0 excluded and 1")
+            raise ValueError("fading_factor must be between 0 excluded and 1")
         self.eps = eps
         self.entropy = 0
         self.n = 0
@@ -80,10 +80,10 @@ class Entropy(stats.base.Univariate):
         cx = self.counter.get(x, 0)
         n = self.n
         eps = self.eps
-        alpha = self.alpha
+        fading_factor = self.fading_factor
 
         entropy = self.entropy
-        entropy = (n + eps) / (n + 1) * (alpha * entropy - math.log((n + eps) / (n + 1)))
+        entropy = (n + eps) / (n + 1) * (fading_factor * entropy - math.log((n + eps) / (n + 1)))
         entropy -= (cx + 1) / (n + 1) * math.log((cx + 1) / (n + 1))
         entropy += (cx + eps) / (n + 1) * math.log((cx + eps) / (n + 1))
         self.entropy = entropy

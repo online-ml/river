@@ -35,9 +35,9 @@ class HeavyHitters(base.Base):
         in $(0, 1]$ and typically `epsilon` $\\ll$ `support`. The smaller the `epsilon`, the more
         accurate the estimates will be, but the count sketch will have an increased memory
         footprint.
-    alpha
+    fading_factor
         Forgetting factor applied to the frequency estimates to reduce the impact of old items.
-        The value of `alpha` must be in $(0, 1]$.
+        The value of `fading_factor` must be in $(0, 1]$.
 
     Examples
     --------
@@ -74,13 +74,15 @@ class HeavyHitters(base.Base):
 
     """
 
-    def __init__(self, support: float = 0.001, epsilon: float = 0.005, alpha: float = 0.999):
+    def __init__(
+        self, support: float = 0.001, epsilon: float = 0.005, fading_factor: float = 0.999
+    ):
         if support > epsilon:
             raise ValueError("'support' must be smaller than 'epsilon'.")
 
         self.support = support
         self.epsilon = epsilon
-        self.alpha = alpha
+        self.fading_factor = fading_factor
 
         self._bucket_width = math.ceil(1 / self.epsilon)
         self._n: int = 0
@@ -104,7 +106,7 @@ class HeavyHitters(base.Base):
             prune = []
             for key in self._entries:
                 freq, delta = self._entries[key]
-                freq *= self.alpha
+                freq *= self.fading_factor
                 self._entries[key] = (freq, delta)
 
                 if freq + delta <= current_bucket:
@@ -113,7 +115,7 @@ class HeavyHitters(base.Base):
             for key in prune:
                 del self._entries[key]
 
-            self._delta = self._bucket_width + self._delta * self.alpha
+            self._delta = self._bucket_width + self._delta * self.fading_factor
 
         return self
 

@@ -29,10 +29,10 @@ class AdaptiveRegressor(base.Regressor):
     accurate one is selected automatically for each incoming instance.
     """
 
-    def __init__(self, model_predictor: base.Regressor, alpha: float):
+    def __init__(self, model_predictor: base.Regressor, fading_factor: float):
         self.model_predictor = model_predictor
         self.mean_predictor = MeanRegressor()
-        self.alpha = alpha
+        self.fading_factor = fading_factor
 
         self._mae_mean = 0.0
         self._mae_model = 0.0
@@ -41,8 +41,8 @@ class AdaptiveRegressor(base.Regressor):
         abs_error_mean = abs(y - self.mean_predictor.predict_one(x))  # type: ignore
         abs_error_model = abs(y - self.model_predictor.predict_one(x))  # type: ignore
 
-        self._mae_mean = self.alpha * self._mae_mean + abs_error_mean
-        self._mae_model = self.alpha * self._mae_model + abs_error_model
+        self._mae_mean = self.fading_factor * self._mae_mean + abs_error_mean
+        self._mae_model = self.fading_factor * self._mae_model + abs_error_model
 
         self.mean_predictor.learn_one(x, y, w)
 
@@ -199,7 +199,7 @@ class AMRules(base.Regressor):
         The drift detection model that is used by each rule. Care must be taken to avoid the
         triggering of too many false alarms or delaying too much the concept drift detection.
         By default, `drift.ADWIN` is used if `drift_detector` is `None`.
-    alpha
+    fading_factor
         The exponential decaying factor applied to the learning models' absolute errors, that
         are monitored if `pred_type='adaptive'`. Must be between `0` and `1`. The closer
         to `1`, the more importance is going to be given to past observations. On the other hand,
@@ -280,7 +280,7 @@ class AMRules(base.Regressor):
         pred_model: base.Regressor = None,
         splitter: spl.Splitter = None,
         drift_detector: base.DriftDetector = None,
-        alpha: float = 0.99,
+        fading_factor: float = 0.99,
         anomaly_threshold: float = -0.75,
         m_min: int = 30,
         ordered_rule_set: bool = True,
@@ -302,7 +302,7 @@ class AMRules(base.Regressor):
 
         self.drift_detector = drift_detector if drift_detector is not None else drift.ADWIN()
 
-        self.alpha = alpha
+        self.fading_factor = fading_factor
         self.anomaly_threshold = anomaly_threshold
         self.m_min = m_min
         self.ordered_rule_set = ordered_rule_set
@@ -315,7 +315,15 @@ class AMRules(base.Regressor):
 
     @property
     def _mutable_attributes(self):
-        return {"n_min", "delta", "tau", "alpha", "anomaly_threshold", "m_min", "ordered_rule_set"}
+        return {
+            "n_min",
+            "delta",
+            "tau",
+            "fading_factor",
+            "anomaly_threshold",
+            "m_min",
+            "ordered_rule_set",
+        }
 
     def __len__(self):
         return len(self._rules) + 1
@@ -336,7 +344,7 @@ class AMRules(base.Regressor):
         else:  # adaptive predictor
             predictor = AdaptiveRegressor(
                 model_predictor=self.pred_model.clone(),
-                alpha=self.alpha,
+                fading_factor=self.fading_factor,
             )  # type: ignore
 
         return RegRule(

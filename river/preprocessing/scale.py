@@ -485,9 +485,9 @@ class AdaptiveStandardScaler(base.Transformer):
 
     Parameters
     ----------
-    alpha
+    fading_factor
         This parameter is passed to `stats.EWVar`. It is expected to be in [0, 1]. More weight is
-        assigned to recent samples the closer `alpha` is to 1.
+        assigned to recent samples the closer `fading_factor` is to 1.
 
     Examples
     --------
@@ -517,7 +517,7 @@ class AdaptiveStandardScaler(base.Transformer):
 
     >>> from river import preprocessing
 
-    >>> scaler = preprocessing.AdaptiveStandardScaler(alpha=.6)
+    >>> scaler = preprocessing.AdaptiveStandardScaler(fading_factor=.6)
 
     >>> for x in X:
     ...     print(scaler.learn_one(x).transform_one(x))
@@ -532,10 +532,10 @@ class AdaptiveStandardScaler(base.Transformer):
 
     """
 
-    def __init__(self, alpha=0.3):
-        self.alpha = alpha
-        self.vars = collections.defaultdict(functools.partial(stats.EWVar, self.alpha))
-        self.means = collections.defaultdict(functools.partial(stats.EWMean, self.alpha))
+    def __init__(self, fading_factor=0.3):
+        self.fading_factor = fading_factor
+        self.vars = collections.defaultdict(functools.partial(stats.EWVar, self.fading_factor))
+        self.means = collections.defaultdict(functools.partial(stats.EWMean, self.fading_factor))
 
     def learn_one(self, x):
         for i, xi in x.items():
