@@ -7,8 +7,8 @@ class EWMean(stats.base.Univariate):
 
     Parameters
     ----------
-    alpha
-        The closer `alpha` is to 1 the more the statistic will adapt to recent values.
+    fading_factor
+        The closer `fading_factor` is to 1 the more the statistic will adapt to recent values.
 
     Attributes
     ----------
@@ -21,7 +21,7 @@ class EWMean(stats.base.Univariate):
     >>> from river import stats
 
     >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
-    >>> ewm = stats.EWMean(alpha=0.5)
+    >>> ewm = stats.EWMean(fading_factor=0.5)
     >>> for x in X:
     ...     print(ewm.update(x).get())
     1.0
@@ -43,16 +43,16 @@ class EWMean(stats.base.Univariate):
 
     # Note for devs, if you want look the pure python implementation here:
     # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/ewmean.py
-    def __init__(self, alpha=0.5):
-        if not 0 <= alpha <= 1:
+    def __init__(self, fading_factor=0.5):
+        if not 0 <= fading_factor <= 1:
             raise ValueError("q is not comprised between 0 and 1")
-        self.alpha = alpha
-        self._ewmean = _rust_stats.RsEWMean(alpha)
+        self.fading_factor = fading_factor
+        self._ewmean = _rust_stats.RsEWMean(fading_factor)
         self.mean = 0
 
     @property
     def name(self):
-        return f"ewm_{self.alpha}"
+        return f"ewm_{self.fading_factor}"
 
     def update(self, x):
         self._ewmean.update(x)

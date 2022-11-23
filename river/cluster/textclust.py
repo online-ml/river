@@ -11,8 +11,6 @@ __all__ = ["TextClust"]
 class TextClust(base.Clusterer):
     r"""textClust, a clustering algorithm for text data.
 
-
-
     textClust [^1][^2] is a stream clustering algorithm for textual data that can identify and track topics
     over time in a stream of texts. The algorithm uses a widely popular two-phase clustering
     approach where the stream is first summarised in real-time.

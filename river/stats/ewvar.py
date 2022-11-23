@@ -10,8 +10,8 @@ class EWVar(stats.base.Univariate):
 
     Parameters
     ----------
-    alpha
-        The closer `alpha` is to 1 the more the statistic will adapt to recent values.
+    fading_factor
+        The closer `fading_factor` is to 1 the more the statistic will adapt to recent values.
 
     Attributes
     ----------
@@ -24,7 +24,7 @@ class EWVar(stats.base.Univariate):
     >>> from river import stats
 
     >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
-    >>> ewv = stats.EWVar(alpha=0.5)
+    >>> ewv = stats.EWVar(fading_factor=0.5)
     >>> for x in X:
     ...     print(ewv.update(x).get())
     0.0
@@ -46,16 +46,16 @@ class EWVar(stats.base.Univariate):
 
     # Note for devs, if you want look the pure python implementation here:
     # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/ewvar.py
-    def __init__(self, alpha=0.5):
-        if not 0 <= alpha <= 1:
+    def __init__(self, fading_factor=0.5):
+        if not 0 <= fading_factor <= 1:
             raise ValueError("q is not comprised between 0 and 1")
 
-        self.alpha = alpha
-        self._ewvar = _rust_stats.RsEWVar(alpha)
+        self.fading_factor = fading_factor
+        self._ewvar = _rust_stats.RsEWVar(fading_factor)
 
     @property
     def name(self):
-        return f"ewv_{self.alpha}"
+        return f"ewv_{self.fading_factor}"
 
     def update(self, x):
         self._ewvar.update(x)
