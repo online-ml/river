@@ -50,7 +50,7 @@ But of course, when you're developping a model, you don't usually have access to
 
 Online model evaluation differs from its traditional batch counterpart. In the latter, you usually perform cross-validation, whereby your training dataset is split into a learning and an evaluation dataset. This is fine, but it doesn't exactly reflect the data generation process that occurs in production.
 
-Online model evaluation involves learning and inference in the same order as what would happen in production. Indeed, if you know the order in which your data arrives, then you can process it the exact same order. This allows you to replay a production scenario and evaluate your model with higher fidelity that cross-validation.
+Online model evaluation involves learning and inference in the same order as what would happen in production. Indeed, if you know the order in which your data arrives, then you can process it the exact same order. This allows you to replay a production scenario and evaluate your model with higher fidelity than cross-validation.
 
 This is what makes online machine learning powerful. By replaying datasets in the correct order, you ensure you are designing models which will perform as expected in production.
 
