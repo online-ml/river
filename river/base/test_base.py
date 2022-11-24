@@ -1,4 +1,4 @@
-from river import compose, datasets, linear_model, optim, preprocessing, stats
+from river import compose, datasets, linear_model, optim, preprocessing, stats, time_series
 
 
 def test_clone_estimator():
@@ -121,3 +121,16 @@ def test_clone_positional_args():
     assert compose.Select(1, 2, 3).clone().keys == {1, 2, 3}
     assert compose.Discard("a", "b", "c").clone().keys == {"a", "b", "c"}
     assert compose.SelectType(float, int).clone().types == (float, int)
+
+
+def test_clone_nested_pipeline():
+    model = time_series.SNARIMAX(
+        p=2,
+        d=1,
+        q=3,
+        regressor=(
+            preprocessing.StandardScaler()
+            | linear_model.LinearRegression(optimizer=optim.SGD(3e-2))
+        ),
+    )
+    assert model.clone()._get_params() == model._get_params()

@@ -1,5 +1,9 @@
 # Unreleased
 
+## base
+
+- Fixed an issue where an estimator that has attribute a pipeline could not be cloned.
+
 ## preprocessing
 
 - Renamed `alpha` to `fading_factor` in `preprocessing.AdaptiveStandardScaler`.
