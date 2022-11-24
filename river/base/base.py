@@ -174,30 +174,27 @@ class Base:
                 and isinstance(param[1], dict)
             )
 
-        def instantiate(klass, params, new_params):
+        # Override the default parameters with the new ones
+        params = self._get_params()
+        params.update(new_params or {})
 
-            params = {name: new_params.get(name, param) for name, param in params.items()}
-            return klass(
-                *(params.get("_POSITIONAL_ARGS", [])),
-                **{
-                    name: (
-                        instantiate(klass=param[0], params=param[1], new_params={})
-                        if is_class_param(param)
-                        else copy.deepcopy(param)
-                    )
-                    for name, param in params.items()
-                    if name != "_POSITIONAL_ARGS"
-                },
-            )
-
-        clone = instantiate(
-            klass=self.__class__, params=self._get_params(), new_params=new_params or {}
+        # Clone by recursing
+        clone = self.__class__(
+            *(params.get("_POSITIONAL_ARGS", [])),
+            **{
+                name: (
+                    getattr(self, name).clone(param[1])
+                    if is_class_param(param)
+                    else copy.deepcopy(param)
+                )
+                for name, param in params.items()
+                if name != "_POSITIONAL_ARGS"
+            },
         )
 
         if not include_attributes:
             return clone
 
-        params = clone._get_params()
         for attr, value in self.__dict__.items():
             if attr not in params:
                 setattr(clone, attr, copy.deepcopy(value))
