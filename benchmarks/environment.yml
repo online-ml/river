@@ -45,7 +45,7 @@ dependencies:
     - enum-compat==0.0.3
     - llvmlite==0.39.1
     - markupsafe==2.1.1
-    - onelearn==0.0.0
+    # - onelearn==0.3.0
     - packaging==21.3
     - param==1.12.2
     - pillow==9.2.0

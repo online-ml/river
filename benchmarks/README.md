@@ -3,7 +3,7 @@
 Navigate to the root of this repo and create a `conda` virtual environment, as so:
 
 ```sh
-conda create -f environment.yml
+conda env create -f environment.yml
 conda activate river-benchmarks
 ```
 

@@ -9,7 +9,7 @@ import shelve
 import sys
 
 import numpy as np
-import onelearn
+# import onelearn
 import torch
 from sklearn.linear_model import SGDClassifier
 from vowpalwabbit import pyvw
@@ -17,7 +17,7 @@ from vowpalwabbit import pyvw
 from river import (
     base,
     compat,
-    drift,
+    # drift,
     dummy,
     ensemble,
     evaluate,
@@ -150,20 +150,20 @@ class VW2RiverClassifier(VW2RiverBase, base.Classifier):
         return {True: y_pred, False: 1.0 - y_pred}
 
 
-class AMFClassifier(onelearn.AMFClassifier):
+# class AMFClassifier(onelearn.AMFClassifier):
 
-    def __init__(self, classes, *args, **kwargs):
-        super().__init__(*args, **kwargs, n_classes=len(classes))
-        self.classes_ = np.array(classes)
+#     def __init__(self, classes, *args, **kwargs):
+#         super().__init__(*args, **kwargs, n_classes=len(classes))
+#         self.classes_ = np.array(classes)
 
-    def partial_fit(self, X, y, classes=None):
-        return super().partial_fit(np.asarray(X), np.asarray(y))
+#     def partial_fit(self, X, y, classes=None):
+#         return super().partial_fit(np.asarray(X), np.asarray(y))
 
-    def predict(self, X):
-        if self._n_features is None:
-            return self.classes_[np.zeros(len(X), dtype=int)]
-        indices = self.predict_proba(X).argmax(axis=1)
-        return self.classes_[indices]
+#     def predict(self, X):
+#         if self._n_features is None:
+#             return self.classes_[np.zeros(len(X), dtype=int)]
+#         indices = self.predict_proba(X).argmax(axis=1)
+#         return self.classes_[indices]
 
 
 LEARNING_RATE = 0.005
@@ -176,14 +176,14 @@ models = {
         ),
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
         "Stochastic Gradient Tree": tree.SGTClassifier(),
-        "onelearn AMFClassifier": (
-            compat.SKL2RiverClassifier(
-                AMFClassifier(
-                    classes=[False, True],
-                ),
-                classes=[False, True],
-            )
-        ),
+        # "onelearn AMFClassifier": (
+        #     compat.SKL2RiverClassifier(
+        #         AMFClassifier(
+        #             classes=[False, True],
+        #         ),
+        #         classes=[False, True],
+        #     )
+        # ),
         "sklearn SGDClassifier": (
             preprocessing.StandardScaler()
             | compat.SKL2RiverClassifier(
