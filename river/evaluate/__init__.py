@@ -6,17 +6,15 @@ allows to evaluate a model via progressive validation.
 
 This module also exposes "tracks". A track is a predefined combination of a dataset and one or more
 metrics. This allows a principled manner to compare models with each other. For instance,
-the `load_binary_clf_tracks` returns tracks that are to be used to evaluate the performance of
-a binary classification model.
-
-The `benchmarks` directory at the root of the River repository uses these tracks.
+the `RegressionTrack` contains several datasets and metrics to evaluate regression models. There is
+also a bare `Track` class to implement a custom track. The `benchmarks` directory at the root of
+the River repository uses these tracks.
 
 """
 from .progressive_validation import iter_progressive_val_score, progressive_val_score
 from .tracks import BinaryClassificationTrack, MultiClassClassificationTrack, RegressionTrack, Track
 
 __all__ = [
-    "load_binary_clf_tracks",
     "iter_progressive_val_score",
     "progressive_val_score",
     "BinaryClassificationTrack",
