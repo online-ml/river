@@ -53,7 +53,7 @@ class RegressionJackknife(base.Regressor, base.Wrapper):
     >>> efficiency = stats.Mean()
 
     >>> for x, y in dataset:
-    ...     interval = model.predict_one(x)
+    ...     interval = model.predict_one(x, with_interval=True)
     ...     validity = validity.update(y in interval)
     ...     efficiency = efficiency.update(interval.width)
     ...     model = model.learn_one(x, y)
@@ -98,6 +98,12 @@ class RegressionJackknife(base.Regressor, base.Wrapper):
     def _wrapped_model(self):
         return self.regressor
 
+    @classmethod
+    def _unit_test_params(cls):
+        from river import linear_model, preprocessing
+
+        yield {"regressor": (preprocessing.StandardScaler() | linear_model.LinearRegression())}
+
     def learn_one(self, x, y):
 
         # Update the quantiles
@@ -109,7 +115,7 @@ class RegressionJackknife(base.Regressor, base.Wrapper):
 
         return self
 
-    def predict_one(self, x, with_interval=True):
+    def predict_one(self, x, with_interval=False):
         """Predict the output of features `x`.
 
         Parameters
