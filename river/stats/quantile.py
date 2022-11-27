@@ -143,6 +143,8 @@ class RollingQuantile(stats.base.RollingUnivariate):
         return self
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self._rolling_quantile.get()
 
     @property

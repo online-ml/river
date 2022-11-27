@@ -40,7 +40,7 @@ class BayesianLinearRegression(base.Regressor):
     >>> model.predict_one(x)
     43.61
 
-    >>> model.predict_one(x, as_dist=True)
+    >>> model.predict_one(x, with_dist=True)
     𝒩(μ=43.616, σ=1.003)
 
     References
@@ -109,14 +109,14 @@ class BayesianLinearRegression(base.Regressor):
 
         return self
 
-    def predict_one(self, x, as_dist=False):
+    def predict_one(self, x, with_dist=False):
         """Predict the output of features `x`.
 
         Parameters
         ----------
         x
             A dictionary of features.
-        as_dist
+        with_dist
             Whether to return a predictive distribution, or instead just the most likely value.
 
         Returns
@@ -127,7 +127,7 @@ class BayesianLinearRegression(base.Regressor):
 
         # Bishop equation 3.58
         y_pred_mean = utils.math.dot(self._m, x)
-        if not as_dist:
+        if not with_dist:
             return y_pred_mean
 
         x_arr = np.array(list(x.values()))
