@@ -11712,9 +11712,9 @@ scenario with high fidelity. The core function of this module is <code>progressi
 allows to evaluate a model via progressive validation.</p>
 <p>This module also exposes "tracks". A track is a predefined combination of a dataset and one or more
 metrics. This allows a principled manner to compare models with each other. For instance,
-the <code>load_binary_clf_tracks</code> returns tracks that are to be used to evaluate the performance of
-a binary classification model.</p>
-<p>The <code>benchmarks</code> directory at the root of the River repository uses these tracks.</p>
+the <code>RegressionTrack</code> contains several datasets and metrics to evaluate regression models. There is
+also a bare <code>Track</code> class to implement a custom track. The <code>benchmarks</code> directory at the root of
+the River repository uses these tracks.</p>
 <p><strong>Classes</strong></p>
 <ul>
 <li><a href="../evaluate/BinaryClassificationTrack">BinaryClassificationTrack</a></li>
