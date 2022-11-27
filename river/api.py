@@ -47,6 +47,7 @@ __all__ = [
     "cluster",
     "compat",
     "compose",
+    "conf",
     "covariance",
     "datasets",
     "dummy",

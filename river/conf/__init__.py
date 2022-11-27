@@ -2,3 +2,8 @@
 regressor or classifier."""
 from .interval import Interval
 from .jackknife import RegressionJackknife
+
+__all__ = [
+    "Interval",
+    "RegressionJackknife",
+]

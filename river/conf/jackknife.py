@@ -1,5 +1,5 @@
-from river import base
-from river import stats
+from river import base, stats
+
 from . import interval
 
 
@@ -85,12 +85,14 @@ class RegressionJackknife(base.Regressor, base.Wrapper):
         self.window_size = window_size
 
         alpha = (1 - confidence_level) / 2
-        if window_size:
-            self._lower = stats.RollingQuantile(alpha, window_size)
-            self._upper = stats.RollingQuantile(1 - alpha, window_size)
-        else:
-            self._lower = stats.Quantile(alpha)
-            self._upper = stats.Quantile(1 - alpha)
+        self._lower = (
+            stats.RollingQuantile(alpha, window_size) if window_size else stats.Quantile(alpha)
+        )
+        self._upper = (
+            stats.RollingQuantile(1 - alpha, window_size)
+            if window_size
+            else stats.Quantile(1 - alpha)
+        )
 
     @property
     def _wrapped_model(self):
