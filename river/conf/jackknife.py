@@ -69,7 +69,7 @@ class RegressionJackknife(base.Regressor, base.Wrapper):
     >>> efficiency
     Mean: 3.430883
 
-    Lowering the confidence interval will mechanically improve the efficiency.
+    Lowering the confidence lowering will mechanically improve the efficiency.
 
     References
     ----------
