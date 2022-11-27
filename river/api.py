@@ -7,6 +7,7 @@ from . import (
     cluster,
     compat,
     compose,
+    conf,
     covariance,
     datasets,
     drift,
