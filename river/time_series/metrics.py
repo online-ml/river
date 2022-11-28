@@ -40,7 +40,9 @@ class HorizonMetric(ForecastingMetric):
     """Measures performance at each time step ahead.
 
     This allows to measure the performance of a model at each time step along the horizon. A copy
-    of the provided regression metric is made for each time step.
+    of the provided regression metric is made for each time step. At each time step ahead, the 
+    metric is thus evaluated on each prediction for said time step, and not for the time steps before
+    or after that.
 
     Parameters
     ----------
