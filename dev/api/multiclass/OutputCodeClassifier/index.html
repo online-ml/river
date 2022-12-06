@@ -10545,7 +10545,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">ImageSegments</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">scaler</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ooc</span> <span class="o">=</span> <span class="n">OutputCodeClassifier</span><span class="p">(</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ooc</span> <span class="o">=</span> <span class="n">multiclass</span><span class="o">.</span><span class="n">OutputCodeClassifier</span><span class="p">(</span>
 <span class="o">...</span>     <span class="n">classifier</span><span class="o">=</span><span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(),</span>
 <span class="o">...</span>     <span class="n">code_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">24</span>
