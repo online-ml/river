@@ -19,10 +19,9 @@ from .nodes.leaf import HTLeaf
 
 try:
     import graphviz
-
-    GRAPHVIZ_INSTALLED = True
-except ImportError:
-    GRAPHVIZ_INSTALLED = False
+except ImportError as e:
+    raise ValueError(
+        "You have to install graphviz to use the draw method,") from e
 
 
 class HoeffdingTree(ABC):
@@ -409,9 +408,6 @@ class HoeffdingTree(ABC):
         """
         counter = 0
 
-        assert GRAPHVIZ_INSTALLED, (
-            "Graphviz is not installed. " "Please install it to use this feature."
-        )
 
         def iterate(node=None):
             if node is None:
