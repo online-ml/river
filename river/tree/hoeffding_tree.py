@@ -409,6 +409,8 @@ class HoeffdingTree(ABC):
         """
         counter = 0
 
+        assert GRAPHVIZ_INSTALLED, "Graphviz is not installed. " \
+                                    "Please install it to use this feature."
         def iterate(node=None):
             if node is None:
                 yield None, None, self._root, 0, None
