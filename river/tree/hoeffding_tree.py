@@ -17,11 +17,6 @@ from .nodes.branch import (
 )
 from .nodes.leaf import HTLeaf
 
-try:
-    import graphviz
-except ImportError as e:
-    raise ValueError("You have to install graphviz to use the draw method,") from e
-
 
 class HoeffdingTree(ABC):
     """Base class for Hoeffding Decision Trees.
@@ -405,6 +400,10 @@ class HoeffdingTree(ABC):
         .. image:: ../../docs/img/dtree_draw.svg
             :align: center
         """
+        try:
+            import graphviz
+        except ImportError as e:
+            raise ValueError("You have to install graphviz to use the draw method,") from e
         counter = 0
 
         def iterate(node=None):
