@@ -403,7 +403,7 @@ class HoeffdingTree(ABC):
         try:
             import graphviz
         except ImportError as e:
-            raise ValueError("You have to install graphviz to use the draw method,") from e
+            raise ValueError("You have to install graphviz to use the draw method.") from e
         counter = 0
 
         def iterate(node=None):
