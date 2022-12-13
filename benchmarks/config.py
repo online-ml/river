@@ -1,8 +1,8 @@
 from sklearn.linear_model import SGDClassifier
 
 import torch
-from benchmarks.model_zoo.torch import PyTorchBinaryClassifier, PyTorchLogReg
-from benchmarks.model_zoo.vw import VW2RiverClassifier
+from model_zoo.torch import PyTorchBinaryClassifier, PyTorchLogReg
+from model_zoo.vw import VW2RiverClassifier
 from river import preprocessing, linear_model, tree, naive_bayes, ensemble, neighbors, rules, neural_net, dummy
 from river import compat, optim, evaluate, stats
 
@@ -35,7 +35,7 @@ MODELS = {
             preprocessing.StandardScaler()
             | compat.SKL2RiverClassifier(
                 SGDClassifier(
-                    loss="log", learning_rate="constant", eta0=LEARNING_RATE, penalty="none"
+                    loss="log_loss", learning_rate="constant", eta0=LEARNING_RATE, penalty="none"
                 ),
                 classes=[False, True],
             )
