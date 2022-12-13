@@ -57,11 +57,13 @@ class Logical(datasets.base.SyntheticDataset):
         self.n_tiles = n_tiles
         self.shuffle = shuffle
         self.seed = seed
-        self._rng = np.random.default_rng(self.seed)
+        self._rng: np.random.Generator
         self.feature_names = ["A", "B"]
         self.target_names = ["OR", "XOR", "AND"]
 
     def __iter__(self):
+        self._rng = np.random.default_rng(self.seed)
+
         X, Y = self._make_logical(n_tiles=self.n_tiles, shuffle=self.shuffle)
 
         for xi, yi in itertools.zip_longest(X, Y if hasattr(Y, "__iter__") else []):
